@@ -110,8 +110,14 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     }
 
     public Optional<LocalDate> resolveDateDebutDelaiCadre() {
-        return loadNbJourDateMin(false)
+        Optional<LocalDate> localDate = loadNbJourDateMin(false)
                 .map(NbJourDateMin::getDateDebutMin);
+
+        if(localDate.isPresent()){
+            return localDate;
+        }
+
+        return Optional.of(Dates.toDate(this.getDateDebutDroit()));
     }
 
     @Override

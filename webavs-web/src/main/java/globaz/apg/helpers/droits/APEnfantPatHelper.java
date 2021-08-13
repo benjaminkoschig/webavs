@@ -37,6 +37,7 @@ public class APEnfantPatHelper extends PRAbstractHelper {
     @Override
     protected void _add(final FWViewBeanInterface viewBean, final FWAction action, final BISession session) throws Exception {
         if (viewBean instanceof APEnfantPatViewBean) {
+            new CareLeaveEventIdHelper().updateCareLeveEventId(viewBean, session);
             if(JadeStringUtil.isBlankOrZero(((APEnfantPatViewBean)viewBean).getIdSitFamPaternite()) ||
                     ((APEnfantPatViewBean)viewBean).isNew()){
                 super._add(viewBean, action, session);
@@ -44,7 +45,6 @@ public class APEnfantPatHelper extends PRAbstractHelper {
                 this._update(viewBean, action, session);
             }
         }
-        new CareLeaveEventIdHelper().updateCareLeveEventId(viewBean, session);
     }
 
     protected void _retrieve(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {

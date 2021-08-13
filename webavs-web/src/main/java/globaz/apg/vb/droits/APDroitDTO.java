@@ -63,7 +63,6 @@ public class APDroitDTO implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private String dateDebutDroitDelaiCadre = "";
     private String dateDebutDroit = "";
     private String genreService = "";
     private String idDroit = "";
@@ -93,7 +92,6 @@ public class APDroitDTO implements Serializable {
         nomPrenom = droitDTO.nomPrenom;
         noAVS = droitDTO.noAVS;
         dateDebutDroit = droitDTO.dateDebutDroit;
-        dateDebutDroitDelaiCadre = droitDTO.dateDebutDroitDelaiCadre;
         genreService = droitDTO.genreService;
         modifiable = droitDTO.modifiable;
         idTiers = droitDTO.idTiers;
@@ -114,10 +112,6 @@ public class APDroitDTO implements Serializable {
         genreService = droit.getGenreService();
         npa = droit.getNpa();
 
-        if(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService) && droit instanceof APDroitProcheAidant){
-            dateDebutDroitDelaiCadre = ((APDroitProcheAidant) droit).resolveDateDebutDelaiCadre().map(Dates::formatSwiss)
-                    .orElse("");
-        }
         PRTiersWrapper tiers = null;
 
         try {
@@ -150,15 +144,6 @@ public class APDroitDTO implements Serializable {
      */
     public String getDateDebutDroit() {
         return dateDebutDroit;
-    }
-
-    /**
-     * getter pour l'attribut date debut droit
-     *
-     * @return la valeur courante de l'attribut date debut droit
-     */
-    public String getDateDebutDroitDelaiCadre() {
-        return dateDebutDroitDelaiCadre;
     }
 
     /**
@@ -216,16 +201,6 @@ public class APDroitDTO implements Serializable {
      */
     public void setDateDebutDroit(String string) {
         dateDebutDroit = string;
-    }
-
-    /**
-     * setter pour l'attribut date debut droit delai cadre
-     *
-     * @param string
-     *            une nouvelle valeur pour cet attribut
-     */
-    public void setDateDebutDroitDelaiCadre(String string) {
-        dateDebutDroitDelaiCadre = string;
     }
 
     /**
