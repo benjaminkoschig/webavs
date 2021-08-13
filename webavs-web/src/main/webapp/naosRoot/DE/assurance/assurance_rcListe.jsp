@@ -38,15 +38,9 @@
 		} else {
     %>
 	<TD class="mtd" width="30" >
-		<%if(viewBean.getAssuranceType(i).equals(CodeSystem.TYPE_ASS_CRP_BASIC)){%>
-			<ct:menuPopup menu="AFOptionsAssurancesTauxFixe" labelId="MENU_OPTIONS" target="top.fr_main" detailLabelId="DETAIL_POPUP" detailLink="<%=detailLink + viewBean.getAssuranceId(i)%>">
-				<ct:menuParam key="assuranceId" value="<%=viewBean.getAssuranceId(i)%>"/>
-			</ct:menuPopup>
-		<%}else{%>
-			<ct:menuPopup menu="AFOptionsAssurances" labelId="MENU_OPTIONS" target="top.fr_main" detailLabelId="DETAIL_POPUP" detailLink="<%=detailLink + viewBean.getAssuranceId(i)%>">
-				<ct:menuParam key="assuranceId" value="<%=viewBean.getAssuranceId(i)%>"/>
-			</ct:menuPopup>
-		<%}%>
+		<<ct:menuPopup menu="AFOptionsAssurances" labelId="MENU_OPTIONS" target="top.fr_main" detailLabelId="DETAIL_POPUP" detailLink="<%=detailLink + viewBean.getAssuranceId(i)%>">
+			<ct:menuParam key="assuranceId" value="<%=viewBean.getAssuranceId(i)%>"/>
+		</ct:menuPopup>
 	</TD>
 	<% } %>
 	<TD class="mtd" onClick="<%=actionDetail%>" width="350"><%=viewBean.getAssuranceLibelle(i)%></TD>

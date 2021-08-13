@@ -274,15 +274,10 @@ function onChangeHasAssuranceReference() {
 </SCRIPT> 
 <% } %> 
 	<ct:menuChange displayId="menu" menuId="AFMenuPrincipal"/>
-<% if(viewBean.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){%>
-<ct:menuChange displayId="options" menuId="AFOptionsAssurancesTauxFixe" showTab="options">
-	<ct:menuSetAllParams key="assuranceId" value="<%=viewBean.getAssuranceId()%>"/>
-</ct:menuChange>
-<%}else{%>
+
 <ct:menuChange displayId="options" menuId="AFOptionsAssurances" showTab="options">
 	<ct:menuSetAllParams key="assuranceId" value="<%=viewBean.getAssuranceId()%>"/>
 </ct:menuChange>
-<%}%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/footer.jspf" %>
 <%-- /tpl:insert --%>

@@ -866,20 +866,6 @@
 			</node>
 		</nodes>
 	</menu>
-
-	<!-- Options assurance -->
-	<menu id="AFOptionsAssurancesTauxFixe">
-		<label refId="MENU_OPTIONS"/>
-		<nodes>
-			<node>
-				<label refId="OPTION_PARAMTAUX"/>
-				<action command="/naos" responseTarget="fr_main">
-					<parameter name="userAction" value="naos.parametreAssurance.parametreAssurance.chercher"/>
-					<parameter name="assuranceId" value="" />
-				</action>
-			</node>
-		</nodes>
-	</menu>
 	
 	<!-- Options couverture -->
 	<menu id="AFOptionsCouverture">
