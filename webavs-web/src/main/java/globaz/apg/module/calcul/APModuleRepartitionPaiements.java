@@ -1713,8 +1713,8 @@ public class APModuleRepartitionPaiements {
                     allocBrutPrestationCumulee = opMontantJour.get().calculMontantPrestation();
                 } else {
                     if(repartitionBenefPaiement.getTauxRJM() != null && !"100.00".equals(repartitionBenefPaiement.getTauxRJM())) {
-                        allocBrutPrestationCumulee = JANumberFormatter.round(benefPotentiel.getMontant(allocBrutPrestationCumulee),0.05, 2, JANumberFormatter.NEAR);
                         allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
+                        allocBrutPrestationCumulee = JANumberFormatter.round(benefPotentiel.getMontant(allocBrutPrestationCumulee),0.05, 2, JANumberFormatter.NEAR);
                         montantBrutPrestation = allocBrutPrestationCumulee;
                     } else {
                         allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
