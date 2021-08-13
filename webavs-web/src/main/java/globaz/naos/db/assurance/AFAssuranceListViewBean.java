@@ -49,4 +49,8 @@ public class AFAssuranceListViewBean extends AFAssuranceManager implements FWVie
 
         return ((AFAssurance) getEntity(index)).getRubriqueId();
     }
+
+    public String getAssuranceType(int index){
+        return ((AFAssurance) getEntity(index)).getTypeAssurance();
+    }
 }

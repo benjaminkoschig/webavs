@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.naos.translation.CodeSystem" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -273,9 +274,16 @@ function onChangeHasAssuranceReference() {
 </SCRIPT> 
 <% } %> 
 	<ct:menuChange displayId="menu" menuId="AFMenuPrincipal"/>
+<% if(viewBean.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){%>
+	<ct:menuChange displayId="options" menuId="AFOptionsAssurancesTauxFixe" showTab="options">
+		<ct:menuSetAllParams key="assuranceId" value="<%=viewBean.getAssuranceId()%>"/>
+	</ct:menuChange>
+<%}else{%>
 	<ct:menuChange displayId="options" menuId="AFOptionsAssurances" showTab="options">
 		<ct:menuSetAllParams key="assuranceId" value="<%=viewBean.getAssuranceId()%>"/>
 	</ct:menuChange>
+<%}%>
+
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/footer.jspf" %>
 <%-- /tpl:insert --%>

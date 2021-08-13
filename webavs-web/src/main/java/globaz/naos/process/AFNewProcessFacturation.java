@@ -326,16 +326,14 @@ public final class AFNewProcessFacturation extends BProcess {
      * 
      * @param process
      *            process appellant la méthode: process naos ou musca
-     * @param donneeFacturation
+     * @param donneesFacturation
      *            entity retourné par AFProcessFacturationViewBean
      * @param anneeFacturation
      * @param moisFacturation
      * @param isParitaire
      *            true is on veut calculer une paritaire
-     * @param isPersonel
+     * @param isPersonnel
      *            true is on veut calculer une Personelle
-     * @param cotisationAffilie
-     *            liste de cotisation déjà calculées pour un affilié
      */
     public static final LineFacturation calculerCotisation(BProcess process,
             AFProcessFacturationViewBean donneesFacturation, String anneeFacturation, String moisFacturation,
