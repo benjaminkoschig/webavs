@@ -6,6 +6,7 @@ import java.util.List;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
+import ch.globaz.al.business.constantes.ALCSCantons;
 import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
@@ -1201,6 +1202,35 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             canton = getCantonBaseLegale(dossier, droit);
         }
 
+        // Force le canton à VD sur les annonces rafam pour les tarifs spéciaux FPV
+        if (isTarifSpecifiqueFPV(canton)) {
+            canton = "VD";
+        }
+
+        // Si ce n'est pas un canton, se trouve dans un tarif spécifique forcer au canton de l'affiliation
+        if(!isCantonSuisse(canton)){
+            canton = getCantonBaseLegale(dossier, droit);
+        }
+
         return canton;
+    }
+
+    private boolean isCantonSuisse(String canton){
+        return ALCSCantons.CANTONS.contains(canton);
+    }
+
+    /** Permet de savoir si l'on se trouve dans un tarif spécifique FPV et non un canton
+     * @param canton
+     * @return true si le canton est un tarif spécifique FPV et non un canton
+     */
+    private boolean isTarifSpecifiqueFPV(String canton) {
+        return StringUtils.equals(canton, "FPV_IAV")
+                    || StringUtils.equals(canton, "FPV_GAR")
+                    || StringUtils.equals(canton, "FPV_GEOM")
+                    || StringUtils.equals(canton, "FPV_LIBR")
+                    || StringUtils.equals(canton, "FPV_AT")
+                    || StringUtils.equals(canton, "FPV_NOT")
+                    || StringUtils.equals(canton, "FPV_AGA")
+                    || StringUtils.equals(canton, "FPV_AFIT");
     }
 }

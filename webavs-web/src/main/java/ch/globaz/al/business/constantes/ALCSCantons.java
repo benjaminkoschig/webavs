@@ -1,5 +1,9 @@
 package ch.globaz.al.business.constantes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Codes système liés aux cantons
  * 
@@ -125,4 +129,8 @@ public interface ALCSCantons {
      * CS : canton "Zürich"
      */
     String ZH = "61020026";
+    /**
+     * Liste des abréviations des cantons
+     */
+    List<String> CANTONS = new ArrayList<>(Arrays.asList("AG", "AI", "AR", "BE", "BL", "BS", "FR", "GE", "GL", "GR", "JU", "LU", "NE", "NW", "OW", "SG", "SH", "SO", "SZ", "TG", "TI", "UR", "VD", "VS", "ZG", "ZH"));
 }
