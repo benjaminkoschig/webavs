@@ -1,5 +1,7 @@
 package globaz.naos.itext.acompte;
 
+import ch.globaz.al.business.constantes.ALCSAffilie;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
@@ -12,8 +14,11 @@ import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.itext.masse.AFAbstractSalaires_Doc;
 import globaz.naos.itext.masse.AFSalaires_Param;
 import globaz.naos.translation.CodeSystem;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 
 public class AFPrevisionAcompte_Doc extends AFAbstractSalaires_Doc {
 
@@ -55,12 +60,38 @@ public class AFPrevisionAcompte_Doc extends AFAbstractSalaires_Doc {
 
             this.beforeBuildReport(
                     format(loadNiveau(1), new String[] { loadPlan().getLibelleFactureNotEmpty(), datePeriode }),
-                    format(loadNiveau(3),
-                            new String[] { JACalendar.format(dateRetour, affiliation().getTiers().getLangueIso()) }),
+                    loadPeriodiciteTexteNiveau(5) + format(loadNiveau(3), new String[] { JACalendar.format(dateRetour, affiliation().getTiers().getLangueIso()) }),
                     texte(4, 1), texte(4, 2), Boolean.TRUE);
         } catch (Exception ex) {
             throw new FWIException(ex);
         }
+    }
+
+    /**
+     * Genère le texte de modification de la périodicité pour le document
+     * prévision pour acompte si les positions existent dans le catalogue.
+     *
+     * @return String vide ou les texte du catalogues déjà initilisé avec leur paramètres
+     * @throws Exception
+     * @param niveau
+     */
+    private String loadPeriodiciteTexteNiveau(int niveau) throws Exception {
+        String periodiciteTexte = "";
+        String periodiciteCode = affiliation().getPeriodicite();
+        // Test si le niveau de catalogues pour le texte de périodicité existe
+        if (StringUtils.isNotBlank(texte(niveau, 4)) && StringUtils.isNotBlank(periodiciteCode)) {
+            String periodiciteLibelle = CodeSystemUtils.searchCodeSystemTraduction(periodiciteCode, getSession(), getIsoLangueDestinataire()).getTraduction().toLowerCase(Locale.ROOT);
+            periodiciteTexte = texte(5, 4) + "\n\n"; // ajouter une fin de paragraphe
+            if (ALCSAffilie.PERIODICITE_MEN.equals(periodiciteCode)) {
+                periodiciteTexte += texte(5, 5);
+            } else if (ALCSAffilie.PERIODICITE_TRI.equals(periodiciteCode)) {
+                periodiciteTexte += texte(5, 6);
+            } else if (ALCSAffilie.PERIODICITE_ANN.equals(periodiciteCode)) {
+                periodiciteTexte += texte(5, 7);
+            }
+            periodiciteTexte = format(periodiciteTexte, new String[]{periodiciteLibelle});
+        }
+        return periodiciteTexte;
     }
 
     @Override
