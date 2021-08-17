@@ -174,7 +174,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIPAR")
                                        .append(" and child.VATETA in (?))))", etatsDroit);
         if (filtrerPeriodePlusAnciennne) {
-            sqlWriter.append("and SUBSTRING(schema.APPRESP.VHDFIN,1,6) <= SUBSTRING((select max(periodeMax.VHDFIN)")
+            sqlWriter.append("and SUBSTR(schema.APPRESP.VHDFIN,1,6) <= SUBSTR((select max(periodeMax.VHDFIN)")
                      .append("                                 from schema.APDROIP as currentDroit")
                      .append("                                inner join schema.APPRESP as periodeMax  ")
                      .append("                                   ON periodeMax.VHIDRO = currentDroit.VAIDRO")
