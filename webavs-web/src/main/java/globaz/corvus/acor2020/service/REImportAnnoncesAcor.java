@@ -1,4 +1,4 @@
-package globaz.corvus.acor2020.business;
+package globaz.corvus.acor2020.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.rev09.REACORParser;
-import globaz.corvus.acor2020.parser.ParserUtils;
+import globaz.corvus.acor2020.parser.REConverterUtils;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.db.annonces.REAnnonceRente;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
@@ -247,7 +247,7 @@ public class REImportAnnoncesAcor {
         String moisRapport = "";
 
         /* (String) : contient 6 positions : numeroCaisse (3pos) + numeroAgence (3pos) */
-        String noCaisseEtAgence = ParserUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
+        String noCaisseEtAgence = REConverterUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
         if (!JadeStringUtil.isEmpty(noCaisseEtAgence)) {
             if (noCaisseEtAgence.length() >= 3) {
                 /* ZAANOC : 3 positions */
@@ -270,7 +270,7 @@ public class REImportAnnoncesAcor {
          * YXDMRA (XMLGregorianCalendar) : format AAAAMM. Cette valeur est récupérée que pour la validation avec Anakin,
          * elle n'est pas stockée.
          */
-        moisRapport = ParserUtils.formatDateToAAAAMM(annonce10emeRev.getBerichtsmonat());
+        moisRapport = REConverterUtils.formatDateToAAAAMM(annonce10emeRev.getBerichtsmonat());
 
         /* Ayant-droit */
         if (annonce10emeRev.getLeistungsberechtigtePerson() != null) {
@@ -308,16 +308,16 @@ public class REImportAnnoncesAcor {
             }
 
             /* YXLETC (short) : type intrinsèque, sera toujours présent (non null), 1 position */
-            etatCivil = ParserUtils.formatShortToString(leistungsberechtigtePerson.getZivilstand());
+            etatCivil = REConverterUtils.formatShortToString(leistungsberechtigtePerson.getZivilstand());
 
             /* YXBREF (boolean) : type intrinsèque, sera toujours présent (non null), 1 position */
-            isRefugie = ParserUtils.formatBooleanToString(leistungsberechtigtePerson.isIstFluechtling());
+            isRefugie = REConverterUtils.formatBooleanToString(leistungsberechtigtePerson.isIstFluechtling());
 
             /* YXLCAN (String) : 3 position, si null -> vide sinon formaté sur 3 positions avec des 0 */
-            String canton = ParserUtils.formatIntegerToString(leistungsberechtigtePerson.getWohnkantonStaat());
+            String canton = REConverterUtils.formatIntegerToString(leistungsberechtigtePerson.getWohnkantonStaat());
             if (canton != null) {
                 cantonEtatDomicile = canton;
-                cantonEtatDomicile = ParserUtils.indentLeftWithZero(cantonEtatDomicile, 3);
+                cantonEtatDomicile = REConverterUtils.indentLeftWithZero(cantonEtatDomicile, 3);
             }
         }
 
@@ -331,22 +331,22 @@ public class REImportAnnoncesAcor {
             }
 
             /* YXDDEB (XMLGregorianCalendar) : format MMAA */
-            debutDroit = ParserUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsbeginn());
+            debutDroit = REConverterUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsbeginn());
 
             /* YXDFIN (XMLGregorianCalendar) : format MMAA */
-            finDroit = ParserUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsende());
+            finDroit = REConverterUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsende());
 
             /* YXMMEN (BigDecimal) : 5 position, si vide que des 0 */
             BigDecimal mensualite = leistungsbeschreibung.getMonatsbetrag();
             if (mensualite != null) {
-                mensualitePrestationsFrancs = ParserUtils.formatBigDecimalToString(mensualite);
-                mensualitePrestationsFrancs = ParserUtils.indentLeftWithZero(mensualitePrestationsFrancs, 5);
+                mensualitePrestationsFrancs = REConverterUtils.formatBigDecimalToString(mensualite);
+                mensualitePrestationsFrancs = REConverterUtils.indentLeftWithZero(mensualitePrestationsFrancs, 5);
             }
 
             /* YXLCOM : code mutation. Vide si pas de valeur (0 veut dire pas de valeur) sinon valeur sur 2 position */
             Short v7 = leistungsbeschreibung.getMutationscode();
             if (v7 != null) {
-                codeMutation = ParserUtils.indentLeftWithZero(String.valueOf(v7), 2);
+                codeMutation = REConverterUtils.indentLeftWithZero(String.valueOf(v7), 2);
             }
         }
 
@@ -452,33 +452,33 @@ public class REImportAnnoncesAcor {
             /* YYLRED (Short) : si pas de valeur = vide, sinon la valeur formatée sur 2 position */
             Short reductionShort = leistungsbeschreibung.getKuerzungSelbstverschulden();
             if (reductionShort != null) {
-                reduction = ParserUtils.formatShortToString(reductionShort);
-                reduction = ParserUtils.indentLeftWithZero(reduction, 2);
+                reduction = REConverterUtils.formatShortToString(reductionShort);
+                reduction = REConverterUtils.indentLeftWithZero(reduction, 2);
             }
 
             /* YZBSUR (Boolean) : si null -> pas de valeur sinon valeur 0 ou 1 */
             Boolean survivantBoolean = leistungsbeschreibung.isIstInvaliderHinterlassener();
             if (survivantBoolean != null) {
-                isSurvivant = ParserUtils.formatBooleanToString(survivantBoolean);
+                isSurvivant = REConverterUtils.formatBooleanToString(survivantBoolean);
             }
 
             /* YYLCS1 à YYLCS5 (Short) : Si null ou vide, pas de valeur sinon formaté sur 2 positions */
             List<Short> codesCasSpeciaux = annonce10emeRev.getLeistungsbeschreibung().getSonderfallcodeRente();
             if (codesCasSpeciaux != null) {
                 if (codesCasSpeciaux.size() > 0) {
-                    codeCasSpecial1 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(0));
+                    codeCasSpecial1 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(0));
                 }
                 if (codesCasSpeciaux.size() > 1) {
-                    codeCasSpecial2 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(1));
+                    codeCasSpecial2 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(1));
                 }
                 if (codesCasSpeciaux.size() > 2) {
-                    codeCasSpecial3 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(2));
+                    codeCasSpecial3 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(2));
                 }
                 if (codesCasSpeciaux.size() > 3) {
-                    codeCasSpecial4 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(3));
+                    codeCasSpecial4 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(3));
                 }
                 if (codesCasSpeciaux.size() > 4) {
-                    codeCasSpecial5 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(4));
+                    codeCasSpecial5 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(4));
                 }
             }
 
@@ -498,30 +498,30 @@ public class REImportAnnoncesAcor {
                     SkalaBerechnungType skalaBerechnung = berechnungsgrundlagen.getSkalaBerechnung();
 
                     /* YYLECR (short) : formaté sur 2 position */
-                    echelleRente = ParserUtils.formatShortToString(skalaBerechnung.getSkala());
+                    echelleRente = REConverterUtils.formatShortToString(skalaBerechnung.getSkala());
 
                     /* YYDCEC (BigDecimal) : si valeur vide -> vide, sinon formaté sur 4 position */
                     tmpVal1 = skalaBerechnung.getBeitragsdauerVor1973();
                     if (tmpVal1 != null) {
-                        dureeCoEchelleRenteAv73 = ParserUtils.formatBigDecimal(tmpVal1);
+                        dureeCoEchelleRenteAv73 = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
                     /* YYDECH (BigDecimal) : si valeur vide -> vide, sinon formaté sur 4 position */
                     tmpVal1 = skalaBerechnung.getBeitragsdauerAb1973();
                     if (tmpVal1 != null) {
-                        dureeCoEchelleRenteDes73 = ParserUtils.formatBigDecimal(tmpVal1);
+                        dureeCoEchelleRenteDes73 = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
                     /* YYDCM1 (int) : type intrinsèque, valeur formatée sur 2 position */
-                    dureeCotManquante48_72 = ParserUtils.formatIntegerToString(skalaBerechnung.getAnrechnungVor1973FehlenderBeitragsmonate());
-                    dureeCotManquante48_72 = ParserUtils.indentLeftWithZero(dureeCotManquante48_72, 2);
+                    dureeCotManquante48_72 = REConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungVor1973FehlenderBeitragsmonate());
+                    dureeCotManquante48_72 = REConverterUtils.indentLeftWithZero(dureeCotManquante48_72, 2);
 
                     /* YYDCM2 (int) : type intrinsèque, valeur formatée sur 2 position */
-                    dureeCotManquante73_78 = ParserUtils.formatIntegerToString(skalaBerechnung.getAnrechnungAb1973Bis1978FehlenderBeitragsmonate());
-                    dureeCotManquante73_78 = ParserUtils.indentLeftWithZero(dureeCotManquante73_78, 2);
+                    dureeCotManquante73_78 = REConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungAb1973Bis1978FehlenderBeitragsmonate());
+                    dureeCotManquante73_78 = REConverterUtils.indentLeftWithZero(dureeCotManquante73_78, 2);
 
                     /* YYDACC (int) : type intrinsèque, valeur brut, formatage sur 2 positions */
-                    anneeCotClasseAge = ParserUtils.indentLeftWithZero(ParserUtils.formatIntegerToString(skalaBerechnung.getBeitragsjahreJahrgang()),
+                    anneeCotClasseAge = REConverterUtils.indentLeftWithZero(REConverterUtils.formatIntegerToString(skalaBerechnung.getBeitragsjahreJahrgang()),
                             2);
                 }
 
@@ -531,18 +531,18 @@ public class REImportAnnoncesAcor {
                     /* YYMRAM (BigDecimal) : si null pas de valeur -> chaîne vide sinon formaté sur 8 position */
                     tmpVal1 = dJEBeschreibung.getDurchschnittlichesJahreseinkommen();
                     if (tmpVal1 != null) {
-                        ramDeterminant = ParserUtils.formatBigDecimalToString(tmpVal1);
-                        ramDeterminant = ParserUtils.indentLeftWithZero(ramDeterminant, 8);
+                        ramDeterminant = REConverterUtils.formatBigDecimalToString(tmpVal1);
+                        ramDeterminant = REConverterUtils.indentLeftWithZero(ramDeterminant, 8);
                     }
 
                     /* YYNDCO (BigDecimal) : si valeur null ou vide --> vide, sinon formatage sur 4 position */
                     tmpVal1 = dJEBeschreibung.getBeitragsdauerDurchschnittlichesJahreseinkommen();
                     if (tmpVal1 != null) {
-                        dureeCotPourDetRAM = ParserUtils.formatBigDecimal(tmpVal1);
+                        dureeCotPourDetRAM = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
                     /* YZTCOD (boolean) : type intrinsèque, valeur brut, pas de formatage particulier */
-                    codeRevenuSplitte = ParserUtils.formatBooleanToString(dJEBeschreibung.isGesplitteteEinkommen());
+                    codeRevenuSplitte = REConverterUtils.formatBooleanToString(dJEBeschreibung.isGesplitteteEinkommen());
                 }
 
                 /* Bonification */
@@ -557,7 +557,7 @@ public class REImportAnnoncesAcor {
                     if (tmpVal1 != null) {
                         tmpVal1 = tmpVal1.multiply(multiplicateur100);
                         nombreAnneeBTE = String.valueOf(tmpVal1.intValue());
-                        nombreAnneeBTE = ParserUtils.indentLeftWithZero(nombreAnneeBTE, 4);
+                        nombreAnneeBTE = REConverterUtils.indentLeftWithZero(nombreAnneeBTE, 4);
                     }
 
                     /*
@@ -568,7 +568,7 @@ public class REImportAnnoncesAcor {
                     if (tmpVal1 != null) {
                         tmpVal1 = tmpVal1.multiply(multiplicateur100);
                         nbreAnneeBTA = String.valueOf(tmpVal1.intValue());
-                        nbreAnneeBTA = ParserUtils.indentLeftWithZero(nbreAnneeBTA, 4);
+                        nbreAnneeBTA = REConverterUtils.indentLeftWithZero(nbreAnneeBTA, 4);
                     }
 
                     /* YZNBON (BigDecimal) : si valeur null -> vide sinon formaté sur 2 position */
@@ -576,7 +576,7 @@ public class REImportAnnoncesAcor {
                     if (tmpVal1 != null) {
                         tmpVal1 = tmpVal1.multiply(multiplicateur10);
                         nbreAnneeBonifTrans = String.valueOf(tmpVal1.intValue());
-                        nbreAnneeBonifTrans = ParserUtils.indentLeftWithZero(nbreAnneeBonifTrans, 2);
+                        nbreAnneeBonifTrans = REConverterUtils.indentLeftWithZero(nbreAnneeBonifTrans, 2);
                     }
                 }
 
@@ -584,22 +584,22 @@ public class REImportAnnoncesAcor {
                     IVDaten10Type iVDaten10Type = berechnungsgrundlagen.getIVDaten();
 
                     /* YYLOAI (int) : valeur sans formatage */
-                    officeAICompetent = ParserUtils.formatIntegerToString(iVDaten10Type.getIVStelle());
+                    officeAICompetent = REConverterUtils.formatIntegerToString(iVDaten10Type.getIVStelle());
 
                     /* YYNDIN (short) : 3 position formaté */
-                    degreInvalidite = ParserUtils.formatShortToString(iVDaten10Type.getInvaliditaetsgrad());
-                    degreInvalidite = ParserUtils.indentLeftWithZero(degreInvalidite, 3);
+                    degreInvalidite = REConverterUtils.formatShortToString(iVDaten10Type.getInvaliditaetsgrad());
+                    degreInvalidite = REConverterUtils.indentLeftWithZero(degreInvalidite, 3);
 
                     /* code infirmité, 3 position formaté */
-                    String codeInf = ParserUtils.formatIntegerToString(iVDaten10Type.getGebrechensschluessel());
-                    codeInf = ParserUtils.indentLeftWithZero(codeInf, 3);
+                    String codeInf = REConverterUtils.formatIntegerToString(iVDaten10Type.getGebrechensschluessel());
+                    codeInf = REConverterUtils.indentLeftWithZero(codeInf, 3);
 
                     /* code atteinte fonctionnel, si null -> pas de valeur sinon 2 position formaté */
                     String codeAtteinte = "";
                     Short ca = iVDaten10Type.getFunktionsausfallcode();
                     if (ca != null) {
-                        codeAtteinte = ParserUtils.formatShortToString(ca);
-                        codeAtteinte = ParserUtils.indentLeftWithZero(codeAtteinte, 2);
+                        codeAtteinte = REConverterUtils.formatShortToString(ca);
+                        codeAtteinte = REConverterUtils.indentLeftWithZero(codeAtteinte, 2);
                     }
 
                     /*
@@ -609,10 +609,10 @@ public class REImportAnnoncesAcor {
                     codeInfirmite = codeInf + codeAtteinte;
 
                     /* YYNSUR : si valeur null -> chaîne vide sinon date au format MMAA */
-                    survenanceEvenAssure = ParserUtils.formatDateToMMAA(iVDaten10Type.getDatumVersicherungsfall());
+                    survenanceEvenAssure = REConverterUtils.formatDateToMMAA(iVDaten10Type.getDatumVersicherungsfall());
 
                     /* YYNAGE (boolean) : Valeur 0 ou 1. Si invalide avant 25 ans 1 sinon 0 */
-                    ageDebutInvalidite = ParserUtils.formatBooleanToString(iVDaten10Type.isIstFruehInvalid());
+                    ageDebutInvalidite = REConverterUtils.formatBooleanToString(iVDaten10Type.isIstFruehInvalid());
                 }
 
                 /* Age flexible de la rente */
@@ -643,7 +643,7 @@ public class REImportAnnoncesAcor {
                         }
 
                         /* YYDREV (XMLGregorianCalendar) : si valeur null -> vide sinon format MMAA */
-                        dateRevocationAjournement = ParserUtils.formatDateToMMAA(rentenaufschubType.getAbrufdatum());
+                        dateRevocationAjournement = REConverterUtils.formatDateToMMAA(rentenaufschubType.getAbrufdatum());
 
                         /*
                          * YYNSUP (BigDecimal) : si valeur null -> vide sinon formaté sur 5 position. Pas de
@@ -652,7 +652,7 @@ public class REImportAnnoncesAcor {
                         tmpVal1 = rentenaufschubType.getAufschubszuschlag();
                         if (tmpVal1 != null) {
                             supplementAjournement = String.valueOf(tmpVal1.intValue());
-                            supplementAjournement = ParserUtils.indentLeftWithZero(supplementAjournement, 5);
+                            supplementAjournement = REConverterUtils.indentLeftWithZero(supplementAjournement, 5);
                         }
 
                     }
@@ -662,15 +662,15 @@ public class REImportAnnoncesAcor {
                                 .getRentenvorbezug();
 
                         /* YZNANT (int) : pas de formatage particulier */
-                        nbreAnneeAnticipation = ParserUtils.formatIntegerToString(rentenvorbezugType.getAnzahlVorbezugsjahre());
+                        nbreAnneeAnticipation = REConverterUtils.formatIntegerToString(rentenvorbezugType.getAnzahlVorbezugsjahre());
 
                         /* YZDDEB (XMLGregorianCalendar) : si null -> pas de valeur sinon formaté en AAMM */
-                        dateDebutAnticipation = ParserUtils.formatDateToMMAA(rentenvorbezugType.getVorbezugsdatum());
+                        dateDebutAnticipation = REConverterUtils.formatDateToMMAA(rentenvorbezugType.getVorbezugsdatum());
                         /* YZNRED (BigDecimal) */
                         tmpVal1 = rentenvorbezugType.getVorbezugsreduktion();
                         if (tmpVal1 != null) {
                             reductionAnticipation = String.valueOf(tmpVal1.intValue());
-                            reductionAnticipation = ParserUtils.indentLeftWithZero(reductionAnticipation, 5);
+                            reductionAnticipation = REConverterUtils.indentLeftWithZero(reductionAnticipation, 5);
                         }
                     }
                 }
@@ -900,7 +900,7 @@ public class REImportAnnoncesAcor {
         String moisRapport = "";
 
         /* (String) : contient 6 positions : numeroCaisse (3pos) + numeroAgence (3pos) */
-        String noCaisseEtAgence = ParserUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
+        String noCaisseEtAgence = REConverterUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
         if (noCaisseEtAgence.length() >= 3) {
             /* ZAANOC : 3 positions */
             numeroCaisse = noCaisseEtAgence.substring(0, 3);
@@ -921,7 +921,7 @@ public class REImportAnnoncesAcor {
          * YXDMRA (XMLGregorianCalendar) : format AAAAMM. Cette valeur est récupérée que pour la validation avec Anakin,
          * elle n'est pas stockée.
          */
-        moisRapport = ParserUtils.formatDateToAAAAMM(annonce10emeRev.getBerichtsmonat());
+        moisRapport = REConverterUtils.formatDateToAAAAMM(annonce10emeRev.getBerichtsmonat());
 
         /* Ayant-droit */
         if (annonce10emeRev.getLeistungsberechtigtePerson() != null) {
@@ -964,16 +964,16 @@ public class REImportAnnoncesAcor {
             }
 
             /* YXLETC (short) : type intrinsèque, sera toujours présent (non null), 1 position */
-            etatCivil = ParserUtils.formatShortToString(leistungsberechtigtePerson.getZivilstand());
+            etatCivil = REConverterUtils.formatShortToString(leistungsberechtigtePerson.getZivilstand());
 
             /* YXBREF (boolean) : type intrinsèque, sera toujours présent (non null), 1 position */
-            isRefugie = ParserUtils.formatBooleanToString(leistungsberechtigtePerson.isIstFluechtling());
+            isRefugie = REConverterUtils.formatBooleanToString(leistungsberechtigtePerson.isIstFluechtling());
 
             /* YXLCAN (String) : 3 position, si null -> vide sinon formaté sur 3 positions avec des 0 */
-            String canton = ParserUtils.formatIntegerToString(leistungsberechtigtePerson.getWohnkantonStaat());
+            String canton = REConverterUtils.formatIntegerToString(leistungsberechtigtePerson.getWohnkantonStaat());
             if (StringUtils.isNotEmpty(canton)) {
                 cantonEtatDomicile = canton;
-                cantonEtatDomicile = ParserUtils.indentLeftWithZero(cantonEtatDomicile, 3);
+                cantonEtatDomicile = REConverterUtils.indentLeftWithZero(cantonEtatDomicile, 3);
             }
         }
 
@@ -988,22 +988,22 @@ public class REImportAnnoncesAcor {
             }
 
             /* YXDDEB (XMLGregorianCalendar) : format MMAA */
-            debutDroit = ParserUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsbeginn());
+            debutDroit = REConverterUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsbeginn());
 
             /* YXDFIN (XMLGregorianCalendar) : format MMAA */
-            finDroit = ParserUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsende());
+            finDroit = REConverterUtils.formatDateToMMAA(leistungsbeschreibung.getAnspruchsende());
 
             /* YXMMEN (BigDecimal) : 5 position, si vide que des 0 */
             BigDecimal mensualite = leistungsbeschreibung.getMonatsbetrag();
             if (mensualite != null) {
-                mensualitePrestationsFrancs = ParserUtils.formatBigDecimalToString(mensualite);
-                mensualitePrestationsFrancs = ParserUtils.indentLeftWithZero(mensualitePrestationsFrancs, 5);
+                mensualitePrestationsFrancs = REConverterUtils.formatBigDecimalToString(mensualite);
+                mensualitePrestationsFrancs = REConverterUtils.indentLeftWithZero(mensualitePrestationsFrancs, 5);
             }
 
             /* YXLCOM : code mutation. Vide si pas de valeur (0 veut dire pas de valeur) sinon valeur sur 2 position */
             Short v7 = leistungsbeschreibung.getMutationscode();
             if (v7 != null) {
-                codeMutation = ParserUtils.indentLeftWithZero(String.valueOf(v7), 2);
+                codeMutation = REConverterUtils.indentLeftWithZero(String.valueOf(v7), 2);
             }
         }
 
@@ -1087,33 +1087,33 @@ public class REImportAnnoncesAcor {
             /* YYLRED (Short) : si pas de valeur = vide, sinon la valeur formatée sur 2 position */
             Short reductionShort = leistungsbeschreibung.getKuerzungSelbstverschulden();
             if (reductionShort != null) {
-                reduction = ParserUtils.formatShortToString(reductionShort);
-                reduction = ParserUtils.indentLeftWithZero(reduction, 2);
+                reduction = REConverterUtils.formatShortToString(reductionShort);
+                reduction = REConverterUtils.indentLeftWithZero(reduction, 2);
             }
 
             /* YZBSUR (Boolean) : si null -> pas de valeur sinon valeur 0 ou 1 */
             Boolean survivantBoolean = leistungsbeschreibung.isIstInvaliderHinterlassener();
             if (survivantBoolean != null) {
-                isSurvivant = ParserUtils.formatBooleanToString(survivantBoolean);
+                isSurvivant = REConverterUtils.formatBooleanToString(survivantBoolean);
             }
 
             /* YYLCS1 à YYLCS5 (Short) : Si null ou vide, pas de valeur sinon formaté sur 2 positions */
             List<Short> codesCasSpeciaux = annonce10emeRev.getLeistungsbeschreibung().getSonderfallcodeRente();
             if (codesCasSpeciaux != null) {
                 if (codesCasSpeciaux.size() > 0) {
-                    codeCasSpecial1 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(0));
+                    codeCasSpecial1 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(0));
                 }
                 if (codesCasSpeciaux.size() > 1) {
-                    codeCasSpecial2 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(1));
+                    codeCasSpecial2 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(1));
                 }
                 if (codesCasSpeciaux.size() > 2) {
-                    codeCasSpecial3 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(2));
+                    codeCasSpecial3 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(2));
                 }
                 if (codesCasSpeciaux.size() > 3) {
-                    codeCasSpecial4 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(3));
+                    codeCasSpecial4 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(3));
                 }
                 if (codesCasSpeciaux.size() > 4) {
-                    codeCasSpecial5 = ParserUtils.formatCodeCasSpecial(codesCasSpeciaux.get(4));
+                    codeCasSpecial5 = REConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(4));
                 }
             }
 
@@ -1134,22 +1134,22 @@ public class REImportAnnoncesAcor {
                     IVDaten10Type iVDaten10Type = berechnungsgrundlagen.getIVDaten();
 
                     /* YYLOAI (int) : valeur sans formatage */
-                    officeAICompetent = ParserUtils.formatIntegerToString(iVDaten10Type.getIVStelle());
+                    officeAICompetent = REConverterUtils.formatIntegerToString(iVDaten10Type.getIVStelle());
 
                     /* YYNDIN (short) : 3 position formaté */
-                    degreInvalidite = ParserUtils.formatShortToString(iVDaten10Type.getInvaliditaetsgrad());
-                    degreInvalidite = ParserUtils.indentLeftWithZero(degreInvalidite, 3);
+                    degreInvalidite = REConverterUtils.formatShortToString(iVDaten10Type.getInvaliditaetsgrad());
+                    degreInvalidite = REConverterUtils.indentLeftWithZero(degreInvalidite, 3);
 
                     /* code infirmité, 3 position formaté */
-                    String codeInf = ParserUtils.formatIntegerToString(iVDaten10Type.getGebrechensschluessel());
-                    codeInf = ParserUtils.indentLeftWithZero(codeInf, 3);
+                    String codeInf = REConverterUtils.formatIntegerToString(iVDaten10Type.getGebrechensschluessel());
+                    codeInf = REConverterUtils.indentLeftWithZero(codeInf, 3);
 
                     /* code atteinte fonctionnel, si null -> pas de valeur sinon 2 position formaté */
                     String codeAtteinte = "";
                     Short ca = iVDaten10Type.getFunktionsausfallcode();
                     if (ca != null) {
-                        codeAtteinte = ParserUtils.formatShortToString(ca);
-                        codeAtteinte = ParserUtils.indentLeftWithZero(codeAtteinte, 2);
+                        codeAtteinte = REConverterUtils.formatShortToString(ca);
+                        codeAtteinte = REConverterUtils.indentLeftWithZero(codeAtteinte, 2);
                     }
 
                     /*
@@ -1159,10 +1159,10 @@ public class REImportAnnoncesAcor {
                     codeInfirmite = codeInf + codeAtteinte;
 
                     /* YYNSUR : si valeur null -> chaîne vide sinon date au format MMAA */
-                    survenanceEvenAssure = ParserUtils.formatDateToMMAA(iVDaten10Type.getDatumVersicherungsfall());
+                    survenanceEvenAssure = REConverterUtils.formatDateToMMAA(iVDaten10Type.getDatumVersicherungsfall());
 
                     /* YYNAGE (boolean) : Valeur 0 ou 1. Si invalide avant 25 ans 1 sinon 0 */
-                    ageDebutInvalidite = ParserUtils.formatBooleanToString(iVDaten10Type.isIstFruehInvalid());
+                    ageDebutInvalidite = REConverterUtils.formatBooleanToString(iVDaten10Type.isIstFruehInvalid());
                 }
             }
         }

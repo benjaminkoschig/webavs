@@ -1,8 +1,8 @@
 package ch.globaz.common.acor;
 
-public interface Acor2020TokenService {
+public interface Acor2020TokenService<T extends Acor2020Token > {
 
-    Acor2020Token getToken(String token);
+    T getToken(String token);
 
     String createToken();
 

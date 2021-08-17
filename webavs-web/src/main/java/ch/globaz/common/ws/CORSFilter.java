@@ -1,9 +1,13 @@
-package ch.globaz.common.acor;
+package ch.globaz.common.ws;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
+@Provider
+@PreMatching
 public class CORSFilter implements Filter {
 
     @Override

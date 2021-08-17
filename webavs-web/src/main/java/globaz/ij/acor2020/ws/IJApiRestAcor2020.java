@@ -1,7 +1,7 @@
 package globaz.ij.acor2020.ws;
 
 import acor.rentes.xsd.standard.error.OriginType;
-import ch.globaz.common.acor.WebAvsAcor2020Service;
+import ch.globaz.common.acor.Acor2020StandardErrorUtil;
 import globaz.ij.acor2020.ws.token.Acor2020TokenIJ;
 import globaz.ij.acor2020.ws.token.Acor2020TokenIJServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 @Path("ijAcor2020")
 @Slf4j
-public class WebAvsAcor2020ServiceIJ implements WebAvsAcor2020Service {
+public class IJApiRestAcor2020 {
 
     /**
      * Web Service exposé pour récupérer les données d'un dossier de IJAI dans le cadre d'un calcul ACOR.
@@ -49,9 +49,9 @@ public class WebAvsAcor2020ServiceIJ implements WebAvsAcor2020Service {
 //                return responseBuilder.entity(WebAvsAcor2020Service.getStandardError(ERROR_ACOR_EXTERN_IMPORT_UNKOWN, e, 1, OriginType.TECHNICAL_IMPORT)).build();
 //            }
 //        }
-        LOG.error(TOKEN_INVALIDE);
+        LOG.error(Acor2020StandardErrorUtil.TOKEN_INVALIDE);
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-        return responseBuilder.entity(WebAvsAcor2020Service.getStandardError(ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
+        return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(Acor2020StandardErrorUtil.ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
     }
 
     /**
@@ -91,9 +91,9 @@ public class WebAvsAcor2020ServiceIJ implements WebAvsAcor2020Service {
 //                return responseBuilder.entity(WebAvsAcor2020Service.getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 1, OriginType.TECHNICAL_EXPORT)).build();
 //            }
 //        }
-        LOG.error(TOKEN_INVALIDE);
+        LOG.error(Acor2020StandardErrorUtil.TOKEN_INVALIDE);
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-        return responseBuilder.entity(WebAvsAcor2020Service.getStandardError(ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
+        return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(Acor2020StandardErrorUtil.ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
     }
 
 }

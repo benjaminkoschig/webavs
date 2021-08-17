@@ -4,11 +4,11 @@ import ch.globaz.common.acor.Acor2020Token;
 import lombok.Data;
 
 @Data
-public class Acor2020TokenRentes implements Acor2020Token {
+public class REAcor2020Token implements Acor2020Token {
 
     private String idDemande;
-    private String noAVSDemande;
     private String idTiers;
+    private String noAVSDemande;
     private String dateDemande;
     private String timeDemande;
     private String timeStampGedo;

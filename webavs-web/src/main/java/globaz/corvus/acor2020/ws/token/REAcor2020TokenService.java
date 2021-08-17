@@ -1,9 +1,9 @@
 package globaz.corvus.acor2020.ws.token;
 
-import ch.globaz.common.acor.Acor2020Token;
 import ch.globaz.common.acor.Acor2020TokenService;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import globaz.corvus.acor2020.ws.REApiRestAcor2020;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.globall.db.BSession;
 import globaz.jade.i18n.JadeI18n;
@@ -15,17 +15,19 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.Path;
 import java.net.UnknownHostException;
 import java.security.Key;
 import java.util.*;
 
 @Service
 @Slf4j
-public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
+public class REAcor2020TokenService implements Acor2020TokenService<REAcor2020Token> {
 
-    private static Acor2020TokenRentesServiceImpl instance;
+    private static REAcor2020TokenService instance;
 
     private static final String LANGUE_PAR_DEFAUT = "FR";
+    private static final String API_REST_PATH = REApiRestAcor2020.class.getAnnotation(Path.class).value();
     private static String importUrl = "";
     private static String exportUrl = "";
     private static String export9Url = "";
@@ -35,15 +37,15 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
     private static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // static method to create instance of Singleton class
-    public static Acor2020TokenRentesServiceImpl getInstance()
+    public static REAcor2020TokenService getInstance()
     {
         if (instance == null)
-            instance = new Acor2020TokenRentesServiceImpl();
+            instance = new REAcor2020TokenService();
 
         return instance;
     }
 
-    private Acor2020TokenRentesServiceImpl() {
+    private REAcor2020TokenService() {
     }
 
     public static String createToken(RECalculACORDemandeRenteViewBean bean, String dateDemande, String timeDemande, String timeStampGedo, BSession bSession) {
@@ -93,14 +95,17 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
         nomHote = (nomHote.substring(nomHote.length() - 1, nomHote.length()).equals("/") ? nomHote.substring(0, nomHote.length() - 1) : nomHote);
 
         acorBaseUrl = CommonProperties.ACOR_ADRESSE_WEB.getValue() + "backend/acor-ws-core-web";
-        export9Url = nomHote + "/export9";
-        exportUrl = nomHote + "/export";
-        importUrl = nomHote + "/import";
+        export9Url = nomHote + "/rest/" + API_REST_PATH + "/export9";
+        exportUrl = nomHote + "/rest/" + API_REST_PATH + "/export";
+        importUrl = nomHote + "/rest/" + API_REST_PATH + "/import";
     }
 
     @Override
-    public Acor2020Token getToken(String token) {
-        if (Objects.nonNull(token) && token.startsWith("Bearer ")) {
+    public REAcor2020Token getToken(String token) {
+        if (Objects.isNull(token)) {
+            return null;
+        }
+        if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
         Jws<Claims> jws = Jwts.parserBuilder()
@@ -108,7 +113,7 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
                 .build()
                 .parseClaimsJws(token);
 
-        Acor2020TokenRentes acorV4Token = new Acor2020TokenRentes();
+        REAcor2020Token acorV4Token = new REAcor2020Token();
 
         // TODO Null pointer à traiter
 
@@ -138,7 +143,7 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
     }
 
     public static void setImportUrl(String importUrl) {
-        Acor2020TokenRentesServiceImpl.importUrl = importUrl;
+        REAcor2020TokenService.importUrl = importUrl;
     }
 
     public static String getExportUrl() {
@@ -146,7 +151,7 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
     }
 
     public static void setExportUrl(String exportUrl) {
-        Acor2020TokenRentesServiceImpl.exportUrl = exportUrl;
+        REAcor2020TokenService.exportUrl = exportUrl;
     }
 
     public static String getExport9Url() {
@@ -154,7 +159,7 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
     }
 
     public static void setExport9Url(String export9Url) {
-        Acor2020TokenRentesServiceImpl.export9Url = export9Url;
+        REAcor2020TokenService.export9Url = export9Url;
     }
 
     public static String getAcorBaseUrl() {
@@ -162,6 +167,6 @@ public class Acor2020TokenRentesServiceImpl implements Acor2020TokenService {
     }
 
     public static void setAcorBaseUrl(String acorBaseUrl) {
-        Acor2020TokenRentesServiceImpl.acorBaseUrl = acorBaseUrl;
+        REAcor2020TokenService.acorBaseUrl = acorBaseUrl;
     }
 }

@@ -26,7 +26,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%@page import="globaz.prestation.acor.PRACORConst"%>
 <%@ page import="globaz.corvus.properties.REProperties" %>
 <%@ page import="globaz.jade.client.util.JadeDateUtil" %>
-<%@ page import="globaz.corvus.acor2020.ws.token.Acor2020TokenRentesServiceImpl" %>
+<%@ page import="globaz.corvus.acor2020.ws.token.REAcor2020TokenService" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.util.Date" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>

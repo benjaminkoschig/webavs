@@ -10,11 +10,12 @@
 <%@ page import="globaz.prestation.acor.PRACORConst" %>
 <%@ page import="globaz.prestation.jsp.taglib.PRDisplayRequerantInfoTag" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
-<%@ page import="globaz.corvus.acor2020.ws.token.Acor2020TokenRentesServiceImpl" %>
+<%@ page import="globaz.corvus.acor2020.ws.token.REAcor2020TokenService" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersWrapper" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersHelper" %>
 <%@ page import="globaz.jade.client.util.JadeDateUtil" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="globaz.corvus.properties.REProperties" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/corvusRoot/corvustaglib.tld" prefix="re" %>
@@ -269,7 +270,7 @@
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
     Date actualDate = new Date();
     String day = JadeDateUtil.getDMYDate(actualDate);
-    String token = Acor2020TokenRentesServiceImpl.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
+    String token = REAcor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
     String adresseWebAcor = viewBean.getAdresseWebACOR(bSession, "import", token);
 %>
         Set shell = CreateObject ("Shell.Application")

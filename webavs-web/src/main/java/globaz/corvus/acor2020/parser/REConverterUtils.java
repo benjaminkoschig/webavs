@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public final class ParserUtils {
+public final class REConverterUtils {
 
     private static final String VALUE_00_00 = "00.00";
     private static final String MESSAGE_ERREUR_CAST_BIGDECIMAL = "Impossible de parser la valeur : {} en BigDecimal. ";
@@ -33,7 +33,7 @@ public final class ParserUtils {
     private static final String MESSAGE_ERREUR_CAST_LONG = "Impossible de parser la valeur : {} en Long. ";
     public static final String FORMAT_S_S = "%s.%s";
 
-    private ParserUtils() {
+    private REConverterUtils() {
     }
 
     public static String formatIntToStringWithTwoChar(Integer value) {

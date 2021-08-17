@@ -1,4 +1,4 @@
-package globaz.corvus.acor2020;
+package globaz.corvus.acor2020.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
@@ -13,13 +13,8 @@ import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
 import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
 import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
 import ch.globaz.pyxis.domaine.PersonneAVS;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
-import globaz.corvus.acor2020.business.REImportAnnoncesAcor;
 import globaz.corvus.acor2020.parser.REAcor2020Parser;
 import globaz.corvus.acor2020.parser.ReturnedValue;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -43,7 +38,6 @@ import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.acor.BaseCalculWrapper;
 import globaz.corvus.utils.acor.DemandeRenteWrapper;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
-import globaz.corvus.acor2020.ws.Acor2020AnnoncesService;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -66,7 +60,6 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,10 +74,9 @@ public class REImportationCalculAcor2020 {
 
     private static final Logger LOG = Logger.getLogger(REImportationCalculAcor2020.class);
 
-    private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
 
-    public void actionImporterScriptACOR(String idDemande, String idTiers, String json,
+    public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
                                          final BSession session) throws Exception {
         LOG.info("Importation des données calculées.");
         Long idCopieDemande = null;
@@ -127,25 +119,20 @@ public class REImportationCalculAcor2020 {
                 throw new PRACORException(session.getLabel("ERREUR_RECALCUL_CAS"));
             }
 
-            FCalcul fCalcul = null;
             List<FCalcul.Evenement> filterEvents = new ArrayList<>();
-            if (!JadeStringUtil.isEmpty(json)) {
-                fCalcul = convertJsonToFCalcul(json);
-            }
 
             if (Objects.isNull(fCalcul)) {
                 throw new PRACORException("FCalcul est null. Le json n'a pas pu être converti.");
             }
 
             if (fCalcul.getEvenement() != null) {
-                // On analyse filtre les évènements de la feuille de calcul pour ne garder que ceux qui possèdent une base de calcul dont la décision n'est pas vide.
+                // On filtre les évènements de la feuille de calcul pour ne garder que ceux qui possèdent une base de calcul dont la décision n'est pas vide.
                 filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
             }
 
             // K191213_001, suite à l'incident I191211_020
             // Passage dans le IF si c'est une 10ème révision mais qu'il n'y a pas de décisions dans le f_calcul.xml
             // Si on se trouve dans une 10ème révision et qu'il y a des décisions, on fait le calcul normalement
-            // Pour une 9ème révision, le f_calcul.xml sera vide donc on passe dans tous les cas dans le else et on fait le traitement normalement
             if (filterEvents.isEmpty()) {
                 // Dans ce cas de figure, il n'y a rien à remonter.
                 // On contrôle l'arrivée d'un ci additionnel pour le requérant
@@ -249,13 +236,13 @@ public class REImportationCalculAcor2020 {
                     if (ret == 1) {
                         // TODO : refacto méthode pour diminuer les paramètres.
                         idCopieDemande = importationDesAnnoncesDuCalculACOR(session, transaction,
-                                idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul, json);
+                                idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul);
                     }
                 }
                 // Pas de ci additionnel, traitement standard.
                 else {
                     idCopieDemande = importationDesAnnoncesDuCalculACOR(session, transaction,
-                            idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul, json);
+                            idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul);
                 }
             }
 
@@ -385,7 +372,7 @@ public class REImportationCalculAcor2020 {
         }
     }
 
-    public void actionImporterScriptACOR9(String idDemande, String idTiers, String json, BSession session) throws Exception {
+    public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
         Long idCopieDemande = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
@@ -426,12 +413,6 @@ public class REImportationCalculAcor2020 {
                 noCasATraiter = CAS_RECALCUL_DEMANDE_NON_VALIDEE;
             } else {
                 throw new PRACORException(session.getLabel("ERREUR_RECALCUL_CAS"));
-            }
-
-            Resultat9 resultat9 = null;
-            List<FCalcul.Evenement> filterEvents = new ArrayList<>();
-            if (!JadeStringUtil.isEmpty(json)) {
-                resultat9 = convertJsonToResultat9(json);
             }
 
 
@@ -505,7 +486,6 @@ public class REImportationCalculAcor2020 {
             }
 
             if (isCIAdditionnel) {
-                // TODO : modifier le traitement pour ne plus utiliser l'ancien fichier annonces.pay
                 int ret = importationCIAdditionnelsDepuisCalculACOR9(session, transaction, mapAP, demandeRente, resultat9);
                 // Traitement standard....
                 if (ret == 1) {
@@ -815,45 +795,6 @@ public class REImportationCalculAcor2020 {
         return v;
     }
 
-    /**
-     * Converti le json en objet FCalcul.
-     *
-     * @param json le fichier json reçu de ACOR
-     * @return l'objet FCalcul associé
-     */
-    private FCalcul convertJsonToFCalcul(String json) throws PRACORException {
-        // Le configure permet de caster des listes lorqu'il n'y a qu'un seul éléments dans le json.
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        FCalcul value;
-        try {
-            value = mapper.readValue(json, FCalcul.class);
-        } catch (JsonParseException e) {
-            throw new PRACORException("Erreur de parsing du json fCalcul.", e);
-        } catch (JsonMappingException e) {
-            throw new PRACORException("Erreur de mapping du json fCalcul.", e);
-        } catch (IOException e) {
-            throw new PRACORException("Erreur de connexion lors de la conversion du json fCalcul.", e);
-        }
-        return value;
-    }
-
-    private Resultat9 convertJsonToResultat9(String json) {
-        // Le configure permet de caster des listes lorqu'il n'y a qu'un seul éléments dans le json.
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        Resultat9 value = null;
-        try {
-            value = mapper.readValue(json, Resultat9.class);
-
-        } catch (JsonParseException e) {
-            LOG.error("Erreur de parsing du json resultat9.", e);
-        } catch (JsonMappingException e) {
-            LOG.error("Erreur de mapping du json resultat9.", e);
-        } catch (IOException e) {
-            LOG.error("Erreur de connexion lors de la conversion du json resultat9.", e);
-        }
-        return value;
-    }
-
     /*
      *
      * Voir avec RJE, besoin de cas tests !!!!
@@ -1123,7 +1064,7 @@ public class REImportationCalculAcor2020 {
      * @throws Exception
      */
     private Long importationDesAnnoncesDuCalculACOR(final BSession session, final BITransaction transaction,
-                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final FCalcul fCalcul, final String json)
+                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final FCalcul fCalcul)
             throws PRACORException, Exception {
 
 
@@ -1137,11 +1078,11 @@ public class REImportationCalculAcor2020 {
          * feuille de calcul acor taux de reduction, BTE entière, demi, quart...
          */
         if ((fCalcul != null) && (fCalcul.getEvenement().size() > 0)) {
-            rentesWithoutBte = REAcor2020Parser.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
+            REAcor2020Parser.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
         }
 
         // Connexion au WebService ACOR pour récupérer les annonces.
-        PoolMeldungZurZAS annonces = Acor2020AnnoncesService.getInstance().getAnnonces(json);
+        PoolMeldungZurZAS annonces = REAcor2020AnnoncesService.getInstance().getAnnonces(fCalcul);
         if (Objects.nonNull(annonces)) {
             REImportAnnoncesAcor.getInstance().importAnnonces(session, (BTransaction) transaction,annonces,rentesAccordees);
         }

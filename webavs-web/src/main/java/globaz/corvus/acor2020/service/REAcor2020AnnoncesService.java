@@ -1,8 +1,9 @@
-package globaz.corvus.acor2020.ws;
+package globaz.corvus.acor2020.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.rentes.xsd.fcalcul.FCalcul;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import globaz.corvus.acor2020.ws.token.Acor2020TokenRentesServiceImpl;
+import globaz.corvus.acor2020.ws.token.REAcor2020TokenService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -16,17 +17,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 @Slf4j
-public class Acor2020AnnoncesService {
+public class REAcor2020AnnoncesService {
 
-    private static Acor2020AnnoncesService instance;
+    private static REAcor2020AnnoncesService instance;
 
-    private Acor2020AnnoncesService() {
+    private REAcor2020AnnoncesService() {
     }
 
-    public static Acor2020AnnoncesService getInstance()
+    public static REAcor2020AnnoncesService getInstance()
     {
         if (instance == null)
-            instance = new Acor2020AnnoncesService();
+            instance = new REAcor2020AnnoncesService();
 
         return instance;
     }
@@ -37,10 +38,10 @@ public class Acor2020AnnoncesService {
      * @param fCalcul le json fCalcul
      * @returns les annonces
      */
-    public PoolMeldungZurZAS getAnnonces(String fCalcul) {
+    public PoolMeldungZurZAS getAnnonces(FCalcul fCalcul) {
         URL url;
         HttpURLConnection con;
-        String acorBaseUrl = Acor2020TokenRentesServiceImpl.getAcorBaseUrl();
+        String acorBaseUrl = REAcor2020TokenService.getAcorBaseUrl();
         PoolMeldungZurZAS annonces = null;
 
         try {
@@ -52,7 +53,7 @@ public class Acor2020AnnoncesService {
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             OutputStream os = con.getOutputStream();
-            byte[] input = fCalcul.getBytes(StandardCharsets.UTF_8);
+            byte[] input = fCalcul.toString().getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
             if (con.getResponseCode() <= 400) {
                 InputStream response = con.getInputStream();

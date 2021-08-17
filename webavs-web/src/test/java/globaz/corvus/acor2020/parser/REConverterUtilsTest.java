@@ -10,13 +10,13 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ParserUtilsTest {
+public class REConverterUtilsTest {
 
     @Test
     public void formatIntToStringWithTwoChar_avecParametreNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithTwoChar(null);
+        String result = REConverterUtils.formatIntToStringWithTwoChar(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -26,7 +26,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithTwoChar_avecChiffre_renvoiStringSur2Caracteres() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithTwoChar(1);
+        String result = REConverterUtils.formatIntToStringWithTwoChar(1);
 
         // assert
         assertThat(result).isEqualTo("01");
@@ -36,7 +36,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithTwoChar_avecNbInf100_renvoiStringSur2Caracteres() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithTwoChar(20);
+        String result = REConverterUtils.formatIntToStringWithTwoChar(20);
 
         // assert
         assertThat(result).isEqualTo("20");
@@ -46,7 +46,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithTwoChar_avecNbSup100_renvoiStringSur3Caracteres() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithTwoChar(100);
+        String result = REConverterUtils.formatIntToStringWithTwoChar(100);
 
         // assert
         assertThat(result).isEqualTo("100");
@@ -56,7 +56,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithSixChar_avecParametreNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithSixChar(null);
+        String result = REConverterUtils.formatIntToStringWithSixChar(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -66,7 +66,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithSixChar_avecNbInf100000_renvoiStringSur6Caracteres() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithSixChar(100);
+        String result = REConverterUtils.formatIntToStringWithSixChar(100);
 
         // assert
         assertThat(result).isEqualTo("000100");
@@ -76,7 +76,7 @@ public class ParserUtilsTest {
     public void formatIntToStringWithSixChar_avecNbSup1000000_renvoiStringSur7Caracteres() {
         // arrange
         // act
-        String result = ParserUtils.formatIntToStringWithSixChar(2000000);
+        String result = REConverterUtils.formatIntToStringWithSixChar(2000000);
 
         // assert
         assertThat(result).isEqualTo("2000000");
@@ -86,7 +86,7 @@ public class ParserUtilsTest {
     public void formatFloatToStringWithTwoDecimal_avecParametreNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatFloatToStringWithTwoDecimal(null);
+        String result = REConverterUtils.formatFloatToStringWithTwoDecimal(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -96,7 +96,7 @@ public class ParserUtilsTest {
     public void formatFloatToStringWithTwoDecimal_avecChiffre_renvoiStringAuFormatXX_XX() {
         // arrange
         // act
-        String result = ParserUtils.formatFloatToStringWithTwoDecimal(1f);
+        String result = REConverterUtils.formatFloatToStringWithTwoDecimal(1f);
 
         // assert
         assertThat(result).isEqualTo("01.00");
@@ -106,7 +106,7 @@ public class ParserUtilsTest {
     public void formatFloatToStringWithTwoDecimal_avecFloatXXX_X_renvoiStringAuFormatXXX_XX() {
         // arrange
         // act
-        String result = ParserUtils.formatFloatToStringWithTwoDecimal(111.1f);
+        String result = REConverterUtils.formatFloatToStringWithTwoDecimal(111.1f);
 
         // assert
         assertThat(result).isEqualTo("111.10");
@@ -116,7 +116,7 @@ public class ParserUtilsTest {
     public void formatFloatToStringWithTwoDecimal_avecFloatXX_XXX_renvoiStringAuFormatXX_XX() {
         // arrange
         // act
-        String result = ParserUtils.formatFloatToStringWithTwoDecimal(11.111f);
+        String result = REConverterUtils.formatFloatToStringWithTwoDecimal(11.111f);
 
         // assert
         assertThat(result).isEqualTo("11.11");
@@ -127,7 +127,7 @@ public class ParserUtilsTest {
     public void formatRequiredLong_avecNull_renvoi0() {
         // arrange
         // act
-        long result = ParserUtils.formatRequiredLong(null);
+        long result = REConverterUtils.formatRequiredLong(null);
 
         // assert
         assertThat(result).isEqualTo(0l);
@@ -137,7 +137,7 @@ public class ParserUtilsTest {
     public void formatRequiredLong_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        long result = ParserUtils.formatRequiredLong("test");
+        long result = REConverterUtils.formatRequiredLong("test");
 
         // assert
         assertThat(result).isEqualTo(0l);
@@ -147,7 +147,7 @@ public class ParserUtilsTest {
     public void formatRequiredLong_avecNombre_renvoiNombre() {
         // arrange
         // act
-        long result = ParserUtils.formatRequiredLong("10");
+        long result = REConverterUtils.formatRequiredLong("10");
 
         // assert
         assertThat(result).isEqualTo(10l);
@@ -157,7 +157,7 @@ public class ParserUtilsTest {
     public void formatRequiredInteger_avecNull_renvoi0() {
         // arrange
         // act
-        int result = ParserUtils.formatRequiredInteger(null);
+        int result = REConverterUtils.formatRequiredInteger(null);
 
         // assert
         assertThat(result).isEqualTo(0);
@@ -167,7 +167,7 @@ public class ParserUtilsTest {
     public void formatRequiredInteger_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        int result = ParserUtils.formatRequiredInteger("test");
+        int result = REConverterUtils.formatRequiredInteger("test");
 
         // assert
         assertThat(result).isEqualTo(0);
@@ -177,7 +177,7 @@ public class ParserUtilsTest {
     public void formatRequiredInteger_avecNombre_renvoiNombre() {
         // arrange
         // act
-        int result = ParserUtils.formatRequiredInteger("10");
+        int result = REConverterUtils.formatRequiredInteger("10");
 
         // assert
         assertThat(result).isEqualTo(10);
@@ -187,7 +187,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimal_avecNull_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimal(null);
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimal(null);
 
         // assert
         assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -197,7 +197,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimal_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimal("test");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimal("test");
 
         // assert
         assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -207,7 +207,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimal_avecNombre_renvoiNombre() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimal("10");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimal("10");
 
         // assert
         assertThat(result).isEqualTo(new BigDecimal(10));
@@ -217,7 +217,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalDuree_avecNull_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalDuree(null);
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalDuree(null);
 
         // assert
         assertThat(result).isEqualTo(new BigDecimal("00.00"));
@@ -227,7 +227,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalDuree_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalDuree("test");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalDuree("test");
 
         // assert
         assertThat(result).isEqualTo(new BigDecimal("00.00"));
@@ -237,7 +237,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalDuree_avecChiffre_renvoiChiffre() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalDuree("1");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalDuree("1");
 
         // assert
         assertThat(result).isEqualTo(new BigDecimal("1"));
@@ -247,7 +247,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalNoDecimal_avecNull_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalNoDecimal(null);
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalNoDecimal(null);
 
         // assert
         assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -257,7 +257,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalNoDecimal_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalNoDecimal("test");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalNoDecimal("test");
 
         // assert
         assertThat(result).isEqualTo(BigDecimal.ZERO);
@@ -267,7 +267,7 @@ public class ParserUtilsTest {
     public void formatRequiredBigDecimalNoDecimal_avecDecimalX_X_renvoiDecimalX() {
         // arrange
         // act
-        BigDecimal result = ParserUtils.formatRequiredBigDecimalNoDecimal("1.2");
+        BigDecimal result = REConverterUtils.formatRequiredBigDecimalNoDecimal("1.2");
 
         // assert
         assertThat(result).isEqualTo(new BigDecimal("1"));
@@ -277,7 +277,7 @@ public class ParserUtilsTest {
     public void formatRequiredShort_avecNull_renvoi0() {
         // arrange
         // act
-        short result = ParserUtils.formatRequiredShort(null);
+        short result = REConverterUtils.formatRequiredShort(null);
 
         // assert
         assertThat(result).isEqualTo((short) 0);
@@ -287,7 +287,7 @@ public class ParserUtilsTest {
     public void formatRequiredShort_avecStringNonConvertible_renvoi0() {
         // arrange
         // act
-        short result = ParserUtils.formatRequiredShort("test");
+        short result = REConverterUtils.formatRequiredShort("test");
 
         // assert
         assertThat(result).isEqualTo((short) 0);
@@ -297,7 +297,7 @@ public class ParserUtilsTest {
     public void formatRequiredShort_avecNb_renvoiNb() {
         // arrange
         // act
-        short result = ParserUtils.formatRequiredShort("20");
+        short result = REConverterUtils.formatRequiredShort("20");
 
         // assert
         assertThat(result).isEqualTo((short) 20);
@@ -307,7 +307,7 @@ public class ParserUtilsTest {
     public void formatOptionalShort_avecNull_renvoiNull() {
         // arrange
         // act
-        Short result = ParserUtils.formatOptionalShort(null);
+        Short result = REConverterUtils.formatOptionalShort(null);
 
         // assert
         assertThat(result).isNull();
@@ -317,7 +317,7 @@ public class ParserUtilsTest {
     public void formatOptionalShort_avecStringNonConvertible_renvoiNull() {
         // arrange
         // act
-        Short result = ParserUtils.formatOptionalShort("test");
+        Short result = REConverterUtils.formatOptionalShort("test");
 
         // assert
         assertThat(result).isNull();
@@ -327,7 +327,7 @@ public class ParserUtilsTest {
     public void formatOptionalShort_avecNb_renvoiNb() {
         // arrange
         // act
-        Short result = ParserUtils.formatOptionalShort("20");
+        Short result = REConverterUtils.formatOptionalShort("20");
 
         // assert
         assertThat(result).isEqualTo(new Short("20"));
@@ -338,7 +338,7 @@ public class ParserUtilsTest {
         // arrange
         String format = "dd.MM.yyyy";
         // act
-        XMLGregorianCalendar result = ParserUtils.formatDate(null, format);
+        XMLGregorianCalendar result = REConverterUtils.formatDate(null, format);
 
         // assert
         assertThat(result).isNull();
@@ -349,7 +349,7 @@ public class ParserUtilsTest {
         // arrange
         String format = "dd.MM.yyyy";
         // act
-        XMLGregorianCalendar result = ParserUtils.formatDate("12.02", format);
+        XMLGregorianCalendar result = REConverterUtils.formatDate("12.02", format);
 
         // assert
         assertThat(result).isNull();
@@ -362,7 +362,7 @@ public class ParserUtilsTest {
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021,2,12,0,0,0,0, 60);
 
         // act
-        XMLGregorianCalendar result = ParserUtils.formatDate("12.02.2021", format);
+        XMLGregorianCalendar result = REConverterUtils.formatDate("12.02.2021", format);
 
         // assert
         assertThat(result).isEqualTo(date);
@@ -372,7 +372,7 @@ public class ParserUtilsTest {
     public void formatDateToAAAAMM_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatDateToAAAAMM(null);
+        String result = REConverterUtils.formatDateToAAAAMM(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -384,7 +384,7 @@ public class ParserUtilsTest {
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021,2,26,0,0,0,0, 60);
 
         // act
-        String result = ParserUtils.formatDateToAAAAMM(date);
+        String result = REConverterUtils.formatDateToAAAAMM(date);
 
         // assert
         assertThat(result).isEqualTo("202102");
@@ -396,7 +396,7 @@ public class ParserUtilsTest {
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021,12,26,0,0,0,0, 60);
 
         // act
-        String result = ParserUtils.formatDateToAAAAMM(date);
+        String result = REConverterUtils.formatDateToAAAAMM(date);
 
         // assert
         assertThat(result).isEqualTo("202112");
@@ -406,7 +406,7 @@ public class ParserUtilsTest {
     public void formatDateToMMAA_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatDateToMMAA(null);
+        String result = REConverterUtils.formatDateToMMAA(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -418,7 +418,7 @@ public class ParserUtilsTest {
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021,2,26,0,0,0,0, 60);
 
         // act
-        String result = ParserUtils.formatDateToMMAA(date);
+        String result = REConverterUtils.formatDateToMMAA(date);
 
         // assert
         assertThat(result).isEqualTo("0221");
@@ -430,7 +430,7 @@ public class ParserUtilsTest {
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021,12,26,0,0,0,0, 60);
 
         // act
-        String result = ParserUtils.formatDateToMMAA(date);
+        String result = REConverterUtils.formatDateToMMAA(date);
 
         // assert
         assertThat(result).isEqualTo("1221");
@@ -440,7 +440,7 @@ public class ParserUtilsTest {
     public void formatNssToLong_avecNull_renvoi0() {
         // arrange
         // act
-        long result = ParserUtils.formatNssToLong(null);
+        long result = REConverterUtils.formatNssToLong(null);
 
         // assert
         assertThat(result).isEqualTo(0l);
@@ -450,7 +450,7 @@ public class ParserUtilsTest {
     public void formatNssToLong_avecDateDecembre_renvoiDateMMAA() {
         // arrange
         // act
-        long result = ParserUtils.formatNssToLong("756.000.000.00");
+        long result = REConverterUtils.formatNssToLong("756.000.000.00");
 
         // assert
         assertThat(result).isEqualTo(75600000000l);
@@ -460,7 +460,7 @@ public class ParserUtilsTest {
     public void formatAAAAtoAA_avecStringEmpty_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatAAAAtoAA(StringUtils.EMPTY);
+        String result = REConverterUtils.formatAAAAtoAA(StringUtils.EMPTY);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -470,7 +470,7 @@ public class ParserUtilsTest {
     public void formatAAAAtoAA_avecAnneeAAAA_renvoiAnneeAA() {
         // arrange
         // act
-        String result = ParserUtils.formatAAAAtoAA("2021");
+        String result = REConverterUtils.formatAAAAtoAA("2021");
 
         // assert
         assertThat(result).isEqualTo("21");
@@ -480,7 +480,7 @@ public class ParserUtilsTest {
     public void formatAAAAtoAA_avecAnneeAA_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatAAAAtoAA("21");
+        String result = REConverterUtils.formatAAAAtoAA("21");
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -490,7 +490,7 @@ public class ParserUtilsTest {
     public void formatMMtoAAxMM_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAAxMM(null);
+        String result = REConverterUtils.formatMMtoAAxMM(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -500,7 +500,7 @@ public class ParserUtilsTest {
     public void formatMMtoAAxMM_avecNbMoisSupA12_renvoiDateAAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAAxMM(23);
+        String result = REConverterUtils.formatMMtoAAxMM(23);
 
         // assert
         assertThat(result).isEqualTo("01.11");
@@ -510,7 +510,7 @@ public class ParserUtilsTest {
     public void formatMMtoAAxMM_avecNbMoisInfA12_renvoiDateAAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAAxMM(9);
+        String result = REConverterUtils.formatMMtoAAxMM(9);
 
         // assert
         assertThat(result).isEqualTo("00.09");
@@ -520,7 +520,7 @@ public class ParserUtilsTest {
     public void formatMMtoAAxMM_avec12mois_renvoiDateAAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAAxMM(12);
+        String result = REConverterUtils.formatMMtoAAxMM(12);
 
         // assert
         assertThat(result).isEqualTo("01.00");
@@ -530,7 +530,7 @@ public class ParserUtilsTest {
     public void formatAAMMtoAAxMM_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatAAMMtoAAxMM(null);
+        String result = REConverterUtils.formatAAMMtoAAxMM(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -540,7 +540,7 @@ public class ParserUtilsTest {
     public void formatAAMMtoAAxMM_avecIntXXXX_renvoiDateAAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatAAMMtoAAxMM(1109);
+        String result = REConverterUtils.formatAAMMtoAAxMM(1109);
 
         // assert
         assertThat(result).isEqualTo("11.09");
@@ -550,7 +550,7 @@ public class ParserUtilsTest {
     public void formatAAMMtoAAxMM_avecIntAMM_renvoiDateAAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatAAMMtoAAxMM(406);
+        String result = REConverterUtils.formatAAMMtoAAxMM(406);
 
         // assert
         assertThat(result).isEqualTo("04.06");
@@ -560,7 +560,7 @@ public class ParserUtilsTest {
     public void formatAAMMtoAAxMM_avecIntXX_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatAAMMtoAAxMM(11);
+        String result = REConverterUtils.formatAAMMtoAAxMM(11);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -570,7 +570,7 @@ public class ParserUtilsTest {
     public void formatMMtoAxMM_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAxMM(null);
+        String result = REConverterUtils.formatMMtoAxMM(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -580,7 +580,7 @@ public class ParserUtilsTest {
     public void formatMMtoAxMM_avecMoins12Mois_renvoiDateAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAxMM(9);
+        String result = REConverterUtils.formatMMtoAxMM(9);
 
         // assert
         assertThat(result).isEqualTo("0.09");
@@ -590,7 +590,7 @@ public class ParserUtilsTest {
     public void formatMMtoAxMM_avecPlus12Mois_renvoiDateAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAxMM(21);
+        String result = REConverterUtils.formatMMtoAxMM(21);
 
         // assert
         assertThat(result).isEqualTo("1.09");
@@ -600,7 +600,7 @@ public class ParserUtilsTest {
     public void formatMMtoAxMM_avec12Mois_renvoiDateAxMM() {
         // arrange
         // act
-        String result = ParserUtils.formatMMtoAxMM(12);
+        String result = REConverterUtils.formatMMtoAxMM(12);
 
         // assert
         assertThat(result).isEqualTo("1.00");
@@ -610,7 +610,7 @@ public class ParserUtilsTest {
     public void convertMMtoA_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.convertMMtoA(null);
+        String result = REConverterUtils.convertMMtoA(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -620,7 +620,7 @@ public class ParserUtilsTest {
     public void convertMMtoA_avecMoins12Mois_renvoiNbAnnee() {
         // arrange
         // act
-        String result = ParserUtils.convertMMtoA(9);
+        String result = REConverterUtils.convertMMtoA(9);
 
         // assert
         assertThat(result).isEqualTo("0");
@@ -630,7 +630,7 @@ public class ParserUtilsTest {
     public void convertMMtoA_avecPlus12Mois_renvoiNbAnnee() {
         // arrange
         // act
-        String result = ParserUtils.convertMMtoA(24);
+        String result = REConverterUtils.convertMMtoA(24);
 
         // assert
         assertThat(result).isEqualTo("2");
@@ -640,7 +640,7 @@ public class ParserUtilsTest {
     public void formatBigDecimalToString_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatBigDecimalToString(null);
+        String result = REConverterUtils.formatBigDecimalToString(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -650,7 +650,7 @@ public class ParserUtilsTest {
     public void formatBigDecimalToString_avecBigDecimal_renvoiNb() {
         // arrange
         // act
-        String result = ParserUtils.formatBigDecimalToString(new BigDecimal("9.1"));
+        String result = REConverterUtils.formatBigDecimalToString(new BigDecimal("9.1"));
 
         // assert
         assertThat(result).isEqualTo("9.1");
@@ -660,7 +660,7 @@ public class ParserUtilsTest {
     public void formatBooleanToString_avecNull_renvoiNull() {
         // arrange
         // act
-        String result = ParserUtils.formatBooleanToString(null);
+        String result = REConverterUtils.formatBooleanToString(null);
 
         // assert
         assertThat(result).isNull();
@@ -670,7 +670,7 @@ public class ParserUtilsTest {
     public void formatBooleanToString_avecTrue_renvoi1() {
         // arrange
         // act
-        String result = ParserUtils.formatBooleanToString(Boolean.TRUE);
+        String result = REConverterUtils.formatBooleanToString(Boolean.TRUE);
 
         // assert
         assertThat(result).isEqualTo("1");
@@ -680,7 +680,7 @@ public class ParserUtilsTest {
     public void formatBooleanToString_avecFalse_renvoi0() {
         // arrange
         // act
-        String result = ParserUtils.formatBooleanToString(Boolean.FALSE);
+        String result = REConverterUtils.formatBooleanToString(Boolean.FALSE);
 
         // assert
         assertThat(result).isEqualTo("0");
@@ -690,7 +690,7 @@ public class ParserUtilsTest {
     public void formatIntegerToString_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatIntegerToString(null);
+        String result = REConverterUtils.formatIntegerToString(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -700,7 +700,7 @@ public class ParserUtilsTest {
     public void formatIntegerToString_avecInteger_renvoiNb() {
         // arrange
         // act
-        String result = ParserUtils.formatIntegerToString(20);
+        String result = REConverterUtils.formatIntegerToString(20);
 
         // assert
         assertThat(result).isEqualTo("20");
@@ -710,7 +710,7 @@ public class ParserUtilsTest {
     public void formatShortToString_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatShortToString(null);
+        String result = REConverterUtils.formatShortToString(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -720,7 +720,7 @@ public class ParserUtilsTest {
     public void formatShortToString_avecShort_renvoiNb() {
         // arrange
         // act
-        String result = ParserUtils.formatShortToString((short) 20);
+        String result = REConverterUtils.formatShortToString((short) 20);
 
         // assert
         assertThat(result).isEqualTo("20");
@@ -730,7 +730,7 @@ public class ParserUtilsTest {
     public void formatCodeCasSpecial_avecNull_renvoiStringEmpty() {
         // arrange
         // act
-        String result = ParserUtils.formatCodeCasSpecial(null);
+        String result = REConverterUtils.formatCodeCasSpecial(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -740,7 +740,7 @@ public class ParserUtilsTest {
     public void formatCodeCasSpecial_avecCode1Chiffre_renvoiNb2Champs() {
         // arrange
         // act
-        String result = ParserUtils.formatCodeCasSpecial((short) 9);
+        String result = REConverterUtils.formatCodeCasSpecial((short) 9);
 
         // assert
         assertThat(result).isEqualTo("09");
@@ -750,7 +750,7 @@ public class ParserUtilsTest {
     public void formatCodeCasSpecial_avecCode2Chiffres_renvoiNb2Champs() {
         // arrange
         // act
-        String result = ParserUtils.formatCodeCasSpecial((short) 11);
+        String result = REConverterUtils.formatCodeCasSpecial((short) 11);
 
         // assert
         assertThat(result).isEqualTo("11");
@@ -760,7 +760,7 @@ public class ParserUtilsTest {
     public void formatStringWithoutDots_avecNumeroNull_renvoiStringEmtpy() {
         // arrange
         // act
-        String result = ParserUtils.formatStringWithoutDots(null);
+        String result = REConverterUtils.formatStringWithoutDots(null);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -770,7 +770,7 @@ public class ParserUtilsTest {
     public void formatStringWithoutDots_avecNumeroAvecPoints_renvoiNumeroSansPoint() {
         // arrange
         // act
-        String result = ParserUtils.formatStringWithoutDots("756.000.000.00");
+        String result = REConverterUtils.formatStringWithoutDots("756.000.000.00");
 
         // assert
         assertThat(result).isEqualTo("75600000000");
