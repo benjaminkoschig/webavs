@@ -54,6 +54,7 @@ public class DSActionLigneDeclaration extends FWDefaultServletAction {
 
         DSLigneDeclarationViewBean vBean = (DSLigneDeclarationViewBean) viewBean;
         vBean.setIdDeclaration(request.getParameter("idDeclaration"));
+        vBean.setAssuranceId(request.getParameter("idAssurance"));
         return vBean;
     }
 }

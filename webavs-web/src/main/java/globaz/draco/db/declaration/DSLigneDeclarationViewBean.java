@@ -71,6 +71,8 @@ public class DSLigneDeclarationViewBean extends BEntity {
     private String tauxAssuranceAnneeCourante = new String();
     /** (TBMTAD) */
     private String tauxAssuranceDeclaration = new String();
+    /** (COTISATION_FIXE) */
+    private String cotisationDue;
 
     // code systeme
     // private double montant =-1 ;
@@ -185,6 +187,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
         tauxAssuranceAnneeCourante = statement.dbReadNumeric("TBMTAC", 5);
         fractionAssuranceAnneeCourante = statement.dbReadNumeric("TBMFAA", 5);
         anneCotisation = statement.dbReadNumeric("TBNANN");
+        cotisationDue = statement.dbReadNumeric("COTISATION_FIXE");
     }
 
     /**
@@ -248,6 +251,8 @@ public class DSLigneDeclarationViewBean extends BEntity {
                 getFractionAssuranceAnneeCourante(), "fractionAssuranceAnneeCourante"));
         statement.writeField("TBNANN",
                 this._dbWriteNumeric(statement.getTransaction(), getAnneCotisation(), "anneeCotisation"));
+        statement.writeField("COTISATION_FIXE",
+                this._dbWriteNumeric(statement.getTransaction(), getCotisationDue(), "cotisationDue"));
     }
 
     /**
@@ -643,6 +648,9 @@ public class DSLigneDeclarationViewBean extends BEntity {
             dateFin += getDeclaration().getAnnee();
         }
         assurance = getAssurance();
+        if(assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){
+            return cotisationDue;
+        }
         if (!JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getMontantDeclaration()))
                 && !CodeSystem.TYPE_ASS_IMPOT_SOURCE.equals(assurance.getTypeAssurance())) {
             if (JadeStringUtil.isIntegerEmpty(getTauxAssuranceDeclaration())
@@ -1210,6 +1218,10 @@ public class DSLigneDeclarationViewBean extends BEntity {
         assuranceId = newAssuranceId;
     }
 
+    public void setCotisationDue(String newCotisationDue) {
+        cotisationDue = newCotisationDue;
+    }
+
     /**
      * Sets the cumulCotisationAnneeCourante.
      * 
@@ -1320,6 +1332,14 @@ public class DSLigneDeclarationViewBean extends BEntity {
      */
     public void setTauxAssuranceDeclaration(String tauxAssuranceDeclaration) {
         this.tauxAssuranceDeclaration = JANumberFormatter.deQuote(tauxAssuranceDeclaration);
+    }
+
+    public boolean isAssuranceTypeCrpBasic(){
+        AFAssurance assuranceCourante = getAssurance();
+        if(assuranceCourante != null && assuranceCourante.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -14,7 +14,20 @@
 	idEcran = "CDS0008";
 
 	DSLigneDeclarationViewBean viewBean = (DSLigneDeclarationViewBean)session.getAttribute ("viewBean");
-	
+
+	boolean updateCalled = false;
+	String isReadonlyCotisationDue = "readonly";
+    String isReadonlyAutres = "";
+    String classCotisationDue = "montantDisabled";
+    String classAutres = "montant";
+    String classTaux = "libelle";
+	if(viewBean.isAssuranceTypeCrpBasic()){
+        isReadonlyCotisationDue = "";
+        isReadonlyAutres = "readonly";
+        classCotisationDue = "montant";
+        classAutres = "montantDisabled";
+        classTaux = "montantDisabled";
+    }
 
 	selectedIdValue = viewBean.getIdLigneDeclaration();
 	userActionValue = "draco.declaration.ligneDeclaration.afficher";
@@ -23,13 +36,31 @@
 %>
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.tauxAssurance.AFTauxAssurance"%>
+<%@ page import="ch.globaz.eavs.utils.StringUtils" %>
 <SCRIPT language="JavaScript">
+    console.log("<%=request.getParameter("_method")%>");
 </SCRIPT> <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
-<%-- tpl:put name="zoneScripts" --%><SCRIPT language="JavaScript">
+<%-- tpl:put name="zoneScripts" --%>
+<SCRIPT language="JavaScript">
 <!--hide this script from non-javascript-enabled browsers
+
+
+$(function (){
+    $("#assuranceId").change(function(){
+        <% if (request.getParameter("_method") == null || request.getParameter("_method").equals("")){ %>
+            location.href = "<%=request.getContextPath()%>/draco?userAction=draco.declaration.ligneDeclaration.afficher&selectedId=<%=request.getParameter("selectedId")%>&idAssurance="+this.value;
+        <% } else if(request.getParameter("_method").equals("add")){ %>
+            location.href = "<%=request.getContextPath()%>/draco?userAction=draco.declaration.ligneDeclaration.afficher&_method=add&idDeclaration=<%=viewBean.getIdDeclaration()%>&idAssurance="+this.value;
+        <% }else{ %>
+            location.href = "<%=request.getContextPath()%>/draco?userAction=draco.declaration.ligneDeclaration.afficher&_method=<%=request.getParameter("_method")%>&selectedId=<%=request.getParameter("selectedId")%>&idAssurance="+this.value;
+        <% } %>
+    });
+})
+
+
 
 function add() {
 	updatePage();
@@ -37,13 +68,15 @@ function add() {
 	document.forms[0].elements('cumulCotisation').value='';
 	document.forms[0].elements('tauxAssuranceDeclaration').value='';
 	document.forms[0].elements('fractionAssuranceDeclaration').value='';
-	document.forms[0].elements('acompte').value='';
+	document.forms[0].elements('cotisationDue').value='';
 	document.forms[0].elements('soldeCot').value='';
+
 }
 function upd() {
 //	 On met à jour les infos du compte
 	document.forms[0].target = "fr_main";
 	document.forms[0].elements('selectedId').value = document.forms[0].elements('idDeclaration').value;
+    <%updateCalled = true;%>;
 	updatePage();
 }
 function validate() {
@@ -106,17 +139,17 @@ function updatePage() {
           <tr> 
             <td nowrap>Masse effective</td>
             <td>
-              <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
-                            <input name='montantDeclarationComp'  value="<%=viewBean.getMontantDeclaration()%>" class="montant">
-              <% } else {%>
-              <input name='montantDeclaration'  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="montant">
-              <%}%>
+                <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+                    <input name='montantDeclarationComp' <%=isReadonlyAutres%>  value="<%=viewBean.getMontantDeclaration()%>" class="<%=classAutres%>">
+                <% } else {%>
+                    <input name='montantDeclaration' <%=isReadonlyAutres%>  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="<%=classAutres%>">
+                <%}%>
             </td>
           </tr>
           <tr> 
             <td>Cotisation due</td>
-            <td> 
-              <input name='acompte'  readonly value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="montantDisabled">
+            <td>
+                <input name='cotisationDue' <%=isReadonlyCotisationDue%> value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="<%=classCotisationDue%>">
             </td>
           </tr>
           <tr> 
@@ -139,19 +172,19 @@ function updatePage() {
             AFTauxAssurance tauxLigne = viewBean.getAssurance().getTaux("31.12."+viewBean.getDeclaration().getAnnee());
             if(tauxLigne!=null && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(tauxLigne.getGenreValeur())) {
             	if (!JAUtil.isStringEmpty(viewBean.getTauxAssuranceDeclaration())) {%>
-                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>"  >
-                / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>"  readonly></td>
+                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>" class="<%=classTaux%>" <%=isReadonlyAutres%> >
+                / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>"  class="<%=classTaux%>" readonly></td>
                 <%} else {%>
-                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" >
+                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" class="<%=classTaux%>" <%=isReadonlyAutres%>>
                 / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssurance()%>" class="disabled" readonly></td>
                 <%}
             } else {
             	if (!JAUtil.isStringEmpty(viewBean.getTauxAssuranceDeclaration())) {%>
-	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>" class="libelle">
-	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>" class="libelle"></td>
+	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>" class="<%=classTaux%>" <%=isReadonlyAutres%>>
+	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>" class="<%=classTaux%>" <%=isReadonlyAutres%>></td>
 	            <%} else {%>
-	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" class="libelle">
-	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssurance()%>" class="libelle"></td>
+	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" class="<%=classTaux%>" <%=isReadonlyAutres%>>
+	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssurance()%>" class="<%=classTaux%>" <%=isReadonlyAutres%>></td>
 	            <%}
 	        } %>
           </tr>

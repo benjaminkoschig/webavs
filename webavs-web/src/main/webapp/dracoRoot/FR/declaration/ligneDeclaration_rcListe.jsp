@@ -60,35 +60,35 @@ detailLink = "draco?userAction=draco.declaration.ligneDeclaration.afficher&selec
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssurance()%></TD>            
             <%}%>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.formatNoRound(entity.getCotisationDue())%>&nbsp;</TD> 
-              <%
-	  		if (!JAUtil.isStringEmpty(entity.getCotisationDue())){
-	  			cotisationDue = cotisationDue.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCotisationDue()))); 
-	  		}
-	  		%>          
-            <%if(entity.getDeclaration().getTypeDeclaration().equals(CodeSystem.CS_PRINCIPALE)
-            	|| entity.getDeclaration().getTypeDeclaration().equals(CodeSystem.CS_BOUCLEMENT_ACCOMPTE)){
-            	if (entity.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.formatNoRound(entity.getCumulCotisationDeclaration())%>&nbsp;</TD>
-            <%if (!JAUtil.isStringEmpty(entity.getCumulCotisationDeclaration())){
-		  			acompte = acompte.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCumulCotisationDeclaration()))); 
-		  		}%>
-            <%} else {%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%if (entity.getCompteur() != null) {%><%=JANumberFormatter.formatNoRound(entity.getCompteur().getCumulCotisation())%><%}%>&nbsp;</TD>
- 			<%
-		  		if (entity.getCompteur()!=null && !JAUtil.isStringEmpty(entity.getCompteur().getCumulCotisation())){
-		  			acompte = acompte.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCompteur().getCumulCotisation()))); 
-		  		}
- 			%>
-	  		
-            <%}}else{%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right">&nbsp;</TD>
+            <% if (!JAUtil.isStringEmpty(entity.getCotisationDue())){
+	  		    cotisationDue = cotisationDue.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCotisationDue())));
+            }%>
+                <% if(entity.getDeclaration().getTypeDeclaration().equals(CodeSystem.CS_PRINCIPALE)
+                    || entity.getDeclaration().getTypeDeclaration().equals(CodeSystem.CS_BOUCLEMENT_ACCOMPTE)){
+                    if (entity.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+                    <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.formatNoRound(entity.getCumulCotisationDeclaration())%>&nbsp;</TD>
+                        <%if (!JAUtil.isStringEmpty(entity.getCumulCotisationDeclaration())){
+                            acompte = acompte.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCumulCotisationDeclaration())));
+                        }%>
+                <%} else {%>
+                    <TD class="mtd" onClick="<%=actionDetail%>" align="right">
+                        <%if (entity.getCompteur() != null) {%>
+                            <%=JANumberFormatter.formatNoRound(entity.getCompteur().getCumulCotisation())%>
+                        <%}%>&nbsp;
+                    </TD>
+                <%
+                    if (entity.getCompteur()!=null && !JAUtil.isStringEmpty(entity.getCompteur().getCumulCotisation())){
+                        acompte = acompte.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCompteur().getCumulCotisation())));
+                    }
+                %>
+                <%}
+            }else{ %>
+                <TD class="mtd" onClick="<%=actionDetail%>" align="right">&nbsp;</TD>
             <%}%>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.formatNoRound(entity.getSoldeCotisation())%>&nbsp;</TD>
-            <%
-	  		if (JAUtil.isStringEmpty(entity.getSoldeCotisation())){}else{
+            <% if (JAUtil.isStringEmpty(entity.getSoldeCotisation())){}else{
 	  			montTotal = montTotal.add(new BigDecimal(JANumberFormatter.deQuote(entity.getSoldeCotisation()))); 
-	  		}
-	  		%>
+	  		}%>
 
 <ct:menuChange displayId="options" menuId="DS-OptionsDeclaration" showTab="options">
 	<ct:menuSetAllParams key="idDeclaration" value="<%=entity.getIdDeclaration()%>"/>
