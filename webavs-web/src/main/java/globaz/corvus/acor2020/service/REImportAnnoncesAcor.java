@@ -503,12 +503,14 @@ public class REImportAnnoncesAcor {
                     /* YYDCEC (BigDecimal) : si valeur vide -> vide, sinon formaté sur 4 position */
                     tmpVal1 = skalaBerechnung.getBeitragsdauerVor1973();
                     if (tmpVal1 != null) {
+                        tmpVal1 = tmpVal1.setScale(2);
                         dureeCoEchelleRenteAv73 = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
                     /* YYDECH (BigDecimal) : si valeur vide -> vide, sinon formaté sur 4 position */
                     tmpVal1 = skalaBerechnung.getBeitragsdauerAb1973();
                     if (tmpVal1 != null) {
+                        tmpVal1 = tmpVal1.setScale(2);
                         dureeCoEchelleRenteDes73 = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
@@ -538,6 +540,7 @@ public class REImportAnnoncesAcor {
                     /* YYNDCO (BigDecimal) : si valeur null ou vide --> vide, sinon formatage sur 4 position */
                     tmpVal1 = dJEBeschreibung.getBeitragsdauerDurchschnittlichesJahreseinkommen();
                     if (tmpVal1 != null) {
+                        tmpVal1 = tmpVal1.setScale(2);
                         dureeCotPourDetRAM = REConverterUtils.formatBigDecimal(tmpVal1);
                     }
 
