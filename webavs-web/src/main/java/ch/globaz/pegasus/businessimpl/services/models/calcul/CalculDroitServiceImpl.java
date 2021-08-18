@@ -1043,7 +1043,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         Map<String, CalculDonneesHome> mapHomeFilter = new HashMap<>();
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
-            String key = home.getIdHome() + home.getDateDebutDFH() + home.getDateFinDFH();
+            String key = home.getIdHome()+ home.getCsRoleFamille() + home.getDateDebutDFH() + home.getDateFinDFH();
             if (!mapHomeFilter.containsKey(key)) {
                 mapHomeFilter.put(key, home);
             }
