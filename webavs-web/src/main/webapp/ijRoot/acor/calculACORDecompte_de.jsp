@@ -287,7 +287,6 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
             </tr>
             <% } %>
 
-            <th><ct:FWLabel key="JSP_CAD_PAR_ACOR"/></th>
             <tr>
                 <td>
 												<H6><A style="color:black;" href="#" onclick="exporterScriptACOR()"><ct:FWLabel key="JSP_CAD_D_ETAPE_1"/></A></H6>
