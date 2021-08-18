@@ -6,6 +6,7 @@ import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
 import ch.globaz.pegasus.business.models.creancier.CreanceAccordeeSearch;
 import ch.globaz.pegasus.business.models.creancier.CreancierSearch;
+import ch.globaz.pegasus.business.models.decision.CopiesDecision;
 import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
@@ -22,6 +23,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import ch.globaz.babel.business.exception.CatalogueTexteException;
 import ch.globaz.babel.business.services.BabelServiceLocator;
@@ -441,7 +443,9 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             DecisionApresCalculOO decisionApresCalculOO = PegasusServiceLocator.getDecisionApresCalculService()
                     .readForOO(decision);
             decisionApresCalculOO = loadCreancierRetenuesAndCalcul(decisionApresCalculOO);
-            decisionApresCalculOO.getDecisionHeader().setListeCopies(CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul()));
+            ArrayList<CopiesDecision> listeCopies = CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul());
+            listeCopies.addAll(decisionApresCalculOO.getDecisionHeader().getListeCopies());
+            decisionApresCalculOO.getDecisionHeader().setListeCopies(listeCopies);
             if(handlerGlobal.getFromAdaptation()){
                 decisionApresCalculOO.setDateAdaptation(handlerGlobal.getDateDoc());
             }
