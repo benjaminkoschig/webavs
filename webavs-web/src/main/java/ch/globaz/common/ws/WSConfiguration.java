@@ -39,7 +39,6 @@ public class WSConfiguration extends Application {
         Set<Class<?>> allClasses = new HashSet<>();
 
         try (ScanResult result = new ClassGraph().enableAnnotationInfo()
-                                                 .disableJarScanning()
                                                  .addClassLoader(WSConfiguration.class.getClassLoader())
                                                  .acceptPackages("globaz", "ch.globaz")
                                                  .scan()) {
