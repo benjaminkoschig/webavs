@@ -4,20 +4,15 @@
 	Configuration d'OpenOffice et de la façon d'y accéder. 
 	 -->
 	<ooo>
-		<!--
-			connection-url L'url de connection au serveur OpenOffice. La valeur
-			spéciale "bootstrap" est autorisée pour utiliser OpenOffice sans
-			avoir à démarrer un serveur (utile pour le développement par
-			exemple). 
-			Exemple:
-			<connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url>
-		-->
-		<!-- <connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url> -->
+
+		<!-- OpenOffice 3.3 (nécessite un lancement à la main du serveur OpenOffice) -->
+		<connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url>
+
+		<!-- OpenOffice 2.4 -->
 		<!-- <connection-url>bootstrap</connection-url> -->
-		<connection-url>uno:socket,host=localhost,port=8101;urp;StarOffice.ServiceManager</connection-url>
-		<killScript>/etc/init.d/sofficed3-2 stop</killScript>
-		<startScript>/etc/init.d/sofficed3-2 start</startScript>
-		<maxDocsPerRestart>1000</maxDocsPerRestart>
+
+		<!-- <killScript>C:\\dev\\OO script\\killOOo.bat</killScript> -->
+		<!-- <startScript>C:\\dev\\OO script\\startOOo.bat</startScript> -->
 	</ooo>
 	
 	<doc-selection id="*">
