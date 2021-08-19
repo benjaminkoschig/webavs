@@ -9,8 +9,6 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +40,8 @@ public class WSConfiguration extends Application {
 
         try (ScanResult result = new ClassGraph().enableAnnotationInfo()
                                                  .disableJarScanning()
-                                                 .acceptPackages("globaz","ch.globaz")
+                                                 .addClassLoader(WSConfiguration.class.getClassLoader())
+                                                 .acceptPackages("globaz", "ch.globaz")
                                                  .scan()) {
 
             ClassInfoList classInfos = result.getClassesWithAnnotation(Path.class.getName());
@@ -52,8 +51,8 @@ public class WSConfiguration extends Application {
 
             LOG.info("Nb classes used for jax-rs is {} :", allClasses.size());
             allClasses.stream()
-                   .sorted(Comparator.comparing(Class::getCanonicalName))
-                   .forEach(aClass -> LOG.info("  {}", aClass.getCanonicalName()));
+                      .sorted(Comparator.comparing(Class::getCanonicalName))
+                      .forEach(aClass -> LOG.info("  {}", aClass.getCanonicalName()));
 
             return allClasses;
         } catch (Exception e) {
