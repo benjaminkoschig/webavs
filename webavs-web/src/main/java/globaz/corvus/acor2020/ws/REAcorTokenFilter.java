@@ -22,6 +22,7 @@ import java.util.Objects;
 public class REAcorTokenFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        LOG.info("REAcorTokenFilter");
         if (!Objects.equals(HttpMethod.OPTIONS, requestContext.getMethod())) {
             String token = requestContext.getHeaderString("authorization");
             REAcor2020Token acor2020Token = REAcor2020TokenService.getInstance().getToken(token);
