@@ -27,7 +27,9 @@ import ch.globaz.common.process.byitem.ProcessItemsService;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class EBPucsServletAction extends EBAbstractServletAction {
 
     public EBPucsServletAction(FWServlet aServlet) {
@@ -35,7 +37,7 @@ public class EBPucsServletAction extends EBAbstractServletAction {
     }
 
     protected void _actionChangeUser(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws javax.servlet.ServletException, java.io.IOException {
+                                     FWDispatcher mainDispatcher) throws javax.servlet.ServletException, java.io.IOException {
         String destination = "";
         try {
 
@@ -80,13 +82,13 @@ public class EBPucsServletAction extends EBAbstractServletAction {
 
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher dispatcher) throws javax.servlet.ServletException, java.io.IOException {
+                                FWDispatcher dispatcher) throws javax.servlet.ServletException, java.io.IOException {
         if (getAction().getActionPart().equals("changeUser")) {
             _actionChangeUser(session, request, response, dispatcher);
         } else if (getAction().getActionPart().equals("importInDb")) {
             BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
             Boolean isProcessRunnig = ProcessItemsService.isProcessRunnig(EBImportPucsDanProcess.KEY,
-                    EBImportSwissDecProcess.KEY);
+                                                                          EBImportSwissDecProcess.KEY);
             if (!isProcessRunnig) {
                 try {
                     if (!EBProperties.PUCS_SWISS_DEC_DIRECTORY.isEmpty()) {
@@ -105,14 +107,14 @@ public class EBPucsServletAction extends EBAbstractServletAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWDefaultServletAction#actionExecuter(javax .servlet.http.HttpSession,
      * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      * globaz.framework.controller.FWDispatcher)
      */
     @Override
     protected void actionExecuter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws ServletException, IOException {
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
         // Set le viewbean en session - vient d'un rc -> pas le bon vb
         // potentiellement
         session.setAttribute("viewBean", FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix()));
@@ -133,7 +135,7 @@ public class EBPucsServletAction extends EBAbstractServletAction {
 
     @Override
     protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws ServletException, IOException {
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination;
 
         try {
@@ -155,7 +157,7 @@ public class EBPucsServletAction extends EBAbstractServletAction {
              * Creation dynamique de notre viewBean
              */
             FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(privateAction,
-                    mainDispatcher.getPrefix());
+                                                                               mainDispatcher.getPrefix());
 
             globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
 
@@ -222,9 +224,9 @@ public class EBPucsServletAction extends EBAbstractServletAction {
             }
 
             vBean = (EBPucsFileListViewBean) mainDispatcher.dispatch(vBean, getAction());
-            vBean.getManager().find(BManager.SIZE_NOLIMIT);
-            vBean.perpareList();
+            vBean.loadAndSetUser();
         } catch (Exception e) {
+            LOG.error("Error for actionChercher ",e);
             vBean.setMsgType(FWViewBeanInterface.ERROR);
             vBean.setMessage(e.getMessage());
         }

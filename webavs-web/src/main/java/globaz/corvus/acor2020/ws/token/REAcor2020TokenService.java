@@ -82,7 +82,11 @@ public class REAcor2020TokenService implements Acor2020TokenService<REAcor2020To
         claims.put("idTiers", bean.getIdTiers());
         claims.put("recordId", bean.getNoAVSAssure());
 
-        String jws = Jwts.builder().setHeader(header).setClaims(claims).setIssuer("auth0").setIssuedAt(new Date()).setExpiration(cal.getTime())
+        String jws = Jwts.builder()
+                         .setHeader(header)
+                         .setClaims(claims)
+                         .setIssuer("auth0")
+                         .setIssuedAt(new Date()).setExpiration(cal.getTime())
                 .signWith(key).compact();
         return jws;
     }
