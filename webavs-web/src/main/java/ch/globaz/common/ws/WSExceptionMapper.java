@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -27,7 +28,25 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception e) {
         LOG.error("WebService Error : ", e);
+        LOG.info("getRequestURI : {}",request.getRequestURI());
+        LOG.info("getContextPath : {}",request.getContextPath());
+        LOG.info("getPathInfo : {}",request.getPathInfo());
+        LOG.info("getQueryString : {}",request.getQueryString());
+        LOG.info("getAuthType : {}",request.getAuthType());
+        LOG.info("getRemoteUser : {}",request.getRemoteUser());
+        LOG.info("getMethod : {}",request.getMethod());
+        LOG.info("getLocalAddr : {}",request.getLocalAddr());
+        LOG.info("getRequestedSessionId : {}",request.getRequestedSessionId());
+        LOG.info("getServerName : {}",request.getServerName());
+
+        LOG.info("getPath : {}",uriInfo.getPath());
+        LOG.info("getPath : {}",uriInfo.getPath());
+        LOG.info("getRequestUri : {}",uriInfo.getRequestUri().toString());
+        LOG.info("getBaseUri : {}",uriInfo.getBaseUri().toString());
+        LOG.info("getAbsolutePath : {}",uriInfo.getAbsolutePath().toString());
+        LOG.info("getPathSegments : {}",uriInfo.getPathSegments().toString());
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+        responseBuilder.type(MediaType.APPLICATION_JSON_TYPE);
         if (e instanceof PRACORException) {
             return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(e.getMessage(), e, 2, OriginType.TECHNICAL_EXPORT)).build();
         } else {
