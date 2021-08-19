@@ -1,0 +1,1129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<adapter name="airs" class="globaz.jade.ged.adapter.airs.JadeGedAdapter" verbose="true">
+	<select.service.jsp>common/ged/selectService.jsp</select.service.jsp>
+	<import.url>D:\ged</import.url>
+	<!--services [REQUIRED]: liste des services GED-->
+	<airs.url></airs.url>
+	<!--Pas de propagation -->
+	<airs.synchro.path></airs.synchro.path>
+	<!-- Pas de propagation-->
+	<airs.synchro.id>N_NSS</airs.synchro.id>
+	<!-- appel famille rentes -->
+	<airs.url.extended.parameters>true</airs.url.extended.parameters>
+	<services>
+		<service name="MAL" text="Caisse Maladie" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">410</index>
+			<index name="N_CTB">numero.contribuable</index>
+			<index name="YEAR">subside.anneeHistorique</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+			<consult>
+				<!--index: indication d'un champ composant l'url-->
+				<index name="authentication">adm_airs3:D1g1tech</index>
+				<index name="orgId">30</index>
+				<index name="outcome">gotoSimpleView</index>
+				<index name="cty">DOCUMENT_ASSURE</index>
+				<index name="field1">N_NSS</index>
+				<index name="value1">pyxis.tiers.numero.avs.non.formatte</index>
+			</consult>
+		</service>
+		<service name="RENTES" text="Rentes" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">407</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+			<consult>
+				<!--index: indication d'un champ composant l'url-->
+				<index name="authentication">adm_airs3:D1g1tech</index>
+				<index name="orgId">30</index>
+				<index name="outcome">gotoSimpleView</index>
+				<index name="cty">DOCUMENT_ASSURE</index>
+				<index name="field1">N_NSS</index>
+				<index name="value1">pyxis.tiers.numero.avs.non.formatte</index>
+			</consult>
+		</service>
+		<service name="RENTES_HS_ASS_AFF" text="Rentes hors assuré/affilié" ged="DOCUMENT_HS_ASSURE_AFFILIE">
+			<index name="AL_CCJU_SERV">407</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+			<consult>
+				<!--index: indication d'un champ composant l'url-->
+				<index name="authentication">adm_airs3:D1g1tech</index>
+				<index name="orgId">30</index>
+				<index name="outcome">gotoSimpleView</index>
+				<index name="cty">DOCUMENT_HS_ASSURE_AFFILIE</index>
+				<index name="field1">N_NSS</index>
+				<index name="value1">pyxis.tiers.numero.avs.non.formatte</index>
+			</consult>
+		</service>
+		<service name="COT_AFF" text="Affiliés" ged="DOCUMENT_AFFILIE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="COT_AFF_NUM_DCPTE" text="Affiliés avec numéro de décompte" ged="DOCUMENT_AFFILIE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="NO_DCPTE">osiris.section.idExterne</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="COT_ASS" text="Assurés" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="COT_AFF_ASS" text="Affiliés/Assurés" ged="DOCUMENT_AFFILIE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="COT_HS_ASS_AFF" text="Affiliés hors assuré/affilié" ged="DOCUMENT_HS_ASSURE_AFFILIE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="COT_PERS_AFF" text="Affiliés personnels" ged="DOCUMENT_AFFILIE">
+			<index name="AL_CCJU_SERV">411</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="DECISION_TYPE">phenix.decision.type</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="AF" text="Allocations Familiales" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">412</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="AF_SOUS_SERVICE" text="Allocations Familiales avec sous-service" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">412</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="S_SERVICE">type.dossier</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+
+		<service name="APG_SOUS_SERVICE" text="Allocations pertes de gains" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">412</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="S_SERVICE">APG</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+
+		<service name="AMAT_SOUS_SERVICE" text="Allocations maternité" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">412</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="S_SERVICE">APGMat</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+
+		<service name="IJAI_SOUS_SERVICE" text="Indemnités journalières" ged="DOCUMENT_ASSURE">
+			<index name="AL_CCJU_SERV">412</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="S_SERVICE">IJAI</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+
+
+
+
+		<service name="COMPTA_AFF" text="Comptabilité affiliés" ged="DOCUMENT_AFFILIE">
+			<index name="AL_CCJU_SERV">406</index>
+			<index name="N_AFF">numero.role.formatte</index>
+			<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+			<index name="TITRE_DOCUMENT">babel.type.id</index>
+			<index name="NO_DCPTE">osiris.section.idExterne</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="PC" text="Prestations complémentaires" ged="DOCUMENT_ASSURE">
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="AL_CCJU_SERV">408</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+		</service>
+		<service name="RFM" text="Remboursements frais maladies" ged="DOCUMENT_ASSURE">
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="AL_CCJU_SERV">409</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+			<consult>
+				<!--index: indication d'un champ composant l'url-->
+				<index name="authentication">adm_airs3:D1g1tech</index>
+				<index name="orgId">30</index>
+				<index name="outcome">gotoSimpleView</index>
+				<index name="cty">DOCUMENT_ASSURE</index>
+				<index name="field1">N_NSS</index>
+				<index name="value1">pyxis.tiers.numero.avs.non.formatte</index>
+			</consult>
+		</service>
+		<service name="RFM_HS_ASS_AFF" text="Remboursements frais maladies hors assuré/affilié" ged="DOCUMENT_HS_ASSURE_AFFILIE">
+			<index name="N_NSS">pyxis.tiers.numero.avs.non.formatte</index>
+			<index name="AL_CCJU_SERV">409</index>
+			<index name="DATE_DOCUMENT">creation.date</index>
+			<consult>
+				<!--index: indication d'un champ composant l'url-->
+				<index name="authentication">adm_airs3:D1g1tech</index>
+				<index name="orgId">30</index>
+				<index name="outcome">gotoSimpleView</index>
+				<index name="cty">DOCUMENT_HS_ASSURE_AFFILIE</index>
+				<index name="field1">N_NSS</index>
+				<index name="value1">pyxis.tiers.numero.avs.non.formatte</index>
+			</consult>
+		</service>
+	</services>
+	<documents>
+		<!--Décision RENTESs-->
+		<document application="5100PRE" ged="1859">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!-- Décision rente vieilesse -->
+		<document application="5151PRE" ged="PRE5151" department="RTC">
+			<folders>
+				<folder name="tiers"/>
+			</folders>
+			<description>
+				<value>Décision rente vieillesse</value>
+			</description>
+		</document>
+		<!--Liste récapitulative du paiement mensuel-->
+		<document application="5130PRE" ged="1731">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Récapitulative menuelle des rentes-->
+		<document application="5131PRE" ged="1732">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Accusé de réception-->
+		<document application="5147PRE" ged="1904">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Attestations fiscales-->
+		<document application="5113PRE" ged="1819">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+
+		<!--Attestations fiscales-->
+		<document application="5114PRE" ged="1819">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Lettre pour indication de changement de caisse à la centrale (sort avec 5102)-->
+		<document application="5136PRE" ged="1863">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Demande de compensation-->
+		<document application="5104PRE" ged="1820">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--RENTES de veuve perdure-->
+		<document application="5134PRE" ged="1859">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Transfert à caisse compétente-->
+		<document application="5101PRE" ged="1863">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Transfert à caisse compétente pour calcul prévisonnel-->
+		<document application="5103PRE" ged="1863">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Transfert dossier en cours à une autre caisse-->
+		<document application="5102PRE" ged="1863">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Attestation-->
+		<document application="Attestation" ged="1766">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--Correspondance-->
+		<document application="Correspondance" ged="1802">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--Décision-->
+		<document application="Décision" ged="1858">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--Demande-->
+		<document application="Demande" ged="2269">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--Opposition-->
+		<document application="Opposition" ged="1949">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--TCA-->
+		<document application="TCA" ged="1949">
+			<services>
+				<service name="MAL"/>
+			</services>
+		</document>
+		<!--Décision après-calcul-->
+		<document application="6500PPC" ged="2270">
+			<services>
+				<service name="PC"/>
+			</services>
+		</document>
+		<!--Transfert de dossier (cas non octroyés)-->
+		<document application="6502PPC" ged="2270">
+			<services>
+				<service name="PC"/>
+			</services>
+		</document>
+		<!--Décisions - Transfert de dossier-->
+		<document application="6503PPC" ged="2270">
+			<services>
+				<service name="PC"/>
+			</services>
+		</document>
+		<!--Demande - Transfert de dossier de rente pour une caisse acceptante-->
+		<document application="6506PPC" ged="1807">
+			<services>
+				<service name="PC"/>
+			</services>
+		</document>
+		<!--Demande - Transfert de dossier de rente pour une caisse refusante-->
+		<document application="6507PPC" ged="1807">
+			<services>
+				<service name="PC"/>
+			</services>
+		</document>
+		<!--Attestation de prolongation d'étude-->
+		<document application="5137PRE" ged="1939">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Lettre d'ajournement de rentes-->
+		<document application="5156PRE" ged="1817">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Communication mutation office AI-->
+		<document application="5157PRE" ged="1801">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Décision ponctuelle-->
+		<document application="7000PRF" ged="2270">
+			<services>
+				<service name="RFM"/>
+			</services>
+		</document>
+		<!--Décision mensuelle - régime (CCJU)-->
+		<document application="7001PRF" ged="2270">
+			<services>
+				<service name="RFM"/>
+			</services>
+		</document>
+		<!--Liste récapitulative des paiements-->
+		<document application="7045PRF" ged="1732">
+			<services>
+				<service name="RFM_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Décision de restitution-->
+		<document application="7002PRF" ged="1784">
+			<services>
+				<service name="RFM"/>
+			</services>
+		</document>
+		<!--Échéance Enfant 18 ans-->
+		<document application="5105PRE" ged="1939">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Echéance 25 ans-->
+		<document application="5106PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Échéances études-->
+		<document application="5107PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Échéance H/F-->
+		<document application="5108PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Échéance ajournement-->
+		<document application="5110PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Échéance veuf-->
+		<document application="5111PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Échéance certificat vie-->
+		<document application="5112PRE" ged="1612">
+			<services>
+				<service name="RENTES_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (provisoire)-->
+		<document application="605001" ged="2066">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (correction)-->
+		<document application="605003" ged="2066">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (acompte)-->
+		<document application="605007" ged="2066">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (définitive)-->
+		<document application="605002" ged="2067">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (rectification)-->
+		<document application="605004" ged="2067">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (imputation)-->
+		<document application="605005" ged="2067">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (remise)-->
+		<document application="605008" ged="2067">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision cotisations personnelles (reduction)-->
+		<document application="605009" ged="2067">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision d'allocation de maternité fédérale-->
+		<document application="5003PAP" ged="1858">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décision de congé paternité-->
+		<document application="5053PAP" ged="1858">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Attestation fiscale de congé paternité-->
+		<document application="5054PAP" ged="1858">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte APG, vst employeur ou bénéficiaire-->
+		<document application="5004PAP" ged="1960">
+			<services>
+				<service name="APG_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte APG, vst employeur ou bénéficiaire-->
+		<document application="5045PAP" ged="1960">
+			<services>
+				<service name="APG_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte APG Ventilation-->
+		<document application="5039PAP" ged="1960">
+			<services>
+				<service name="APG_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte d'allocation de maternité fédérale-->
+		<document application="5006PAP" ged="1961">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Attestation fiscales maternité APG-->
+		<document application="5050PAP" ged="3000">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Attestation fiscales maternité APG Pandémie -->
+		<document application="5051PAP" ged="3001">
+			<services>
+				<service name="AMAT_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte de cotisations-->
+		<document application="0099CFA" ged="2160">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Acompte périodique de cotisations-->
+		<document application="0293CFA" ged="2160">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Sommation-->
+		<document application="0022GCO" ged="2144">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Réquisition de poursuite-->
+		<document application="0023GCO" ged="2145">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Réquisition de continuer la poursuite (RCP) par voie de saisie-->
+		<document application="0031GCO" ged="2147">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Réquisition de vente-->
+		<document application="0036GCO" ged="2150">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Lettre de bienvenue avec questionnaires LPP et LAA-->
+		<document application="0001CAF" ged="2029">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Attestation d'affiliation-->
+		<document application="0002CAF" ged="2036">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre de confirmation de modification d'acomptes-->
+		<document application="0003CAF" ged="2041">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Avis de mutation à Caisse Cantonale-->
+		<document application="0007CAF" ged="2030">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LAA Questionnaire-->
+		<document application="0104CAF" ged="2083">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LAA Rappel-->
+		<document application="0105CAF" ged="2085">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LAA Sommation-->
+		<document application="0106CAF" ged="2086">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LAA Annonce-->
+		<document application="0107CAF" ged="2089">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LPP Questionnaire-->
+		<document application="0108CAF" ged="2083">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LPP Rappel-->
+		<document application="0109CAF" ged="2085">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LPP Sommation-->
+		<document application="0110CAF" ged="2086">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--LPP Annonce-->
+		<document application="0111CAF" ged="2089">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Statistiques OFAS-->
+		<document application="0118CAF" ged="1636">
+			<services>
+				<service name="COT_HS_ASS_AFF"/>
+			</services>
+		</document>
+		<!--Prévision pour acomptes-->
+		<document application="0155CAF" ged="2065">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Affiliation indépendante - demande de revenus et bilan année précédente-->
+		<document application="0174CAF" ged="2041">
+			<services>
+				<service name="COT_AFF_ASS"/>
+			</services>
+		</document>
+		<!--Radiation indépendant / demande revenus et bilans-->
+		<document application="0176CAF" ged="2041">
+			<services>
+				<service name="COT_AFF_ASS"/>
+			</services>
+		</document>
+		<!--Lettre de redistribution de la taxe CO2-->
+		<document application="0237CAF" ged="2042">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Affiliation indépendante - demande de revenus et bilan année précédente, 1er rappel-->
+		<document application="0257CAF" ged="2041">
+			<services>
+				<service name="COT_AFF_ASS"/>
+			</services>
+		</document>
+		<!--Affiliation indépendante - demande de revenus et bilan année précédente, 2eme rappel-->
+		<document application="0258CAF" ged="2041">
+			<services>
+				<service name="COT_AFF_ASS"/>
+			</services>
+		</document>
+		<!--Attestation des cotisations facturées-->
+		<document application="0271CAF" ged="2038">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Attestation de paiement des charges sociales-->
+		<document application="0275CAF" ged="2037">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre d'inscription e-business-->
+		<document application="0285CAF" ged="2081">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Questionnaire LPP-->
+		<document application="0327CAF" ged="2041">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Declaration de salaire-->
+		<document application="0324CAF" ged="2041">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre d'accompagnement d'extrait de CI-->
+		<document application="0008CCI" ged="2056">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Avis de décès-->
+		<document application="0158CCI" ged="1947">
+			<services>
+				<service name="RENTES"/>
+			</services>
+		</document>
+		<!--Décision d'octroi BTA-->
+		<document application="0204CCI" ged="2046">
+			<services>
+				<service name="COT_ASS"/>
+			</services>
+		</document>
+		<!--Lettre de répétition de droit BTA-->
+		<document application="0205CCI" ged="2046">
+			<services>
+				<service name="COT_ASS"/>
+			</services>
+		</document>
+		<!--Rappel des lettres de répétition de droit BTA-->
+		<document application="0206CCI" ged="2048">
+			<services>
+				<service name="COT_ASS"/>
+			</services>
+		</document>
+		<!--Lettre d'accompagnement du splitting-->
+		<document application="0278CCI" ged="2107">
+			<services>
+				<service name="COT_ASS"/>
+			</services>
+		</document>
+		<!--Lettre d'accompagnement des extraits de CI-->
+		<document application="0294CCI" ged="2056">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Sursis au paiement - Décision-->
+		<document application="0041GCA" ged="2182">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Sursis au paiement - Echéancier-->
+		<document application="0042GCA" ged="2182">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Sursis au paiement -Rappel pour plan de paiement non respecté-->
+		<document application="0131GCA" ged="2183">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel-->
+		<document application="0020GCO" ged="2143">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel à l'OP du CDP-->
+		<document application="0024GCO" ged="2131">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Avis de radiation d'une poursuite-->
+		<document application="0026GCO" ged="2125">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Demande de main levée-->
+		<document application="0027GCO" ged="2121">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Situation de compte (annexé à la demande de main levée)-->
+		<document application="0028GCO" ged="2121">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Demande de retrait d'opposition + Retrait d'opposition-->
+		<document application="0029GCO" ged="2120">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel à OP du PV de saisie-->
+		<document application="0032GCO" ged="2132">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Retrait de la RCP-->
+		<document application="0033GCO" ged="2128">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Imputer versement-->
+		<document application="0035GCO" ged="2124">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel PV de saisie-->
+		<document application="0037GCO" ged="2132">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel à l'OP de réquisition de vente-->
+		<document application="0038GCO" ged="2133">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Réclamer frais et intérêts - formule 44-->
+		<document application="0040GCO" ged="2122">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel de réclamation de frais et intérêts-->
+		<document application="0151GCA" ged="2122">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Rappel sursis à la vente non respecté-->
+		<document application="0189GCA" ged="2133">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Retrait de la RV (Débiteur) (OV)-->
+		<document application="0190GCA" ged="2129">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Présentation du fichier pour l'office de poursuite-->
+		<document application="0224GCO" ged="1730">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Décision du contrôle d'employeur-->
+		<document application="0186CCE" ged="2052">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre libre pour contrôle d'employeur-->
+		<document application="0187CCE" ged="2053">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre prochain contrôle d'employeur-->
+		<document application="0192CCE" ged="2053">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Avis délégation contrôle employeur-->
+		<document application="0255CCE" ged="2053">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre rapport du contrôle-->
+		<document application="0282CCE" ged="2053">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Déclarations de salaires -->
+		<document application="0088CDS" ged="2070">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Déclarations de salaires -->
+		<document application="0089CDS" ged="2070">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Rappel de la déclaration de salaires-->
+		<document application="0091CDS" ged="2072">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Sommation de la déclaration de salaires-->
+		<document application="0092CDS" ged="2073">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Plainte pour déclaration de salaires-->
+		<document application="0125CDS" ged="2079">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Déclaration de salaire remplie (contrôle d'employeurs) 2 + 4 col.-->
+		<document application="0178CDS" ged="2070">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Attestations fiscales LTN-->
+		<document application="0198CDS" ged="2090">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Sommation de la déclaration de salaires LTN non retournée-->
+		<document application="0200CDS" ged="2073">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Déclaration de salaires LTN-->
+		<document application="0201CDS" ged="2070">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Rappel de la déclaration de salaires LTN non retournée-->
+		<document application="0203CDS" ged="2072">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre de réclamation des NSS invalides-->
+		<document application="0264CDS" ged="2077">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Lettre de rappel des NSS invalides-->
+		<document application="0265CDS" ged="2077">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Amende pour déclaration de salaires-->
+		<document application="0266CDS" ged="2073">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+		<!--Décision d'intérêts moratoires pour cotisations rétroactives-->
+		<document application="0094CFA" ged="2034">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Décision d'intérêts moratoires pour paiements tardifs-->
+		<document application="0095CFA" ged="2172">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Décision d'intérêts rémunératoires-->
+		<document application="0096CFA" ged="2034">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Bulletin de solde-->
+		<document application="0100CFA" ged="2161">
+			<services>
+				<service name="COMPTA_AFF"/>
+			</services>
+		</document>
+		<!--Décision d'intérêts moratoires pour remise tardive-->
+		<document application="0128CFA" ged="2034">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Décision d'intérêts moratoires si plus de 25 %-->
+		<document application="0129CFA" ged="2034">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Facture périodique paritaire-->
+		<document application="0288CFA" ged="2160">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Facture périodique personnelle-->
+		<document application="0289CFA" ged="2160">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Facture décompte personnelle-->
+		<document application="0290CFA" ged="2160">
+			<services>
+				<service name="COT_AFF_NUM_DCPTE"/>
+			</services>
+		</document>
+		<!--Attestation fiscale-->
+		<document application="5001PAP" ged="1919">
+			<services>
+				<service name="APG_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Certificat de radiation -->
+		<document application="3003WAF" ged="1858">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Liste des récapitulations aux employeurs (format pdf) -->
+		<document application="RecapEntreprise01" ged="1964">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Liste des récapitulations aux employeurs (format pdf) -->
+		<document application="3004WAF" ged="1964">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Avis d'échéance - Liste à l'affilié -->
+		<document application="3006WAF" ged="1925">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Avis d'échéance - Lettre pour l'allocataire (envoyée à l'affilié)-->
+		<document application="3007WAF" ged="1925">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Avis d'échéance - Liste à l'affilié-->
+		<document application="3008WAF" ged="1925">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Avis d'échéance - Lettre à l'allocataire (envoyée à l'allocataire)-->
+		<document application="3009WAF" ged="1925">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décision à paiement direct, indirect ou un tiers bénéficiaire-->
+		<document application="DecisionAF" ged="1858">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décision à paiement direct, indirect ou un tiers bénéficiaire-->
+		<document application="3010WAF" ged="1858">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte ADI-->
+		<document application="Adi" ged="1873">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte ADI récapitulatif-->
+		<document application="3012WAF" ged="1873">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte ADI détaillé-->
+		<document application="3013WAF" ged="1873">
+			<services>
+				<service name="AF_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Lettre d'information pour conjoint non couvert-->
+		<document application="0079CCP" ged="2067">
+			<services>
+				<service name="COT_PERS_AFF"/>
+			</services>
+		</document>
+		<!--Lettre pour non-actif ayant assez cotisé comme salarié-->
+		<document application="0080CCP" ged="2067">
+			<services>
+				<service name="COT_PERS_AFF"/>
+			</services>
+		</document>
+		<!--Attestation fiscale IJ-->
+		<document application="5011PIJ" ged="1919">
+			<services>
+				<service name="IJAI_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décompte d'IJAI à l'assuré-->
+		<document application="5012PIJ" ged="1962">
+			<services>
+				<service name="IJAI_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Formulaire de bases d'indémnisations-->
+		<document application="5013PIJ" ged="1795">
+			<services>
+				<service name="IJAI_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Décision IJAI-->
+		<document application="5019PIJ" ged="1858">
+			<services>
+				<service name="IJAI_SOUS_SERVICE"/>
+			</services>
+		</document>
+		<!--Fichier PUCS-->
+		<document application="0315CEB" ged="2070">
+			<services>
+				<service name="COT_AFF"/>
+			</services>
+		</document>
+
+	</documents>
+</adapter>
