@@ -442,6 +442,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             // liste dac
             DecisionApresCalculOO decisionApresCalculOO = PegasusServiceLocator.getDecisionApresCalculService()
                     .readForOO(decision);
+            //Chargement pour faire les copies : Selon le paramètrage automatique OU d'ajout manuel depuis l'écran des décisions
             decisionApresCalculOO = loadCreancierRetenuesAndCalcul(decisionApresCalculOO);
             ArrayList<CopiesDecision> listeCopies = CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul());
             listeCopies.addAll(decisionApresCalculOO.getDecisionHeader().getListeCopies());
