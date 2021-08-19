@@ -12,6 +12,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
 import ch.globaz.pegasus.businessimpl.utils.decision.CopiesDecisionHandler;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
+import ch.globaz.perseus.business.models.decision.CopieDecision;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
@@ -21,10 +22,9 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 import ch.globaz.babel.business.exception.CatalogueTexteException;
 import ch.globaz.babel.business.services.BabelServiceLocator;
 import ch.globaz.common.business.models.CTDocumentImpl;
@@ -436,7 +436,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
      * @throws Exception
      */
     private void loadDBEntity() throws CatalogueTexteException, Exception {
-
+        Map<String,CopiesDecision> copieDecisionMap = new LinkedHashMap<>();
         // pour chaque decision contenue dans la liste des id de decisions, on charge la dac, et le pcal
         for (String decision : handlerGlobal.getDecisionsId()) {
             // liste dac
@@ -445,6 +445,14 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             decisionApresCalculOO = loadCreancierRetenuesAndCalcul(decisionApresCalculOO);
             ArrayList<CopiesDecision> listeCopies = CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul());
             listeCopies.addAll(decisionApresCalculOO.getDecisionHeader().getListeCopies());
+            /**
+             * Éviter les copies en doubles.
+             */
+            for(CopiesDecision cps : listeCopies){
+                copieDecisionMap.put(cps.getSimpleCopiesDecision().getIdTiersCopie(),cps);
+            }
+            listeCopies.clear();
+            listeCopies.addAll(copieDecisionMap.values());
             decisionApresCalculOO.getDecisionHeader().setListeCopies(listeCopies);
             if(handlerGlobal.getFromAdaptation()){
                 decisionApresCalculOO.setDateAdaptation(handlerGlobal.getDateDoc());
