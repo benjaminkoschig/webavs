@@ -9,5 +9,8 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/rest")
 public class WSConfiguration extends Application {
 
+    public WSConfiguration() {
+        LOG.info("new instance of WSConfiguration");
+    }
 
 }

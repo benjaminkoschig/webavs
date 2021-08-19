@@ -2,6 +2,7 @@ package ch.globaz.common.acor;
 
 import acor.rentes.xsd.standard.error.OriginType;
 import acor.rentes.xsd.standard.error.StandardError;
+import com.google.common.base.Throwables;
 
 public final class Acor2020StandardErrorUtil {
 
@@ -33,7 +34,8 @@ public final class Acor2020StandardErrorUtil {
         error.setLevel(level);
         error.setType(1);
         if (e != null) {
-            error.setDebug(e.getStackTrace().toString());
+            error.setLabel(e.getMessage());
+            error.setDebug(Throwables.getStackTraceAsString(e));
         }
         return error;
     }

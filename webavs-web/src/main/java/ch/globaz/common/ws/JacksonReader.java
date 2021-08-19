@@ -1,6 +1,7 @@
 package ch.globaz.common.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -15,6 +16,7 @@ import java.lang.reflect.Type;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
+@Slf4j
 public class JacksonReader<T> implements MessageBodyReader<T> {
 
     private ObjectMapper mapper = JacksonJsonProvider.getInstance();
@@ -26,6 +28,7 @@ public class JacksonReader<T> implements MessageBodyReader<T> {
 
     @Override
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+        LOG.info("JacksonReader");
         return mapper.readValue(entityStream, type);
     }
 }

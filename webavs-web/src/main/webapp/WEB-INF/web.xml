@@ -302,22 +302,22 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
-	<servlet id="WSRestServlet">
-		<servlet-name>WSRest</servlet-name>
-		<!-- TOMCAT -->
+<!--	<servlet id="WSRestServlet">-->
+<!--		<servlet-name>WSRest</servlet-name>-->
+<!--		&lt;!&ndash; TOMCAT &ndash;&gt;-->
 <!--		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
-		<!-- IBM -->
-		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>ch.globaz.common.ws.WSConfiguration</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping id="WSRestServletMapping">
-		<servlet-name>WSRest</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>
+<!--		&lt;!&ndash; IBM &ndash;&gt;-->
+<!--&lt;!&ndash;		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>&ndash;&gt;-->
+<!--		<init-param>-->
+<!--			<param-name>javax.ws.rs.Application</param-name>-->
+<!--			<param-value>ch.globaz.common.ws.WSConfiguration</param-value>-->
+<!--		</init-param>-->
+<!--		<load-on-startup>1</load-on-startup>-->
+<!--	</servlet>-->
+<!--	<servlet-mapping id="WSRestServletMapping">-->
+<!--		<servlet-name>WSRest</servlet-name>-->
+<!--		<url-pattern>/rest/*</url-pattern>-->
+<!--	</servlet-mapping>-->
 
 	<servlet-mapping id="GlobazVulpeculaServletMapping">
 		<servlet-name>vulpecula</servlet-name>
