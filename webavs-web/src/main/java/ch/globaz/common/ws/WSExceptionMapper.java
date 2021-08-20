@@ -58,12 +58,13 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
 
         Optional<ExceptionHandler> exceptionHandler = resolveExeptionHandler(WSConfiguration.INSTANCE);
 
-        if (!exceptionHandler.isPresent()) {
+        if (exceptionHandler.isPresent()) {
             return exceptionHandler.get().generateResponse(e, responseBuilder, request);
         } else {
             RequestInfo requestInfo = new RequestInfo(request, uriInfo);
             ExceptionRequestInfo exceptionRequestInfo = new ExceptionRequestInfo(requestInfo, e);
-            return responseBuilder.entity(exceptionRequestInfo).build();
+            return responseBuilder.entity(exceptionRequestInfo)
+                    .build();
         }
     }
 
