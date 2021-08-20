@@ -371,8 +371,13 @@ $(function () {
 								if (cotisation.getTauxGenre().equals(globaz.naos.translation.CodeSystem.GEN_VALEUR_ASS_MONTANT)) {
 					%>
 								<TD nowrap>
+									<% if(globaz.naos.translation.CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(cotisation.getTypeCalcul())) {%>
+									<INPUT type="text" name="montantFixe<%=i%>" size="20" value="<%=cotisation.getMontantFixeString(viewBean.isFirstCalculation())%>"
+										   style="text-align : right;" readonly="true" tabindex="-1" class="Disabled">
+									<% } else {%>
 									<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
-										style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
+										   style="text-align : right;">
+									<% } %>
 								</TD>
 								<TD nowrap>
 									<INPUT type="text" name="dateDebutMontant<%=i%>" size="10" value="<%=cotisation.getDebutPeriode()%>"

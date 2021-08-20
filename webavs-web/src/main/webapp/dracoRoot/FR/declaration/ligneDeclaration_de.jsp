@@ -142,7 +142,7 @@ function updatePage() {
                 <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
                     <input name='montantDeclarationComp' <%=isReadonlyAutres%>  value="<%=viewBean.getMontantDeclaration()%>" class="<%=classAutres%>">
                 <% } else {%>
-                    <input name='montantDeclaration' <%=isReadonlyAutres%>  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="<%=classAutres%>">
+                    <input name='montantDeclaration' <%=isReadonlyAutres%>  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else if (!"0.00".equals(viewBean.getDeclaration().getMasseSalTotal())) {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="<%=classAutres%>">
                 <%}%>
             </td>
           </tr>
