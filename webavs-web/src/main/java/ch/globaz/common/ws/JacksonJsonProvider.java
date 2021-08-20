@@ -2,21 +2,31 @@ package ch.globaz.common.ws;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 public class JacksonJsonProvider {
 
-    private static ObjectMapper MAPPER = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+    private static final ObjectMapper MAPPER;
 
     static {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        MAPPER.setDateFormat(df);
+        MAPPER = JsonMapper.builder()
+                           .addModule(new ParameterNamesModule())
+                           .addModule(new Jdk8Module())
+                           .addModule(new JavaTimeModule())
+                .build();
+
+        MAPPER.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     }
 
-    private JacksonJsonProvider() {
-    }
+    private JacksonJsonProvider() {}
 
     public static ObjectMapper getInstance() {
         return MAPPER;

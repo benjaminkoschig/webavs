@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
-public class JacksonWriter<T>  implements MessageBodyWriter<T> {
+public class JacksonWriter<T> implements MessageBodyWriter<T> {
 
     private ObjectMapper mapper = JacksonJsonProvider.getInstance();
 
@@ -33,7 +33,7 @@ public class JacksonWriter<T>  implements MessageBodyWriter<T> {
 
     @Override
     public void writeTo(T object, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException, WebApplicationException {
-       LOG.info("JacksonWriter");
+        LOG.debug("JacksonWriter");
         mapper.writeValue(outputStream, object);
     }
 }

@@ -28,7 +28,7 @@ public class JacksonReader<T> implements MessageBodyReader<T> {
 
     @Override
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        LOG.info("JacksonReader");
+        LOG.debug("JacksonReader");
         return mapper.readValue(entityStream, type);
     }
 }
