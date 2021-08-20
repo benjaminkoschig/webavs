@@ -33,13 +33,15 @@ public class WSConfiguration extends Application {
      * On récupère toutes les classes "WebService" en s'appuyant sur l'annotation "Path" et tout les provider.
      * On parcours uniquement les sous-packages de "globaz" et on filtre sur les packages ".ws".
      *
+     * Malheureusement on est obligé de faire cette recherche pour trouver les classes dédiées à jax-rs car la dédéction de ces class ne fonctionne
+     * pas avec webSphere :(.  Avec tomact clea fonctionne parfaitement et toutes les fonctions de cette class pour être supprimé.
+     *
      * @return le set de classes WS
      */
-    public Set<Class<?>> loadClasses() {
+    Set<Class<?>> loadClasses() {
         Set<Class<?>> allClasses = new HashSet<>();
 
         try (ScanResult result = new ClassGraph().enableAnnotationInfo()
-                                                 .addClassLoader(WSConfiguration.class.getClassLoader())
                                                  .acceptPackages("globaz", "ch.globaz")
                                                  .scan()) {
 

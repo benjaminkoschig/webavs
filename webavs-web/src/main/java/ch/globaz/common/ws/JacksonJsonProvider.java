@@ -11,7 +11,7 @@ public class JacksonJsonProvider {
     private static ObjectMapper MAPPER = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
     static {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         MAPPER.setDateFormat(df);
     }
 
