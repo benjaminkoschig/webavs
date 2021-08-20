@@ -29,6 +29,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import globaz.jade.common.Jade;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -226,6 +227,9 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
             SimplePlanDeCalcul planDeCalcul = planCalculHandler.getPlanDeCalcul();
             String byteArrayToString = null;
             byteArrayToString = new String(planDeCalcul.getResultatCalcul());
+            if(JadeStringUtil.isBlankOrZero(byteArrayToString)){
+                return false;
+            }
             TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(
                     byteArrayToString);
             return UtilFortune.isRefusFortunePopUp(tupleRoot);
