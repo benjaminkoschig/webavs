@@ -8,6 +8,7 @@ import ch.globaz.orion.db.EBPucsFileManager;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.queryexec.bridge.jade.SCM;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
+import com.google.common.annotations.VisibleForTesting;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
@@ -39,6 +41,13 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     private Map<String, List<String>> mapNumAffiliationParticularite;
     private Map<String, AFAffiliation> mapAffiliation;
     private EBPucsFileManager manager = new EBPucsFileManager();
+
+    public EBPucsFileListViewBean(){}
+
+    @VisibleForTesting
+    EBPucsFileListViewBean(EBPucsFileManager manager){
+        this.manager = manager;
+    }
 
     @Override
     public BManager getManager() {
@@ -264,8 +273,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         return manager.getUsers();
     }
 
-    public Map getUsersJson() {
-        return manager.getUsersJson();
+    public String getUsersJson() {
+        return manager.getUsers().stream().collect(Collectors.joining("\",\"", "[\"","\"]"));
     }
 
     public String getForTypeDeclaration(){

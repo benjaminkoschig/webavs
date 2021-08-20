@@ -13,14 +13,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.ws.rs.Path;
 import java.net.UnknownHostException;
 import java.security.Key;
 import java.util.*;
 
-@Service
 @Slf4j
 public class REAcor2020TokenService implements Acor2020TokenService<REAcor2020Token> {
 

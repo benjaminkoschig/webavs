@@ -1,17 +1,14 @@
 package ch.globaz.orion.db;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import globaz.globall.db.BEntity;
-import globaz.jade.client.util.JadeStringUtil;
-
-import java.util.*;
-
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import globaz.globall.db.BEntity;
+import globaz.jade.client.util.JadeStringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.ModelAndView;
+
+import java.util.*;
 
 
 public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
@@ -28,7 +25,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     private String forFilename;
     private String forTypeDeclaration;
     private String forUser;
-    private List <String> users = new ArrayList();
+    private List <String> users = new ArrayList<>();
 
     private String forDateDebut;
     private String forDateFin;
@@ -148,25 +145,8 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         this.forDateFin = forDateFin;
     }
 
-    public List getUsers() {
+    public List<String> getUsers() {
         return users;
-    }
-
-    public Map  getUsersJson() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        ModelAndView usersJson = new ModelAndView("pucsFile_rc");
-
-        String json = "";
-        try {
-            json = mapper.writeValueAsString(users);
-        } catch (Exception e) {
-            LOG.info("Erreur lors du mappage des Users en JSON.");
-        }
-
-        usersJson.addObject("usersJson",json);
-
-        return usersJson.getModel();
     }
 
     public void setUsers(String user) {

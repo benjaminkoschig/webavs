@@ -12,7 +12,6 @@
 <%@page import="ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme"%>
 <%@page import="ch.globaz.jade.JadeBusinessServiceLocator"%>
 <%@ page import="globaz.orion.vb.pucs.EBPucsFileListViewBean" %>
-<%@ page import="org.springframework.web.servlet.ModelAndView" %>
 <%@ page import="java.util.Objects" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -38,7 +37,6 @@
 	}
 
 	EBPucsFileListViewBean viewBean = (EBPucsFileListViewBean) session.getAttribute("viewBean");
-	Map usersJson = viewBean.getUsersJson();
 
 	// Récupération d'une viewBean précédente
 	Object pucsBean = session.getAttribute ("listViewBean");
@@ -57,7 +55,7 @@ messageNoSwissDecSelected = '<%=BSessionUtil.getSessionFromThreadContext().getLa
 usrAction = "orion.pucs.pucsFile.lister";
 $(document).ready(function(){
 
-	var listUsers = <%=usersJson.get("usersJson")%>;
+	var listUsers = <%=viewBean.getUsersJson()%>;
 	var aUser = "<%=Objects.isNull(viewBeanFind)? "":viewBeanFind.getForUser()%>";
 
 	$.each(listUsers, function( index, value ) {
