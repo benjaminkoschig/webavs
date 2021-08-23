@@ -1,6 +1,7 @@
 package ch.globaz.common.ws;
 
 import ch.globaz.common.util.Dates;
+import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Data;
 import org.junit.Test;

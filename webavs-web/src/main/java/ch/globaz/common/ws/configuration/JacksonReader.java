@@ -1,4 +1,4 @@
-package ch.globaz.common.ws;
+package ch.globaz.common.ws.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

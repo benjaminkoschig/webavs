@@ -1,10 +1,10 @@
-package ch.globaz.common.ws;
+package ch.globaz.common.ws.configuration;
 
+import ch.globaz.common.ws.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,8 +27,6 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
     private HttpServletResponse response;
     @Context
     private UriInfo uriInfo;
-    @Context
-    private Application application;
 
     @Override
     public Response toResponse(Exception e) {

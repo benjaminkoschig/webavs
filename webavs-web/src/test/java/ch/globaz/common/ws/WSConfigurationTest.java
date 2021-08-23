@@ -1,5 +1,6 @@
 package ch.globaz.common.ws;
 
+import ch.globaz.common.ws.configuration.WSConfiguration;
 import org.junit.Test;
 
 import java.util.Map;

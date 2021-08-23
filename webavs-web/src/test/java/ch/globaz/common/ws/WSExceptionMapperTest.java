@@ -3,6 +3,7 @@ package ch.globaz.common.ws;
 
 import acor.rentes.xsd.standard.error.StandardError;
 import ch.globaz.common.acor.Acor2020StandardErrorUtil;
+import ch.globaz.common.ws.configuration.WSExceptionMapper;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.prestation.acor.PRACORException;
 import org.junit.Test;

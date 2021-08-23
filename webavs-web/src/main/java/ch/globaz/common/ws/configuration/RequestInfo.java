@@ -1,4 +1,4 @@
-package ch.globaz.common.ws;
+package ch.globaz.common.ws.configuration;
 
 import lombok.Data;
 
@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * Permet d'avoir des informations sur une request qui sont facilement sérializable(DTO)
+ * Permet d'avoir des informations sur une request qui sont facilement sérializable(DTO).
  */
 @Data
-public class RequestInfo {
+class RequestInfo {
     private final String requestURI;
     private final String contextPath;
     private final String pathInfo;

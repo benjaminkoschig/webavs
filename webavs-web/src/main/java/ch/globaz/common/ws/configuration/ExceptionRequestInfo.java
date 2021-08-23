@@ -1,4 +1,4 @@
-package ch.globaz.common.ws;
+package ch.globaz.common.ws.configuration;
 
 import com.google.common.base.Throwables;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.Data;
  * Cette à pour but d'être un dto et de remonter des informations sur une exception.
  */
 @Data
-public class ExceptionRequestInfo {
+class ExceptionRequestInfo {
 
     private final RequestInfo requestInfo;
     private final String stackTrace;

@@ -1,4 +1,4 @@
-package ch.globaz.common.ws;
+package ch.globaz.common.ws.configuration;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
