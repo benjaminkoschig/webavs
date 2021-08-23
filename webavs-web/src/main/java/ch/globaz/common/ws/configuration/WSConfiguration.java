@@ -153,16 +153,19 @@ public class WSConfiguration extends Application {
     }
 
     private static void gererException(final HttpServletRequest request, final HttpServletResponse response, final Exception e) {
+
+        WSExceptionMapper wsExceptionMapper = new WSExceptionMapper();
+        wsExceptionMapper.setRequest(request);
+        wsExceptionMapper.setResponse(response);
+
+        Response exceptionResponse = wsExceptionMapper.toResponse(e);
+        response.setStatus(exceptionResponse.getStatus());
+        exceptionResponse.getMetadata()
+                         .forEach((key, value) ->
+                             response.addHeader(key, value.stream().map(String::valueOf).collect(Collectors.joining(" ; ")))
+                         );
+
         Exceptions.checkedToUnChecked(() -> {
-            WSExceptionMapper wsExceptionMapper = new WSExceptionMapper();
-            wsExceptionMapper.setRequest(request);
-            wsExceptionMapper.setResponse(response);
-
-            Response exceptionResponse = wsExceptionMapper.toResponse(e);
-            response.setStatus(exceptionResponse.getStatus());
-            exceptionResponse.getStringHeaders()
-                             .forEach((key, value) -> response.addHeader(key, String.join("; ", value)));
-
             PrintWriter out = response.getWriter();
             out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
             out.flush();
