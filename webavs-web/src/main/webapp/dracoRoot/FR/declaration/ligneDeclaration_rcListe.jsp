@@ -50,14 +50,14 @@ detailLink = "draco?userAction=draco.declaration.ligneDeclaration.afficher&selec
             <TD class="mtd" onClick="<%=actionDetail%>" width="100" align="left"><%=entity.getAnneCotisation()%></TD>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%if(globaz.jade.client.util.JadeStringUtil.isDecimalEmpty(entity.getMontantDeclaration())){%><%=entity.getMontantDeclaration()%><%}else{%><%=JANumberFormatter.format(JANumberFormatter.round(JANumberFormatter.deQuote(entity.getMontantDeclaration()),0.05,2,JANumberFormatter.NEAR))%><%}%></TD>
             <%if (!JAUtil.isStringEmpty(entity.getTauxAssuranceDeclaration())){%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getTauxAssuranceDeclaration()%></TD>
+                <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getTauxAssuranceDeclaration()%></TD>
             <%} else {%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.fmt(entity.getTauxAssurance(),true,true,true,5)%></TD>            
+                <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.fmt(entity.getTauxAssurance(),true,true,true,5)%></TD>
             <%}%>
             <%if (!JAUtil.isStringEmpty(entity.getFractionAssuranceDeclaration())){%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssuranceDeclaration()%></TD>
+                <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssuranceDeclaration()%></TD>
             <%} else {%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssurance()%></TD>            
+                <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssurance()%></TD>
             <%}%>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.formatNoRound(entity.getCotisationDue())%>&nbsp;</TD> 
             <% if (!JAUtil.isStringEmpty(entity.getCotisationDue())){
@@ -70,8 +70,8 @@ detailLink = "draco?userAction=draco.declaration.ligneDeclaration.afficher&selec
                         <%if (!JAUtil.isStringEmpty(entity.getCumulCotisationDeclaration())){
                             acompte = acompte.add(new BigDecimal(JANumberFormatter.deQuote(entity.getCumulCotisationDeclaration())));
                         }%>
-                <%} else {%>
-                    <TD class="mtd" onClick="<%=actionDetail%>" align="right">
+                        <%} else {%>
+                            <TD class="mtd" onClick="<%=actionDetail%>" align="right">
                         <%if (entity.getCompteur() != null) {%>
                             <%=JANumberFormatter.formatNoRound(entity.getCompteur().getCumulCotisation())%>
                         <%}%>&nbsp;

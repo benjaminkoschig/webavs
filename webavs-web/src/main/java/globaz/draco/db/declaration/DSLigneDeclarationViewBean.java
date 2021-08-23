@@ -258,7 +258,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
     /**
      * Calcul le montant de la cotisation due en fonction de la cotisation donnée
      * 
-     * @param taux
+     * @param tauxLigne
      *            le taux donné par la ligne ou 0 pour taux par défaut (celui de la cotisation)
      * @param dateDebut
      *            la date de début
@@ -453,8 +453,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
 
     /**
      * Permet de récuperer un compteur Date de création : (22.05.2003 10:12:15)
-     * 
-     * @param app
+     *
      * 
      * @return globaz.osiris.db.comptes.CACompteur
      */
@@ -648,7 +647,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
             dateFin += getDeclaration().getAnnee();
         }
         assurance = getAssurance();
-        if(assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){
+        if(CodeSystem.TYPE_ASS_CRP_BASIC.equals(assurance.getTypeAssurance())){
             return cotisationDue;
         }
         if (!JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getMontantDeclaration()))
@@ -1241,7 +1240,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
     /**
      * Sets the isEnFacturation.
      * 
-     * @param isEnFacturation
+     * @param EnFacturation
      *            The isEnFacturation to set
      */
     public void setEnFacturation(boolean EnFacturation) {
@@ -1275,7 +1274,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
     /**
      * Insérez la description de la méthode ici. Date de création : (22.10.2002 13:52:58)
      * 
-     * @param newD
+     * @param newIdLigneDeclaration
      *            String
      */
     public void setIdLigneDeclaration(String newIdLigneDeclaration) {
@@ -1332,7 +1331,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
 
     public boolean isAssuranceTypeCrpBasic(){
         AFAssurance assuranceCourante = getAssurance();
-        if(assuranceCourante != null && assuranceCourante.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CRP_BASIC)){
+        if(assuranceCourante != null && CodeSystem.TYPE_ASS_CRP_BASIC.equals(assuranceCourante.getTypeAssurance())){
             return true;
         }
         return false;

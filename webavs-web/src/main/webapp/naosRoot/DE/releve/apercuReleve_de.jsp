@@ -362,42 +362,52 @@ $(function () {
 							<!--INPUT type="text" name="noCaisse<%=i%>" size="3" value="123" readonly="readonly" tabindex="-1" class="Disabled"-->
 
 						</TD>
-					<%
-						if (viewBean.getEtat().equals(globaz.naos.translation.CodeSystem.ETATS_RELEVE_SAISIE)) {
-							if (globaz.naos.translation.CodeSystem.GENRE_ASS_PARITAIRE.equals(cotisation.getGenreAssurance()) &&
-								!globaz.naos.translation.CodeSystem.TYPE_CALCUL_COTISATION.equals(cotisation.getTypeCalcul())) {
-								if (cotisation.getTauxGenre().equals(globaz.naos.translation.CodeSystem.GEN_VALEUR_ASS_MONTANT)) {
-					%>
-								<TD nowrap>
-									<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
-										style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
-								</TD>
-								<TD nowrap>
-									<INPUT type="text" name="dateDebutMontant<%=i%>" size="10" value="<%=cotisation.getDebutPeriode()%>"
-										readonly="readonly" tabindex="-1" class="Disabled">
-									<INPUT type="text" name="dateFinMontantReadOnly" size="10" value="<%=cotisation.getFinPeriode()%>"
-										readonly="readonly" tabindex="-1" class="Disabled">
-								</TD>
-					<% 			} else { %>
-								<TD nowrap>
-									<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
-										style="text-align : right;">
-								</TD>
-								<TD nowrap>
-									<INPUT type="text" name="taux<%=i%>" size="8" value="<%=cotisation.getTauxString()%>"
-										style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">%
-								</TD>
-					<%			}
-							} else { %>
-							<TD nowrap>
+						<%
+							if (viewBean.getEtat().equals(globaz.naos.translation.CodeSystem.ETATS_RELEVE_SAISIE)) {
+								if (globaz.naos.translation.CodeSystem.GENRE_ASS_PARITAIRE.equals(cotisation.getGenreAssurance()) &&
+										!globaz.naos.translation.CodeSystem.TYPE_CALCUL_COTISATION.equals(cotisation.getTypeCalcul())) {
+									if (cotisation.getTauxGenre().equals(globaz.naos.translation.CodeSystem.GEN_VALEUR_ASS_MONTANT)) {
+						%>
+						<TD nowrap>
+							<% if(globaz.naos.translation.CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(cotisation.getTypeCalcul())) {%>
+							<INPUT type="text" name="montantFixe<%=i%>" size="20" value="<%=cotisation.getMontantFixeString(viewBean.isFirstCalculation())%>"
+								   style="text-align : right;" readonly="true" tabindex="-1" class="Disabled">
+							<% } else {%>
+							<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
+								   style="text-align : right;" readonly="true" class="Disabled">
+							<% } %>
+						</TD>
+						<TD nowrap>
+							<INPUT type="text" name="dateDebutMontant<%=i%>" size="10" value="<%=cotisation.getDebutPeriode()%>"
+								   readonly="readonly" tabindex="-1" class="Disabled">
+							<INPUT type="text" name="dateFinMontantReadOnly" size="10" value="<%=cotisation.getFinPeriode()%>"
+								   readonly="readonly" tabindex="-1" class="Disabled">
+						</TD>
+						<% 			} else { %>
+						<TD nowrap>
+							<% if(globaz.naos.translation.CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(cotisation.getTypeCalcul())) {%>
+							<INPUT type="text" name="montantFixe<%=i%>" size="20" value="<%=cotisation.getMontantFixeString(viewBean.isFirstCalculation())%>"
+								   style="text-align : right;" readonly="true" tabindex="-1" class="Disabled">
+							<% } else {%>
+							<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
+								   style="text-align : right;">
+							<% } %>
+						</TD>
+						<TD nowrap>
+							<INPUT type="text" name="taux<%=i%>" size="8" value="<%=cotisation.getTauxString()%>"
+								   style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">%
+						</TD>
+						<%			}
+						} else { %>
+						<TD nowrap>
 							<INPUT type="text" name="masse<%=i%>Dummy" size="18" value=""
-								style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
-							</TD>
-							<TD nowrap>
-								<INPUT type="text" name="taux<%=i%>Dummy" size="8" value=""
-									style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
-							</TD>
-					<% 		} %>
+								   style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
+						</TD>
+						<TD nowrap>
+							<INPUT type="text" name="taux<%=i%>Dummy" size="8" value=""
+								   style="text-align : right;" readonly="readonly" tabindex="-1" class="Disabled">
+						</TD>
+						<% 		} %>
 						<TD nowrap>
 							<INPUT type="text" name="montantCalculer<%=i%>" size="20" value="<%=cotisation.getMontantCalculerString()%>" style="text-align : right;">
 						</TD>

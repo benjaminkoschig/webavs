@@ -273,7 +273,8 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                             } else if (cotisation.getAssurance().getTypeAssurance()
                                     .equals(CodeSystem.TYPE_ASS_COTISATION_AC2)) {
                                 ligneDec.setMontantDeclaration(getMasseAC2Total());
-                            } else {
+                            } else if (!cotisation.getAssurance().getTypeAssurance()
+                                    .equals(CodeSystem.TYPE_ASS_CRP_BASIC)){
                                 ligneDec.setMontantDeclaration(getMasseSalTotal());
                             }
                             if (cotisation.getAssurance().getAssuranceReference() != null) {

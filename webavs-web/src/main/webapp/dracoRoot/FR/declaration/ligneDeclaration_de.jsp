@@ -15,7 +15,6 @@
 
 	DSLigneDeclarationViewBean viewBean = (DSLigneDeclarationViewBean)session.getAttribute ("viewBean");
 
-	boolean updateCalled = false;
 	String isReadonlyCotisationDue = "readonly";
     String isReadonlyAutres = "";
     String classCotisationDue = "montantDisabled";
@@ -37,9 +36,7 @@
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.tauxAssurance.AFTauxAssurance"%>
 <%@ page import="ch.globaz.eavs.utils.StringUtils" %>
-<SCRIPT language="JavaScript">
-    console.log("<%=request.getParameter("_method")%>");
-</SCRIPT> <%-- /tpl:put --%>
+<%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
@@ -76,7 +73,6 @@ function upd() {
 //	 On met à jour les infos du compte
 	document.forms[0].target = "fr_main";
 	document.forms[0].elements('selectedId').value = document.forms[0].elements('idDeclaration').value;
-    <%updateCalled = true;%>;
 	updatePage();
 }
 function validate() {
@@ -139,7 +135,7 @@ function updatePage() {
           <tr> 
             <td nowrap>Masse effective</td>
             <td>
-                <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+                <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE) || CodeSystem.TYPE_ASS_CRP_BASIC.equals(viewBean.getAssurance().getTypeAssurance())) {%>
                     <input name='montantDeclarationComp' <%=isReadonlyAutres%>  value="<%=viewBean.getMontantDeclaration()%>" class="<%=classAutres%>">
                 <% } else {%>
                     <input name='montantDeclaration' <%=isReadonlyAutres%>  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else if (!"0.00".equals(viewBean.getDeclaration().getMasseSalTotal())) {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="<%=classAutres%>">

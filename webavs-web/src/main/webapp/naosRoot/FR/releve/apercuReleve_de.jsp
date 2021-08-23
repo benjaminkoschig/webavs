@@ -376,7 +376,7 @@ $(function () {
 										   style="text-align : right;" readonly="true" tabindex="-1" class="Disabled">
 									<% } else {%>
 									<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
-										   style="text-align : right;">
+										   style="text-align : right;" readonly="true" class="Disabled">
 									<% } %>
 								</TD>
 								<TD nowrap>
