@@ -18,10 +18,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -136,13 +139,33 @@ public class WSConfiguration extends Application {
         return filterMappers;
     }
 
-    static void executeOthersFilters(final ServletRequest request, final ServletResponse response, final FilterChain chain) {
+    static void executeOthersFilters(final ServletRequest request, final ServletResponse servletResponse, final FilterChain chain) {
         INSTANCE.getFilterMappers()
-                .forEach(filter -> Exceptions.checkedToUnChecked(() -> {
-                    if (!response.isCommitted() && filter.isFilterable((HttpServletRequest) request)) {
-                        filter.doFilter(request, response, chain);
+                .forEach(filter -> {
+                    if (!servletResponse.isCommitted() && filter.isFilterable((HttpServletRequest) request)) {
+                        try {
+                            filter.doFilter(request, servletResponse, chain);
+                        } catch (Exception e) {
+                            gererException((HttpServletRequest) request, (HttpServletResponse) servletResponse, e);
+                        }
                     }
-                }));
+                });
     }
 
+    private static void gererException(final HttpServletRequest request, final HttpServletResponse response, final Exception e) {
+        Exceptions.checkedToUnChecked(() -> {
+            WSExceptionMapper wsExceptionMapper = new WSExceptionMapper();
+            wsExceptionMapper.setRequest(request);
+            wsExceptionMapper.setResponse(response);
+
+            Response exceptionResponse = wsExceptionMapper.toResponse(e);
+            response.setStatus(exceptionResponse.getStatus());
+            exceptionResponse.getStringHeaders()
+                             .forEach((key, value) -> response.addHeader(key, String.join("; ", value)));
+
+            PrintWriter out = response.getWriter();
+            out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
+            out.flush();
+        });
+    }
 }

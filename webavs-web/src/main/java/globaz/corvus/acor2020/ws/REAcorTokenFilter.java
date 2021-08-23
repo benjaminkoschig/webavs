@@ -16,15 +16,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Objects;
 
-@Provider
-@PreMatching
+//@Provider
+//@PreMatching
 @Slf4j
 public class REAcorTokenFilter implements FilterMapper {
 

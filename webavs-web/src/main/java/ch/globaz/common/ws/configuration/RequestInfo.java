@@ -3,7 +3,6 @@ package ch.globaz.common.ws.configuration;
 import lombok.Data;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * Permet d'avoir des informations sur une request qui sont facilement sérializable(DTO).
@@ -21,14 +20,9 @@ class RequestInfo {
     private final String requestedSessionId;
     private final String serverName;
     private final String remoteAddr;
-
     private final String scheme;
-    private final String path;
-    private final String baseUri;
-    private final String absolutePath;
-    private final String pathSegments;
 
-    public RequestInfo(HttpServletRequest request, UriInfo uriInfo) {
+    public RequestInfo(HttpServletRequest request) {
         this.requestURI = request.getRequestURI();
         this.contextPath = request.getContextPath();
         this.pathInfo = request.getPathInfo();
@@ -41,10 +35,5 @@ class RequestInfo {
         this.serverName = request.getServerName();
         this.remoteAddr = request.getRemoteAddr();
         this.scheme = request.getScheme();
-
-        this.path = uriInfo.getPath();
-        this.baseUri = uriInfo.getBaseUri().toString();
-        this.absolutePath = uriInfo.getAbsolutePath().toString();
-        this.pathSegments = uriInfo.getPathSegments().toString();
     }
 }

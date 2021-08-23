@@ -1,6 +1,7 @@
 package ch.globaz.common.ws.configuration;
 
 import ch.globaz.common.ws.ExceptionHandler;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.util.Map;
@@ -22,11 +22,11 @@ import java.util.Optional;
 public class WSExceptionMapper implements ExceptionMapper<Exception> {
 
     @Context
+    @Setter
     private HttpServletRequest request;
     @Context
+    @Setter
     private HttpServletResponse response;
-    @Context
-    private UriInfo uriInfo;
 
     @Override
     public Response toResponse(Exception e) {
@@ -45,31 +45,24 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
         LOG.info("RemoteAddr : {}", request.getRemoteAddr());
         LOG.info("Scheme : {}", request.getScheme());
 
-        LOG.info("Path : {}", uriInfo.getPath());
-        LOG.info("RequestUri : {}", uriInfo.getRequestUri().toString());
-        LOG.info("BaseUri : {}", uriInfo.getBaseUri().toString());
-        LOG.info("AbsolutePath : {}", uriInfo.getAbsolutePath().toString());
-        LOG.info("PathSegments : {}", uriInfo.getPathSegments().toString());
-
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
         responseBuilder.type(MediaType.APPLICATION_JSON_TYPE);
 
-        Optional<ExceptionHandler> exceptionHandler = resolveExeptionHandler(WSConfiguration.INSTANCE);
+        Optional<ExceptionHandler> exceptionHandler = resolveExceptionHandler(WSConfiguration.INSTANCE);
 
         if (exceptionHandler.isPresent()) {
             return exceptionHandler.get().generateResponse(e, responseBuilder, request);
         } else {
-            RequestInfo requestInfo = new RequestInfo(request, uriInfo);
+            RequestInfo requestInfo = new RequestInfo(request);
             ExceptionRequestInfo exceptionRequestInfo = new ExceptionRequestInfo(requestInfo, e);
-            return responseBuilder.entity(exceptionRequestInfo)
-                    .build();
+            return responseBuilder.entity(exceptionRequestInfo).build();
         }
     }
 
-    private Optional<ExceptionHandler> resolveExeptionHandler(final WSConfiguration wsConfiguration) {
+    private Optional<ExceptionHandler> resolveExceptionHandler(final WSConfiguration wsConfiguration) {
         return wsConfiguration.getExceptionMapperClasses().entrySet()
                               .stream()
-                              .filter(o -> (uriInfo.getPath().startsWith(o.getKey())))
+                              .filter(o -> (request.getPathInfo().startsWith(o.getKey()) || request.getPathInfo().startsWith("/" + o.getKey())))
                               .map(Map.Entry::getValue)
                               .findFirst();
     }
