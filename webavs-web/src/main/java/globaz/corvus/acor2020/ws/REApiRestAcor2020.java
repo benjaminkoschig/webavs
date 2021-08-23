@@ -33,7 +33,7 @@ public class REApiRestAcor2020 {
      * @return le json inhost.
      */
     @GET
-    @Path(value = "/import/")
+    @Path(value = "/import")
     public Response importDossierRente(@HeaderParam("authorization") String token) {
         LOG.info("Importation des données.");
         return execute(token, service::createInHostJson);
@@ -48,7 +48,7 @@ public class REApiRestAcor2020 {
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */
     @POST
-    @Path("/export/")
+    @Path("/export")
     public Response exportDossierRente10(@HeaderParam("authorization") String token, FCalcul fCalcul) {
         LOG.info("Exportation du dossier.");
         return execute(token, fCalcul, service::updateRente10afterAcorCalcul);
@@ -63,19 +63,19 @@ public class REApiRestAcor2020 {
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */
     @POST
-    @Path("/export9/")
+    @Path("/export9")
     public Response exportDossierRente9(@HeaderParam("authorization") String token, Resultat9 resultat9) {
         LOG.info("Exportation du dossier de type 9.");
         return execute(token, resultat9, service::updateRente9afterAcorCalcul);
     }
 
     private <T> Response execute(String token, Function<REAcor2020Token, T> function) {
-        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().getToken(token);
+        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
         return Response.ok(function.apply(REAcor2020Token)).build();
     }
 
     private <T> Response execute(String token, T object, BiConsumer<T, REAcor2020Token> consumer) {
-        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().getToken(token);
+        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
         consumer.accept(object, REAcor2020Token);
         return Response.ok().build();
     }

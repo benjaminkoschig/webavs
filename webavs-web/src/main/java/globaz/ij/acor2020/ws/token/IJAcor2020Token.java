@@ -4,5 +4,5 @@ import ch.globaz.common.acor.Acor2020Token;
 import lombok.Data;
 
 @Data
-public class Acor2020TokenIJ implements Acor2020Token {
+public class IJAcor2020Token implements Acor2020Token {
 }

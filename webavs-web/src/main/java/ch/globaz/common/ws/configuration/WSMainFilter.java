@@ -17,7 +17,7 @@ import java.io.IOException;
 //@Provider
 //@PreMatching
 @Slf4j
-public class CORSFilter implements Filter {
+public class WSMainFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

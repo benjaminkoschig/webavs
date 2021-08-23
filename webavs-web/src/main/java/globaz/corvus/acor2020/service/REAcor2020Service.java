@@ -15,7 +15,7 @@ public class REAcor2020Service {
 
     public InHostType createInHostJson(REAcor2020Token REAcor2020Token) {
         try {
-            BSession session = BSessionUtil.createSession(REApplication.DEFAULT_APPLICATION_CORVUS, REAcor2020Token.getUserId());
+            BSession session = BSessionUtil.getSessionFromThreadContext();
             REExportationCalculAcor2020 inHostService = new REExportationCalculAcor2020(session, REAcor2020Token.getIdDemande());
             InHostType inHost = inHostService.createInHost();
             inHost.setVersionSchema("5.0");
@@ -27,7 +27,7 @@ public class REAcor2020Service {
 
     public void updateRente10afterAcorCalcul(FCalcul fCalcul, REAcor2020Token REAcor2020Token) {
         try {
-            BSession session = BSessionUtil.createSession(REApplication.DEFAULT_APPLICATION_CORVUS, REAcor2020Token.getUserId());
+            BSession session = BSessionUtil.getSessionFromThreadContext();
             REImportationCalculAcor2020 exportProcess = new REImportationCalculAcor2020();
             exportProcess.actionImporterScriptACOR(REAcor2020Token.getIdDemande(), REAcor2020Token.getIdTiers(), fCalcul, session);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class REAcor2020Service {
 
     public void updateRente9afterAcorCalcul(Resultat9 resultat9, REAcor2020Token REAcor2020Token) {
         try {
-            BSession session = BSessionUtil.createSession(REApplication.DEFAULT_APPLICATION_CORVUS, REAcor2020Token.getUserId());
+            BSession session = BSessionUtil.getSessionFromThreadContext();
             REImportationCalculAcor2020 exportProcess = new REImportationCalculAcor2020();
             exportProcess.actionImporterScriptACOR9(REAcor2020Token.getIdDemande(), REAcor2020Token.getIdTiers(), resultat9, session);
         } catch (Exception e) {
