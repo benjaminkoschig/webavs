@@ -36,12 +36,6 @@ public interface FilterMapper extends Filter {
      */
     String getApplicationId();
 
-    /**
-     * Doit retourner le path de base qui est utilisé par l'application. Ex. ij, ou corvus.
-     *
-     * @return la path de de bas.
-     */
-    String getBasePath();
 
     /**
      * Applique le filtre. {@link Filter}.
@@ -61,13 +55,13 @@ public interface FilterMapper extends Filter {
     default void initSessionAndDoAction(final ServletRequest request,
                                         final ServletResponse servletResponse,
                                         final FilterChain chain,
-                                        final String uderId) {
+                                        final String userId) {
         Object object = null;
         try {
             if (BSessionUtil.getSessionFromThreadContext() == null) {
                 BSession bsession = resolveSession((HttpServletRequest) request).orElse(null);
                 if(bsession == null){
-                    bsession = BSessionUtil.createSession(this.getApplicationId(), uderId);
+                    bsession = BSessionUtil.createSession(this.getApplicationId(), userId);
                 }
 
                 object = new Object();

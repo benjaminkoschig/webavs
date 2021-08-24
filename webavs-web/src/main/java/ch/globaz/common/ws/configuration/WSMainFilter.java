@@ -21,12 +21,12 @@ public class WSMainFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        LOG.info("init:CORSFilter");
+        LOG.debug("init:WSMainFilter");
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        LOG.debug("CORSFilter");
+        LOG.debug("WSMainFilter");
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.addHeader("Access-Control-Allow-Origin", "*");
         httpResponse.addHeader(

@@ -22,4 +22,10 @@ public class WSConfigurationTest {
         Map<String, ExceptionHandler> result = config.getExceptionMapperClasses();
         assertThat(result).hasSizeGreaterThanOrEqualTo(1);
     }
+
+    @Test
+    public void filterClasses() {
+        Set<FilterMapper> filterMappers = config.getFilterMappers();
+        assertThat(filterMappers).hasSizeGreaterThanOrEqualTo(1);
+    }
 }

@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Slf4j
-@Path("acor2020/rente")
+@Path("/acor2020/rente")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class REAcor2020ApiRest {

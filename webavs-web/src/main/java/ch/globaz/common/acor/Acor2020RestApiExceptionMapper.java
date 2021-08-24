@@ -1,7 +1,6 @@
-package globaz.corvus.acor2020.ws;
+package ch.globaz.common.acor;
 
 import acor.rentes.xsd.standard.error.OriginType;
-import ch.globaz.common.acor.Acor2020StandardErrorUtil;
 import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import globaz.prestation.acor.PRACORException;
@@ -10,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 @ExceptionMapper("acor2020")
-public class REAcor2020RestApiExceptionMapper implements ExceptionHandler {
+public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
     @Override
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
         if (e instanceof PRACORException) {

@@ -80,7 +80,7 @@ public class WSConfiguration extends Application {
      *
      * @return une map qui à comme clé le path ou l'on applique exception.
      */
-    static Map<String /*path*/, ExceptionHandler> loadExceptionHanlder(final ScanResult result) {
+    private static Map<String /*path*/, ExceptionHandler> loadExceptionHanlder(final ScanResult result) {
         List<Class<?>> classList = result.getClassesWithAnnotation(ExceptionMapper.class).loadClasses();
         Map<String, ExceptionHandler> map = classList.stream()
                                                      .collect(Collectors.toMap(
@@ -107,11 +107,10 @@ public class WSConfiguration extends Application {
      *
      * @return le set de classes WS
      */
-    static Set<Class<?>> loadClasses(ScanResult result) {
-        Set<Class<?>> allClasses = new HashSet<>();
-
+    private static Set<Class<?>> loadClasses(ScanResult result) {
         ClassInfoList classInfos = result.getClassesWithAnnotation(Path.class);
-        allClasses.addAll(classInfos.loadClasses());
+
+        Set<Class<?>> allClasses = new HashSet<>(classInfos.loadClasses());
         classInfos = result.getClassesWithAnnotation(Provider.class);
         allClasses.addAll(classInfos.loadClasses());
 
@@ -125,8 +124,9 @@ public class WSConfiguration extends Application {
         return allClasses;
     }
 
-    static Set<FilterMapper> resolveFilter(final ScanResult result) {
+    private static Set<FilterMapper> resolveFilter(final ScanResult result) {
         Set<FilterMapper> filterMappers = result.getClassesImplementing(FilterMapper.class).stream()
+                                                .filter(classInfo -> !classInfo.isAbstract())
                                                 .map(ClassInfo::loadClass)
                                                 .map(aClass -> (FilterMapper) Exceptions.checkedToUnChecked(aClass::newInstance, "error with this classe :" + aClass))
                                                 .collect(Collectors.toSet());
@@ -162,7 +162,7 @@ public class WSConfiguration extends Application {
         response.setStatus(exceptionResponse.getStatus());
         exceptionResponse.getMetadata()
                          .forEach((key, value) ->
-                             response.addHeader(key, value.stream().map(String::valueOf).collect(Collectors.joining(" ; ")))
+                                          response.addHeader(key, value.stream().map(String::valueOf).collect(Collectors.joining(" ; ")))
                          );
 
         Exceptions.checkedToUnChecked(() -> {

@@ -1,23 +1,24 @@
-package globaz.corvus.acor2020.ws;
+package globaz.ij.acor2020.ws;
 
 import ch.globaz.common.acor.Acor2020TokenService;
 import ch.globaz.common.acor.AcorTokenFilterAbstract;
+import globaz.corvus.acor2020.ws.REAcor2020ApiRest;
 import globaz.corvus.acor2020.ws.token.REAcor2020TokenService;
-import globaz.corvus.application.REApplication;
+import globaz.ij.application.IJApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 
-public class REAcorTokenFilter extends AcorTokenFilterAbstract {
+public class IJAcorTokenFilter extends AcorTokenFilterAbstract {
 
     @Override
     public boolean isFilterable(final HttpServletRequest request) {
-        return request.getPathInfo().startsWith(REAcor2020ApiRest.class.getAnnotation(Path.class).value());
+        return request.getPathInfo().startsWith(IJAcor2020ApiRest.class.getAnnotation(Path.class).value());
     }
 
     @Override
     public String getApplicationId() {
-        return REApplication.DEFAULT_APPLICATION_CORVUS;
+        return IJApplication.DEFAULT_APPLICATION_IJ;
     }
 
     @Override

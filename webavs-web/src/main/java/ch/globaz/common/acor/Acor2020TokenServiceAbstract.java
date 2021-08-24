@@ -21,7 +21,7 @@ import java.util.Objects;
 public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> implements Acor2020TokenService<T> {
 
     private static final String NOM_HOTE = resolveNomHote();
-    private static final String BASE_REST_URI = NOM_HOTE + "/rest/";
+    private static final String BASE_REST_URI = NOM_HOTE + "/rest";
     private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final String ACOR_BASEURL = loadAcorBaseUrl();
     private static final String LANGUE = "langue";
