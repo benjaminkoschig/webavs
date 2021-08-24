@@ -1,14 +1,18 @@
 package ch.globaz.common.properties;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.globall.api.BIApplication;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSystem;
 import globaz.jade.client.util.JadeStringUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class CommonPropertiesUtils {
 
     private static CommonPropertiesUtils instance;
@@ -41,6 +45,50 @@ public class CommonPropertiesUtils {
         } else {
             throw new PropertiesException("The value (" + value + ") for the properties" + properties.toString()
                     + "is not a boolean value");
+        }
+    }
+
+    /**
+     * Permet de transformer un valeur en integer d'une properties. Si on arrive pas à convertir la properties une
+     * exception est lancé.
+     *
+     * @param properties
+     *            La propriété voulue
+     * @return La valeur de la property sous forme booléenne. Si la valeur de la propriété est null ou vide une
+     *         Exception sera lancée
+     * @throws PropertiesException
+     *             Si la valeur de la propriété est null ou vide
+     */
+    public static Integer getInteger(final IProperties properties) throws PropertiesException {
+        final String value = CommonPropertiesUtils.getValue(properties);
+        return toInteger(properties, value);
+    }
+
+    /**
+     * Permet de transformer un valeur en integer d'une properties. Si on arrive pas à convertir la properties une
+     * exception est lancé.
+     *
+     * @param properties
+     *            La propriété voulue
+     * @param defaultValue
+     *            La valeur par défaut si la properties n'existe pas.
+     * @return La valeur de la property sous forme booléenne. Si la valeur de la propriété est null ou vide une
+     *         Exception sera lancée
+     */
+    public static Integer getIntegerWithDefaultValue(final IProperties properties, String defaultValue)  {
+        final String value = CommonPropertiesUtils.getValueWithDefault(properties,defaultValue);
+        return toInteger(properties, value);
+    }
+
+    private static Integer toInteger(final IProperties properties, final String value) {
+        try {
+            if(value == null){
+                return null;
+            }
+            return Integer.valueOf(value);
+        }catch (NumberFormatException e){
+            throw new CommonTechnicalException("The value (" + value + ") for the properties" + properties.toString()
+                                                  + "is not a integer value");
         }
     }
 
@@ -91,6 +139,29 @@ public class CommonPropertiesUtils {
             throw new PropertiesException("Remote Exeption", e);
         }
     }
+
+
+    /**
+     * Permet de retrouver la valeur de la properties si cette properties n'existe pas on lance une exception.
+     *
+     * @param properties
+     *            La propriété voulue
+     * @return La valeur de la propriété en String
+
+     */
+    public static String getValueWithDefault(final IProperties properties, String defaultValue)  {
+        try {
+            final String value = CommonPropertiesUtils.getInstance().getPropertyValue(properties);
+            if (value == null) {
+                return defaultValue;
+            }
+            return value;
+        } catch (final RemoteException | PropertiesException e ) {
+            LOG.warn("Error to have this propertie : [" + properties.getPropertyName() + "], Desc: " + properties.getDescription());
+            return defaultValue;
+        }
+    }
+
     public static String getValueWithoutException(final IProperties properties) throws PropertiesException {
         try {
             final String value = CommonPropertiesUtils.getInstance().getPropertyValue(properties);

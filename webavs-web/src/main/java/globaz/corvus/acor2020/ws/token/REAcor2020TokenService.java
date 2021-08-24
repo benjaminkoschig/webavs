@@ -3,7 +3,7 @@ package globaz.corvus.acor2020.ws.token;
 import ch.globaz.common.acor.Acor2020TokenServiceAbstract;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
-import globaz.corvus.acor2020.ws.REApiRestAcor2020;
+import globaz.corvus.acor2020.ws.REAcor2020ApiRest;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.globall.db.BSession;
 import io.jsonwebtoken.Claims;
@@ -15,14 +15,13 @@ import javax.ws.rs.Path;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 @Slf4j
 public class REAcor2020TokenService extends Acor2020TokenServiceAbstract<REAcor2020Token> {
 
     @Getter
     private static final REAcor2020TokenService INSTANCE = new REAcor2020TokenService();
-    private static final String API_REST_PATH = REApiRestAcor2020.class.getAnnotation(Path.class).value();
+    private static final String API_REST_PATH = REAcor2020ApiRest.class.getAnnotation(Path.class).value();
 
     private static String importUrl = "";
     private static String exportUrl = "";

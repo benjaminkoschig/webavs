@@ -17,11 +17,11 @@ import java.util.function.Function;
 @Path("acor2020/rente")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class REApiRestAcor2020 {
+public class REAcor2020ApiRest {
 
     private REAcor2020Service service;
 
-    public REApiRestAcor2020() {
+    public REAcor2020ApiRest() {
         service = new REAcor2020Service();
     }
 
@@ -70,13 +70,13 @@ public class REApiRestAcor2020 {
     }
 
     private <T> Response execute(String token, Function<REAcor2020Token, T> function) {
-        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
-        return Response.ok(function.apply(REAcor2020Token)).build();
+        REAcor2020Token acor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
+        return Response.ok(function.apply(acor2020Token)).build();
     }
 
     private <T> Response execute(String token, T object, BiConsumer<T, REAcor2020Token> consumer) {
-        REAcor2020Token REAcor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
-        consumer.accept(object, REAcor2020Token);
+        REAcor2020Token acor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
+        consumer.accept(object, acor2020Token);
         return Response.ok().build();
     }
 

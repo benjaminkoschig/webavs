@@ -1,5 +1,8 @@
 package globaz.ij.acor2020.ws;
 
+import globaz.ij.acor2020.service.IJAcor2020Service;
+import globaz.ij.acor2020.ws.token.IJAcor2020Token;
+import globaz.ij.acor2020.ws.token.IJAcor2020TokenService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
@@ -15,7 +18,13 @@ import javax.ws.rs.core.Response;
 @Slf4j
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class IJApiRestAcor2020 {
+public class IJAcor2020ApiRest {
+
+    private final IJAcor2020Service ijAcor2020Service;
+
+    public IJAcor2020ApiRest() {
+        this.ijAcor2020Service = new IJAcor2020Service();
+    }
 
     /**
      * Web Service exposé pour récupérer les données d'un dossier de IJAI dans le cadre d'un calcul ACOR.
@@ -25,11 +34,12 @@ public class IJApiRestAcor2020 {
      * @return le json ij-in.
      */
     @GET
-    @Path(value = "/import/")
-    public Response importDossierIJ(@HeaderParam("authorization") String token) {
+    @Path(value = "/import")
+    public Response importDossier(@HeaderParam("authorization") String token) {
         LOG.info("Importation des données.");
-        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.OK);
-        return responseBuilder.build();
+        IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
+
+        return Response.ok(this.ijAcor2020Service.createInHost(acor2020Token)).build();
     }
 
     /**
@@ -41,10 +51,12 @@ public class IJApiRestAcor2020 {
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */
     @POST
-    @Path("/export/")
-    public Response exportDossierIJ(@HeaderParam("authorization") String token, String json) {
+    @Path("/export")
+    public Response exportDossier(@HeaderParam("authorization") String token, String json) {
         LOG.info("Exportation du dossier.");
-        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.OK);
-        return responseBuilder.build();
+
+        IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
+
+        return Response.ok().build();
     }
 }

@@ -1,5 +1,6 @@
 package ch.globaz.common.acor;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.jade.i18n.JadeI18n;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -25,8 +26,9 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     }
 
     public static String creatToken(final Map<String, Object> claims) {
+        Integer acorTokenDuration = CommonProperties.ACOR_TOKEN_DURATION.getIntegerWithDefaultValue(1);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.HOUR, 1);
+        cal.add(Calendar.HOUR, acorTokenDuration);
 
         Map<String, Object> header = new HashMap<>();
         // Header

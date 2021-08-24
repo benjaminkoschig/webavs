@@ -5,4 +5,6 @@ import lombok.Data;
 
 @Data
 public class IJAcor2020Token implements Acor2020Token {
+    private String userId;
+    private String langue;
 }

@@ -76,7 +76,8 @@ public enum CommonProperties implements IProperties {
     TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires"),
 
     ACOR_ADRESSE_WEB("acor.adresse.web","Adresse web à utiliser pour ACOR Web"),
-    NAVIGATEUR_ACOR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web");
+    NAVIGATEUR_ACOR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web"),
+    ACOR_TOKEN_DURATION("acor.token.duration", "Indique la duré en heure de validité du token");
 
     private String description;
     private String propertyName;
@@ -86,9 +87,6 @@ public enum CommonProperties implements IProperties {
         this.description = description;
     }
 
-    /**
-     * Retourne le nom de l'application Lyra.
-     */
     @Override
     public String getApplicationName() {
         return GlobazSystem.APPLICATION_FRAMEWORK;
@@ -97,6 +95,14 @@ public enum CommonProperties implements IProperties {
     @Override
     public Boolean getBooleanValue() throws PropertiesException {
         return CommonPropertiesUtils.getBoolean(this);
+    }
+
+    public Integer getIntegerValue() throws PropertiesException {
+        return CommonPropertiesUtils.getInteger(this);
+    }
+
+    public Integer getIntegerWithDefaultValue(Integer defaultValue)  {
+        return CommonPropertiesUtils.getIntegerWithDefaultValue(this, String.valueOf(defaultValue));
     }
 
     @Override

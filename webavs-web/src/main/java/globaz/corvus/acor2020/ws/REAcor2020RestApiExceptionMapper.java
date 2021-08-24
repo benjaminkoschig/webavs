@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 @ExceptionMapper("acor2020")
-public class REExceptionMapperRestApi implements ExceptionHandler {
+public class REAcor2020RestApiExceptionMapper implements ExceptionHandler {
     @Override
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
         if (e instanceof PRACORException) {
