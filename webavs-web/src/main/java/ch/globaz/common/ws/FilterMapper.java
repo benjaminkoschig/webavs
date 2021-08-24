@@ -1,6 +1,7 @@
 package ch.globaz.common.ws;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import globaz.framework.controller.FWController;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.context.JadeThread;
@@ -13,7 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Cette interface à pour but de faciliter la gestion des filters pour les API Rest.
@@ -62,11 +65,14 @@ public interface FilterMapper extends Filter {
         Object object = null;
         try {
             if (BSessionUtil.getSessionFromThreadContext() == null) {
-                object = new Object();
-                BSession session = BSessionUtil.createSession(this.getApplicationId(), uderId);
-                BSessionUtil.initContext(session, object);
-                JadeThread.storeTemporaryObject("bsession", session);
+                BSession bsession = resolveSession((HttpServletRequest) request).orElse(null);
+                if(bsession == null){
+                    bsession = BSessionUtil.createSession(this.getApplicationId(), uderId);
+                }
 
+                object = new Object();
+                BSessionUtil.initContext(bsession, object);
+                JadeThread.storeTemporaryObject("bsession", bsession);
                 //the chain.doFilter do the action
                 chain.doFilter(request, servletResponse);
             }
@@ -77,5 +83,14 @@ public interface FilterMapper extends Filter {
                 JadeThreadActivator.stopUsingContext(object);
             }
         }
+    }
+
+    default Optional<BSession> resolveSession(final HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+        if (httpSession != null) {
+            FWController controller = (FWController) httpSession.getAttribute("objController");
+            return Optional.of((BSession) controller.getSession());
+        }
+        return Optional.empty();
     }
 }
