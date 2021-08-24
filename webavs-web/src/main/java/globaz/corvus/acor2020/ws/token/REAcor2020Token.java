@@ -12,6 +12,7 @@ public class REAcor2020Token implements Acor2020Token {
     private String dateDemande;
     private String timeDemande;
     private String timeStampGedo;
+
     private String langue;
     private String email;
     private String userId;
