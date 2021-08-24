@@ -715,7 +715,8 @@ public final class AFProcessFacturationBvrNeutre extends BProcess {
             // "Prorata Temporis".
 
             if (nbMoisFacturer > 0) {
-                if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)) {
+                if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)
+                        || CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(donneesFacturation.getTypeCalcul())) {
                     montant = Double.parseDouble(JANumberFormatter.deQuote(donneesFacturation.getMasseAnnuelleCoti()))
                             / 12 * nbMoisFacturer;
 

@@ -522,7 +522,8 @@ public final class AFProcessFacturation extends BProcess {
             // Le montant de la cotisation est égal à la masse de la cotisation
             // au
             // "Prorata Temporis".
-            if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)) {
+            if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)
+                    || CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(donneesFacturation.getTypeCalcul())) {
                 double montant = (Double.parseDouble(masseAnnuel) / 12) * nbMoisFacturer;
 
                 sommeMasse.add(montant);
@@ -931,7 +932,8 @@ public final class AFProcessFacturation extends BProcess {
                 // "Prorata Temporis".
 
                 if (nbMoisFacturer > 0) {
-                    if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)) {
+                    if (donneesFacturation.getTypeCalcul().equals(CodeSystem.TYPE_CALCUL_COTISATION)
+                            || CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(donneesFacturation.getTypeCalcul())) {
                         montant = (Double.parseDouble(JANumberFormatter.deQuote(donneesFacturation
                                 .getMasseAnnuelleCoti())) / 12) * nbMoisFacturer;
 
