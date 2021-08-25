@@ -454,6 +454,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             }
             listeCopies.clear();
             listeCopies.addAll(copieDecisionMap.values());
+            copieDecisionMap.clear();
             decisionApresCalculOO.getDecisionHeader().setListeCopies(listeCopies);
             if(handlerGlobal.getFromAdaptation()){
                 decisionApresCalculOO.setDateAdaptation(handlerGlobal.getDateDoc());
