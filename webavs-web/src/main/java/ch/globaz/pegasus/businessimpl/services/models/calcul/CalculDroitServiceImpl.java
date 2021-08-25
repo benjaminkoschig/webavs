@@ -417,6 +417,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 isReforme = true;
             } else if (JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(dateDebut), dateReforme)
                     || isRefusFortune(pcAccordesReforme)) {
+                // Contrôle sur calcul comparatif lorsque qu'il y a depassement de fortune
+                if (pcAccordes.getCalculsComparatifs().size() == 0) {
+                    throw new CalculException("pegasus.calcul.seuil.fortune.depasse", pcAccordesReforme.getCalculsComparatifs().get(0).getFortune());
+                }
                 // periode de cette pca avant la réforme à ne pas comparer ou refus seuil de fortune sur le calcul réforme
                 pcAccordes.determineCCFavorable();
             } else {
