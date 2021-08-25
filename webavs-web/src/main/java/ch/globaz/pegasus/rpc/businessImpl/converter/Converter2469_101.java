@@ -421,9 +421,9 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             RentsTypeRef1 rents = (RentsTypeRef1)createRentsTypeRef(calculationElements, true);
             if(calculationElements.getRentRegion() != null) {
                 rents.setRentRegion(calculationElements.getRentRegion());
+                rents.setFamilySize(calculationElements.getFamilySize());
+                calcElmnt.setRents(rents);
             }
-            rents.setFamilySize(calculationElements.getFamilySize());
-            calcElmnt.setRents(rents);
         }
 
         if (calculationElements.isDivestedWealth()) { //si Dessaisissement fortune cochée
