@@ -668,17 +668,23 @@ public final class DSProcessFacturationDeclarationSalaire extends BProcess {
                     afact.setDebutPeriode("01.01." + declaration.getAnnee());
                     afact.setFinPeriode("31.12." + declaration.getAnnee());
                 }
-                if (JadeStringUtil.isBlank(ligne.getMontantDeclaration())) {
+
+                if(CodeSystem.TYPE_ASS_CRP_BASIC.equals(assurance.getTypeAssurance())){
                     afact.setMasseInitiale("0");
-                    afact.setMontantInitial("0");
-                } else {
-                    // Masse et montant initial
-                    if (CodeSystem.TYPE_ASS_IMPOT_SOURCE.equals(assurance.getTypeAssurance())) {
-                        afact.setMasseInitiale("0");
-                    } else {
-                        afact.setMasseInitiale(JANumberFormatter.deQuote(ligne.getMontantDeclaration()));
-                    }
                     afact.setMontantInitial(JANumberFormatter.deQuote(ligne.getCotisationDue()));
+                }else {
+                    if (JadeStringUtil.isBlank(ligne.getMontantDeclaration())) {
+                        afact.setMasseInitiale("0");
+                        afact.setMontantInitial("0");
+                    } else {
+                        // Masse et montant initial
+                        if (CodeSystem.TYPE_ASS_IMPOT_SOURCE.equals(assurance.getTypeAssurance())) {
+                            afact.setMasseInitiale("0");
+                        } else {
+                            afact.setMasseInitiale(JANumberFormatter.deQuote(ligne.getMontantDeclaration()));
+                        }
+                        afact.setMontantInitial(JANumberFormatter.deQuote(ligne.getCotisationDue()));
+                    }
                 }
                 // Masse et montant déjà facturé
                 if ((ligne.getCompteur() != null)
@@ -704,7 +710,9 @@ public final class DSProcessFacturationDeclarationSalaire extends BProcess {
                     afact.setAnneeCotisation(declaration.getAnnee());
                 }
 
-                if (DSDeclarationViewBean.CS_PRINCIPALE.equals(declaration.getTypeDeclaration())
+                if(CodeSystem.TYPE_ASS_CRP_BASIC.equals(assurance.getTypeAssurance())) {
+                    afact.setMasseFacture("0");
+                }else if (DSDeclarationViewBean.CS_PRINCIPALE.equals(declaration.getTypeDeclaration())
                         || DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE.equals(declaration.getTypeDeclaration())) {
                     afact.setMasseFacture(JANumberFormatter.deQuote(ligne.getDecompte()));
                 } else {
