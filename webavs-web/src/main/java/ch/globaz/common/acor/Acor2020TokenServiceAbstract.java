@@ -23,7 +23,6 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     private static final String NOM_HOTE = resolveNomHote();
     private static final String BASE_REST_URI = NOM_HOTE + "/rest";
     private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final String ACOR_BASE_URL = loadAcorBaseUrl();
     private static final String LANGUE = "langue";
     private static final String EMAIL = "email";
     private static final String USER_ID = "userId";
@@ -34,7 +33,7 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     }
 
     public static String getAcorBaseUrl() {
-        return ACOR_BASE_URL;
+        return loadAcorBaseUrl();
     }
 
     private static String loadAcorBaseUrl() {
@@ -59,7 +58,7 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
         claims.put(EMAIL, bSession.getUserEMail());
         claims.put(USER_ID, bSession.getUserId());
 
-        claims.put("acorBaseUrl", ACOR_BASE_URL);
+        claims.put("acorBaseUrl", loadAcorBaseUrl());
 
         Map<String, Object> header = new HashMap<>();
         // Header
