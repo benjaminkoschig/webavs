@@ -295,6 +295,8 @@ public class IJApplication extends PRAbstractApplication {
                 FWSecureConstants.ADD);
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_DECOMPTE + ".actionCalculerPrestation",
                 FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_DECOMPTE + ".actionCallACORWeb",
+                FWSecureConstants.ADD);
 
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_DECOMPTE_AIT_AA + ".calculerAit", FWSecureConstants.ADD);
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_DECOMPTE_AIT_AA + ".calculerAa", FWSecureConstants.ADD);
@@ -303,6 +305,7 @@ public class IJApplication extends PRAbstractApplication {
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_IJ + ".actionExporterScriptACOR2", FWSecureConstants.ADD);
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_IJ + ".actionImporterIJ", FWSecureConstants.ADD);
         FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_IJ + ".calculerAit", FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IIJActions.ACTION_CALCUL_IJ + ".actionCallACORWeb", FWSecureConstants.ADD);
 
         FWAction.registerActionCustom(IIJActions.ACTION_FACTURES_LOT + ".actionAfficherEcranDE", FWSecureConstants.READ);
         FWAction.registerActionCustom(IIJActions.ACTION_FACTURES_LOT + ".saveNewViewBean", FWSecureConstants.READ);

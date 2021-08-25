@@ -11,6 +11,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%
 	idEcran="PIJ3006";
 	globaz.ij.vb.acor.IJCalculACORIJViewBean viewBean = (globaz.ij.vb.acor.IJCalculACORIJViewBean) session.getAttribute("viewBean");
+	BSession bSession = (BSession) controller.getSession();
 	selectedIdValue = viewBean.getIdPrononce();	
 	
 	bButtonNew = false;
@@ -25,10 +26,8 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.prestation.acor.PRACORConst"%>
 <%@ page import="globaz.corvus.properties.REProperties" %>
-<%@ page import="globaz.jade.client.util.JadeDateUtil" %>
-<%@ page import="globaz.corvus.acor2020.ws.token.REAcor2020TokenService" %>
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="java.util.Date" %>
+<%@ page import="globaz.globall.db.BSession" %>
+<%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -160,19 +159,17 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 	objShell.Exec("<%=startAcorCmd%>")
 
 <% } else if (viewBean.isAcorV4Web()) { %>
-
-<%--    String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(controller.getSession());--%>
-<%--    Date actualDate = new Date();--%>
-<%--    String day = JadeDateUtil.getDMYDate(actualDate);--%>
-<%--    String token = Acor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, controller.getSession());--%>
-<%--    String adresseWebAcor = viewBean.getAdresseWebACOR(bSession, "import", token);--%>
-<%--%>--%>
-<%--        Set shell = CreateObject ("Shell.Application")--%>
-<%--<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>--%>
-<%--        shell.Open "<%=adresseWebAcor%>"--%>
-<%--<% } else { %>--%>
-<%--        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1--%>
-<%--<% } %>--%>
+<%
+    String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
+    String token = IJAcor2020TokenService.createToken(bSession);
+    String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
+%>
+        Set shell = CreateObject ("Shell.Application")
+<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>
+        shell.Open "<%=adresseWebAcor%>"
+<% } else { %>
+        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+<% } %>
 
 <%}%>
 </script>

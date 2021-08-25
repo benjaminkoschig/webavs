@@ -271,7 +271,7 @@
     Date actualDate = new Date();
     String day = JadeDateUtil.getDMYDate(actualDate);
     String token = REAcor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
-    String adresseWebAcor = viewBean.getAdresseWebACOR(bSession, "import", token);
+    String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
 <%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>

@@ -2,7 +2,7 @@ package globaz.corvus.acor2020.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import globaz.corvus.acor2020.ws.token.REAcor2020TokenService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 @Slf4j
@@ -53,13 +52,12 @@ public class REAcor2020AnnoncesService {
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             OutputStream os = con.getOutputStream();
-            byte[] input = fCalcul.toString().getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
+            JacksonJsonProvider.getInstance().writeValue(os, fCalcul);
             if (con.getResponseCode() <= 400) {
                 InputStream response = con.getInputStream();
                 Scanner scanner = new Scanner(response);
                 String responseBody = scanner.next();
-                annonces =  new ObjectMapper().readValue(responseBody, PoolMeldungZurZAS.class);
+                annonces = JacksonJsonProvider.getInstance().readValue(responseBody, PoolMeldungZurZAS.class);
             }
             con.disconnect();
         } catch (MalformedURLException e) {

@@ -8,15 +8,17 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author scr
  */
 public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSupport {
@@ -49,7 +51,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut chemin annonce pay
-     * 
+     *
      * @return la valeur courante de l'attribut chemin annonce pay
      */
     public String getCheminAnnoncePay() throws PRACORException, Exception {
@@ -60,7 +62,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut chemin annonce RR
-     * 
+     *
      * @return la valeur courante de l'attribut chemin annonce RR
      */
     public String getCheminAnnonceRR() throws PRACORException, Exception {
@@ -71,7 +73,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut chemin annonce.xml
-     * 
+     *
      * @return la valeur courante de l'attribut chemin annonce RR
      */
     public String getCheminAnnonceXML() throws PRACORException, Exception {
@@ -82,7 +84,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut chemin annonce pay
-     * 
+     *
      * @return la valeur courante de l'attribut chemin annonce pay
      */
     public String getCheminFCalculXML() throws PRACORException, Exception {
@@ -93,7 +95,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut contenu annonce pay
-     * 
+     *
      * @return la valeur courante de l'attribut contenu annonce pay
      */
     public String getContenuAnnoncePay() {
@@ -102,7 +104,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut contenu annonce RR
-     * 
+     *
      * @return la valeur courante de l'attribut contenu annonce RR
      */
     public String getContenuAnnonceRR() {
@@ -122,7 +124,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut dossier ACOR
-     * 
+     *
      * @return la valeur courante de l'attribut dossier ACOR
      */
     public String getDossierACOR() throws PRACORException, Exception {
@@ -136,7 +138,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut no AVSAssure
-     * 
+     *
      * @return la valeur courante de l'attribut no AVSAssure
      */
     public String getNoAVSAssure() {
@@ -152,7 +154,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut spy
-     * 
+     *
      * @return null
      */
     @Override
@@ -172,27 +174,30 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     public String getStartNavigateurAcor(BSession session) {
         try {
-            return PRACORConst.navigateurACOR(session);
+            String navigateur = PRACORConst.navigateurACOR(session);
+            if (new File(navigateur).exists()) {
+                return navigateur;
+            } else {
+                return StringUtils.EMPTY;
+            }
         } catch (PRACORException e) {
-            LOG.info("Impossible de récupérer la properties acor.navigateur");
-            // Ne devrait jamais arriver !!!
-            return "C:\\Program Files\\" + PRACORConst.EXECUTABLE_FIREFOX_ACOR;
+            LOG.warn("Impossible de récupérer le navigateur ACOR.", e);
         }
+        return StringUtils.EMPTY;
     }
 
-    public String getAdresseWebACOR(BSession session,String askAction, String token) {
-
+    public String getAdresseWebACOR(String askAction, String token) {
         try {
-            return CommonProperties.ACOR_ADRESSE_WEB.getValue() + askAction + "/"+ token;
+            return CommonProperties.ACOR_ADRESSE_WEB.getValue() + askAction + "/" + token;
         } catch (PropertiesException e) {
             LOG.warn("La propriété n'existe pas ou n'est pas renseigné :", e);
-            return "";
         }
+        return StringUtils.EMPTY;
     }
 
     /**
      * getter pour l'attribut writer
-     * 
+     *
      * @return la valeur courante de l'attribut writer
      */
     public PrintWriter getWriter() {
@@ -201,7 +206,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * getter pour l'attribut calculable
-     * 
+     *
      * @return la valeur courante de l'attribut calculable
      */
     public boolean isCalculable() {
@@ -210,9 +215,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * setter pour l'attribut calculable
-     * 
-     * @param calculable
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param calculable une nouvelle valeur pour cet attribut
      */
     public void setCalculable(boolean calculable) {
         this.calculable = calculable;
@@ -220,9 +224,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * setter pour l'attribut contenu annonce pay
-     * 
-     * @param contenuAnnoncePay
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param contenuAnnoncePay une nouvelle valeur pour cet attribut
      */
     public void setContenuAnnoncePay(String contenuAnnoncePay) {
         this.contenuAnnoncePay = contenuAnnoncePay;
@@ -230,9 +233,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * setter pour l'attribut contenu annonce RR
-     * 
-     * @param contenuAnnonceRR
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param contenuAnnonceRR une nouvelle valeur pour cet attribut
      */
     public void setContenuAnnonceRR(String contenuAnnonceRR) {
         this.contenuAnnonceRR = contenuAnnonceRR;
@@ -243,8 +245,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
     }
 
     /**
-     * @param contenuFeuilleCalculXML
-     *            the contenuFeuilleCalculXML to set
+     * @param contenuFeuilleCalculXML the contenuFeuilleCalculXML to set
      */
     public void setContenuFeuilleCalculXML(String contenuFeuilleCalculXML) {
         this.contenuFeuilleCalculXML = contenuFeuilleCalculXML;
@@ -256,9 +257,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * setter pour l'attribut no AVSAssure
-     * 
-     * @param noAVSAssure
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param noAVSAssure une nouvelle valeur pour cet attribut
      */
     public void setNoAVSAssure(String noAVSAssure) {
         this.noAVSAssure = noAVSAssure;
@@ -273,9 +273,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * setter pour l'attribut writer
-     * 
-     * @param writer
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param writer une nouvelle valeur pour cet attribut
      */
     public void setWriter(PrintWriter writer) {
         this.writer = writer;
@@ -283,7 +282,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override

@@ -11,6 +11,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%
 	idEcran="PIJ3005";
 	globaz.ij.vb.acor.IJCalculACORDecompteViewBean viewBean = (globaz.ij.vb.acor.IJCalculACORDecompteViewBean) session.getAttribute("viewBean");
+	BSession bSession = (BSession) controller.getSession();
 	selectedIdValue = viewBean.getIdBaseIndemnisation();	
 	
 	bButtonNew = false;
@@ -26,6 +27,8 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%@page import="globaz.ij.helpers.acor.IJRevision"%>
 <%@page import="globaz.prestation.acor.PRACORConst"%>
 <%@ page import="globaz.corvus.properties.REProperties" %>
+<%@ page import="globaz.globall.db.BSession" %>
+<%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -173,7 +176,21 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 	Set objShell = CreateObject("WScript.shell")
 	objShell.Exec("<%=startAcorCmd%>")
 
+<% } else if (viewBean.isAcorV4Web()) { %>
+<%
+	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
+	String token = IJAcor2020TokenService.createToken(bSession);
+	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
+%>
+        Set shell = CreateObject ("Shell.Application")
+<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>
+        shell.Open "<%=adresseWebAcor%>"
+<% } else { %>
+        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+<% } %>
+
 <%}%>
+
 </script>
 
 

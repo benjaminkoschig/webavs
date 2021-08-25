@@ -1,10 +1,16 @@
 package globaz.ij.vb.acor;
 
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -13,6 +19,7 @@ import java.util.Map;
  * 
  * @author vre
  */
+@Slf4j
 public abstract class IJAbstractCalculACORViewBean extends PRAbstractViewBeanSupport {
 
     // ~ Instance fields
@@ -115,6 +122,42 @@ public abstract class IJAbstractCalculACORViewBean extends PRAbstractViewBeanSup
             e.printStackTrace();
             // Ne devrait jamais arriver !!!
             return "C:\\Acor\\" + PRACORConst.EXECUTABLE_ACOR + "\"";
+        }
+    }
+
+    /**
+     * Méthode permettant de récupérer le navigateur à utiliser pour ACOR.
+     *
+     * @param session
+     * @return
+     */
+    public String getStartNavigateurAcor(BSession session) {
+        try {
+            String navigateur = PRACORConst.navigateurACOR(session);
+            if (new File(navigateur).exists()) {
+                return navigateur;
+            } else {
+                return StringUtils.EMPTY;
+            }
+        } catch (PRACORException e) {
+            LOG.warn("Impossible de récupérer le navigateur ACOR.", e);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    /**
+     * Méthode permettant de récupérer l'URL ACOR.
+     *
+     * @param askAction
+     * @param token
+     * @return
+     */
+    public String getAdresseWebACOR(String askAction, String token) {
+        try {
+            return CommonProperties.ACOR_ADRESSE_WEB.getValue() + askAction + "/"+ token;
+        } catch (PropertiesException e) {
+            LOG.warn("La propriété n'existe pas ou n'est pas renseigné :", e);
+            return "";
         }
     }
 
