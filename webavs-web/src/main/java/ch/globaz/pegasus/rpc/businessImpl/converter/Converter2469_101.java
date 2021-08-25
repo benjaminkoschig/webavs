@@ -111,7 +111,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
             xmlDeci.setElAmounts(elAmount);
         } else {
-            xmlDeci.setElAmounts((ElAmountsTypeRef1) createEmptyCommElAmountsType(false));
+            xmlDeci.setElAmounts((ElAmountsTypeRef1) createEmptyCommElAmountsType(true));
         }
 
         xmlDeci.setRequestDateOfReceipt(annonceDecision.getRequestDateofReceipt());
