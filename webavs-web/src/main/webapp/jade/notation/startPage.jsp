@@ -2,23 +2,23 @@
 <html class="area mainContainerAjax sansBordure">
 	<head>
 <% 
-		String servletContext ="/webavs/";
+		String servletContext =request.getContextPath();
 %>		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 		<title>Framework de notation Javascript</title>
 
-		<script type="text/javascript" src="<%=servletContext%>scripts/jquery.js"></script>
-		<script type="text/javascript" src="<%=servletContext%>scripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="<%=servletContext%>scripts/ValidationGroups.js"></script>
-		<script type="text/javascript" src="<%=servletContext%>scripts/widget/globazwidget.js"></script>
+		<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+		<script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
+		<script type="text/javascript" src="<%=servletContext%>/scripts/ValidationGroups.js"></script>
+		<script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script>
 
-		<link type="text/css" href="<%=servletContext%>jade/notation/test/testNotation.css" rel="stylesheet" />
-		<link type="text/css" href="<%=servletContext%>theme/jquery/jquery-ui.css" rel="stylesheet" />
-		<link type="text/css" href="<%=servletContext%>theme/master.css" rel="stylesheet" />
-		<link type="text/css" href="<%=servletContext%>theme/ajax/templateZoneAjax.css" rel="stylesheet" />
-		<link type="text/css" href="<%=servletContext%>jade/notation/startPage.css" rel="stylesheet" />
+		<link type="text/css" href="<%=servletContext%>/jade/notation/test/testNotation.css" rel="stylesheet" />
+		<link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
+		<link type="text/css" href="<%=servletContext%>/theme/master.css" rel="stylesheet" />
+		<link type="text/css" href="<%=servletContext%>/theme/ajax/templateZoneAjax.css" rel="stylesheet" />
+		<link type="text/css" href="<%=servletContext%>/jade/notation/startPage.css" rel="stylesheet" />
 
-		<script type="text/javascript" src="<%=servletContext%>jade/notation/startPage.js"></script>  
+		<script type="text/javascript" src="<%=servletContext%>/jade/notation/startPage.js"></script>
 	</head>
 	<body>
 		<div id="navBar" class="content withBorder">
