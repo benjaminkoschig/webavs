@@ -140,7 +140,6 @@ public class CommonPropertiesUtils {
         }
     }
 
-
     /**
      * Permet de retrouver la valeur de la properties si cette properties n'existe pas on lance une exception.
      *
@@ -153,22 +152,22 @@ public class CommonPropertiesUtils {
         try {
             final String value = CommonPropertiesUtils.getInstance().getPropertyValue(properties);
             if (value == null) {
+                LOG.warn("The Default value is used for this property : [{}], Desc: {}", properties.getPropertyName(), properties.getDescription());
                 return defaultValue;
             }
             return value;
         } catch (final RemoteException | PropertiesException e ) {
-            LOG.warn("Error to have this propertie : [" + properties.getPropertyName() + "], Desc: " + properties.getDescription());
+            LOG.warn("Exception happened, the Default value is used for this property : [{}], Desc: {}", properties.getPropertyName(),
+                     properties.getDescription(), e);
             return defaultValue;
         }
     }
 
     public static String getValueWithoutException(final IProperties properties) throws PropertiesException {
         try {
-            final String value = CommonPropertiesUtils.getInstance().getPropertyValue(properties);
-
-            return value;
+            return CommonPropertiesUtils.getInstance().getPropertyValue(properties);
         } catch (final RemoteException e) {
-            throw new PropertiesException("Remote Exeption", e);
+            throw new PropertiesException("Remote Exception", e);
         }
     }
 

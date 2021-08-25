@@ -23,7 +23,7 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     private static final String NOM_HOTE = resolveNomHote();
     private static final String BASE_REST_URI = NOM_HOTE + "/rest";
     private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final String ACOR_BASEURL = loadAcorBaseUrl();
+    private static final String ACOR_BASE_URL = loadAcorBaseUrl();
     private static final String LANGUE = "langue";
     private static final String EMAIL = "email";
     private static final String USER_ID = "userId";
@@ -34,16 +34,20 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     }
 
     public static String getAcorBaseUrl() {
-        return ACOR_BASEURL;
+        return ACOR_BASE_URL;
     }
 
-    public static String loadAcorBaseUrl() {
-        return Exceptions.checkedToUnChecked(() -> CommonProperties.ACOR_ADRESSE_WEB.getValue() + "backend/acor-ws-core-web", "Impossible to get ACOR_ADRESSE_WEB");
+    private static String loadAcorBaseUrl() {
+        return Exceptions.checkedToUnChecked(() -> {
+            String adresseWeb = CommonProperties.ACOR_ADRESSE_WEB.getValue();
+            String adressePath = CommonProperties.ACOR_BACKEND_PATH.getValueWithDefault("/backend/acor-ws-core-web");
+            return Slashs.deleteLastSlash(adresseWeb) + Slashs.addFirstSlash(adressePath);
+        }, "Impossible to have properties for acor");
     }
 
     private static String resolveNomHote() {
         String hote = JadeI18n.getInstance().getMessage("FR", "back.ws.root");
-        return (hote.endsWith("/") ? hote.substring(0, hote.length() - 1) : hote);
+        return Slashs.deleteLastSlash(hote);
     }
 
     public static String creatToken(final Map<String, Object> claims, final BSession bSession) {
@@ -55,7 +59,7 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
         claims.put(EMAIL, bSession.getUserEMail());
         claims.put(USER_ID, bSession.getUserId());
 
-        claims.put("acorBaseUrl", ACOR_BASEURL);
+        claims.put("acorBaseUrl", ACOR_BASE_URL);
 
         Map<String, Object> header = new HashMap<>();
         // Header

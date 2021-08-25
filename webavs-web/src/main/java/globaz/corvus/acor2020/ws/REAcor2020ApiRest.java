@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Consumes(MediaType.APPLICATION_JSON)
 public class REAcor2020ApiRest {
 
-    private REAcor2020Service service;
+    private final REAcor2020Service service;
 
     public REAcor2020ApiRest() {
         service = new REAcor2020Service();

@@ -1015,7 +1015,7 @@ public class PRACORConst {
     public static final String navigateurACOR(BSession session) throws PRACORException {
 
         try {
-            return CommonProperties.NAVIGATEUR_ACOR.getValue();
+            return CommonProperties.ACOR_NAVIGATEUR.getValue();
         } catch (Exception e) {
             throw new PRACORException(session.getLabel("PROPRIETE_DOSSIER_NAVIGATEUR_ACOR_INTROUVABLE"), e);
 }

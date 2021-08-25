@@ -76,7 +76,8 @@ public enum CommonProperties implements IProperties {
     TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires"),
 
     ACOR_ADRESSE_WEB("acor.adresse.web","Adresse web à utiliser pour ACOR Web"),
-    NAVIGATEUR_ACOR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web"),
+    ACOR_BACKEND_PATH("acor.backend.path","Path de l'api utilisé pour ACOR Web"),
+    ACOR_NAVIGATEUR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web"),
     ACOR_TOKEN_DURATION("acor.token.duration", "Indique la duré en heure de validité du token");
 
     private String description;
@@ -118,6 +119,10 @@ public enum CommonProperties implements IProperties {
     @Override
     public String getValue() throws PropertiesException {
         return CommonPropertiesUtils.getValue(this);
+    }
+
+    public String getValueWithDefault(String defaultValue)  {
+        return CommonPropertiesUtils.getValueWithDefault(this,defaultValue);
     }
 
 }
