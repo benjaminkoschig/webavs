@@ -429,6 +429,160 @@ public class PRTiersHelper {
 
     }
 
+    public static String getAdresseAdministrationFiscaleByIdTiers(BSession session, String idTiers) throws Exception {
+
+            // Trouver le canton de domicile du bénéfiaire principal
+            PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(session, idTiers,
+                    JACalendar.todayJJsMMsAAAA());
+
+            if (tier == null) {
+                throw new Exception(session.getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
+            }
+
+            String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+            String langueTier = tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
+
+            return PRTiersHelper.getAdresseAdministrationFiscale(session, langueTier, cantonDomicile);
+    }
+
+    public static String getAdresseAdministrationFiscale(BSession session, String langue, String idCanton) throws Exception {
+        TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
+        admAdrMgr.setSession(session);
+
+        String cantonDomicile = idCanton;
+        String langueTier = langue;
+
+        admAdrMgr.setForCantonAdministration(cantonDomicile);
+        admAdrMgr.setForGenreAdministration("509011");// Administration fiscale cantonale
+        admAdrMgr.find();
+
+        if (admAdrMgr.isEmpty()) {
+//            if (!JadeStringUtil.contains(warningCopy.toString(), session.getLabel("WARNING_ADM_FISCALE"))) {
+//                warningCopy.append(session.getLabel("WARNING_ADM_FISCALE") + "\n");
+//            }
+            throw new Exception(session.getLabel("WARNING_ADM_FISCALE"));
+        }
+
+        String idAdmFiscale = "";
+        String idAdmFiscaleFR = "";
+        String idAdmFiscaleDE = "";
+        String idAdmFiscaleAutre = "";
+        String idAdmFiscaleNonBilingueAutre = "";
+
+        for (int i = 0; i < admAdrMgr.size(); i++) {
+
+            TIAdministrationAdresse entity = (TIAdministrationAdresse) admAdrMgr.get(i);
+
+            if (entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_BERNE)
+                    || entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_FRIBOURG)
+                    || entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_VALAIS)) {
+                // si canton de Berne,Fribourg ou Valais choisir le service dans la langue du
+                // bénéficiaire principal
+                // sinon langue adm = langue tier
+
+                if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(langueTier)) {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(langueTier)
+                        || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(langueTier)) {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                } else {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                }
+            } else {
+                if (entity.getLangue().equals(langueTier)) {
+                    idAdmFiscale = entity.getIdTiers();
+                } else {
+                    idAdmFiscaleNonBilingueAutre = entity.getIdTiers();
+                }
+            }
+        }// Fin boucle for
+
+        if (JadeStringUtil.isBlank(idAdmFiscale) && JadeStringUtil.isBlank(idAdmFiscaleNonBilingueAutre)) {
+
+            // Si assuré FR, recours FR sinon DE sinon Autre
+            if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(langueTier)) {
+
+                if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else {
+                    idAdmFiscale = "";
+                }
+
+                // Si assuré DE ou RO, recours DE sinon FR sinon Autre
+            } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(langueTier)
+                    || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(langueTier)) {
+
+                if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else {
+                    idAdmFiscale = "";
+                }
+
+                // Si assuré autre, recours FR sinon DE sinon Autre
+            } else {
+                if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else {
+                    idAdmFiscale = "";
+                }
+            }
+        }
+
+        if (JadeStringUtil.isBlank(idAdmFiscale)) {
+            if (!JadeStringUtil.isBlank(idAdmFiscaleNonBilingueAutre)) {
+                idAdmFiscale = idAdmFiscaleNonBilingueAutre;
+            }
+        }
+
+        if (!JadeStringUtil.isBlank(idAdmFiscale)) {
+            return idAdmFiscale;
+        }
+
+        return "";
+    }
+
     /**
      * <p>
      * retourne une adresse de courrier valide pour un tiers. Attention, spécifique aux rentes
