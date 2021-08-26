@@ -36,11 +36,8 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import globaz.pyxis.db.tiers.TIAdministrationManager;
-import globaz.pyxis.db.tiers.TIAdministrationViewBean;
-import globaz.pyxis.db.tiers.TIBanqueViewBean;
-import globaz.pyxis.db.tiers.TICompositionTiers;
-import globaz.pyxis.db.tiers.TICompositionTiersManager;
+import globaz.pyxis.db.tiers.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -383,6 +380,8 @@ public class IJGenererDecisionHelper extends FWHelper {
                         scalableAnnexe.setLibelle(annexe.getDescription());
                         addAnnexe((ICTScalableDocument) viewBean, scalableAnnexe);
                     }
+
+                    addCopieFisc((ICTScalableDocument) viewBean, session, vb, factory);
                 }
             }
 
@@ -435,9 +434,36 @@ public class IJGenererDecisionHelper extends FWHelper {
                         }
                     }
                 }
+
+                addCopieFisc((ICTScalableDocument) viewBean, session, vb, factory);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Ajoute une copie au fisc si impot à la source
+     * @param viewBean
+     * @param session
+     * @param vb
+     * @param factory
+     * @throws Exception
+     */
+    private void addCopieFisc(ICTScalableDocument viewBean, BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
+        if (!JadeStringUtil.isEmpty(vb.getCsCantonImpotSource())) {
+            ICTScalableDocumentCopie copieFisc = factory.createNewScalableDocumentCopie();
+            PRTiersWrapper tiersl = PRTiersHelper.getTiersParId(session, vb.getIdTierDemandeDecision());
+            if(tiersl != null && !JadeStringUtil.isEmpty(tiersl.getLangue())) {
+                String idTiersAmin = PRTiersHelper.getAdresseAdministrationFiscale(session, tiersl.getLangue(), vb.getCsCantonImpotSource());
+                if (!idTiersAmin.isEmpty()) {
+                    copieFisc.setIdTiers(idTiersAmin);
+                    String nom = CTTiersUtils
+                            .getPrenomNomTiersParIdTiers(session, idTiersAmin);
+                    copieFisc.setPrenomNomTiers(nom);
+                    addCopie(viewBean, copieFisc);
+                }
+            }
         }
     }
 
