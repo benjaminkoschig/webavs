@@ -407,6 +407,12 @@ public class FAImpressionFactureEBillXml {
         addressType.setCity(eBillFacture.getDebLieu());
         addressType.setCountry(eBillFacture.getDebPays());
 
+        String numeroAffilie = entete.getIdExterneRole().replaceAll("[^\\d]", "");
+        String role = entete.getIdRole().substring(Math.max(entete.getIdRole().length() - 2, 0));
+
+        StringBuilder customerId = new StringBuilder(numeroAffilie).append("/").append(role);
+        partyType.setCustomerID(customerId.toString());
+
         partyType.setAddress(addressType);
 
         return partyType;
