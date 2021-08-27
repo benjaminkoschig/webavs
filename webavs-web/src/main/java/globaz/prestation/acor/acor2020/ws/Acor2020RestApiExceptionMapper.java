@@ -1,7 +1,6 @@
 package globaz.prestation.acor.acor2020.ws;
 
 import acor.rentes.xsd.standard.error.OriginType;
-import ch.globaz.common.acor.Acor2020StandardErrorUtil;
 import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import ch.globaz.common.ws.configuration.ExceptionRequestInfo;
@@ -11,7 +10,6 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.smtp.JadeSmtpClient;
-import globaz.prestation.acor.PRACORException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -30,22 +28,22 @@ public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
         try {
             if (StringUtils.contains(requestInfo.getPathInfo(), "import")) {
                 LOG.error("Une erreur est intervenue lors de l'importation.", e);
-                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), ch.globaz.common.acor.Acor2020StandardErrorUtil.ERROR_ACOR_IMPORT_SUBJECT);
-                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), ch.globaz.common.acor.Acor2020StandardErrorUtil.ERROR_ACOR_IMPORT);
+                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_IMPORT_SUBJECT);
+                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_IMPORT);
                 sendMailError(session, exceptionRequestInfo, objet);
-                return responseBuilder.entity(ch.globaz.common.acor.Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_IMPORT)).build();
+                return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_IMPORT)).build();
             } else if (StringUtils.contains(requestInfo.getPathInfo(), "export")) {
                 LOG.error("Une erreur est intervenue lors de l'exportation.", e);
-                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), ch.globaz.common.acor.Acor2020StandardErrorUtil.ERROR_ACOR_EXPORT_SUBJECT);
-                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), ch.globaz.common.acor.Acor2020StandardErrorUtil.ERROR_ACOR_EXPORT);
+                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_EXPORT_SUBJECT);
+                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_EXPORT);
                 sendMailError(session, exceptionRequestInfo, objet);
-                return responseBuilder.entity(ch.globaz.common.acor.Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
             }
         } catch (Exception exception) {
             LOG.error("Une erreur s'est produite lors de l'envoi du mail.", e);
         }
         LOG.error("Une erreur imprévue s'est produite.", e);
-        String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), ch.globaz.common.acor.Acor2020StandardErrorUtil.ERROR_ACOR_GLOBAL);
+        String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_GLOBAL);
         return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
     }
 
