@@ -24,13 +24,9 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.PRTypeDemande;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
 import globaz.prestation.utils.PRDateUtils;
-import globaz.pyxis.constantes.IConstantes;
-import globaz.pyxis.db.tiers.TIAdministrationAdresse;
-import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
-import lombok.Value;
 import org.apache.commons.lang.StringUtils;
 import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
@@ -986,9 +982,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     private String getAdresseFiscFormatteLine(String langue, String idCanton) {
         try {
-            String idAdmFisc = PRTiersHelper.getAdresseAdministrationFiscale(getSession(), langue, idCanton);
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), langue, idCanton);
             String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                    idAdmFisc, getDomaineByTypePrest(getCSTypePrestationsLot()), "", "",
+                    idTiersAdmFiscale, getDomaineByTypePrest(getCSTypePrestationsLot()), "", "",
                     new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
             return tiersAdresseFiscFormatteLine;
         } catch (Exception e) {
@@ -999,8 +995,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     private String getAdresseFiscFormatte(String langue, String idCanton) {
         try {
-            String idAdmFisc = PRTiersHelper.getAdresseAdministrationFiscale(getSession(), langue, idCanton);
-            String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), langue, idCanton);
+            String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idTiersAdmFiscale, "",
                     getDomaineByTypePrest(getCSTypePrestationsLot()));
             return tiersAdresseFiscFormatte;
         } catch (Exception e) {

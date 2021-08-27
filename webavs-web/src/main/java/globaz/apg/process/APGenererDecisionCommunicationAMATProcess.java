@@ -92,12 +92,24 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
         // Envoi de la décision - communication
         APDecisionCommunicationAMAT decisionOriginale = createDecisionOriginale();
         Boolean paramCopie = new Boolean(getSession().getApplication().getProperty(DOC_DEC_AMAT_COPIE_ASS));
+
+        // génère une copie si nécessaire
         if (decisionOriginale.isCreateDocumentCopie() && paramCopie.booleanValue()) {
             // Création du document en-tête
-            createLettreEntete(demande.getIdTiers());
+            createLettreEntete(demande.getIdTiers(), false);
             // Création de la lettre de copie à l'assuré
             createDecisionCopy();
         }
+
+        // génère une copie a l'administration fiscale du tiers si nécessaire (cas impôt source)
+        if (decisionOriginale.isCreateDocumentCopieFisc()) {
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), demande.getIdTiers());
+            // Création du document en-tête
+            createLettreEntete(idTiersAdmFiscale, true);
+            // Création de la lettre de copie à l'assuré
+            createDecisionCopy();
+        }
+
         // Fusionne les documents ci-dessus
         fusionDocuments();
         if (decisionOriginale.isOnError()) {
@@ -219,11 +231,16 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
      * @throws FWIException
      * @throws Exception
      */
-    private PRLettreEnTete createLettreEntete(String idTiers) throws FWIException, Exception {
+    private PRLettreEnTete createLettreEntete(String idTiers, boolean isAdmFiscale) throws FWIException, Exception {
         PRLettreEnTete lettreEnTete = new PRLettreEnTete();
         lettreEnTete.setSession(getSession());
         // retrieve du tiers
-        PRTiersWrapper tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiers);
+        PRTiersWrapper tier;
+        if (isAdmFiscale) {
+            tier = PRTiersHelper.getAdministrationParId(getSession(), idTiers);
+        } else {
+            tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiers);
+        }
         lettreEnTete.setTierAdresse(tier);
         // pour l'instant, les copies sont uniquement adressées aux assurés,
         // donc pas d'idAffilié

@@ -455,11 +455,11 @@ public class IJGenererDecisionHelper extends FWHelper {
             ICTScalableDocumentCopie copieFisc = factory.createNewScalableDocumentCopie();
             PRTiersWrapper tiersl = PRTiersHelper.getTiersParId(session, vb.getIdTierDemandeDecision());
             if(tiersl != null && !JadeStringUtil.isEmpty(tiersl.getLangue())) {
-                String idTiersAmin = PRTiersHelper.getAdresseAdministrationFiscale(session, tiersl.getLangue(), vb.getCsCantonImpotSource());
-                if (!idTiersAmin.isEmpty()) {
-                    copieFisc.setIdTiers(idTiersAmin);
+                String idTiersAdmin = PRTiersHelper.getIdTiersAdministrationFiscale(session, tiersl.getLangue(), vb.getCsCantonImpotSource());
+                if (!idTiersAdmin.isEmpty()) {
+                    copieFisc.setIdTiers(idTiersAdmin);
                     String nom = CTTiersUtils
-                            .getPrenomNomTiersParIdTiers(session, idTiersAmin);
+                            .getPrenomNomTiersParIdTiers(session, idTiersAdmin);
                     copieFisc.setPrenomNomTiers(nom);
                     addCopie(viewBean, copieFisc);
                 }

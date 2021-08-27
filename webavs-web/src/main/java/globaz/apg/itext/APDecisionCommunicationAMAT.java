@@ -53,13 +53,17 @@ import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.external.IntRole;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.db.tauxImposition.PRTauxImposition;
+import globaz.prestation.db.tauxImposition.PRTauxImpositionManager;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater01;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
+import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRBlankBNumberFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.utils.PRDateUtils;
@@ -71,15 +75,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.text.FieldPosition;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+
 import net.sf.jasperreports.engine.JRDataSource;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <H1>Description</H1>
@@ -235,6 +234,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private String codeIsoLangue = "FR";
     private boolean createDocumentCopie = false;
+    private boolean createDocumentCopieFisc = false;
     private String csTypeDocument;
     private String date;
     private PRDemande demande = null;
@@ -546,8 +546,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(5).getDescription());
         }
 
-        if (isDocumentCopy()) {
-            parametres.put("P_COPIE", document.getTextes(1).getTexte(4).getDescription());
+        final Boolean paramCopie = new Boolean(getSession().getApplication().getProperty(
+                APDecisionCommunicationAMAT.DOC_DEC_AMAT_COPIE_ASS));
+
+        if ((isDocumentCopy() && paramCopie.booleanValue())
+                || ((isDocumentCopy() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))) {
+            parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
         }
 
         // le corps du document
@@ -715,6 +719,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             throw new FWIException("Valeur de position incorrecte: " + e.getMessage());
         }
 
+        // ajoute le texte impot source si décision standard et le droit est soumis à l'impôt source
+        if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD && droit.getIsSoumisImpotSource()) {
+            ajouteTexteImpotSource(document, buffer);
+            this.setCreateDocumentCopieFisc(true);
+        }
+
         completePied(parametres, buffer, document.getTextes(4));
         parametres.put("PARAM_PIED", buffer.toString());
 
@@ -777,19 +787,83 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         } catch (final Exception e) {
             throw new FWIException("Impossible de charger le pied de page", e);
         }
-        final Boolean paramCopie = new Boolean(getSession().getApplication().getProperty(
-                APDecisionCommunicationAMAT.DOC_DEC_AMAT_COPIE_ASS));
 
         if (isCreateDocumentCopie() && paramCopie.booleanValue()) {
-            final TITiers t = new TITiers();
-            t.setSession(getSession());
-            t.setIdTiers(demande.getIdTiers());
-            // chargement de la ligne de copie avec le formater
-            final String ligne = t.getAdresseAsString(TIAvoirAdresse.CS_COURRIER, APApplication.CS_DOMAINE_ADRESSE_APG,
-                    JACalendar.todayJJsMMsAAAA(), new PRTiersAdresseCopyFormater01());
+            initCopieACopieA2(document, parametres);
+        }
+        if (isCreateDocumentCopie() && isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
+            initCopieA2Fisc(document, parametres);
+        }
+    }
 
-            parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
-            parametres.put("P_COPIE_A2", ligne);
+    private String getTextOrEmpty(ICTDocument document, int niveau, int position) {
+        try {
+            return document.getTextes(niveau).getTexte(position).getDescription();
+        } catch (IndexOutOfBoundsException e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, "APDecisionCommunicationAMAT");
+            return "";
+        }
+    }
+
+    private void initCopieACopieA2(ICTDocument document, Map parametres) throws Exception {
+        final TITiers t = new TITiers();
+        t.setSession(getSession());
+        t.setIdTiers(demande.getIdTiers());
+        // chargement de la ligne de copie avec le formater
+        final String ligne = t.getAdresseAsString(TIAvoirAdresse.CS_COURRIER, APApplication.CS_DOMAINE_ADRESSE_APG,
+                JACalendar.todayJJsMMsAAAA(), new PRTiersAdresseCopyFormater01());
+
+        parametres.put("P_COPIE_A", getTextOrEmpty(document, 1, 8));
+        parametres.put("P_COPIE_A2", ligne);
+    }
+
+    private void initCopieA2Fisc(ICTDocument document, Map parametres) throws Exception {
+        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), demande.getIdTiers());
+
+        // chargement de la ligne de copie avec le formater
+        final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
+                new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
+
+        if (parametres.get("P_COPIE_A2") != null)
+            parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + "\n" + ligneAdmFiscale);
+        else {
+            parametres.put("P_COPIE_A2", ligneAdmFiscale);
+        }
+        parametres.put("P_COPIE_A", getTextOrEmpty(document, 1, 8));
+    }
+
+    private void ajouteTexteImpotSource(ICTDocument document, StringBuffer buffer) throws Exception {
+        String taux = droit.getTauxImpotSource();
+
+        // si aucun taux n'a été défini dans le droit
+        if (JadeStringUtil.isDecimalEmpty(taux)) {
+
+            // on va rechercher tous les taux pour ce canton et pour la période de la prestation
+            String cantonImposition = PRTiersHelper.getCanton(getSession(), droit.getNpa());
+
+            PRTauxImpositionManager mgrTauxImpot = new PRTauxImpositionManager();
+            mgrTauxImpot.setSession(getSession());
+            mgrTauxImpot.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
+            mgrTauxImpot.setOrderBy(PRTauxImposition.FIELDNAME_DATEDEBUT);
+            mgrTauxImpot.setForPeriode(droit.getDateDebutDroit(), droit.getDateFinDroit());
+            mgrTauxImpot.setForCsCanton(cantonImposition);
+            mgrTauxImpot.find(BManager.SIZE_NOLIMIT);
+
+            List<PRTauxImposition> tauxImpots = mgrTauxImpot.getContainerAsList();
+
+            // on retourne le premier taux trouvé
+            if (tauxImpots.size() > 0) {
+                taux = tauxImpots.get(0).getTaux();
+            }
+        }
+
+        // on récupère et on complète le texte avec les paramètres
+        String textImpotSource = getTextOrEmpty(document, 4, 105);
+        if (StringUtils.isNotBlank(textImpotSource)) {
+            buffer.setLength(0);
+            buffer.append("\n\n");
+            buffer.append(PRStringUtils.replaceString(textImpotSource, "{tauxImposition}", JANumberFormatter.format(taux, 0.01, 2, JANumberFormatter.NEAR)));
         }
     }
 
@@ -2689,6 +2763,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         return createDocumentCopie;
     }
 
+     /**
+     * Retourne si le document doit avoir une copie au fisc
+     *
+     * @return
+     */
+    public boolean isCreateDocumentCopieFisc() {
+        return createDocumentCopieFisc;
+    }
+
+
     /**
      * Permet de savoir si document de copie
      *
@@ -2922,6 +3006,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
      */
     public void setCreateDocumentCopie(final boolean newCreateDocumentCopie) {
         createDocumentCopie = newCreateDocumentCopie;
+    }
+
+     /**
+     * Indique si création de document de copie au fisc
+     *
+     * @param newCreateDocumentCopieFisc
+     */
+    public void setCreateDocumentCopieFisc(final boolean newCreateDocumentCopieFisc) {
+        createDocumentCopieFisc = newCreateDocumentCopieFisc;
     }
 
     /**

@@ -429,7 +429,7 @@ public class PRTiersHelper {
 
     }
 
-    public static String getAdresseAdministrationFiscaleByIdTiers(BSession session, String idTiers) throws Exception {
+   public static String getIdTiersAdministrationFiscale(BSession session, String idTiers) throws Exception {
 
             // Trouver le canton de domicile du bénéfiaire principal
             PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(session, idTiers,
@@ -442,10 +442,10 @@ public class PRTiersHelper {
             String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
             String langueTier = tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
 
-            return PRTiersHelper.getAdresseAdministrationFiscale(session, langueTier, cantonDomicile);
+            return PRTiersHelper.getIdTiersAdministrationFiscale(session, langueTier, cantonDomicile);
     }
 
-    public static String getAdresseAdministrationFiscale(BSession session, String langue, String idCanton) throws Exception {
+    public static String getIdTiersAdministrationFiscale(BSession session, String langue, String idCanton) throws Exception {
         TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
         admAdrMgr.setSession(session);
 
@@ -457,9 +457,9 @@ public class PRTiersHelper {
         admAdrMgr.find();
 
         if (admAdrMgr.isEmpty()) {
-//            if (!JadeStringUtil.contains(warningCopy.toString(), session.getLabel("WARNING_ADM_FISCALE"))) {
-//                warningCopy.append(session.getLabel("WARNING_ADM_FISCALE") + "\n");
-//            }
+            /*if (!JadeStringUtil.contains(warningCopy.toString(), session.getLabel("WARNING_ADM_FISCALE"))) {
+                warningCopy.append(session.getLabel("WARNING_ADM_FISCALE") + "\n");
+            }*/
             throw new Exception(session.getLabel("WARNING_ADM_FISCALE"));
         }
 
