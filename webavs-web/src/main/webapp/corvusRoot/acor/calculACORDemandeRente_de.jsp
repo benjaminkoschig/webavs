@@ -384,12 +384,7 @@
         </p>
     </td>
 </tr>
-<tr><td>
-<p>---------------------------------------------------------------------------------------------</p>
-<p>ANCIEN ACOR</p>
-</td>
-</tr>
-<%    } %>
+<%    } else { %>
 <tr>
     <td colspan="4">
         <h6>
@@ -418,6 +413,7 @@
         </p>
     </td>
 </tr>
+<% } %>
 <% } %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <input type="button"
