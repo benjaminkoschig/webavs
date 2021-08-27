@@ -135,7 +135,7 @@ function updatePage() {
           <tr> 
             <td nowrap>Masse effective</td>
             <td>
-                <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE) || CodeSystem.TYPE_ASS_CRP_BASIC.equals(viewBean.getAssurance().getTypeAssurance())) {%>
+                <% if (DSDeclarationViewBean.CS_COMPTABILISE.equalsIgnoreCase(viewBean.getDeclaration().getEtat()) || CodeSystem.TYPE_ASS_CRP_BASIC.equals(viewBean.getAssurance().getTypeAssurance())) {%>
                     <input name='montantDeclarationComp' <%=isReadonlyAutres%>  value="<%=viewBean.getMontantDeclaration()%>" class="<%=classAutres%>">
                 <% } else {%>
                     <input name='montantDeclaration' <%=isReadonlyAutres%>  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else if (!"0.00".equals(viewBean.getDeclaration().getMasseSalTotal())) {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="<%=classAutres%>">
@@ -145,12 +145,16 @@ function updatePage() {
           <tr> 
             <td>Cotisation due</td>
             <td>
-                <input name='cotisationDue' <%=isReadonlyCotisationDue%> value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="<%=classCotisationDue%>">
+                <% if (DSDeclarationViewBean.CS_COMPTABILISE.equalsIgnoreCase(viewBean.getDeclaration().getEtat()) || CodeSystem.TYPE_ASS_CRP_BASIC.equals(viewBean.getAssurance().getTypeAssurance())) {%>
+                    <input name='cotisationDue' <%=isReadonlyCotisationDue%> value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="<%=classCotisationDue%>">
+                <% } else {%>
+                    <input name='cotisationDueCalcule' <%=isReadonlyCotisationDue%> value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="<%=classCotisationDue%>">
+                <%}%>
             </td>
           </tr>
           <tr> 
             <td>Acompte</td>
-            <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+            <% if (DSDeclarationViewBean.CS_COMPTABILISE.equalsIgnoreCase(viewBean.getDeclaration().getEtat()) && !CodeSystem.TYPE_ASS_CRP_BASIC.equalsIgnoreCase(viewBean.getAssurance().getTypeAssurance())) {%>
             <td><input name='cumulCotisation' readonly value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getMontantFactureACEJour())%>" class="montantDisabled"></td>
             <%} else {%>
             <td><input name='cumulCotisation' readonly value="<%if (viewBean.getCompteur() != null) {%><%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCompteur().getCumulCotisation())%><%}else{%><%="0.00"%><%}%>" class="montantDisabled"></td>
