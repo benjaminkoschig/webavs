@@ -39,7 +39,7 @@ public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> impl
     private static String loadAcorBaseUrl() {
         return Exceptions.checkedToUnChecked(() -> {
             String adresseWeb = CommonProperties.ACOR_ADRESSE_WEB.getValue();
-            String adressePath = CommonProperties.ACOR_BACKEND_PATH.getValueWithDefault("/backend/acor-ws-core-web");
+            String adressePath = CommonProperties.ACOR_BACKEND_PATH.getValueWithDefault("/acor-ws-core-web");
             return Slashs.deleteLastSlash(adresseWeb) + Slashs.addFirstSlash(adressePath);
         }, "Impossible to have properties for acor");
     }
