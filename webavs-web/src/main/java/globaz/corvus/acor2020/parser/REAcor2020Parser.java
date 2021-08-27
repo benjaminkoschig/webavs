@@ -549,6 +549,8 @@ public class REAcor2020Parser {
             if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr())) {
                 //        bc.setRevenuSplitte(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_SPLITTE"))); $b38
                 bc.setRevenuSplitte(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
+                // On met la même valeur que le revenu splitté.
+                bc.setIsPartageRevenuActuel(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
                 //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
                 bc.setFacteurRevalorisation(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getFacRev(), StringUtils.EMPTY));
 
@@ -639,9 +641,6 @@ public class REAcor2020Parser {
         }
 
         bc.setReferenceDecision("0");
-
-        // TODO : contenu dans la remarque ?
-//        bc.setIsPartageRevenuActuel();
 
         if (!fCalcul.getAnalysePeriodes().isEmpty()) {
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
@@ -932,15 +931,11 @@ public class REAcor2020Parser {
 
         List<Integer> refugies = fCalcul.getAssure().stream().filter(assure -> StringUtils.equals(assure.getId().getValue(), prestation.getBeneficiaire())).map(assure -> assure.getRefugie()).collect(Collectors.toList());
         if (refugies.stream().anyMatch(value -> Objects.nonNull(value))) {
+        // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
             ra.setCodeRefugie("1");
         } else {
             ra.setCodeRefugie("0");
         }
-
-        // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
-
-        // TODO : champ non mappé -> égale à 0 dans le fichier plat.
-        // ra.setCodeAuxilliaire(REACORAbstractFlatFileParser.getField(line, fields, "CODE_AUXILIAIRE")); $r6
 
         return ra;
     }

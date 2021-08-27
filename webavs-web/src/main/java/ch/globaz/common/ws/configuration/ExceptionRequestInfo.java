@@ -7,7 +7,7 @@ import lombok.Data;
  * Cette à pour but d'être un dto et de remonter des informations sur une exception.
  */
 @Data
-class ExceptionRequestInfo {
+public class ExceptionRequestInfo {
 
     private final RequestInfo requestInfo;
     private final String stackTrace;

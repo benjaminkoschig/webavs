@@ -7,16 +7,15 @@ import com.google.common.base.Throwables;
 public final class Acor2020StandardErrorUtil {
 
     public static final String ERROR_ACOR_EXTERN_TOKEN_INVALID = "ERROR.ACOR_EXTERN.TOKEN.INVALID";
-    public static final String ERROR_ACOR_EXTERN_IMPORT_UNKOWN = "ERROR.ACOR_EXTERN.IMPORT.UNKOWN";
-    public static final String ERROR_ACOR_EXTERN_IMPORT_IN_HOST = "ERROR.ACOR_EXTERN.IMPORT.IN_HOST";
-    public static final String ERROR_ACOR_EXTERN_IMPORT_CONVERT = "ERROR.ACOR_EXTERN.IMPORT.CONVERT";
-    public static final String ERROR_ACOR_EXTERN_EXPORT_UNKNOWN = "ERROR.ACOR_EXTERN.EXPORT.UNKNOWN";
-    public static final String ERROR_ACOR_EXTERN_EXPORT_SPE = "&ERROR.ACOR_EXTERN.EXPORT.SPE";
+    public static final String ERROR_ACOR_IMPORT = "error.acor.import";
+    public static final String ERROR_ACOR_EXPORT = "error.acor.export";
+    public static final String ERROR_ACOR_IMPORT_SUBJECT = "error.acor.import.subject";
+    public static final String ERROR_ACOR_EXPORT_SUBJECT = "error.acor.export.subject";
+    public static final String ERROR_ACOR_GLOBAL = "error.acor.global";
     public static final String TOKEN_INVALIDE = "Token invalide.";
 
     private Acor2020StandardErrorUtil() {
     }
-
 
     /**
      * Méthode permettant de générer des erreurs standards lorsqu'un traitement est en erreur.

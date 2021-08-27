@@ -1,54 +1,14 @@
 package globaz.corvus.acor2020.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9Type;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiCurrentType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiInformations;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.CiType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonAgeFlexible;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonRenteType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliCType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.rentes.xsd.common.OrganisationAdresseType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
+import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
-import globaz.corvus.acor2020.business.FractionRente;
-import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
-import globaz.corvus.acor2020.business.Ligne;
-import globaz.corvus.acor2020.business.RCIContainer;
-import globaz.corvus.acor2020.business.REDateNaissanceComparator;
+import globaz.corvus.acor2020.business.*;
 import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
@@ -60,6 +20,7 @@ import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
@@ -69,11 +30,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.hera.api.ISFEnfant;
-import globaz.hera.api.ISFMembreFamilleRequerant;
-import globaz.hera.api.ISFPeriode;
-import globaz.hera.api.ISFRelationFamiliale;
-import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.api.*;
 import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.wrapper.SFPeriodeWrapper;
@@ -82,14 +39,19 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
-import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
-import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
+import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
+import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
+import globaz.pyxis.api.ITIAdministration;
+import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.tiers.TITiers;
+import globaz.webavs.common.CommonProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,16 +64,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class REExportationCalculAcor2020  {
 
@@ -170,7 +123,7 @@ public class REExportationCalculAcor2020  {
             inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
             inHost.getEnfant().addAll(createListEnfants(membresCatEnfants));
         } catch (Exception e) {
-            LOG.error("Erreur lors de la construction du inHost.", e);
+            throw new RETechnicalException("Erreur lors de la construction du inHost.", e);
         }
         return inHost;
     }
@@ -229,7 +182,9 @@ public class REExportationCalculAcor2020  {
         demandeType.setDateDepot(getDateDepot(demandeRente.getDateDepot()));
 
         // NOUVELLES DONNES XSD OBLIGATOIRES
+        demandeType.setCaisseAgence(getCaisseAgence(session));
         //TODO adresse de la caisse par des propriétés applications à créer
+        demandeType.setAdresseCaisse(createAdresseCaisse());
         demandeType.setMoisRapport(0);
         demandeType.setLangue(StringUtils.lowerCase(session.getIdLangue()));
         demandeType.setTypeCalcul(getTypeCalcul(demandeRente.getCsTypeCalcul()));
@@ -237,6 +192,50 @@ public class REExportationCalculAcor2020  {
         return demandeType;
     }
 
+    private OrganisationAdresseType createAdresseCaisse() {
+        OrganisationAdresseType adresseCaisse = new OrganisationAdresseType();
+
+        try {
+            ITIAdministration cre = CaisseHelperFactory.getInstance().getAdministrationCaisse(getSession());
+            TITiers tiers = getTiers(cre.getIdTiers());
+            TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
+                    null, null, true, cre.getLangue());
+
+            adresseCaisse.setNom(cre.getNom());
+            adresseCaisse.setAdresse(adresse.casePostale);
+            adresseCaisse.setLocalite(adresse.localiteNom);
+            adresseCaisse.setCodePostal(adresse.localiteNpa);
+            adresseCaisse.setPays(PRConverterUtils.formatRequiredInteger(cre.getIdPays()));
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer l'adresse de la caisse.", e);
+        }
+        return adresseCaisse;
+    }
+
+    private TITiers getTiers(String idTiers) {
+        TITiers tiers = null;
+        try {
+            tiers = new TITiers();
+            tiers.setSession(getSession());
+            tiers.setIdTiers(idTiers);
+            tiers.retrieve();
+        } catch (Exception exception) {
+            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", idTiers, exception);
+        }
+        return tiers;
+    }
+
+    private Integer getCaisseAgence(BSession session) {
+        Integer caisseAgence = 0;
+        try {
+            String noCaisse = session.getApplication().getProperty(CommonProperties.KEY_NO_CAISSE);
+            String noAgence = session.getApplication().getProperty(CommonProperties.KEY_NO_AGENCE);
+            caisseAgence = Integer.valueOf(noCaisse + noAgence);
+        } catch (Exception e) {
+            LOG.error("Erreur lors de la récupération du numéro de la caisse.", e);
+        }
+        return caisseAgence;
+    }
 
     private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille) {
         return new PRAcorAssureTypeMapper(this.prAcorMapper, membresFamille).map(this::addInformationInAssreType);
@@ -252,8 +251,7 @@ public class REExportationCalculAcor2020  {
             getSession().addError(getSession().getLabel("ERREUR_INFOS_COMP"));
         }
         assureType.setRefugie(infoCompl.getIsRefugie());
-        // TODO : gestion des données veto
-        //        assure.setDonneesVeto(createDonnesVeto(infoCompl));
+        assureType.setDonneesVeto(createDonnesVeto(infoCompl));
 
         // RENTES
         addRentesAssures(assureType, membre);
@@ -284,11 +282,17 @@ public class REExportationCalculAcor2020  {
 
     private AssureType.DonneesVeto createDonnesVeto(PRInfoCompl infoCompl) {
         AssureType.DonneesVeto donneesVeto = new AssureType.DonneesVeto();
-        // TODO : veto 1 = transfert , 2 = remboursement , 3 = autre raison
+
+        // TODO : voir avec French : date de veto et impact acorV3
         // Actuellement, autre raison = 2 dans WebAVS -> faut-il modifier le Code systèmes ? attention aux impacts sur l'ancien acor.
         // De plus s'il y a un veto, il faut renseigner une date de veto --> quelle date doit être prise en compte.
-        donneesVeto.setVetoPrestation(PRConverterUtils.formatRequiredInteger(PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation())));
+        String codeVeto = PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation());
+        if (StringUtils.isNotEmpty(codeVeto)) {
+            donneesVeto.setVetoPrestation(PRConverterUtils.formatRequiredInteger(codeVeto));
+            donneesVeto.setDateVeto(PRConverterUtils.formatDate(infoCompl.getDateInfoCompl(), DD_MM_YYYY_FORMAT));
         return donneesVeto;
+    }
+        return null;
     }
 
     /**
@@ -392,9 +396,6 @@ public class REExportationCalculAcor2020  {
             } catch (Exception e) {
                 getSession().addError("Erreur lors de la récupération de la rente accordée.");
             }
-            // Non utilisé
-            // TODO : valeur 0 non valide (Enum Mutationscode_Type dans Prestations-types.xsd) ->
-//          // TODO : information contenu dans la rente accordée : RERenteAccordee --> YLLCMU
             if (StringUtils.isNotEmpty(renteAccordee.getCodeMutation())) {
                 commonRente.setCodeMutation(PRConverterUtils.formatRequiredInteger(renteAccordee.getCodeMutation()));
             }
@@ -556,9 +557,8 @@ public class REExportationCalculAcor2020  {
         ram.setDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getRam()));
         // 8. durée cotisation ram
         ram.setBeitragsdauerDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimal(rente.getDureeCotRam()));
-//        TODO : valeur 0 non valide -> enum  1,2,3 (code revenu pris dans Prestations9-types.xsd) Le code revenu ne devrait pas être vide.
-        ram.setAngerechneteEinkommen((short) 1);
-//        ram.setAngerechneteEinkommen(formatRequiredShort(rente.getCodeRevenu()));
+        // 9. code revenu
+        ram.setAngerechneteEinkommen(PRConverterUtils.formatRequiredShort(rente.getCodeRevenu()));
         return ram;
     }
 
@@ -665,10 +665,7 @@ public class REExportationCalculAcor2020  {
         donnesAi.setIstFruehInvalid(rente.getIsInvaliditePrecoce());
         // 23. office ai
         donnesAi.setIVStelle(rente.getOfficeAI());
-        //TODO faut-il tester tous les champs pour savoir si donneesAI doit être remplies ?
-        if (JadeStringUtil.isBlankOrZero(donnesAi.getIVStelle())) {
-            return null;
-        }
+
         return donnesAi;
     }
 
@@ -830,12 +827,11 @@ public class REExportationCalculAcor2020  {
         return periode;
     }
 
+    // TODO : valeur non défini dans WebAVS actuellement --> sujet à voir avec Pool
     private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
-        // TODO : identifier quand on est sur un cas recueilliC
         PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
         periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
         periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        //TODO voir quoi mettre
 //        periode.setParentNonBiologique();
         return periode;
     }
@@ -1287,7 +1283,6 @@ public class REExportationCalculAcor2020  {
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
             enfant.setDateDeces(PRConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
         }
-        //TODO demande un int dans le JSON sinon l'appli client met une erreur
         enfant.setNationalite(this.prAcorMapper.getCodePays(membre.getCsNationalite()));
         enfant.setDomicile(this.prAcorMapper.getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
         enfant.setRefugie(false);
@@ -1306,7 +1301,6 @@ public class REExportationCalculAcor2020  {
         } else {
             enfant.setMereInconnue(true);
         }
-        // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
         enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(session, membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
             enfant.setDateAdoption(PRConverterUtils.formatDate(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
@@ -1324,7 +1318,6 @@ public class REExportationCalculAcor2020  {
 
     private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
         for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {
-            // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
                 enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
             } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
@@ -1401,7 +1394,6 @@ public class REExportationCalculAcor2020  {
 
             ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) ligne
                     .getConjoint();
-            // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
             famille.getNavs().add(PRConverterUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
             famille.getNavs().add(getNssMembre(exConjointDuConjoint));
         } else {
@@ -1517,7 +1509,6 @@ public class REExportationCalculAcor2020  {
                 }
 
 
-                // TODO : la gestion des dates de fin de relation reste un mystère.
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
@@ -1826,10 +1817,8 @@ public class REExportationCalculAcor2020  {
             return TypeDemandeEnum.S;
         } else if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(csTypeDemandeRente)) {
             return TypeDemandeEnum.V;
-        } else {
-            // TODO : Que faut-il renvoyer si cs type demande est différent des trois tests
-            return TypeDemandeEnum.V;
         }
+        return null;
     }
 
     public int getTypeCalcul(String csTypeCalcul) {

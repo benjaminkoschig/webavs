@@ -4,7 +4,6 @@ import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import globaz.corvus.acor2020.ws.token.REAcor2020Token;
-import globaz.corvus.application.REApplication;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;

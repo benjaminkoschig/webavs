@@ -378,7 +378,6 @@ public class REImportationCalculAcor2020 {
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
 
         try {
-            // TODO load deamande à partir de l'id --> voir pour le type loadDemandeRente()
             REDemandeRente demandeRente = loadDemandeRente(session, null, idDemande);
 
             if (IREDemandeRente.CS_TYPE_CALCUL_PREVISIONNEL.equals(demandeRente.getCsTypeCalcul())) {
@@ -398,7 +397,6 @@ public class REImportationCalculAcor2020 {
             }
 
             demandeRente = loadDemandeRente(session, transaction, idDemande);
-            // TODO : identifier comment récupérer l'id tiers --> paramètre ou depuis la demandeRente ??
             reinitialiserToutesDemandesNonValideesFamille(session, idTiers);
 
             // Identification du cas à traiter :
@@ -489,14 +487,12 @@ public class REImportationCalculAcor2020 {
                 int ret = importationCIAdditionnelsDepuisCalculACOR9(session, transaction, mapAP, demandeRente, resultat9);
                 // Traitement standard....
                 if (ret == 1) {
-                    // TODO : pas de fCalcul dans le cadre d'une 9e --> valeur null
                     idCopieDemande = importationDesAnnoncesDuCalculACOR9(session, transaction,
                             idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, resultat9);
                 }
             }
             // Pas de ci additionnel, traitement standard.
             else {
-                // TODO : pas de fCalcul dans le cadre d'une 9e --> valeur null
                 idCopieDemande = importationDesAnnoncesDuCalculACOR9(session, transaction,
                         idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, resultat9);
             }
@@ -511,8 +507,6 @@ public class REImportationCalculAcor2020 {
             }
 
             // Inforom D0112 : recherche si des remarques particulières sont présentes dans la feuille de calcul
-            // TODO : trouver les remarques dans resultat9
-            String fCalcul = resultat9.getAnnexes().getFCalcul();
             traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, idDemande);
 
             /*
@@ -1070,7 +1064,6 @@ public class REImportationCalculAcor2020 {
 
         ReturnedValue returnedValue = REAcor2020Parser.doMAJPrestations(session, transaction, demande, fCalcul, noCasATraiter);
 
-        // TODO : mettre à jour rentes accordées avec le nouveau mapping.
         rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
         remarquesParticulieres = returnedValue.getRemarquesParticulieres();
         /*
@@ -1105,33 +1098,13 @@ public class REImportationCalculAcor2020 {
                                                      final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final Resultat9 resultat9)
             throws PRACORException, Exception {
 
-        // TODO : utiliser le REAcor2020Parser pour mapper à partir de fcalcul et non plus annonce.pay
         // On récupère l'ancien fichier .pay pour conserver le mapping
         StringReader annoncePayReader = new StringReader(resultat9.getAnnexes().getPay());
         // Ancien parsing du fichier annonce.pay
         REACORParser.ReturnedValue returnedValue = REACORParser.parse(session, transaction, demande,
                 annoncePayReader, noCasATraiter);
 
-        // TODO : mettre à jour rentes accordées avec le nouveau mapping.
         rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
-
-        /* Lecture du fichier annonce.rr en priorité */
-        /* Mis en commentaire car le fichier ne sera plus généré par ACOR */
-//          if (!JadeStringUtil.isEmpty(resultat9.getAnnexes().getRr())) {
-//          globaz.corvus.acor.parser.rev09.REACORParser.parseAnnonceRR(session, transaction, new StringReader(
-//                  resultat9.getAnnexes().getRr()), rentesAccordees);
-//          }
-
-        // TODO : voir comment récupérer annonces.xml avec la nouvelle version ACOR.
-        /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
-         */
-//        if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
-//            REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
-//            annonceXmlReader.readAnnonceXmlContent(session, (BTransaction) transaction,
-//                    caViewbean.getContenuAnnonceXML(), rentesAccordees);
-//        } else {
-//            // Si aucun fichier d'annonce à lire, on ne lit rien
-//        }
 
         return returnedValue.getIdCopieDemande();
     }
