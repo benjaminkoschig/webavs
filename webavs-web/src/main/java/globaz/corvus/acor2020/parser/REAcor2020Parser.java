@@ -6,8 +6,8 @@ import acor.rentes.xsd.fcalcul.Rente;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
-import globaz.corvus.acor2020.service.REImportationCalculAcor2020;
 import globaz.corvus.acor2020.business.FractionRente;
+import globaz.corvus.acor2020.service.REImportationCalculAcor2020;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.basescalcul.IREPrestationDue;
@@ -18,7 +18,11 @@ import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.basescalcul.REBasesCalculDixiemeRevision;
 import globaz.corvus.db.basescalcul.REBasesCalculManager;
 import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.rentesaccordees.*;
+import globaz.corvus.db.rentesaccordees.REPrestationDue;
+import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
+import globaz.corvus.db.rentesaccordees.RERenteCalculee;
 import globaz.corvus.regles.REDemandeRegles;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
@@ -36,6 +40,7 @@ import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
+import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -44,7 +49,12 @@ import globaz.prestation.tools.PRDateFormater;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class REAcor2020Parser {
@@ -528,7 +538,7 @@ public class REAcor2020Parser {
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getBte())) {
                 //      bc.setAnneeBonifTacheEduc(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_EDUC"));
-                bc.setAnneeBonifTacheEduc(REConverterUtils.formatFloatToStringWithTwoDecimal(baseCalcul.getBaseRam().getBte().getAnDecimal()));
+                bc.setAnneeBonifTacheEduc(PRConverterUtils.formatFloatToStringWithTwoDecimal(baseCalcul.getBaseRam().getBte().getAnDecimal()));
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getBtrans())) {
                 //        bc.setAnneeBonifTransitoire(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TRANSITOIRE"));
@@ -543,11 +553,11 @@ public class REAcor2020Parser {
                 bc.setFacteurRevalorisation(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getFacRev(), StringUtils.EMPTY));
 
                 //        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
-                bc.setDureeRevenuAnnuelMoyen(REConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
+                bc.setDureeRevenuAnnuelMoyen(PRConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
             }
         }
         //        bc.setAnneeDeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU")); $b10
-        bc.setAnneeDeNiveau(REConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY)));
+        bc.setAnneeDeNiveau(PRConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY)));
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
 
@@ -575,14 +585,14 @@ public class REAcor2020Parser {
             //        bc.setAnneeCotiClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COTI_CLASSE_AGE")); $b9
             bc.setAnneeCotiClasseAge(Objects.toString(baseCalcul.getBaseEchelle().getAnCotClss(), StringUtils.EMPTY));
 
-            bc.setAnneeDeNiveau(REConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getBaseEchelle().getAnNiveau(), StringUtils.EMPTY)));
+            bc.setAnneeDeNiveau(PRConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getBaseEchelle().getAnNiveau(), StringUtils.EMPTY)));
             for (BaseEchelle.DCot eachDCot : baseCalcul.getBaseEchelle().getDCot()) {
                 switch (eachDCot.getType()) {
                     // Mariage/veuvage sans cotisations
                     case 2:
 //        bc.setPeriodeMariage(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_MARIAGE")); $b34
-                        StringBuilder periodeMariage = new StringBuilder(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
-                        periodeMariage.append(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
+                        StringBuilder periodeMariage = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
+                        periodeMariage.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
                         bc.setPeriodeMariage(periodeMariage.toString());
                         break;
                     // mois d'appoint
@@ -603,23 +613,23 @@ public class REAcor2020Parser {
                     // assurance étrangère
                     case 8:
 //        bc.setPeriodeAssEtrangerAv73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_AV_73")); $b35
-                        StringBuilder periodeAssEtrAv73 = new StringBuilder(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
-                        periodeAssEtrAv73.append(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
+                        StringBuilder periodeAssEtrAv73 = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
+                        periodeAssEtrAv73.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
                         bc.setPeriodeAssEtrangerAv73(periodeAssEtrAv73.toString());
 //        bc.setPeriodeAssEtrangerDes73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_DES73")); $b49
-                        StringBuilder periodeAssEtrAp73 = new StringBuilder(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
-                        periodeAssEtrAp73.append(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
+                        StringBuilder periodeAssEtrAp73 = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
+                        periodeAssEtrAp73.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
                         bc.setPeriodeAssEtrangerDes73(periodeAssEtrAp73.toString());
                         break;
                     // total
                     case 10:
 //        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
-                        StringBuilder dureeCotiAv73 = new StringBuilder(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
-                        dureeCotiAv73.append(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
+                        StringBuilder dureeCotiAv73 = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
+                        dureeCotiAv73.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
                         bc.setDureeCotiAvant73(dureeCotiAv73.toString());
 //        bc.setDureeCotiDes73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_DES_73")); $b7
-                        StringBuilder dureeCotiAp73 = new StringBuilder(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
-                        dureeCotiAp73.append(REConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
+                        StringBuilder dureeCotiAp73 = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
+                        dureeCotiAp73.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
                         bc.setDureeCotiDes73(dureeCotiAp73.toString());
                         break;
                     default:
@@ -637,7 +647,7 @@ public class REAcor2020Parser {
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
             bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
 //        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
-            bc.setPeriodeJeunesse(REConverterUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
+            bc.setPeriodeJeunesse(PRConverterUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
         }
 
         return bc;
@@ -791,7 +801,7 @@ public class REAcor2020Parser {
         // par des blancs
 //        String casSpeciaux = REACORAbstractFlatFileParser.getField(line, fields, "CODE_CAS_SPECIAUX"); $r14
         for (int i = 0; i < rente.getCodeCasSpecial().size(); i++) {
-            String codeCasSpecial = REConverterUtils.formatIntToStringWithTwoChar(rente.getCodeCasSpecial().get(i));
+            String codeCasSpecial = PRConverterUtils.formatIntToStringWithTwoChar(rente.getCodeCasSpecial().get(i));
             switch (i) {
                 case 0:
                     ra.setCodeCasSpeciaux1(codeCasSpecial);
@@ -814,7 +824,7 @@ public class REAcor2020Parser {
         }
 
 //        String codeMutation = REACORAbstractFlatFileParser.getField(line, fields, "CODE_MUTATION"); $r19
-        String codeMutation = REConverterUtils.formatIntToStringWithTwoChar(rente.getCodeMutation());
+        String codeMutation = PRConverterUtils.formatIntToStringWithTwoChar(rente.getCodeMutation());
 
         if (!JadeStringUtil.isBlankOrZero(codeMutation)) {
             ra.setCodeMutation(codeMutation);
@@ -963,7 +973,7 @@ public class REAcor2020Parser {
 //                        ra.setDateRevocationAjournement(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT"))); $r22
                     ra.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(eachTranche.getDateRevocation(), StringUtils.EMPTY)));
                     //        ra.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT")); $r20
-                    ra.setDureeAjournement(REConverterUtils.formatMMtoAxMM(eachTranche.getDureeAjournement()));
+                    ra.setDureeAjournement(PRConverterUtils.formatMMtoAxMM(eachTranche.getDureeAjournement()));
                     //        ra.setSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields, "SUPPLEMENT_AJOURNEMENT")); $r21
                     ra.setSupplementAjournement(Objects.toString(eachTranche.getMontantSupplement(), StringUtils.EMPTY));
                     return ra;
@@ -986,7 +996,7 @@ public class REAcor2020Parser {
             for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche.Rente eachRente : eachTranche.getRente()) {
                 if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
                     //                        ra.setAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_ANTICIPATION")); $r23
-                    ra.setAnneeAnticipation(REConverterUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
+                    ra.setAnneeAnticipation(PRConverterUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
                     ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));

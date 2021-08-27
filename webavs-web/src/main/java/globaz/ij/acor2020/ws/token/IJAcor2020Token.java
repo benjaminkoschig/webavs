@@ -1,6 +1,6 @@
 package globaz.ij.acor2020.ws.token;
 
-import ch.globaz.common.acor.Acor2020Token;
+import globaz.prestation.acor.acor2020.ws.Acor2020Token;
 import lombok.Data;
 
 @Data

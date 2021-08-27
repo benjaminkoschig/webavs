@@ -1,6 +1,6 @@
 package globaz.corvus.acor2020.ws.token;
 
-import ch.globaz.common.acor.Acor2020TokenServiceAbstract;
+import globaz.prestation.acor.acor2020.ws.Acor2020TokenServiceAbstract;
 import globaz.corvus.acor2020.ws.REAcor2020ApiRest;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.globall.db.BSession;

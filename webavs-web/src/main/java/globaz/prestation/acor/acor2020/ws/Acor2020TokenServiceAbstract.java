@@ -1,4 +1,4 @@
-package ch.globaz.common.acor;
+package globaz.prestation.acor.acor2020.ws;
 
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonProperties;

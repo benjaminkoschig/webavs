@@ -1,5 +1,6 @@
 package ch.globaz.common.domaine;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import java.util.Calendar;
 import java.util.Collections;
@@ -9,8 +10,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class DateTest {
     private void create100Times(final int nbThreads) throws InterruptedException {
@@ -479,5 +485,40 @@ public class DateTest {
     public void testForPartialDateGeneric() throws Exception {
         Date date = Date.forPartialDate("20160410");
         assertEquals(new Date("10.04.2016"), date);
+    }
+
+    @Test
+    public void formatDate_avecNull_renvoiNull() {
+        // arrange
+        String format = "dd.MM.yyyy";
+        // act
+        XMLGregorianCalendar result = PRConverterUtils.formatDate(null, format);
+
+        // assert
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void formatDate_avecStringNonConvertible_renvoiNull() {
+        // arrange
+        String format = "dd.MM.yyyy";
+        // act
+        XMLGregorianCalendar result = PRConverterUtils.formatDate("12.02", format);
+
+        // assert
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void formatDate_dateDD_MM_YYYY_renvoiDate() throws DatatypeConfigurationException {
+        // arrange
+        String format = "dd.MM.yyyy";
+        XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(2021, 2, 12, 0, 0, 0, 0, 60);
+
+        // act
+        XMLGregorianCalendar result = PRConverterUtils.formatDate("12.02.2021", format);
+
+        // assert
+        assertThat(result).isEqualTo(date);
     }
 }

@@ -161,7 +161,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <% } else if (viewBean.isAcorV4Web()) { %>
 <%
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-    String token = IJAcor2020TokenService.createToken(bSession);
+    String token = IJAcor2020TokenService.createToken(bSession,viewBean.getIdPrononce(),viewBean.getNoAVSAssure());
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")

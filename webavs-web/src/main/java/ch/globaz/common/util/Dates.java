@@ -1,8 +1,16 @@
 package ch.globaz.common.util;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.exceptions.Exceptions;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeStringUtil;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +18,7 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -160,6 +169,27 @@ public class Dates {
     public static long daysBetween(LocalDate fromDate, LocalDate toDate) {
         long between = ChronoUnit.DAYS.between(fromDate, toDate);
         return between >= 0 ? between + 1 : between - 1;
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendar(String date) {
+        return toXMLGregorianCalendar(date, "dd.MM.yyyy");
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendar(String date, String formatDate) {
+        if (JadeStringUtil.isBlankOrZero(date)) {
+            return null;
+        }
+        DateFormat format = new SimpleDateFormat(formatDate);
+        try {
+            Date dateFormat = format.parse(date);
+
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(dateFormat);
+
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+        } catch (DatatypeConfigurationException | ParseException e) {
+            throw new CommonTechnicalException("Error with this date:" + date, e);
+        }
     }
 
 }

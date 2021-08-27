@@ -1,4 +1,4 @@
-package ch.globaz.common.acor;
+package globaz.prestation.acor.acor2020.ws;
 
 import acor.rentes.xsd.standard.error.OriginType;
 import ch.globaz.common.ws.ExceptionHandler;
@@ -8,7 +8,7 @@ import globaz.prestation.acor.PRACORException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-@ExceptionMapper("acor2020")
+@ExceptionMapper("/acor2020")
 public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
     @Override
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {

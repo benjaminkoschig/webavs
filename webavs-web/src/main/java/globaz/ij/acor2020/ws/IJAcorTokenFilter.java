@@ -1,8 +1,8 @@
 package globaz.ij.acor2020.ws;
 
-import ch.globaz.common.acor.Acor2020TokenService;
-import ch.globaz.common.acor.AcorTokenFilterAbstract;
-import globaz.corvus.acor2020.ws.REAcor2020ApiRest;
+import globaz.ij.acor2020.ws.token.IJAcor2020TokenService;
+import globaz.prestation.acor.acor2020.ws.Acor2020TokenService;
+import globaz.prestation.acor.acor2020.ws.AcorTokenFilterAbstract;
 import globaz.corvus.acor2020.ws.token.REAcor2020TokenService;
 import globaz.ij.application.IJApplication;
 
@@ -23,6 +23,6 @@ public class IJAcorTokenFilter extends AcorTokenFilterAbstract {
 
     @Override
     public Acor2020TokenService getInstanceTokenConverter() {
-        return REAcor2020TokenService.getInstance();
+        return IJAcor2020TokenService.getInstance();
     }
 }

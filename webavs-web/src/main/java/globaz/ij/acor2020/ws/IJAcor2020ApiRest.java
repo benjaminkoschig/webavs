@@ -10,6 +10,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,17 +30,12 @@ public class IJAcor2020ApiRest {
     /**
      * Web Service exposé pour récupérer les données d'un dossier de IJAI dans le cadre d'un calcul ACOR.
      *
-     * @param token le token à contrôler.
-     *
      * @return le json ij-in.
      */
     @GET
-    @Path(value = "/import")
-    public Response importDossier(@HeaderParam("authorization") String token) {
-        LOG.info("Importation des données.");
-        IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
-
-        return Response.ok(this.ijAcor2020Service.createInHost(acor2020Token)).build();
+    @Path(value = "/import/{idPrononce}")
+    public Response importDossier(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce) {
+        return Response.ok(this.ijAcor2020Service.createInHost(idPrononce)).build();
     }
 
     /**

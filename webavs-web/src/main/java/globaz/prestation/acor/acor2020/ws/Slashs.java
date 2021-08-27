@@ -1,4 +1,4 @@
-package ch.globaz.common.acor;
+package globaz.prestation.acor.acor2020.ws;
 
 class Slashs {
     static String addFirstSlash(final String path) {

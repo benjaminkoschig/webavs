@@ -1,8 +1,8 @@
 package globaz.ij.acor2020.ws.token;
 
-import ch.globaz.common.acor.Acor2020TokenServiceAbstract;
 import globaz.globall.db.BSession;
 import globaz.ij.acor2020.ws.IJAcor2020ApiRest;
+import globaz.prestation.acor.acor2020.ws.Acor2020TokenServiceAbstract;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
@@ -23,11 +23,12 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
         return INSTANCE;
     }
 
-    public static String createToken(BSession bSession) {
+    public static String createToken(BSession bSession, final String idPrononce, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("exportUrl", EXPORT_URL);
-        claims.put("importUrl", IMPORT_URL);
+        claims.put("importUrl", IMPORT_URL + "/" + idPrononce);
+        claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);
     }

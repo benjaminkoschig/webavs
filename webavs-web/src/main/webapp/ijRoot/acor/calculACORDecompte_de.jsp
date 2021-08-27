@@ -179,7 +179,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <% } else if (viewBean.isAcorV4Web()) { %>
 <%
 	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-	String token = IJAcor2020TokenService.createToken(bSession);
+	String token = IJAcor2020TokenService.createToken(bSession, viewBean.loadPrononce().getIdPrononce(), viewBean.getNoAVSAssure());
 	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")

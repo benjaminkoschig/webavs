@@ -1,4 +1,4 @@
-package ch.globaz.common.acor;
+package globaz.prestation.acor.acor2020.ws;
 
 import acor.rentes.xsd.standard.error.OriginType;
 import acor.rentes.xsd.standard.error.StandardError;

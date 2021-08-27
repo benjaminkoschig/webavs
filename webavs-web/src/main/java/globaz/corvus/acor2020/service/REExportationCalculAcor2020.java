@@ -1,16 +1,54 @@
 package globaz.corvus.acor2020.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
-import acor.rentes.xsd.common.AdresseType;
-import acor.rentes.xsd.common.BanqueAdresseType;
-import acor.rentes.xsd.common.OrganisationAdresseType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9Type;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiCurrentType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiInformations;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CiType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonAgeFlexible;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonRenteType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliCType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
-import globaz.corvus.acor2020.business.*;
-import globaz.corvus.acor2020.parser.REConverterUtils;
+import globaz.corvus.acor2020.business.FractionRente;
+import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
+import globaz.corvus.acor2020.business.Ligne;
+import globaz.corvus.acor2020.business.RCIContainer;
+import globaz.corvus.acor2020.business.REDateNaissanceComparator;
 import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
@@ -25,15 +63,17 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
-import globaz.externe.IPRConstantesExternes;
-import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.hera.api.*;
+import globaz.hera.api.ISFEnfant;
+import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFPeriode;
+import globaz.hera.api.ISFRelationFamiliale;
+import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.wrapper.SFPeriodeWrapper;
@@ -42,21 +82,14 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
+import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
+import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
+import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
+import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.tools.impl.PRNSS13ChiffresUtils;
-import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
-import globaz.pyxis.constantes.IConstantes;
-import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
-import globaz.pyxis.db.adressecourrier.TIPays;
-import globaz.pyxis.db.adressecourrier.TIPaysManager;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import globaz.pyxis.db.tiers.TITiers;
-import globaz.pyxis.util.TIAdresseResolver;
-import globaz.webavs.common.CommonProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,9 +102,18 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-public class REExportationCalculAcor2020 {
+public class REExportationCalculAcor2020  {
 
     private static final Logger LOG = LoggerFactory.getLogger(REExportationCalculAcor2020.class);
 
@@ -95,6 +137,7 @@ public class REExportationCalculAcor2020 {
     public static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
     private static final int ANTICIPATION_OR_REVOCATION = 100;
     private static final int AJOURNEMENT = 0;
+    private PRAcorMapper prAcorMapper;
 
     public REExportationCalculAcor2020(BSession bSession, String idDemandeRente) {
         session = bSession;
@@ -108,6 +151,12 @@ public class REExportationCalculAcor2020 {
         try {
             demandeRente = REDemandeRente.loadDemandeRente(session, transaction, idDemande, null);
             tiersRequerant = demandeRente.loadDemandePrestation(null).loadTiers();
+
+            boolean adresseCourrierPourRequerant = false;
+            if ("true".equals(getWantAdresseCourrierProperties())) {
+                adresseCourrierPourRequerant = true;
+            }
+            this.prAcorMapper = new PRAcorMapper(adresseCourrierPourRequerant, this.tiersRequerant, this.session);
 
             inHost.setDemande(createDemande(demandeRente, tiersRequerant, session));
             List<ISFMembreFamilleRequerant> membresFamille = getToutesLesMembresFamillesEtEtendue();
@@ -170,7 +219,8 @@ public class REExportationCalculAcor2020 {
     }
 
     public DemandeType createDemande(REDemandeRente demandeRente, PRTiersWrapper tiersRequerant, BSession session) {
-        DemandeType demandeType = new DemandeType();
+        PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(this.session);
+        DemandeType demandeType = demandeTypeAcorMapper.map();
 
         // DONNEES FICHIER DEMANDES
         demandeType.setNavs(getNumAvsFromDemande(demandeRente, tiersRequerant, session));
@@ -179,9 +229,7 @@ public class REExportationCalculAcor2020 {
         demandeType.setDateDepot(getDateDepot(demandeRente.getDateDepot()));
 
         // NOUVELLES DONNES XSD OBLIGATOIRES
-        demandeType.setCaisseAgence(getCaisseAgence(session));
         //TODO adresse de la caisse par des propriétés applications à créer
-        demandeType.setAdresseCaisse(createAdresseCaisse());
         demandeType.setMoisRapport(0);
         demandeType.setLangue(StringUtils.lowerCase(session.getIdLangue()));
         demandeType.setTypeCalcul(getTypeCalcul(demandeRente.getCsTypeCalcul()));
@@ -189,54 +237,12 @@ public class REExportationCalculAcor2020 {
         return demandeType;
     }
 
-    private OrganisationAdresseType createAdresseCaisse() {
-        OrganisationAdresseType adresseCaisse = new OrganisationAdresseType();
-        //TODO
-        adresseCaisse.setAdresse("test");
-        adresseCaisse.setLocalite("test");
-        adresseCaisse.setCodePostal("2300");
-        adresseCaisse.setPays(100);
-        adresseCaisse.setNom("");
-        return adresseCaisse;
-    }
-
-    private Integer getCaisseAgence(BSession session) {
-        Integer caisseAgence = 0;
-        try {
-            String noCaisse = session.getApplication().getProperty(CommonProperties.KEY_NO_CAISSE);
-            String noAgence = session.getApplication().getProperty(CommonProperties.KEY_NO_AGENCE);
-            caisseAgence = Integer.valueOf(noCaisse + noAgence);
-        } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération du numéro de la caisse.", e);
-        }
-        return caisseAgence;
-    }
 
     private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille) {
-        List<AssureType> listAssures = new ArrayList<>();
-        for (ISFMembreFamilleRequerant membre : membresFamille) {
-            AssureType assure = createAssureType(membre);
-            listAssures.add(assure);
-        }
-        return listAssures;
+        return new PRAcorAssureTypeMapper(this.prAcorMapper, membresFamille).map(this::addInformationInAssreType);
     }
 
-    /**
-     * @param membre
-     * @return
-     */
-    private AssureType createAssureType(ISFMembreFamilleRequerant membre) {
-        AssureType assure = new AssureType();
-        assure.setNavs(getNssMembre(membre));
-        assure.setNom(membre.getNom());
-        assure.setPrenom(membre.getPrenom());
-        assure.setDateNaissance(REConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
-        if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-            assure.setDateDeces(REConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
-        }
-        assure.setNationalite(getCodePays(membre.getCsNationalite()));
-        assure.setDomicile(getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
-
+    private AssureType addInformationInAssreType(final ISFMembreFamilleRequerant membre, final AssureType assureType) {
         PRInfoCompl infoCompl = new PRInfoCompl();
         try {
             infoCompl.setSession(getSession());
@@ -245,39 +251,35 @@ public class REExportationCalculAcor2020 {
         } catch (Exception e) {
             getSession().addError(getSession().getLabel("ERREUR_INFOS_COMP"));
         }
-        assure.setRefugie(infoCompl.getIsRefugie());
+        assureType.setRefugie(infoCompl.getIsRefugie());
         // TODO : gestion des données veto
-//        assure.setDonneesVeto(createDonnesVeto(infoCompl));
+        //        assure.setDonneesVeto(createDonnesVeto(infoCompl));
 
-        assure.setSexe(PRACORConst.csSexeToAcor2020(membre.getCsSexe()));
         // RENTES
-        addRentesAssures(assure, membre);
+        addRentesAssures(assureType, membre);
 
         // Donnees AI
         if (StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {
-            assure.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRente));
-            assure.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRente).getPourcentRedFauteGrave()));
+            assureType.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRente));
+            assureType.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRente).getPourcentRedFauteGrave()));
         }
 
         // Anticipation ou ajournement
         if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) && demandeRente instanceof REDemandeRenteVieillesse) {
             FlexibilisationType flexibilisationType = createFlexibilisationType();
             if (Objects.nonNull(flexibilisationType)) {
-                assure.setFlexibilisation(flexibilisationType);
+                assureType.setFlexibilisation(flexibilisationType);
             }
         }
 
-        // EURO_FORM
-        assure.setDonneesPostales(createDonneesPostales());
-
         // CI
         if (!JadeStringUtil.isBlankOrZero(membre.getIdTiers())) {
-            assure.getCi().addAll(createListCI(membre.getIdTiers()));
+            assureType.getCi().addAll(createListCI(membre.getIdTiers()));
         }
 
         // PERIODES
-        addPeriodesAssure(assure, membre);
-        return assure;
+        addPeriodesAssure(assureType, membre);
+        return assureType;
     }
 
     private AssureType.DonneesVeto createDonnesVeto(PRInfoCompl infoCompl) {
@@ -285,7 +287,7 @@ public class REExportationCalculAcor2020 {
         // TODO : veto 1 = transfert , 2 = remboursement , 3 = autre raison
         // Actuellement, autre raison = 2 dans WebAVS -> faut-il modifier le Code systèmes ? attention aux impacts sur l'ancien acor.
         // De plus s'il y a un veto, il faut renseigner une date de veto --> quelle date doit être prise en compte.
-        donneesVeto.setVetoPrestation(REConverterUtils.formatRequiredInteger(PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation())));
+        donneesVeto.setVetoPrestation(PRConverterUtils.formatRequiredInteger(PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation())));
         return donneesVeto;
     }
 
@@ -300,7 +302,7 @@ public class REExportationCalculAcor2020 {
         // Anticipation
         if (StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES, anticipation) || StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE, anticipation)) {
             flexibilisationType = new FlexibilisationType();
-            flexibilisationType.setDebut(REConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
+            flexibilisationType.setDebut(PRConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
             flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour une anticipation
         }
         boolean ajournement = ((REDemandeRenteVieillesse) demandeRente).getIsAjournementRequerant();
@@ -309,11 +311,11 @@ public class REExportationCalculAcor2020 {
             flexibilisationType = new FlexibilisationType();
             // Revocation
             if (StringUtils.isNotEmpty(dateRevocation)) {
-                flexibilisationType.setDebut(REConverterUtils.formatDate(dateRevocation, DD_MM_YYYY_FORMAT));
+                flexibilisationType.setDebut(PRConverterUtils.formatDate(dateRevocation, DD_MM_YYYY_FORMAT));
                 flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour un ajournement révoqué
             } else {
                 // Ajournement
-                flexibilisationType.setDebut(REConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
+                flexibilisationType.setDebut(PRConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
                 flexibilisationType.setPartPercue(AJOURNEMENT); // Pour un ajournement demandé
             }
         }
@@ -345,7 +347,7 @@ public class REExportationCalculAcor2020 {
     }
 
     private boolean isRenteExtraordinaire(String codePrestation) {
-        Integer intCodePrestation = REConverterUtils.formatRequiredInteger(codePrestation);
+        Integer intCodePrestation = PRConverterUtils.formatRequiredInteger(codePrestation);
         if (intCodePrestation >= 20 && intCodePrestation <= 29) {
             return true;
         }
@@ -371,15 +373,15 @@ public class REExportationCalculAcor2020 {
         }
 
         // 2. genre de prestation
-        commonRente.setGenre(REConverterUtils.formatRequiredInteger(rente.getCodePrestation()));
+        commonRente.setGenre(PRConverterUtils.formatRequiredInteger(rente.getCodePrestation()));
         // Non mappé -> mettre false par défaut
         commonRente.setIndemniteForfaitaire(false);
         // 3. fraction de rente
         commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
         // 4. date début du droit
-        commonRente.setDebutDroit(REConverterUtils.formatDate(rente.getDateDebutDroit(), "MM.yyyy"));
+        commonRente.setDebutDroit(PRConverterUtils.formatDate(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit
-        commonRente.setFinDroit(REConverterUtils.formatDate(rente.getDateFinDroit(), "MM.yyyy"));
+        commonRente.setFinDroit(PRConverterUtils.formatDate(rente.getDateFinDroit(), "MM.yyyy"));
 
         if (commonRente.getFinDroit() != null) {
             RERenteAccordee renteAccordee = new RERenteAccordee();
@@ -394,28 +396,28 @@ public class REExportationCalculAcor2020 {
             // TODO : valeur 0 non valide (Enum Mutationscode_Type dans Prestations-types.xsd) ->
 //          // TODO : information contenu dans la rente accordée : RERenteAccordee --> YLLCMU
             if (StringUtils.isNotEmpty(renteAccordee.getCodeMutation())) {
-                commonRente.setCodeMutation(REConverterUtils.formatRequiredInteger(renteAccordee.getCodeMutation()));
+                commonRente.setCodeMutation(PRConverterUtils.formatRequiredInteger(renteAccordee.getCodeMutation()));
             }
         }
         // 6. montant de la prestation
-        commonRente.setMontant(REConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));
+        commonRente.setMontant(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));
         // 38. année du montant du ram
-        commonRente.setAnneeEtat(REConverterUtils.formatDate(rente.getAnneeMontantRAM(), "yyyy"));
+        commonRente.setAnneeEtat(PRConverterUtils.formatDate(rente.getAnneeMontantRAM(), "yyyy"));
 //        // 17. code cas spécial
         if (!JadeStringUtil.isBlankOrZero((rente.getCs1()))) {
-            commonRente.getCasSpecial().add(REConverterUtils.formatRequiredShort(rente.getCs1()));
+            commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs1()));
         }
         if (!JadeStringUtil.isBlankOrZero((rente.getCs2()))) {
-            commonRente.getCasSpecial().add(REConverterUtils.formatRequiredShort(rente.getCs2()));
+            commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs2()));
         }
         if (!JadeStringUtil.isBlankOrZero((rente.getCs3()))) {
-            commonRente.getCasSpecial().add(REConverterUtils.formatRequiredShort(rente.getCs3()));
+            commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs3()));
         }
         if (!JadeStringUtil.isBlankOrZero((rente.getCs4()))) {
-            commonRente.getCasSpecial().add(REConverterUtils.formatRequiredShort(rente.getCs4()));
+            commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs4()));
         }
         if (!JadeStringUtil.isBlankOrZero((rente.getCs5()))) {
-            commonRente.getCasSpecial().add(REConverterUtils.formatRequiredShort(rente.getCs5()));
+            commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs5()));
         }
 
         return commonRente;
@@ -461,7 +463,7 @@ public class REExportationCalculAcor2020 {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(REConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 24 - 26 + 33 - 35
@@ -479,7 +481,7 @@ public class REExportationCalculAcor2020 {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(REConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 24 - 26 + 33 - 35
@@ -493,7 +495,7 @@ public class REExportationCalculAcor2020 {
         ExtraordinaireBase10Type base = new ExtraordinaireBase10Type();
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(REConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         return base;
@@ -507,7 +509,7 @@ public class REExportationCalculAcor2020 {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(REConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 27 - 30
@@ -540,9 +542,9 @@ public class REExportationCalculAcor2020 {
     private DJE10BeschreibungType createRam10(REHistoriqueRentes rente) {
         DJE10BeschreibungType ram = new DJE10BeschreibungType();
         // 7. revenu annuel moyen
-        ram.setDurchschnittlichesJahreseinkommen(REConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getRam()));
+        ram.setDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getRam()));
         // 8. durée cotisation ram
-        ram.setBeitragsdauerDurchschnittlichesJahreseinkommen(REConverterUtils.formatRequiredBigDecimal(rente.getDureeCotRam()));
+        ram.setBeitragsdauerDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimal(rente.getDureeCotRam()));
         // 31. code rev. splitté
         ram.setGesplitteteEinkommen(rente.getIsRevenuSplitte());
         return ram;
@@ -551,9 +553,9 @@ public class REExportationCalculAcor2020 {
     private DJE9BeschreibungType createRam9(REHistoriqueRentes rente) {
         DJE9BeschreibungType ram = new DJE9BeschreibungType();
         // 7. revenu annuel moyen
-        ram.setDurchschnittlichesJahreseinkommen(REConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getRam()));
+        ram.setDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getRam()));
         // 8. durée cotisation ram
-        ram.setBeitragsdauerDurchschnittlichesJahreseinkommen(REConverterUtils.formatRequiredBigDecimal(rente.getDureeCotRam()));
+        ram.setBeitragsdauerDurchschnittlichesJahreseinkommen(PRConverterUtils.formatRequiredBigDecimal(rente.getDureeCotRam()));
 //        TODO : valeur 0 non valide -> enum  1,2,3 (code revenu pris dans Prestations9-types.xsd) Le code revenu ne devrait pas être vide.
         ram.setAngerechneteEinkommen((short) 1);
 //        ram.setAngerechneteEinkommen(formatRequiredShort(rente.getCodeRevenu()));
@@ -564,14 +566,14 @@ public class REExportationCalculAcor2020 {
         RentenvorbezugType anticipation = new RentenvorbezugType();
         // 33. nbr. année anticipation
         if (!JadeStringUtil.isBlankOrZero(rente.getNbrAnneeAnticipation())) {
-            anticipation.setAnzahlVorbezugsjahre(REConverterUtils.formatRequiredInteger(rente.getNbrAnneeAnticipation()));
+            anticipation.setAnzahlVorbezugsjahre(PRConverterUtils.formatRequiredInteger(rente.getNbrAnneeAnticipation()));
         }
         // 34. montant redic. pour anticipation
         if (!JadeStringUtil.isBlankOrZero(rente.getMontantReducAnticipation())) {
-            anticipation.setVorbezugsreduktion(REConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantReducAnticipation()));
+            anticipation.setVorbezugsreduktion(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantReducAnticipation()));
         }
         // 35. date déb. anticipation
-        anticipation.setVorbezugsdatum(REConverterUtils.formatDate(rente.getDateDebutAnticipation(), "MM.yyyy"));
+        anticipation.setVorbezugsdatum(PRConverterUtils.formatDate(rente.getDateDebutAnticipation(), "MM.yyyy"));
         if (isAuMoinsUneDonneeObligatoireManquante(anticipation.getAnzahlVorbezugsjahre(), anticipation.getVorbezugsreduktion(), anticipation.getVorbezugsdatum())) {
             return null;
         }
@@ -581,22 +583,22 @@ public class REExportationCalculAcor2020 {
     private Gutschriften10Type createDonneesBonification10(REHistoriqueRentes rente) {
         Gutschriften10Type donneesBonification = new Gutschriften10Type();
         // 28. nbr. année bonif. bte
-        donneesBonification.setAnzahlErziehungsgutschrift(REConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTE()));
+        donneesBonification.setAnzahlErziehungsgutschrift(PRConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTE()));
         // 29. nbr. année bonif. bta
-        donneesBonification.setAnzahlBetreuungsgutschrift(REConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTA()));
+        donneesBonification.setAnzahlBetreuungsgutschrift(PRConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTA()));
         // 30. nbr. année bonif. transitoire
-        donneesBonification.setAnzahlUebergangsgutschrift(REConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTR()));
+        donneesBonification.setAnzahlUebergangsgutschrift(PRConverterUtils.formatRequiredBigDecimal(rente.getNbrAnneeBTR()));
         return donneesBonification;
     }
 
     private Gutschriften9Type createDonneesBonification9(REHistoriqueRentes rente, BigDecimal durchschnittlichesJahreseinkommen) {
         Gutschriften9Type donneesBonification = new Gutschriften9Type();
         // 27. montant bonus éducatif
-        BigDecimal montantBTE = REConverterUtils.formatRequiredBigDecimal(rente.getMontantBTE());
+        BigDecimal montantBTE = PRConverterUtils.formatRequiredBigDecimal(rente.getMontantBTE());
         donneesBonification.setAngerechneteErziehungsgutschrift(montantBTE.setScale(0, BigDecimal.ROUND_DOWN));
         // 28. nbr. année bonif. bte
         if (!JadeStringUtil.isBlankOrZero(rente.getNbrAnneeBTE())) {
-            donneesBonification.setAnzahlErziehungsgutschrift(REConverterUtils.formatRequiredShort(rente.getNbrAnneeBTE().substring(0, 2)));
+            donneesBonification.setAnzahlErziehungsgutschrift(PRConverterUtils.formatRequiredShort(rente.getNbrAnneeBTE().substring(0, 2)));
         } else {
             donneesBonification.setAnzahlErziehungsgutschrift(new Short("0"));
         }
@@ -610,11 +612,11 @@ public class REExportationCalculAcor2020 {
         RentenaufschubType ajournement = new RentenaufschubType();
         // 24. durée ajournement
         if (!JadeStringUtil.isBlankOrZero(rente.getDureeAjournement())) {
-            ajournement.setAufschubsdauer(REConverterUtils.formatRequiredBigDecimal(rente.getDureeAjournement()));
+            ajournement.setAufschubsdauer(PRConverterUtils.formatRequiredBigDecimal(rente.getDureeAjournement()));
         }
         // 25. supplément ajournement
         if (!JadeStringUtil.isBlankOrZero(rente.getSupplementAjournement())) {
-            ajournement.setAufschubszuschlag(REConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getSupplementAjournement()));
+            ajournement.setAufschubszuschlag(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getSupplementAjournement()));
         }
         // 26. date de révocation
         String date = rente.getDateRevocationAjournement();
@@ -624,7 +626,7 @@ public class REExportationCalculAcor2020 {
         if (date.length() < 6) {
             date = 0 + date;
         }
-        ajournement.setAbrufdatum(REConverterUtils.formatDate(date, "MM.yyyy"));
+        ajournement.setAbrufdatum(PRConverterUtils.formatDate(date, "MM.yyyy"));
 
         if (isAuMoinsUneDonneeObligatoireManquante(ajournement.getAufschubsdauer(), ajournement.getAbrufdatum(), ajournement.getAufschubszuschlag())) {
             return null;
@@ -647,7 +649,7 @@ public class REExportationCalculAcor2020 {
     private AiType createAiType(REHistoriqueRentes rente) {
         AiType donnesAi = new AiType();
         // 19. degré d'invalidité
-        donnesAi.setInvaliditaetsgrad(REConverterUtils.formatRequiredShort(rente.getDegreInvalidite()));
+        donnesAi.setInvaliditaetsgrad(PRConverterUtils.formatRequiredShort(rente.getDegreInvalidite()));
         // 20. clé infirmité + atteinte fonctionnelle
         Integer cleInfirmite = getCleInfirmite(rente.getCleInfirmiteAtteinteFct());
         if (cleInfirmite != null) {
@@ -658,7 +660,7 @@ public class REExportationCalculAcor2020 {
             donnesAi.setFunktionsausfallcode(atteinteFct);
         }
         // 21. survenance évén. assure
-        donnesAi.setDatumVersicherungsfall(REConverterUtils.formatDate(rente.getSurvenanceEvenementAssure(), "MM.yyyy"));
+        donnesAi.setDatumVersicherungsfall(PRConverterUtils.formatDate(rente.getSurvenanceEvenementAssure(), "MM.yyyy"));
         // 22. invalide précoce
         donnesAi.setIstFruehInvalid(rente.getIsInvaliditePrecoce());
         // 23. office ai
@@ -674,6 +676,7 @@ public class REExportationCalculAcor2020 {
      * Créations des informations AI.
      *
      * @param demandeRenteInvalidite : demande de rente invalidité.
+     *
      * @return les informations AI.
      */
     private AiInformations createAiInformations(REDemandeRenteInvalidite demandeRenteInvalidite) {
@@ -685,8 +688,8 @@ public class REExportationCalculAcor2020 {
                 periodeAI.setInvaliditaetsgrad(Short.valueOf(periode.getDegreInvalidite())); // degré invalidité
                 periodeAI.setGebrechensschluessel(Integer.valueOf(getSession().getCode(demandeRenteInvalidite.getCsInfirmite()))); // Genre infirmité
                 periodeAI.setFunktionsausfallcode(Short.valueOf(getSession().getCode(demandeRenteInvalidite.getCsAtteinte()))); // atteinte fonctionnelle
-                periodeAI.setDebutInvalidite(REConverterUtils.formatDate(periode.getDateDebutInvalidite(), DD_MM_YYYY_FORMAT));
-                periodeAI.setFinInvalidite(REConverterUtils.formatDate(periode.getDateFinInvalidite(), DD_MM_YYYY_FORMAT));
+                periodeAI.setDebutInvalidite(PRConverterUtils.formatDate(periode.getDateDebutInvalidite(), DD_MM_YYYY_FORMAT));
+                periodeAI.setFinInvalidite(PRConverterUtils.formatDate(periode.getDateFinInvalidite(), DD_MM_YYYY_FORMAT));
                 aiInformations.getPeriodeAI().add(periodeAI);
             }
         } catch (Exception e) {
@@ -695,8 +698,8 @@ public class REExportationCalculAcor2020 {
         if (!JadeStringUtil.isBlankOrZero(demandeRenteInvalidite.getPourcentRedNonCollaboration())) {
             AiInformations.DonneesNonCollaboration donneesNonCollaboration = new AiInformations.DonneesNonCollaboration();
             donneesNonCollaboration.setPartReduction(Integer.valueOf(demandeRenteInvalidite.getPourcentRedNonCollaboration()));
-            donneesNonCollaboration.setDebut(REConverterUtils.formatDate(demandeRenteInvalidite.getDateDebutRedNonCollaboration(), DD_MM_YYYY_FORMAT));
-            donneesNonCollaboration.setFin(REConverterUtils.formatDate(demandeRenteInvalidite.getDateFinRedNonCollaboration(), DD_MM_YYYY_FORMAT));
+            donneesNonCollaboration.setDebut(PRConverterUtils.formatDate(demandeRenteInvalidite.getDateDebutRedNonCollaboration(), DD_MM_YYYY_FORMAT));
+            donneesNonCollaboration.setFin(PRConverterUtils.formatDate(demandeRenteInvalidite.getDateFinRedNonCollaboration(), DD_MM_YYYY_FORMAT));
             aiInformations.getDonneesNonCollaboration().add(donneesNonCollaboration);
         }
         return aiInformations;
@@ -704,14 +707,14 @@ public class REExportationCalculAcor2020 {
 
     private Integer getCleInfirmite(String cleInfirmiteAtteinteFct) {
         if (!JadeStringUtil.isBlankOrZero(cleInfirmiteAtteinteFct) && cleInfirmiteAtteinteFct.length() >= 3) {
-            return REConverterUtils.formatRequiredInteger(cleInfirmiteAtteinteFct.substring(0, 3));
+            return PRConverterUtils.formatRequiredInteger(cleInfirmiteAtteinteFct.substring(0, 3));
         }
         return null;
     }
 
     private Short getAtteinteFct(String cleInfirmiteAtteinteFct) {
         if (!JadeStringUtil.isBlankOrZero(cleInfirmiteAtteinteFct) && cleInfirmiteAtteinteFct.length() == 5) {
-            return REConverterUtils.formatRequiredShort(cleInfirmiteAtteinteFct.substring(3, 5));
+            return PRConverterUtils.formatRequiredShort(cleInfirmiteAtteinteFct.substring(3, 5));
         }
         return null;
     }
@@ -734,22 +737,22 @@ public class REExportationCalculAcor2020 {
     private DonneesEchelleType createDonnesEchelleType(REHistoriqueRentes rente) {
         DonneesEchelleType donnesEchelle = new DonneesEchelleType();
         // 10. echelle de rente
-        donnesEchelle.setSkala(REConverterUtils.formatRequiredShort(rente.getEchelle()));
+        donnesEchelle.setSkala(PRConverterUtils.formatRequiredShort(rente.getEchelle()));
         // TODO : valider le résultat fonctionnel de la méthode de formattage
         // 11. durée cotisation avant 73
-        donnesEchelle.setDureeEtrangereAvant73(REConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAv73()));
+        donnesEchelle.setDureeEtrangereAvant73(PRConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAv73()));
         // 12. durée cotisation après 73
-        donnesEchelle.setDureeEtrangereApres73(REConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAp73()));
+        donnesEchelle.setDureeEtrangereApres73(PRConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAp73()));
         // 13. mois appoint avant 73
-        donnesEchelle.setAnrechnungVor1973FehlenderBeitragsmonate(REConverterUtils.formatRequiredInteger(rente.getMoisAppointAv73()));
+        donnesEchelle.setAnrechnungVor1973FehlenderBeitragsmonate(PRConverterUtils.formatRequiredInteger(rente.getMoisAppointAv73()));
         // 14. mois appoint après 73
-        donnesEchelle.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(REConverterUtils.formatRequiredInteger(rente.getMoisAppointAp73()));
+        donnesEchelle.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(PRConverterUtils.formatRequiredInteger(rente.getMoisAppointAp73()));
         // 15. durée cotis. de la classe d'age
-        donnesEchelle.setBeitragsjahreJahrgang(REConverterUtils.formatRequiredInteger(rente.getDureeCotiClasseAge()));
+        donnesEchelle.setBeitragsjahreJahrgang(PRConverterUtils.formatRequiredInteger(rente.getDureeCotiClasseAge()));
         // 39. durée cotis av. 73
-        donnesEchelle.setBeitragsdauerVor1973(REConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotAv73()));
+        donnesEchelle.setBeitragsdauerVor1973(PRConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotAv73()));
         // 40.durée cotis ap. 73
-        donnesEchelle.setBeitragsdauerAb1973(REConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotAp73()));
+        donnesEchelle.setBeitragsdauerAb1973(PRConverterUtils.formatRequiredBigDecimalDuree(rente.getDureeCotAp73()));
         return donnesEchelle;
     }
 
@@ -801,8 +804,8 @@ public class REExportationCalculAcor2020 {
 
     private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {
         PeriodeBTEType periode = new PeriodeBTEType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
             if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
                 periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
@@ -817,8 +820,8 @@ public class REExportationCalculAcor2020 {
 
     private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
         PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         if (StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur())) {
             periode.setTuteur(true);
         } else {
@@ -830,8 +833,8 @@ public class REExportationCalculAcor2020 {
     private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
         // TODO : identifier quand on est sur un cas recueilliC
         PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         //TODO voir quoi mettre
 //        periode.setParentNonBiologique();
         return periode;
@@ -839,8 +842,8 @@ public class REExportationCalculAcor2020 {
 
     private PeriodeTravailType createPeriodeTravailType(ISFPeriode isfPeriode) {
         PeriodeTravailType periode = new PeriodeTravailType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         //Mettre à 0 car il n'existe pas sur WebAVS
         periode.setMontantDebut(BigDecimal.ZERO);
         return periode;
@@ -848,24 +851,24 @@ public class REExportationCalculAcor2020 {
 
     private PeriodeEtrangereType createPeriodeEtrangerType(ISFPeriode isfPeriode) {
         PeriodeEtrangereType periode = new PeriodeEtrangereType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        periode.setEtat(REConverterUtils.formatRequiredInteger(isfPeriode.getPays()));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setEtat(PRConverterUtils.formatRequiredInteger(isfPeriode.getPays()));
         return periode;
     }
 
     private PeriodeType createPeriodeType(ISFPeriode isfPeriode) {
         PeriodeType periode = new PeriodeType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         periode.setType(getEnumPeriodeType(isfPeriode));
         return periode;
     }
 
     private PeriodeIJType createPeriodeIJ(ISFPeriode isfPeriode) {
         PeriodeIJType periode = new PeriodeIJType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         //Par défaut false
         periode.setMesureNouvelle(false);
         return periode;
@@ -873,8 +876,8 @@ public class REExportationCalculAcor2020 {
 
     private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
         PeriodeEnfantType periode = new PeriodeEnfantType();
-        periode.setDebut(REConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(REConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
         periode.setType(getEnumPeriodeEnfantType(isfPeriode));
         return periode;
     }
@@ -1035,35 +1038,35 @@ public class REExportationCalculAcor2020 {
 
     private CiType createCi(REInscriptionCIViewBean inscription) {
         CiType ci = new CiType();
-        long brancheEco = REConverterUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique()));
+        long brancheEco = PRConverterUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique()));
         if (brancheEco != 0) {
             ci.setBrancheEconomique(brancheEco);
         }
 
         // 3. Code diminution
-        ci.setCodeDiminution(REConverterUtils.formatRequiredShort(inscription.getCodeExtourne()));
+        ci.setCodeDiminution(PRConverterUtils.formatRequiredShort(inscription.getCodeExtourne()));
 
         // 4. Genre cotisation
-        ci.setGenreCotisation(REConverterUtils.formatRequiredInteger(inscription.getGenreCotisation()));
+        ci.setGenreCotisation(PRConverterUtils.formatRequiredInteger(inscription.getGenreCotisation()));
 
         // 5. Code particulier
-        ci.setCodeParticulier(REConverterUtils.formatOptionalShort(inscription.getCodeParticulier()));
+        ci.setCodeParticulier(PRConverterUtils.formatOptionalShort(inscription.getCodeParticulier()));
 
         // 6. Mois début période de cotisation
         if (!JadeStringUtil.isBlankOrZero(inscription.getMoisDebutCotisations())) {
-            ci.setMoisDebut(REConverterUtils.formatRequiredInteger(inscription.getMoisDebutCotisations()));
+            ci.setMoisDebut(PRConverterUtils.formatRequiredInteger(inscription.getMoisDebutCotisations()));
         }
 
         // 7. Mois de fin de période de cotisation
         if (!JadeStringUtil.isBlankOrZero(inscription.getMoisFinCotisations())) {
-            ci.setMoisFin(REConverterUtils.formatRequiredInteger(inscription.getMoisFinCotisations()));
+            ci.setMoisFin(PRConverterUtils.formatRequiredInteger(inscription.getMoisFinCotisations()));
         }
 
         // 8. Année de cotisation
         ci.setAnnee(convertstrAnneeToXmlGreg(inscription.getAnneeCotisations()));
 
         // 9. Montant du revenu en francs
-        ci.setMontant(REConverterUtils.formatRequiredBigDecimalNoDecimal(inscription.getRevenu()));
+        ci.setMontant(PRConverterUtils.formatRequiredBigDecimalNoDecimal(inscription.getRevenu()));
 
         // 10. Caisse + agence
         ci.setCaisseAgence(Integer.valueOf(inscription.getNumeroCaisse() + inscription.getNumeroAgence()));
@@ -1072,7 +1075,7 @@ public class REExportationCalculAcor2020 {
         if (JadeStringUtil.isBlankOrZero(inscription.getNoAffilie())) {
             ci.setNumeroAffilie("0");
         } else {
-            ci.setNumeroAffilie(REConverterUtils.formatStringWithoutDots(inscription.getNoAffilie()));
+            ci.setNumeroAffilie(PRConverterUtils.formatStringWithoutDots(inscription.getNoAffilie()));
         }
 
         // 12. Code amortissement
@@ -1081,10 +1084,10 @@ public class REExportationCalculAcor2020 {
         }
 
         // 13. Part. aux bonif. assistance
-        ci.setParticipationBonificationAssistance(REConverterUtils.formatRequiredInteger(inscription.getPartBonifAssist()));
+        ci.setParticipationBonificationAssistance(PRConverterUtils.formatRequiredInteger(inscription.getPartBonifAssist()));
 
         // 14. Code provenance
-        ci.setCodeProvenance(REConverterUtils.formatRequiredInteger(inscription.getProvenance()));
+        ci.setCodeProvenance(PRConverterUtils.formatRequiredInteger(inscription.getProvenance()));
 
         return ci;
     }
@@ -1148,7 +1151,7 @@ public class REExportationCalculAcor2020 {
                     if (JadeStringUtil.isBlankOrZero(rci.getMotif())) {
                         continue;
                     }
-                    rciCo.addRCI(REConverterUtils.formatRequiredInteger(rci.getMotif()).intValue(), rci.getIdRCI());
+                    rciCo.addRCI(PRConverterUtils.formatRequiredInteger(rci.getMotif()).intValue(), rci.getIdRCI());
                 }
             }
 
@@ -1168,7 +1171,7 @@ public class REExportationCalculAcor2020 {
                             continue;
                         }
                         if (idsRCICopy.contains(rciAdd.getIdParent())) {
-                            rciCo.addRCIAdditionnel(REConverterUtils.formatRequiredInteger(rciAdd.getMotif()).intValue(),
+                            rciCo.addRCIAdditionnel(PRConverterUtils.formatRequiredInteger(rciAdd.getMotif()).intValue(),
                                     rciAdd.getIdRCI());
                         }
                     }
@@ -1238,108 +1241,6 @@ public class REExportationCalculAcor2020 {
         return inscriptionsCI;
     }
 
-    private DonneesPostalesType createDonneesPostales() {
-        DonneesPostalesType donneesPostalesType = new DonneesPostalesType();
-
-        try {
-            TIAdresseDataSource adresse = getAdresseRequerant();
-            if (adresse != null) {
-                AdresseType adresseType = new AdresseType();
-                // 2. Numéro et rue
-                adresseType.setAdresse(adresse.rue + " " + adresse.numeroRue);
-                // 3. Localite
-                adresseType.setLocalite(adresse.localiteNom);
-                // 4. Code postal
-                adresseType.setCodePostal(adresse.localiteNpa);
-                // 5. Récupération du code pays
-                String codePays = "0";
-                if (!JadeStringUtil.isBlankOrZero(adresse.paysIso)) {
-                    TIPaysManager paysManager = new TIPaysManager();
-                    paysManager.setSession(session);
-                    paysManager.setForCodeIso(adresse.paysIso);
-                    paysManager.find(BManager.SIZE_NOLIMIT);
-                    if (!paysManager.getContainer().isEmpty()) {
-                        codePays = ((TIPays) paysManager.getContainer().get(0)).getCodeCentrale();
-                    }
-                }
-                adresseType.setPays(REConverterUtils.formatRequiredInteger(codePays));
-                donneesPostalesType.setAdresse(adresseType);
-            }
-
-            TIAdressePaiementData adressePaiement = PRTiersHelper.getAdressePaiementData(session, transaction, tiersRequerant.getIdTiers(),
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
-
-            if (adressePaiement != null && StringUtils.isNotEmpty(adressePaiement.getId())) {
-
-                BanqueAdresseType banqueAdresseType = new BanqueAdresseType();
-                // 6. Nom du tiers
-                banqueAdresseType.setNomTitulaire(adressePaiement.getNomTiers1() + adressePaiement.getNomTiers2());
-
-                String idTiersBanque = adressePaiement.getIdTiersBanque();
-                TIAbstractAdresseData banque = null;
-                if (!JadeStringUtil.isBlankOrZero(idTiersBanque)) {
-                    banque = TIAdresseResolver.dataSourceAdr(session, idTiersBanque,
-                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
-                            IConstantes.CS_AVOIR_ADRESSE_DOMICILE, "", JACalendar.todayJJsMMsAAAA(), true);
-                }
-
-                // Adresse de la banque
-                if (banque != null) {
-                    // 7. Nom banque
-                    StringBuilder banqueDesignation = new StringBuilder();
-                    banqueDesignation.append(banque.getDesignation1_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
-                    banqueDesignation.append(banque.getDesignation2_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
-                    banqueDesignation.append(banque.getDesignation3_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
-                    banqueDesignation.append(banque.getDesignation4_tiers());
-                    banqueAdresseType.setNom(banqueDesignation.toString().trim());
-
-                    // 8. Numéro et rue
-                    StringBuilder banqueAdresse = new StringBuilder();
-                    banqueAdresse.append(banque.getRue()).append(PRACORConst.CA_CHAINE_VIDE);
-                    banqueAdresse.append(banque.getNumero());
-                    banqueAdresseType.setAdresse(banqueAdresse.toString().trim());
-                    // 9. Localité
-                    banqueAdresseType.setLocalite(banque.getLocalite());
-                    // 10. Code postal
-                    banqueAdresseType.setCodePostal(banque.getNpa());
-                    // 11. Code pays
-                    banqueAdresseType.setPays(REConverterUtils.formatRequiredInteger(banque.getIdPays()));
-                }
-
-                // 12. swift
-                if (StringUtils.isNotEmpty(adressePaiement.getSwift())) {
-                    banqueAdresseType.setBic(adressePaiement.getSwift());
-                }
-                // Apparemment pour récupérer l'IBAN il ne faut pas utiliser la méthode getIban() mais getCompte()... ->
-                // trop facile sinon
-                // 13. IBAN
-                // On doit supprimer les espaces pour respecter le xsd ACOR
-                if (StringUtils.isNotEmpty(adressePaiement.getCompte())) {
-                    banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ", ""));
-                }
-                donneesPostalesType.setBanque(banqueAdresseType);
-            }
-        } catch (Exception e) {
-            LOG.error("Erreur lors de la création des données postales.", e);
-        }
-        return donneesPostalesType;
-    }
-
-    private TIAdresseDataSource getAdresseRequerant() throws Exception {
-        TIAdresseDataSource adresse;
-        TITiers t = new TITiers();
-        t.setIdTiers(tiersRequerant.getIdTiers());
-        t.setSession(session);
-        String prop = getWantAdresseCourrierProperties();
-        if ("true".equals(prop)) {
-            adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER,
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
-        } else {
-            adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE,
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
-        }
-        return adresse;
-    }
 
     private String getWantAdresseCourrierProperties() {
         String prop = null;
@@ -1356,40 +1257,6 @@ public class REExportationCalculAcor2020 {
         return prop;
     }
 
-    private Integer getDomicile(String csCantonDomicile, String codePays, PRTiersWrapper tiersRequerant) {
-        /**
-         * 1) On prend le canton
-         * 2) Sinon le pays
-         * 3) Sinon prendre le pays du requérant
-         */
-        if (!JadeStringUtil.isIntegerEmpty(csCantonDomicile)) {
-            // Le canton peut désigner 'Etranger', dans ce cas il faut reprendre le pays
-            if (PRACORConst.CODE_CANTON_ETRANGER.equals(csCantonDomicile)) {
-                if (JadeStringUtil.isIntegerEmpty(codePays)) {
-                    // On retourne un code 999 si le canton et pays sont inconnus
-                    return REConverterUtils.formatRequiredInteger(PRACORConst.CANTON_ET_PAYS_INCONNU);
-                } else {
-                    return REConverterUtils.formatRequiredInteger(codePays);
-                }
-            } else {
-                return REConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(csCantonDomicile));
-            }
-        } else {
-            if (!JadeStringUtil.isIntegerEmpty(codePays)) {
-                return REConverterUtils.formatRequiredInteger(codePays);
-            } else {
-                return REConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(tiersRequerant.getCanton()));
-            }
-        }
-    }
-
-    private Integer getCodePays(String csNationalite) {
-        if (!JadeStringUtil.isIntegerEmpty(csNationalite)) {
-            return REConverterUtils.formatRequiredInteger(PRACORConst.csEtatToAcor(csNationalite));
-        } else {
-            return REConverterUtils.formatRequiredInteger(PRACORConst.CA_ORIGINE_INCONNU);
-        }
-    }
 
     private List<EnfantType> createListEnfants(List<ISFMembreFamilleRequerant> enfantsFamilles) throws PRACORException {
         List<EnfantType> enfants = new ArrayList<>();
@@ -1416,38 +1283,39 @@ public class REExportationCalculAcor2020 {
         if (StringUtils.isNotEmpty(membre.getPrenom())) {
             enfant.setPrenom(membre.getPrenom());
         }
-        enfant.setDateNaissance(REConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
+        enfant.setDateNaissance(PRConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-            enfant.setDateDeces(REConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
+            enfant.setDateDeces(PRConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
         }
         //TODO demande un int dans le JSON sinon l'appli client met une erreur
-        enfant.setNationalite(getCodePays(membre.getCsNationalite()));
-        enfant.setDomicile(getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
+        enfant.setNationalite(this.prAcorMapper.getCodePays(membre.getCsNationalite()));
+        enfant.setDomicile(this.prAcorMapper.getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
         enfant.setRefugie(false);
         enfant.setSexe(PRACORConst.csSexeEnfantToAcor2020(membre.getCsSexe()));
 
-        String noAvsPere = nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(), true);
+        String noAvsPere = this.prAcorMapper.nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(),
+                                                      true);
         if (!JadeStringUtil.isBlankOrZero(noAvsPere)) {
-            enfant.setNavsPere(REConverterUtils.formatNssToLong(noAvsPere));
+            enfant.setNavsPere(PRConverterUtils.formatNssToLong(noAvsPere));
         } else {
             enfant.setPereInconnu(true);
         }
-        String noAvsMere = nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), true);
+        String noAvsMere = this.prAcorMapper.nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), true);
         if (!JadeStringUtil.isBlankOrZero(noAvsMere)) {
-            enfant.setNavsMere(REConverterUtils.formatNssToLong(noAvsMere));
+            enfant.setNavsMere(PRConverterUtils.formatNssToLong(noAvsMere));
         } else {
             enfant.setMereInconnue(true);
         }
         // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
         enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(session, membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
-            enfant.setDateAdoption(REConverterUtils.formatDate(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
+            enfant.setDateAdoption(PRConverterUtils.formatDate(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
         }
         // RENTES
         addRentesEnfant(enfant, membre);
 
         // EURO_FORM
-        enfant.setDonneesPostales(createDonneesPostales());
+        enfant.setDonneesPostales(this.prAcorMapper.createDonneesPostales());
 
         // PERIODES
         addPeriodesEnfant(enfant, membre);
@@ -1494,10 +1362,10 @@ public class REExportationCalculAcor2020 {
     private long getNssMembre(ISFMembreFamilleRequerant membre) {
         String nss = membre.getNss();
         if (JadeStringUtil.isBlank(membre.getNss()) || JadeStringUtil.isIntegerEmpty(membre.getNss())) {
-            nss = nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), !membre
+            nss = this.prAcorMapper.nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), !membre
                     .getRelationAuRequerant().equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT));
         }
-        return REConverterUtils.formatNssToLong(nss);
+        return PRConverterUtils.formatNssToLong(nss);
     }
 
     private List<FamilleType> createListFamilles(List<ISFMembreFamilleRequerant> membresCatConjoints, List<ISFMembreFamilleRequerant> membresCatExConjointsConjoints) {
@@ -1534,27 +1402,27 @@ public class REExportationCalculAcor2020 {
             ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) ligne
                     .getConjoint();
             // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
-            famille.getNavs().add(REConverterUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
+            famille.getNavs().add(PRConverterUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
             famille.getNavs().add(getNssMembre(exConjointDuConjoint));
         } else {
-            famille.getNavs().add(REConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
+            famille.getNavs().add(PRConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
             famille.getNavs().add(getNssMembre(ligne.getConjoint()));
         }
-        famille.setDebut(REConverterUtils.formatDate(ligne.getDateMariage(), DD_MM_YYYY_FORMAT));
-        if (REConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT) != null) {
-            short typeRelation = REConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien()));
+        famille.setDebut(PRConverterUtils.formatDate(ligne.getDateMariage(), DD_MM_YYYY_FORMAT));
+        if (PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT) != null) {
+            short typeRelation = PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien()));
             if (typeRelation == 5 || typeRelation == 9) {
                 PeriodeJour separation = new PeriodeJour();
-                separation.setDebut(REConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
+                separation.setDebut(PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
                 famille.getPeriodeSeparation().add(separation);
             } else {
                 FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
-                donnesFin.setFin(REConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
+                donnesFin.setFin(PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
                 famille.setDonneesFin(donnesFin);
-                donnesFin.setType(REConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
+                donnesFin.setType(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
             }
         }
-        famille.setLien(REConverterUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), ligne.getTypeLien())));
+        famille.setLien(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), ligne.getTypeLien())));
         famille.setPensionAlimentaire(false);
         return famille;
     }
@@ -1701,7 +1569,7 @@ public class REExportationCalculAcor2020 {
             } else if (!Objects.isNull(tiers)) {
                 strNss = tiers.getNSS();
             }
-            navs = REConverterUtils.formatNssToLong(strNss);
+            navs = PRConverterUtils.formatNssToLong(strNss);
         } catch (Exception e) {
             LOG.error("Erreur lors de la récupération du numéro AVS de la demande.", e);
         }
@@ -1733,6 +1601,7 @@ public class REExportationCalculAcor2020 {
      * Recherche les membres de la famille du tiers requérant
      *
      * @return
+     *
      * @throws Exception
      */
     protected List<ISFMembreFamilleRequerant> getToutesLesMembresFamillesEtEtendue() throws Exception {
@@ -1806,7 +1675,7 @@ public class REExportationCalculAcor2020 {
         }
     }
 
-    public ISFSituationFamiliale situationFamiliale() throws PRACORException {
+    private ISFSituationFamiliale situationFamiliale() throws PRACORException {
         ISFSituationFamiliale sf;
         try {
             String csDomaine = ISFSituationFamiliale.CS_DOMAINE_RENTES;
@@ -2031,9 +1900,9 @@ public class REExportationCalculAcor2020 {
 
             JACalendarGregorian cal = new JACalendarGregorian();
             if (cal.compare(datePmt, dateTraitement) == JACalendar.COMPARE_FIRSTUPPER) {
-                return REConverterUtils.formatDate(datePmt.toXMLDate(), YYYY_MM_DD_FORMAT);
+                return PRConverterUtils.formatDate(datePmt.toXMLDate(), YYYY_MM_DD_FORMAT);
             } else {
-                return REConverterUtils.formatDate(dateTraitement.toXMLDate(), YYYY_MM_DD_FORMAT);
+                return PRConverterUtils.formatDate(dateTraitement.toXMLDate(), YYYY_MM_DD_FORMAT);
             }
 
         } catch (Exception e) {
@@ -2061,149 +1930,7 @@ public class REExportationCalculAcor2020 {
         return null;
     }
 
-    public BSession getSession() {
+    private BSession getSession() {
         return session;
     }
-
-    public void setSession(BSession session) {
-        this.session = session;
-    }
-
-    public String nssBidon(String nss, String csSexe, String nomPrenom, boolean conjoint) {
-
-        if (!JadeStringUtil.isEmpty(nss)) {
-            return nss;
-        }
-
-        try {
-            String nssRequerant = NSUtil.unFormatAVS(tiersRequerant.getNSS());
-
-            // NNSS
-            if (nssRequerant.length() > 11) {
-                return _nssBidon(nss, csSexe, nomPrenom, conjoint);
-            }
-            // NAVS
-            else {
-                return _noAVSBidon(nss, csSexe, nomPrenom, conjoint);
-            }
-
-        } catch (Exception e) {
-            return _nssBidon(nss, csSexe, nomPrenom, conjoint);
-        }
-
-    }
-
-    /**
-     * @param noAVS     DOCUMENT ME!
-     * @param csSexe    DOCUMENT ME!
-     * @param nomPrenom DOCUMENT ME!
-     * @param conjoint  DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
-    private String _noAVSBidon(String noAVS, String csSexe, String nomPrenom, boolean conjoint) {
-
-        if (!JadeStringUtil.isEmpty(noAVS)) {
-            return noAVS;
-        }
-
-        String retValue;
-
-        if (JadeStringUtil.isIntegerEmpty(csSexe)) {
-            /*
-             * le sexe n'est pas stocke dans la situation familliale, par defaut on va prendre le sexe oppose au
-             * requerant, de cette manière, les eventuelles relations de conjoint seront acceptees par ACOR
-             */
-            retValue = PRACORConst.CS_FEMME.equals(tiersRequerant.getSexe()) ? PRACORConst.CA_NO_AVS_BIDON_HOMME
-                    : PRACORConst.CA_NO_AVS_BIDON_FEMME;
-        } else {
-            // le sexe est defini dans la situation familiale.
-            retValue = PRACORConst.CS_FEMME.equals(csSexe) ? PRACORConst.CA_NO_AVS_BIDON_FEMME
-                    : PRACORConst.CA_NO_AVS_BIDON_HOMME;
-        }
-
-        /*
-         * comme a la fois les conjoints et les enfants peuvent avoir un no avs vide, il est possible qu'un enfant et un
-         * conjoint ait le meme no AVS dans le fichier ACOR, ce qui fait qu'ACOR ne pourra pas determiner qui est
-         * l'enfant et qui est le conjoint. Pour regler ce probleme, on differencie les no AVS bidon en se basant sur le
-         * type de relation et le nomPrenom
-         */
-        String idNoAVSBidon = conjoint + "_" + nomPrenom;
-        String noUnique = (String) idNoAVSBidons.get(idNoAVSBidon);
-
-        if (noUnique == null) {
-            noUnique = String.valueOf(idNoAVSBidons.size() + 1);
-            idNoAVSBidons.put(idNoAVSBidon, noUnique);
-        }
-
-        return noUnique + retValue.substring(noUnique.length());
-    }
-
-    /**
-     * @param csSexe    DOCUMENT ME!
-     * @param nomPrenom DOCUMENT ME!
-     * @param conjoint  DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
-    private String _nssBidon(String nss, String csSexe, String nomPrenom, boolean conjoint) {
-
-        if (!JadeStringUtil.isEmpty(nss)) {
-            return nss;
-        }
-
-        String idNssBidon = conjoint + "_" + nomPrenom;
-
-        // Prendre un nss de la liste des 25 et voir s'il existe déjà dans la map (itérer),
-        // s'il existe, prendre un autre et retest, s'il existe pas, le retourner et l'insérer.
-
-        boolean isOK = false;
-        boolean isEqual = false;
-        String nss13 = "";
-        int increment = 0;
-
-        while (!isOK) {
-
-            nss13 = PRNSS13ChiffresUtils.getNSSErrone(increment);
-
-            Set keys = idNSSBidons.keySet();
-
-            for (Iterator iterator = keys.iterator(); iterator.hasNext(); ) {
-                String key = (String) iterator.next();
-                String nssKey = (String) idNSSBidons.get(key);
-
-                if (nssKey.equals(nss13)) {
-                    isEqual = true;
-                    break;
-                }
-
-            }
-
-            if (!isEqual) {
-                isOK = true;
-                idNoAVSBidons.put(idNssBidon, nss13);
-            } else {
-                increment++;
-                isEqual = false;
-            }
-
-        }
-
-        // le sexe est defini dans la situation familiale.
-        // String nss13 = PRNSS13ChiffresUtils.getRandomNSS(getSession());
-
-        /*
-         * comme a la fois les conjoints et les enfants peuvent avoir un no avs vide, il est possible qu'un enfant et un
-         * conjoint ait le meme no AVS dans le fichier ACOR, ce qui fait qu'ACOR ne pourra pas determiner qui est
-         * l'enfant et qui est le conjoint. Pour regler ce probleme, on differencie les no AVS bidon en se basant sur le
-         * type de relation et le nomPrenom
-         */
-
-        String noUnique = (String) idNSSBidons.get(idNssBidon);
-
-        if (noUnique == null) {
-            noUnique = nss13;
-            idNSSBidons.put(idNssBidon, noUnique);
-        }
-        return noUnique;
-    }
-
 }
