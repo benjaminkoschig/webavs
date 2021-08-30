@@ -18,8 +18,7 @@ public class StrategieCapitalLPP extends StrategieCalculFortune implements IStra
 
     @Override
     protected TupleDonneeRapport calculeFortune(CalculDonneesCC donnee, CalculContext context,
-            TupleDonneeRapport resultatExistant) {
-
+            TupleDonneeRapport resultatExistant) throws CalculException {
         this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_FOR_MOBI_CAPITAL_LPP, getMontant(donnee));
         return resultatExistant;
     }

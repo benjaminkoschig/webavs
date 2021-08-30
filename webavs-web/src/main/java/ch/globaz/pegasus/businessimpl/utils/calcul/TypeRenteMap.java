@@ -90,4 +90,67 @@ public final class TypeRenteMap {
         }
     };
 
+    public final static List<String> listeCsRenteEnfant = new ArrayList<String>() {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        {
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_14);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_15);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_16);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_24);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_25);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_26);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_34);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_35);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_36);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_44);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_45);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_46);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_54);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_55);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_56);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_74);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_75);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_76);
+        }
+    };
+
+    public final static List<String> listeCsRenteEnfantBesoinsVitauxIndifs = new ArrayList<String>() {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        {
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_14);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_15);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_16);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_24);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_25);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_26);
+        }
+    };
+
+
+    public final static List<String> listeCsRenteEnfantInstitutionBesoinsVitaux = new ArrayList<String>() {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        {
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_34);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_35);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_45);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_54);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_55);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_74);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_75);
+            this.add(IPCRenteAvsAi.CS_TYPE_SANS_RENTE);
+        }
+    };
+
 }

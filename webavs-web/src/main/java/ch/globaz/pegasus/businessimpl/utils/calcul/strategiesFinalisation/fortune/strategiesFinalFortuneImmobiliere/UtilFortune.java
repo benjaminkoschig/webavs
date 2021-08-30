@@ -1,15 +1,16 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune.strategiesFinalFortuneImmobiliere;
 
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TypeRenteMap;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategiesFinalisationFactory;
 import globaz.jade.client.util.JadeDateUtil;
+
+import java.util.Objects;
 
 public class UtilFortune {
 
@@ -25,14 +26,16 @@ public class UtilFortune {
         boolean refusForce = false;
         if (isReformeApplicableDroit(context)) {
             float totalFortune;
-            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION) && !(Boolean) context.get(CalculContext.Attribut.IS_FRATRIE)) {
+            boolean isRenteEnfant = isRenteEnfant(donnee, context);
+            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION)
+                    && (!(Boolean) context.get(CalculContext.Attribut.IS_FRATRIE)) || isRenteEnfant) {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION);
             } else {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL);
             }
             int nbParent = (Integer) context.get(CalculContext.Attribut.NB_PARENTS);
             float seuil;
-            if ((Boolean) context.get(CalculContext.Attribut.IS_FRATRIE)) {
+            if ((Boolean) context.get(CalculContext.Attribut.IS_FRATRIE) || isRenteEnfant) {
                 seuil = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(CalculContext.Attribut.CS_REFORME_SEUIL_FORTUNE_ENFANT)).getValeurCourante());
             } else if (nbParent == 2) {
@@ -50,11 +53,28 @@ public class UtilFortune {
         return refusForce;
     }
 
+    private static boolean isRenteEnfant(TupleDonneeRapport donnee, CalculContext context) throws CalculException {
+
+        // Si le requerant a une rente faisant partie de la liste des rentes avec besoin vitaux indifférents
+        if (TypeRenteMap.listeCsRenteEnfantBesoinsVitauxIndifs.contains(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT))) {
+            return true;
+        }
+
+        int nbEnfantsMoins11 = (Integer) context.get(CalculContext.Attribut.NB_ENFANTS_INF_11);
+        int nbEnfantsPlusOuEgal11 = (Integer) context.get(CalculContext.Attribut.NB_ENFANTS_EGAL_SUP_11);
+
+        boolean enfantInstitutionOuBesoinVitaux = TypeRenteMap.listeCsRenteEnfantInstitutionBesoinsVitaux.contains(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT));
+        boolean isInstitution = (donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL).equals("null")) ? false : Float.valueOf(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL)) > 0;
+        boolean isBesoinVitauxEnfant = (nbEnfantsMoins11 != 0) || (nbEnfantsPlusOuEgal11 != 0);
+
+        // Si le requerant possède une autre rente enfant, on va faire attention s'il possède des besoins vitaux adultes ou enfant, ou alors s'il est en Home/Institution
+        return ((enfantInstitutionOuBesoinVitaux && isInstitution) || (enfantInstitutionOuBesoinVitaux && isBesoinVitauxEnfant));
+    }
+
     /**
      * Méthode qui retourne si le seuil a été atteint pour le calcul en paramètre
      *
      * @param donnee  du plan de calcul
-     * @param context
      * @return true si le seuil est atteint
      * @throws CalculException
      */
@@ -112,23 +132,7 @@ public class UtilFortune {
      * @return booleen indiquant d'appliquer le calcul ou non
      * @throws CalculException
      */
-    private static boolean isReformeApplicableDroit(CalculContext context) throws CalculException {
-//        String dateReforme = "";
-//        String dateValidite = (String) context.get(CalculContext.Attribut.DATE_DEBUT_PERIODE);
-//        try {
-//            dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
-//        } catch (PropertiesException e) {
-//            throw new CalculException("Propriété date reforme pc manquante", e);
-//        }
-//        boolean isReforme = false;
-//        try {
-//            isReforme = EPCProperties.REFORME_PC.getBooleanValue();
-//        } catch (PropertiesException e) {
-//            throw new CalculException("Propriété reforme pc manquante", e);
-//        }
-//        return isReforme                                                                        // si réforme pc active
-//        && (context.contains(CalculContext.Attribut.REFORME)                                    // si dans le calcul de la réforme
-//        || (!dateReforme.isEmpty() && JadeDateUtil.isDateBefore(dateReforme, dateValidite)));   // ou si date de début du droit après la date de début de la réforme
-        return context.contains(CalculContext.Attribut.REFORME);
+    private static boolean isReformeApplicableDroit(CalculContext context) {
+         return context.contains(CalculContext.Attribut.REFORME);
     }
 }

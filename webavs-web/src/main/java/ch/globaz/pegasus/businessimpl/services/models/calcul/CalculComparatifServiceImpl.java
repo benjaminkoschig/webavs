@@ -567,9 +567,9 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
             cacheDonnees.put(ConstantesCalcul.CONTAINER_DONNEES_DROIT_CC, searchDonneesCalculModel);
 
             // récupère données homes
-            List<String> listIdTypeChambre = new ArrayList<String>();
-            List<CalculDonneesCC> listTypeChambre = new ArrayList<CalculDonneesCC>();
-            List<String> listIdLocalite = new ArrayList<>();
+            List<String> listIdTypeChambre = new ArrayList<>();
+            List<CalculDonneesCC> listTypeChambre = new ArrayList<>();
+
 
             for (JadeAbstractModel absDonnee : searchDonneesCalculModel.getSearchResults()) {
                 CalculDonneesCC donnee = (CalculDonneesCC) absDonnee;
