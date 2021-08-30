@@ -143,14 +143,14 @@ public class HomeUtil {
             if(tupleHome != null) {
                 idHome = String.valueOf(tupleHome.getValeur());
             } else {
-                TupleDonneeRapport tupleRequerant = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_IDTIER_REQUERANT);
                 TupleDonneeRapport tupleConjoint = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_IDTIER_CONJOINT);
 
-                if (tupleConjoint != null && Float.valueOf(idTier) == tupleConjoint.getValeur()) {
+                TupleDonneeRapport tupleHomeRequerant = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_REQUERANT);
+
+                if ((tupleConjoint != null && Float.valueOf(idTier) == tupleConjoint.getValeur()) || tupleHomeRequerant == null) {
                     TupleDonneeRapport tupleHomeConjoint = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_CONJOINT);
                     idHome = String.valueOf(tupleHomeConjoint.getValeur());
                 } else {
-                    TupleDonneeRapport tupleHomeRequerant = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_REQUERANT);
                     idHome = String.valueOf(tupleHomeRequerant.getValeur());
                 }
             }
