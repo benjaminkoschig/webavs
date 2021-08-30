@@ -5,12 +5,15 @@ import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelperOO;
 import globaz.corvus.api.codesystem.IRECatalogueTexte;
+import globaz.corvus.api.creances.IRECreancier;
 import globaz.corvus.api.decisions.IREDecision;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.ordresversements.IRESoldePourRestitution;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
+import globaz.corvus.db.creances.RECreancier;
+import globaz.corvus.db.creances.RECreancierManager;
 import globaz.corvus.db.decisions.REAnnexeDecision;
 import globaz.corvus.db.decisions.REAnnexeDecisionManager;
 import globaz.corvus.db.decisions.RECopieDecision;
@@ -88,6 +91,7 @@ import ch.globaz.corvus.domaine.constantes.TypeRenteVerseeATort;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Création de la décision de rentes avec la solution Topaz
@@ -134,6 +138,8 @@ public class REDecisionOO extends REAbstractJobOO {
     private boolean isCopieFiscTronquee;
     private boolean isCopieOAI;
     public boolean isEnteteAI;
+    private RECreancier creancierImpotSource;
+
     private boolean isIdTiersBCEqualsIdTiersReqDemande;
     private JADate lastDateDebutRADecision;
     private BigDecimal montantCompensationDepuisCID;
@@ -2054,6 +2060,21 @@ public class REDecisionOO extends REAbstractJobOO {
 
                             for (Long idTiersCreancier : keysCreanciers) {
 
+                                if (typeDecision.startsWith("INV")) {
+                                // récupérer les créancier et vérifier si un des créanciers est de type impôt source
+                                    RECreancierManager creMgr = new RECreancierManager();
+                                    creMgr.setSession(getSession());
+                                    creMgr.setForIdTiers(idTiersCreancier.toString());
+                                    creMgr.setForIdDemandeRente(demandeRente.getIdDemandeRente());
+                                    creMgr.find(getSession().getCurrentThreadTransaction());
+
+                                    for (RECreancier cre : creMgr.getContainerAsList()) {
+                                        if (cre.getCsType().equals(IRECreancier.CS_IMPOT_SOURCE)) {
+                                            creancierImpotSource = cre;
+                                        }
+                                    }
+                                }
+
                                 // BZ 5220, recherche de l'adresse en cascade en fonction du paramètre
                                 // isWantAdresseCourrier se trouvant dans le fichier corvus.properties
                                 String nomCreancier = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
@@ -2397,6 +2418,23 @@ public class REDecisionOO extends REAbstractJobOO {
 
     }
 
+    private void ajouteTexteImpotSource(StringBuffer buffer) {
+
+        // recherche le texte dans le catalogues
+        String texteImpotSource = getTexteOrEmpty(catalogeDeTexteDecision, 6, 30);
+
+        // si le texte existe
+        if (StringUtils.isNotBlank(texteImpotSource)) {
+
+            // on insère le taux et le revenu annuel déterminant dans le texte
+            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{revenuAnnuelDeterminant}", JANumberFormatter.format(creancierImpotSource.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR));
+            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{tauxImposition}", JANumberFormatter.format(creancierImpotSource.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
+            buffer.append(texteImpotSource);
+            buffer.append("\r\r");
+        }
+
+    }
+
     private void remplirMoyensDroit() throws Exception {
 
         StringBuffer buffer = new StringBuffer();
@@ -2729,6 +2767,11 @@ public class REDecisionOO extends REAbstractJobOO {
                 buffer.append("\r\r");
             }
             buffer.append(getTexte(catalogeDeTexteRemarquesDecision, 1, 6));
+        }
+
+        // ajoute la remarque impôt source si la demande possède un créancier de type impôt source avec les valeurs nécessaires pour compléter le texte
+        if (creancierImpotSource != null  && !JadeStringUtil.isBlank(creancierImpotSource.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlank(creancierImpotSource.getTauxImposition())) {
+            ajouteTexteImpotSource(buffer);
         }
 
         // Rente pour enfants

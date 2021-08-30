@@ -55,6 +55,15 @@ public abstract class REAbstractJobOO extends AbstractJadeJob {
         }
     }
 
+    protected final String getTexteOrEmpty(CatalogueText catalogue, int niveau, int position) {
+        try {
+            return babelContainer.getTexte(catalogue, niveau, position);
+        } catch (Exception ex) {
+            getLogSession().error(getName(), ex.toString());
+            return "";
+        }
+    }
+
     private final JadeContext initContext() throws Exception {
 
         setSession(BSessionUtil.createSession(REApplication.DEFAULT_APPLICATION_CORVUS, getSession().getUserId()));

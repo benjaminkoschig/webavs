@@ -35,7 +35,7 @@
 	String jspLocation = servletContext + "/corvusRoot/numeroSecuriteSocialeSF_select.jsp";
 	
 	boolean hasUpdateRight = controller.getSession().hasRight(IREActions.ACTION_CREANCIER, FWSecureConstants.UPDATE);
-	
+
 	bButtonDelete = bButtonDelete && viewBean.isModifiable() && hasUpdateRight;
 	bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && hasUpdateRight;
 	bButtonValidate = bButtonValidate && viewBean.isModifiable() && hasUpdateRight;
@@ -237,10 +237,27 @@
 							</TBODY>
 						<%} else if(globaz.corvus.api.creances.IRECreancier.CS_IMPOT_SOURCE.equalsIgnoreCase(viewBean.getCsType())){%>
 							<TBODY id="isTypeImpotSource">
-								<TR>
-									<TD><ct:FWLabel key="JSP_CRE_D_MONTANT_REVENDIQUE"/></TD>
-									<TD><INPUT type="text" name="montantRevandique" value="<%=new globaz.framework.util.FWCurrency(viewBean.getMontantRevandique()).toStringFormat()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
-								</TR>
+                                <TR>
+                                    <TD><ct:FWLabel key="JSP_CRE_D_MONTANT_REVENDIQUE"/></TD>
+                                    <TD><INPUT type="text" name="montantRevandique"
+                                               value="<%=new globaz.framework.util.FWCurrency(viewBean.getMontantRevandique()).toStringFormat()%>"
+                                               class="montant" onchange="validateFloatNumber(this);"
+                                               onkeypress="return filterCharForFloat(window.event);"></TD>
+                                </TR>
+                                <TR>
+                                    <TD><ct:FWLabel key="JSP_CRE_D_REVENU_ANNUEL_DETERMINANT"/></TD>
+                                    <TD><INPUT type="text" name="revenuAnnuelDeterminant"
+                                               value="<%=new globaz.framework.util.FWCurrency(viewBean.getRevenuAnnuelDeterminant()).toStringFormat()%>"
+                                               class="montant" onchange="validateFloatNumber(this, 2);"
+                                               onkeypress="return filterCharForFloat(window.event);"></TD>
+                                </TR>
+                                <TR>
+                                    <TD><ct:FWLabel key="JSP_CRE_D_TAUX_IMPOSITION"/></TD>
+                                    <TD><INPUT type="text" name="tauxImposition"
+                                               value="<%=new globaz.framework.util.FWCurrency(viewBean.getTauxImposition()).toStringFormat()%>"
+                                               class="montant" onchange="validateFloatNumber(this, 2);"
+                                               onkeypress="return filterCharForFloat(window.event);">%</TD>
+                                 </TR>
 							</TBODY>
 						<%}%>
 						</TR>

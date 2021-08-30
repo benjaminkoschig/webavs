@@ -820,17 +820,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private void initCopieA2Fisc(ICTDocument document, Map parametres) throws Exception {
         String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), demande.getIdTiers());
 
-        // chargement de la ligne de copie avec le formater
-        final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
-                new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
-
-        if (parametres.get("P_COPIE_A2") != null)
+        parametres.putIfAbsent("P_COPIE_A2", "");
+        if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
+            // chargement de la ligne de copie avec le formater
+            final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
+                    new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
             parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + "\n" + ligneAdmFiscale);
-        else {
-            parametres.put("P_COPIE_A2", ligneAdmFiscale);
         }
-        parametres.put("P_COPIE_A", getTextOrEmpty(document, 1, 8));
+        parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
     }
 
     private void ajouteTexteImpotSource(ICTDocument document, StringBuffer buffer) throws Exception {

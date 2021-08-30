@@ -40,6 +40,8 @@ public class RECreancier extends BEntity {
     public static final String FIELDNAME_ID_TIERS_REGROUPEMENT = "YSITRG";
     public static final String FIELDNAME_IS_BLOQUE = "YSBBLO";
     public static final String FIELDNAME_MONTANT_REVANDIQUE = "YSMREV";
+    public static final String FIELDNAME_REVENU_ANNUEL_DETERMINANT = "YSRAND";
+    public static final String FIELDNAME_TAUX_IMPOSITION = "YSRTIM";
     public static final String FIELDNAME_REF_PAIEMENT = "YSLRPA";
     public static final String TABLE_NAME_CREANCIER = "RECREAN";
 
@@ -61,6 +63,8 @@ public class RECreancier extends BEntity {
     private String idTiersRegroupement = "";
     private Boolean isBloque = Boolean.FALSE;
     private String montantRevandique = "";
+    private String revenuAnnuelDeterminant = "";
+    private String tauxImposition = "";
     private String refPaiement = "";
 
     // ~ Methods
@@ -109,6 +113,8 @@ public class RECreancier extends BEntity {
         idAffilieAdressePmt = statement.dbReadNumeric(FIELDNAME_ID_AFFILIE_ADR_PMT);
         idDomaineApplicatif = statement.dbReadNumeric(FIELDNAME_ID_DOMAINE_APPLICATIF);
         montantRevandique = statement.dbReadNumeric(FIELDNAME_MONTANT_REVANDIQUE);
+        revenuAnnuelDeterminant = statement.dbReadNumeric(FIELDNAME_REVENU_ANNUEL_DETERMINANT);
+        tauxImposition = statement.dbReadNumeric(FIELDNAME_TAUX_IMPOSITION);
         csEtat = statement.dbReadNumeric(FIELDNAME_CS_ETAT);
         idTiers = statement.dbReadNumeric(FIELDNAME_ID_TIERS);
         csType = statement.dbReadNumeric(FIELDNAME_CS_TYPE);
@@ -167,6 +173,10 @@ public class RECreancier extends BEntity {
                 _dbWriteNumeric(statement.getTransaction(), idDomaineApplicatif, "idDomaineApplicatif"));
         statement.writeField(FIELDNAME_MONTANT_REVANDIQUE,
                 _dbWriteNumeric(statement.getTransaction(), montantRevandique, "montantRevandique"));
+        statement.writeField(FIELDNAME_REVENU_ANNUEL_DETERMINANT,
+                _dbWriteNumeric(statement.getTransaction(), revenuAnnuelDeterminant, "revenuAnnuelDeterminant"));
+        statement.writeField(FIELDNAME_TAUX_IMPOSITION,
+                _dbWriteNumeric(statement.getTransaction(), tauxImposition, "tauxImposition"));
         statement.writeField(FIELDNAME_CS_ETAT, _dbWriteNumeric(statement.getTransaction(), csEtat, "csEtat"));
         statement.writeField(FIELDNAME_ID_TIERS, _dbWriteNumeric(statement.getTransaction(), idTiers, "idTiers"));
         statement.writeField(FIELDNAME_CS_TYPE, _dbWriteNumeric(statement.getTransaction(), csType, "csType"));
@@ -268,6 +278,20 @@ public class RECreancier extends BEntity {
      */
     public String getMontantRevandique() {
         return montantRevandique;
+    }
+
+    /**
+     * @return
+     */
+    public String getTauxImposition() {
+        return tauxImposition;
+    }
+
+    /**
+     * @return
+     */
+    public String getRevenuAnnuelDeterminant() {
+        return revenuAnnuelDeterminant;
     }
 
     /**
@@ -389,6 +413,20 @@ public class RECreancier extends BEntity {
      */
     public void setMontantRevandique(String string) {
         montantRevandique = string;
+    }
+
+    /**
+     * @param revenuAnnuelDeterminant
+     */
+    public void setRevenuAnnuelDeterminant(String revenuAnnuelDeterminant) {
+        this.revenuAnnuelDeterminant = revenuAnnuelDeterminant;
+    }
+
+    /**
+     * @param tauxImposition
+     */
+    public void setTauxImposition(String tauxImposition) {
+        this.tauxImposition = tauxImposition;
     }
 
     /**
