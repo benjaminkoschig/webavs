@@ -1,14 +1,54 @@
 package globaz.corvus.acor2020.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
-import acor.rentes.xsd.common.OrganisationAdresseType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9Type;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiCurrentType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiInformations;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CiType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonAgeFlexible;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonRenteType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliCType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
-import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
-import globaz.corvus.acor2020.business.*;
+import globaz.corvus.acor2020.business.FractionRente;
+import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
+import globaz.corvus.acor2020.business.Ligne;
+import globaz.corvus.acor2020.business.RCIContainer;
+import globaz.corvus.acor2020.business.REDateNaissanceComparator;
 import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
@@ -20,7 +60,6 @@ import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
-import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
@@ -30,7 +69,10 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.hera.api.*;
+import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFPeriode;
+import globaz.hera.api.ISFRelationFamiliale;
+import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.wrapper.SFPeriodeWrapper;
@@ -41,17 +83,13 @@ import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
+import globaz.prestation.acor.acor2020.mapper.PRAcorEnfantTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
 import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
-import globaz.pyxis.api.ITIAdministration;
-import globaz.pyxis.constantes.IConstantes;
-import globaz.pyxis.db.tiers.TITiers;
-import globaz.webavs.common.CommonProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +102,16 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class REExportationCalculAcor2020  {
 
@@ -121,11 +168,30 @@ public class REExportationCalculAcor2020  {
 
             inHost.getAssure().addAll(createListAssures(membresCatAssures));
             inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
-            inHost.getEnfant().addAll(createListEnfants(membresCatEnfants));
+
+            List<EnfantType> enfantTypes = createListEnfants(adresseCourrierPourRequerant, membresCatEnfants);
+            inHost.getEnfant().addAll(enfantTypes );
         } catch (Exception e) {
-            throw new RETechnicalException("Erreur lors de la construction du inHost.", e);
+            LOG.error("Erreur lors de la construction du inHost.", e);
         }
         return inHost;
+    }
+
+    private List<EnfantType> createListEnfants(final boolean adresseCourrierPourRequerant, final List<ISFMembreFamilleRequerant> membresCatEnfants) throws PRACORException {
+        PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(
+                adresseCourrierPourRequerant,
+                this.tiersRequerant,
+                this.situationFamiliale(),
+                membresCatEnfants,
+                this.session);
+
+        return prAcorEnfantTypeMapper.map((membre, enfant) ->{
+            // RENTES
+            addRentesEnfant(enfant, membre);
+            // PERIODES
+            addPeriodesEnfant(enfant, membre);
+            return enfant;
+        });
     }
 
     private List<ISFMembreFamilleRequerant> filterListMembresAssures(List<ISFMembreFamilleRequerant> membresFamille) {
@@ -180,62 +246,12 @@ public class REExportationCalculAcor2020  {
         demandeType.setTypeDemande(formatTypeDemande(demandeRente.getCsTypeDemandeRente()));
         demandeType.setDateTraitement(getDateTraitement());
         demandeType.setDateDepot(getDateDepot(demandeRente.getDateDepot()));
-
         // NOUVELLES DONNES XSD OBLIGATOIRES
-        demandeType.setCaisseAgence(getCaisseAgence(session));
-        //TODO adresse de la caisse par des propriétés applications à créer
-        demandeType.setAdresseCaisse(createAdresseCaisse());
-        demandeType.setMoisRapport(0);
-        demandeType.setLangue(StringUtils.lowerCase(session.getIdLangue()));
         demandeType.setTypeCalcul(getTypeCalcul(demandeRente.getCsTypeCalcul()));
 
         return demandeType;
     }
 
-    private OrganisationAdresseType createAdresseCaisse() {
-        OrganisationAdresseType adresseCaisse = new OrganisationAdresseType();
-
-        try {
-            ITIAdministration cre = CaisseHelperFactory.getInstance().getAdministrationCaisse(getSession());
-            TITiers tiers = getTiers(cre.getIdTiers());
-            TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
-                    null, null, true, cre.getLangue());
-
-            adresseCaisse.setNom(cre.getNom());
-            adresseCaisse.setAdresse(adresse.casePostale);
-            adresseCaisse.setLocalite(adresse.localiteNom);
-            adresseCaisse.setCodePostal(adresse.localiteNpa);
-            adresseCaisse.setPays(PRConverterUtils.formatRequiredInteger(cre.getIdPays()));
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer l'adresse de la caisse.", e);
-        }
-        return adresseCaisse;
-    }
-
-    private TITiers getTiers(String idTiers) {
-        TITiers tiers = null;
-        try {
-            tiers = new TITiers();
-            tiers.setSession(getSession());
-            tiers.setIdTiers(idTiers);
-            tiers.retrieve();
-        } catch (Exception exception) {
-            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", idTiers, exception);
-        }
-        return tiers;
-    }
-
-    private Integer getCaisseAgence(BSession session) {
-        Integer caisseAgence = 0;
-        try {
-            String noCaisse = session.getApplication().getProperty(CommonProperties.KEY_NO_CAISSE);
-            String noAgence = session.getApplication().getProperty(CommonProperties.KEY_NO_AGENCE);
-            caisseAgence = Integer.valueOf(noCaisse + noAgence);
-        } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération du numéro de la caisse.", e);
-        }
-        return caisseAgence;
-    }
 
     private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille) {
         return new PRAcorAssureTypeMapper(this.prAcorMapper, membresFamille).map(this::addInformationInAssreType);
@@ -1253,68 +1269,6 @@ public class REExportationCalculAcor2020  {
         return prop;
     }
 
-
-    private List<EnfantType> createListEnfants(List<ISFMembreFamilleRequerant> enfantsFamilles) throws PRACORException {
-        List<EnfantType> enfants = new ArrayList<>();
-        for (ISFMembreFamilleRequerant membre : enfantsFamilles) {
-            EnfantType enfant = createEnfantType(membre);
-            enfants.add(enfant);
-        }
-        return enfants;
-    }
-
-    private EnfantType createEnfantType(ISFMembreFamilleRequerant membre) throws PRACORException {
-        EnfantType enfant = new EnfantType();
-        ISFEnfant detail;
-        try {
-            detail = situationFamiliale().getEnfant(membre.getIdMembreFamille());
-        } catch (Exception e) {
-            throw new PRACORException(getSession().getLabel("ERREUR_DETAILS_ENFANTS"), e);
-        }
-
-        enfant.setNavs(getNssMembre(membre));
-        if (StringUtils.isNotEmpty(membre.getNom())) {
-            enfant.setNom(membre.getNom());
-        }
-        if (StringUtils.isNotEmpty(membre.getPrenom())) {
-            enfant.setPrenom(membre.getPrenom());
-        }
-        enfant.setDateNaissance(PRConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
-        if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-            enfant.setDateDeces(PRConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
-        }
-        enfant.setNationalite(this.prAcorMapper.getCodePays(membre.getCsNationalite()));
-        enfant.setDomicile(this.prAcorMapper.getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
-        enfant.setRefugie(false);
-        enfant.setSexe(PRACORConst.csSexeEnfantToAcor2020(membre.getCsSexe()));
-
-        String noAvsPere = this.prAcorMapper.nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(),
-                                                      true);
-        if (!JadeStringUtil.isBlankOrZero(noAvsPere)) {
-            enfant.setNavsPere(PRConverterUtils.formatNssToLong(noAvsPere));
-        } else {
-            enfant.setPereInconnu(true);
-        }
-        String noAvsMere = this.prAcorMapper.nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), true);
-        if (!JadeStringUtil.isBlankOrZero(noAvsMere)) {
-            enfant.setNavsMere(PRConverterUtils.formatNssToLong(noAvsMere));
-        } else {
-            enfant.setMereInconnue(true);
-        }
-        enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(session, membre.getCsEtatCivil())));
-        if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
-            enfant.setDateAdoption(PRConverterUtils.formatDate(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
-        }
-        // RENTES
-        addRentesEnfant(enfant, membre);
-
-        // EURO_FORM
-        enfant.setDonneesPostales(this.prAcorMapper.createDonneesPostales());
-
-        // PERIODES
-        addPeriodesEnfant(enfant, membre);
-        return enfant;
-    }
 
     private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
         for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {

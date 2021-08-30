@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IJAcor2020Service {
 
     public InHostType createInHost(String idPrononce) {
-        InHostCreator inHostCreator = new InHostCreator();
-        return inHostCreator.createInHost(idPrononce);
+        IJExportationCalculAcor IJExportationCalculAcor = new IJExportationCalculAcor();
+        return IJExportationCalculAcor.createInHost(idPrononce);
     }
 }

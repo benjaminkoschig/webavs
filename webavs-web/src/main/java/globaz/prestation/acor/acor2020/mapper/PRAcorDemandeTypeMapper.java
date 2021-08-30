@@ -2,7 +2,12 @@ package globaz.prestation.acor.acor2020.mapper;
 
 import acor.rentes.xsd.common.OrganisationAdresseType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
+import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BSession;
+import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
+import globaz.pyxis.api.ITIAdministration;
+import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +33,36 @@ public class PRAcorDemandeTypeMapper {
 
     private OrganisationAdresseType createAdresseCaisse() {
         OrganisationAdresseType adresseCaisse = new OrganisationAdresseType();
-        //TODO
-        adresseCaisse.setAdresse("test");
-        adresseCaisse.setLocalite("test");
-        adresseCaisse.setCodePostal("2300");
-        adresseCaisse.setPays(100);
-        adresseCaisse.setNom("");
+
+        try {
+            ITIAdministration cre = CaisseHelperFactory.getInstance().getAdministrationCaisse(session);
+            TITiers tiers = getTiers(cre.getIdTiers());
+
+            TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
+                                                                       null, null, true, cre.getLangue());
+
+            adresseCaisse.setNom(cre.getNom());
+            adresseCaisse.setAdresse(adresse.casePostale);
+            adresseCaisse.setLocalite(adresse.localiteNom);
+            adresseCaisse.setCodePostal(adresse.localiteNpa);
+            adresseCaisse.setPays(PRConverterUtils.formatRequiredInteger(cre.getIdPays()));
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer l'adresse de la caisse.", e);
+        }
         return adresseCaisse;
+    }
+
+    private TITiers getTiers(String idTiers) {
+        TITiers tiers = null;
+        try {
+            tiers = new TITiers();
+            tiers.setSession(session);
+            tiers.setIdTiers(idTiers);
+            tiers.retrieve();
+        } catch (Exception exception) {
+            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", idTiers, exception);
+        }
+        return tiers;
     }
 
     private Integer getCaisseAgence(BSession session) {
