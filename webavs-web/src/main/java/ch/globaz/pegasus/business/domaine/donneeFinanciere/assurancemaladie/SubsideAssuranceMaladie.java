@@ -32,7 +32,7 @@ public class SubsideAssuranceMaladie extends DonneeFinanciere implements Revenu 
 
     @Override
     protected void definedTypeDonneeFinanciere() {
-        typeDonnneeFianciere = DonneeFinanciereType.ALLOCATION_FAMILIALLE;
+        typeDonnneeFianciere = DonneeFinanciereType.SUBSIDE_ASSURANCE_MALADIE;
     }
 
     @Override

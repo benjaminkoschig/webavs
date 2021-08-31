@@ -14,6 +14,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienIm
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonPrincipale.BiensImmobiliersNonPrincipale;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierServantHbitationPrincipale.BiensImmobiliersServantHabitationPrincipale;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViager.ContratEntretienViager;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.fraisdegarde.FraisDeGarde;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
@@ -36,7 +37,7 @@ import ch.globaz.pegasus.business.domaine.parametre.monnaieEtrangere.MonnaieEtra
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariableMetier;
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariableMetierType;
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariablesMetier;
-import ch.globaz.pegasus.business.models.renteijapi.AutreApi;
+import ch.globaz.pegasus.business.models.assurancemaladie.SubsideAssuranceMaladie;
 import ch.globaz.pegasus.businessimpl.utils.calcul.ProxyCalculDates;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.rpc.businessImpl.RpcTechnicalException;
@@ -184,6 +185,8 @@ public class PersonneElementsCalculConverter {
             perElCal.setHomeDepensesPersonnelles(Montant.ZERO_ANNUEL);
             perElCal.setHomeParticipationAuxCoutDesPatients(Montant.ZERO_ANNUEL);
         }
+        // Ajout des subsides Assurance Maladie
+//        perElCal.setAutresRevenus(perElCal.getAutresRevenus().add(resolveSubsideRetro(df)));
         
         // calcul pour le contrat entretien viager, repris du Plan de calcul (cf StrategieContratRenteViager)
         boolean isHomeViager = false;
@@ -215,7 +218,7 @@ public class PersonneElementsCalculConverter {
                 .add(df.getDessaisissementsRevenu().sumRevenuAnnuel())
                 .add(df.getBiensImmobiliersServantHbitationPrincipale().sumSousLocationPartPorietaire())
                 // .add(df.getComptesBancairePostal().sumRevenuAnnuel())
-                .add(entretienViager).add(df.getAllocationsFamilliale().sumRevenuAnnuelBrut()));
+                .add(entretienViager).add(df.getAllocationsFamilliale().sumRevenuAnnuelBrut()).add(resolveSubsideRetro(df)));
 
         perElCal.setLegalAddress(legalAddress);
         perElCal.setLivingAddress(livingAddress);
@@ -447,6 +450,15 @@ public class PersonneElementsCalculConverter {
         return  forfaitPrimeAssuranceMaladie.getMontantPrimeMoy();
     }
 
+    private Montant resolveSubsideRetro(DonneesFinancieresContainer df) {
+        Montant subsideAssuranceMaladieMontant = Montant.ZERO_ANNUEL;
+
+        for (ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie subsideAssuranceMaladie : df.getSubsideAssuranceMaladie().getList()) {
+            subsideAssuranceMaladieMontant = subsideAssuranceMaladieMontant.add(subsideAssuranceMaladie.getMontant());
+        }
+
+        return  subsideAssuranceMaladieMontant;
+    }
 
     /**
      * Méthode permettant de récupérer le forfait de prime assurance maladie en fonction de la personne et de la date de début.
@@ -522,15 +534,19 @@ public class PersonneElementsCalculConverter {
     private Montant resolveFraisGarde(DonneesFinancieresContainer df){
         Montant fraisGarde = Montant.ZERO_ANNUEL;
         for (RevenuHypothtique revenuHypothetique : df.getRevenusHypothtique().getList()) {
-            fraisGarde.add(revenuHypothetique.getFraisGarde());
+            fraisGarde = fraisGarde.add(revenuHypothetique.getFraisGarde());
         }
 
         for (RevenuActiviteLucrativeDependante revenuDependant : df.getRevenusActiviteLucrativeDependante().getList()) {
-            fraisGarde.add(revenuDependant.getFraisDeGarde());
+            fraisGarde = fraisGarde.add(revenuDependant.getFraisDeGarde());
         }
 
         for (RevenuActiviteLucrativeIndependante revenuIndependant : df.getRevenusActiviteLucrativeIndependante().getList()) {
-            fraisGarde.add(revenuIndependant.getFraisDeGarde());
+            fraisGarde = fraisGarde.add(revenuIndependant.getFraisDeGarde());
+        }
+
+        for (FraisDeGarde fraisDeGarde : df.getFraisDeGarde().getList()) {
+            fraisGarde = fraisGarde.add(fraisDeGarde.getMontant());
         }
 
         return fraisGarde;

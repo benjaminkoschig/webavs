@@ -400,6 +400,14 @@ public class DonneesFinancieresContainer {
         return primeAssuranceMaladie;
     }
 
+    public DonneesFinancieresListBase<SubsideAssuranceMaladie> getSubsideAssuranceMaladie() {
+        return subsideAssuranceMaladie;
+    }
+
+    public void setSubsideAssuranceMaladie(DonneesFinancieresListBase<SubsideAssuranceMaladie> subsideAssuranceMaladie) {
+        this.subsideAssuranceMaladie = subsideAssuranceMaladie;
+    }
+
     public BiensImmobiliersListBase getAllBiensImmobilier() {
         List<BienImmobilier> list = new ArrayList<BienImmobilier>();
         list.addAll(biensImmobiliersNonHabitable.getList());
@@ -467,6 +475,7 @@ public class DonneesFinancieresContainer {
         container.revenusActiviteLucrativeDependante = revenusActiviteLucrativeDependante
                 .filtreForMembreFamille(membreFamille);
         container.revenusHypothtique = revenusHypothtique.filtreForMembreFamille(membreFamille);
+        container.fraisDeGarde = fraisDeGarde.filtreForMembreFamille(membreFamille);
         container.titres = titres.filtreForMembreFamille(membreFamille);
         container.vehicules = vehicules.filtreForMembreFamille(membreFamille);
         container.regimes = regimes.filtreForMembreFamille(membreFamille);
@@ -520,6 +529,7 @@ public class DonneesFinancieresContainer {
         container.revenusActiviteLucrativeDependante = revenusActiviteLucrativeDependante
                 .filtreForRole(roleMembreFamille);
         container.revenusHypothtique = revenusHypothtique.filtreForRole(roleMembreFamille);
+        container.fraisDeGarde = fraisDeGarde.filtreForRole(roleMembreFamille);
         container.titres = titres.filtreForRole(roleMembreFamille);
         container.vehicules = vehicules.filtreForRole(roleMembreFamille);
         container.regimes = regimes.filtreForRole(roleMembreFamille);
@@ -573,6 +583,7 @@ public class DonneesFinancieresContainer {
                 fin);
         container.revenusActiviteLucrativeDependante = revenusActiviteLucrativeDependante.filtreForPeriode(debut, fin);
         container.revenusHypothtique = revenusHypothtique.filtreForPeriode(debut, fin);
+        container.fraisDeGarde = fraisDeGarde.filtreForPeriode(debut, fin);
         container.titres = titres.filtreForPeriode(debut, fin);
         container.vehicules = vehicules.filtreForPeriode(debut, fin);
         container.regimes = regimes.filtreForPeriode(debut, fin);
@@ -606,7 +617,9 @@ public class DonneesFinancieresContainer {
                 + ", revenuesActiviteLucrativeDependante=" + revenusActiviteLucrativeDependante.size()
                 + ", revenuesHypothtique=" + revenusHypothtique.size() + ", titres=" + titres.size() + ", vehicules="
                 + vehicules.size()  + ", fraisDeGarde="
-                + fraisDeGarde.size() + ", sejourMoisPartiel="
+                + fraisDeGarde.size() + ", primeAssuranceMaladie="
+                + primeAssuranceMaladie.size() + ", subsideAssuranceMaladie="
+                + subsideAssuranceMaladie.size() + ", sejourMoisPartiel="
                 + sejourMoisPartiel.size()+ "]";
     }
 

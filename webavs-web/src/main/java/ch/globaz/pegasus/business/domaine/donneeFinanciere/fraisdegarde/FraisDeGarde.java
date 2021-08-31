@@ -10,7 +10,10 @@ public class FraisDeGarde extends DonneeFinanciere implements Depense {
 
     public FraisDeGarde(Montant montant, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
-        this.montant = montant.getMontantAbsolu();
+        // Si envoi montant annuel
+        this.montant = montant.getMontantAbsolu().addMensuelPeriodicity();
+        // Si envoi montant mensuel
+        // this.montant = montant.getMontantAbsolu();
     }
     @Override
     public Montant computeDepense() {
@@ -20,5 +23,9 @@ public class FraisDeGarde extends DonneeFinanciere implements Depense {
     @Override
     protected void definedTypeDonneeFinanciere() {
         typeDonnneeFianciere = DonneeFinanciereType.FRAIS_GARDE;
+    }
+
+    public Montant getMontant() {
+        return montant;
     }
 }

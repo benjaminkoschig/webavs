@@ -121,7 +121,9 @@
 			<select-field name="revenuHypothetiqueMontantDeductionsLPP" field-ref="simpleRevenuHypothetique.deductionLPP"/>
 			<select-field name="revenuHypothetiqueMontantFraisGarde" field-ref="simpleRevenuHypothetique.fraisDeGarde"/>
 			<select-field name="revenuHypothetiqueMotif" field-ref="simpleRevenuHypothetique.csMotif"/>
-			
+
+			<select-field name="montantFraisDeGarde" field-ref="simpleFraisGarde.montant"/>
+
 			<select-field name="contratEntretienViagerMontant" field-ref="simpleContratRenteViager.montantContrat"/>
 			<select-field name="renteAVSAIMontant" field-ref="simpleRenteAVSAI.montant"/>
 			<select-field name="renteAVSAICsType" field-ref="simpleRenteAVSAI.csTypeRente"/>
@@ -422,6 +424,12 @@
 		</linked-model>
 
 		<linked-model name="simpleLoyer" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleLoyer" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleFraisGarde" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleFraisGarde" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>
