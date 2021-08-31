@@ -26,7 +26,7 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
     public static String createToken(BSession bSession, final String idPrononce, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("exportUrl", EXPORT_URL);
+        claims.put("exportUrl", EXPORT_URL + "/" + idPrononce);
         claims.put("importUrl", IMPORT_URL + "/" + idPrononce);
         claims.put("recordId", noAVSAssure);
 

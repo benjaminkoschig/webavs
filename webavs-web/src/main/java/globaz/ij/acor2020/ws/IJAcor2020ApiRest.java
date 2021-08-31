@@ -1,5 +1,6 @@
 package globaz.ij.acor2020.ws;
 
+import acor.ij.xsd.ij.out.FCalcul;
 import globaz.ij.acor2020.service.IJAcor2020Service;
 import globaz.ij.acor2020.ws.token.IJAcor2020Token;
 import globaz.ij.acor2020.ws.token.IJAcor2020TokenService;
@@ -47,12 +48,12 @@ public class IJAcor2020ApiRest {
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */
     @POST
-    @Path("/export")
-    public Response exportDossier(@HeaderParam("authorization") String token, String json) {
+    @Path("/export/{idPrononce}")
+    public Response exportDossier(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, FCalcul fCalcul) {
         LOG.info("Exportation du dossier.");
 
         IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
-
+        ijAcor2020Service.importCalculAcor(idPrononce, fCalcul);
         return Response.ok().build();
     }
 }
