@@ -1,8 +1,8 @@
-package globaz.corvus.acor2020.business;
+package globaz.prestation.acor.acor2020.mapper;
 
 import globaz.hera.api.ISFMembreFamilleRequerant;
 
-public class Ligne {
+class Ligne {
 
     // ~ Instance fields
     // --------------------------------------------------------------------------------------------

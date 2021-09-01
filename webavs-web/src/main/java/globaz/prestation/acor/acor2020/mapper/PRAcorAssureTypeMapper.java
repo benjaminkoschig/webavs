@@ -1,6 +1,7 @@
 package globaz.prestation.acor.acor2020.mapper;
 
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
+import ch.globaz.common.util.Dates;
 import ch.globaz.utils.Pair;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFMembreFamilleRequerant;
@@ -50,9 +51,9 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
         assure.setNavs(getNssMembre(membre));
         assure.setNom(membre.getNom());
         assure.setPrenom(membre.getPrenom());
-        assure.setDateNaissance(PRConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
+        assure.setDateNaissance(Dates.toXMLGregorianCalendar(membre.getDateNaissance()));
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-            assure.setDateDeces(PRConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
+            assure.setDateDeces(Dates.toXMLGregorianCalendar(membre.getDateDeces()));
         }
         assure.setNationalite(getCodePays(membre.getCsNationalite()));
         assure.setDomicile(getDomicile(membre.getCsCantonDomicile(), membre.getPays(), getTiersRequerant()));
@@ -63,6 +64,4 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
 
         return assure;
     }
-
-
 }

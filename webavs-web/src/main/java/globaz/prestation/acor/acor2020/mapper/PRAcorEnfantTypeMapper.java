@@ -1,6 +1,7 @@
 package globaz.prestation.acor.acor2020.mapper;
 
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
+import ch.globaz.common.util.Dates;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFEnfant;
 import globaz.hera.api.ISFMembreFamilleRequerant;
@@ -25,7 +26,15 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
                                   final ISFSituationFamiliale situationFamiliale,
                                   final List<ISFMembreFamilleRequerant> enfantsFamilles,
                                   final BSession session) {
-        super(adresseCourrierPourRequerant, tiersRequerant,session);
+        super(adresseCourrierPourRequerant, tiersRequerant, session);
+        this.situationFamiliale = situationFamiliale;
+        this.enfantsFamilles = enfantsFamilles;
+    }
+
+    public PRAcorEnfantTypeMapper(final ISFSituationFamiliale situationFamiliale,
+                                  final List<ISFMembreFamilleRequerant> enfantsFamilles,
+                                  final PRAcorMapper prAcorMapper) {
+        super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.enfantsFamilles = enfantsFamilles;
     }
@@ -42,7 +51,7 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         List<EnfantType> enfants = new ArrayList<>();
         for (ISFMembreFamilleRequerant membre : enfantsFamilles) {
             EnfantType enfant = createEnfantType(membre);
-            enfants.add(enfantTypeFunction.apply(membre,enfant));
+            enfants.add(enfantTypeFunction.apply(membre, enfant));
         }
         return enfants;
     }
@@ -63,9 +72,9 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         if (StringUtils.isNotEmpty(membre.getPrenom())) {
             enfant.setPrenom(membre.getPrenom());
         }
-        enfant.setDateNaissance(PRConverterUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
+        enfant.setDateNaissance(Dates.toXMLGregorianCalendar(membre.getDateNaissance()));
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-            enfant.setDateDeces(PRConverterUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
+            enfant.setDateDeces(Dates.toXMLGregorianCalendar(membre.getDateDeces()));
         }
         //TODO demande un int dans le JSON sinon l'appli client met une erreur
         enfant.setNationalite(getCodePays(membre.getCsNationalite()));
@@ -88,7 +97,7 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
         enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(this.getSession(), membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
-            enfant.setDateAdoption(PRConverterUtils.formatDate(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
+            enfant.setDateAdoption(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
         }
 
         // EURO_FORM

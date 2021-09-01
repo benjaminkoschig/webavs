@@ -43,7 +43,10 @@ public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
             LOG.error("Une erreur s'est produite lors de l'envoi du mail.", e);
         }
         LOG.error("Une erreur imprévue s'est produite.", e);
-        String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_GLOBAL);
+        String label = "Global error";
+        if(session!=null) {
+             label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), Acor2020StandardErrorUtil.ERROR_ACOR_GLOBAL);
+        }
         return responseBuilder.entity(Acor2020StandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
     }
 

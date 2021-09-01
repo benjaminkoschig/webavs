@@ -151,23 +151,6 @@ public final class PRConverterUtils {
         return null;
     }
 
-    public static XMLGregorianCalendar formatDate(String date, String formatDate) {
-        if (JadeStringUtil.isBlankOrZero(date)) {
-            return null;
-        }
-        DateFormat format = new SimpleDateFormat(formatDate);
-        try {
-            Date dateFormat = format.parse(date);
-
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(dateFormat);
-
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-        } catch (ParseException | DatatypeConfigurationException e) {
-            LOG.error("Erreur lors du formatage d'une date.", e);
-        }
-        return null;
-    }
 
     public static String formatDateToAAAAMM(XMLGregorianCalendar date) {
         if (date == null) {

@@ -1,5 +1,6 @@
 package globaz.prestation.acor.acor2020.ws;
 
+import ch.globaz.common.util.Slashs;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

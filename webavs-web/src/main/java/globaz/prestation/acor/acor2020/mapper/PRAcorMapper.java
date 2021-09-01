@@ -36,7 +36,7 @@ import java.util.Set;
 @Slf4j
 public class PRAcorMapper {
     protected static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
-    protected static final String DD_MM_YYYY_FORMAT = "dd.MM.yyyy";
+    //protected static final String DD_MM_YYYY_FORMAT = "dd.MM.yyyy";
 
     private final Map<String, String> idNoAVSBidons = new HashMap<>();
     private final Map<String, String> idNSSBidons = new HashMap<>();

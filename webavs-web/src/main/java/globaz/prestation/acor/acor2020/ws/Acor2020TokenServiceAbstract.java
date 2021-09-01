@@ -2,6 +2,7 @@ package globaz.prestation.acor.acor2020.ws;
 
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.util.Slashs;
 import globaz.globall.db.BSession;
 import globaz.jade.i18n.JadeI18n;
 import io.jsonwebtoken.Claims;

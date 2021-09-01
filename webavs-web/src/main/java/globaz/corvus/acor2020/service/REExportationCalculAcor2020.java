@@ -29,7 +29,6 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliCType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
@@ -40,13 +39,13 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
 import globaz.corvus.acor2020.business.FractionRente;
 import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
-import globaz.corvus.acor2020.business.Ligne;
 import globaz.corvus.acor2020.business.RCIContainer;
 import globaz.corvus.acor2020.business.REDateNaissanceComparator;
 import globaz.corvus.api.ci.IRERassemblementCI;
@@ -84,6 +83,7 @@ import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorEnfantTypeMapper;
+import globaz.prestation.acor.acor2020.mapper.PRAcorFamilleTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
 import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
@@ -94,7 +94,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -113,31 +112,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class REExportationCalculAcor2020  {
+public class REExportationCalculAcor2020 {
 
     private static final Logger LOG = LoggerFactory.getLogger(REExportationCalculAcor2020.class);
 
 
-    public BSession session;
-    public String idDemande;
-    public BTransaction transaction;
-    public REDemandeRente demandeRente;
-    public PRTiersWrapper tiersRequerant;
+    private BSession session;
+    private String idDemande;
+    private BTransaction transaction;
+    private REDemandeRente demandeRente;
+    private PRTiersWrapper tiersRequerant;
     private ISFMembreFamilleRequerant membreRequerant;
-    private HashMap relations = new HashMap();
-
-    private HashMap idNoAVSBidons = new HashMap();
-    private HashMap idNSSBidons = new HashMap();
     private static final String IS_WANT_ADRESSE_COURRIER = "isWantAdresseCourrier";
 
-    private transient Marshaller marshaller;
-    private static final String XSD_FOLDER = "/xsd/acor/xsd/";
-    private static final String XSD_NAME = "acor-rentes-in-host.xsd";
-    private static final String DD_MM_YYYY_FORMAT = "dd.MM.yyyy";
     public static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
     private static final int ANTICIPATION_OR_REVOCATION = 100;
     private static final int AJOURNEMENT = 0;
     private PRAcorMapper prAcorMapper;
+    private PRAcorFamilleTypeMapper familleTypeMapper;
 
     public REExportationCalculAcor2020(BSession bSession, String idDemandeRente) {
         session = bSession;
@@ -157,7 +149,8 @@ public class REExportationCalculAcor2020  {
                 adresseCourrierPourRequerant = true;
             }
             this.prAcorMapper = new PRAcorMapper(adresseCourrierPourRequerant, this.tiersRequerant, this.session);
-
+            ISFSituationFamiliale situationFamiliale = this.situationFamiliale();
+            this.familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, this.prAcorMapper);
             inHost.setDemande(createDemande(demandeRente, tiersRequerant, session));
             List<ISFMembreFamilleRequerant> membresFamille = getToutesLesMembresFamillesEtEtendue();
             trouverRequerant(membresFamille);
@@ -169,23 +162,18 @@ public class REExportationCalculAcor2020  {
             inHost.getAssure().addAll(createListAssures(membresCatAssures));
             inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
 
-            List<EnfantType> enfantTypes = createListEnfants(adresseCourrierPourRequerant, membresCatEnfants);
-            inHost.getEnfant().addAll(enfantTypes );
+            PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, membresCatEnfants, this.prAcorMapper);
+
+            List<EnfantType> enfantTypes = createListEnfants(prAcorEnfantTypeMapper);
+            inHost.getEnfant().addAll(enfantTypes);
         } catch (Exception e) {
             LOG.error("Erreur lors de la construction du inHost.", e);
         }
         return inHost;
     }
 
-    private List<EnfantType> createListEnfants(final boolean adresseCourrierPourRequerant, final List<ISFMembreFamilleRequerant> membresCatEnfants) throws PRACORException {
-        PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(
-                adresseCourrierPourRequerant,
-                this.tiersRequerant,
-                this.situationFamiliale(),
-                membresCatEnfants,
-                this.session);
-
-        return prAcorEnfantTypeMapper.map((membre, enfant) ->{
+    private List<EnfantType> createListEnfants(PRAcorEnfantTypeMapper prAcorEnfantTypeMapper) throws PRACORException {
+        return prAcorEnfantTypeMapper.map((membre, enfant) -> {
             // RENTES
             addRentesEnfant(enfant, membre);
             // PERIODES
@@ -245,7 +233,7 @@ public class REExportationCalculAcor2020  {
         demandeType.setNavs(getNumAvsFromDemande(demandeRente, tiersRequerant, session));
         demandeType.setTypeDemande(formatTypeDemande(demandeRente.getCsTypeDemandeRente()));
         demandeType.setDateTraitement(getDateTraitement());
-        demandeType.setDateDepot(getDateDepot(demandeRente.getDateDepot()));
+        demandeType.setDateDepot(Dates.toXMLGregorianCalendar(demandeRente.getDateDepot()));
         // NOUVELLES DONNES XSD OBLIGATOIRES
         demandeType.setTypeCalcul(getTypeCalcul(demandeRente.getCsTypeCalcul()));
 
@@ -305,9 +293,9 @@ public class REExportationCalculAcor2020  {
         String codeVeto = PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation());
         if (StringUtils.isNotEmpty(codeVeto)) {
             donneesVeto.setVetoPrestation(PRConverterUtils.formatRequiredInteger(codeVeto));
-            donneesVeto.setDateVeto(PRConverterUtils.formatDate(infoCompl.getDateInfoCompl(), DD_MM_YYYY_FORMAT));
-        return donneesVeto;
-    }
+            donneesVeto.setDateVeto(Dates.toXMLGregorianCalendar(infoCompl.getDateInfoCompl()));
+            return donneesVeto;
+        }
         return null;
     }
 
@@ -322,7 +310,7 @@ public class REExportationCalculAcor2020  {
         // Anticipation
         if (StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES, anticipation) || StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE, anticipation)) {
             flexibilisationType = new FlexibilisationType();
-            flexibilisationType.setDebut(PRConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
+            flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(demandeRente.getDateDebut()));
             flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour une anticipation
         }
         boolean ajournement = ((REDemandeRenteVieillesse) demandeRente).getIsAjournementRequerant();
@@ -331,11 +319,11 @@ public class REExportationCalculAcor2020  {
             flexibilisationType = new FlexibilisationType();
             // Revocation
             if (StringUtils.isNotEmpty(dateRevocation)) {
-                flexibilisationType.setDebut(PRConverterUtils.formatDate(dateRevocation, DD_MM_YYYY_FORMAT));
+                flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(dateRevocation));
                 flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour un ajournement révoqué
             } else {
                 // Ajournement
-                flexibilisationType.setDebut(PRConverterUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
+                flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(demandeRente.getDateDebut()));
                 flexibilisationType.setPartPercue(AJOURNEMENT); // Pour un ajournement demandé
             }
         }
@@ -399,9 +387,9 @@ public class REExportationCalculAcor2020  {
         // 3. fraction de rente
         commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
         // 4. date début du droit
-        commonRente.setDebutDroit(PRConverterUtils.formatDate(rente.getDateDebutDroit(), "MM.yyyy"));
+        commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit
-        commonRente.setFinDroit(PRConverterUtils.formatDate(rente.getDateFinDroit(), "MM.yyyy"));
+        commonRente.setFinDroit(Dates.toXMLGregorianCalendar(rente.getDateFinDroit(), "MM.yyyy"));
 
         if (commonRente.getFinDroit() != null) {
             RERenteAccordee renteAccordee = new RERenteAccordee();
@@ -419,7 +407,7 @@ public class REExportationCalculAcor2020  {
         // 6. montant de la prestation
         commonRente.setMontant(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));
         // 38. année du montant du ram
-        commonRente.setAnneeEtat(PRConverterUtils.formatDate(rente.getAnneeMontantRAM(), "yyyy"));
+        commonRente.setAnneeEtat(Dates.toXMLGregorianCalendar(rente.getAnneeMontantRAM(), "yyyy"));
 //        // 17. code cas spécial
         if (!JadeStringUtil.isBlankOrZero((rente.getCs1()))) {
             commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs1()));
@@ -480,7 +468,7 @@ public class REExportationCalculAcor2020  {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(Dates.toXMLGregorianCalendar(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 24 - 26 + 33 - 35
@@ -498,7 +486,7 @@ public class REExportationCalculAcor2020  {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(Dates.toXMLGregorianCalendar(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 24 - 26 + 33 - 35
@@ -512,7 +500,7 @@ public class REExportationCalculAcor2020  {
         ExtraordinaireBase10Type base = new ExtraordinaireBase10Type();
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(Dates.toXMLGregorianCalendar(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         return base;
@@ -526,7 +514,7 @@ public class REExportationCalculAcor2020  {
         base.setDonneesEchelle(createDonnesEchelleType(rente));
         // 16. année de niveau
         String anneeNiveau = formatAnneeNiveau(rente.getAnneeNiveau());
-        base.setAnneeNiveau(PRConverterUtils.formatDate(anneeNiveau, "yyyy"));
+        base.setAnneeNiveau(Dates.toXMLGregorianCalendar(anneeNiveau, "yyyy"));
         // 19 - 23
         base.setDonneesAI(createAiType(rente));
         // 27 - 30
@@ -589,7 +577,7 @@ public class REExportationCalculAcor2020  {
             anticipation.setVorbezugsreduktion(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantReducAnticipation()));
         }
         // 35. date déb. anticipation
-        anticipation.setVorbezugsdatum(PRConverterUtils.formatDate(rente.getDateDebutAnticipation(), "MM.yyyy"));
+        anticipation.setVorbezugsdatum(Dates.toXMLGregorianCalendar(rente.getDateDebutAnticipation(), "MM.yyyy"));
         if (isAuMoinsUneDonneeObligatoireManquante(anticipation.getAnzahlVorbezugsjahre(), anticipation.getVorbezugsreduktion(), anticipation.getVorbezugsdatum())) {
             return null;
         }
@@ -642,7 +630,7 @@ public class REExportationCalculAcor2020  {
         if (date.length() < 6) {
             date = 0 + date;
         }
-        ajournement.setAbrufdatum(PRConverterUtils.formatDate(date, "MM.yyyy"));
+        ajournement.setAbrufdatum(Dates.toXMLGregorianCalendar(date, "MM.yyyy"));
 
         if (isAuMoinsUneDonneeObligatoireManquante(ajournement.getAufschubsdauer(), ajournement.getAbrufdatum(), ajournement.getAufschubszuschlag())) {
             return null;
@@ -676,7 +664,7 @@ public class REExportationCalculAcor2020  {
             donnesAi.setFunktionsausfallcode(atteinteFct);
         }
         // 21. survenance évén. assure
-        donnesAi.setDatumVersicherungsfall(PRConverterUtils.formatDate(rente.getSurvenanceEvenementAssure(), "MM.yyyy"));
+        donnesAi.setDatumVersicherungsfall(Dates.toXMLGregorianCalendar(rente.getSurvenanceEvenementAssure(), "MM.yyyy"));
         // 22. invalide précoce
         donnesAi.setIstFruehInvalid(rente.getIsInvaliditePrecoce());
         // 23. office ai
@@ -701,8 +689,8 @@ public class REExportationCalculAcor2020  {
                 periodeAI.setInvaliditaetsgrad(Short.valueOf(periode.getDegreInvalidite())); // degré invalidité
                 periodeAI.setGebrechensschluessel(Integer.valueOf(getSession().getCode(demandeRenteInvalidite.getCsInfirmite()))); // Genre infirmité
                 periodeAI.setFunktionsausfallcode(Short.valueOf(getSession().getCode(demandeRenteInvalidite.getCsAtteinte()))); // atteinte fonctionnelle
-                periodeAI.setDebutInvalidite(PRConverterUtils.formatDate(periode.getDateDebutInvalidite(), DD_MM_YYYY_FORMAT));
-                periodeAI.setFinInvalidite(PRConverterUtils.formatDate(periode.getDateFinInvalidite(), DD_MM_YYYY_FORMAT));
+                periodeAI.setDebutInvalidite(Dates.toXMLGregorianCalendar(periode.getDateDebutInvalidite()));
+                periodeAI.setFinInvalidite(Dates.toXMLGregorianCalendar(periode.getDateFinInvalidite()));
                 aiInformations.getPeriodeAI().add(periodeAI);
             }
         } catch (Exception e) {
@@ -711,8 +699,8 @@ public class REExportationCalculAcor2020  {
         if (!JadeStringUtil.isBlankOrZero(demandeRenteInvalidite.getPourcentRedNonCollaboration())) {
             AiInformations.DonneesNonCollaboration donneesNonCollaboration = new AiInformations.DonneesNonCollaboration();
             donneesNonCollaboration.setPartReduction(Integer.valueOf(demandeRenteInvalidite.getPourcentRedNonCollaboration()));
-            donneesNonCollaboration.setDebut(PRConverterUtils.formatDate(demandeRenteInvalidite.getDateDebutRedNonCollaboration(), DD_MM_YYYY_FORMAT));
-            donneesNonCollaboration.setFin(PRConverterUtils.formatDate(demandeRenteInvalidite.getDateFinRedNonCollaboration(), DD_MM_YYYY_FORMAT));
+            donneesNonCollaboration.setDebut(Dates.toXMLGregorianCalendar(demandeRenteInvalidite.getDateDebutRedNonCollaboration()));
+            donneesNonCollaboration.setFin(Dates.toXMLGregorianCalendar(demandeRenteInvalidite.getDateFinRedNonCollaboration()));
             aiInformations.getDonneesNonCollaboration().add(donneesNonCollaboration);
         }
         return aiInformations;
@@ -817,8 +805,8 @@ public class REExportationCalculAcor2020  {
 
     private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {
         PeriodeBTEType periode = new PeriodeBTEType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
             if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
                 periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
@@ -833,8 +821,8 @@ public class REExportationCalculAcor2020  {
 
     private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
         PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         if (StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur())) {
             periode.setTuteur(true);
         } else {
@@ -846,16 +834,16 @@ public class REExportationCalculAcor2020  {
     // TODO : valeur non défini dans WebAVS actuellement --> sujet à voir avec Pool
     private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
         PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
 //        periode.setParentNonBiologique();
         return periode;
     }
 
     private PeriodeTravailType createPeriodeTravailType(ISFPeriode isfPeriode) {
         PeriodeTravailType periode = new PeriodeTravailType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         //Mettre à 0 car il n'existe pas sur WebAVS
         periode.setMontantDebut(BigDecimal.ZERO);
         return periode;
@@ -863,24 +851,24 @@ public class REExportationCalculAcor2020  {
 
     private PeriodeEtrangereType createPeriodeEtrangerType(ISFPeriode isfPeriode) {
         PeriodeEtrangereType periode = new PeriodeEtrangereType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         periode.setEtat(PRConverterUtils.formatRequiredInteger(isfPeriode.getPays()));
         return periode;
     }
 
     private PeriodeType createPeriodeType(ISFPeriode isfPeriode) {
         PeriodeType periode = new PeriodeType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         periode.setType(getEnumPeriodeType(isfPeriode));
         return periode;
     }
 
     private PeriodeIJType createPeriodeIJ(ISFPeriode isfPeriode) {
         PeriodeIJType periode = new PeriodeIJType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         //Par défaut false
         periode.setMesureNouvelle(false);
         return periode;
@@ -888,8 +876,8 @@ public class REExportationCalculAcor2020  {
 
     private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
         PeriodeEnfantType periode = new PeriodeEnfantType();
-        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         periode.setType(getEnumPeriodeEnfantType(isfPeriode));
         return periode;
     }
@@ -1306,71 +1294,12 @@ public class REExportationCalculAcor2020  {
         }
     }
 
-    private long getNssMembre(ISFMembreFamilleRequerant membre) {
-        String nss = membre.getNss();
-        if (JadeStringUtil.isBlank(membre.getNss()) || JadeStringUtil.isIntegerEmpty(membre.getNss())) {
-            nss = this.prAcorMapper.nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), !membre
-                    .getRelationAuRequerant().equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT));
-        }
-        return PRConverterUtils.formatNssToLong(nss);
-    }
 
     private List<FamilleType> createListFamilles(List<ISFMembreFamilleRequerant> membresCatConjoints, List<ISFMembreFamilleRequerant> membresCatExConjointsConjoints) {
-        List<FamilleType> listfamillesType = new ArrayList<>();
-        try {
-            List<Ligne> lignesConjoints = new ArrayList<>();
-            List<Ligne> lignesExConjoints = new ArrayList<>();
-            for (ISFMembreFamilleRequerant conjoints : membresCatConjoints) {
-                lignesConjoints.addAll(creerLignes(conjoints));
-            }
-            for (Ligne ligne : lignesConjoints) {
-                listfamillesType.add(createFamille(ligne));
-            }
-            for (ISFMembreFamilleRequerant exConjoints : membresCatExConjointsConjoints) {
-                lignesExConjoints.addAll(creerLignes(exConjoints));
-            }
-            for (Ligne ligne : lignesExConjoints) {
-                listfamillesType.add(createFamille(ligne));
-            }
-            return listfamillesType;
-        } catch (Exception e) {
-            LOG.error("Erreur lors de la création de la famille.", e);
-        }
-        return listfamillesType;
-    }
-
-
-    private FamilleType createFamille(Ligne ligne) {
-        FamilleType famille = new FamilleType();
-        if ((ligne.getConjoint() instanceof ImplMembreFamilleRequerantWrapper)
-                && REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT
-                .equals(ligne.getConjoint().getRelationAuRequerant())) {
-
-            ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) ligne
-                    .getConjoint();
-            famille.getNavs().add(PRConverterUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
-            famille.getNavs().add(getNssMembre(exConjointDuConjoint));
-        } else {
-            famille.getNavs().add(PRConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
-            famille.getNavs().add(getNssMembre(ligne.getConjoint()));
-        }
-        famille.setDebut(PRConverterUtils.formatDate(ligne.getDateMariage(), DD_MM_YYYY_FORMAT));
-        if (PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT) != null) {
-            short typeRelation = PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien()));
-            if (typeRelation == 5 || typeRelation == 9) {
-                PeriodeJour separation = new PeriodeJour();
-                separation.setDebut(PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
-                famille.getPeriodeSeparation().add(separation);
-            } else {
-                FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
-                donnesFin.setFin(PRConverterUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
-                famille.setDonneesFin(donnesFin);
-                donnesFin.setType(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
-            }
-        }
-        famille.setLien(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), ligne.getTypeLien())));
-        famille.setPensionAlimentaire(false);
-        return famille;
+        List<ISFMembreFamilleRequerant> membreFamilleRequerants = new ArrayList<>();
+        membreFamilleRequerants.addAll(membresCatConjoints);
+        membreFamilleRequerants.addAll(membresCatExConjointsConjoints);
+        return this.familleTypeMapper.map(membreFamilleRequerants);
     }
 
     private void trouverRequerant(List<ISFMembreFamilleRequerant> membres) {
@@ -1385,124 +1314,6 @@ public class REExportationCalculAcor2020  {
         }
     }
 
-    private List<Ligne> creerLignes(ISFMembreFamilleRequerant conjoint) throws Exception {
-        List<Ligne> lignesList = new ArrayList<>();
-
-        // Les relations sont ordonnées de la plus ancienne à la plus récente.
-        ISFRelationFamiliale[] relationsAll = null;
-        // Cas des ex-conjoints du conjoint du requérant....
-        if ((conjoint instanceof ImplMembreFamilleRequerantWrapper)
-                && ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT
-                .equals(((ImplMembreFamilleRequerantWrapper) conjoint).getRelationAuRequerant())) {
-
-            relationsAll = relations(((ImplMembreFamilleRequerantWrapper) conjoint).getIdMFDuConjoint(),
-                    conjoint.getIdMembreFamille());
-
-        } else {
-            relationsAll = relations(membreRequerant.getIdMembreFamille(), conjoint.getIdMembreFamille());
-        }
-
-        // regroup
-        String dateMariage = null;
-
-        for (int idRelation = 0; idRelation < relationsAll.length; ++idRelation) {
-
-            ISFRelationFamiliale relation = relationsAll[idRelation];
-
-            // Ce cas apparait pour les types de relations ENFANT_COMMUN ou RELATION_INDEFINIE.
-            if (relation.getTypeLien() == null) {
-                continue;
-            }
-
-            if (ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
-                    || ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation
-                    .getTypeLien())
-                    || ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
-                    || ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES.equals(relation.getTypeLien())) {
-
-                dateMariage = relation.getDateDebutRelation();
-            }
-
-            boolean isLastElement = idRelation == (relationsAll.length - 1) ? true : false;
-
-            String csTypeLienNextElem = null;
-            if (!isLastElement) {
-                csTypeLienNextElem = relationsAll[idRelation + 1].getTypeLien();
-            }
-
-            if (isLastElement || ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(csTypeLienNextElem)
-                    || ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(csTypeLienNextElem)) {
-
-                // BZ-5083
-                // On stocke le cas en cours
-                Ligne l = null;
-
-                // Le type de lien séparé de fait doit être considéré comme marié ou lpart_enregistré
-                if (ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE.equals(relation.getTypeLien())) {
-                    if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
-                            .getTypeRelation())) {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
-                                ISFSituationFamiliale.CS_TYPE_LIEN_MARIE, dateMariage);
-                    } else {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
-                                relation.getTypeLien(), dateMariage);
-                    }
-                } else if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT.equals(relation
-                        .getTypeLien())) {
-                    if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
-                            .getTypeRelation())) {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
-                                ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE, dateMariage);
-                    } else {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
-                                relation.getTypeLien(), dateMariage);
-                    }
-                } else {
-                    l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
-                            relation.getTypeLien(), dateMariage);
-                }
-
-
-                if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
-                    l.setDateFin(relation.getDateDebut());
-                } else {
-                    l.setDateFin(relation.getDateFin());
-                }
-                lignesList.add(l);
-            }
-        }
-
-        return lignesList;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param idM1 DOCUMENT ME!
-     * @param idM2 DOCUMENT ME!
-     * @return DOCUMENT ME!
-     * @throws PRACORException DOCUMENT ME!
-     */
-    public ISFRelationFamiliale[] relations(String idM1, String idM2) throws PRACORException {
-        String id = idM1 + "_" + idM2;
-        ISFRelationFamiliale[] retValue = (ISFRelationFamiliale[]) relations.get(id);
-
-        if (retValue == null) {
-            try {
-                retValue = situationFamiliale().getToutesRelationsConjoints(idM1, idM2, Boolean.FALSE);
-                relations.put(id, retValue);
-            } catch (PRACORException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new PRACORException(session.getLabel("ERREUR_CHARGEMENT_RELATIONS_CONJOINTS"), e);
-            }
-        }
-
-        return retValue;
-    }
 
     private Long getNumAvsFromDemande(REDemandeRente demandeRente, PRTiersWrapper tiers, BSession session) {
         Long navs = new Long(0);
@@ -1843,9 +1654,9 @@ public class REExportationCalculAcor2020  {
 
             JACalendarGregorian cal = new JACalendarGregorian();
             if (cal.compare(datePmt, dateTraitement) == JACalendar.COMPARE_FIRSTUPPER) {
-                return PRConverterUtils.formatDate(datePmt.toXMLDate(), YYYY_MM_DD_FORMAT);
+                return Dates.toXMLGregorianCalendar(datePmt.toXMLDate(), YYYY_MM_DD_FORMAT);
             } else {
-                return PRConverterUtils.formatDate(dateTraitement.toXMLDate(), YYYY_MM_DD_FORMAT);
+                return Dates.toXMLGregorianCalendar(dateTraitement.toXMLDate(), YYYY_MM_DD_FORMAT);
             }
 
         } catch (Exception e) {
@@ -1854,24 +1665,6 @@ public class REExportationCalculAcor2020  {
         }
     }
 
-    public XMLGregorianCalendar getDateDepot(String date) {
-        if (JadeStringUtil.isBlankOrZero(date)) {
-            return null;
-        }
-        DateFormat format = new SimpleDateFormat(DD_MM_YYYY_FORMAT);
-        Date dateFormat = null;
-        try {
-            dateFormat = format.parse(date);
-
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(dateFormat);
-
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-        } catch (ParseException | DatatypeConfigurationException e) {
-            LOG.error("Erreur lors de la récupération de la date de dépôt.", e);
-        }
-        return null;
-    }
 
     private BSession getSession() {
         return session;

@@ -2,6 +2,7 @@ package globaz.corvus.vb.acor;
 
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.util.Slashs;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.jade.client.util.JadeStringUtil;
@@ -188,7 +189,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     public String getAdresseWebACOR(String askAction, String token) {
         try {
-            return CommonProperties.ACOR_ADRESSE_WEB.getValue() + askAction + "/" + token;
+            return Slashs.addLastSlash(CommonProperties.ACOR_ADRESSE_WEB.getValue()) + askAction + "/" + token;
         } catch (PropertiesException e) {
             LOG.warn("La propriété n'existe pas ou n'est pas renseigné :", e);
         }
