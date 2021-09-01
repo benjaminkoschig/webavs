@@ -126,6 +126,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private boolean impotSource = false;
     private boolean afficherPeriode = true;
     private boolean hasRestitution = false;
+    private String revenuAnnuelDeterminant = "";
+    private String tauxImposition = "";
+    private String impotDateDebut = "";
+    private String impotDateFin = "";
 
     private String PATERNITE_AFFICHAGE_PERIODE = "decision.paternite.affichage.periode";
     private String PROCHE_AIDANT_AFFICHAGE_PERIODE = "decision.procheaidant.affichage.periode";
@@ -886,6 +890,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
 
+            // Texte Impot source
+            if(impotSource) {
+                if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
+                    calculRevenuAnnuel();
+                }
+                // TODO: Voir si positionner le texte pour tous les types de document à la même position (5,10 ?)
+                if(IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())) {
+                    String texte = document.getTextes(5).getTexte(10).getDescription();
+                    texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}",revenuAnnuelDeterminant);
+                    texte = PRStringUtils.replaceString(texte,"{tauxImposition}",JANumberFormatter.formatNoRound(tauxImposition));
+                    buffer.append("\n"+texte+"\n");
+                }
+            }
 
             parametres.put("PARAM_PIED", buffer.toString());
             buffer.setLength(0);
@@ -977,6 +994,20 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             getMemoryLog().logMessage(msg, FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
             setSendMailOnError(true);
             abort();
+        }
+    }
+
+    private void calculRevenuAnnuel() throws Exception {
+        APReferenceDataAPG ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), new JADate(impotDateDebut),
+                new JADate(impotDateFin), new JADate(impotDateFin));
+        final double montantJournalierMax = ref.getGE().intValue();
+        final double montantAnnuelMax = montantJournalierMax * 360;
+        boolean isMontantMax = false;
+
+        if (montantAnnuelMax <= decompteCourant.getRevenuAnnuel().doubleValue()) {
+            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
+        } else {
+            revenuAnnuelDeterminant = JANumberFormatter.format(decompteCourant.getRevenuAnnuel());
         }
     }
 
@@ -1348,10 +1379,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(10).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
+            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
             isMontantMax = true;
         } else {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(11).getDescription(), "{montantAnnuel}",
                     JANumberFormatter.format(revenuAnnuel));
+            revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
         }
 
         if (isMontantMax) {
@@ -1518,6 +1551,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(5).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
+            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
 
             // arguments[10] =
             // "supérieur à CHF "+JANumberFormatter.format(montantAnnuelMax);
@@ -1525,6 +1559,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         } else {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
                     JANumberFormatter.format(revenuAnnuel));
+            revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
         }
 
         if (isMontantMax) {
@@ -2011,6 +2046,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
                             totalMontantImpotSource.add((apCot.getMontant()));
                             tauxImpotSource = apCot.getTaux();
+                            tauxImposition = tauxImpotSource;
+                            impotDateDebut = apCot.getDateDebut();
+                            impotDateFin = apCot.getDateFin();
                             if (idCantonImpotSource == "") {
                                 APPeriodeAPGManager mgr = new APPeriodeAPGManager();
                                 mgr.setSession(getSession());

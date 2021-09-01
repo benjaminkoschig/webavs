@@ -1,9 +1,11 @@
 package globaz.apg.itext.decompte.utils;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.api.BITransaction;
@@ -52,6 +54,7 @@ public class APDonneeRegroupementDecompte {
     @Getter
     @Setter
     private String idEmployeur;
+    private BigDecimal revenuAnnuel;
 
     /**
      * Mapping utilisé pour le regroupement des prestations Standard et ACM_NE
@@ -177,6 +180,7 @@ public class APDonneeRegroupementDecompte {
         isIndependant = repartitionJointPrestation.getSituatuionPro() != null
                 ? repartitionJointPrestation.getSituatuionPro().getIsIndependant()
                 : false;
+        revenuAnnuel = APSituationProfessionnelleManager.getRevenuJournalier(situationProfessionnelle).multiply(new BigDecimal(360));
 
         isPaiementEmployeur = determinerSiPaiementAEmployeur(repartitionJointPrestation, situationProfessionnelle);
         this.departement = determinerDepartement(isPaiementEmployeur, situationProfessionnelle, departement);
@@ -363,5 +367,13 @@ public class APDonneeRegroupementDecompte {
 
     public void setIdTiersSauv(String idTiersSauv) {
         this.idTiersSauv = idTiersSauv;
+    }
+
+    public BigDecimal getRevenuAnnuel() {
+        return revenuAnnuel;
+    }
+
+    public void setRevenuAnnuel(BigDecimal revenuAnnuel) {
+        this.revenuAnnuel = revenuAnnuel;
     }
 }

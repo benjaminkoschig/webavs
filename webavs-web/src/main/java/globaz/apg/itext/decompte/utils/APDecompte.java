@@ -4,6 +4,8 @@ import globaz.apg.db.lots.APFactureACompenser;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.prestation.db.employeurs.PRDepartement;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -173,5 +175,9 @@ public class APDecompte {
 
     public final String getIdEmployeur() {
         return donneePourRegroupement.getIdEmployeur();
+    }
+
+    public final BigDecimal getRevenuAnnuel() {
+        return donneePourRegroupement.getRevenuAnnuel();
     }
 }
