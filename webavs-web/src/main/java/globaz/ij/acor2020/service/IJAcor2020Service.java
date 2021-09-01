@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 public class IJAcor2020Service {
 
     public InHostType createInHost(String idPrononce) {
-        IJExportationCalculAcor IJExportationCalculAcor = new IJExportationCalculAcor();
-        return IJExportationCalculAcor.createInHost(idPrononce);
+        IJExportationCalculAcor exporter = new IJExportationCalculAcor();
+        return exporter.createInHost(idPrononce);
     }
 
     public void importCalculAcor(String idPrononce, FCalcul fCalcul){

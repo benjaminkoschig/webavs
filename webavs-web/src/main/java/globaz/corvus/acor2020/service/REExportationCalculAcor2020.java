@@ -129,7 +129,6 @@ public class REExportationCalculAcor2020 {
     private static final int ANTICIPATION_OR_REVOCATION = 100;
     private static final int AJOURNEMENT = 0;
     private PRAcorMapper prAcorMapper;
-    private PRAcorFamilleTypeMapper familleTypeMapper;
 
     public REExportationCalculAcor2020(BSession bSession, String idDemandeRente) {
         session = bSession;
@@ -150,17 +149,19 @@ public class REExportationCalculAcor2020 {
             }
             this.prAcorMapper = new PRAcorMapper(adresseCourrierPourRequerant, this.tiersRequerant, this.session);
             ISFSituationFamiliale situationFamiliale = this.situationFamiliale();
-            this.familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, this.prAcorMapper);
             inHost.setDemande(createDemande(demandeRente, tiersRequerant, session));
             List<ISFMembreFamilleRequerant> membresFamille = getToutesLesMembresFamillesEtEtendue();
             trouverRequerant(membresFamille);
             List<ISFMembreFamilleRequerant> membresCatAssures = filterListMembresAssures(membresFamille);
-            List<ISFMembreFamilleRequerant> membresCatConjoints = filterListMembresConjoints(membresFamille);
-            List<ISFMembreFamilleRequerant> membresCatExConjointsConjoints = filterListMembresExConjointConjoint(membresFamille);
             List<ISFMembreFamilleRequerant> membresCatEnfants = filterListMembresEnfants(membresFamille);
+            List<ISFMembreFamilleRequerant> conjoints = new ArrayList<>();
+            conjoints.addAll(filterListMembresExConjointConjoint(membresFamille));
+            conjoints.addAll(filterListMembresConjoints(membresFamille));
+
+            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, this.prAcorMapper, conjoints);
 
             inHost.getAssure().addAll(createListAssures(membresCatAssures));
-            inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
+            inHost.getFamille().addAll(familleTypeMapper.map());
 
             PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, membresCatEnfants, this.prAcorMapper);
 
@@ -1294,13 +1295,6 @@ public class REExportationCalculAcor2020 {
         }
     }
 
-
-    private List<FamilleType> createListFamilles(List<ISFMembreFamilleRequerant> membresCatConjoints, List<ISFMembreFamilleRequerant> membresCatExConjointsConjoints) {
-        List<ISFMembreFamilleRequerant> membreFamilleRequerants = new ArrayList<>();
-        membreFamilleRequerants.addAll(membresCatConjoints);
-        membreFamilleRequerants.addAll(membresCatExConjointsConjoints);
-        return this.familleTypeMapper.map(membreFamilleRequerants);
-    }
 
     private void trouverRequerant(List<ISFMembreFamilleRequerant> membres) {
         String noAVS = tiersRequerant.getNSS();

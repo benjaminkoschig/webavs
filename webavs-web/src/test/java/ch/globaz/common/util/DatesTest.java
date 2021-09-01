@@ -11,6 +11,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class
 DatesTest {
@@ -87,10 +88,7 @@ DatesTest {
         // arrange
         String format = "dd.MM.yyyy";
         // act
-        XMLGregorianCalendar result = Dates.toXMLGregorianCalendar("12.02", format);
-
-        // assert
-        assertThat(result).isNull();
+        assertThatCode(()->Dates.toXMLGregorianCalendar("12.02", format)).hasMessageContaining("12.02");
     }
 
     @Test

@@ -24,19 +24,22 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
 
     private final ISFMembreFamilleRequerant membreRequerant;
     private final ISFSituationFamiliale situationFamiliale;
+    private final List<ISFMembreFamilleRequerant> conjoints;
 
     public PRAcorFamilleTypeMapper(final ISFMembreFamilleRequerant membreRequerant,
                                    final ISFSituationFamiliale situationFamiliale,
-                                   final PRAcorMapper prAcorMapper) {
+                                   final PRAcorMapper prAcorMapper,
+                                   final List<ISFMembreFamilleRequerant> conjoints) {
         super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.membreRequerant = membreRequerant;
+        this.conjoints = conjoints;
     }
 
-    public List<FamilleType> map(List<ISFMembreFamilleRequerant> membres) {
-        return membres.stream()
-                      .map(this::creerLignes).flatMap(Collection::stream).map(this::createFamille)
-                      .collect(Collectors.toList());
+    public List<FamilleType> map() {
+        return conjoints.stream()
+                        .map(this::creerLignes).flatMap(Collection::stream).map(this::createFamille)
+                        .collect(Collectors.toList());
     }
 
     private List<Ligne> creerLignes(ISFMembreFamilleRequerant conjoint) {

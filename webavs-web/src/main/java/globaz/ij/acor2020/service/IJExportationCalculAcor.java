@@ -51,7 +51,6 @@ class IJExportationCalculAcor {
             IJPrononce prononce = IJPrononce.loadPrononce(session, null, idPrononce, null);
             PRDemande demande = prononce.loadDemande(null);
             PRTiersWrapper tiersRequerant = demande.loadTiers();
-            PRAcorMapper prAcorMapper = new PRAcorMapper(false, tiersRequerant, session);
 
             ISFSituationFamiliale situationFamiliale = this.loadSituationFamiliale(tiersRequerant.getIdTiers(), session);
             List<ISFMembreFamilleRequerant> membres = this.loadMembres(tiersRequerant.getIdTiers(), situationFamiliale);
@@ -61,12 +60,13 @@ class IJExportationCalculAcor {
             List<ISFMembreFamilleRequerant> conjoints = membresFamilleRequerant.filtreConjoints();
             ISFMembreFamilleRequerant requerant = membresFamilleRequerant.filtreByIdTiers(tiersRequerant.getIdTiers());
 
+            PRAcorMapper prAcorMapper = new PRAcorMapper(false, tiersRequerant, session);
             PRAcorAssureTypeMapper assureTypeAcorMapper = new PRAcorAssureTypeMapper(prAcorMapper, membresFamilleRequerant.filtreTousSaufEnfants());
-            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, prAcorMapper);
-            PRAcorEnfantTypeMapper enfantTypeMapper = new PRAcorEnfantTypeMapper(false, tiersRequerant, situationFamiliale, enfants, session);
+            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, prAcorMapper, conjoints);
+            PRAcorEnfantTypeMapper enfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, enfants, prAcorMapper);
 
             InHostType inHost = new InHostType();
-            inHost.getFamille().addAll(familleTypeMapper.map(conjoints));
+            inHost.getFamille().addAll(familleTypeMapper.map());
             inHost.getEnfant().addAll(enfantTypeMapper.map());
             inHost.getAssure().addAll(toAssures(assureTypeAcorMapper, prononce, session));
             inHost.setDemande(toDemande(tiersRequerant, prononce, session));
@@ -87,7 +87,6 @@ class IJExportationCalculAcor {
         //        PeriodeIJType periodeIJType = new PeriodeIJType();
 //        periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
 //        periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
-
 
         IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
         indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
@@ -128,7 +127,7 @@ class IJExportationCalculAcor {
         if (prononce.isPetiteIJ()) {
             IJPetiteIJ ijPetiteIJ = loadPetiteIJ(prononce.getIdPrononce());
             basesCalculCouranteIJ.setFormation(Integer.parseInt(session.getCode(ijPetiteIJ.getCsSituationAssure())));
-            String revenu= loadRevenu(ijPetiteIJ);
+            String revenu = loadRevenu(ijPetiteIJ);
             basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
         }
         //TODO DMA 27.08.2021: à mapper
@@ -149,7 +148,7 @@ class IJExportationCalculAcor {
     private String loadRevenu(final IJPetiteIJ ijPetiteIJ) {
         String revenu;
         try {
-             revenu = ijPetiteIJ.loadRevenu().getRevenu();
+            revenu = ijPetiteIJ.loadRevenu().getRevenu();
         } catch (Exception e) {
             throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijPetiteIJ.getId());
         }
@@ -199,9 +198,8 @@ class IJExportationCalculAcor {
         demandeType.setNavs(PRConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
         demandeType.setTypeDemande(TypeDemandeEnum.IJ);
         demandeType.setDateTraitement(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));
-        //TODO DMA 01.09.2021 : Que mettre comme date de dépot
+        // Il n'y a pas de date dépot pour les IJ
         //demandeType.setDateDepot()
-        // Avoir dans l'ancienne manièreil n'y pas de date de dépot.
         demandeType.setTypeCalcul(Integer.parseInt(PRACORConst.CA_TYPE_CALCUL_STANDARD));
 
         return demandeType;
