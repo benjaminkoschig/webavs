@@ -598,6 +598,16 @@ public class REAcor2020Parser {
                         bc.setPeriodeMariage(periodeMariage.toString());
                         break;
                     // mois d'appoint
+
+                    //année de jeunesse
+                    case 5:
+                        fCalcul.getAnalysePeriodes().stream().filter(analysePeriodes -> nssTiersBaseCalcul.equals(analysePeriodes.getBeneficiaire()))
+                               .findFirst()
+                               .ifPresent(analysePeriodes -> {
+                                   bc.setRevenuJeunesse(Objects.toString( analysePeriodes.getRevJTot(), StringUtils.EMPTY));
+                               });
+                        bc.setPeriodeJeunesse(PRConverterUtils.formatMMtoAAxMM(eachDCot.getTotal().getAnnees()));
+                        break;
                     case 6:
 //        bc.setMoisAppointsAvant73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_AV_73")); $b13
                         int moisAppointsAv73 = eachDCot.getAv73().getAnnees() * MONTHS_IN_YEAR + eachDCot.getAv73().getMois();
@@ -644,9 +654,9 @@ public class REAcor2020Parser {
 
         if (!fCalcul.getAnalysePeriodes().isEmpty()) {
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
-            bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
+            //bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
 //        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
-            bc.setPeriodeJeunesse(PRConverterUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
+            //bc.setPeriodeJeunesse(PRConverterUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
         }
 
         return bc;
