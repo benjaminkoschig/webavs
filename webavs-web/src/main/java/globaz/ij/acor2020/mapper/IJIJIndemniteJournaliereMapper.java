@@ -9,7 +9,7 @@ import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.prestation.acor.PRACORConst;
 
-public class IJIJIndemniteJournaliereMapper {
+public final class IJIJIndemniteJournaliereMapper {
 
     public static void baseCalculEtIjMapToIndemniteJournaliere(FCalcul.Cycle.BasesCalcul basesCalcul, IJIJCalculee ijijCalculee, BSession session){
 
@@ -18,7 +18,7 @@ public class IJIJIndemniteJournaliereMapper {
             for (FCalcul.Cycle.BasesCalcul.Ij ij :
                     basesCalcul.getIj()) {
                 IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
-                if (PRACORConst.CA_TYPE_MESURE_INTERNE.equals(ij.getCategorie())) {
+                if (PRACORConst.CA_TYPE_MESURE_INTERNE.equals(String.valueOf(ij.getCategorie()))) {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
                 } else {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);

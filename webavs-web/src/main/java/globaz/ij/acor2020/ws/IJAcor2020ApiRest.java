@@ -43,7 +43,8 @@ public class IJAcor2020ApiRest {
      * Web Service exposé pour transmettre à WebAVS les données IJout suite à un calcul dans ACOR.
      *
      * @param token le token à contrôler.
-     * @param json  le json ij-out.
+     * @param idPrononce  L'id du prononcé en cours de traitement correspondant à la requête de Calcul ACOR demandée par WebAVS.
+     * @param fCalcul Données du calcul ACOR à importer et mapper dans WebAVS.
      *
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */

@@ -1,4 +1,4 @@
-package globaz.ij.acor2020.service;
+package globaz.hera.domaine.membrefamille;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
-public class PRMembresFamilleRequerant {
+public class SFMembresFamilleRequerant {
 
     private final List<ISFMembreFamilleRequerant> membres;
 
@@ -34,12 +34,12 @@ public class PRMembresFamilleRequerant {
     }
 
     public ISFMembreFamilleRequerant filtreByIdTiers(final String idTiers) {
-        return filterAndFindFrist(membre -> membre.getIdTiers().equals(idTiers))
+        return filterAndFindFirst(membre -> membre.getIdTiers().equals(idTiers))
                 .orElseThrow(() -> new CommonTechnicalException("Membre famille not found with this id " + idTiers));
     }
 
     public ISFMembreFamilleRequerant filtreRequerant() {
-        return filterAndFindFrist(membre -> Objects.equals(membre.getRelationAuRequerant(), ISFMembreFamille.CS_TYPE_RELATION_REQUERANT))
+        return filterAndFindFirst(membre -> Objects.equals(membre.getRelationAuRequerant(), ISFMembreFamille.CS_TYPE_RELATION_REQUERANT))
                 .orElseThrow(() -> new CommonTechnicalException("Membre famille requerant not found"));
     }
 
@@ -47,7 +47,7 @@ public class PRMembresFamilleRequerant {
         return membres.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    private Optional<ISFMembreFamilleRequerant> filterAndFindFrist(Predicate<ISFMembreFamilleRequerant> predicate) {
+    private Optional<ISFMembreFamilleRequerant> filterAndFindFirst(Predicate<ISFMembreFamilleRequerant> predicate) {
         return membres.stream().filter(predicate).findFirst();
     }
 }

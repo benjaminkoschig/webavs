@@ -16,6 +16,7 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.domaine.membrefamille.SFMembresFamilleRequerant;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJGrandeIJ;
@@ -55,7 +56,7 @@ class IJExportationCalculAcor {
             ISFSituationFamiliale situationFamiliale = this.loadSituationFamiliale(tiersRequerant.getIdTiers(), session);
             List<ISFMembreFamilleRequerant> membres = this.loadMembres(tiersRequerant.getIdTiers(), situationFamiliale);
 
-            PRMembresFamilleRequerant membresFamilleRequerant = new PRMembresFamilleRequerant(membres);
+            SFMembresFamilleRequerant membresFamilleRequerant = new SFMembresFamilleRequerant(membres);
             List<ISFMembreFamilleRequerant> enfants = membresFamilleRequerant.filtreEnfants();
             List<ISFMembreFamilleRequerant> conjoints = membresFamilleRequerant.filtreConjoints();
             ISFMembreFamilleRequerant requerant = membresFamilleRequerant.filtreByIdTiers(tiersRequerant.getIdTiers());
