@@ -885,18 +885,23 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             }
 
-            // Pour paternité, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
+            // Pour maternité, si Assuré et impôt source, alors ajouter ce texte sur les décomptes.
+            if (IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot()) && impotSource && !decompteCourant.getIsPaiementEmployeur()) {
+                buffer.append(document.getTextes(4).getTexte(101).getDescription()+"\n");
+            }
+
+            // Pour paternité, si Assuré indépendant, alors il faut ajouter ce texte sur les décomptes.
             if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
                 buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
 
             // Texte Impot source
-            if(impotSource) {
+            if(impotSource && !decompteCourant.getIsPaiementEmployeur()) {
                 if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
                     calculRevenuAnnuel();
                 }
                 // TODO: Voir si positionner le texte pour tous les types de document à la même position (5,10 ?)
-                if(IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())) {
+                if(IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
                     String texte = document.getTextes(5).getTexte(10).getDescription();
                     texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}",revenuAnnuelDeterminant);
                     texte = PRStringUtils.replaceString(texte,"{tauxImposition}",JANumberFormatter.formatNoRound(tauxImposition));
@@ -2132,7 +2137,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // Affichage de l'impôt à la source
                     if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
                         impotSource = true;
-                        if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
+                        if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
+                                || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
+                                ||  IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
+                                ||  IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()))) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
