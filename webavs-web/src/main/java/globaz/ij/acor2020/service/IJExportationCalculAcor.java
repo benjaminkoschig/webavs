@@ -98,6 +98,8 @@ class IJExportationCalculAcor {
 
     private BasesCalculCouranteIJ mapToBaseCalculCourante(final IJPrononce prononce, final BSession session) {
         BasesCalculCouranteIJ basesCalculCouranteIJ = new BasesCalculCouranteIJ();
+//        basesCalculCouranteIJ.setMetaInfo(new Meta.MetaInfo());
+//        basesCalculCouranteIJ.getMetaInfo().setId(prononce.getId());
 
         if (prononce.isGrandeIJ()) {
             IJGrandeIJ ijGrandeIJ = this.loadGrandeIJ(prononce.getIdPrononce());
@@ -184,9 +186,9 @@ class IJExportationCalculAcor {
         }
     }
 
-    private int loadCode(final BSession session, final String csGenre) {
+    private Integer loadCode(final BSession session, final String csGenre) {
         if (JadeStringUtil.isBlankOrZero(csGenre)) {
-            return 0;
+            return null;
         }
         return Integer.parseInt(session.getCode(csGenre));
     }

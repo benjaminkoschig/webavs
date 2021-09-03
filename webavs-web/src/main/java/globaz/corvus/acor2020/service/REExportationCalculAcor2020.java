@@ -3,7 +3,7 @@ package globaz.corvus.acor2020.service;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9Type;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9WeakType;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
@@ -19,7 +19,6 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
@@ -596,8 +595,8 @@ public class REExportationCalculAcor2020 {
         return donneesBonification;
     }
 
-    private Gutschriften9Type createDonneesBonification9(REHistoriqueRentes rente, BigDecimal durchschnittlichesJahreseinkommen) {
-        Gutschriften9Type donneesBonification = new Gutschriften9Type();
+    private Gutschriften9WeakType createDonneesBonification9(REHistoriqueRentes rente, BigDecimal durchschnittlichesJahreseinkommen) {
+        Gutschriften9WeakType donneesBonification = new Gutschriften9WeakType();
         // 27. montant bonus éducatif
         BigDecimal montantBTE = PRConverterUtils.formatRequiredBigDecimal(rente.getMontantBTE());
         donneesBonification.setAngerechneteErziehungsgutschrift(montantBTE.setScale(0, BigDecimal.ROUND_DOWN));

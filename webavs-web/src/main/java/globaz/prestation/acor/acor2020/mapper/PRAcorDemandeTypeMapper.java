@@ -41,6 +41,7 @@ public class PRAcorDemandeTypeMapper {
 
             TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
                                                                        null, null, true, cre.getLangue());
+            adresseCaisse.setPays(100);//Suisse
             if(adresse!=null) {
                 adresseCaisse.setNom(cre.getNom());
                 adresseCaisse.setAdresse(adresse.casePostale);
@@ -48,6 +49,7 @@ public class PRAcorDemandeTypeMapper {
                 adresseCaisse.setCodePostal(adresse.localiteNpa);
                 adresseCaisse.setPays(PRConverterUtils.formatRequiredInteger(cre.getIdPays()));
             }
+
         } catch (Exception e) {
             LOG.error("Impossible de récupérer l'adresse de la caisse.", e);
         }

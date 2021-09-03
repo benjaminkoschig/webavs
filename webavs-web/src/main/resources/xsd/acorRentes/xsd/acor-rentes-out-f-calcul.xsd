@@ -659,6 +659,9 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
+			<xs:element name="supplement_veuvage" type="xs:boolean" minOccurs="0">
+				<xs:annotation><xs:documentation>la rente a-t-elle un supplément pour personne veuve</xs:documentation></xs:annotation>
+			</xs:element>
 			<xs:element name="etat" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
@@ -1983,7 +1986,7 @@
 							</xs:element>
 							<xs:element name="fin" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>fin du partenariat
+									<xs:documentation>fin du partenariat. Peut-être absent en cas de communication de période
                                         Ende des Partnerschafts
                                     </xs:documentation>
 								</xs:annotation>

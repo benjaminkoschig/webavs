@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Mit XMLSpy v2019 sp1 (http://www.altova.com) von ﻿Bundesamt für Informatik und (Bundesamt für Informatik und) bearbeitet -->
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" xmlns:acor-common="http://www.zas.admin.ch/xmlns/acor-common/0" xmlns:ij="http://www.zas.admin.ch/xmlns/in-ij/0" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4" xmlns:trax="http://www.zas.admin.ch/RC" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:annox="http://annox.dev.java.net" targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.3" jaxb:version="2.1" jaxb:extensionBindingPrefixes="annox">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" xmlns:acor-common="http://www.zas.admin.ch/xmlns/acor-common/0" xmlns:ij="http://www.zas.admin.ch/xmlns/in-ij/0" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4" xmlns:trax="http://www.zas.admin.ch/RC" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:annox="http://annox.dev.java.net" targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.4" jaxb:version="2.1" jaxb:extensionBindingPrefixes="annox">
 	<xs:import namespace="http://www.zas.admin.ch/xmlns/acor-common/0" schemaLocation="acor-common.xsd"/>
 	<xs:import namespace="http://www.zas.admin.ch/xmlns/in-ij/0" schemaLocation="acor-in-ij.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/4" schemaLocation="eCH-0044-4-0.xsd"/>
@@ -344,7 +344,7 @@
 	<xs:complexType name="donneesPostalesType">
 		<xs:sequence>
 			<xs:element name="adresse" type="acor-common:adresseType"/>
-			<xs:element name="banque" type="acor-common:banqueAdresseType"/>
+			<xs:element name="banque" type="acor-common:banqueAdresseType" minOccurs="0"/>
 			<xs:element name="mandataire" type="acor-common:organisationAdresseType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -528,11 +528,15 @@
 				<xs:sequence>
 					<xs:element name="navs" type="xs:long" minOccurs="2" maxOccurs="2"/>
 					<xs:element name="lien" type="rentes_in_host:lienType"/>
-					<xs:element name="debut" type="xs:date"/>
+					<xs:element name="debut" type="xs:date" minOccurs="0">
+						<xs:annotation><xs:documentation>En principe la date de mariage/partenariat est obligatoire mais il existe des exceptions pour le traitement des IJ et des communications de périodes</xs:documentation></xs:annotation>
+					</xs:element>
 					<xs:element name="donneesFin" minOccurs="0" maxOccurs="1">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="fin" type="xs:date"/>
+								<xs:element name="fin" type="xs:date" minOccurs="0">
+									<xs:annotation><xs:documentation>En principe la date de divorce/dissolution du partenariat est obligatoire mais il existe des exceptions pour le traitement des IJ et des communications de périodes</xs:documentation></xs:annotation>
+								</xs:element>
 								<xs:element name="type" type="rentes_in_host:finLienType"/>
 							</xs:sequence>
 						</xs:complexType>
@@ -813,7 +817,7 @@
 			<xs:extension base="rentes_in_host:echelleBaseFType">
 				<xs:sequence>
 					<xs:element name="donneesRam" type="trax:DJE9Beschreibung_Type" minOccurs="0"/>
-					<xs:element name="donneesBonifications" type="trax:Gutschriften9_Type" minOccurs="0"/>
+					<xs:element name="donneesBonifications" type="trax:Gutschriften9_WeakType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -837,18 +841,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<!--    <xs:complexType name="abstractOrdinaireBase9Type" abstract="true">
-        <xs:complexContent>
-            <xs:restriction base="rentes_in_host:ramBase9FType">
-                <xs:sequence>
-                    <xs:element name="anneeNiveau" type="xs:gYear"/>
-                    <xs:element name="donneesEchelle" type="rentes_in_host:donneesEchelleType"/>
-                    <xs:element name="donneesRam" type="trax:DJE9Beschreibung_Type"/>
-                    <xs:element name="donneesBonifications" type="trax:Gutschriften9_Type" minOccurs="0"/>
-                </xs:sequence>
-            </xs:restriction>
-        </xs:complexContent>
-    </xs:complexType>-->
 	<xs:complexType name="ordinaireBase9Type">
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:ramBase9Type">

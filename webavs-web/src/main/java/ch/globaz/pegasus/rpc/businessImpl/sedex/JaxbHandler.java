@@ -55,8 +55,8 @@ public class JaxbHandler<T> {
         try {
             marshaller.marshal(element, f);
         } catch (JAXBException exception) {
-            FileUtils.deleteQuietly(f);
             logger.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
+            FileUtils.deleteQuietly(f);
             throw new CommonTechnicalException(exception);
         }
         if (!validationErrors.isEmpty()) {

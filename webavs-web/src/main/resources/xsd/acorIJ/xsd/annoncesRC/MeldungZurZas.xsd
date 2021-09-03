@@ -39,7 +39,6 @@
 
 								<!-- Annonces APG/IJ -->
 								<xs:element name="IVTaggelderMeldung" type="rc:IVTaggelderMeldung_Type"/>
-								<xs:element name="IVTaggelderMeldungBis2003" type="rc:IVTaggelderMeldungBis2003_Type"/>
 								<xs:element name="EoMeldung" type="rc:EoMeldung_Type"/>
 								<xs:element name="EoMeldungNachAltemRecht" type="rc:EoMeldungNachAltemRecht_Type"/>
 								<!-- Annonces comptables -->

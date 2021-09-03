@@ -121,7 +121,16 @@
 			</xs:element>
 			<xs:element name="UVGarantie" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="GekuerztesTaggeld" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="BesitzstandWEIVRevision" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="BesitzstandWEIVRevision" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">0 = Neue Leistung
+1 = kleines Taggeld
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">0 = Nouvelle prestation
+1 = petite IJ antérieure
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="NrVerfuegung" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="de">27-stellige Verfuegungsnummer
@@ -172,8 +181,8 @@
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:short">
-									<xs:minInclusive value="0"/>
-									<xs:maxInclusive value="9"/>
+									<xs:minInclusive value="01"/>
+									<xs:maxInclusive value="5"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -254,8 +263,8 @@ true,1   = oui</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:short">
-									<xs:minInclusive value="0"/>
-									<xs:maxInclusive value="9"/>
+									<xs:minInclusive value="1"/>
+									<xs:maxInclusive value="5"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -316,73 +325,6 @@ true,1   = oui</xs:documentation>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="IVTaggelderMeldungBis2003_Type">
-		<xs:annotation>
-			<xs:documentation xml:lang="fr">
-				Annonce des indemnités journalières AI à la centrale. Cas jusqu'au 31.12.2003 Code application 85
-			</xs:documentation>
-			<xs:documentation xml:lang="de">
-				Meldung der IV-Taggelder an die ZAS. Fälle bis 31.12.2003 Code Anwendungsgebiet 85
-			</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
-			<xs:element name="BuchungsmonatJahr" type="AHVDatumJM_Type" minOccurs="0"/>
-			<xs:element name="Kartenart" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-						1 = Meldekarte
-						3 = Korrekturkarte für Nachzahlung
-						4 = Korrekturkarte für Rückforderung
-					</xs:documentation>
-					<xs:documentation xml:lang="fr">
-						1 = questionnaire
-						3 = carte rectificative pour paiement rétroactif
-						4 = carte rectificative pour restitution
-					</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="1"/>
-						<xs:enumeration value="3"/>
-						<xs:enumeration value="4"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
-			<xs:element name="Zivilstand" type="ZivilstandNr_Type" minOccurs="0"/>
-			<xs:element name="AnzahlKinder" type="AnzahlKinder_Type" minOccurs="0"/>
-			<xs:element name="EffektivesDurchschnittlichesTageseinkommenNichtPlafoniert" type="BetragFRRP4_Type" minOccurs="0"/>
-			<xs:element name="IVStelle" type="IVStelle_strongType" minOccurs="0"/>
-			<xs:element name="EntschaedigungAlleinstehende" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="Haushaltentschaedigung" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="Unterstuetzungszulage" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="Betriebszulage" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="Eingliederungszuschlag" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="KleinesIVTaggeld" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="TaggeldPeriode" minOccurs="0" maxOccurs="3">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="AnzahlTage" type="AnzahlTage3Stellig_Type" minOccurs="0"/>
-						<xs:element name="Tagesansatz" type="BetragFRRP3_Type" minOccurs="0"/>
-						<xs:element name="CodeEingliederungsart" minOccurs="0">
-							<xs:simpleType>
-								<xs:restriction base="xs:short">
-									<xs:minInclusive value="1"/>
-									<xs:maxInclusive value="8"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
-						<xs:element name="UVGarantie" type="xs:boolean" minOccurs="0"/>
-						<xs:element name="TaggeldGekuerzt" type="xs:boolean" minOccurs="0"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="IVTaggeldTotal" type="BetragFRRP5Bis_Type" minOccurs="0"/>
-			<xs:element name="PeriodeBeginn" type="AHVDatumJMT_Type" minOccurs="0"/>
-			<xs:element name="PeriodeEnde" type="AHVDatumJMT_Type" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- Annonces APG -->

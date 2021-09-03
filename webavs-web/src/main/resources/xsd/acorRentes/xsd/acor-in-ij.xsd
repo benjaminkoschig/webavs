@@ -361,7 +361,9 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="determinant" type="xs:double"/>
-            <xs:element name="date" type="xs:date"/>
+            <xs:element name="date" type="xs:date" minOccurs="0">
+                <xs:annotation><xs:documentation>Pour une IJ en saisie manuelle cette date n'est pas nécessairement renseignée (elle devient automatiquement le début de droit de l'IJ)</xs:documentation></xs:annotation>
+            </xs:element>
             <xs:element name="journalier" type="xs:double"/>
         </xs:sequence>
     </xs:complexType>
@@ -407,7 +409,7 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="deBase" type="xs:double"/>
-            <xs:element name="enfant" type="xs:double"/>
+            <xs:element name="enfant" type="xs:double" minOccurs="0"/>
             <xs:element name="externe" type="xs:double"/>
             <xs:element name="interne" type="xs:double"/>
             <xs:element name="libres" type="xs:boolean">
@@ -460,11 +462,11 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="raisonInterruption">
+            <xs:element name="raisonInterruption" minOccurs="0">
                 <xs:annotation><xs:documentation>1 = Maladie/accident sans rap. Avec réadaptation 2 = Maladie/accident en rap. Avec réadaptation  3 = Grossesse 4 = Accouchement  5 = Autres motifs</xs:documentation></xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:int">
-                        <xs:minInclusive value="0"/>
+                        <xs:minInclusive value="1"/>
                         <xs:maxInclusive value="5"/>
                     </xs:restriction>
                 </xs:simpleType>

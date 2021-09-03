@@ -218,25 +218,19 @@
                             <schemaDirectory>src/main/resources/xsd</schemaDirectory>
                             <generateDirectory>target/generated-sources/xjc-acor-rentes</generateDirectory>
                             <schemaIncludes>
-                                <include>acorRentes/swap/xsd/*.xsd</include>
+<!--                                <include>acorRentes/swap/xsd/*.xsd</include>-->
                                 <include>acorRentes/xsd/*.xsd</include>
                                 <include>acorRentes/xsd/annoncesRC/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesAI/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesApgIj/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesCompta/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesPC/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/assuranceMilitaire/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/CACI/*.xsd</include>
+                                <include>acorRentes/xsd/annoncesRC/CACI/annonceCI-types.xsd</include>
                                 <include>acorRentes/xsd/annoncesRC/Prestations/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/testAnnonce/*.xsd</include>
                                 <include>acorRentes/xsd/euro/*.xsd</include>
                                 <include>acorRentes/xsd/Typebase/AI/*.xsd</include>
                                 <include>acorRentes/xsd/Typebase/ARC/*.xsd</include>
                                 <include>acorRentes/xsd/Typebase/CI/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/Compta/*.xsd</include>
+<!--                                <include>acorRentes/xsd/Typebase/Compta/*.xsd</include>-->
                                 <include>acorRentes/xsd/Typebase/General/*.xsd</include>
                                 <include>acorRentes/xsd/Typebase/PersPhys/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/Prestations/*.xsd</include>
+                                <include>acorRentes/xsd/Typebase/Prestations/annonceRente.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
