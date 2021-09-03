@@ -29,6 +29,8 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%@ page import="globaz.corvus.properties.REProperties" %>
 <%@ page import="globaz.globall.db.BSession" %>
 <%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
+<%@ page import="globaz.corvus.servlet.IREActions" %>
+<%@ page import="globaz.ij.servlet.IIJActions" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -81,6 +83,15 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 			document.forms[0].submit();
 		}
 	}
+
+	$(document).ready(function () {
+
+		$('#lienAcorWeb').one('click', function () {
+			ajaxUtils.addOverlay($('html'));
+			document.forms[0].elements('userAction').value  = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_DECOMPTE%>.actionImporterDecompte";
+			document.forms[0].submit();
+		});
+	});
 	
 	
 </SCRIPT>
@@ -296,7 +307,14 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
                     <H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_2"/></u></H6>
                     <P><ct:FWLabel key="JSP_CAD_D_CALCULER_ACOR"/></P>
                     <H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_3"/></u></H6>
-                    <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>
+												<p>
+													<ct:ifhasright element="<%=IIJActions.ACTION_CALCUL_DECOMPTE %>" crud="u">
+														<a id="lienAcorWeb" href="#" name="lienAcorWeb">
+															<ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+														</a>
+													</ct:ifhasright>
+												</p>
+<%--                    <P><A href="#" onclick="afficherPrestation()" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>--%>
                     <p>---------------------------------------------------------------------------------------------</p>
                     <p>ANCIEN ACOR</p>
                     <p>---------------------------------------------------------------------------------------------</p>

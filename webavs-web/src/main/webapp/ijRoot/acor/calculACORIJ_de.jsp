@@ -28,6 +28,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%@ page import="globaz.corvus.properties.REProperties" %>
 <%@ page import="globaz.globall.db.BSession" %>
 <%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
+<%@ page import="globaz.ij.servlet.IIJActions" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -61,6 +62,15 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
         document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.actionCallACORWeb";
         document.forms[0].submit();
     }
+
+	$(document).ready(function () {
+
+		$('#lienAcorWeb').one('click', function () {
+			ajaxUtils.addOverlay($('html'));
+			document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.actionImporterIJ";
+			document.forms[0].submit();
+		});
+	});
 
 </SCRIPT>
 <SCRIPT language="vbscript">
@@ -200,7 +210,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
         <HR>
     </TD>
 </TR>
-
+<% if (viewBean.isCalculable()) { %>
 <%
     if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
 %>
@@ -212,7 +222,14 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
         <H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_2"/></u></H6>
         <P><ct:FWLabel key="JSP_CAI_D_CALCULER_ACOR"/></P>
         <H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_3"/></u></H6>
-        <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>
+		<p>
+			<ct:ifhasright element="<%=IIJActions.ACTION_CALCUL_IJ %>" crud="u">
+				<a id="lienAcorWeb" href="#" name="lienAcorWeb">
+					<ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+				</a>
+			</ct:ifhasright>
+		</p>
+<%--        <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>--%>
         <p>---------------------------------------------------------------------------------------------</p>
         <p>ANCIEN ACOR</p>
         <p>---------------------------------------------------------------------------------------------</p>
@@ -222,7 +239,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <% } %>
 
 						<TR>
-							<% if (viewBean.isCalculable()) { %>
+
 							<TD colspan="4">
 
 								<H6><A href="#" style="color:black;" onclick="exporterScriptACOR()"><ct:FWLabel key="JSP_CAI_D_ETAPE_1"/></A></H6>							
@@ -232,12 +249,15 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 								<H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_3"/></u></H6>
 								<P><A href="#" id="lnkImporter"><ct:FWLabel key="JSP_CAI_D_IMPORTER_RESULTAT"/></A></P>
 							</TD>
-							<% } else { %>
-							<TD colspan="4">
-								<P style="color: red"><ct:FWLabel key="JSP_CAI_D_CALCUL_INTERDIT"/></P>
-							</TD>
-							<% } %>
+
 						</TR>
+<% } else { %>
+<TR>
+<TD colspan="4">
+	<P style="color: red"><ct:FWLabel key="JSP_CAI_D_CALCUL_INTERDIT"/></P>
+</TD>
+</TR>
+<% } %>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
