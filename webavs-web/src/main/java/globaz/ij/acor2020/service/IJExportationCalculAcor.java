@@ -131,7 +131,8 @@ class IJExportationCalculAcor {
         if (prononce.isPetiteIJ()) {
             IJPetiteIJ ijPetiteIJ = loadPetiteIJ(prononce.getIdPrononce());
             basesCalculCouranteIJ.setFormation(Integer.parseInt(session.getCode(ijPetiteIJ.getCsSituationAssure())));
-            String revenu = loadRevenu(ijPetiteIJ);
+            String revenu = loadRevenuReadaptation(ijPetiteIJ).getRevenu();
+
             basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
         }
         //TODO DMA 27.08.2021: à mapper
@@ -153,6 +154,16 @@ class IJExportationCalculAcor {
         String revenu;
         try {
             revenu = ijPetiteIJ.loadRevenu().getRevenu();
+        } catch (Exception e) {
+            throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijPetiteIJ.getId());
+        }
+        return revenu;
+    }
+
+    private IJRevenu loadRevenuReadaptation(final IJPetiteIJ ijPetiteIJ) {
+        IJRevenu revenu;
+        try {
+            revenu = ijPetiteIJ.loadRevenuReadaptation(null);
         } catch (Exception e) {
             throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijPetiteIJ.getId());
         }
