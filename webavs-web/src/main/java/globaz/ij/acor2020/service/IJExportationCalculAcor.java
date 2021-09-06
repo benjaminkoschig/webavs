@@ -113,6 +113,7 @@ class IJExportationCalculAcor {
 
         //Pas utilisé donc non mapper.
         //basesCalculCouranteIJ.setTauxLibre();
+        basesCalculCouranteIJ.setId(prononce.getId());
         basesCalculCouranteIJ.setGenreIndemnite(prononce.isGrandeIJ() ? 1 : 2);
         basesCalculCouranteIJ.setOfficeAI(prononce.getOfficeAI());
 

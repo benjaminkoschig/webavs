@@ -41,13 +41,19 @@ public class PRAcorDemandeTypeMapper {
 
             TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
                                                                        null, null, true, cre.getLangue());
-            adresseCaisse.setPays(100);//Suisse
+
             if(adresse!=null) {
                 adresseCaisse.setNom(cre.getNom());
                 adresseCaisse.setAdresse(adresse.casePostale);
                 adresseCaisse.setLocalite(adresse.localiteNom);
                 adresseCaisse.setCodePostal(adresse.localiteNpa);
                 adresseCaisse.setPays(PRConverterUtils.formatRequiredInteger(cre.getIdPays()));
+            }else{
+                adresseCaisse.setNom("Nom caisse");
+                adresseCaisse.setAdresse("Rue de la caisse ou case postale");
+                adresseCaisse.setLocalite("Localité de la caisse");
+                adresseCaisse.setCodePostal("1111");
+                adresseCaisse.setPays(100);//Suisse
             }
 
         } catch (Exception e) {
