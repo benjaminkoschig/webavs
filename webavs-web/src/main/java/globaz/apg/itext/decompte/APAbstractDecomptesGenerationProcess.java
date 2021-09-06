@@ -897,11 +897,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             // Texte Impot source
             if(impotSource && !decompteCourant.getIsPaiementEmployeur()) {
-                if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
-                    calculRevenuAnnuel();
-                }
                 // TODO: Voir si positionner le texte pour tous les types de document à la même position (5,10 ?)
                 if(IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
+                    if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
+                        calculRevenuAnnuel();
+                    }
                     String texte = document.getTextes(5).getTexte(10).getDescription();
                     texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}",revenuAnnuelDeterminant);
                     texte = PRStringUtils.replaceString(texte,"{tauxImposition}",JANumberFormatter.formatNoRound(tauxImposition));
