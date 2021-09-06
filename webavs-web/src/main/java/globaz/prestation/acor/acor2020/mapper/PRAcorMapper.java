@@ -4,8 +4,6 @@ import acor.rentes.xsd.common.AdresseType;
 import acor.rentes.xsd.common.BanqueAdresseType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesPostalesType;
 import globaz.commons.nss.NSUtil;
-import globaz.externe.IPRConstantesExternes;
-import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
@@ -36,26 +34,32 @@ import java.util.Set;
 @Slf4j
 public class PRAcorMapper {
     protected static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
-    //protected static final String DD_MM_YYYY_FORMAT = "dd.MM.yyyy";
 
     private final Map<String, String> idNoAVSBidons = new HashMap<>();
     private final Map<String, String> idNSSBidons = new HashMap<>();
 
     @Getter
-    private boolean adresseCourrierPourRequerant = false;
+    private final String typeAdressePourRequerant;
     @Getter
-    private PRTiersWrapper tiersRequerant;
+    private final PRTiersWrapper tiersRequerant;
+    @Getter
+    private final String domaineAdresse;
     @Getter
     private BSession session;
 
-    public PRAcorMapper(final Boolean adresseCourrierPourRequerant,final PRTiersWrapper tiersRequerant, final BSession session) {
-        this.adresseCourrierPourRequerant = adresseCourrierPourRequerant;
+    public PRAcorMapper(String typeAdressePourRequerant,
+                        PRTiersWrapper tiersRequerant,
+                        String domaineAdresse,
+                        BSession session) {
+
+        this.typeAdressePourRequerant = typeAdressePourRequerant;
         this.tiersRequerant = tiersRequerant;
+        this.domaineAdresse = domaineAdresse;
         this.session = session;
     }
 
     public Integer getDomicile(String csCantonDomicile, String codePays, PRTiersWrapper tiersRequerant) {
-        /**
+        /*
          * 1) On prend le canton
          * 2) Sinon le pays
          * 3) Sinon prendre le pays du requérant
@@ -226,7 +230,7 @@ public class PRAcorMapper {
         DonneesPostalesType donneesPostalesType = new DonneesPostalesType();
 
         try {
-            TIAdresseDataSource adresse = loadAdresse(this.adresseCourrierPourRequerant, tiersRequerant.getIdTiers());
+            TIAdresseDataSource adresse = loadAdresse(this.typeAdressePourRequerant, this.domaineAdresse, tiersRequerant.getIdTiers());
             if (adresse != null) {
                 AdresseType adresseType = new AdresseType();
                 // 2. Numéro et rue
@@ -251,7 +255,7 @@ public class PRAcorMapper {
             }
 
             TIAdressePaiementData adressePaiement = PRTiersHelper.getAdressePaiementData(session, null, tiersRequerant.getIdTiers(),
-                                                                                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
+                                                                                         domaineAdresse, "", JACalendar.todayJJsMMsAAAA());
 
             if (adressePaiement != null && StringUtils.isNotEmpty(adressePaiement.getId())) {
 
@@ -263,7 +267,7 @@ public class PRAcorMapper {
                 TIAbstractAdresseData banque = null;
                 if (!JadeStringUtil.isBlankOrZero(idTiersBanque)) {
                     banque = TIAdresseResolver.dataSourceAdr(session, idTiersBanque,
-                                                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
+                                                             domaineAdresse,
                                                              IConstantes.CS_AVOIR_ADRESSE_DOMICILE, "", JACalendar.todayJJsMMsAAAA(), true);
                 }
 
@@ -309,17 +313,11 @@ public class PRAcorMapper {
         return donneesPostalesType;
     }
 
-    private TIAdresseDataSource loadAdresse(boolean adresseCourrierPourRequerant, String idTiers) throws Exception {
+    private TIAdresseDataSource loadAdresse(String typeAdresse, String domaineAdresse, String idTiers) throws Exception {
         TITiers tiers = new TITiers();
         tiers.setIdTiers(idTiers);
         tiers.setSession(session);
-        if (adresseCourrierPourRequerant) {
-            return tiers.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER,
-                                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
-        } else {
-            return tiers.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE,
-                                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
-        }
+        return tiers.getAdresseAsDataSource(typeAdresse, domaineAdresse, JACalendar.todayJJsMMsAAAA(), true);
     }
 
 }

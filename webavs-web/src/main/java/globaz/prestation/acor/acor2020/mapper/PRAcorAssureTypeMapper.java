@@ -19,16 +19,8 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
 
     private final List<ISFMembreFamilleRequerant> membresFamille;
 
-    public PRAcorAssureTypeMapper(final BSession session,
-                                  final PRTiersWrapper tiersRequerant,
-                                  final Boolean adresseCourrierPourRequerant,
-                                  final List<ISFMembreFamilleRequerant> membresFamille) {
-        super(adresseCourrierPourRequerant, tiersRequerant, session);
-        this.membresFamille = membresFamille;
-    }
-
     public PRAcorAssureTypeMapper(final List<ISFMembreFamilleRequerant> membresFamille,final PRAcorMapper prAcorMapper) {
-        super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
+        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(),prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
         this.membresFamille = membresFamille;
     }
 
@@ -48,7 +40,6 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
                              .map(pair -> assureTypeFunction.apply(pair.getLeft(), pair.getRight()))
                              .collect(Collectors.toList());
     }
-
 
     private AssureType createAssureType(ISFMembreFamilleRequerant membre) {
         AssureType assure = new AssureType();

@@ -12,6 +12,8 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
+import globaz.externe.IPRConstantesExternes;
+import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -64,7 +66,7 @@ class IJExportationCalculAcor {
             List<ISFMembreFamilleRequerant> conjoints = membresFamilleRequerant.filtreConjoints();
             ISFMembreFamilleRequerant requerant = membresFamilleRequerant.filtreByIdTiers(tiersRequerant.getIdTiers());
 
-            PRAcorMapper prAcorMapper = new PRAcorMapper(false, tiersRequerant, session);
+            PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE, tiersRequerant, IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, session);
             PRAcorAssureTypeMapper assureTypeAcorMapper = new PRAcorAssureTypeMapper(membresFamilleRequerant.filtreTousSaufEnfants(), prAcorMapper);
             PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, conjoints, prAcorMapper);
             PRAcorEnfantTypeMapper enfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, enfants, prAcorMapper);

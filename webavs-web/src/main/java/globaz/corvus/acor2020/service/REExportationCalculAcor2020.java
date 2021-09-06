@@ -61,6 +61,8 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
+import globaz.externe.IPRConstantesExternes;
+import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -142,11 +144,13 @@ public class REExportationCalculAcor2020 {
             demandeRente = REDemandeRente.loadDemandeRente(session, transaction, idDemande, null);
             tiersRequerant = demandeRente.loadDemandePrestation(null).loadTiers();
 
-            boolean adresseCourrierPourRequerant = false;
+            String typeAdressePourRequerant = IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE;
             if ("true".equals(getWantAdresseCourrierProperties())) {
-                adresseCourrierPourRequerant = true;
+                typeAdressePourRequerant = IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER;
             }
-            this.prAcorMapper = new PRAcorMapper(adresseCourrierPourRequerant, this.tiersRequerant, this.session);
+            this.prAcorMapper = new PRAcorMapper(typeAdressePourRequerant, this.tiersRequerant,
+                                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
+                                                 this.session);
             ISFSituationFamiliale situationFamiliale = this.situationFamiliale();
             inHost.setDemande(createDemande(demandeRente, tiersRequerant, session));
             List<ISFMembreFamilleRequerant> membresFamille = getToutesLesMembresFamillesEtEtendue();

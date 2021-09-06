@@ -21,20 +21,12 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
     private final ISFSituationFamiliale situationFamiliale;
     private final List<ISFMembreFamilleRequerant> enfantsFamilles;
 
-    public PRAcorEnfantTypeMapper(final Boolean adresseCourrierPourRequerant,
-                                  final PRTiersWrapper tiersRequerant,
-                                  final ISFSituationFamiliale situationFamiliale,
-                                  final List<ISFMembreFamilleRequerant> enfantsFamilles,
-                                  final BSession session) {
-        super(adresseCourrierPourRequerant, tiersRequerant, session);
-        this.situationFamiliale = situationFamiliale;
-        this.enfantsFamilles = enfantsFamilles;
-    }
+
 
     public PRAcorEnfantTypeMapper(final ISFSituationFamiliale situationFamiliale,
                                   final List<ISFMembreFamilleRequerant> enfantsFamilles,
                                   final PRAcorMapper prAcorMapper) {
-        super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
+        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(),prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.enfantsFamilles = enfantsFamilles;
     }
