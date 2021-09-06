@@ -157,7 +157,7 @@ public class REExportationCalculAcor2020 {
             conjoints.addAll(filterListMembresExConjointConjoint(membresFamille));
             conjoints.addAll(filterListMembresConjoints(membresFamille));
 
-            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, this.prAcorMapper, conjoints);
+            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, conjoints, this.prAcorMapper);
 
             inHost.getAssure().addAll(createListAssures(membresCatAssures));
             inHost.getFamille().addAll(familleTypeMapper.map());
@@ -207,7 +207,8 @@ public class REExportationCalculAcor2020 {
     private List<ISFMembreFamilleRequerant> filterListMembresExConjointConjoint(List<ISFMembreFamilleRequerant> membresFamille) {
         List<ISFMembreFamilleRequerant> exConjointsConjoints = new ArrayList<>();
         for (ISFMembreFamilleRequerant membre : membresFamille) {
-            if (StringUtils.equals(REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT,
+            if (StringUtils.equals(
+                    REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT,
                     membre.getRelationAuRequerant())) {
                 exConjointsConjoints.add(membre);
             }
@@ -242,7 +243,7 @@ public class REExportationCalculAcor2020 {
 
 
     private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille) {
-        return new PRAcorAssureTypeMapper(this.prAcorMapper, membresFamille).map(this::addInformationInAssreType);
+        return new PRAcorAssureTypeMapper(membresFamille, this.prAcorMapper).map(this::addInformationInAssreType);
     }
 
     private AssureType addInformationInAssreType(final ISFMembreFamilleRequerant membre, final AssureType assureType) {
@@ -924,7 +925,7 @@ public class REExportationCalculAcor2020 {
                                 ISFPeriode periode = periodes[i];
                                 if (periode.getNoAvs().equals(((ISFMembreFamilleRequerant) membre).getNss())
                                         && ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE.equals(periode
-                                        .getType())) {
+                                                                                                         .getType())) {
                                     isPeriodeDomicileSuisse = true;
                                 }
                             }
@@ -1135,7 +1136,7 @@ public class REExportationCalculAcor2020 {
             // Tri par date de rassemblement (plus récente à plus
             // ancienne) et motif (ordre croissant)
             mgrRCI.setOrderBy(RERassemblementCI.FIELDNAME_DATE_RASSEMBLEMENT + " DESC, "
-                    + RERassemblementCI.FIELDNAME_MOTIF + " ASC ");
+                                      + RERassemblementCI.FIELDNAME_MOTIF + " ASC ");
 
             mgrRCI.find(transaction, BManager.SIZE_NOLIMIT);
             RCIContainer rciCo = new RCIContainer();
@@ -1171,7 +1172,8 @@ public class REExportationCalculAcor2020 {
                             continue;
                         }
                         if (idsRCICopy.contains(rciAdd.getIdParent())) {
-                            rciCo.addRCIAdditionnel(PRConverterUtils.formatRequiredInteger(rciAdd.getMotif()).intValue(),
+                            rciCo.addRCIAdditionnel(
+                                    PRConverterUtils.formatRequiredInteger(rciAdd.getMotif()).intValue(),
                                     rciAdd.getIdRCI());
                         }
                     }
@@ -1358,7 +1360,8 @@ public class REExportationCalculAcor2020 {
         ISFSituationFamiliale sf = situationFamiliale();
         try {
             List antiDoublon = new ArrayList();
-            ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(tiersRequerant.getIdTiers(),
+            ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(
+                    tiersRequerant.getIdTiers(),
                     getDateTraimentFormat());
 
             for (int i = 0; i < membresFamille.length; ++i) {
@@ -1367,7 +1370,7 @@ public class REExportationCalculAcor2020 {
                     antiDoublon.add(getKey(membresFamille[i]));
 
                     if (ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(membresFamille[i]
-                            .getRelationAuRequerant())) {
+                                                                                       .getRelationAuRequerant())) {
 
                         // On récupére également les éventuelles conjoints des conjoints
 
@@ -1384,7 +1387,7 @@ public class REExportationCalculAcor2020 {
 
                                         // On parle du (ex)conjoint du conjoint du requérant.
                                         if (ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(m
-                                                .getRelationAuRequerant())
+                                                                                                           .getRelationAuRequerant())
                                                 && !tiersRequerant.getIdTiers().equals(m.getIdTiers())) {
                                             m.setRelationAuRequerant(REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT);
                                             m.setIdMFDuConjoint(membresFamille[i].getIdMembreFamille());
@@ -1395,7 +1398,7 @@ public class REExportationCalculAcor2020 {
                                             if (tiersRequerant.getIdTiers().equals(m.getIdTiers())) {
                                                 m.setRelationAuRequerant(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT);
                                             } else if (ISFSituationFamiliale.CS_TYPE_RELATION_ENFANT.equals(m
-                                                    .getRelationAuRequerant())) {
+                                                                                                                    .getRelationAuRequerant())) {
                                                 ;
                                             } else {
                                                 m.setRelationAuRequerant(REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_BLANK);
@@ -1456,7 +1459,7 @@ public class REExportationCalculAcor2020 {
 
         // On recherche la sit famille du tiers requérant
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
+                                                                                     ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
 
         // On récupère tous les membres de la famille
         ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(idTiersRequerant);
@@ -1497,12 +1500,12 @@ public class REExportationCalculAcor2020 {
 
             // On recherche la sit famille du tiers requérant
             ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                    ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
+                                                                                         ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
 
             // On récupère les relations au tiers pour chaque conjoint
             for (ISFMembreFamilleRequerant conjoint : conjoints) {
                 ISFRelationFamiliale[] relations = sf.getToutesRelationsConjoints(idMembreFamilleRequerant,
-                        conjoint.getIdMembreFamille(), false);
+                                                                                  conjoint.getIdMembreFamille(), false);
                 for (ISFRelationFamiliale relation : relations) {
                     // On anaylse ses relations par rapport au tiers requerant
                     if (ISFRelationConjoint.CS_REL_CONJ_ENFANT_COMMUN.equals(relation.getTypeRelation())) {

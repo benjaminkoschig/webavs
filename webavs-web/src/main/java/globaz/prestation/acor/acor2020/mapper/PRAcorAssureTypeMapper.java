@@ -23,13 +23,17 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
                                   final PRTiersWrapper tiersRequerant,
                                   final Boolean adresseCourrierPourRequerant,
                                   final List<ISFMembreFamilleRequerant> membresFamille) {
-        super(adresseCourrierPourRequerant, tiersRequerant,session);
+        super(adresseCourrierPourRequerant, tiersRequerant, session);
         this.membresFamille = membresFamille;
     }
 
-    public PRAcorAssureTypeMapper(final PRAcorMapper prAcorMapper, final List<ISFMembreFamilleRequerant> membresFamille) {
-        super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(),prAcorMapper.getSession());
+    public PRAcorAssureTypeMapper(final List<ISFMembreFamilleRequerant> membresFamille,final PRAcorMapper prAcorMapper) {
+        super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
         this.membresFamille = membresFamille;
+    }
+
+    public List<AssureType> map() {
+        return this.map(this.membresFamille, (membreFamilleRequerant, assureType) -> assureType);
     }
 
     public List<AssureType> map(BiFunction<ISFMembreFamilleRequerant, AssureType, AssureType> assureTypeFunction) {

@@ -1,6 +1,7 @@
 package globaz.ij.acor2020.service;
 
 import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
+import acor.rentes.xsd.in.ij.BasesCalculIJ;
 import acor.rentes.xsd.in.ij.BasesCalculRevenusIJ;
 import acor.rentes.xsd.in.ij.BeneficiaireIJ;
 import acor.rentes.xsd.in.ij.IndemniteJournaliereIJ;
@@ -10,6 +11,7 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
+import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -40,6 +42,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static globaz.cygnus.mappingXmlml.RFXmlmlMappingStatistiquesMontantsSASH.getSession;
 
@@ -62,14 +65,15 @@ class IJExportationCalculAcor {
             ISFMembreFamilleRequerant requerant = membresFamilleRequerant.filtreByIdTiers(tiersRequerant.getIdTiers());
 
             PRAcorMapper prAcorMapper = new PRAcorMapper(false, tiersRequerant, session);
-            PRAcorAssureTypeMapper assureTypeAcorMapper = new PRAcorAssureTypeMapper(prAcorMapper, membresFamilleRequerant.filtreTousSaufEnfants());
-            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, prAcorMapper, conjoints);
+            PRAcorAssureTypeMapper assureTypeAcorMapper = new PRAcorAssureTypeMapper(membresFamilleRequerant.filtreTousSaufEnfants(), prAcorMapper);
+            PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, conjoints, prAcorMapper);
             PRAcorEnfantTypeMapper enfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, enfants, prAcorMapper);
 
             InHostType inHost = new InHostType();
             inHost.getFamille().addAll(familleTypeMapper.map());
             inHost.getEnfant().addAll(enfantTypeMapper.map());
             inHost.getAssure().addAll(toAssures(assureTypeAcorMapper, prononce, session));
+
             inHost.setDemande(toDemande(tiersRequerant, prononce, session));
             inHost.setVersionSchema("5.0");
 
@@ -80,19 +84,24 @@ class IJExportationCalculAcor {
     }
 
     private List<AssureType> toAssures(final PRAcorAssureTypeMapper assureTypeAcorMapper, final IJPrononce prononce, final BSession session) {
-        return assureTypeAcorMapper.map((membreFamilleRequerant, assureType) -> completeMappingAssure(session, prononce, assureType));
+        return assureTypeAcorMapper.map((membreFamilleRequerant, assureType) -> completeMappingAssure(membreFamilleRequerant, prononce, assureType, session));
     }
 
-    private AssureType completeMappingAssure(final BSession session, final IJPrononce prononce, final AssureType assureType) {
-        BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
-        //        PeriodeIJType periodeIJType = new PeriodeIJType();
+    private AssureType completeMappingAssure(final ISFMembreFamilleRequerant membreFamille,
+                                             final IJPrononce prononce,
+                                             final AssureType assureType,
+                                             final BSession session) {
+
+        if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
+            BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
+            //        PeriodeIJType periodeIJType = new PeriodeIJType();
 //        periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
 //        periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
-        IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
-        indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
-        assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
-
+            IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
+            indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
+            assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
+        }
         return assureType;
     }
 
@@ -140,8 +149,19 @@ class IJExportationCalculAcor {
         basesCalculCouranteIJ.setStatut(loadCode(session, prononce.getCsStatutProfessionnel()));
         basesCalculCouranteIJ.setDemiIJAC(Double.parseDouble(prononce.getDemiIJAC()));
 
-//        BasesCalculIJ.GarantieAA garantieAA = new BasesCalculIJ.GarantieAA();
-//        basesCalculCouranteIJ.setGarantieAA(garantieAA);
+        if(!JadeStringUtil.isBlankOrZero(prononce.getMontantGarantiAA())) {
+            BasesCalculIJ.GarantieAA garantieAA = new BasesCalculIJ.GarantieAA();
+            if (prononce.getMontantGarantiAAReduit()) {
+                // R= réduite
+                garantieAA.setType("R");
+            } else {
+                // NR= non réduite
+                garantieAA.setType("NR");
+            }
+            garantieAA.setValue(Double.parseDouble(prononce.getMontantGarantiAA()));
+            basesCalculCouranteIJ.setGarantieAA(garantieAA);
+        }
+
         basesCalculCouranteIJ.setCantonImpots(loadCode(session, prononce.getCsCantonImpositionSource()));
         //Choix fait par défaut à false
         basesCalculCouranteIJ.setMesureRea8A(false);
@@ -182,11 +202,14 @@ class IJExportationCalculAcor {
         try {
             IJSalaireFilter salaire = new IJSalaireFilter(getSession(), situationProfessionnelle);
             BasesCalculRevenusIJ basesCalculRevenus = new BasesCalculRevenusIJ();
-
+            basesCalculRevenus.setId(situationProfessionnelle.getId());
             basesCalculRevenus.setRevenu(Double.parseDouble(salaire.getMontantSalaireArrondi()));
             basesCalculRevenus.setAnnee(Dates.toXMLGregorianCalendar("01.01." + situationProfessionnelle.getAnneeCorrespondante()));
             basesCalculRevenus.setType(Integer.parseInt(PRACORConst.csPeriodiciteSalaireIJToAcor(session, salaire.getCsPeriodiciteSalaire())));
-            basesCalculRevenus.setHeuresHebdo((int) Double.parseDouble(salaire.getNombreHeuresSemaines()));
+            //Si le type est egale à horaire
+            if (Objects.equals(1, basesCalculRevenus.getType())) {
+                basesCalculRevenus.setHeuresHebdo((int) Double.parseDouble(salaire.getNombreHeuresSemaines()));
+            }
             IJEmployeur employeur = situationProfessionnelle.loadEmployeur();
             basesCalculRevenus.setNumeroAffilie(employeur.loadNumero());
             basesCalculRevenus.setNomEmployeur(employeur.loadNom());

@@ -21,7 +21,7 @@ public class IJAcor2020Service {
 
         if (IN_HOST_TYPE_VALIDATEUR != null && Debug.isEnvironnementInDebug()) {
             List<MessageValidation> validate = IN_HOST_TYPE_VALIDATEUR.validate(inHostType);
-            validate.forEach(validationEvent -> LOG.warn(validationEvent.message()));
+            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}",validationEvent.message()));
         }
 
         return inHostType;

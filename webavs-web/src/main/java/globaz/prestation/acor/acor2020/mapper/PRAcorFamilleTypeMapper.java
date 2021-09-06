@@ -28,8 +28,8 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
 
     public PRAcorFamilleTypeMapper(final ISFMembreFamilleRequerant membreRequerant,
                                    final ISFSituationFamiliale situationFamiliale,
-                                   final PRAcorMapper prAcorMapper,
-                                   final List<ISFMembreFamilleRequerant> conjoints) {
+                                   final List<ISFMembreFamilleRequerant> conjoints,
+                                   final PRAcorMapper prAcorMapper) {
         super(prAcorMapper.isAdresseCourrierPourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.membreRequerant = membreRequerant;
