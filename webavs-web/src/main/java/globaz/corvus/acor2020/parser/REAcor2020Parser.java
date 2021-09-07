@@ -1007,6 +1007,8 @@ public class REAcor2020Parser {
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
                     if (Objects.nonNull(eachTranche.getMontantReduction())) {
                         ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachTranche.getMontantReduction()), StringUtils.EMPTY));
+                    } else {
+                        ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachRente.getMontantReduction()), StringUtils.EMPTY));
                     }
                     return ra;
                 }

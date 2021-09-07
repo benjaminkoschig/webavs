@@ -124,11 +124,26 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
+                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())
+                        && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES.equals(relation.getTypeLien())){
                     l.setDateFin(relation.getDateDebut());
                 } else {
                     l.setDateFin(relation.getDateFin());
                 }
+
+                // mise à jour date de fin si décè du conjoint
+                if (!conjoint.getDateDeces().isEmpty() && l.getDateFin().isEmpty()
+                        && (ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
+                        || (ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE.equals(relation.getTypeLien())))) {
+                    l.setDateFin(conjoint.getDateDeces());
+                    l.setTypeLien(ISFSituationFamiliale.CS_TYPE_LIEN_VEUF);
+                } else if(!conjoint.getDateDeces().isEmpty() && l.getDateFin().isEmpty()
+                        && (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
+                        || (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE.equals(relation.getTypeLien())))) {
+                    l.setDateFin(conjoint.getDateDeces());
+                    l.setTypeLien(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES);
+                }
+
                 lignesList.add(l);
             }
         }

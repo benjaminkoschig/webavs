@@ -5,10 +5,12 @@ import ch.globaz.common.util.Dates;
 import ch.globaz.utils.Pair;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFSituationFamiliale;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -36,6 +38,7 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
                                  final BiFunction<ISFMembreFamilleRequerant, AssureType, AssureType> assureTypeFunction) {
 
         return membresFamille.stream()
+                             .filter(membre -> !StringUtils.equals(ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU, membre.getIdMembreFamille()))
                              .map(membre -> new Pair<>(membre, this.createAssureType(membre)))
                              .map(pair -> assureTypeFunction.apply(pair.getLeft(), pair.getRight()))
                              .collect(Collectors.toList());

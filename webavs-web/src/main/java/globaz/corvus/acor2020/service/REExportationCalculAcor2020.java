@@ -51,10 +51,7 @@ import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
 import globaz.corvus.db.ci.RERassemblementCIManager;
-import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
-import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
-import globaz.corvus.db.demandes.REPeriodeInvalidite;
+import globaz.corvus.db.demandes.*;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
@@ -266,9 +263,15 @@ public class REExportationCalculAcor2020 {
         addRentesAssures(assureType, membre);
 
         // Donnees AI
-        if (StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {
+        if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) && StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {
             assureType.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRente));
             assureType.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRente).getPourcentRedFauteGrave()));
+        } else if(StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
+            REDemandeRente demandeRenteConjoint = rechercheDemandeAiConjoint(membre);
+            if(demandeRenteConjoint != null) {
+                assureType.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRenteConjoint));
+                assureType.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRenteConjoint).getPourcentRedFauteGrave()));
+            }
         }
 
         // Anticipation ou ajournement
@@ -1094,6 +1097,10 @@ public class REExportationCalculAcor2020 {
         // 14. Code provenance
         ci.setCodeProvenance(PRConverterUtils.formatRequiredInteger(inscription.getProvenance()));
 
+        // Code spécial
+        if (!JadeStringUtil.isBlankOrZero(inscription.getCodeSpecial())) {
+            ci.setCodeSpecial(inscription.getCodeSpecial());
+        }
         return ci;
     }
 
@@ -1664,6 +1671,45 @@ public class REExportationCalculAcor2020 {
             return null;
         }
     }
+
+    /**
+     * Recherche d'une demande AI du conjoint, non validée
+     * @param membre
+     * @return la demande AI du conjoint
+     */
+    public REDemandeRente rechercheDemandeAiConjoint(ISFMembreFamilleRequerant membre) {
+        String idTiersConjoint = membre.getIdTiers();
+        REDemandeRenteJointDemandeManager mgr = new REDemandeRenteJointDemandeManager();
+        mgr.setSession(getSession());
+        mgr.setForIdTiersRequ(idTiersConjoint);
+        mgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
+                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
+                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
+
+        mgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
+        mgr.setOrderBy(REDemandeRente.FIELDNAME_DATE_DEBUT + " DESC ");
+        mgr.setForCsTypeCalcul(IREDemandeRente.CS_TYPE_CALCUL_STANDARD);
+
+        try {
+            mgr.find(1);
+            // ---------------------------------------------------------
+            // Traitement des paramètres du conjoint s'il possède une demande de
+            // type AI
+            // ---------------------------------------------------------
+            if (!mgr.isEmpty()) {
+                REDemandeRenteJointDemande elm = (REDemandeRenteJointDemande) mgr.getFirstEntity();
+                REDemandeRente demConjoint = null;
+                demConjoint = REDemandeRente.loadDemandeRente(getSession(), null,
+                        elm.getIdDemandeRente(), elm.getCsTypeDemande());
+                return demConjoint;
+            }
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer la demande du conjoint.", e);
+        }
+        return null;
+    }
+
+
 
 
     private BSession getSession() {
