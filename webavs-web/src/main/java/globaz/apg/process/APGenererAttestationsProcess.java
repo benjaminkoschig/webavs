@@ -4,7 +4,6 @@
 package globaz.apg.process;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
@@ -18,6 +17,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.api.IPRDemande;
@@ -224,7 +224,7 @@ public class APGenererAttestationsProcess extends BProcess {
             // independant)
             if (JadeStringUtil.isIntegerEmpty(rep.getIdParent())
                     && (IAPRepartitionPaiements.CS_PAIEMENT_DIRECT.equals(rep.getTypePaiement()) || sitPro
-                            .getIsIndependant().booleanValue())) {
+                    .getIsIndependant().booleanValue())) {
 
                 montantTotal = rep.getMontantRestant();
                 totalMontantAPG = rep.getMontantBrut();
@@ -265,7 +265,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 FWCurrency totalMontantCotisations = new FWCurrency();
                 FWCurrency totalMontantImpotSource = new FWCurrency();
 
-                for (Iterator iterator = cotMan.iterator(); iterator.hasNext();) {
+                for (Iterator iterator = cotMan.iterator(); iterator.hasNext(); ) {
                     APCotisation cot = (APCotisation) iterator.next();
 
                     if (cot.getType().equals(APCotisation.TYPE_IMPOT)) {
@@ -282,14 +282,14 @@ public class APGenererAttestationsProcess extends BProcess {
                 } else {
                     isRestitution = true;
                 }
-               isAttestationPat = isPrestationLapat(prest);
+                isAttestationPat = isPrestationLapat(prest);
                 isAttestationPai = isPrestationLapai(prest);
-                if (isAttestationPat||isAttestationPai||isPrestationLamat(prest) ||
+                if (isAttestationPat || isAttestationPai || isPrestationLamat(prest) ||
                         (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
-                        .isZero())))
-                        && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
-                        .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
-                        .isPositive()))))) {
+                                .isZero())))
+                                && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
+                                .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
+                                .isPositive()))))) {
 
                     // Création de la clé
                     Key k = new Key();
@@ -298,109 +298,15 @@ public class APGenererAttestationsProcess extends BProcess {
                     // Si la clé est encore inexistante
                     if (!map.containsKey(k)) {
 
-                        // On crée un objet
-                        AttestationsInfos ai = new AttestationsInfos();
-
-                        ai.idTiers = idTiers;
-                        ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
-                        ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
-                        ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
-                        ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
-                                totalMontantCotisations.toString()));
-                        ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
-                                totalMontantImpotSource.toString()));
-                        ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
-                        ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
-                                .toString()));
-                        ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
-
-                        ai.idsRPVentilations = idsVentilation;
-                        // Comme la clé est inexistante, on crée la liste
-                        // d'objet
-                        ArrayList list = new ArrayList();
-                        list.add(ai);
-
-                        // On insère la clé et la liste dans la map
-                        map.put(k, list);
+                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k);
 
                         // si la clé existe déjà
                     } else {
 
-                        // On récupère la liste
-                        ArrayList list = (ArrayList) map.get(k);
-
-                        ArrayList listCopy = new ArrayList();
-                        listCopy.addAll(list);
-
-                        boolean isFusion = false;
-
-                        // On itère sur les objets dans la liste
-                        for (Iterator iterator = listCopy.iterator(); iterator.hasNext();) {
-                            AttestationsInfos ai = (AttestationsInfos) iterator.next();
-
-                            ai.idsRPVentilations.addAll(idsVentilation);
-                            // Dans un premier temps, on regroupe uniquement les
-                            // périodes identiques
-
-                            // date de l'objet en cours d'itération
-                            String dateDebutAi = PRDateFormater.formatDateFrom(ai.dateDebut);
-                            String dateFinAi = PRDateFormater.formatDateFrom(ai.dateFin);
-
-                            // date de l'objet à fusionner ou ajouter
-                            String dateDebutPrest = prest.getDateDebut();
-                            String dateFinPrest = prest.getDateFin();
-
-                            // Donc si les dates sont identiques...
-                            if (/* ai.idsRPVentilations.size()>0 && */dateDebutPrest.equals(dateDebutAi)
-                                    && dateFinPrest.equals(dateFinAi)) {
-
-                                // on ajoute simplement tous les montants à
-                                // l'objet ai
-                                ai.idTiers = idTiers;
-                                ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateDebutPrest);
-                                ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateFinPrest);
-                                ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
-                                ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
-                                        totalMontantCotisations.toString()));
-                                ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
-                                        totalMontantImpotSource.toString()));
-                                ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
-                                ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
-                                        .toString()));
-                                ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
-
-                                // Pas besoin de l'ajouter dans la liste, car
-                                // modifié en temps réel !
-
-                                // Sinon on crée un nouvel objet
-
-                                isFusion = true;
-
-                            }
-                        }
-
-                        if (!isFusion) {
-
-                            AttestationsInfos ai1 = new AttestationsInfos();
-
-                            ai1.idTiers = idTiers;
-                            ai1.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
-                            ai1.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
-                            ai1.totalMontantAPG = ai1.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
-                            ai1.totalMontantCotisations = ai1.totalMontantCotisations.add(new BigDecimal(
-                                    totalMontantCotisations.toString()));
-                            ai1.totalMontantImpotSource = ai1.totalMontantImpotSource.add(new BigDecimal(
-                                    totalMontantImpotSource.toString()));
-                            ai1.montantTotal = ai1.montantTotal.add(new BigDecimal(montantTotal.toString()));
-                            ai1.montantVentilations = ai1.montantVentilations.add(new BigDecimal(montantVentilation
-                                    .toString()));
-                            ai1.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
-                            ai1.idsRPVentilations = idsVentilation;
-                            list.add(ai1);
-
-                        }
+                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k);
 
                     }
+
                 }
             }
         }
@@ -420,6 +326,116 @@ public class APGenererAttestationsProcess extends BProcess {
             }
         }
 
+        createAttestation(annee, dateDebut, dateFin, isAttestationPat, isAttestationPai, map, false);
+
+        return true;
+
+    }
+
+     private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k) throws JAException {
+        // On crée un objet
+        AttestationsInfos ai = new AttestationsInfos();
+
+        ai.idTiers = idTiers;
+        ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
+        ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
+        ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
+        ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
+                totalMontantCotisations.toString()));
+        ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
+                totalMontantImpotSource.toString()));
+        ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
+        ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
+                .toString()));
+        ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
+
+        ai.idsRPVentilations = idsVentilation;
+        // Comme la clé est inexistante, on crée la liste
+        // d'objet
+        ArrayList list = new ArrayList();
+        list.add(ai);
+
+        // On insère la clé et la liste dans la map
+        map.put(k, list);
+    }
+
+    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k) throws JAException {
+        // On récupère la liste
+        ArrayList list = (ArrayList) map.get(k);
+
+        ArrayList listCopy = new ArrayList();
+        listCopy.addAll(list);
+
+        boolean isFusion = false;
+
+        // On itère sur les objets dans la liste
+        for (Iterator iterator = listCopy.iterator(); iterator.hasNext();) {
+            AttestationsInfos ai = (AttestationsInfos) iterator.next();
+
+            ai.idsRPVentilations.addAll(idsVentilation);
+            // Dans un premier temps, on regroupe uniquement les
+            // périodes identiques
+
+            // date de l'objet en cours d'itération
+            String dateDebutAi = PRDateFormater.formatDateFrom(ai.dateDebut);
+            String dateFinAi = PRDateFormater.formatDateFrom(ai.dateFin);
+
+            // date de l'objet à fusionner ou ajouter
+            String dateDebutPrest = prest.getDateDebut();
+            String dateFinPrest = prest.getDateFin();
+
+            // Donc si les dates sont identiques...
+            if (/* ai.idsRPVentilations.size()>0 && */dateDebutPrest.equals(dateDebutAi)
+                    && dateFinPrest.equals(dateFinAi)) {
+
+                // on ajoute simplement tous les montants à
+                // l'objet ai
+                ai.idTiers = idTiers;
+                ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateDebutPrest);
+                ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateFinPrest);
+                ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
+                ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
+                        totalMontantCotisations.toString()));
+                ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
+                        totalMontantImpotSource.toString()));
+                ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
+                ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
+                        .toString()));
+                ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
+
+                // Pas besoin de l'ajouter dans la liste, car
+                // modifié en temps réel !
+
+                // Sinon on crée un nouvel objet
+
+                isFusion = true;
+
+            }
+        }
+
+        if (!isFusion) {
+
+            AttestationsInfos ai1 = new AttestationsInfos();
+
+            ai1.idTiers = idTiers;
+            ai1.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
+            ai1.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
+            ai1.totalMontantAPG = ai1.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
+            ai1.totalMontantCotisations = ai1.totalMontantCotisations.add(new BigDecimal(
+                    totalMontantCotisations.toString()));
+            ai1.totalMontantImpotSource = ai1.totalMontantImpotSource.add(new BigDecimal(
+                    totalMontantImpotSource.toString()));
+            ai1.montantTotal = ai1.montantTotal.add(new BigDecimal(montantTotal.toString()));
+            ai1.montantVentilations = ai1.montantVentilations.add(new BigDecimal(montantVentilation
+                    .toString()));
+            ai1.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
+            ai1.idsRPVentilations = idsVentilation;
+            list.add(ai1);
+
+        }
+    }
+
+    private void createAttestation(String annee, String dateDebut, String dateFin, boolean isAttestationPat, boolean isAttestationPai, TreeMap map, boolean isCopyFisc) throws Exception {
         APAttestations attestations = new APAttestations(getSession());
         attestations.setAttestationsMap(map);
         attestations.setDateDebut(dateDebut);
@@ -427,32 +443,12 @@ public class APGenererAttestationsProcess extends BProcess {
         attestations.setAnnee(annee);
         attestations.setParent(this);
         attestations.setTailleLot(1);
+        //attestationsFisc.setIsCopyFisc(isCopyFisc);
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setType(typePrestation);
         attestations.setAttestationPat(isAttestationPat);
         attestations.setAttestationPai(isAttestationPai);
         attestations.executeProcess();
-
-        // mergedDocInfo = createDocumentInfo();
-        //
-        // if (getIsGenerationUnique().booleanValue()){
-        // mergedDocInfo.setDocumentSubject("Attestation pour "
-        // +tiers.getProperty(PRTiersWrapper.PROPERTY_NOM)+" "
-        // +tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)+
-        // " imprimée avec succès"
-        // );
-        // } else {
-        // mergedDocInfo.setDocumentSubject("Attestations fiscales pour l'année "+annee);
-        // }
-        //
-        // mergePDF(mergedDocInfo,
-        // true,
-        // 100,
-        // false,
-        // ORDER_PRINTING_BY);
-
-        return true;
-
     }
 
     private boolean isPrestationLamat(APPrestation prest) {
