@@ -4,6 +4,7 @@ import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.persistence.EntityUtils;
 import globaz.globall.db.BSession;
 import globaz.ij.api.prestations.IIJPetiteIJCalculee;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prestations.IJGrandeIJCalculee;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJPetiteIJCalculee;
@@ -14,14 +15,16 @@ import globaz.prestation.acor.PRAcorDomaineException;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 
+import java.util.Objects;
+
 public class IJIJCalculeeMapper {
 
     public static IJIJCalculee baseCalculMapToIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, PRTiersWrapper tiers, IJPrononce prononce, BSession session) {
         IJIJCalculee ijijCalculee;
 
-        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(basesCalcul.getGenre())){
+        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(String.valueOf(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapGrandeIJ(basesCalcul);
-        }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(basesCalcul.getGenre())){
+        }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(String.valueOf(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapPetiteIJ(basesCalcul, prononce);
         }else{
             throw new PRAcorDomaineException("Réponse invalide : Type d' IJ non réconnu.");
@@ -32,9 +35,9 @@ public class IJIJCalculeeMapper {
 
     private static IJIJCalculee mapIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, PRTiersWrapper tiers, IJPrononce prononce, BSession session, IJIJCalculee ijijCalculee) {
 
-        if("1".equals(basesCalcul.getDroitPrestationEnfant())){
+        if(Objects.equals(1, basesCalcul.getDroitPrestationEnfant())){
             ijijCalculee.setIsDroitPrestationPourEnfant(Boolean.TRUE);
-        }else if("0".equals(basesCalcul.getDroitPrestationEnfant())){
+        }else if(Objects.equals(0, basesCalcul.getDroitPrestationEnfant())){
             ijijCalculee.setIsDroitPrestationPourEnfant(Boolean.FALSE);
         }else{
             ijijCalculee.setIsDroitPrestationPourEnfant(null);
@@ -46,19 +49,28 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getDatePrononce())));
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getFinDroit())));
-        ijijCalculee.setRevenuDeterminant(String.valueOf(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
-        ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getRevenuDeterminant().getDate())));
+        if(basesCalcul.getRevenuDeterminant() != null) {
+            ijijCalculee.setRevenuDeterminant(String.valueOf(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
+            ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getRevenuDeterminant().getDate())));
+        }
+
         ijijCalculee.setMontantBase(String.valueOf(basesCalcul.getMontantBase()));
-        ijijCalculee.setRevenuJournalierReadaptation(String.valueOf(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
+        if(basesCalcul.getRevenuReadaptation() != null) {
+            ijijCalculee.setRevenuJournalierReadaptation(String.valueOf(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
+            ijijCalculee.setDemiIJACBrut(String.valueOf(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
+        }
         ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(session, String.valueOf(basesCalcul.getStatut())));
         // TODO : Valeur mise à jour dans fichier plat mais pas possible de la trouver dans le xsd
         // ijijCalculee.setPourcentDegreIncapaciteTravail(????);
-        ijijCalculee.setDemiIJACBrut(String.valueOf(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
+
         ijijCalculee.setDifferenceRevenu(String.valueOf(basesCalcul.getDifferenceRevenu()));
         ijijCalculee.setIdPrononce(prononce.getIdPrononce());
-        ijijCalculee.setCsTypeIJ(String.valueOf(basesCalcul.getGenre()));
+        if(basesCalcul.getGenre() == 1){
+            ijijCalculee.setCsTypeIJ(IIJPrononce.CS_GRANDE_IJ);
+        }else if(basesCalcul.getGenre() == 2){
+            ijijCalculee.setCsTypeIJ(IIJPrononce.CS_PETITE_IJ);
+        }
         ijijCalculee.setNoRevision(String.valueOf(basesCalcul.getRevision()));
-
         EntityUtils.saveEntity(ijijCalculee, session);
         return ijijCalculee;
     }

@@ -52,9 +52,8 @@ public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
 
     private void sendMailError(BSession session, ExceptionRequestInfo exceptionRequestInfo, String object) throws Exception {
         BTransaction transaction = session.getCurrentThreadTransaction();
-        StringBuilder content = new StringBuilder(exceptionRequestInfo.toString());
+        StringBuilder content = new StringBuilder();
         if (session.hasErrors()) {
-            ajoutSautDeLigne(content);
             content.append("Errors in session : ");
             ajoutSautDeLigne(content);
             content.append(session.getErrors());
@@ -64,6 +63,12 @@ public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
             content.append("Errors in transaction : ");
             ajoutSautDeLigne(content);
             content.append(transaction.getErrors());
+        }
+        if(exceptionRequestInfo != null) {
+            ajoutSautDeLigne(content);
+            content.append("Exception information : ");
+            ajoutSautDeLigne(content);
+            content.append(exceptionRequestInfo.toString());
         }
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content.toString(), null);
     }

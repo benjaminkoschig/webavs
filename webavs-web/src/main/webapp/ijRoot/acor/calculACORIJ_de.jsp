@@ -171,21 +171,18 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <% } else if (viewBean.isAcorV4Web()) { %>
 <%
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-    String token = IJAcor2020TokenService.createToken(bSession,viewBean.getIdPrononce(),viewBean.getNoAVSAssure());
+    String token = IJAcor2020TokenService.createTokenCalcul(bSession,viewBean.getIdPrononce(),viewBean.getNoAVSAssure());
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
-<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>
-        shell.Open "<%=adresseWebAcor%>"
-<% } else { %>
-        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
-<% } %>
-
+        Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
+        if fileSystemObj.FileExists("<%=startNavigateurAcorCmd%>") Then
+            shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+        Else
+            shell.Open "<%=adresseWebAcor%>"
+        End If
 <%}%>
 </script>
-
-
-
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>

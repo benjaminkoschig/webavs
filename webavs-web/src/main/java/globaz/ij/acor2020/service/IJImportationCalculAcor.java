@@ -8,7 +8,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.ij.acor2020.mapper.IJIJCalculeeMapper;
 import globaz.ij.acor2020.mapper.IJIJIndemniteJournaliereMapper;
-import globaz.ij.acor2020.mapper.IJPrestationMapper;
+import globaz.ij.acor2020.mapper.IJDecompteMapper;
+import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prononces.IJPrononce;
 
@@ -19,16 +20,20 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 class IJImportationCalculAcor {
     IJPrononce prononce;
+    IJBaseIndemnisation baseIndemnisation;
     BSession session;
     PRTiersWrapper tiers;
+
 
     void importCalculAcor(String idPrononce, FCalcul fCalcul) {
 
         try {
+
             loadSession();
             // Chargement des informations du prononcé correspondant à la demande de calcul Acor
             // dans WebAVS
-            loadPrononce(idPrononce, fCalcul.getTypeDem());
+            loadPrononce(idPrononce);
+
             if (prononce == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver le prononcé du calcul. ");
             }
@@ -40,6 +45,59 @@ class IJImportationCalculAcor {
             throw new CommonTechnicalException(e);
         }
 
+        // Récupère le NSS du FCalcul reçu d'ACOR
+        checkNssIntegrite(fCalcul);
+
+        // Mapping des données liées aux bases de calcul.
+        for (FCalcul.Cycle cycle :
+                fCalcul.getCycle()) {
+
+            for (FCalcul.Cycle.BasesCalcul baseCalcul :
+                    cycle.getBasesCalcul()) {
+                IJIJCalculee ijCalculee = IJIJCalculeeMapper.baseCalculMapToIJIJCalculee(baseCalcul, tiers, prononce, session);
+                IJIJIndemniteJournaliereMapper.baseCalculEtIjMapToIndemniteJournaliere(baseCalcul, ijCalculee, session);
+            }
+        }
+    }
+
+    void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul) {
+
+        try {
+            loadSession();
+            // Chargement des informations du prononcé correspondant à la demande du decompte Acor
+            // dans WebAVS
+            loadPrononce(idPrononce);
+            if (prononce == null) {
+                throw new PRACORException("Réponse invalide : Impossible de retrouver le prononcé du decompte. ");
+            }
+            loadTiers();
+            if (tiers == null) {
+                throw new PRACORException("Réponse invalide : Impossible de retrouver le tiers  du decompte. ");
+            }
+            loadBaseIndemnisation(idBaseIndemnisation);
+            if(baseIndemnisation == null){
+                throw new PRACORException("Réponse invalide : Impossible de retrouver la base d'indemnisation du decompte. ");
+            }
+        } catch (Exception e) {
+            throw new CommonTechnicalException(e);
+        }
+        checkNssIntegrite(fCalcul);
+
+        // Mapping des données liées aux bases de calcul.
+        for (FCalcul.Cycle cycle :
+                fCalcul.getCycle()) {
+
+            for (FCalcul.Cycle.BasesCalcul baseCalcul :
+                    cycle.getBasesCalcul()) {
+                IJIJCalculee ijCalculee = IJIJCalculeeMapper.baseCalculMapToIJIJCalculee(baseCalcul, tiers, prononce, session);
+                IJIJIndemniteJournaliereMapper.baseCalculEtIjMapToIndemniteJournaliere(baseCalcul, ijCalculee, session);
+                // Mapping liés aux prestations
+                IJDecompteMapper.baseCalculDecompteMapToIJPrestation(baseCalcul, ijCalculee.getId(), idBaseIndemnisation, session);
+            }
+        }
+    }
+
+    private void checkNssIntegrite(FCalcul fCalcul) {
         // Récupère le NSS du FCalcul reçu d'ACOR
         String nss = "";
         for (FCalcul.Assure assure :
@@ -57,26 +115,11 @@ class IJImportationCalculAcor {
         if (nss.equals(tiers.getNSS())) {
             throw new PRAcorDomaineException(session.getLabel("IMPORTATION_MAUVAIS_PRONONCE") + " (8)");
         }
-
-        // Mapping des données liées aux bases de calcul.
-        for (FCalcul.Cycle cycle :
-                fCalcul.getCycle()) {
-
-            for (FCalcul.Cycle.BasesCalcul baseCalcul :
-                    cycle.getBasesCalcul()) {
-                IJIJCalculee ijCalculee = IJIJCalculeeMapper.baseCalculMapToIJIJCalculee(baseCalcul, tiers, prononce, session);
-                IJIJIndemniteJournaliereMapper.baseCalculEtIjMapToIndemniteJournaliere(baseCalcul, ijCalculee, session);
-                // Mapping liés aux prestations
-                // TODO : Voir comment récupérer l'id de la base d'indemnisation depuis le webservice via le token.
-                String idBaseIndemnisation = "";
-                IJPrestationMapper.baseCalculDecompteMapToIJPrestation(baseCalcul, ijCalculee.getId(), idBaseIndemnisation, session);
-            }
-        }
     }
 
-    private void loadPrononce(String idPrononce, String csTypeIJ) throws Exception {
+    private void loadPrononce(String idPrononce) throws Exception {
         if ((prononce == null) & !JadeStringUtil.isIntegerEmpty(idPrononce)) {
-            prononce = IJPrononce.loadPrononce(session, null, idPrononce, csTypeIJ);
+            prononce = IJPrononce.loadPrononce(session, null, idPrononce, null);
         }
     }
 
@@ -89,6 +132,15 @@ class IJImportationCalculAcor {
     private void loadTiers() throws Exception {
         if(tiers == null) {
             tiers = prononce.loadDemande(null).loadTiers();
+        }
+    }
+
+    private void loadBaseIndemnisation(String idBaseIndemnisation) throws Exception {
+        if ((baseIndemnisation == null) && !JadeStringUtil.isIntegerEmpty(idBaseIndemnisation)) {
+            baseIndemnisation = new IJBaseIndemnisation();
+            baseIndemnisation.setISession(session);
+            baseIndemnisation.setIdBaseIndemisation(idBaseIndemnisation);
+            baseIndemnisation.retrieve();
         }
     }
 }

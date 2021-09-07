@@ -24,6 +24,7 @@ public class JacksonJsonProvider {
         MAPPER.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private JacksonJsonProvider() {}

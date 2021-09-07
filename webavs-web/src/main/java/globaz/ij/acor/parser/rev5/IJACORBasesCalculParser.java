@@ -644,7 +644,7 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
 
     /**
      * @param session
-     * @param ijCalculee
+     * @param idIJCalculee
      * @throws Exception
      */
     private static void creerIJIndemniteJournaliere(String idIJCalculee, BSession session, String reductionAi)
@@ -673,7 +673,6 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
     }
 
     /**
-     * @param indemniteJournaliere
      */
     private static IJIndemniteJournaliere creerIndemniteJournaliereSansType() {
         IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();

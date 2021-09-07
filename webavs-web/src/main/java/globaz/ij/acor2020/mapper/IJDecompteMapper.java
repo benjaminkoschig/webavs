@@ -11,7 +11,7 @@ import org.apache.axis.utils.StringUtils;
 
 import java.util.Optional;
 
-public final class IJPrestationMapper {
+public final class IJDecompteMapper {
 
     public static void baseCalculDecompteMapToIJPrestation(FCalcul.Cycle.BasesCalcul basesCalcul, String idIJCalculee, String idBaseIndemnisation, BSession session){
 

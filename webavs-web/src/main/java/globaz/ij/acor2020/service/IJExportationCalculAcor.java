@@ -1,14 +1,12 @@
 package globaz.ij.acor2020.service;
 
+import acor.rentes.xsd.common.BanqueAdresseType;
 import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.rentes.xsd.in.ij.BasesCalculIJ;
 import acor.rentes.xsd.in.ij.BasesCalculRevenusIJ;
 import acor.rentes.xsd.in.ij.BeneficiaireIJ;
 import acor.rentes.xsd.in.ij.IndemniteJournaliereIJ;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
@@ -96,12 +94,22 @@ class IJExportationCalculAcor {
 
         if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
             BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
+            BanqueAdresseType adresseBanque = new BanqueAdresseType();
+           beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
+           beneficiaireIJ.setActif(true);
+           beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
+           beneficiaireIJ.setGenre(0);
+           beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
+           beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
+           beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
+           beneficiaireIJ.setModifie(false);
             //        PeriodeIJType periodeIJType = new PeriodeIJType();
 //        periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
 //        periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
             indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
+            indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
         }
         return assureType;

@@ -35,8 +35,19 @@ public class IJAcor2020ApiRest {
      */
     @GET
     @Path(value = "/import/{idPrononce}")
-    public Response importDossier(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce) {
-        return Response.ok(this.ijAcor2020Service.createInHost(idPrononce)).build();
+    public Response importDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce) {
+        return Response.ok(this.ijAcor2020Service.createInHostCalcul(idPrononce)).build();
+    }
+
+    /**
+     * Web Service exposé pour récupérer les données d'un dossier de IJAI dans le cadre d'un calcul ACOR.
+     *
+     * @return le json ij-in.
+     */
+    @GET
+    @Path(value = "/decompte/import/{idPrononce}/{idBaseIndemnisation}")
+    public Response importDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, @PathParam("idBaseIndemnisation") String idBaseIndemnisation) {
+        return Response.ok(this.ijAcor2020Service.createInHostDecompte(idPrononce, idBaseIndemnisation)).build();
     }
 
     /**
@@ -50,11 +61,21 @@ public class IJAcor2020ApiRest {
      */
     @POST
     @Path("/export/{idPrononce}")
-    public Response exportDossier(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, FCalcul fCalcul) {
+    public Response exportDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, FCalcul fCalcul) {
         LOG.info("Exportation du dossier.");
 
         IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
         ijAcor2020Service.importCalculAcor(idPrononce, fCalcul);
+        return Response.ok("{}").build();
+    }
+
+    @GET
+    @Path(value = "/decompte/export/{idPrononce}/{idBaseIndemnisation}")
+    public Response exportDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, @PathParam("idBaseIndemnisation") String idBaseIndemnisation, FCalcul fCalcul){
+        LOG.info("Exportation du dossier.");
+
+        IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
+        ijAcor2020Service.importDecompteAcor(idPrononce, idBaseIndemnisation, fCalcul);
         return Response.ok().build();
     }
 }

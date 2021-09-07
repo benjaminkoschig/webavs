@@ -15,7 +15,19 @@ public class IJAcor2020Service {
 
     private static final JaxbHandler<InHostType> IN_HOST_TYPE_VALIDATEUR = createJaxbValidator();
 
-    public InHostType createInHost(String idPrononce) {
+    public InHostType createInHostCalcul(String idPrononce) {
+        IJExportationCalculAcor exporter = new IJExportationCalculAcor();
+        InHostType inHostType = exporter.createInHost(idPrononce);
+
+        if (IN_HOST_TYPE_VALIDATEUR != null && Debug.isEnvironnementInDebug()) {
+            List<MessageValidation> validate = IN_HOST_TYPE_VALIDATEUR.validate(inHostType);
+            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}",validationEvent.message()));
+        }
+
+        return inHostType;
+    }
+
+    public InHostType createInHostDecompte(String idPrononce, String idBaseIndemnisation) {
         IJExportationCalculAcor exporter = new IJExportationCalculAcor();
         InHostType inHostType = exporter.createInHost(idPrononce);
 
@@ -38,6 +50,11 @@ public class IJAcor2020Service {
     }
 
     public void importCalculAcor(String idPrononce, FCalcul fCalcul) {
+        IJImportationCalculAcor importer = new IJImportationCalculAcor();
+        importer.importCalculAcor(idPrononce, fCalcul);
+    }
+
+    public void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul){
         IJImportationCalculAcor importer = new IJImportationCalculAcor();
         importer.importCalculAcor(idPrononce, fCalcul);
     }
