@@ -232,8 +232,8 @@
 
 		'suppression de tous les fichiers du répertoire ACOR IN_HOST
 		fileSystemObj.DeleteFile "<%=filesToDelete%>"
-
-	<%
+		fielSystemObj.
+<%
     String startAcorCmd = viewBean.getStartAcorCmd(bSession);
     System.out.println("B.5 " + startAcorCmd);
     java.util.Map filesContent = viewBean.getFilesContent();
@@ -248,8 +248,9 @@
 %>
 
 			' création des nouveaux fichiers
-			Set file = fileSystemObj.CreateTextFile("<%=dossierInHost + fc.getFileName()%>", True)		
-			<%
+			Set file = fileSystemObj.CreateTextFile("<%=dossierInHost + fc.getFileName()%>", True)
+			Set file = fileSystemObj.get
+<%
     java.util.List contents = fc.getContents();
     for (int i = 0; i < contents.size(); i++) {
         String content = (String) contents.get(i);
@@ -274,15 +275,12 @@
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
-<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>
-
-        shell.Open "<%=adresseWebAcor%>"
-
-<%} else {%>
-
-        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
-
-<%}%>
+        Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
+        if fileSystemObj.FileExists("<%=startNavigateurAcorCmd%>") Then
+            shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+        Else
+            shell.Open "<%=adresseWebAcor%>"
+        End If
 <%}%>
 
 

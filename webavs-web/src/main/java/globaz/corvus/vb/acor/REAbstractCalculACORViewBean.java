@@ -175,16 +175,11 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     public String getStartNavigateurAcor(BSession session) {
         try {
-            String navigateur = PRACORConst.navigateurACOR(session);
-            if (new File(navigateur).exists()) {
-                return navigateur;
-            } else {
-                return StringUtils.EMPTY;
-            }
+            return PRACORConst.navigateurACOR(session);
         } catch (PRACORException e) {
             LOG.warn("Impossible de récupérer le navigateur ACOR.", e);
+            return StringUtils.EMPTY;
         }
-        return StringUtils.EMPTY;
     }
 
     public String getAdresseWebACOR(String askAction, String token) {
