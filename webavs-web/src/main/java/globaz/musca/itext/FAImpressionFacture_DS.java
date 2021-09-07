@@ -371,7 +371,8 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
         // version optimisée -> Suppression de ce contrôle : if
         if (FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME4DECSAL.equalsIgnoreCase(FAImpressionFacture_BVR_Doc
                 .getTemplateFilename(enteteFacture))) {
-            return getFieldValueForDecSal(jrField);
+            //return getFieldValueForDecSal(jrField);
+            return null;
 
         }
 
@@ -379,42 +380,93 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
         if (jrField.getName().equals("COL_ID")) {
             return new Integer(_index);
         }
-        if (jrField.getName().equals("COL_1")) {
-            if (enCours.size() > 1) {
-                for (int i = 1; i < enCours.size(); i++) {
-                    if (!((FAAfact) enCours.get(i - 1)).getMasseFacture().equals("")
-                            && !((FAAfact) enCours.get(i)).getMasseFacture().equals("")) {
-                        double masseClone = Double.parseDouble(JadeStringUtil.change(
-                                ((FAAfact) enCours.get(i - 1)).getMasseFacture(), "'", ""));
-                        double masse = Double.parseDouble(JadeStringUtil.change(
-                                ((FAAfact) enCours.get(i)).getMasseFacture(), "'", ""));
-                        if ((masseClone == masse) && passageAutorise) {
-                            afficherMasse = true;
-                        } else {
-                            afficherMasse = false;
-                            passageAutorise = false;
+        if (((FAAfact) enCours.get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION)
+                || ((FAAfact) enCours.get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION_INTERNE)) {
+            if (jrField.getName().equals("COL_1B")) {
+                if (enCours.size() > 1) {
+                    for (int i = 1; i < enCours.size(); i++) {
+                        if (!((FAAfact) enCours.get(i - 1)).getMasseFacture().equals("")
+                                && !((FAAfact) enCours.get(i)).getMasseFacture().equals("")) {
+                            double masseClone = Double.parseDouble(JadeStringUtil.change(
+                                    ((FAAfact) enCours.get(i - 1)).getMasseFacture(), "'", ""));
+                            double masse = Double.parseDouble(JadeStringUtil.change(
+                                    ((FAAfact) enCours.get(i)).getMasseFacture(), "'", ""));
+                            if ((masseClone == masse) && passageAutorise) {
+                                afficherMasse = true;
+                            } else {
+                                afficherMasse = false;
+                                passageAutorise = false;
+                            }
                         }
                     }
-                }
-                return ((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture.getISOLangueTiers());
-            } else if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getOrdreRegroupement())) {
-                if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture
-                        .getISOLangueTiers()))) {
                     return ((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture.getISOLangueTiers());
+                } else if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getOrdreRegroupement())) {
+                    if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture
+                            .getISOLangueTiers()))) {
+                        return ((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture.getISOLangueTiers());
+                    } else {
+                        if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelle())
+                                || !JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getLibelle())) {
+                            //return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+                            return ((FAAfact) enCours.get(0)).getLibelleRetourLigneSansModifEtatObject();
+                        } else {
+                            //return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                            return ((FAAfact) enCours.get(0)).getLibelleSurFactureSansModifEtatObjet(enteteFacture.getISOLangueTiers());
+                        }
+                    }
                 } else {
                     if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelle())
                             || !JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getLibelle())) {
-                        return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+                        //return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+                        return ((FAAfact) enCours.get(0)).getLibelleRetourLigneSansModifEtatObject();
                     } else {
-                        return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                        //return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                        return ((FAAfact) enCours.get(0)).getLibelleSurFactureSansModifEtatObjet(enteteFacture.getISOLangueTiers());
                     }
                 }
-            } else {
-                if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelle())
-                        || !JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getLibelle())) {
-                    return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+            }
+        } else {
+            if (jrField.getName().equals("COL_1")) {
+                if (enCours.size() > 1) {
+                    for (int i = 1; i < enCours.size(); i++) {
+                        if (!((FAAfact) enCours.get(i - 1)).getMasseFacture().equals("")
+                                && !((FAAfact) enCours.get(i)).getMasseFacture().equals("")) {
+                            double masseClone = Double.parseDouble(JadeStringUtil.change(
+                                    ((FAAfact) enCours.get(i - 1)).getMasseFacture(), "'", ""));
+                            double masse = Double.parseDouble(JadeStringUtil.change(
+                                    ((FAAfact) enCours.get(i)).getMasseFacture(), "'", ""));
+                            if ((masseClone == masse) && passageAutorise) {
+                                afficherMasse = true;
+                            } else {
+                                afficherMasse = false;
+                                passageAutorise = false;
+                            }
+                        }
+                    }
+                    return ((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture.getISOLangueTiers());
+                } else if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getOrdreRegroupement())) {
+                    if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture
+                            .getISOLangueTiers()))) {
+                        return ((FAAfact) enCours.get(0)).getLibelleOrdre(enteteFacture.getISOLangueTiers());
+                    } else {
+                        if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelle())
+                                || !JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getLibelle())) {
+                            //return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+                            return ((FAAfact) enCours.get(0)).getLibelleRetourLigneSansModifEtatObject();
+                        } else {
+                            //return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                            return ((FAAfact) enCours.get(0)).getLibelleSurFactureSansModifEtatObjet(enteteFacture.getISOLangueTiers());
+                        }
+                    }
                 } else {
-                    return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                    if (!JadeStringUtil.isEmpty(((FAAfact) enCours.get(0)).getLibelle())
+                            || !JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getLibelle())) {
+                        //return ((FAAfact) enCours.get(0)).getLibelleRetourLigne();
+                        return ((FAAfact) enCours.get(0)).getLibelleRetourLigneSansModifEtatObject();
+                    } else {
+                        //return ((FAAfact) enCours.get(0)).getLibelleSurFacture(enteteFacture.getISOLangueTiers());
+                        return ((FAAfact) enCours.get(0)).getLibelleSurFactureSansModifEtatObjet(enteteFacture.getISOLangueTiers());
+                    }
                 }
             }
         }
@@ -862,6 +914,10 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
 
     private Boolean isAfficheTaux() {
         return ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue() || ((app.afficheTauxParParlier()) && !Objects.isNull(((FAAfact) enCours.get(0)).getTauxFacture()));
+    }
+
+    public ArrayList<?> getEnCours() {
+        return enCours;
     }
 
 }

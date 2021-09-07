@@ -1461,6 +1461,19 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
     }
 
     /**
+     * @return
+     */
+    public String getLibelleRetourLigneSansModifEtatObject() {
+        String libelleLocal = libelle;
+        if (getLibelle().length() > FAAfact.LONGUEUR_MAX_LIBELLE) {
+            String retourLigne = getLibelle().substring(0, FAAfact.LONGUEUR_MAX_LIBELLE);
+            libelleLocal = getLibelle().substring(0, retourLigne.lastIndexOf(" ")) + "\n"
+                    + getLibelle().substring(retourLigne.lastIndexOf(" ") + 1);
+        }
+        return libelleLocal;
+    }
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 16:55:52)
      * 
      * @return String
@@ -1520,6 +1533,24 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
             }
         }
         return libelle;
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (29.04.2003 16:55:52)
+     *
+     * @return String
+     */
+    public String getLibelleRubriqueSansModifEtatObjet(String langue) {
+        String libelleLocal = libelle;
+        if (JadeStringUtil.isBlank(libelleLocal)) {
+            try {
+                FAApplication app = (FAApplication) getSession().getApplication();
+                libelleLocal = app.getLibelleRubrique(getSession(), getIdRubrique(), langue);
+            } catch (Exception e) {
+                JadeLogger.error(this, e);
+            }
+        }
+        return libelleLocal;
     }
 
     public String getLibelleSurFacture(String langue) {
@@ -1603,6 +1634,94 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
                     return this.getLibelleRubrique(langue);
                 } else {
                     return this.getLibelleRubrique(langue) + " " + anneeCotisation;
+                }
+            }
+        } else {
+            return libelle;
+        }
+    }
+
+    public String getLibelleSurFactureSansModifEtatObjet(String langue) {
+        String s = "";
+        if (JadeStringUtil.isBlank(libelle)) {
+            if (idTypeAfact.equals(FAAfact.CS_AFACT_COMPENSATION)) {
+                try {
+                    CACompteAnnexe compte = new CACompteAnnexe();
+                    compte.setSession(getSession());
+                    compte.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
+                    compte.setIdRole(getIdRoleDebiteurCompensation());
+                    compte.setIdExterneRole(getIdExterneDebiteurCompensation());
+                    compte.retrieve();
+
+                    CASectionManager secMana = new CASectionManager();
+                    secMana.setSession(getSession());
+                    secMana.setForIdExterne(getIdExterneFactureCompensation());
+                    secMana.setForIdCompteAnnexe(compte.getIdCompteAnnexe());
+                    secMana.find();
+
+                    if (secMana.size() > 0) {
+                        CASection section = (CASection) secMana.getFirstEntity();
+                        if ((CAUtil.isSoldeSectionLessOrEqualTaxes(section.getSolde(), section.getTaxes()))
+                                && !JadeStringUtil.isIntegerEmpty(section.getSolde())) {
+                            if (JadeStringUtil.isIntegerEmpty(getIdExterneFactureCompensation())) {
+                                s = getSession().getApplication().getLabel("FACTAXESOMMATION", getISOLangueTiers());
+                            } else {
+                                s = getSession().getApplication().getLabel("FACTAXESOMMATION", getISOLangueTiers())
+                                        + " - " + getIdExterneFactureCompensation() + " "
+                                        + section.getDescription(getISOLangueTiers());
+                            }
+                        } else if ((section.getIdModeCompensation().equals(APISection.MODE_REPORT)
+                                || section.getIdModeCompensation().equals(APISection.MODE_COMP_COMPLEMENTAIRE)
+                                || section.getIdModeCompensation().equals(APISection.MODE_COMP_CONT_EMPLOYEUR)
+                                || section.getIdModeCompensation().equals(APISection.MODE_COMP_COT_PERS) || section
+                                .getIdModeCompensation().equals(APISection.MODE_COMP_DEC_FINAL))
+                                && !JadeStringUtil.isEmpty(getIdExterneFactureCompensation())) {
+                            if (JadeStringUtil.isIntegerEmpty(getIdExterneFactureCompensation())) {
+                                s = getSession().getApplication().getLabel("FACREPORT", langue);
+                            } else {
+                                s = getSession().getApplication().getLabel("FACREPORT", langue) + " - "
+                                        + getIdExterneFactureCompensation() + " " + section.getDescription(langue);
+                            }
+                        } else {
+                            if (JadeStringUtil.isIntegerEmpty(getIdExterneFactureCompensation())) {
+                                s = this.getLibelleRubriqueSansModifEtatObjet(langue);
+                            } else if (section.getCompteAnnexe().getIdExterneRole().equals(getIdExterneRole())) {
+                                s = this.getLibelleRubriqueSansModifEtatObjet(langue) + " - " + getIdExterneFactureCompensation() + " "
+                                        + section.getDescription(langue);
+                            } else {
+                                s = this.getLibelleRubriqueSansModifEtatObjet(langue) + " - " + getIdExterneFactureCompensation() + " "
+                                        + section.getDescription(langue) + " "
+                                        + section.getCompteAnnexe().getIdExterneRole();
+                            }
+                        }
+                        return s;
+                    }
+                    return s;
+                } catch (Exception e) {
+                    JadeLogger.error(this, e);
+                    return "";
+                }
+            } else if (idTypeAfact.equals(FAAfact.CS_AFACT_COMPENSATION_INTERNE)) {
+                try {
+                    if (JadeStringUtil.isIntegerEmpty(getIdExterneFactureCompensation())) {
+                        s = getSession().getApplication().getLabel("FACCOMPENINTERNE", getISOLangueTiers());
+                    } else if (getIdExterneDebiteurCompensation().equals(getIdExterneRole())) {
+                        s = getSession().getApplication().getLabel("FACCOMPENINTERNE", getISOLangueTiers()) + " - "
+                                + getIdExterneFactureCompensation();
+                    } else {
+                        s = getSession().getApplication().getLabel("FACCOMPENINTERNE", getISOLangueTiers()) + " - "
+                                + getIdExterneFactureCompensation() + " - " + getIdExterneDebiteurCompensation();
+                    }
+                    return s;
+                } catch (Exception e) {
+                    JadeLogger.error(this, e);
+                    return "";
+                }
+            } else {
+                if (JadeStringUtil.isIntegerEmpty(anneeCotisation)) {
+                    return this.getLibelleRubriqueSansModifEtatObjet(langue);
+                } else {
+                    return this.getLibelleRubriqueSansModifEtatObjet(langue) + " " + anneeCotisation;
                 }
             }
         } else {

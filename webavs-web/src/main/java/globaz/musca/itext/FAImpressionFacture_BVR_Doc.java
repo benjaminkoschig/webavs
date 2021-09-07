@@ -33,19 +33,18 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.musca.api.musca.PaireIdExterneEBill;
 import globaz.musca.application.FAApplication;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.musca.db.facturation.FAModulePassageManager;
-import globaz.musca.db.facturation.FAPassage;
+import globaz.musca.db.facturation.*;
 import globaz.musca.itext.impfactbvrutil.FAImpFactDataSourceProviderFactory;
 import globaz.musca.itext.impfactbvrutil.FAImpFactPropertiesProvider;
 import globaz.musca.itext.impfactbvrutil.IFAImpFactDataSourceProvider;
+import globaz.musca.process.FAGenericProcess;
 import globaz.musca.process.FAImpressionFactureProcess;
 import globaz.musca.process.FAImpressionFactureProcessSansLSVRemb;
 import globaz.musca.util.FAUtil;
 import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.api.APISection;
 import globaz.osiris.api.APISectionDescriptor;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.exceptions.CATechnicalException;
@@ -700,10 +699,17 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             return;
         }
 
-        //Extrait les lignes dans une liste
-        List data = buildLignes();
-        // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-        lignesParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);
+        // Prepare la map des lignes de factures eBill si propriété eBill est active et compte annexe de la facture inscrit à eBill
+        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+        if (isEBillActive) {
+            CACompteAnnexe compteAnnexe = FAGenericProcess.getCompteAnnexe(currentDataSource.getEnteteFacture(), getSession(), getTransaction());
+            if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+                //Extrait les lignes dans une liste
+                List data = buildLignes();
+                // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+                lignesParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);
+            }
+        }
 
         super.setDataSource(currentDataSource.getImpressionFacture_DS());
         super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, currentDataSource.getNbDeLigne());
@@ -786,7 +792,13 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             field.setName("COL_ID");
             Integer index = (Integer) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
 
-            field.setName("COL_1");
+            if (((FAAfact) faImpressionFacture_ds.getEnCours().get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION)
+                || ((FAAfact) faImpressionFacture_ds.getEnCours().get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION_INTERNE)) {
+                field.setName("COL_1B");
+            } else {
+                field.setName("COL_1");
+            }
+
             String libelleCourant = (String) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
 
             field.setName("COL_2");

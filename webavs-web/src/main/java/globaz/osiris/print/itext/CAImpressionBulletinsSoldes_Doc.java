@@ -514,8 +514,14 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 List data = _buildLignes();
 
                 if (isMuscaSource) {
-                    // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-                    lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
+                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBill est active et compte annexe de la facture inscrit à eBill
+                    boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+                    if (isEBillActive) {
+                        if (!JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+                            // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+                            lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
+                        }
+                    }
                     if (JadeStringUtil.isEmpty(getIdSection())) {
                         setIdSection(sectionCourante.getSection().getIdSection());
                         loadSection();
