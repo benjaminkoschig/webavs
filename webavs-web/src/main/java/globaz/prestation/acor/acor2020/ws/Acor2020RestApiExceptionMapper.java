@@ -51,26 +51,30 @@ public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
     }
 
     private void sendMailError(BSession session, ExceptionRequestInfo exceptionRequestInfo, String object) throws Exception {
-        BTransaction transaction = session.getCurrentThreadTransaction();
-        StringBuilder content = new StringBuilder();
-        if (session.hasErrors()) {
-            content.append("Errors in session : ");
-            ajoutSautDeLigne(content);
-            content.append(session.getErrors());
+        if(session!=null) {
+            BTransaction transaction = session.getCurrentThreadTransaction();
+            StringBuilder content = new StringBuilder();
+            if (session.hasErrors()) {
+                content.append("Errors in session : ");
+                ajoutSautDeLigne(content);
+                content.append(session.getErrors());
+                LOG.error("ERROR in session {}", session.getErrors());
+            }
+            if (transaction.hasErrors()) {
+                ajoutSautDeLigne(content);
+                content.append("Errors in transaction : ");
+                ajoutSautDeLigne(content);
+                content.append(transaction.getErrors());
+                LOG.error("ERROR in transaction {}", transaction.getErrors());
+            }
+            if (exceptionRequestInfo != null) {
+                ajoutSautDeLigne(content);
+                content.append("Exception information : ");
+                ajoutSautDeLigne(content);
+                content.append(exceptionRequestInfo);
+            }
+            JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content.toString(), null);
         }
-        if (transaction.hasErrors()) {
-            ajoutSautDeLigne(content);
-            content.append("Errors in transaction : ");
-            ajoutSautDeLigne(content);
-            content.append(transaction.getErrors());
-        }
-        if(exceptionRequestInfo != null) {
-            ajoutSautDeLigne(content);
-            content.append("Exception information : ");
-            ajoutSautDeLigne(content);
-            content.append(exceptionRequestInfo.toString());
-        }
-        JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content.toString(), null);
     }
 
     private void ajoutSautDeLigne(StringBuilder content) {
