@@ -10,6 +10,7 @@ import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
+import org.apache.axis.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -184,7 +185,7 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
             famille.getNavs().add(getNssMembre(PRAcorLienFamilial.getConjoint()));
         }
         famille.setDebut(Dates.toXMLGregorianCalendar(PRAcorLienFamilial.getDateMariage()));
-        if (PRAcorLienFamilial.getDateFin() != null) {
+        if (!StringUtils.isEmpty(PRAcorLienFamilial.getDateFin())) {
             short typeRelation = PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), PRAcorLienFamilial.getTypeLien()));
             if (typeRelation == 5 || typeRelation == 9) {
                 PeriodeJour separation = new PeriodeJour();

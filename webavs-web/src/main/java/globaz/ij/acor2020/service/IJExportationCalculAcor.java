@@ -1,5 +1,6 @@
 package globaz.ij.acor2020.service;
 
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
 import acor.rentes.xsd.common.BanqueAdresseType;
 import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.rentes.xsd.in.ij.BasesCalculIJ;
@@ -20,6 +21,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.domaine.membrefamille.SFMembresFamilleRequerant;
 import globaz.hera.external.SFSituationFamilialeFactory;
+import globaz.ij.application.IJApplication;
 import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJGrandeIJ;
 import globaz.ij.db.prononces.IJPetiteIJ;
@@ -39,13 +41,17 @@ import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
 import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.axis.utils.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import static globaz.cygnus.mappingXmlml.RFXmlmlMappingStatistiquesMontantsSASH.getSession;
 
+@Slf4j
 class IJExportationCalculAcor {
 
     InHostType createInHost(String idPrononce) {
@@ -76,7 +82,6 @@ class IJExportationCalculAcor {
 
             inHost.setDemande(toDemande(tiersRequerant, prononce, session));
             inHost.setVersionSchema("5.0");
-
             return inHost;
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
@@ -93,26 +98,77 @@ class IJExportationCalculAcor {
                                              final BSession session) {
 
         if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
-            // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
-//            BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
-//           beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
-//           beneficiaireIJ.setActif(true);
-//           beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
-//           beneficiaireIJ.setGenre(0);
-//           beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
-//           beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
-//           beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
-//           beneficiaireIJ.setModifie(false);
-//             PeriodeIJType periodeIJType = new PeriodeIJType();
-//             periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
-//             periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
-
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
             indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
+
+            // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
+//          BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
+//          beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
+//          beneficiaireIJ.setActif(true);
+//          beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
+//          beneficiaireIJ.setGenre(0);
+//          beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
+//          beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
+//          beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
+//          beneficiaireIJ.setModifie(false);
 //          indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
+            // TODO JJO 08.09.2021 : Contrôler si la gestion des période est nécessaire et adapter en conséquence
+//          PeriodeIJType periodeIJType = new PeriodeIJType();
+//          periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
+//          periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
+
+
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
+            if(!JadeStringUtil.isBlankOrZero(prononce.getMontantRenteEnCours())) {
+                assureType.getRenteOrdinaire10().add(mapToRenteOrdinaire10(prononce));
+            }
         }
         return assureType;
+    }
+
+    private RenteOrdinaire10Type mapToRenteOrdinaire10(IJPrononce prononce) {
+        RenteOrdinaire10Type rente = new RenteOrdinaire10Type();
+        rente.setAnneeEtat(Dates.toXMLGregorianCalendar("01.01." + prononce.getAnneeRenteEnCours()));
+        rente.setMontant(new BigDecimal(prononce.getMontantRenteEnCours()));
+        rente.setFraction(1f);
+        try {
+            rente.setGenre(Integer.valueOf(getSession().getApplication().getProperty(IJApplication.PROPERTY_GENRE_PRESTATION_ACOR)));
+        }catch(Exception e){
+            LOG.error("Impossible de trouver la property PROPERTY_GENRE_PRESTATION_ACOR", e);
+            rente.setGenre(50);
+        }
+        rente.setDebutDroit(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
+        OrdinaireBase10Type base = new OrdinaireBase10Type();
+        base.setAnneeNiveau(Dates.toXMLGregorianCalendar("01.01." + Dates.toDate(prononce.getDateDebutPrononce()).getYear()));
+        DonneesEchelleType echelleType = new DonneesEchelleType();
+        // 10. Echelle On la force à 44.
+        String echelle = prononce.getEchelle();
+        // si on ne donne pas d'echelle on force a 44
+        if (JadeStringUtil.isBlankOrZero(echelle)) {
+            echelleType.setSkala((short) 44);
+        } else {
+            echelleType.setSkala(Integer.valueOf(echelle).shortValue());
+        }
+        echelleType.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(0);
+        echelleType.setAnrechnungVor1973FehlenderBeitragsmonate(0);
+        echelleType.setBeitragsdauerVor1973(new BigDecimal(0));
+        echelleType.setBeitragsdauerAb1973(new BigDecimal(0));
+        echelleType.setBeitragsjahreJahrgang(0);
+        echelleType.setDureeEtrangereApres73(new BigDecimal(0));
+        echelleType.setDureeEtrangereAvant73(new BigDecimal(0));
+
+        DJE10BeschreibungType donneesRam = new DJE10BeschreibungType();
+        String ram = prononce.getRam();
+        if (!JadeStringUtil.isEmpty(ram)) {
+            ram = String.valueOf(new Float(ram).intValue());
+        }
+        donneesRam.setDurchschnittlichesJahreseinkommen(new BigDecimal(ram));
+        donneesRam.setBeitragsdauerDurchschnittlichesJahreseinkommen(new BigDecimal(0));
+        donneesRam.setGesplitteteEinkommen(false);
+        base.setDonneesRam(donneesRam);
+        base.setDonneesEchelle(echelleType);
+        rente.setBases(base);
+        return rente;
     }
 
     private BasesCalculCouranteIJ mapToBaseCalculCourante(final IJPrononce prononce, final BSession session) {
@@ -168,8 +224,9 @@ class IJExportationCalculAcor {
             garantieAA.setValue(Double.parseDouble(prononce.getMontantGarantiAA()));
             basesCalculCouranteIJ.setGarantieAA(garantieAA);
         }
-
-        basesCalculCouranteIJ.setCantonImpots(loadCode(session, prononce.getCsCantonImpositionSource()));
+        if(prononce.getSoumisImpotSource()) {
+            basesCalculCouranteIJ.setCantonImpots(Integer.parseInt(PRACORConst.csCantonToAcor(prononce.getCsCantonImpositionSource())));
+        }
         //Choix fait par défaut à false
         basesCalculCouranteIJ.setMesureRea8A(false);
         //Choix fait par défaut à false
