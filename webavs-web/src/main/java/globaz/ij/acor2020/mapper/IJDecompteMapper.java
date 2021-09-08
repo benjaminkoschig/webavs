@@ -4,6 +4,7 @@ import acor.ij.xsd.ij.out.Decompte;
 import acor.ij.xsd.ij.out.DecompteIJ;
 import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.util.Strings;
 import globaz.globall.db.BSession;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.prestation.acor.PRACORConst;
@@ -22,16 +23,16 @@ public final class IJDecompteMapper {
         if(decompte.isPresent()) {
             IJPrestation prestation = new IJPrestation();
 
-            prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(EntityUtils.toString(decompte.get().getDateDebut())));
-            prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(EntityUtils.toString(decompte.get().getDateFin())));
+            prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.get().getDateDebut())));
+            prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.get().getDateFin())));
             prestation.setIdIJCalculee(idIJCalculee);
             // TODO : Comment récupérer l'id de la base d'indemnisation ???
             if(!StringUtils.isEmpty(idBaseIndemnisation)) {
                 prestation.setIdBaseIndemnisation(idBaseIndemnisation);
             }
-            prestation.setNombreJoursExt(EntityUtils.toString(decompte.get().getNjoursExt()));
-            prestation.setNombreJoursInt(EntityUtils.toString(decompte.get().getNjoursInt()));
-            prestation.setMontantBrut(EntityUtils.toString(decompte.get().getMontantGlobal()));
+            prestation.setNombreJoursExt(Strings.toStringOrNull(decompte.get().getNjoursExt()));
+            prestation.setNombreJoursInt(Strings.toStringOrNull(decompte.get().getNjoursInt()));
+            prestation.setMontantBrut(Strings.toStringOrNull(decompte.get().getMontantGlobal()));
             setPrestationDataFromDecompteCategorie(prestation, decompte.get(), PRACORConst.CA_TYPE_MESURE_EXTERNE);
             setPrestationDataFromDecompteCategorie(prestation, decompte.get(), PRACORConst.CA_TYPE_MESURE_INTERNE);
         }
@@ -43,11 +44,11 @@ public final class IJDecompteMapper {
                         typeMesure.equals(String.valueOf(decompCat.getCategorie()))).findFirst();
         if(decompteCategorie.isPresent()) {
             if(PRACORConst.CA_TYPE_MESURE_EXTERNE.equals(typeMesure)) {
-                prestation.setMontantBrutExterne(EntityUtils.toString(decompteCategorie.get().getMontantCategorieTotal()));
-                prestation.setMontantJournalierExterne(EntityUtils.toString(decompteCategorie.get().getMontantCategorieJ()));
+                prestation.setMontantBrutExterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieTotal()));
+                prestation.setMontantJournalierExterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieJ()));
             }else if(PRACORConst.CA_TYPE_MESURE_INTERNE.equals(typeMesure)){
-                prestation.setMontantBrutInterne(EntityUtils.toString(decompteCategorie.get().getMontantCategorieTotal()));
-                prestation.setMontantJournalierInterne(EntityUtils.toString(decompteCategorie.get().getMontantCategorieJ()));
+                prestation.setMontantBrutInterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieTotal()));
+                prestation.setMontantJournalierInterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieJ()));
             }
         }
     }
