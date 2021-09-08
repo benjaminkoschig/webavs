@@ -42,8 +42,8 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                         .collect(Collectors.toList());
     }
 
-    private List<Ligne> creerLignes(ISFMembreFamilleRequerant conjoint) {
-        List<Ligne> lignesList = new ArrayList<>();
+    private List<PRAcorLienFamilial> creerLignes(ISFMembreFamilleRequerant conjoint) {
+        List<PRAcorLienFamilial> lignesList = new ArrayList<>();
 
         // Les relations sont ordonnées de la plus ancienne à la plus récente.
         ISFRelationFamiliale[] relationsAll = null;
@@ -93,30 +93,30 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
 
                 // BZ-5083
                 // On stocke le cas en cours
-                Ligne l = null;
+                PRAcorLienFamilial l = null;
 
                 // Le type de lien séparé de fait doit être considéré comme marié ou lpart_enregistré
                 if (ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE.equals(relation.getTypeLien())) {
                     if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
                                                                                         .getTypeRelation())) {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
+                        l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                       ISFSituationFamiliale.CS_TYPE_LIEN_MARIE, dateMariage);
                     } else {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
+                        l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                       relation.getTypeLien(), dateMariage);
                     }
                 } else if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT.equals(relation
                                                                                            .getTypeLien())) {
                     if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
                                                                                         .getTypeRelation())) {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
+                        l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                       ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE, dateMariage);
                     } else {
-                        l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
+                        l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                       relation.getTypeLien(), dateMariage);
                     }
                 } else {
-                    l = new Ligne(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
+                    l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                   relation.getTypeLien(), dateMariage);
                 }
 
@@ -169,35 +169,35 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
         return retValue;
     }
 
-    private FamilleType createFamille(Ligne ligne) {
+    private FamilleType createFamille(PRAcorLienFamilial PRAcorLienFamilial) {
         FamilleType famille = new FamilleType();
-        if ((ligne.getConjoint() instanceof ImplMembreFamilleRequerantWrapper)
+        if ((PRAcorLienFamilial.getConjoint() instanceof ImplMembreFamilleRequerantWrapper)
                 && REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT
-                .equals(ligne.getConjoint().getRelationAuRequerant())) {
+                .equals(PRAcorLienFamilial.getConjoint().getRelationAuRequerant())) {
 
-            ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) ligne
+            ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) PRAcorLienFamilial
                     .getConjoint();
             famille.getNavs().add(PRConverterUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
             famille.getNavs().add(getNssMembre(exConjointDuConjoint));
         } else {
             famille.getNavs().add(PRConverterUtils.formatNssToLong(this.getTiersRequerant().getNSS()));
-            famille.getNavs().add(getNssMembre(ligne.getConjoint()));
+            famille.getNavs().add(getNssMembre(PRAcorLienFamilial.getConjoint()));
         }
-        famille.setDebut(Dates.toXMLGregorianCalendar(ligne.getDateMariage()));
-        if (ligne.getDateFin() != null) {
-            short typeRelation = PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien()));
+        famille.setDebut(Dates.toXMLGregorianCalendar(PRAcorLienFamilial.getDateMariage()));
+        if (PRAcorLienFamilial.getDateFin() != null) {
+            short typeRelation = PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), PRAcorLienFamilial.getTypeLien()));
             if (typeRelation == 5 || typeRelation == 9) {
                 PeriodeJour separation = new PeriodeJour();
-                separation.setDebut(Dates.toXMLGregorianCalendar(ligne.getDateFin()));
+                separation.setDebut(Dates.toXMLGregorianCalendar(PRAcorLienFamilial.getDateFin()));
                 famille.getPeriodeSeparation().add(separation);
             } else {
                 FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
-                donnesFin.setFin(Dates.toXMLGregorianCalendar(ligne.getDateFin()));
+                donnesFin.setFin(Dates.toXMLGregorianCalendar(PRAcorLienFamilial.getDateFin()));
                 famille.setDonneesFin(donnesFin);
-                donnesFin.setType(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
+                donnesFin.setType(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), PRAcorLienFamilial.getTypeLien())));
             }
         }
-        famille.setLien(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), ligne.getTypeLien())));
+        famille.setLien(PRConverterUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), PRAcorLienFamilial.getTypeLien())));
         famille.setPensionAlimentaire(false);
         return famille;
     }

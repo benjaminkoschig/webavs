@@ -35,7 +35,7 @@ public class JaxbHandler<T> {
     /**
      * Constructeur pour faciliter l'utilisation de jaxb.
      *
-     * @param xsdFilePath Le chemain ou se trouve le fichier xsd.
+     * @param xsdFilePath Le chemin ou se trouve le fichier xsd.
      * @param clazz       La class qui représente l'objet qui va être sérialisé ou désérialisé.
      * @param function    Permet de ne pas avoir cette erreur:
      *                    impossible de sérialiser le type "T" en tant qu'élément car il lui manque une annotation @XmlRootElement

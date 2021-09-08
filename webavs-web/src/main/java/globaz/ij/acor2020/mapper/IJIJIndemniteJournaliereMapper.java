@@ -3,13 +3,12 @@ package globaz.ij.acor2020.mapper;
 import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.util.Strings;
 import globaz.globall.db.BSession;
 import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
-import org.apache.commons.lang.StringUtils;
 
 public final class IJIJIndemniteJournaliereMapper {
 
@@ -20,33 +19,26 @@ public final class IJIJIndemniteJournaliereMapper {
             for (FCalcul.Cycle.BasesCalcul.Ij ij :
                     basesCalcul.getIj()) {
                 IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
-                if (PRACORConst.CA_TYPE_MESURE_INTERNE.equals(toString(ij.getCategorie()))) {
+                if (PRACORConst.CA_TYPE_MESURE_INTERNE.equals(Strings.toStringOrNull(ij.getCategorie()))) {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
                 } else {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
                 }
-                indemniteJournaliere.setMontantSupplementaireReadaptation(toString(ij.getDeduction()));
-                indemniteJournaliere.setMontantGarantiAANonReduit(toString(basesCalcul.getGarantieAANonReduite()));
-                indemniteJournaliere.setIndemniteAvantReduction(toString(basesCalcul.getMontantBase()));
-                indemniteJournaliere.setDeductionRenteAI(toString(basesCalcul.getReductionAI()));
+                indemniteJournaliere.setMontantSupplementaireReadaptation(Strings.toStringOrNull(ij.getDeduction()));
+                indemniteJournaliere.setMontantGarantiAANonReduit(Strings.toStringOrNull(basesCalcul.getGarantieAANonReduite()));
+                indemniteJournaliere.setIndemniteAvantReduction(Strings.toStringOrNull(basesCalcul.getMontantBase()));
+                indemniteJournaliere.setDeductionRenteAI(Strings.toStringOrNull(basesCalcul.getReductionAI()));
 
-                indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(toString(basesCalcul.getReductionRevenu()));
-                indemniteJournaliere.setMontantJournalierIndemnite(toString(ij.getMontantIndemnite()));
-                indemniteJournaliere.setMontantGarantiAAReduit(toString(basesCalcul.getMontantGarantiAA()));
+                indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(Strings.toStringOrNull(basesCalcul.getReductionRevenu()));
+                indemniteJournaliere.setMontantJournalierIndemnite(Strings.toStringOrNull(ij.getMontantIndemnite()));
+                indemniteJournaliere.setMontantGarantiAAReduit(Strings.toStringOrNull(basesCalcul.getMontantGarantiAA()));
                 indemniteJournaliere.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
-                EntityUtils.saveEntity(indemniteJournaliere, session);
+                EntityUtils.addEntity(indemniteJournaliere, session);
             }
         // Sinon on créé des indemnités interne et externe à 0.-
         } else {
             creerIJIndemniteJournaliere(ijijCalculee.getIdIJCalculee(), String.valueOf(basesCalcul.getReductionAI()), session);
         }
-    }
-
-    private static String toString(Object toReturn){
-        if(toReturn == null){
-            return null;
-        }
-        return String.valueOf(toReturn);
     }
 
     private static void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, BSession session) {

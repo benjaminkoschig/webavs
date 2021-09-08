@@ -14,13 +14,12 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
     private static final IJAcor2020TokenService INSTANCE = new IJAcor2020TokenService();
     private static final String API_PATH = createApiPath(IJAcor2020ApiRest.class);
 
-    private static final String EXPORT_URL = API_PATH + "/export";
-    private static final String IMPORT_URL = API_PATH + "/import";
+    private static final String EXPORT_CALCUL_URL = API_PATH + "/calcul/export";
+    private static final String IMPORT_CALCUL_URL = API_PATH + "/calcul/import";
 
     private static final String EXPORT_DECOMPTE_URL =  API_PATH + "/decompte/export";
     private static final String IMPORT_DECOMPTE_URL =  API_PATH + "/decompte/import";
 
-    private static final String CALCUL_DOMAINE = API_PATH + "calcul/export";
 
     private IJAcor2020TokenService() {}
 
@@ -31,10 +30,8 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
     public static String createTokenCalcul(BSession bSession, final String idPrononce, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
 
-//        claims.put("exportIJUrl", CALCUL_DOMAINE + "/" + EXPORT_URL + "/" + idPrononce);
-//        claims.put("importUrl", CALCUL_DOMAINE + "/" + IMPORT_URL + "/" +  idPrononce);
-        claims.put("exportIJUrl", EXPORT_URL + "/" + idPrononce);
-        claims.put("importUrl", IMPORT_URL + "/" +  idPrononce);
+        claims.put("exportIJUrl", EXPORT_CALCUL_URL + "/" + idPrononce);
+        claims.put("importUrl", IMPORT_CALCUL_URL + "/" +  idPrononce);
         claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);

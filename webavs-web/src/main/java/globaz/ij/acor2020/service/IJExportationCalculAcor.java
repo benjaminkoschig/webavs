@@ -93,23 +93,23 @@ class IJExportationCalculAcor {
                                              final BSession session) {
 
         if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
-            BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
-            BanqueAdresseType adresseBanque = new BanqueAdresseType();
-           beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
-           beneficiaireIJ.setActif(true);
-           beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
-           beneficiaireIJ.setGenre(0);
-           beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
-           beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
-           beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
-           beneficiaireIJ.setModifie(false);
-            //        PeriodeIJType periodeIJType = new PeriodeIJType();
-//        periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
-//        periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
+            // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
+//            BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
+//           beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
+//           beneficiaireIJ.setActif(true);
+//           beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
+//           beneficiaireIJ.setGenre(0);
+//           beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
+//           beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
+//           beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
+//           beneficiaireIJ.setModifie(false);
+//             PeriodeIJType periodeIJType = new PeriodeIJType();
+//             periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
+//             periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
             indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
-            indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
+//          indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
         }
         return assureType;
@@ -117,9 +117,6 @@ class IJExportationCalculAcor {
 
     private BasesCalculCouranteIJ mapToBaseCalculCourante(final IJPrononce prononce, final BSession session) {
         BasesCalculCouranteIJ basesCalculCouranteIJ = new BasesCalculCouranteIJ();
-//        basesCalculCouranteIJ.setMetaInfo(new Meta.MetaInfo());
-//        basesCalculCouranteIJ.getMetaInfo().setId(prononce.getId());
-
         if (prononce.isGrandeIJ()) {
             IJGrandeIJ ijGrandeIJ = this.loadGrandeIJ(prononce.getIdPrononce());
             IJRevenu ijRevenu = loadRevenu(ijGrandeIJ);

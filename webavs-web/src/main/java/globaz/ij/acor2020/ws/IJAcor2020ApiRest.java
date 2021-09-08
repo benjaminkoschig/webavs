@@ -34,7 +34,7 @@ public class IJAcor2020ApiRest {
      * @return le json ij-in.
      */
     @GET
-    @Path(value = "/import/{idPrononce}")
+    @Path(value = "/calcul/import/{idPrononce}")
     public Response importDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce) {
         return Response.ok(this.ijAcor2020Service.createInHostCalcul(idPrononce)).build();
     }
@@ -60,12 +60,14 @@ public class IJAcor2020ApiRest {
      * @return OK si le json a été correctement traité. Sinon des messages d'erreurs.
      */
     @POST
-    @Path("/export/{idPrononce}")
+    @Path("/calcul/export/{idPrononce}")
     public Response exportDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, FCalcul fCalcul) {
         LOG.info("Exportation du dossier.");
 
         IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
         ijAcor2020Service.importCalculAcor(idPrononce, fCalcul);
+        // TODO : Retourne un objet json vide pour éviter une erreur sur la fermeture du flux
+        // TODO: Investiguer et solutionner le problème et remettre Response.ok().build()
         return Response.ok("{}").build();
     }
 
@@ -76,6 +78,6 @@ public class IJAcor2020ApiRest {
 
         IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
         ijAcor2020Service.importDecompteAcor(idPrononce, idBaseIndemnisation, fCalcul);
-        return Response.ok().build();
+        return Response.ok("{}").build();
     }
 }

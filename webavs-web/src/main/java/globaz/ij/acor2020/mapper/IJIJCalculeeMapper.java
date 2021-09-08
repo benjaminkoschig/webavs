@@ -2,6 +2,7 @@ package globaz.ij.acor2020.mapper;
 
 import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.util.Strings;
 import globaz.globall.db.BSession;
 import globaz.ij.api.prestations.IIJPetiteIJCalculee;
 import globaz.ij.api.prononces.IIJPrononce;
@@ -22,9 +23,9 @@ public class IJIJCalculeeMapper {
     public static IJIJCalculee baseCalculMapToIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, PRTiersWrapper tiers, IJPrononce prononce, BSession session) {
         IJIJCalculee ijijCalculee;
 
-        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(String.valueOf(basesCalcul.getGenre()))){
+        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapGrandeIJ(basesCalcul);
-        }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(String.valueOf(basesCalcul.getGenre()))){
+        }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapPetiteIJ(basesCalcul, prononce);
         }else{
             throw new PRAcorDomaineException("Réponse invalide : Type d' IJ non réconnu.");
@@ -45,40 +46,40 @@ public class IJIJCalculeeMapper {
 
         ijijCalculee.setNoAVS(tiers.getNSS());
         ijijCalculee.setOfficeAI(String.valueOf(basesCalcul.getOfficeAi()));
-        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(session, String.valueOf(basesCalcul.getGenreReadaptation())));
-        ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getDatePrononce())));
-        ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getDebutDroit())));
-        ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getFinDroit())));
+        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(session, Strings.toStringOrNull(basesCalcul.getGenreReadaptation())));
+        ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDatePrononce())));
+        ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
+        ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
         if(basesCalcul.getRevenuDeterminant() != null) {
-            ijijCalculee.setRevenuDeterminant(String.valueOf(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
-            ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(String.valueOf(basesCalcul.getRevenuDeterminant().getDate())));
+            ijijCalculee.setRevenuDeterminant(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
+            ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getDate())));
         }
 
-        ijijCalculee.setMontantBase(String.valueOf(basesCalcul.getMontantBase()));
+        ijijCalculee.setMontantBase(Strings.toStringOrNull(basesCalcul.getMontantBase()));
         if(basesCalcul.getRevenuReadaptation() != null) {
-            ijijCalculee.setRevenuJournalierReadaptation(String.valueOf(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
-            ijijCalculee.setDemiIJACBrut(String.valueOf(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
+            ijijCalculee.setRevenuJournalierReadaptation(Strings.toStringOrNull(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
+            ijijCalculee.setDemiIJACBrut(Strings.toStringOrNull(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
         }
-        ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(session, String.valueOf(basesCalcul.getStatut())));
+        ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(session, Strings.toStringOrNull(basesCalcul.getStatut())));
         // TODO : Valeur mise à jour dans fichier plat mais pas possible de la trouver dans le xsd
         // ijijCalculee.setPourcentDegreIncapaciteTravail(????);
 
-        ijijCalculee.setDifferenceRevenu(String.valueOf(basesCalcul.getDifferenceRevenu()));
+        ijijCalculee.setDifferenceRevenu(Strings.toStringOrNull(basesCalcul.getDifferenceRevenu()));
         ijijCalculee.setIdPrononce(prononce.getIdPrononce());
         if(basesCalcul.getGenre() == 1){
             ijijCalculee.setCsTypeIJ(IIJPrononce.CS_GRANDE_IJ);
         }else if(basesCalcul.getGenre() == 2){
             ijijCalculee.setCsTypeIJ(IIJPrononce.CS_PETITE_IJ);
         }
-        ijijCalculee.setNoRevision(String.valueOf(basesCalcul.getRevision()));
-        EntityUtils.saveEntity(ijijCalculee, session);
+        ijijCalculee.setNoRevision(Strings.toStringOrNull(basesCalcul.getRevision()));
+        EntityUtils.addEntity(ijijCalculee, session);
         return ijijCalculee;
     }
 
     private static IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJIJCalculee ijijCalculee;
         IJPetiteIJCalculee petiteIJ = new IJPetiteIJCalculee();
-        petiteIJ.setCsModeCalcul(String.valueOf(mapModeCalcul(basesCalcul, prononce)));
+        petiteIJ.setCsModeCalcul(Strings.toStringOrNull(mapModeCalcul(basesCalcul, prononce)));
         ijijCalculee = petiteIJ;
         return ijijCalculee;
     }
@@ -86,8 +87,8 @@ public class IJIJCalculeeMapper {
     private static IJIJCalculee createAndMapGrandeIJ(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJIJCalculee ijijCalculee;
         IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
-        grandeIJ.setMontantIndemniteEnfant(String.valueOf(basesCalcul.getMontantEnfants()));
-        grandeIJ.setNbEnfants(String.valueOf(basesCalcul.getNEnfants()));
+        grandeIJ.setMontantIndemniteEnfant(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
+        grandeIJ.setNbEnfants(Strings.toStringOrNull(basesCalcul.getNEnfants()));
         ijijCalculee = grandeIJ;
         return ijijCalculee;
     }

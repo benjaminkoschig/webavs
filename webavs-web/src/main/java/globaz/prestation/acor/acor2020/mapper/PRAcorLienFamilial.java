@@ -2,7 +2,7 @@ package globaz.prestation.acor.acor2020.mapper;
 
 import globaz.hera.api.ISFMembreFamilleRequerant;
 
-class Ligne {
+class PRAcorLienFamilial {
 
     // ~ Instance fields
     // --------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ class Ligne {
     // ~ Constructors
     // -----------------------------------------------------------------------------------------------
 
-    public Ligne(ISFMembreFamilleRequerant conjoint, boolean conjointHomme, String typeLien, String dateMariage) {
+    public PRAcorLienFamilial(ISFMembreFamilleRequerant conjoint, boolean conjointHomme, String typeLien, String dateMariage) {
         this.conjoint = conjoint;
         this.conjointHomme = conjointHomme;
         this.typeLien = typeLien;
