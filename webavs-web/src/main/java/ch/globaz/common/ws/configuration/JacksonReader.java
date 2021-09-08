@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 @Slf4j
 public class JacksonReader<T> implements MessageBodyReader<T> {
 
-    private ObjectMapper mapper = JacksonJsonProvider.getInstance();
+    private final ObjectMapper mapper = JacksonJsonProvider.getInstance();
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
