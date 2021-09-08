@@ -204,8 +204,6 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             if (pcAccordeeSearch.getSize() > 0) {
                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                     PCAccordee pcAccordee = (PCAccordee) d;
-                    revertCreancier(pcAccordee.getId());
-                    revertRetenues(pcAccordee.getSimpleDroit().getIdDroit(),pcAccordee.getSimpleVersionDroit().getNoVersion());
                     delete(pcAccordee);
                     idPca.add(pcAccordee.getId());
                 }
@@ -218,36 +216,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         }
     }
 
-    private void revertRetenues(String idDroit, String noVersionActuel) throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
-        PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
-        pcaRetenueSearch.setForIdDroit(idDroit);
-        int noVersion = Integer.parseInt(noVersionActuel);
-        if (noVersion > 1) {
-            noVersion--;
-        }
-        pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
-        pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
-        String dateProchainPaiement = null;
-        try {
-            dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
-            for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
-                PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
-                if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
-                    retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
-                    PegasusServiceLocator.getRetenueService().update(retenueAncienne);
-                }
-            }
-        } catch (CreancierException e) {
-            throw new JadePersistenceException("Service not available - " + e.getMessage());
-        } catch (PmtMensuelException e) {
-            throw new JadePersistenceException("Service not available - " + e.getMessage());
-        } catch (JadeApplicationException e) {
-            throw new JadePersistenceException("Service not available - " + e.getMessage());
-        }
-    }
 
-    private void revertCreancier(String id) {
-    }
 
 
     @Override

@@ -245,35 +245,6 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
             return UtilFortune.isRefusFortunePopUp(tupleRoot);
 
 
-//            Map<String, DonneesFinancieresContainer> mapDonneesFinancieres = DonneeFinanciereLoader
-//                    .loadByIdsVersionDroitAndGroupByIdVersionDroit(Sets.newHashSet(droit.getSimpleVersionDroit().getIdVersionDroit())
-//                            , DonneeFinanciereType.COMPTE_BANCAIRE_POSTAL, DonneeFinanciereType.TITRE
-//                            , DonneeFinanciereType.ASSURANCE_VIE, DonneeFinanciereType.CAPITAL_LPP, DonneeFinanciereType.BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE
-//                            , DonneeFinanciereType.BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE, DonneeFinanciereType.BIEN_IMMOBILIER_NON_HABITABLE,
-//                            DonneeFinanciereType.PRET_ENVERS_TIERS, DonneeFinanciereType.ASSURANCE_RENTE_VIAGERE, DonneeFinanciereType.NUMERAIRE,
-//                            DonneeFinanciereType.MARCHANDISE_STOCK, DonneeFinanciereType.BETAIL, DonneeFinanciereType.AUTRE_FORTUNE_MOBILIERE, DonneeFinanciereType.VEHICULE);
-//            Montant totalFortune = Montant.ZERO;
-//            for (DonneesFinancieresContainer donnee : mapDonneesFinancieres.values()) {
-//                totalFortune = totalFortune.add(donnee.getComptesBancairePostal().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getTitres().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getAssurancesVie().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getCapitalsLpp().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersServantHbitationPrincipale().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersNonPrincipale().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersNonHabitable().sumFortune());
-//
-//                totalFortune = totalFortune.add(donnee.getPretsEnversTiers().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getAssurancesRentesViageres().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getNumeraires().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getMarchandisesStocks().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getVehicules().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getBetails().sumFortune());
-//                totalFortune = totalFortune.add(donnee.getAutresFortunesMobilieres().sumFortune());
-//            }
-//            if(totalFortune.greater(new Montant(40000))){
-//                return true;
-//            }
-
         }
 
         return false;

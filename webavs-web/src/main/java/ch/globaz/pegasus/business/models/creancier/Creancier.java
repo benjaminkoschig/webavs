@@ -11,6 +11,10 @@ public class Creancier extends JadeComplexModel {
     private SimpleCreancier simpleCreancier = null;
     private TiersSimpleModel simpleTiers = null;
 
+    //NOT IN DB
+    private String csRole = "";
+    private boolean isCreatedForOther = false;
+
     // private SimpleDemande simpleDemande = null;
 
     public Creancier() {
@@ -70,4 +74,19 @@ public class Creancier extends JadeComplexModel {
         simpleCreancier.setSpy(spy);
     }
 
+    public String getCsRole() {
+        return csRole;
+    }
+
+    public void setCsRole(String csRole) {
+        this.csRole = csRole;
+    }
+
+    public boolean isCreatedForOther() {
+        return isCreatedForOther;
+    }
+
+    public void setCreatedForOther(boolean createdForOther) {
+        isCreatedForOther = createdForOther;
+    }
 }

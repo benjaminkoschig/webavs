@@ -42,7 +42,8 @@ public class StrategieSejourMoisPartiel extends StrategieCalculDepense {
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_PRIX_JOURNALIER, prixJournalier);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_FRAIS_NOURRITURE, fraisNourriture);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS, nbJours);
-
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_DATE_DEBUT, donnee.getDateDebutDonneeFinanciere());
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_DATE_FIN, donnee.getDateFinDonneeFinanciere());
         float montantSejourMoisPartiel = Float.max(prixJournalier - fraisNourriture, 0.0f) * nbJours * NB_MOIS;
 
         if(donnee.isRequerant()) {

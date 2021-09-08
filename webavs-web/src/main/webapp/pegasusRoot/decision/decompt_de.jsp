@@ -365,7 +365,7 @@ h2 {
 						<div class="ligneTotal">
 							<div class="row-fluid "> 
 								<div class="span8 sub-totalDesc" ><ct:FWLabel key="JSP_PC_DECOMPTE_L_TOTAL"/></div>
-								<div class="sub-total mnt span4">-<%= new FWCurrency(viewBean.getDecompte().getCreanciers().getTotal().toString()).toStringFormat()%></div>
+								<div class="sub-total mnt span4"><%=viewBean.formatTotal(new FWCurrency(viewBean.getDecompte().getCreanciers().getTotal().toString()))%></div>
 							</div>
 						</div>
 						</div>

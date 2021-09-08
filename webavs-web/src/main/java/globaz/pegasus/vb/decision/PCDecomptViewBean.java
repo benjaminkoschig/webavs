@@ -189,5 +189,11 @@ public class PCDecomptViewBean extends BJadePersistentObjectViewBean {
     public void update() throws Exception {
         throw new Exception("Méthode update non implémentée");
     }
+    public String formatTotal(FWCurrency fwCurrency){
+        if(fwCurrency.isPositive()){
+            return "-"+fwCurrency.toStringFormat();
+        }
+        return new FWCurrency(fwCurrency.getBigDecimalValue().abs().toPlainString()).toStringFormat();
+    }
 
 }
