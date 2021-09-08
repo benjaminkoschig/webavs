@@ -61,6 +61,7 @@ public class REAcor2020Parser {
 
 
     public static final int MONTHS_IN_YEAR = 12;
+    private static final int CODE_SPECIAL_AJOURNEMENT = 8;
 
     public static ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
         ReturnedValue returnedValue = new ReturnedValue();
@@ -273,6 +274,7 @@ public class REAcor2020Parser {
                                     // Traitement des prestations dues...
                                     Rente rente = eachPrestation.getRente();
                                     if (Objects.nonNull(rente)) {
+                                        boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
                                         returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
                                         Rente.Versement versement = rente.getVersement();
                                         // Si versement est non null, on est sur un $t (total)
@@ -294,14 +296,16 @@ public class REAcor2020Parser {
                                             }
                                             pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
                                             pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                            pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                                            if(nonAjournement) {
+                                                pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                                            }
                                             pd.setCsTypePaiement(null);
                                             pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
                                             pd.add(transaction);
                                         }
 
                                         for (Rente.Etat eachEtat : rente.getEtat()) {
-                                            REPrestationDue pd = importPrestationsDues(session, eachEtat);
+                                            REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
 
                                             pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
                                             pd.add(transaction);
@@ -574,7 +578,7 @@ public class REAcor2020Parser {
             //        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_AYANT_DROIT"))); $b24
             bc.setInvaliditePrecoce(BooleanUtils.toBoolean(baseCalcul.getInvalidite().getInvalidePrecoce()));
             //        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")), '.')); $b23
-            bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_MMAA_to_MMxAAAA(Objects.toString(baseCalcul.getInvalidite().getSurvenanceEvAss(), StringUtils.EMPTY)), '.'));
+            bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(baseCalcul.getInvalidite().getSurvenanceEvAss(), StringUtils.EMPTY)), '.'));
         }
         //        bc.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE")); $b11
         bc.setEchelleRente(Objects.toString(baseCalcul.getEchelle(), StringUtils.EMPTY));
@@ -922,7 +926,9 @@ public class REAcor2020Parser {
         }
 
 //        ra.setMontantPrestation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_PRESTATION")); $r12
-        ra.setMontantPrestation(Objects.toString(dernierEtat.getMontant(), StringUtils.EMPTY));
+        if(rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT)) {
+            ra.setMontantPrestation(Objects.toString(dernierEtat.getMontant(), StringUtils.EMPTY));
+        }
 
 //        ra.setReductionFauteGrave(REACORAbstractFlatFileParser.getField(line, fields, "REDUCTION_FAUTE_GRAVE")); $r15
         ra.setReductionFauteGrave(Objects.toString(rente.getFauteGrave(), StringUtils.EMPTY));
@@ -935,6 +941,7 @@ public class REAcor2020Parser {
         // TODO : supplément de veuvage non trouvé dans le xml -> on set la valeur à 0
         // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
         ra.setSupplementVeuvage("0");
+        //ra.setSupplementVeuvage(rente.isSupplementVeuvage(), StringUtils.EMPTY));
 
 //         ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
         ra.setPrescriptionAppliquee(getNombreAnneePrescriptionAppliquee(rente));
@@ -1023,7 +1030,8 @@ public class REAcor2020Parser {
      * @return
      */
     private static REPrestationDue importPrestationsDues(final BSession session,
-                                                         final Rente.Etat etat) {
+                                                         final Rente.Etat etat,
+                                                         final boolean isNonAjournement) {
         REPrestationDue pd = new REPrestationDue();
         pd.setSession(session);
         pd.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
@@ -1036,7 +1044,9 @@ public class REAcor2020Parser {
         pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getDebut(), StringUtils.EMPTY)));
         pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getFin(), StringUtils.EMPTY)));
         //        pd.setMontant(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT")); $p6
-        pd.setMontant(Objects.toString(etat.getMontant(), StringUtils.EMPTY));
+        if(isNonAjournement) {
+            pd.setMontant(Objects.toString(etat.getMontant(), StringUtils.EMPTY));
+        }
         //        pd.setRam(REACORAbstractFlatFileParser.getField(line, fields, "RAM")); $p7
         pd.setRam(Objects.toString(etat.getRam(), StringUtils.EMPTY));
         pd.setCsTypePaiement(null);
