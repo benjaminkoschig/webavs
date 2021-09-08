@@ -19,6 +19,8 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,6 +62,7 @@ import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlter;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlterManager;
 import ch.globaz.prestation.business.exceptions.models.DemandePrestationException;
+import org.springframework.cglib.core.Local;
 
 /**
  * @author ECO
@@ -339,11 +342,27 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
         if ((nb > 0) && isLastDemande(demande)
                 && !IPCDemandes.CS_REOUVERT.equals(demande.getSimpleDemande().getCsEtatDemande())
-                && !(isComptabilise(demande.getSimpleDemande()))) {
+                && !(isComptabilise(demande.getSimpleDemande())) && isDateFinDemandeFutur(demande.getSimpleDemande().getDateFin())) {
             return true;
         }
         return false;
 
+    }
+
+    /**
+     *
+     * Méthode qui vérifie que la de fin de demande est dans le futur,
+     * afin de ne pas rouvrir une demande dont la date de fin serait déjà dépassée
+     *
+     * @param dateFin
+     * @return
+     */
+    private boolean isDateFinDemandeFutur(String dateFin) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateFinDemande = LocalDate.parse("01."+dateFin, formatter);
+        dateFinDemande = dateFinDemande.withDayOfMonth(dateFinDemande.lengthOfMonth());
+        LocalDate now = LocalDate.now();
+        return now.isBefore(dateFinDemande);
     }
 
     private boolean isComptabilise(SimpleDemande demande) throws DroitException, PrestationException, LotException,

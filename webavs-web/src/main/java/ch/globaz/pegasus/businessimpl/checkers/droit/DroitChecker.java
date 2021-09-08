@@ -32,6 +32,11 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             JadeThread.logError(droit.getClass().getName(), "pegasus.droit.corriger.etat.integrity");
         }
 
+        // La demande du droit ne doit pas avoir de date de fin
+        if (isDemandeGetDatedeFin(droit)) {
+            JadeThread.logError(DroitChecker.class.getName(),"pegasus.droit.corriger.demandeNonReouverte.integrity");
+        }
+
         // Il ne doit pas exister de droit dans les etats ENREGISTRE, AU_CALCUL
         // ou CALCULE pour la demande PC du droit
         DroitSearch dSearch = new DroitSearch();
@@ -43,6 +48,10 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             JadeThread.logError(droit.getClass().getName(), "pegasus.droit.corriger.droitNonValideExistant.integrity");
         }
 
+    }
+
+    private static boolean isDemandeGetDatedeFin(Droit droit) {
+        return !droit.getDemande().getSimpleDemande().getDateFin().isEmpty();
     }
 
     public static void checkForCreateDroitMemembreFamille(MembreFamilleVO membreFamille) {
