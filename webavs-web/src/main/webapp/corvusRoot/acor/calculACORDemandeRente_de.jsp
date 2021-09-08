@@ -223,16 +223,15 @@
         dossierInHost += PRACORConst.DOSSIER_IN_HOST;
         System.out.println("B.3 " + dossierInHost);
 
-
         String filesToDelete = dossierInHost + "*";
         System.out.println("B.4 " + filesToDelete);
 %>
-		' activeX d'exploration du systeme de fichier
-		Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
+	' activeX d'exploration du systeme de fichier
+	Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
 
-		'suppression de tous les fichiers du répertoire ACOR IN_HOST
-		fileSystemObj.DeleteFile "<%=filesToDelete%>"
-		fielSystemObj.
+	'suppression de tous les fichiers du répertoire ACOR IN_HOST
+	fileSystemObj.DeleteFile "<%=filesToDelete%>"
+
 <%
     String startAcorCmd = viewBean.getStartAcorCmd(bSession);
     System.out.println("B.5 " + startAcorCmd);
@@ -246,19 +245,17 @@
 
         if (fc.getContents() != null) {
 %>
-
 			' création des nouveaux fichiers
 			Set file = fileSystemObj.CreateTextFile("<%=dossierInHost + fc.getFileName()%>", True)
-			Set file = fileSystemObj.get
 <%
     java.util.List contents = fc.getContents();
     for (int i = 0; i < contents.size(); i++) {
         String content = (String) contents.get(i);
 %>
-				file.WriteLine("<%=content%>")	
-			<%}%>
-			file.Close	
-		<%}%>				
+	            file.WriteLine("<%=content%>")
+	        <%}%>
+			file.Close
+	    <%}%>
    <%}%>
 
 	Dim objShell
@@ -282,11 +279,6 @@
             shell.Open "<%=adresseWebAcor%>"
         End If
 <%}%>
-
-
-
-
-
 
 </script>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -352,8 +344,8 @@
     </p>
 </td>
 </tr>
-<% }  else {
- if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>
+<% }  else { %>
+<%-- if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>--%>
 <tr>
     <td colspan="4">
         <h6>
@@ -382,9 +374,13 @@
         </p>
     </td>
 </tr>
-<%    } else { %>
+<%--<%    } else {  %>--%>
 <tr>
     <td colspan="4">
+        <br/>
+        <p>---------------------------------------------------------------------------------------------</p>
+        <p>ANCIEN ACOR</p>
+        <p>---------------------------------------------------------------------------------------------</p>
         <h6>
             <ct:FWLabel key="JSP_CADR_ETAPE_1"/>
         </h6>
@@ -411,7 +407,7 @@
         </p>
     </td>
 </tr>
-<% } %>
+<%--<% } %>--%>
 <% } %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <input type="button"
