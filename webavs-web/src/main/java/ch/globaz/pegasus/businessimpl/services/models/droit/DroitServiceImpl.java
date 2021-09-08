@@ -3,6 +3,7 @@ package ch.globaz.pegasus.businessimpl.services.models.droit;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.PrimeAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.SubsideAssuranceMaladieException;
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
@@ -14,6 +15,8 @@ import ch.globaz.pegasus.business.models.habitat.*;
 import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
 import ch.globaz.pegasus.business.models.revenusdepenses.*;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
@@ -37,12 +40,7 @@ import globaz.pegasus.utils.PCUserHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.hera.business.exceptions.HeraException;
@@ -167,6 +165,7 @@ import ch.globaz.pegasus.businessimpl.checkers.droit.DroitChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -4392,64 +4391,97 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                         droit.getSimpleDroit().getIdDroit());
                 PegasusImplServiceLocator.getSimpleDroitService().delete(droit.getSimpleDroit());
             }
-            PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
-            pcaRetenueSearch.setForIdDroit(droit.getId());
             int noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion());
             if (noVersion > 1) {
                 noVersion--;
             }
-            pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
-            pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
-            String dateProchainPaiement = null;
-            try {
-                dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
-                for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
-                    PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
-                    CreanceAccordeeSearch creancierSearch = new CreanceAccordeeSearch();
-                    creancierSearch.setForIdPCAccordee(retenueAncienne.getIdPCAccordee());
-                    creancierSearch.setForIsHome("true");
-                    int nbreResult = PegasusServiceLocator.getCreanceAccordeeService().count(creancierSearch);
-                    if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
-                        retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
-                        PegasusServiceLocator.getRetenueService().update(retenueAncienne);
-                    }
-
-                    if(nbreResult==0){
-                        SimpleCreancierHystoriqueSearch simpleCreancierHystoriqueSearch = new SimpleCreancierHystoriqueSearch();
-                        simpleCreancierHystoriqueSearch.setForIdPcAccordee(retenueAncienne.getIdPCAccordee());
-                        simpleCreancierHystoriqueSearch = PegasusImplServiceLocator.getSimpleCreancierHystoriqueService().search(simpleCreancierHystoriqueSearch);
-                        for(JadeAbstractModel model : simpleCreancierHystoriqueSearch.getSearchResults()){
-                            SimpleCreancierHystorique simpleCreancierHystorique = (SimpleCreancierHystorique) model;
-                            SimpleCreancier simpleCreancier = new SimpleCreancier();
-                            simpleCreancier.setId(simpleCreancierHystorique.getIdCreancier());
-                            simpleCreancier.setCsEtat(simpleCreancierHystorique.getCsEtat());
-                            simpleCreancier.setCsTypeCreance(simpleCreancierHystorique.getCsTypeCreance());
-                            simpleCreancier.setIdDemande(simpleCreancierHystorique.getIdDemande());
-                            simpleCreancier.setIdDomaineApplicatif(simpleCreancierHystorique.getIdDomaineApplicatif());
-                            simpleCreancier.setIdTiers(simpleCreancierHystorique.getIdTiers());
-                            simpleCreancier.setIdTiersAdressePaiement(simpleCreancierHystorique.getIdTiersAdressePaiement());
-                            simpleCreancier.setIdTiersRegroupement(simpleCreancierHystorique.getIdTiersRegroupement());
-                            simpleCreancier.setMontant(simpleCreancierHystorique.getMontantCreancier());
-                            simpleCreancier.setIsCalcule(false);
-                            simpleCreancier.setIsHome(true);
-                            simpleCreancier = PegasusImplServiceLocator.getSimpleCreancierService().create(simpleCreancier);
-                            SimpleCreanceAccordee simpleCreanceAccordee = new SimpleCreanceAccordee();
-                            simpleCreanceAccordee.setIdCreancier(simpleCreancier.getId());
-                            simpleCreanceAccordee.setIdPCAccordee(simpleCreancierHystorique.getIdPCAccordee());
-                            simpleCreanceAccordee.setMontant(simpleCreancierHystorique.getMontantCreancieAccordee());
-                            PegasusImplServiceLocator.getSimpleCreanceAccordeeService().create(simpleCreanceAccordee);
-                        }
-                    }
+            search.setForNoVersionDroit(String.valueOf(noVersion));
+            search = PegasusImplServiceLocator.getSimpleVersionDroitService().search(search);
+            revertRetenuesOldPca(droit);
+            for(JadeAbstractModel searchModel:  search.getSearchResults()){
+                SimpleVersionDroit simpleVersionDroit = (SimpleVersionDroit) searchModel;
+                try {
+                    revertCreancierOldPca(simpleVersionDroit.getIdVersionDroit());
+                } catch (Exception e) {
+                    throw new DroitException(e.getMessage());
                 }
-            } catch (PmtMensuelException e) {
-                throw new DroitException("Unable to delete PCAccordee", e);
-            } catch (JadeApplicationException e) {
-                throw new DroitException("Unable to delete PCAccordee", e);
             }
+
         }
 
-
         return droit;
+    }
+
+    private void revertCreancierOldPca(String idVersion) throws Exception {
+        SimplePCAccordeeSearch simplePCAccordeeSearch = new SimplePCAccordeeSearch();
+        simplePCAccordeeSearch.setForIdVersionDroit(idVersion);
+        List<SimplePCAccordee> pcas = PersistenceUtil.search(simplePCAccordeeSearch);
+        Map<String,String> mapCreancierDejaCreer = new LinkedHashMap<>();
+        for(SimplePCAccordee pca : pcas){
+            CreanceAccordeeSearch creancierSearch = new CreanceAccordeeSearch();
+            creancierSearch.setForIdPCAccordee(pca.getIdPCAccordee());
+            creancierSearch.setForIsHome("true");
+            int nbreResult = PegasusServiceLocator.getCreanceAccordeeService().count(creancierSearch);
+            if(nbreResult==0){
+                SimpleCreancierHystoriqueSearch simpleCreancierHystoriqueSearch = new SimpleCreancierHystoriqueSearch();
+                simpleCreancierHystoriqueSearch.setForIdPcAccordee(pca.getIdPCAccordee());
+                simpleCreancierHystoriqueSearch = PegasusImplServiceLocator.getSimpleCreancierHystoriqueService().search(simpleCreancierHystoriqueSearch);
+                for(JadeAbstractModel model : simpleCreancierHystoriqueSearch.getSearchResults()){
+                    SimpleCreancierHystorique simpleCreancierHystorique = (SimpleCreancierHystorique) model;
+                    if(!mapCreancierDejaCreer.containsKey(simpleCreancierHystorique.getIdCreancier())){
+                        SimpleCreancier simpleCreancier = new SimpleCreancier();
+                        simpleCreancier.setId(simpleCreancierHystorique.getIdCreancier());
+                        simpleCreancier.setCsEtat(simpleCreancierHystorique.getCsEtat());
+                        simpleCreancier.setCsTypeCreance(simpleCreancierHystorique.getCsTypeCreance());
+                        simpleCreancier.setIdDemande(simpleCreancierHystorique.getIdDemande());
+                        simpleCreancier.setIdDomaineApplicatif(simpleCreancierHystorique.getIdDomaineApplicatif());
+                        simpleCreancier.setIdTiers(simpleCreancierHystorique.getIdTiers());
+                        simpleCreancier.setIdTiersAdressePaiement(simpleCreancierHystorique.getIdTiersAdressePaiement());
+                        simpleCreancier.setIdTiersRegroupement(simpleCreancierHystorique.getIdTiersRegroupement());
+                        simpleCreancier.setMontant(simpleCreancierHystorique.getMontantCreancier());
+                        simpleCreancier.setIsCalcule(false);
+                        simpleCreancier.setIsHome(true);
+                        simpleCreancier = PegasusImplServiceLocator.getSimpleCreancierService().create(simpleCreancier);
+                        mapCreancierDejaCreer.put(simpleCreancier.getIdCreancier(),"");
+                    }
+                    SimpleCreanceAccordeeSearch simpleCreanceAccordeeSearch = new SimpleCreanceAccordeeSearch();
+                    simpleCreanceAccordeeSearch.setForIdPcAccordee(simpleCreancierHystorique.getIdPCAccordee());
+                    if(PegasusImplServiceLocator.getSimpleCreanceAccordeeService().count(simpleCreanceAccordeeSearch) ==0){
+                        SimpleCreanceAccordee simpleCreanceAccordee = new SimpleCreanceAccordee();
+                        simpleCreanceAccordee.setIdCreancier(simpleCreancierHystorique.getIdCreancier());
+                        simpleCreanceAccordee.setIdPCAccordee(simpleCreancierHystorique.getIdPCAccordee());
+                        simpleCreanceAccordee.setMontant(simpleCreancierHystorique.getMontantCreancieAccordee());
+                        PegasusImplServiceLocator.getSimpleCreanceAccordeeService().create(simpleCreanceAccordee);
+                    }
+                }
+            }
+        }
+    }
+
+    private void revertRetenuesOldPca(Droit droit) throws DroitException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
+        pcaRetenueSearch.setForIdDroit(droit.getId());
+        int noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion());
+        if (noVersion > 1) {
+            noVersion--;
+        }
+        pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
+        pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
+        String dateProchainPaiement = null;
+        try {
+            dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+            for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
+                PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
+                if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                    retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
+                    PegasusServiceLocator.getRetenueService().update(retenueAncienne);
+                }
+            }
+        } catch (PmtMensuelException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
+        } catch (JadeApplicationException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
+        }
     }
 
     @Override
