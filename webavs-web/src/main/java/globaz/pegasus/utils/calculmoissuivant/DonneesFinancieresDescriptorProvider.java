@@ -167,6 +167,8 @@ public class DonneesFinancieresDescriptorProvider {
                 "JSP_CMS_64007038_FRAIS_NOURRITURE", 2));
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("sejourMoisPartielNombreJour",
                 "JSP_CMS_64007038_NOMBRE_JOUR", 3));
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor("sejourMoisPartielVersementDirect",
+                "JSP_CMS_64007038_VERSEMENT_DIRECT", 4));
         try {
             descripteur = new DonneeFinanciereDescriptor(38, dfProperties, "MENU_OPTION_DROITS_HABITAT",
                     "MENU_ONGLET_DROITS_SEJOUR_MOIS_PARTIEL", IPCActions.ACTION_DROIT_SEJOUR_MOIS_PARTIEL_HOME,

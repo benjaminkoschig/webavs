@@ -313,7 +313,7 @@ public class CalculMoisSuivantBuilder {
                             .append(CalculMoisSuivantBuilder.getLabel(property.getI18nLabel()))
                             .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
 
-                    htmlStr.append(CalculMoisSuivantBuilder.generateValueField(property, fieldValue));
+                        htmlStr.append(CalculMoisSuivantBuilder.generateValueField(property, fieldValue));
                 }
             }
         }
@@ -546,10 +546,15 @@ public class CalculMoisSuivantBuilder {
                         .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
 
             } else {
+                if(value.equals("true")){
+                    returnHtml.append("<div class=\"span1\">").append(CalculMoisSuivantBuilder.getLabel("JSP_CMS_64007008_VERSEMENT_DIRECT_COCHE"))
+                            .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
+                }else{
+                    returnHtml.append("<div class=\"span1\"><span data-g-amount=\" \">").append(value)
+                            .append(CalculMoisSuivantBuilder.HTML_SPAN_CLOSE)
+                            .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
+                }
 
-                returnHtml.append("<div class=\"span1\"><span data-g-amount=\" \">").append(value)
-                        .append(CalculMoisSuivantBuilder.HTML_SPAN_CLOSE)
-                        .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
             }
         }
 

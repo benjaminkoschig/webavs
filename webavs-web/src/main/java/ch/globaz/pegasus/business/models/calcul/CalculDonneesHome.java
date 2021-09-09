@@ -43,6 +43,8 @@ public class CalculDonneesHome extends JadeComplexModel {
     private String csRoleFamille = null;
     private String idDemande = null;
     private String idTiersRegroupement = null;
+    //LOCAL
+    private boolean doitDiviserMontantPCMensuel;
 
     public String getCsCategorieArgentPoche() {
         return csCategorieArgentPoche;
@@ -310,4 +312,11 @@ public class CalculDonneesHome extends JadeComplexModel {
         this.idTiersRegroupement = idTiersRegroupement;
     }
 
+    public boolean isDoitDiviserMontantPCMensuel() {
+        return doitDiviserMontantPCMensuel;
+    }
+
+    public void setDoitDiviserMontantPCMensuel(boolean doitDiviserMontantPCMensuel) {
+        this.doitDiviserMontantPCMensuel = doitDiviserMontantPCMensuel;
+    }
 }
