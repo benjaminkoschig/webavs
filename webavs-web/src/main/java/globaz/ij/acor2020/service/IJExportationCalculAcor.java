@@ -1,18 +1,23 @@
 package globaz.ij.acor2020.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
-import acor.rentes.xsd.common.BanqueAdresseType;
 import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.rentes.xsd.in.ij.BasesCalculIJ;
 import acor.rentes.xsd.in.ij.BasesCalculRevenusIJ;
-import acor.rentes.xsd.in.ij.BeneficiaireIJ;
 import acor.rentes.xsd.in.ij.IndemniteJournaliereIJ;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import globaz.externe.IPRConstantesExternes;
 import globaz.externe.IPTConstantesExternes;
+import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -21,7 +26,10 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.domaine.membrefamille.SFMembresFamilleRequerant;
 import globaz.hera.external.SFSituationFamilialeFactory;
+import globaz.ij.acor2020.mapper.IJCalculDecompteIJMapper;
 import globaz.ij.application.IJApplication;
+import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
+import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJGrandeIJ;
 import globaz.ij.db.prononces.IJPetiteIJ;
@@ -42,22 +50,35 @@ import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.axis.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static globaz.cygnus.mappingXmlml.RFXmlmlMappingStatistiquesMontantsSASH.getSession;
+import static globaz.prestation.acor.acor2020.mapper.PRAcorMapper.loadCodeOrNull;
 
 @Slf4j
 class IJExportationCalculAcor {
+    private final BSession session;
 
-    InHostType createInHost(String idPrononce) {
+    IJExportationCalculAcor() {
+        session = BSessionUtil.getSessionFromThreadContext();
+    }
+
+    InHostType createInHostForCalcul(final String idPrononce) {
+        return this.createInHost(idPrononce, null);
+    }
+
+    InHostType createInHostForDecompte(final String idIJCalculee, final String idBaseIndemnisation) {
+        IJBaseIndemnisation ijBaseIndemnisation = this.loadBaseIndemnisation(idBaseIndemnisation);
+        IJIJCalculee ijijCalculee = loadIjCalculee(idIJCalculee);
+        IJCalculDecompteIJMapper ijCalculDecompteIJMapper = new IJCalculDecompteIJMapper(ijBaseIndemnisation, ijijCalculee);
+        return this.createInHost(ijijCalculee.getIdPrononce(), ijCalculDecompteIJMapper);
+    }
+
+    private InHostType createInHost(final String idPrononce, final IJCalculDecompteIJMapper ijCalculDecompteIJMapper) {
         try {
-            BSession session = BSessionUtil.getSessionFromThreadContext();
-
             IJPrononce prononce = IJPrononce.loadPrononce(session, null, idPrononce, null);
             PRDemande demande = prononce.loadDemande(null);
             PRTiersWrapper tiersRequerant = demande.loadTiers();
@@ -78,28 +99,31 @@ class IJExportationCalculAcor {
             InHostType inHost = new InHostType();
             inHost.getFamille().addAll(familleTypeMapper.map());
             inHost.getEnfant().addAll(enfantTypeMapper.map());
-            inHost.getAssure().addAll(toAssures(assureTypeAcorMapper, prononce, session));
+            inHost.getAssure().addAll(toAssures(assureTypeAcorMapper, prononce, ijCalculDecompteIJMapper, session));
 
             inHost.setDemande(toDemande(tiersRequerant, prononce, session));
             inHost.setVersionSchema("5.0");
+
             return inHost;
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
         }
     }
 
-    private List<AssureType> toAssures(final PRAcorAssureTypeMapper assureTypeAcorMapper, final IJPrononce prononce, final BSession session) {
-        return assureTypeAcorMapper.map((membreFamilleRequerant, assureType) -> completeMappingAssure(membreFamilleRequerant, prononce, assureType, session));
+    private List<AssureType> toAssures(final PRAcorAssureTypeMapper assureTypeAcorMapper,
+                                       final IJPrononce prononce,
+                                       final IJCalculDecompteIJMapper ijCalculDecompteIJMapper,
+                                       final BSession session) {
+        return assureTypeAcorMapper.map((membreFamilleRequerant, assureType) -> completeMappingAssure(membreFamilleRequerant, prononce, assureType,
+                                                                                                      ijCalculDecompteIJMapper, session));
     }
 
     private AssureType completeMappingAssure(final ISFMembreFamilleRequerant membreFamille,
                                              final IJPrononce prononce,
                                              final AssureType assureType,
-                                             final BSession session) {
+                                             final IJCalculDecompteIJMapper ijCalculDecompteIJMapper, final BSession session) {
 
         if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
-            IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
-            indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, session));
 
             // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
 //          BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
@@ -118,10 +142,14 @@ class IJExportationCalculAcor {
 //          periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
 
+            IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
+            indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce,ijCalculDecompteIJMapper, session));
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
+
             if(!JadeStringUtil.isBlankOrZero(prononce.getMontantRenteEnCours())) {
                 assureType.getRenteOrdinaire10().add(mapToRenteOrdinaire10(prononce));
             }
+
         }
         return assureType;
     }
@@ -132,7 +160,7 @@ class IJExportationCalculAcor {
         rente.setMontant(new BigDecimal(prononce.getMontantRenteEnCours()));
         rente.setFraction(1f);
         try {
-            rente.setGenre(Integer.valueOf(getSession().getApplication().getProperty(IJApplication.PROPERTY_GENRE_PRESTATION_ACOR)));
+            rente.setGenre(Integer.valueOf(this.session.getApplication().getProperty(IJApplication.PROPERTY_GENRE_PRESTATION_ACOR)));
         }catch(Exception e){
             LOG.error("Impossible de trouver la property PROPERTY_GENRE_PRESTATION_ACOR", e);
             rente.setGenre(50);
@@ -171,7 +199,7 @@ class IJExportationCalculAcor {
         return rente;
     }
 
-    private BasesCalculCouranteIJ mapToBaseCalculCourante(final IJPrononce prononce, final BSession session) {
+    private BasesCalculCouranteIJ mapToBaseCalculCourante(final IJPrononce prononce, final IJCalculDecompteIJMapper ijCalculDecompteIJMapper, final BSession session) {
         BasesCalculCouranteIJ basesCalculCouranteIJ = new BasesCalculCouranteIJ();
         if (prononce.isGrandeIJ()) {
             IJGrandeIJ ijGrandeIJ = this.loadGrandeIJ(prononce.getIdPrononce());
@@ -196,7 +224,7 @@ class IJExportationCalculAcor {
         //On n'utilise pas cette information car on est toujours en statut 1
         basesCalculCouranteIJ.setIdIJModifiee(null);
 
-        basesCalculCouranteIJ.setGenreReadaptation(loadCode(session, prononce.getCsGenre()));
+        basesCalculCouranteIJ.setGenreReadaptation(loadCodeOrNull(session, prononce.getCsGenre()));
         basesCalculCouranteIJ.setDebutBases(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
         basesCalculCouranteIJ.setFinBases(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
@@ -209,10 +237,10 @@ class IJExportationCalculAcor {
         }
         //TODO DMA 27.08.2021: à mapper
         //basesCalculCouranteIJ.setFormationFPI()
-        basesCalculCouranteIJ.setStatut(loadCode(session, prononce.getCsStatutProfessionnel()));
+        basesCalculCouranteIJ.setStatut(loadCodeOrNull(session, prononce.getCsStatutProfessionnel()));
         basesCalculCouranteIJ.setDemiIJAC(Double.parseDouble(prononce.getDemiIJAC()));
 
-        if(!JadeStringUtil.isBlankOrZero(prononce.getMontantGarantiAA())) {
+        if (!JadeStringUtil.isBlankOrZero(prononce.getMontantGarantiAA())) {
             BasesCalculIJ.GarantieAA garantieAA = new BasesCalculIJ.GarantieAA();
             if (prononce.getMontantGarantiAAReduit()) {
                 // R= réduite
@@ -231,6 +259,10 @@ class IJExportationCalculAcor {
         basesCalculCouranteIJ.setMesureRea8A(false);
         //Choix fait par défaut à false
         basesCalculCouranteIJ.setNouvelleMesure(false);
+
+        if (ijCalculDecompteIJMapper != null) {
+            basesCalculCouranteIJ.getBasesCalculDecomptes().add(ijCalculDecompteIJMapper.map());
+        }
         return basesCalculCouranteIJ;
     }
 
@@ -264,7 +296,7 @@ class IJExportationCalculAcor {
 
     private BasesCalculRevenusIJ mapToBaseCalculeRevenus(final IJSituationProfessionnelle situationProfessionnelle, final BSession session) {
         try {
-            IJSalaireFilter salaire = new IJSalaireFilter(getSession(), situationProfessionnelle);
+            IJSalaireFilter salaire = new IJSalaireFilter(this.session, situationProfessionnelle);
             BasesCalculRevenusIJ basesCalculRevenus = new BasesCalculRevenusIJ();
             basesCalculRevenus.setId(situationProfessionnelle.getId());
             basesCalculRevenus.setRevenu(Double.parseDouble(salaire.getMontantSalaireArrondi()));
@@ -285,12 +317,6 @@ class IJExportationCalculAcor {
         }
     }
 
-    private Integer loadCode(final BSession session, final String csGenre) {
-        if (JadeStringUtil.isBlankOrZero(csGenre)) {
-            return null;
-        }
-        return Integer.parseInt(session.getCode(csGenre));
-    }
 
     private DemandeType toDemande(PRTiersWrapper tiersRequerant, IJPrononce prononce, BSession session) {
         PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(session);
@@ -325,21 +351,9 @@ class IJExportationCalculAcor {
         }
     }
 
-    private IJPetiteIJ loadPetiteIJ(String idPronnonce) {
-        IJPetiteIJ ijPetiteIJ = new IJPetiteIJ();
-        ijPetiteIJ.setSession(getSession());
-        ijPetiteIJ.setIdPrononce(idPronnonce);
-        try {
-            ijPetiteIJ.retrieve();
-            return ijPetiteIJ;
-        } catch (Exception e) {
-            throw new CommonTechnicalException("Impossible to load the ijPetiteIJ with this id:" + idPronnonce, e);
-        }
-    }
-
     private List<IJSituationProfessionnelle> loadSituationProfessionelle(String idPronnonce) {
         IJSituationProfessionnelleManager mgr = new IJSituationProfessionnelleManager();
-        mgr.setISession(getSession());
+        mgr.setISession(this.session);
         mgr.setForIdPrononce(idPronnonce);
         try {
             mgr.find(BManager.SIZE_NOLIMIT);
@@ -349,15 +363,31 @@ class IJExportationCalculAcor {
         }
     }
 
+    private IJPetiteIJ loadPetiteIJ(String idPronnonce) {
+        return this.entityLoader(IJPetiteIJ.class, idPronnonce);
+    }
+
     private IJGrandeIJ loadGrandeIJ(String idPronnonce) {
-        IJGrandeIJ grandeIJ = new IJGrandeIJ();
-        grandeIJ.setSession(getSession());
-        grandeIJ.setIdPrononce(idPronnonce);
+        return this.entityLoader(IJGrandeIJ.class, idPronnonce);
+    }
+
+    private IJBaseIndemnisation loadBaseIndemnisation(String idBaseIndemnisation) {
+        return this.entityLoader(IJBaseIndemnisation.class, idBaseIndemnisation);
+    }
+
+    private IJIJCalculee loadIjCalculee(final String idIJCalculee) {
+        return this.entityLoader(IJIJCalculee.class, idIJCalculee);
+    }
+
+    private <T extends BEntity> T entityLoader(Class<T> entityClass, final String id) {
         try {
-            grandeIJ.retrieve();
-            return grandeIJ;
+            T entity = entityClass.newInstance();
+            entity.setSession(session);
+            entity.setId(id);
+            entity.retrieve();
+            return entity;
         } catch (Exception e) {
-            throw new CommonTechnicalException("Impossible to load the grandeIJ with this id:" + idPronnonce, e);
+            throw new CommonTechnicalException("Impossible to load the " + entityClass.getSimpleName() + " with this id:" + id, e);
         }
     }
 }

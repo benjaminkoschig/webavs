@@ -12,12 +12,13 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 	idEcran="PIJ3005";
 	globaz.ij.vb.acor.IJCalculACORDecompteViewBean viewBean = (globaz.ij.vb.acor.IJCalculACORDecompteViewBean) session.getAttribute("viewBean");
 	BSession bSession = (BSession) controller.getSession();
-	selectedIdValue = viewBean.getIdBaseIndemnisation();	
-	
+	selectedIdValue = viewBean.getIdBaseIndemnisation();
+    IJIJCalculee ijijCalculee = viewBean.loadIJCalculee();
 	bButtonNew = false;
 	bButtonUpdate = false;
 	bButtonDelete = false;
 	bButtonValidate = false;
+
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -31,6 +32,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
 <%@ page import="globaz.corvus.servlet.IREActions" %>
 <%@ page import="globaz.ij.servlet.IIJActions" %>
+<%@ page import="globaz.ij.db.prestations.IJIJCalculee" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -190,7 +192,10 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <% } else if (viewBean.isAcorV4Web()) { %>
 <%
 	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-	String token = IJAcor2020TokenService.createTokenDecompte(bSession, viewBean.loadPrononce().getIdPrononce(), viewBean.getIdBaseIndemnisation(), viewBean.getNoAVSAssure());
+	String token = IJAcor2020TokenService.createTokenDecompte(bSession,
+                                                              ijijCalculee,
+                                                              viewBean.getIdBaseIndemnisation(),
+                                                              viewBean.getNoAVSAssure());
 	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
@@ -243,14 +248,14 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 						
 						<TR>
 							<TD><LABEL for="numeroIJCalculee"><ct:FWLabel key="JSP_CAD_D_NO_IJ_CALCULEE"/></LABEL></TD>
-							<TD><INPUT type="text" name="noIJCalculee" value="<%=viewBean.loadIJCalculee().getIdIJCalculee()%>" class="numero disabled" readonly></TD>
+							<TD><INPUT type="text" name="noIJCalculee" value="<%=ijijCalculee.getIdIJCalculee()%>" class="numero disabled" readonly></TD>
 							<TD>
 								<LABEL for="dateDebutIJCalculee"><ct:FWLabel key="JSP_DU"/></LABEL>&nbsp;
-								<INPUT type="text" name="dateDebutIJCalculee" value="<%=viewBean.loadIJCalculee().getDateDebutDroit()%>" class="date disabled" readonly>
+								<INPUT type="text" name="dateDebutIJCalculee" value="<%=ijijCalculee.getDateDebutDroit()%>" class="date disabled" readonly>
 							</TD>
 							<TD>
 								<LABEL for="dateFinIJCalculee"><ct:FWLabel key="JSP_AU"/></LABEL>&nbsp;
-								<INPUT type="text" name="dateFinIJCalculee" value="<%=viewBean.loadIJCalculee().getDateFinDroit()%>" class="date disabled" readonly>
+								<INPUT type="text" name="dateFinIJCalculee" value="<%=ijijCalculee.getDateFinDroit()%>" class="date disabled" readonly>
     </TD>
 </TR>
 

@@ -12,7 +12,7 @@ import globaz.prestation.acor.PRACORException;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author vre
  */
 public class IJAttestationsJoursAdapter {
@@ -38,12 +38,12 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * Crée une nouvelle instance de la classe IJAttestationsJoursAdapter.
-     * 
+     *
      * @param base
      *            DOCUMENT ME!
      * @param ij
      *            DOCUMENT ME!
-     * 
+     *
      * @throws PRACORException
      *             DOCUMENT ME!
      */
@@ -76,14 +76,12 @@ public class IJAttestationsJoursAdapter {
                 facteur = (joursMois - decalageDebut - decalageFin) / ((double) joursMois);
 
                 if (!JadeStringUtil.isIntegerEmpty(base.getNombreJoursInterruption())) {
-                    setNbJoursInterruption(String.valueOf((int) Math.round(facteur
-                            * Integer.parseInt(base.getNombreJoursInterruption()))));
+                    setNbJoursInterruption(String.valueOf((int) Math.round(facteur * toIntOrZero(base.getNombreJoursInterruption()))));
                 }
             } else {
                 if (!JadeStringUtil.isIntegerEmpty(base.getNombreJoursInterruption())) {
-                    setNbJoursInterruption(String.valueOf(Integer.parseInt(base.getNombreJoursInterruption())));
+                    setNbJoursInterruption(String.valueOf(toIntOrZero(base.getNombreJoursInterruption())));
                 }
-
             }
 
             if (JadeStringUtil.isIntegerEmpty(base.getNombreJoursExterne())
@@ -109,7 +107,7 @@ public class IJAttestationsJoursAdapter {
                     if (IIJBaseIndemnisation.IJ_CALENDAR_INTERNE.equals(String.valueOf(attestationsJours.charAt(i)))) {
                         ++nbrJoursInterne;
                     } else if (IIJBaseIndemnisation.IJ_CALENDAR_EXTERNE.equals(String.valueOf(attestationsJours
-                            .charAt(i)))) {
+                                                                                                      .charAt(i)))) {
                         ++nbrJoursExterne;
                     }
                 }
@@ -122,8 +120,9 @@ public class IJAttestationsJoursAdapter {
                 // c'est le nombre de jours qui a ete renseigne, on calcule au
                 // prorata
                 if ((decalageDebut > 0) || (decalageFin > 0)) {
-                    int joursExt = Integer.parseInt(base.getNombreJoursExterne());
-                    int joursInt = Integer.parseInt(base.getNombreJoursInterne());
+
+                    int joursExt = toIntOrZero(base.getNombreJoursExterne());
+                    int joursInt = toIntOrZero(base.getNombreJoursInterne());
 
                     if (!JadeStringUtil.isEmpty(base.getNombreJoursInterne())) {
                         joursInt = (int) Math.round(facteur * joursInt);
@@ -145,12 +144,19 @@ public class IJAttestationsJoursAdapter {
         }
     }
 
+    private int toIntOrZero(final String value) {
+        if (JadeStringUtil.isBlankOrZero(value)) {
+            return 0;
+        }
+        return Integer.parseInt(value);
+    }
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
     /**
      * getter pour l'attribut attestations jours.
-     * 
+     *
      * @return la valeur courante de l'attribut attestations jours
      */
     public String getAttestationsJours() {
@@ -159,7 +165,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * getter pour l'attribut date debut periode.
-     * 
+     *
      * @return la valeur courante de l'attribut date debut periode
      */
     public String getDateDebutPeriode() {
@@ -168,7 +174,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * getter pour l'attribut date fin periode.
-     * 
+     *
      * @return la valeur courante de l'attribut date fin periode
      */
     public String getDateFinPeriode() {
@@ -177,7 +183,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * getter pour l'attribut nb jours externes.
-     * 
+     *
      * @return la valeur courante de l'attribut nb jours externes
      */
     public String getNbJoursExternes() {
@@ -186,7 +192,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * getter pour l'attribut nb jours internes.
-     * 
+     *
      * @return la valeur courante de l'attribut nb jours internes
      */
     public String getNbJoursInternes() {
@@ -195,7 +201,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * getter pour l'attribut nb jours interruption.
-     * 
+     *
      * @return la valeur courante de l'attribut nb jours interruption
      */
     public String getNbJoursInterruption() {
@@ -211,7 +217,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut attestations jours.
-     * 
+     *
      * @param attestationsJours
      *            une nouvelle valeur pour cet attribut
      */
@@ -228,7 +234,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut date debut periode.
-     * 
+     *
      * @param dateDebutPeriode
      *            une nouvelle valeur pour cet attribut
      */
@@ -238,7 +244,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut date fin periode.
-     * 
+     *
      * @param dateFinPeriode
      *            une nouvelle valeur pour cet attribut
      */
@@ -248,7 +254,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut nb jours externes.
-     * 
+     *
      * @param nbJoursExternes
      *            une nouvelle valeur pour cet attribut
      */
@@ -258,7 +264,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut nb jours internes.
-     * 
+     *
      * @param nbJoursInternes
      *            une nouvelle valeur pour cet attribut
      */
@@ -268,7 +274,7 @@ public class IJAttestationsJoursAdapter {
 
     /**
      * setter pour l'attribut nb jours interruption.
-     * 
+     *
      * @param nbJoursInterruption
      *            une nouvelle valeur pour cet attribut
      */

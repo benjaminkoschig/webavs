@@ -17,23 +17,23 @@ public class IJAcor2020Service {
 
     public InHostType createInHostCalcul(String idPrononce) {
         IJExportationCalculAcor exporter = new IJExportationCalculAcor();
-        InHostType inHostType = exporter.createInHost(idPrononce);
+        InHostType inHostType = exporter.createInHostForCalcul(idPrononce);
 
         if (IN_HOST_TYPE_VALIDATEUR != null && Debug.isEnvironnementInDebug()) {
             List<MessageValidation> validate = IN_HOST_TYPE_VALIDATEUR.validate(inHostType);
-            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}",validationEvent.message()));
+            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}", validationEvent.message()));
         }
 
         return inHostType;
     }
 
-    public InHostType createInHostDecompte(String idPrononce, String idBaseIndemnisation) {
+    public InHostType createInHostDecompte(String idIJCalculee,final String idBaseIndemnisation) {
         IJExportationCalculAcor exporter = new IJExportationCalculAcor();
-        InHostType inHostType = exporter.createInHost(idPrononce);
+        InHostType inHostType = exporter.createInHostForDecompte(idIJCalculee,idBaseIndemnisation);
 
         if (IN_HOST_TYPE_VALIDATEUR != null && Debug.isEnvironnementInDebug()) {
             List<MessageValidation> validate = IN_HOST_TYPE_VALIDATEUR.validate(inHostType);
-            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}",validationEvent.message()));
+            validate.forEach(validationEvent -> LOG.warn("Acor 4 InHostType object not valid: {}", validationEvent.message()));
         }
 
         return inHostType;
@@ -41,10 +41,8 @@ public class IJAcor2020Service {
 
     private static JaxbHandler<InHostType> createJaxbValidator() {
         if (Debug.isEnvironnementInDebug()) {
-            return JaxbHandler.build(
-                    "/xsd/acorRentes/xsd/acor-rentes-in-host.xsd",
-                    InHostType.class,
-                    inHost -> new ObjectFactory().createInHost(inHost));
+            return JaxbHandler.build("/xsd/acorRentes/xsd/acor-rentes-in-host.xsd", InHostType.class,
+                                     inHost -> new ObjectFactory().createInHost(inHost));
         }
         return null;
     }
@@ -54,8 +52,10 @@ public class IJAcor2020Service {
         importer.importCalculAcor(idPrononce, fCalcul);
     }
 
-    public void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul){
+    public void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul) {
         IJImportationCalculAcor importer = new IJImportationCalculAcor();
         importer.importDecompteAcor(idPrononce, idBaseIndemnisation, fCalcul);
     }
+
+
 }

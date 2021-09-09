@@ -43,7 +43,7 @@ public class JaxbHandler<T> {
      *
      * @return
      */
-    public static <T> JaxbHandler<T> build(String xsdFilePath, Class<T> clazz, Function<T, JAXBElement<T>> function) {
+    public static <T> JaxbHandler<T> build(String xsdFilePath,Class<T> clazz, Function<T, JAXBElement<T>> function) {
         return new JaxbHandler<>(xsdFilePath, clazz, function);
     }
 

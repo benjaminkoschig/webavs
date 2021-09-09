@@ -320,4 +320,10 @@ public class PRAcorMapper {
         return tiers.getAdresseAsDataSource(typeAdresse, domaineAdresse, JACalendar.todayJJsMMsAAAA(), true);
     }
 
+    public static Integer loadCodeOrNull(final BSession session, final String csGenre) {
+        if (JadeStringUtil.isBlankOrZero(csGenre)) {
+            return null;
+        }
+        return Integer.parseInt(session.getCode(csGenre));
+    }
 }

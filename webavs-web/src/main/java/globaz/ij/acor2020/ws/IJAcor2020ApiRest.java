@@ -45,9 +45,9 @@ public class IJAcor2020ApiRest {
      * @return le json ij-in.
      */
     @GET
-    @Path(value = "/decompte/import/{idPrononce}/{idBaseIndemnisation}")
-    public Response importDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, @PathParam("idBaseIndemnisation") String idBaseIndemnisation) {
-        return Response.ok(this.ijAcor2020Service.createInHostDecompte(idPrononce, idBaseIndemnisation)).build();
+    @Path(value = "/decompte/import/{idIJCalculee}/{idBaseIndemnisation}")
+    public Response importDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idIJCalculee") String idIJCalculee,  @PathParam("idBaseIndemnisation") String idBaseIndemnisation) {
+        return Response.ok(this.ijAcor2020Service.createInHostDecompte(idIJCalculee,idBaseIndemnisation)).build();
     }
 
     /**

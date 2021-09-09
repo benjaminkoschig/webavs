@@ -2,6 +2,7 @@ package globaz.ij.acor2020.ws.token;
 
 import globaz.globall.db.BSession;
 import globaz.ij.acor2020.ws.IJAcor2020ApiRest;
+import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.prestation.acor.acor2020.ws.Acor2020TokenServiceAbstract;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -37,11 +38,11 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
         return creatToken(claims, bSession);
     }
 
-    public static String createTokenDecompte(BSession bSession, final String idPrononce, final String idBaseIdemnisation, final String noAVSAssure) {
+    public static String createTokenDecompte(BSession bSession, final IJIJCalculee idIJCalculee, final String idBaseIdemnisation, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("exportIJUrl", EXPORT_DECOMPTE_URL + "/" +  idPrononce + "/" + idBaseIdemnisation);
-        claims.put("importUrl", IMPORT_DECOMPTE_URL+ "/" +  idPrononce + "/" + idBaseIdemnisation);
+        claims.put("exportIJUrl", EXPORT_DECOMPTE_URL + "/" +  idIJCalculee.getIdPrononce() + "/" + idBaseIdemnisation);
+        claims.put("importUrl", IMPORT_DECOMPTE_URL+ "/" +  idIJCalculee.getIdIJCalculee() + "/" + idBaseIdemnisation);
         claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);
