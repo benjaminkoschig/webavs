@@ -193,7 +193,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%
 	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
 	String token = IJAcor2020TokenService.createTokenDecompte(bSession,
-                                                              ijijCalculee,
+                                                              ijijCalculee.getIdIJCalculee(),
                                                               viewBean.getIdBaseIndemnisation(),
                                                               viewBean.getNoAVSAssure());
 	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);

@@ -41,12 +41,7 @@ import globaz.ij.module.IJSalaireFilter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
-import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
-import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
-import globaz.prestation.acor.acor2020.mapper.PRAcorEnfantTypeMapper;
-import globaz.prestation.acor.acor2020.mapper.PRAcorFamilleTypeMapper;
-import globaz.prestation.acor.acor2020.mapper.PRAcorMapper;
-import globaz.prestation.acor.acor2020.mapper.PRConverterUtils;
+import globaz.prestation.acor.acor2020.mapper.*;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +93,8 @@ class IJExportationCalculAcor {
             PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(requerant, situationFamiliale, conjoints, prAcorMapper);
             PRAcorEnfantTypeMapper enfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, enfants, prAcorMapper);
 
+
+
             InHostType inHost = new InHostType();
             inHost.getFamille().addAll(familleTypeMapper.map());
             inHost.getEnfant().addAll(enfantTypeMapper.map());
@@ -138,11 +135,6 @@ class IJExportationCalculAcor {
 //          beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
 //          beneficiaireIJ.setModifie(false);
 //          indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
-            // TODO JJO 08.09.2021 : Contrôler si la gestion des période est nécessaire et adapter en conséquence
-//          PeriodeIJType periodeIJType = new PeriodeIJType();
-//          periodeIJType.setDebut(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
-//          periodeIJType.setFin(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
-
 
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
             indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, ijCalculDecompteIJMapper, session));

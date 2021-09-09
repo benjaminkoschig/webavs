@@ -71,13 +71,13 @@ public class IJAcor2020ApiRest {
         return Response.ok("{}").build();
     }
 
-    @GET
-    @Path(value = "/decompte/export/{idPrononce}/{idBaseIndemnisation}")
-    public Response exportDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, @PathParam("idBaseIndemnisation") String idBaseIndemnisation, FCalcul fCalcul){
+    @POST
+    @Path(value = "/decompte/export/{idIJCalculee}/{idBaseIndemnisation}")
+    public Response exportDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idIJCalculee") String idIJCalculee, @PathParam("idBaseIndemnisation") String idBaseIndemnisation, FCalcul fCalcul){
         LOG.info("Exportation du dossier.");
 
         IJAcor2020Token acor2020Token = IJAcor2020TokenService.getInstance().convertToken(token);
-        ijAcor2020Service.importDecompteAcor(idPrononce, idBaseIndemnisation, fCalcul);
+        ijAcor2020Service.importDecompteAcor(idIJCalculee, idBaseIndemnisation, fCalcul);
         return Response.ok("{}").build();
     }
 }

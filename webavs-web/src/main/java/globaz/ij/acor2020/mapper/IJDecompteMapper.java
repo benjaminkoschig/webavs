@@ -16,25 +16,21 @@ import java.util.Optional;
 public final class IJDecompteMapper {
 
     public static void baseCalculDecompteMapToIJPrestation(FCalcul.Cycle.BasesCalcul basesCalcul, String idIJCalculee, String idBaseIndemnisation, BSession session){
-
-        // TODO : Peut-il y avoir plus d'une prestation par base de calcul ?
-        Optional<DecompteIJ> decompte = basesCalcul.getDecompte().stream().findFirst();
-
-        if(decompte.isPresent()) {
+        for (DecompteIJ decompte:
+                basesCalcul.getDecompte()
+             ) {
             IJPrestation prestation = new IJPrestation();
 
-            prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.get().getDateDebut())));
-            prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.get().getDateFin())));
+            prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.getDateDebut())));
+            prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.getDateFin())));
             prestation.setIdIJCalculee(idIJCalculee);
-            // TODO : Comment récupérer l'id de la base d'indemnisation ???
-            if(!StringUtils.isEmpty(idBaseIndemnisation)) {
-                prestation.setIdBaseIndemnisation(idBaseIndemnisation);
-            }
-            prestation.setNombreJoursExt(Strings.toStringOrNull(decompte.get().getNjoursExt()));
-            prestation.setNombreJoursInt(Strings.toStringOrNull(decompte.get().getNjoursInt()));
-            prestation.setMontantBrut(Strings.toStringOrNull(decompte.get().getMontantGlobal()));
-            setPrestationDataFromDecompteCategorie(prestation, decompte.get(), PRACORConst.CA_TYPE_MESURE_EXTERNE);
-            setPrestationDataFromDecompteCategorie(prestation, decompte.get(), PRACORConst.CA_TYPE_MESURE_INTERNE);
+            prestation.setIdBaseIndemnisation(idBaseIndemnisation);
+            prestation.setNombreJoursExt(Strings.toStringOrNull(decompte.getNjoursExt()));
+            prestation.setNombreJoursInt(Strings.toStringOrNull(decompte.getNjoursInt()));
+            prestation.setMontantBrut(Strings.toStringOrNull(decompte.getMontantGlobal()));
+            setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_EXTERNE);
+            setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_INTERNE);
+            EntityUtils.addEntity(prestation, session);
         }
     }
 

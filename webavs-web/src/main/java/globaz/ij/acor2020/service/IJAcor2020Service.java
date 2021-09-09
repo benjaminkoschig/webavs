@@ -45,9 +45,9 @@ public class IJAcor2020Service {
         importer.importCalculAcor(idPrononce, fCalcul);
     }
 
-    public void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul) {
+    public void importDecompteAcor(String idIJCalculee, String idBaseIndemnisation, FCalcul fCalcul) {
         IJImportationCalculAcor importer = new IJImportationCalculAcor();
-        importer.importDecompteAcor(idPrononce, idBaseIndemnisation, fCalcul);
+        importer.importDecompteAcor(idIJCalculee, idBaseIndemnisation, fCalcul);
     }
 
 

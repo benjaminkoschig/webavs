@@ -38,11 +38,11 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
         return creatToken(claims, bSession);
     }
 
-    public static String createTokenDecompte(BSession bSession, final IJIJCalculee idIJCalculee, final String idBaseIdemnisation, final String noAVSAssure) {
+    public static String createTokenDecompte(BSession bSession, final String idijCalculee, final String idBaseIdemnisation, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("exportIJUrl", EXPORT_DECOMPTE_URL + "/" +  idIJCalculee.getIdPrononce() + "/" + idBaseIdemnisation);
-        claims.put("importUrl", IMPORT_DECOMPTE_URL+ "/" +  idIJCalculee.getIdIJCalculee() + "/" + idBaseIdemnisation);
+        claims.put("exportIJUrl", EXPORT_DECOMPTE_URL + "/" +  idijCalculee + "/" + idBaseIdemnisation);
+        claims.put("importUrl", IMPORT_DECOMPTE_URL+ "/" +  idijCalculee + "/" + idBaseIdemnisation);
         claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);

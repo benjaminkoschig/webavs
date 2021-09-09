@@ -15,11 +15,13 @@ import globaz.ij.db.prononces.IJPrononce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorDomaineException;
+import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 class IJImportationCalculAcor {
     private IJPrononce prononce;
     private IJBaseIndemnisation baseIndemnisation;
+    private IJIJCalculee ijijCalculee;
     private final BSession session;
     private PRTiersWrapper tiers;
     private final EntityService entityService;
@@ -32,16 +34,13 @@ class IJImportationCalculAcor {
     void importCalculAcor(String idPrononce, FCalcul fCalcul) {
 
         try {
-
-
             // Chargement des informations du prononcé correspondant à la demande de calcul Acor
             // dans WebAVS
-            loadPrononce(idPrononce);
-
+            prononce = loadPrononce(idPrononce);
             if (prononce == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver le prononcé du calcul. ");
             }
-            loadTiers();
+            tiers = loadTiers(prononce.getIdDemande());
             if (tiers == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver le tiers du calcul. ");
             }
@@ -64,20 +63,23 @@ class IJImportationCalculAcor {
         }
     }
 
-    void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul) {
+    void importDecompteAcor(String idIJCalculee, String idBaseIndemnisation, FCalcul fCalcul) {
 
         try {
-            // Chargement des informations du prononcé correspondant à la demande du decompte Acor
-            // dans WebAVS
-            loadPrononce(idPrononce);
-            if (prononce == null) {
-                throw new PRACORException("Réponse invalide : Impossible de retrouver le prononcé du decompte. ");
+
+            ijijCalculee = loadIjCalculee(idIJCalculee);
+            if(ijijCalculee == null){
+                throw new PRACORException("Réponse invalide : Impossible de retrouver l'ij calculee du decompte. ");
             }
-            loadTiers();
+            prononce = loadPrononce(ijijCalculee.getIdPrononce());
+            if(prononce == null){
+                throw new PRACORException("Réponse invalide : Impossible de retrouver l'ij calculee du decompte. ");
+            }
+            tiers = loadTiers(prononce.getIdDemande());
             if (tiers == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver le tiers  du decompte. ");
             }
-            loadBaseIndemnisation(idBaseIndemnisation);
+            baseIndemnisation = loadBaseIndemnisation(idBaseIndemnisation);
             if (baseIndemnisation == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver la base d'indemnisation du decompte. ");
             }
@@ -92,10 +94,8 @@ class IJImportationCalculAcor {
 
             for (FCalcul.Cycle.BasesCalcul baseCalcul :
                     cycle.getBasesCalcul()) {
-                IJIJCalculee ijCalculee = IJIJCalculeeMapper.baseCalculMapToIJIJCalculee(baseCalcul, tiers, prononce, session);
-                IJIJIndemniteJournaliereMapper.baseCalculEtIjMapToIndemniteJournaliere(baseCalcul, ijCalculee, session);
                 // Mapping liés aux prestations
-                IJDecompteMapper.baseCalculDecompteMapToIJPrestation(baseCalcul, ijCalculee.getId(), idBaseIndemnisation, session);
+                IJDecompteMapper.baseCalculDecompteMapToIJPrestation(baseCalcul, ijijCalculee.getId(), idBaseIndemnisation, session);
             }
         }
     }
@@ -120,21 +120,27 @@ class IJImportationCalculAcor {
         }
     }
 
-    private void loadPrononce(String idPrononce) throws Exception {
-        if ((prononce == null) & !JadeStringUtil.isIntegerEmpty(idPrononce)) {
-            prononce = IJPrononce.loadPrononce(session, null, idPrononce, null);
-        }
+    private IJIJCalculee loadIjCalculee(final String idIJCalculee) {
+        return entityService.load(IJIJCalculee.class, idIJCalculee);
     }
 
-    private void loadTiers() throws Exception {
-        if (tiers == null) {
-            tiers = prononce.loadDemande(null).loadTiers();
-        }
+    private IJPrononce loadPrononce(String idPrononce) throws Exception {
+        return entityService.load(IJPrononce.class, idPrononce);
     }
 
-    private void loadBaseIndemnisation(String idBaseIndemnisation) {
-        if ((baseIndemnisation == null) && !JadeStringUtil.isIntegerEmpty(idBaseIndemnisation)) {
-            baseIndemnisation = this.entityService.load(IJBaseIndemnisation.class, idBaseIndemnisation);
+    private PRTiersWrapper loadTiers(String idDemande) throws Exception {
+        PRDemande demande = loadDemande(idDemande);
+        if (demande != null) {
+            return demande.loadTiers();
         }
+        return null;
+    }
+
+    private PRDemande loadDemande(String idDemande){
+        return entityService.load(PRDemande.class, idDemande);
+    }
+
+    private IJBaseIndemnisation loadBaseIndemnisation(String idBaseIndemnisation) {
+        return entityService.load(IJBaseIndemnisation.class, idBaseIndemnisation);
     }
 }
