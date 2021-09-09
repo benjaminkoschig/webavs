@@ -13,6 +13,7 @@ public enum ServiceEtat implements CodeSystemEnum<ServiceEtat> {
     LITS_ATTENTE("64025007"),
     INSTITUTION("64025008"),
     EPS("64025009"),
+    SPEN("64025010"),
     INDEFINIT("");
 
     private String value;

@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense;
 
+import ch.globaz.pegasus.business.constantes.IPCHomes;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
@@ -84,20 +85,16 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
             throw new CalculBusinessException("pegasus.calcul.strategie.taxeJournaliere.home.integrity");
         }
 
-        if (!JadeNumericUtil.isNumericPositif(strPrixChambre)) {
+        if (isErreurPrixChambreFromService(csPeriodeServiceEtat, strPrixChambre)) {
             throw new CalculException(
                     "The field prix journalier of taxeJournaliere du home must be a valid positive number!");
         }
 
         // spécifique valais
         if (PCApplicationUtil.isCantonVS()) {
-            // plafond pour le home
-            // String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_EMS))
-            // .getValeurCourante());
-
             String plafond = getPlafondForTaxeJournaliere(context, csPeriodeServiceEtat);
 
-            if (!donnee.getTaxeJournaliereIsDeplafonner() && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
+            if (Boolean.FALSE.equals(donnee.getTaxeJournaliereIsDeplafonner()) && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
                 strPrixChambre = plafond;
             }
 
@@ -152,8 +149,14 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         return resultatExistant;
     }
 
+    private boolean isErreurPrixChambreFromService(String csPeriodeServiceEtat, String strPrixChambre) {
+        return (!JadeNumericUtil.isNumericPositif(strPrixChambre) && !IPCHomes.CS_SERVICE_ETAT_SPEN.equals(csPeriodeServiceEtat))
+                || (IPCHomes.CS_SERVICE_ETAT_SPEN.equals(csPeriodeServiceEtat) && !(JadeNumericUtil.isNumericPositif(strPrixChambre) || JadeNumericUtil.isEmptyOrZero(strPrixChambre)));
+
+    }
+
     private String getPlafondForTaxeJournaliere(CalculContext context, String csPeriodeServiceEtat)
-            throws CalculBusinessException, CalculException {
+            throws CalculException {
 
         if (csPeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_EMS)) {
             return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_EMS)).getValeurCourante());

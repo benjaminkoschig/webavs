@@ -20,4 +20,6 @@ public interface IPCTaxeJournaliere {
     public static final String CS_CATEGORIE_NON_DEFINIE = "64072004";
 
     public static final String CS_CATEGORIE_EPS = "64072005";
+
+    public static final String CS_CATEGORIE_SPEN = "64072006";
 }

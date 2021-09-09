@@ -347,7 +347,7 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
         // Test du totale de groupe
         String cs = tabCategorie[0];// recup code systeme
         // SI valeur diff de 0
-        if (getValeur(cs) != 0f) {
+//        if (getValeur(cs) != 0f) {
             // on traite les membres si il y en a
 
             // iteration sur les membres
@@ -356,11 +356,11 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
                 Float valMembre = getValeur(csMembre);
                 String legCsMembre = getLegende(csMembre);
                 // si valeur != 0, on traite
-                if (valMembre != 0f) {
+                if (valMembre != 0f || csMembre.equals(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL)) {
                     groupList.add(createLigneForGroupeList(csMembre, legCsMembre, valMembre, 2));
                 }
             }
-        }
+//        }
     }
 
     /**

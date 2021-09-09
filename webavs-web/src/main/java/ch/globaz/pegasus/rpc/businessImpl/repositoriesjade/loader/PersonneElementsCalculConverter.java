@@ -407,6 +407,7 @@ public class PersonneElementsCalculConverter {
             mapArgentPoche.put(HomeCategoriArgentPoche.EMS_NON_MEDICALISE_PSY,
                     VariableMetierType.MONTANT_EMS_NON_MEDICALISE_PSYHIATRIQUE);
             mapArgentPoche.put(HomeCategoriArgentPoche.EPS, VariableMetierType.MONTANT_EPS_ETABLISSEMENT_MEDSOC);
+            mapArgentPoche.put(HomeCategoriArgentPoche.SPEN, VariableMetierType.MONTANT_SPEN_ETABLISSEMENT);
             mapArgentPoche.put(HomeCategoriArgentPoche.HANDICAP_PHYSIQUE,
                     VariableMetierType.MONTANT_ESE_HANDICAP_PHYSIQUE);
             variableTypeArgentPoche = mapArgentPoche.get(homeCategoreiArgentPoche);

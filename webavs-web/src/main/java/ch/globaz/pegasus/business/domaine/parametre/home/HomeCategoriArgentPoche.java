@@ -9,6 +9,7 @@ public enum HomeCategoriArgentPoche implements CodeSystemEnum<HomeCategoriArgent
     EMS_NON_MEDICALISE_AGE("64072003"),
     NON_DEFINIE("64072004"),
     EPS("64072005"),
+    SPEN("64072006"),
     INDEFINIT("");
 
     private String value;
