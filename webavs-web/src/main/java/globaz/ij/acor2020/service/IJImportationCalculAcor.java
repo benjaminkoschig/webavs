@@ -2,34 +2,38 @@ package globaz.ij.acor2020.service;
 
 import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.eavs.utils.StringUtils;
-
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.ij.acor2020.mapper.IJDecompteMapper;
 import globaz.ij.acor2020.mapper.IJIJCalculeeMapper;
 import globaz.ij.acor2020.mapper.IJIJIndemniteJournaliereMapper;
-import globaz.ij.acor2020.mapper.IJDecompteMapper;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prononces.IJPrononce;
-
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorDomaineException;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 class IJImportationCalculAcor {
-    IJPrononce prononce;
-    IJBaseIndemnisation baseIndemnisation;
-    BSession session;
-    PRTiersWrapper tiers;
+    private IJPrononce prononce;
+    private IJBaseIndemnisation baseIndemnisation;
+    private final BSession session;
+    private PRTiersWrapper tiers;
+    private final EntityService entityService;
 
+    public IJImportationCalculAcor() {
+        session = BSessionUtil.getSessionFromThreadContext();
+        entityService = EntityService.of(this.session);
+    }
 
     void importCalculAcor(String idPrononce, FCalcul fCalcul) {
 
         try {
 
-            loadSession();
+
             // Chargement des informations du prononcé correspondant à la demande de calcul Acor
             // dans WebAVS
             loadPrononce(idPrononce);
@@ -63,7 +67,6 @@ class IJImportationCalculAcor {
     void importDecompteAcor(String idPrononce, String idBaseIndemnisation, FCalcul fCalcul) {
 
         try {
-            loadSession();
             // Chargement des informations du prononcé correspondant à la demande du decompte Acor
             // dans WebAVS
             loadPrononce(idPrononce);
@@ -75,7 +78,7 @@ class IJImportationCalculAcor {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver le tiers  du decompte. ");
             }
             loadBaseIndemnisation(idBaseIndemnisation);
-            if(baseIndemnisation == null){
+            if (baseIndemnisation == null) {
                 throw new PRACORException("Réponse invalide : Impossible de retrouver la base d'indemnisation du decompte. ");
             }
         } catch (Exception e) {
@@ -123,24 +126,15 @@ class IJImportationCalculAcor {
         }
     }
 
-    private void loadSession(){
-        if(session == null){
-            session = BSessionUtil.getSessionFromThreadContext();
-        }
-    }
-
     private void loadTiers() throws Exception {
-        if(tiers == null) {
+        if (tiers == null) {
             tiers = prononce.loadDemande(null).loadTiers();
         }
     }
 
-    private void loadBaseIndemnisation(String idBaseIndemnisation) throws Exception {
+    private void loadBaseIndemnisation(String idBaseIndemnisation) {
         if ((baseIndemnisation == null) && !JadeStringUtil.isIntegerEmpty(idBaseIndemnisation)) {
-            baseIndemnisation = new IJBaseIndemnisation();
-            baseIndemnisation.setISession(session);
-            baseIndemnisation.setIdBaseIndemisation(idBaseIndemnisation);
-            baseIndemnisation.retrieve();
+            baseIndemnisation = this.entityService.load(IJBaseIndemnisation.class, idBaseIndemnisation);
         }
     }
 }

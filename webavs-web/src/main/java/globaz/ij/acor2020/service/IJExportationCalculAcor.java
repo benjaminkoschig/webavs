@@ -13,11 +13,11 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import globaz.externe.IPRConstantesExternes;
 import globaz.externe.IPTConstantesExternes;
-import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -61,9 +61,11 @@ import static globaz.prestation.acor.acor2020.mapper.PRAcorMapper.loadCodeOrNull
 @Slf4j
 class IJExportationCalculAcor {
     private final BSession session;
+    private final EntityService entityService;
 
     IJExportationCalculAcor() {
         session = BSessionUtil.getSessionFromThreadContext();
+        entityService = EntityService.of(this.session);
     }
 
     InHostType createInHostForCalcul(final String idPrononce) {
@@ -123,7 +125,7 @@ class IJExportationCalculAcor {
                                              final AssureType assureType,
                                              final IJCalculDecompteIJMapper ijCalculDecompteIJMapper, final BSession session) {
 
-        if(Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT,membreFamille.getRelationAuRequerant())){
+        if (Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT, membreFamille.getRelationAuRequerant())) {
 
             // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
 //          BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
@@ -143,10 +145,10 @@ class IJExportationCalculAcor {
 
 
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
-            indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce,ijCalculDecompteIJMapper, session));
+            indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, ijCalculDecompteIJMapper, session));
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
 
-            if(!JadeStringUtil.isBlankOrZero(prononce.getMontantRenteEnCours())) {
+            if (!JadeStringUtil.isBlankOrZero(prononce.getMontantRenteEnCours())) {
                 assureType.getRenteOrdinaire10().add(mapToRenteOrdinaire10(prononce));
             }
 
@@ -161,7 +163,7 @@ class IJExportationCalculAcor {
         rente.setFraction(1f);
         try {
             rente.setGenre(Integer.valueOf(this.session.getApplication().getProperty(IJApplication.PROPERTY_GENRE_PRESTATION_ACOR)));
-        }catch(Exception e){
+        } catch (Exception e) {
             LOG.error("Impossible de trouver la property PROPERTY_GENRE_PRESTATION_ACOR", e);
             rente.setGenre(50);
         }
@@ -252,7 +254,7 @@ class IJExportationCalculAcor {
             garantieAA.setValue(Double.parseDouble(prononce.getMontantGarantiAA()));
             basesCalculCouranteIJ.setGarantieAA(garantieAA);
         }
-        if(prononce.getSoumisImpotSource()) {
+        if (prononce.getSoumisImpotSource()) {
             basesCalculCouranteIJ.setCantonImpots(Integer.parseInt(PRACORConst.csCantonToAcor(prononce.getCsCantonImpositionSource())));
         }
         //Choix fait par défaut à false
@@ -364,30 +366,19 @@ class IJExportationCalculAcor {
     }
 
     private IJPetiteIJ loadPetiteIJ(String idPronnonce) {
-        return this.entityLoader(IJPetiteIJ.class, idPronnonce);
+        return entityService.load(IJPetiteIJ.class, idPronnonce);
     }
 
     private IJGrandeIJ loadGrandeIJ(String idPronnonce) {
-        return this.entityLoader(IJGrandeIJ.class, idPronnonce);
+        return entityService.load(IJGrandeIJ.class, idPronnonce);
     }
 
     private IJBaseIndemnisation loadBaseIndemnisation(String idBaseIndemnisation) {
-        return this.entityLoader(IJBaseIndemnisation.class, idBaseIndemnisation);
+        return entityService.load(IJBaseIndemnisation.class, idBaseIndemnisation);
     }
 
     private IJIJCalculee loadIjCalculee(final String idIJCalculee) {
-        return this.entityLoader(IJIJCalculee.class, idIJCalculee);
+        return entityService.load(IJIJCalculee.class, idIJCalculee);
     }
 
-    private <T extends BEntity> T entityLoader(Class<T> entityClass, final String id) {
-        try {
-            T entity = entityClass.newInstance();
-            entity.setSession(session);
-            entity.setId(id);
-            entity.retrieve();
-            return entity;
-        } catch (Exception e) {
-            throw new CommonTechnicalException("Impossible to load the " + entityClass.getSimpleName() + " with this id:" + id, e);
-        }
-    }
 }

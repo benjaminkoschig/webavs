@@ -43,7 +43,7 @@ public class JaxbHandler<T> {
      *
      * @return
      */
-    public static <T> JaxbHandler<T> build(String xsdFilePath,Class<T> clazz, Function<T, JAXBElement<T>> function) {
+    public static <T> JaxbHandler<T> build(String xsdFilePath, Class<T> clazz, Function<T, JAXBElement<T>> function) {
         return new JaxbHandler<>(xsdFilePath, clazz, function);
     }
 
@@ -51,9 +51,9 @@ public class JaxbHandler<T> {
         return new JaxbHandler<>(xsdFileName, clazz, null);
     }
 
-    public List<MessageValidation> validate(T element) {
-        final List<MessageValidation> validationErrors = new LinkedList<>();
-        Marshaller marshaller = buildMarshaller(validationErrors);
+    public MessagesValidation validate(T element) {
+        final List<MessageValidation> meassages = new LinkedList<>();
+        Marshaller marshaller = buildMarshaller(meassages);
         try {
             if (this.function != null) {
                 marshaller.marshal(this.function.apply(element), new ByteArrayOutputStream());
@@ -64,7 +64,8 @@ public class JaxbHandler<T> {
             LOG.error("JAXB validation has thrown a JAXBException", exception);
             throw new CommonTechnicalException(exception);
         }
-        return validationErrors;
+
+        return MessagesValidation.of(meassages, element.getClass());
     }
 
     private static <T> JAXBContext buildJaxbContext(Class<T> clazz) {
