@@ -43,6 +43,13 @@ public class PRRubriqueComptableResolver {
 
             put(PRSousTypeCodePrestationPC.PC_AVS_116.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS);
+
+            // TODO A traiter lorsque les rubrique et code presta auront été définies
+//            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AVS_EN_HOME_SPEN);
+//
+//            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPEN);
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_A_DOMICILE_ORDINAIRES_ESPECES);
@@ -67,6 +74,13 @@ public class PRRubriqueComptableResolver {
 
             put(PRSousTypeCodePrestationPC.PC_AI_118.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS);
+
+            // TODO A traiter lorsque les références rubriques auront été définies
+//            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AI_EN_HOME_SPEN);
+//
+//            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPEN);
 
         }
     };
@@ -99,6 +113,13 @@ public class PRRubriqueComptableResolver {
             put(PRSousTypeCodePrestationPC.PC_AVS_116.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_EPS);
 
+            // TODO A traiter lorsques les rubriques comptables et les codes presta auront été définies
+//            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_SPEN);
+//
+//            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
+
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_A_RESTITUER);
@@ -123,6 +144,15 @@ public class PRRubriqueComptableResolver {
 
             put(PRSousTypeCodePrestationPC.PC_AI_118.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_EPS);
+
+            // TODO A traiter lorsque les références rubriques auront été définies
+            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_HOME_SPEN);
+//            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_SPEN);
+//
+//            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
+//                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
         }
     };
 

@@ -15,6 +15,10 @@ public enum PRSousTypeCodePrestationPC {
     PC_AI_112("112", 112, PRDomainDePrestation.AI),
     PC_AI_117("117", 117, PRDomainDePrestation.AI),
     PC_AI_118("118", 118, PRDomainDePrestation.AI),
+    // TODO Definir code prestation pour SPEN
+    PC_AI_119("119", 119, PRDomainDePrestation.AI),
+//    PC_AI_119("119", 119, PRDomainDePrestation.AI),
+//    PC_AI_120("120", 120, PRDomainDePrestation.AI),
 
     // Sous types PC AVS
     PC_AVS_100("100", 100, PRDomainDePrestation.AVS),
@@ -25,6 +29,9 @@ public enum PRSousTypeCodePrestationPC {
     PC_AVS_114("114", 114, PRDomainDePrestation.AVS),
     PC_AVS_115("115", 115, PRDomainDePrestation.AVS),
     PC_AVS_116("116", 116, PRDomainDePrestation.AVS);
+    // TODO A traiter lorsque les références rubriques auront été définies
+//    PC_AVS_121("121", 121, PRDomainDePrestation.AVS),
+//    PC_AVS_122("122", 122, PRDomainDePrestation.AVS);
 
     private static PRSousTypeCodePrestationPC[] convert(List<PRSousTypeCodePrestationPC> list) {
         PRSousTypeCodePrestationPC[] array = new PRSousTypeCodePrestationPC[list.size()];
