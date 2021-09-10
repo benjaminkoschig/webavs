@@ -15,4 +15,8 @@ public class EntityService {
     public <T extends BEntity> T load(final Class<T> entityClass, final String id) {
         return EntityUtils.entityLoader(entityClass, id, session);
     }
+
+    public BSession getSession(){
+        return session;
+    }
 }

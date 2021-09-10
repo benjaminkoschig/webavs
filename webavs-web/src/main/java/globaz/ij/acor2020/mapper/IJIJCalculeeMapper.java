@@ -1,9 +1,8 @@
 package globaz.ij.acor2020.mapper;
 
 import acor.ij.xsd.ij.out.FCalcul;
-import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Strings;
-import globaz.globall.db.BSession;
 import globaz.ij.api.prestations.IIJPetiteIJCalculee;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prestations.IJGrandeIJCalculee;
@@ -19,8 +18,9 @@ import globaz.prestation.tools.PRDateFormater;
 import java.util.Objects;
 
 public class IJIJCalculeeMapper {
+    private IJIJCalculeeMapper(){}
 
-    public static IJIJCalculee baseCalculMapToIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, PRTiersWrapper tiers, IJPrononce prononce, BSession session) {
+    public static IJIJCalculee baseCalculMapToIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, String nss, IJPrononce prononce, EntityService entityService) {
         IJIJCalculee ijijCalculee;
 
         if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
@@ -31,10 +31,10 @@ public class IJIJCalculeeMapper {
             throw new PRAcorDomaineException("Réponse invalide : Type d' IJ non réconnu.");
         }
 
-        return mapIJIJCalculee(basesCalcul, tiers, prononce, session, ijijCalculee);
+        return mapIJIJCalculee(basesCalcul, nss, prononce, entityService, ijijCalculee);
     }
 
-    private static IJIJCalculee mapIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, PRTiersWrapper tiers, IJPrononce prononce, BSession session, IJIJCalculee ijijCalculee) {
+    private static IJIJCalculee mapIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, String nss, IJPrononce prononce, EntityService entityService, IJIJCalculee ijijCalculee) {
 
         if(Objects.equals(1, basesCalcul.getDroitPrestationEnfant())){
             ijijCalculee.setIsDroitPrestationPourEnfant(Boolean.TRUE);
@@ -44,9 +44,9 @@ public class IJIJCalculeeMapper {
             ijijCalculee.setIsDroitPrestationPourEnfant(null);
         }
 
-        ijijCalculee.setNoAVS(tiers.getNSS());
+        ijijCalculee.setNoAVS(nss);
         ijijCalculee.setOfficeAI(String.valueOf(basesCalcul.getOfficeAi()));
-        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(session, Strings.toStringOrNull(basesCalcul.getGenreReadaptation())));
+        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(entityService.getSession(), Strings.toStringOrNull(basesCalcul.getGenreReadaptation())));
         ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDatePrononce())));
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
@@ -60,9 +60,7 @@ public class IJIJCalculeeMapper {
             ijijCalculee.setRevenuJournalierReadaptation(Strings.toStringOrNull(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
             ijijCalculee.setDemiIJACBrut(Strings.toStringOrNull(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
         }
-        ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(session, Strings.toStringOrNull(basesCalcul.getStatut())));
-        // TODO : Valeur mise à jour dans fichier plat mais pas possible de la trouver dans le xsd
-        // ijijCalculee.setPourcentDegreIncapaciteTravail(????);
+        ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(entityService.getSession(), Strings.toStringOrNull(basesCalcul.getStatut())));
 
         ijijCalculee.setDifferenceRevenu(Strings.toStringOrNull(basesCalcul.getDifferenceRevenu()));
         ijijCalculee.setIdPrononce(prononce.getIdPrononce());
@@ -72,7 +70,7 @@ public class IJIJCalculeeMapper {
             ijijCalculee.setCsTypeIJ(IIJPrononce.CS_PETITE_IJ);
         }
         ijijCalculee.setNoRevision(Strings.toStringOrNull(basesCalcul.getRevision()));
-        EntityUtils.addEntity(ijijCalculee, session);
+        entityService.add(ijijCalculee);
         return ijijCalculee;
     }
 
@@ -110,7 +108,7 @@ public class IJIJCalculeeMapper {
                 return IIJPetiteIJCalculee.CS_FORMATION_INITIALE_PROLONGEE;
             case 5:
             case 6:
-                // TODO : A confirmer
+                // TODO JJO 01.09.2021 : A confirmer
                 // formation initiale changée
                 // formation initiale changée et prolongée
                 return IIJPetiteIJCalculee.CS_NOUVELLE_FORME_APRES_INTERRUPTION;

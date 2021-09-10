@@ -90,8 +90,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 
 		$('#lienAcorWeb').one('click', function () {
 			ajaxUtils.addOverlay($('html'));
-			document.forms[0].elements('userAction').value  = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_DECOMPTE%>.actionImporterDecompte";
-			document.forms[0].submit();
+			window.location.href =  "ij?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_PRESTATION_JOINT_LOT_PRONONCE%>.chercher&forIdPrononce=<%=viewBean.loadPrononce().getIdPrononce()%>&forNoBaseIndemnisation=<%=viewBean.getIdBaseIndemnisation()%>";
 		});
 	});
 	

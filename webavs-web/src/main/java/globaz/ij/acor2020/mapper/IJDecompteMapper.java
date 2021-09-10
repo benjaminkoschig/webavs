@@ -3,19 +3,21 @@ package globaz.ij.acor2020.mapper;
 import acor.ij.xsd.ij.out.Decompte;
 import acor.ij.xsd.ij.out.DecompteIJ;
 import acor.ij.xsd.ij.out.FCalcul;
-import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Strings;
-import globaz.globall.db.BSession;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.tools.PRDateFormater;
-import org.apache.axis.utils.StringUtils;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
-public final class IJDecompteMapper {
+public class IJDecompteMapper {
+    private IJDecompteMapper(){ }
 
-    public static void baseCalculDecompteMapToIJPrestation(FCalcul.Cycle.BasesCalcul basesCalcul, String idIJCalculee, String idBaseIndemnisation, BSession session){
+    public static List baseCalculDecompteMapToIJPrestation(FCalcul.Cycle.BasesCalcul basesCalcul, String idIJCalculee, String idBaseIndemnisation, EntityService entityService){
+        List prestations = new LinkedList();
         for (DecompteIJ decompte:
                 basesCalcul.getDecompte()
              ) {
@@ -30,8 +32,11 @@ public final class IJDecompteMapper {
             prestation.setMontantBrut(Strings.toStringOrNull(decompte.getMontantGlobal()));
             setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_EXTERNE);
             setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_INTERNE);
-            EntityUtils.addEntity(prestation, session);
+
+            entityService.add(prestation);
+            prestations.add(prestation);
         }
+        return prestations;
     }
 
     private static void setPrestationDataFromDecompteCategorie(IJPrestation prestation, DecompteIJ decompte, String typeMesure){

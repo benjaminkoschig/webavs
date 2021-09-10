@@ -2,17 +2,17 @@ package globaz.ij.acor2020.mapper;
 
 import acor.ij.xsd.ij.out.FCalcul;
 import ch.globaz.common.exceptions.CommonTechnicalException;
-import ch.globaz.common.persistence.EntityUtils;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Strings;
-import globaz.globall.db.BSession;
 import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.prestation.acor.PRACORConst;
 
-public final class IJIJIndemniteJournaliereMapper {
+public class IJIJIndemniteJournaliereMapper {
+    private IJIJIndemniteJournaliereMapper(){}
 
-    public static void baseCalculEtIjMapToIndemniteJournaliere(FCalcul.Cycle.BasesCalcul basesCalcul, IJIJCalculee ijijCalculee, BSession session){
+    public static void baseCalculEtIjMapToIndemniteJournaliere(FCalcul.Cycle.BasesCalcul basesCalcul, IJIJCalculee ijijCalculee, EntityService entityService){
 
         // On contrôle qu'au moins une indemnité journalière existe
         if(!basesCalcul.getIj().isEmpty()) {
@@ -33,31 +33,29 @@ public final class IJIJIndemniteJournaliereMapper {
                 indemniteJournaliere.setMontantJournalierIndemnite(Strings.toStringOrNull(ij.getMontantIndemnite()));
                 indemniteJournaliere.setMontantGarantiAAReduit(Strings.toStringOrNull(basesCalcul.getMontantGarantiAA()));
                 indemniteJournaliere.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
-                EntityUtils.addEntity(indemniteJournaliere, session);
+                entityService.add(indemniteJournaliere);
             }
         // Sinon on créé des indemnités interne et externe à 0.-
         } else {
-            creerIJIndemniteJournaliere(ijijCalculee.getIdIJCalculee(), String.valueOf(basesCalcul.getReductionAI()), session);
+            creerIJIndemniteJournaliere(ijijCalculee.getIdIJCalculee(), String.valueOf(basesCalcul.getReductionAI()), entityService);
         }
     }
 
-    private static void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, BSession session) {
+    private static void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, EntityService entityService) {
         try {
             // 1ère IJ de type interne
             IJIndemniteJournaliere indemniteJournaliere = creerIndemniteJournaliereSansType();
-            indemniteJournaliere.setSession(session);
             indemniteJournaliere.setIdIJCalculee(idIJCalculee);
             indemniteJournaliere.setDeductionRenteAI(reductionAi);
             indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
-            indemniteJournaliere.add();
+            entityService.add(indemniteJournaliere);
 
             // 2ème IJ de type externe
             indemniteJournaliere = creerIndemniteJournaliereSansType();
-            indemniteJournaliere.setSession(session);
             indemniteJournaliere.setIdIJCalculee(idIJCalculee);
             indemniteJournaliere.setDeductionRenteAI(reductionAi);
             indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
-            indemniteJournaliere.add();
+            entityService.add(indemniteJournaliere);
         }catch(Exception e){
             throw new CommonTechnicalException(e);
         }

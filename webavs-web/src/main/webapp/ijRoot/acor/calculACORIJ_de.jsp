@@ -67,8 +67,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 
 		$('#lienAcorWeb').one('click', function () {
 			ajaxUtils.addOverlay($('html'));
-			document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.actionImporterIJ";
-			document.forms[0].submit();
+			window.location.href =  "ij?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_IJ_CALCULEES%>.chercher&idPrononce=<%=viewBean.getIdPrononce()%>&csTypeIJ=<%=viewBean.getCsTypeIJ()%>";
 		});
 	});
 
