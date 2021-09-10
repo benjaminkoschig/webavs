@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ DatesTest {
 
     @Test
     public void toDate_sansDate_ok() {
-        Assertions.assertThat(Dates.toDate((String)null)).isNull();
+        Assertions.assertThat(Dates.toDate((String) null)).isNull();
         Assertions.assertThat(Dates.toDate("")).isNull();
         Assertions.assertThat(Dates.toDate("   ")).isNull();
     }
@@ -52,23 +53,23 @@ DatesTest {
     }
 
     @Test
-    public void daysBetween_withSameDay_1(){
+    public void daysBetween_withSameDay_1() {
         assertThat(Dates.daysBetween(LocalDate.now(), LocalDate.now())).isEqualTo(1);
     }
 
     @Test
-    public void daysBetween_fromBeforeTo_2(){
+    public void daysBetween_fromBeforeTo_2() {
         assertThat(Dates.daysBetween(LocalDate.now(), LocalDate.now().plusDays(1))).isEqualTo(2);
     }
 
     @Test
-    public void daysBetween_toBeforeFrom_minus2(){
+    public void daysBetween_toBeforeFrom_minus2() {
         assertThat(Dates.daysBetween(LocalDate.now(), LocalDate.now().minusDays(1))).isEqualTo(-2);
     }
 
     @Test
-    public void daysBetween_withStringSuisseFormat_ok(){
-        assertThat(Dates.daysBetween("01.02.2021","02.02.2021")).isEqualTo(2);
+    public void daysBetween_withStringSuisseFormat_ok() {
+        assertThat(Dates.daysBetween("01.02.2021", "02.02.2021")).isEqualTo(2);
     }
 
 
@@ -88,7 +89,7 @@ DatesTest {
         // arrange
         String format = "dd.MM.yyyy";
         // act
-        assertThatCode(()->Dates.toXMLGregorianCalendar("12.02", format)).hasMessageContaining("12.02");
+        assertThatCode(() -> Dates.toXMLGregorianCalendar("12.02", format)).hasMessageContaining("12.02");
     }
 
     @Test
@@ -102,6 +103,30 @@ DatesTest {
 
         // assert
         assertThat(result).isEqualTo(date);
+    }
+
+
+    @Test
+    public void toXMLGregorianCalendar() {
+        LocalDate localDate = LocalDate.of(2021, 1, 1);
+        XMLGregorianCalendar xmlGregorianCalendar = Dates.toXMLGregorianCalendar(localDate);
+
+        assertThat(xmlGregorianCalendar.getYear()).isEqualTo(localDate.getYear());
+        assertThat(xmlGregorianCalendar.getMonth()).isEqualTo(localDate.getMonthValue());
+        assertThat(xmlGregorianCalendar.getDay()).isEqualTo(localDate.getDayOfMonth());
+        assertThat(xmlGregorianCalendar.getTimezone()).isEqualTo(DatatypeConstants.FIELD_UNDEFINED);
+    }
+
+    @Test
+    public void toDate() throws DatatypeConfigurationException {
+        XMLGregorianCalendar xmlGregorianCalendar =
+                DatatypeFactory.newInstance().newXMLGregorianCalendar("2019-04-25");
+
+        LocalDate localDate = Dates.toDate(xmlGregorianCalendar);
+
+        assertThat(localDate.getYear()).isEqualTo(xmlGregorianCalendar.getYear());
+        assertThat(localDate.getMonthValue()).isEqualTo(xmlGregorianCalendar.getMonth());
+        assertThat(localDate.getDayOfMonth()).isEqualTo(xmlGregorianCalendar.getDay());
     }
 
 }

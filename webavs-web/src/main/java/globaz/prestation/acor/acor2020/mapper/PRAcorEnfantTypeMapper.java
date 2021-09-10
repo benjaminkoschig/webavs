@@ -1,32 +1,44 @@
 package globaz.prestation.acor.acor2020.mapper;
 
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
 import ch.globaz.common.util.Dates;
-import globaz.globall.db.BSession;
+import globaz.commons.nss.NSUtil;
 import globaz.hera.api.ISFEnfant;
 import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFPeriode;
 import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.enums.TypeDeDetenteur;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
+import static ch.globaz.common.util.Collections.forEachPair;
+
+@Slf4j
 public class PRAcorEnfantTypeMapper extends PRAcorMapper {
 
     private final ISFSituationFamiliale situationFamiliale;
     private final List<ISFMembreFamilleRequerant> enfantsFamilles;
 
 
-
     public PRAcorEnfantTypeMapper(final ISFSituationFamiliale situationFamiliale,
                                   final List<ISFMembreFamilleRequerant> enfantsFamilles,
                                   final PRAcorMapper prAcorMapper) {
-        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(),prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
+        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.enfantsFamilles = enfantsFamilles;
     }
@@ -96,180 +108,140 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         enfant.setDonneesPostales(createDonneesPostales());
 
         // PERIODES
-        //addPeriodesEnfant(enfant, membre);
+        addPeriodesEnfant(enfant, membre);
+
         return enfant;
     }
 
-//    private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
-//        for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {
-//            // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
-//            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
-//                enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
-//            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
-//                enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
-//            } else if (getEnumPeriodeEnfantType(isfPeriode) != null) {
-//                enfant.getPeriode().add(createPeriodeEnfantType(isfPeriode));
-//            }
-//        }
-//    }
-//
-//    private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
-//        PeriodeEnfantType periode = new PeriodeEnfantType();
-//        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-//        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-//        periode.setType(getEnumPeriodeEnfantType(isfPeriode));
-//        return periode;
-//    }
-//
-//    private PeriodeEnfantTypeEnum getEnumPeriodeEnfantType(ISFPeriode isfPeriode) {
-//        switch (isfPeriode.getType()) {
-//            case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
-//                return PeriodeEnfantTypeEnum.DOMICILE;
-//            case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
-//                return PeriodeEnfantTypeEnum.NATIONALITE;
-//            case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
-//                return PeriodeEnfantTypeEnum.ETUDE;
-//            default:
-//                return null;
-//        }
-//    }
+    private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
+        ISFPeriode[] periodes = recupererPeriodesMembre(membre);
+        for (ISFPeriode isfPeriode : periodes) {
+            // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
+            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
+                enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
+            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
+                enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
+            } else if (isWrongRefus(isfPeriode)) {
+                PeriodeEnfantType periode = createPeriodeEnfant(enfant, isfPeriode);
+                enfant.getPeriode().add(periode);
+            } else if (getEnumPeriodeEnfantType(isfPeriode) != null) {
+                PeriodeEnfantType periodeEnfantType = createPeriodeEnfantType(isfPeriode);
+                enfant.getPeriode().add(periodeEnfantType);
+            }
+        }
+    }
 
-//
-//    private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
-//        PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
-//        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-//        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-//        if (StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur())) {
-//            periode.setTuteur(true);
-//        } else {
-//            periode.setTuteur(false);
-//        }
-//        return periode;
-//    }
-//
-//    private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
-//        ISFPeriode[] periodes;
-//        try {
-//            ISFPeriode[] periodesToFilre = situationFamiliale.getPeriodes(membre.getIdMembreFamille());
-//
-//            // On filtre les période qui ne sont pas connues d'ACOR
-//            List<ISFPeriode> listPeriode = new ArrayList<ISFPeriode>();
-//            for (int i = 0; i < periodesToFilre.length; i++) {
-//                if (!getTypePeriode(periodesToFilre[i]).isEmpty()) {
-//                    listPeriode.add(periodesToFilre[i]);
-//                }
-//            }
-//            periodes = listPeriode.toArray(new ISFPeriode[listPeriode.size()]);
-//
-//            // si demande survivant
-//            if (getTypeDemande().equals(PRACORConst.CA_TYPE_DEMANDE_SURVIVANT)) {
-//                // si membre = requérant
-//                PRDemande demandePrest = new PRDemande();
-//                demandePrest.setSession(getSession());
-//                demandePrest.setIdDemande(demandeRente.getIdDemandePrestation());
-//                demandePrest.retrieve();
-//
-//                if (demandePrest.getIdTiers().equals(membre.getIdTiers())) {
-//
-//                    // Workaround ACOR
-//                    // Si personne décédée sans période de domicile en
-//                    // suisse,
-//                    // Il faut la crééer pour l'envoyer à ACOR autrement
-//                    // ACOR ne calcul pas.
-//                    // si requérant avec date décès
-//                    if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-//                        // si suisse
-//
-//                        if (membre.getCsNationalite().equals("100")) {
-//                            // voir si une période de domicile en suisse
-//                            // dans la liste
-//                            boolean isPeriodeDomicileSuisse = false;
-//                            for (int i = 0; i < periodes.length; i++) {
-//                                ISFPeriode periode = periodes[i];
-//                                if (periode.getNoAvs().equals(((ISFMembreFamilleRequerant) membre).getNss())
-//                                        && ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE.equals(periode
-//                                                                                                         .getType())) {
-//                                    isPeriodeDomicileSuisse = true;
-//                                }
-//                            }
-//
-//                            if (!isPeriodeDomicileSuisse) {
-//                                // Créer une période de domicile en
-//                                // suisse pour cet assuré
-//                                SFPeriodeWrapper periode = new SFPeriodeWrapper();
-//                                periode.setDateFin(membre.getDateDeces());
-//                                periode.setDateDebut(membre.getDateNaissance());
-//                                periode.setNoAvs(membre.getNss());
-//                                periode.setPays(membre.getCsNationalite());
-//                                periode.setType(ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE);
-//
-//                                List lperiodes = new ArrayList();
-//                                for (int i = 0; i < periodes.length; i++) {
-//                                    lperiodes.add(periodes[i]);
-//                                }
-//                                lperiodes.add(periode);
-//                                periodes = (ISFPeriode[]) lperiodes.toArray(new ISFPeriode[lperiodes.size()]);
-//                            }
-//
-//                        }
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//        } catch (Exception e) {
-//            LOG.error("Erreur lors de la récupération des périodes par membres.", e);
-//            periodes = new ISFPeriode[0];
-//        }
-//        return periodes;
-//    }
-//
-//    private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {
-//        PeriodeBTEType periode = new PeriodeBTEType();
-//        periode.setDebut(PRConverterUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-//        periode.setFin(PRConverterUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-//        if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
-//            if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
-//                periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
-//            } else {
-//                periode.setTiers(false);
-//            }
-//        } else if (StringUtils.equals(TypeDeDetenteur.TIERS.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
-//            periode.setTiers(true);
-//        }
-//        return periode;
-//    }
-//
-//
-//    private String getTypePeriode(ISFPeriode periode) {
-//
-//        if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE)) {
-//            return "do";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE)) {
-//            return "tr";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE)) {
-//            return "na";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_AFFILIATION)) {
-//            return "af";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_COTISATION)) {
-//            return "ex";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE)) {
-//            return "ae";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT)) {
-//            return "rc";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE)) {
-//            return "et";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_IJ)) {
-//            return "ij";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE)) {
-//            return "be";
-//        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_INCARCERATION)) {
-//            return "in";
-//        } else {
-//            return "";
-//        }
-//    }
+    private PeriodeEnfantType createPeriodeEnfant(final EnfantType enfant, final ISFPeriode isfPeriode) {
+        PeriodeEnfantType periode = new PeriodeEnfantType();
+        XMLGregorianCalendar dateDebut = enfant.getDateNaissance();
+        XMLGregorianCalendar dateFin = Dates.toXMLGregorianCalendar(Dates.toDate(enfant.getDateNaissance()).plusYears(25));
+        if (!isfPeriode.getDateDebut().equals("")) {
+            dateDebut = Dates.toXMLGregorianCalendar(Dates.toDate(isfPeriode.getDateDebut()));
+        }
+        if (!isfPeriode.getDateFin().equals("99.99.9999")) {
+            dateFin = Dates.toXMLGregorianCalendar(Dates.toDate(isfPeriode.getDateFin()));
+        }
+        periode.setDebut(dateDebut);
+        periode.setFin(dateFin);
+        periode.setType(PeriodeEnfantTypeEnum.ALLOCATION_FAMILIALE);
+        return periode;
+    }
 
+    static List<PeriodeEnfantType> createPeriodeAllocationFamilliale(List<ISFPeriode> sFperiodes, LocalDate dateNaissance) {
+        List<ISFPeriode> sFPeriodes = sFperiodes.stream()
+                                                .filter(PRAcorEnfantTypeMapper::isPeriodeRefusAf)
+                                                .sorted(Comparator.comparing(o -> Dates.toDate(o.getDateDebut())))
+                                                .collect(Collectors.toList());
+
+        List<PeriodeEnfantType> periodes = new ArrayList<>();
+        if (!sFPeriodes.isEmpty()) {
+            LocalDate dateDebutMin = Dates.toDate(sFPeriodes.get(0).getDateDebut());
+            LocalDate dateFinMax = Dates.toDate(sFPeriodes.get(sFPeriodes.size() - 1).getDateFin());
+            if (dateDebutMin.isAfter(dateNaissance)) {
+                periodes.add(createPeriodeAllocationFamillie(dateNaissance, dateDebutMin.minusDays(1)));
+            }
+
+            forEachPair((periode1, periode2) -> {
+                LocalDate dateFin = Dates.toDate(periode1.getDateFin());
+                LocalDate dateDebut = periode2.map(p -> Dates.toDate(p.getDateDebut())).orElse(null);
+                if (dateFin != null && dateDebut != null) {
+                    periodes.add(createPeriodeAllocationFamillie(dateFin.plusDays(1), dateDebut.minusDays(1)));
+                }
+            }, sFPeriodes);
+
+            if (dateFinMax != null) {
+                periodes.add(createPeriodeAllocationFamillie(dateFinMax.plusDays(1), dateNaissance.plusYears(25)));
+            }
+        } else {
+            periodes.add(createPeriodeAllocationFamillie(dateNaissance, dateNaissance.plusYears(25)));
+        }
+        return periodes;
+    }
+
+
+    private static PeriodeEnfantType createPeriodeAllocationFamillie(final LocalDate dateDebut, final LocalDate dateFin) {
+        PeriodeEnfantType periode = new PeriodeEnfantType();
+        periode.setDebut(Dates.toXMLGregorianCalendar(dateDebut));
+        periode.setFin(Dates.toXMLGregorianCalendar(dateFin));
+        periode.setType(PeriodeEnfantTypeEnum.ALLOCATION_FAMILIALE);
+        return periode;
+    }
+
+    private static boolean isPeriodeRefusAf(final ISFPeriode isfPeriode) {
+        return ch.globaz.hera.business.constantes.ISFPeriode.CS_TYPE_PERIODE_REFUS_AF.equals(isfPeriode.getType());
+    }
+
+
+    private boolean isWrongRefus(final ISFPeriode isfPeriode) {
+        return isfPeriode.getType().equals(PRACORConst.CA_PERIODE_REFUS_AF);
+    }
+
+    private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
+        PeriodeEnfantType periode = new PeriodeEnfantType();
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
+        periode.setType(getEnumPeriodeEnfantType(isfPeriode));
+        return periode;
+    }
+
+    private PeriodeEnfantTypeEnum getEnumPeriodeEnfantType(ISFPeriode isfPeriode) {
+        switch (isfPeriode.getType()) {
+            case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
+                return PeriodeEnfantTypeEnum.DOMICILE;
+            case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
+                return PeriodeEnfantTypeEnum.NATIONALITE;
+            case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
+                return PeriodeEnfantTypeEnum.ETUDE;
+            default:
+                return null;
+        }
+    }
+
+    private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
+        PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
+        periode.setTuteur(StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur()));
+        return periode;
+    }
+
+    private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
+        return PRAccorPeriodeMapper.recupererPeriodesMembre(this.situationFamiliale, membre);
+    }
+
+    private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {
+        PeriodeBTEType periode = new PeriodeBTEType();
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
+        if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
+            if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
+                periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
+            } else {
+                periode.setTiers(false);
+            }
+        } else if (StringUtils.equals(TypeDeDetenteur.TIERS.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
+            periode.setTiers(true);
+        }
+        return periode;
+    }
 }

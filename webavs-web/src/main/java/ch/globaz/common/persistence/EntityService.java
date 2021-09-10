@@ -6,6 +6,7 @@ import lombok.Value;
 
 @Value(staticConstructor = "of")
 public class EntityService {
+
     private final BSession session;
 
     public <T extends BEntity> T add(final T entity) {
@@ -16,7 +17,4 @@ public class EntityService {
         return EntityUtils.entityLoader(entityClass, id, session);
     }
 
-    public BSession getSession(){
-        return session;
-    }
 }

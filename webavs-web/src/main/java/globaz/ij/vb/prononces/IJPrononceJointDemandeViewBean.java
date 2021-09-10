@@ -205,11 +205,11 @@ public class IJPrononceJointDemandeViewBean extends IJPrononceJointDemande imple
 
             orderBy.add(new String[] {
                     IJPrononceJointDemande.FIELDNAME_NOM + ", " + IJPrononceJointDemande.FIELDNAME_PRENOM + ", "
-                            + orderByZeroFirst,
+                            + orderByZeroFirst+","+ IJPrononce.FIELDNAME_ID_PRONONCE + " DESC" ,
                     getSession().getLabel("JSP_NOM") + ", " + getSession().getLabel("JSP_PRENOM") });
-            orderBy.add(new String[] { IJPrononceJointDemande.FIELDNAME_NUM_AVS + ", " + orderByZeroFirst,
+            orderBy.add(new String[] { IJPrononceJointDemande.FIELDNAME_NUM_AVS + ", " + orderByZeroFirst+","+ IJPrononce.FIELDNAME_ID_PRONONCE + " DESC" ,
                     getSession().getLabel("JSP_NSS_ABREGE") });
-            orderBy.add(new String[] { IJPrononce.FIELDNAME_DATE_DEBUT_PRONONCE + " DESC",
+            orderBy.add(new String[] { IJPrononce.FIELDNAME_DATE_DEBUT_PRONONCE + " DESC, "+ IJPrononce.FIELDNAME_ID_PRONONCE + " DESC",
                     getSession().getLabel("JSP_DATE_DEBUT") });
             orderBy.add(new String[] { IJPrononce.FIELDNAME_ID_PRONONCE + " DESC", getSession().getLabel("JSP_NUMERO") });
         }

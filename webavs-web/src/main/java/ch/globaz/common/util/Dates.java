@@ -175,6 +175,24 @@ public class Dates {
         return toXMLGregorianCalendar(date, "dd.MM.yyyy");
     }
 
+    public static XMLGregorianCalendar toXMLGregorianCalendar(LocalDate date) {
+        try {
+            if (date == null) {
+                return null;
+            }
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(date.toString());
+        } catch (DatatypeConfigurationException e) {
+            throw new CommonTechnicalException("Error with this date:" + date, e);
+        }
+    }
+
+    public static LocalDate toDate(XMLGregorianCalendar xmlGregorianCalendar) {
+        if (xmlGregorianCalendar == null) {
+            return null;
+        }
+        return LocalDate.of(xmlGregorianCalendar.getYear(), xmlGregorianCalendar.getMonth(), xmlGregorianCalendar.getDay());
+    }
+
     public static XMLGregorianCalendar toXMLGregorianCalendar(String date, String formatDate) {
         if (JadeStringUtil.isBlankOrZero(date)) {
             return null;

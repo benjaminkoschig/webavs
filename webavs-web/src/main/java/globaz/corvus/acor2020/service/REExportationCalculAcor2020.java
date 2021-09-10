@@ -23,25 +23,15 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase9Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliCType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
-import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
 import globaz.corvus.acor2020.business.FractionRente;
 import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
@@ -51,7 +41,12 @@ import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
 import globaz.corvus.db.ci.RERassemblementCIManager;
-import globaz.corvus.db.demandes.*;
+import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemandeManager;
+import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
+import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
@@ -70,7 +65,6 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFPeriode;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
-import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.wrapper.SFPeriodeWrapper;
 import globaz.jade.client.util.JadeDateUtil;
@@ -78,6 +72,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
+import globaz.prestation.acor.PRAcorTechnicalException;
 import globaz.prestation.acor.acor2020.mapper.PRAcorAssureTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorDemandeTypeMapper;
 import globaz.prestation.acor.acor2020.mapper.PRAcorEnfantTypeMapper;
@@ -122,7 +117,7 @@ public class REExportationCalculAcor2020 {
     private PRTiersWrapper tiersRequerant;
     private ISFMembreFamilleRequerant membreRequerant;
     private static final String IS_WANT_ADRESSE_COURRIER = "isWantAdresseCourrier";
-
+    private EntityService entityService;
     public static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
     private static final int ANTICIPATION_OR_REVOCATION = 100;
     private static final int AJOURNEMENT = 0;
@@ -132,6 +127,7 @@ public class REExportationCalculAcor2020 {
         session = bSession;
         idDemande = idDemandeRente;
         transaction = session.getCurrentThreadTransaction();
+        this.entityService = EntityService.of(session);
     }
 
     public InHostType createInHost() {
@@ -160,7 +156,7 @@ public class REExportationCalculAcor2020 {
 
             PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, conjoints, this.prAcorMapper);
 
-            inHost.getAssure().addAll(createListAssures(membresCatAssures));
+            inHost.getAssure().addAll(createListAssures(membresCatAssures,situationFamiliale));
             inHost.getFamille().addAll(familleTypeMapper.map());
 
             PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, membresCatEnfants, this.prAcorMapper);
@@ -174,13 +170,7 @@ public class REExportationCalculAcor2020 {
     }
 
     private List<EnfantType> createListEnfants(PRAcorEnfantTypeMapper prAcorEnfantTypeMapper) throws PRACORException {
-        return prAcorEnfantTypeMapper.map((membre, enfant) -> {
-            // RENTES
-            addRentesEnfant(enfant, membre);
-            // PERIODES
-            addPeriodesEnfant(enfant, membre);
-            return enfant;
-        });
+        return prAcorEnfantTypeMapper.map(this::addRentesEnfant);
     }
 
     private List<ISFMembreFamilleRequerant> filterListMembresAssures(List<ISFMembreFamilleRequerant> membresFamille) {
@@ -242,9 +232,10 @@ public class REExportationCalculAcor2020 {
         return demandeType;
     }
 
-
-    private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille) {
-        return new PRAcorAssureTypeMapper(membresFamille, this.prAcorMapper).map(this::addInformationInAssreType);
+    private List<AssureType> createListAssures(List<ISFMembreFamilleRequerant> membresFamille, final ISFSituationFamiliale situationFamiliale) {
+        return new PRAcorAssureTypeMapper(membresFamille, situationFamiliale, this.prAcorMapper)
+                .setAddPeriodeFunction(this::addPeriodeForSurvivant)
+                .map(this::addInformationInAssreType);
     }
 
     private AssureType addInformationInAssreType(final ISFMembreFamilleRequerant membre, final AssureType assureType) {
@@ -266,9 +257,9 @@ public class REExportationCalculAcor2020 {
         if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) && StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {
             assureType.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRente));
             assureType.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRente).getPourcentRedFauteGrave()));
-        } else if(StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
+        } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
             REDemandeRente demandeRenteConjoint = rechercheDemandeAiConjoint(membre);
-            if(demandeRenteConjoint != null) {
+            if (demandeRenteConjoint != null) {
                 assureType.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRenteConjoint));
                 assureType.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRenteConjoint).getPourcentRedFauteGrave()));
             }
@@ -287,8 +278,6 @@ public class REExportationCalculAcor2020 {
             assureType.getCi().addAll(createListCI(membre.getIdTiers()));
         }
 
-        // PERIODES
-        addPeriodesAssure(assureType, membre);
         return assureType;
     }
 
@@ -765,211 +754,6 @@ public class REExportationCalculAcor2020 {
         return donnesEchelle;
     }
 
-    private void addPeriodesAssure(AssureType assure, ISFMembreFamilleRequerant membre) {
-        for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {
-            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_IJ, isfPeriode.getType())) {
-                assure.getPeriodeIJ().add(createPeriodeIJ(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType())) {
-                assure.getPeriodeTravail().add(createPeriodeTravailType(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType())) {
-                assure.getPeriodeEtrangere().add(createPeriodeEtrangerType(isfPeriode));
-            } else if (getEnumPeriodeType(isfPeriode) != null) {
-                assure.getPeriode().add(createPeriodeType(isfPeriode));
-            }
-        }
-    }
-
-    private PeriodeTypeEnum getEnumPeriodeType(ISFPeriode isfPeriode) {
-        switch (isfPeriode.getType()) {
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
-                return PeriodeTypeEnum.DOMICILE;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
-                return PeriodeTypeEnum.NATIONALITE;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_INCARCERATION:
-                return PeriodeTypeEnum.INCARCERATION;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
-                return PeriodeTypeEnum.ETUDE;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_AFFILIATION:
-                return PeriodeTypeEnum.AFAC;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_COTISATION:
-                return PeriodeTypeEnum.EXEMPTION;
-            default:
-                return null;
-        }
-    }
-
-    private PeriodeEnfantTypeEnum getEnumPeriodeEnfantType(ISFPeriode isfPeriode) {
-        switch (isfPeriode.getType()) {
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
-                return PeriodeEnfantTypeEnum.DOMICILE;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
-                return PeriodeEnfantTypeEnum.NATIONALITE;
-            case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
-                return PeriodeEnfantTypeEnum.ETUDE;
-            default:
-                return null;
-        }
-    }
-
-    private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {
-        PeriodeBTEType periode = new PeriodeBTEType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
-            if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
-                periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
-            } else {
-                periode.setTiers(false);
-            }
-        } else if (StringUtils.equals(TypeDeDetenteur.TIERS.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
-            periode.setTiers(true);
-        }
-        return periode;
-    }
-
-    private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
-        PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        if (StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur())) {
-            periode.setTuteur(true);
-        } else {
-            periode.setTuteur(false);
-        }
-        return periode;
-    }
-
-    // TODO : valeur non défini dans WebAVS actuellement --> sujet à voir avec Pool
-    private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
-        PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-//        periode.setParentNonBiologique();
-        return periode;
-    }
-
-    private PeriodeTravailType createPeriodeTravailType(ISFPeriode isfPeriode) {
-        PeriodeTravailType periode = new PeriodeTravailType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        //Mettre à 0 car il n'existe pas sur WebAVS
-        periode.setMontantDebut(BigDecimal.ZERO);
-        return periode;
-    }
-
-    private PeriodeEtrangereType createPeriodeEtrangerType(ISFPeriode isfPeriode) {
-        PeriodeEtrangereType periode = new PeriodeEtrangereType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        periode.setEtat(PRConverterUtils.formatRequiredInteger(isfPeriode.getPays()));
-        return periode;
-    }
-
-    private PeriodeType createPeriodeType(ISFPeriode isfPeriode) {
-        PeriodeType periode = new PeriodeType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        periode.setType(getEnumPeriodeType(isfPeriode));
-        return periode;
-    }
-
-    private PeriodeIJType createPeriodeIJ(ISFPeriode isfPeriode) {
-        PeriodeIJType periode = new PeriodeIJType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        //Par défaut false
-        periode.setMesureNouvelle(false);
-        return periode;
-    }
-
-    private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
-        PeriodeEnfantType periode = new PeriodeEnfantType();
-        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
-        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        periode.setType(getEnumPeriodeEnfantType(isfPeriode));
-        return periode;
-    }
-
-
-    private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
-        ISFPeriode[] periodes;
-        try {
-            ISFPeriode[] periodesToFilre = situationFamiliale().getPeriodes(membre.getIdMembreFamille());
-
-            // On filtre les période qui ne sont pas connues d'ACOR
-            List<ISFPeriode> listPeriode = new ArrayList<ISFPeriode>();
-            for (int i = 0; i < periodesToFilre.length; i++) {
-                if (!getTypePeriode(periodesToFilre[i]).isEmpty()) {
-                    listPeriode.add(periodesToFilre[i]);
-                }
-            }
-            periodes = listPeriode.toArray(new ISFPeriode[listPeriode.size()]);
-
-            // si demande survivant
-            if (getTypeDemande().equals(PRACORConst.CA_TYPE_DEMANDE_SURVIVANT)) {
-                // si membre = requérant
-                PRDemande demandePrest = new PRDemande();
-                demandePrest.setSession(getSession());
-                demandePrest.setIdDemande(demandeRente.getIdDemandePrestation());
-                demandePrest.retrieve();
-
-                if (demandePrest.getIdTiers().equals(membre.getIdTiers())) {
-
-                    // Workaround ACOR
-                    // Si personne décédée sans période de domicile en
-                    // suisse,
-                    // Il faut la crééer pour l'envoyer à ACOR autrement
-                    // ACOR ne calcul pas.
-                    // si requérant avec date décès
-                    if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
-                        // si suisse
-
-                        if (membre.getCsNationalite().equals("100")) {
-                            // voir si une période de domicile en suisse
-                            // dans la liste
-                            boolean isPeriodeDomicileSuisse = false;
-                            for (int i = 0; i < periodes.length; i++) {
-                                ISFPeriode periode = periodes[i];
-                                if (periode.getNoAvs().equals(((ISFMembreFamilleRequerant) membre).getNss())
-                                        && ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE.equals(periode
-                                                                                                         .getType())) {
-                                    isPeriodeDomicileSuisse = true;
-                                }
-                            }
-
-                            if (!isPeriodeDomicileSuisse) {
-                                // Créer une période de domicile en
-                                // suisse pour cet assuré
-                                SFPeriodeWrapper periode = new SFPeriodeWrapper();
-                                periode.setDateFin(membre.getDateDeces());
-                                periode.setDateDebut(membre.getDateNaissance());
-                                periode.setNoAvs(membre.getNss());
-                                periode.setPays(membre.getCsNationalite());
-                                periode.setType(ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE);
-
-                                List lperiodes = new ArrayList();
-                                for (int i = 0; i < periodes.length; i++) {
-                                    lperiodes.add(periodes[i]);
-                                }
-                                lperiodes.add(periode);
-                                periodes = (ISFPeriode[]) lperiodes.toArray(new ISFPeriode[lperiodes.size()]);
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération des périodes par membres.", e);
-            periodes = new ISFPeriode[0];
-        }
-        return periodes;
-    }
-
     public String getTypeDemande() {
         if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(demandeRente.getCsTypeDemandeRente())) {
             return "i";
@@ -977,36 +761,6 @@ public class REExportationCalculAcor2020 {
             return "s";
         } else if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(demandeRente.getCsTypeDemandeRente())) {
             return "v";
-        } else {
-            return "";
-        }
-
-    }
-
-    private String getTypePeriode(ISFPeriode periode) {
-
-        if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE)) {
-            return "do";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE)) {
-            return "tr";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE)) {
-            return "na";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_AFFILIATION)) {
-            return "af";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_COTISATION)) {
-            return "ex";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE)) {
-            return "ae";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT)) {
-            return "rc";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE)) {
-            return "et";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_IJ)) {
-            return "ij";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE)) {
-            return "be";
-        } else if (periode.getType().equals(ISFSituationFamiliale.CS_TYPE_PERIODE_INCARCERATION)) {
-            return "in";
         } else {
             return "";
         }
@@ -1271,19 +1025,7 @@ public class REExportationCalculAcor2020 {
     }
 
 
-    private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
-        for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {
-            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
-                enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
-                enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
-            } else if (getEnumPeriodeEnfantType(isfPeriode) != null) {
-                enfant.getPeriode().add(createPeriodeEnfantType(isfPeriode));
-            }
-        }
-    }
-
-    private void addRentesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
+    private EnfantType addRentesEnfant(ISFMembreFamilleRequerant membre, EnfantType enfant) {
         try {
             for (REHistoriqueRentes rente : getRentesEnCours(membre.getIdTiers())) {
                 if (StringUtils.equals(IREDemandeRente.REVISION_10EME_REVISION, rente.getDroitApplique())) {
@@ -1305,8 +1047,8 @@ public class REExportationCalculAcor2020 {
         } catch (Exception e) {
             LOG.error("Erreur lors de l'ajout des rentes enfants", e);
         }
+        return enfant;
     }
-
 
     private void trouverRequerant(List<ISFMembreFamilleRequerant> membres) {
         String noAVS = tiersRequerant.getNSS();
@@ -1322,7 +1064,7 @@ public class REExportationCalculAcor2020 {
 
 
     private Long getNumAvsFromDemande(REDemandeRente demandeRente, PRTiersWrapper tiers, BSession session) {
-        Long navs = new Long(0);
+        Long navs = 0L;
         String strNss = "";
         try {
             // Traitement particulier que les demandes de survivants
@@ -1438,7 +1180,7 @@ public class REExportationCalculAcor2020 {
         }
     }
 
-    private ISFSituationFamiliale situationFamiliale() throws PRACORException {
+    private ISFSituationFamiliale situationFamiliale() {
         ISFSituationFamiliale sf;
         try {
             String csDomaine = ISFSituationFamiliale.CS_DOMAINE_RENTES;
@@ -1451,7 +1193,7 @@ public class REExportationCalculAcor2020 {
             }
             sf = SFSituationFamilialeFactory.getSituationFamiliale(session, csDomaine, tiersRequerant.getIdTiers());
         } catch (Exception e) {
-            throw new PRACORException(session.getLabel("ERREUR_CHARGEMENT_SF"), e);
+            throw new PRAcorTechnicalException(session.getLabel("ERREUR_CHARGEMENT_SF"), e);
         }
 
         return sf;
@@ -1462,7 +1204,9 @@ public class REExportationCalculAcor2020 {
      *
      * @param idTiersRequerant
      * @param session
+     *
      * @return
+     *
      * @throws Exception
      */
     protected ISFMembreFamilleRequerant[] getToutesLesMembresFamilles(String idTiersRequerant, BSession session) throws Exception {
@@ -1484,7 +1228,9 @@ public class REExportationCalculAcor2020 {
      * @param membreFamille
      * @param idTiersRequerant
      * @param session
+     *
      * @return
+     *
      * @throws Exception
      */
     protected boolean hasUniquementRelationEnfantCommun(ISFMembreFamilleRequerant[] membreFamille,
@@ -1674,7 +1420,9 @@ public class REExportationCalculAcor2020 {
 
     /**
      * Recherche d'une demande AI du conjoint, non validée
+     *
      * @param membre
+     *
      * @return la demande AI du conjoint
      */
     public REDemandeRente rechercheDemandeAiConjoint(ISFMembreFamilleRequerant membre) {
@@ -1683,8 +1431,8 @@ public class REExportationCalculAcor2020 {
         mgr.setSession(getSession());
         mgr.setForIdTiersRequ(idTiersConjoint);
         mgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
+                                          + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
+                                          + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
 
         mgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
         mgr.setOrderBy(REDemandeRente.FIELDNAME_DATE_DEBUT + " DESC ");
@@ -1700,7 +1448,7 @@ public class REExportationCalculAcor2020 {
                 REDemandeRenteJointDemande elm = (REDemandeRenteJointDemande) mgr.getFirstEntity();
                 REDemandeRente demConjoint = null;
                 demConjoint = REDemandeRente.loadDemandeRente(getSession(), null,
-                        elm.getIdDemandeRente(), elm.getCsTypeDemande());
+                                                              elm.getIdDemandeRente(), elm.getCsTypeDemande());
                 return demConjoint;
             }
         } catch (Exception e) {
@@ -1709,7 +1457,60 @@ public class REExportationCalculAcor2020 {
         return null;
     }
 
+    private ISFPeriode[] addPeriodeForSurvivant(final ISFMembreFamilleRequerant membre, ISFPeriode[] periodes) {
+        // si demande survivant
+        if (getTypeDemande().equals(PRACORConst.CA_TYPE_DEMANDE_SURVIVANT)) {
+            // si membre = requérant
+            PRDemande demandePrest = this.entityService.load(PRDemande.class, demandeRente.getIdDemandePrestation());
 
+            if (demandePrest.getIdTiers().equals(membre.getIdTiers())) {
+
+                // Workaround ACOR
+                // Si personne décédée sans période de domicile en
+                // suisse,
+                // Il faut la crééer pour l'envoyer à ACOR autrement
+                // ACOR ne calcul pas.
+                // si requérant avec date décès
+                if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
+                    // si suisse
+
+                    if (membre.getCsNationalite().equals("100")) {
+                        // voir si une période de domicile en suisse
+                        // dans la liste
+                        boolean isPeriodeDomicileSuisse = false;
+                        for (int i = 0; i < periodes.length; i++) {
+                            ISFPeriode periode = periodes[i];
+                            if (periode.getNoAvs().equals(membre.getNss())
+                                    && ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE.equals(periode.getType())) {
+                                isPeriodeDomicileSuisse = true;
+                            }
+                        }
+
+                        if (!isPeriodeDomicileSuisse) {
+                            // Créer une période de domicile en
+                            // suisse pour cet assuré
+                            SFPeriodeWrapper periode = new SFPeriodeWrapper();
+                            periode.setDateFin(membre.getDateDeces());
+                            periode.setDateDebut(membre.getDateNaissance());
+                            periode.setNoAvs(membre.getNss());
+                            periode.setPays(membre.getCsNationalite());
+                            periode.setType(ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE);
+
+                            List lperiodes = new ArrayList();
+                            for (int i = 0; i < periodes.length; i++) {
+                                lperiodes.add(periodes[i]);
+                            }
+                            lperiodes.add(periode);
+                            periodes = (ISFPeriode[]) lperiodes.toArray(new ISFPeriode[lperiodes.size()]);
+                        }
+
+                    }
+
+                }
+            }
+        }
+        return periodes;
+    }
 
 
     private BSession getSession() {
