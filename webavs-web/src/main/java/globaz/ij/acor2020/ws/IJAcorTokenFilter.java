@@ -3,7 +3,6 @@ package globaz.ij.acor2020.ws;
 import globaz.ij.acor2020.ws.token.IJAcor2020TokenService;
 import globaz.prestation.acor.acor2020.ws.Acor2020TokenService;
 import globaz.prestation.acor.acor2020.ws.AcorTokenFilterAbstract;
-import globaz.corvus.acor2020.ws.token.REAcor2020TokenService;
 import globaz.ij.application.IJApplication;
 
 import javax.servlet.http.HttpServletRequest;

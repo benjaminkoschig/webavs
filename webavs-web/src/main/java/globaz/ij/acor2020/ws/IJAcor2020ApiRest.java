@@ -2,8 +2,6 @@ package globaz.ij.acor2020.ws;
 
 import acor.ij.xsd.ij.out.FCalcul;
 import globaz.ij.acor2020.service.IJAcor2020Service;
-import globaz.ij.acor2020.ws.token.IJAcor2020Token;
-import globaz.ij.acor2020.ws.token.IJAcor2020TokenService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;

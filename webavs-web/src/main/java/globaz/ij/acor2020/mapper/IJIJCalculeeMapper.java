@@ -12,15 +12,19 @@ import globaz.ij.db.prononces.IJPetiteIJ;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRAcorDomaineException;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import lombok.AllArgsConstructor;
 
 import java.util.Objects;
 
+@AllArgsConstructor
 public class IJIJCalculeeMapper {
-    private IJIJCalculeeMapper(){}
 
-    public static IJIJCalculee baseCalculMapToIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, String nss, IJPrononce prononce, EntityService entityService) {
+    private final String nss;
+    private final IJPrononce prononce;
+    private final EntityService entityService;
+
+    public IJIJCalculee map(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJIJCalculee ijijCalculee;
 
         if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
@@ -34,7 +38,7 @@ public class IJIJCalculeeMapper {
         return mapIJIJCalculee(basesCalcul, nss, prononce, entityService, ijijCalculee);
     }
 
-    private static IJIJCalculee mapIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, String nss, IJPrononce prononce, EntityService entityService, IJIJCalculee ijijCalculee) {
+    private IJIJCalculee mapIJIJCalculee(FCalcul.Cycle.BasesCalcul basesCalcul, String nss, IJPrononce prononce, EntityService entityService, IJIJCalculee ijijCalculee) {
 
         if(Objects.equals(1, basesCalcul.getDroitPrestationEnfant())){
             ijijCalculee.setIsDroitPrestationPourEnfant(Boolean.TRUE);
@@ -74,7 +78,7 @@ public class IJIJCalculeeMapper {
         return ijijCalculee;
     }
 
-    private static IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
+    private IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJIJCalculee ijijCalculee;
         IJPetiteIJCalculee petiteIJ = new IJPetiteIJCalculee();
         petiteIJ.setCsModeCalcul(Strings.toStringOrNull(mapModeCalcul(basesCalcul, prononce)));
@@ -82,7 +86,7 @@ public class IJIJCalculeeMapper {
         return ijijCalculee;
     }
 
-    private static IJIJCalculee createAndMapGrandeIJ(FCalcul.Cycle.BasesCalcul basesCalcul) {
+    private IJIJCalculee createAndMapGrandeIJ(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJIJCalculee ijijCalculee;
         IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
         grandeIJ.setMontantIndemniteEnfant(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
@@ -91,7 +95,7 @@ public class IJIJCalculeeMapper {
         return ijijCalculee;
     }
 
-    private static String mapModeCalcul(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononceEncours){
+    private String mapModeCalcul(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononceEncours){
 
         switch(basesCalcul.getFormation()){
             case 1:

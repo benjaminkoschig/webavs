@@ -8,12 +8,15 @@ import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.prestation.acor.PRACORConst;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class IJIJIndemniteJournaliereMapper {
-    private IJIJIndemniteJournaliereMapper(){}
 
-    public static void baseCalculEtIjMapToIndemniteJournaliere(FCalcul.Cycle.BasesCalcul basesCalcul, IJIJCalculee ijijCalculee, EntityService entityService){
+    private final IJIJCalculee ijijCalculee;
+    private final EntityService entityService;
 
+    public void map(FCalcul.Cycle.BasesCalcul basesCalcul){
         // On contrôle qu'au moins une indemnité journalière existe
         if(!basesCalcul.getIj().isEmpty()) {
             for (FCalcul.Cycle.BasesCalcul.Ij ij :
@@ -41,7 +44,7 @@ public class IJIJIndemniteJournaliereMapper {
         }
     }
 
-    private static void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, EntityService entityService) {
+    private void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, EntityService entityService) {
         try {
             // 1ère IJ de type interne
             IJIndemniteJournaliere indemniteJournaliere = creerIndemniteJournaliereSansType();
@@ -64,7 +67,7 @@ public class IJIJIndemniteJournaliereMapper {
     /**
      * Création d'indemnité journalière sans type.
      */
-    private static IJIndemniteJournaliere creerIndemniteJournaliereSansType() {
+    private IJIndemniteJournaliere creerIndemniteJournaliereSansType() {
         IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
         indemniteJournaliere.setDeductionRenteAI("0");
         indemniteJournaliere.setFractionReductionSiRevenuAvantReadaptation("0");

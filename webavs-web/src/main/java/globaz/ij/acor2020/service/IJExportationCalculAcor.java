@@ -127,18 +127,6 @@ class IJExportationCalculAcor {
 
         if (Objects.equals(ISFMembreFamille.CS_TYPE_RELATION_REQUERANT, membreFamille.getRelationAuRequerant())) {
 
-            // TODO JJO 08.09.2021 : Contrôler si le beneficiare est nécessaire et adapter en conséquence
-//          BeneficiaireIJ beneficiaireIJ = new BeneficiaireIJ();
-//          beneficiaireIJ.setAdressePaiement(assureType.getDonneesPostales().getBanque());
-//          beneficiaireIJ.setActif(true);
-//          beneficiaireIJ.setAdresseBeneficiaire(assureType.getDonneesPostales().getAdresse());
-//          beneficiaireIJ.setGenre(0);
-//          beneficiaireIJ.setDenomination(assureType.getNom() + " " + assureType.getPrenom());
-//          beneficiaireIJ.setDesignationSupplementaire(assureType.getNom() + " " + assureType.getPrenom());
-//          beneficiaireIJ.setId(String.valueOf(assureType.getNavs()));
-//          beneficiaireIJ.setModifie(false);
-//          indemniteJournaliereIJ.getBeneficiaire().add(beneficiaireIJ);
-
             IndemniteJournaliereIJ indemniteJournaliereIJ = new IndemniteJournaliereIJ();
             indemniteJournaliereIJ.getBasesCalcul().add(mapToBaseCalculCourante(prononce, ijCalculDecompteIJMapper, session));
             assureType.setIndemnitesJournalieres(indemniteJournaliereIJ);
@@ -208,8 +196,6 @@ class IJExportationCalculAcor {
             }
         }
 
-        //Pas utilisé donc non mapper.
-        //basesCalculCouranteIJ.setTauxLibre();
         basesCalculCouranteIJ.setId(prononce.getId());
         basesCalculCouranteIJ.setGenreIndemnite(prononce.isGrandeIJ() ? 1 : 2);
         basesCalculCouranteIJ.setOfficeAI(prononce.getOfficeAI());
@@ -261,16 +247,6 @@ class IJExportationCalculAcor {
             basesCalculCouranteIJ.getBasesCalculDecomptes().add(ijCalculDecompteIJMapper.map());
         }
         return basesCalculCouranteIJ;
-    }
-
-    private String loadRevenu(final IJPetiteIJ ijPetiteIJ) {
-        String revenu;
-        try {
-            revenu = ijPetiteIJ.loadRevenu().getRevenu();
-        } catch (Exception e) {
-            throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijPetiteIJ.getId());
-        }
-        return revenu;
     }
 
     private IJRevenu loadRevenuReadaptation(final IJPetiteIJ ijPetiteIJ) {
@@ -375,5 +351,4 @@ class IJExportationCalculAcor {
     private IJIJCalculee loadIjCalculee(final String idIJCalculee) {
         return entityService.load(IJIJCalculee.class, idIJCalculee);
     }
-
 }

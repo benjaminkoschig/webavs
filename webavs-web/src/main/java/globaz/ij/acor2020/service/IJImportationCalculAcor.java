@@ -12,6 +12,7 @@ import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
+import globaz.ij.db.prestations.IJPrestation;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.module.IJRepartitionPaiementBuilder;
 import globaz.ij.regles.IJBaseIndemnisationRegles;
@@ -22,7 +23,7 @@ import globaz.prestation.acor.PRAcorDomaineException;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 class IJImportationCalculAcor {
@@ -53,25 +54,28 @@ class IJImportationCalculAcor {
         // Récupère le NSS du FCalcul reçu d'ACOR
         String nss = checkAndGetNssIntegrite(fCalcul, prononce.getIdDemande());
 
-        List ijCalculees = new LinkedList();
+        List<IJIJCalculee> ijCalculees = new ArrayList<>();
+        IJIJCalculeeMapper mapperIJCalculee = new IJIJCalculeeMapper(nss, prononce, entityService);
+
         // Mapping des données liées aux bases de calcul.
         for (FCalcul.Cycle cycle :
                 fCalcul.getCycle()) {
 
             for (FCalcul.Cycle.BasesCalcul baseCalcul :
                     cycle.getBasesCalcul()) {
-                IJIJCalculee ijCalculee = IJIJCalculeeMapper.baseCalculMapToIJIJCalculee(baseCalcul, nss, prononce, entityService);
-                IJIJIndemniteJournaliereMapper.baseCalculEtIjMapToIndemniteJournaliere(baseCalcul, ijCalculee, entityService);
+                IJIJCalculee ijCalculee = mapperIJCalculee.map(baseCalcul);
+                IJIJIndemniteJournaliereMapper mapperIndemniteJournaliere = new IJIJIndemniteJournaliereMapper(ijCalculee,entityService);
+                mapperIndemniteJournaliere.map(baseCalcul);
                 ijCalculees.add(ijCalculee);
             }
         }
         // restituer ou annuler le prononcé d'origine si celui-ci est une
         // correction
-        RestitutionOuCorrectionPrononceOrigine(prononce, ijCalculees);
+        RestitutionCorrectionPrononceOrigine(prononce, ijCalculees);
         UpdateEtatPrononce(prononce);
     }
 
-    private void RestitutionOuCorrectionPrononceOrigine(IJPrononce prononce, List ijCalculees) {
+    private void RestitutionCorrectionPrononceOrigine(IJPrononce prononce, List<IJIJCalculee> ijCalculees) {
         try {
             if (!JadeStringUtil.isIntegerEmpty(prononce.getIdCorrection())) {
                 IJPrononce prononceOrigine = entityService.load(IJPrononce.class, prononce.getIdCorrection());
@@ -139,14 +143,15 @@ class IJImportationCalculAcor {
         }
 
         checkAndGetNssIntegrite(fCalcul, prononce.getIdDemande());
-        List prestations = new LinkedList();
+        List<IJPrestation> prestations = new ArrayList<>();
+        IJDecompteMapper mapper = new IJDecompteMapper(ijijCalculee.getId(), idBaseIndemnisation, entityService);
         // Mapping des données liées aux bases de calcul.
         for (FCalcul.Cycle cycle :
                 fCalcul.getCycle()) {
             for (FCalcul.Cycle.BasesCalcul baseCalcul :
                     cycle.getBasesCalcul()) {
                 // Mapping liés aux prestations
-                prestations.addAll(IJDecompteMapper.baseCalculDecompteMapToIJPrestation(baseCalcul, ijijCalculee.getId(), idBaseIndemnisation, entityService));
+                prestations.addAll(mapper.map(baseCalcul));
             }
         }
 
@@ -156,7 +161,7 @@ class IJImportationCalculAcor {
         UpdateEtatPrononce(prononce);
     }
 
-    private void creerRepartitionPaiement(String idBaseIndemnisation, IJPrononce prononce, List prestations, IJBaseIndemnisation baseIndemnisation) {
+    private void creerRepartitionPaiement(String idBaseIndemnisation, IJPrononce prononce, List<IJPrestation> prestations, IJBaseIndemnisation baseIndemnisation) {
         try {
             // repartir les paiements de la prestation
             IJRepartitionPaiementBuilder.getInstance().buildRepartitionPaiements(entityService.getSession(), entityService.getSession().getCurrentThreadTransaction(),

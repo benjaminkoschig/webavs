@@ -8,19 +8,22 @@ import ch.globaz.common.util.Strings;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.tools.PRDateFormater;
+import lombok.AllArgsConstructor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 public class IJDecompteMapper {
-    private IJDecompteMapper(){ }
 
-    public static List baseCalculDecompteMapToIJPrestation(FCalcul.Cycle.BasesCalcul basesCalcul, String idIJCalculee, String idBaseIndemnisation, EntityService entityService){
-        List prestations = new LinkedList();
-        for (DecompteIJ decompte:
-                basesCalcul.getDecompte()
-             ) {
+    private final String idIJCalculee;
+    private final String idBaseIndemnisation;
+    private final EntityService entityService;
+
+    public List<IJPrestation> map(FCalcul.Cycle.BasesCalcul basesCalcul){
+        List<IJPrestation> prestations = new ArrayList<>();
+        for (DecompteIJ decompte: basesCalcul.getDecompte()) {
             IJPrestation prestation = new IJPrestation();
 
             prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(decompte.getDateDebut())));
@@ -39,7 +42,7 @@ public class IJDecompteMapper {
         return prestations;
     }
 
-    private static void setPrestationDataFromDecompteCategorie(IJPrestation prestation, DecompteIJ decompte, String typeMesure){
+    private void setPrestationDataFromDecompteCategorie(IJPrestation prestation, DecompteIJ decompte, String typeMesure){
         Optional<Decompte.DecompteCategorie> decompteCategorie = decompte.getDecompteCategorie().stream()
                 .filter(decompCat ->
                         typeMesure.equals(String.valueOf(decompCat.getCategorie()))).findFirst();
