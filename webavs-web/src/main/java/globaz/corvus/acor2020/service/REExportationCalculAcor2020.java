@@ -50,6 +50,7 @@ import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.helpers.historiques.REHistoriqueRentesJoinTiersHelper;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
@@ -329,6 +330,9 @@ public class REExportationCalculAcor2020 {
 
     private void addRentesAssures(AssureType assure, ISFMembreFamilleRequerant membre) {
         try {
+            if(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(membre.getRelationAuRequerant())) {
+                reloadHistorique(membre.getIdTiers());
+            }
             for (REHistoriqueRentes rente : getRentesEnCours(membre.getIdTiers())) {
                 if (StringUtils.equals(IREDemandeRente.REVISION_10EME_REVISION, rente.getDroitApplique())) {
                     if (isRenteExtraordinaire(rente.getCodePrestation())) {
@@ -348,6 +352,36 @@ public class REExportationCalculAcor2020 {
             }
         } catch (Exception e) {
             LOG.error("Erreur lors de la récupération des rentes en cours.", e);
+        }
+    }
+
+    private void reloadHistorique(String idTiers) throws PRACORException {
+        BTransaction transaction = null;
+        try {
+            transaction = (BTransaction) getSession().newTransaction();
+            if (!transaction.isOpened()) {
+                transaction.openTransaction();
+            }
+            REHistoriqueRentesJoinTiersHelper.doReloadHistorique(getSession(), transaction, idTiers);
+        } catch (Exception e) {
+            String message = getSession().getLabel("ERREUR_INSCRIPTIONS_CI_ENFANT");
+            message += " Parent Exception message : " + e.getMessage();
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception e1) {
+                    message += " Exception during transaction rollback. Error message : " + e1.getMessage();
+                }
+            }
+            throw new PRACORException(message, e);
+        } finally {
+            if (transaction != null) {
+                try {
+                    transaction.closeTransaction();
+                } catch (Exception e) {
+                    JadeLogger.error(this, e);
+                }
+            }
         }
     }
 

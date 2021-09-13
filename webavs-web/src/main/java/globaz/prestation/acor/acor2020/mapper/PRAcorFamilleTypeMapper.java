@@ -8,6 +8,7 @@ import globaz.corvus.acor2020.business.ImplMembreFamilleRequerantWrapper;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import org.apache.axis.utils.StringUtils;
@@ -132,16 +133,27 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                     l.setDateFin(relation.getDateFin());
                 }
 
-                // mise à jour date de fin si décè du conjoint
-                if (!conjoint.getDateDeces().isEmpty() && l.getDateFin().isEmpty()
+                // mise à jour date de fin si décès du conjoint ou requérant
+                String dateDeces = conjoint.getDateDeces();
+                if (conjoint instanceof ImplMembreFamilleRequerantWrapper) {
+                    String dateDecesRequerant = ((ImplMembreFamilleRequerantWrapper)conjoint).getTiersRequerant().getDateDeces();
+                    if(!dateDeces.isEmpty()) {
+                        if(!dateDecesRequerant.isEmpty() && JadeDateUtil.isDateBefore(dateDecesRequerant, dateDeces)) {
+                            dateDeces = dateDecesRequerant;
+                        }
+                    } else if(!dateDecesRequerant.isEmpty()) {
+                        dateDeces = dateDecesRequerant;
+                    }
+                }
+                if (!dateDeces.isEmpty() && l.getDateFin().isEmpty()
                         && (ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         || (ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE.equals(relation.getTypeLien())))) {
-                    l.setDateFin(conjoint.getDateDeces());
+                    l.setDateFin(dateDeces);
                     l.setTypeLien(ISFSituationFamiliale.CS_TYPE_LIEN_VEUF);
-                } else if(!conjoint.getDateDeces().isEmpty() && l.getDateFin().isEmpty()
+                } else if(!dateDeces.isEmpty() && l.getDateFin().isEmpty()
                         && (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
                         || (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE.equals(relation.getTypeLien())))) {
-                    l.setDateFin(conjoint.getDateDeces());
+                    l.setDateFin(dateDeces);
                     l.setTypeLien(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES);
                 }
 
