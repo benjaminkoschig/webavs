@@ -6,13 +6,14 @@ import globaz.hera.api.ISFSituationFamiliale;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PRAccorPeriodeMapper {
+public class PRAcorPeriodeMapper {
 
     public static ISFPeriode[] recupererPeriodesMembre(ISFSituationFamiliale situationFamiliale,ISFMembreFamilleRequerant membre) {
         ISFPeriode[] periodes;
         try {
            return situationFamiliale.getPeriodes(membre.getIdMembreFamille());
-
+            // TODO JJO 13.09.2021 : Si pas d'utiliter via retour de test supprimer le code commenté et la méthode
+            // TODO JJO 13.09.2021 : gettypePériode.
 //            // On filtre les périodes qui ne sont pas connues d'ACOR
 //            List<ISFPeriode> listPeriode = new ArrayList<>();
 //            for (int i = 0; i < periodesToFilre.length; i++) {

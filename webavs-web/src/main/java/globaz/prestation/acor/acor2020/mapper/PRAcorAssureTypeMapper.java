@@ -79,7 +79,7 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
 
     private void addPeriodesAssure(AssureType assure, ISFMembreFamilleRequerant membre) {
 
-        ISFPeriode[] periodes = PRAccorPeriodeMapper.recupererPeriodesMembre(this.situationFamiliale, membre);
+        ISFPeriode[] periodes = PRAcorPeriodeMapper.recupererPeriodesMembre(this.situationFamiliale, membre);
         if (this.addPeriodeFunction != null) {
             periodes = this.addPeriodeFunction.apply(membre, periodes);
         }

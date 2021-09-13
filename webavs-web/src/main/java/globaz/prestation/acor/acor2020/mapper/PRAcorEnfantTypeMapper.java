@@ -226,7 +226,7 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
     }
 
     private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
-        return PRAccorPeriodeMapper.recupererPeriodesMembre(this.situationFamiliale, membre);
+        return PRAcorPeriodeMapper.recupererPeriodesMembre(this.situationFamiliale, membre);
     }
 
     private PeriodeBTEType createPeriodeBTE(ISFPeriode isfPeriode) {

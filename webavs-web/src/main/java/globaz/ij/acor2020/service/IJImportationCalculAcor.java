@@ -14,6 +14,7 @@ import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.module.IJRepartitionPaiementBuilder;
+import globaz.ij.regles.IJBaseIndemnisationRegles;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
@@ -92,6 +93,7 @@ class IJImportationCalculAcor {
     void importDecompteAcor(String idIJCalculee, String idBaseIndemnisation, FCalcul fCalcul) {
         IJIJCalculee ijijCalculee;
         IJPrononce prononce;
+        IJBaseIndemnisation ijBaseIndemnisation;
         try {
             ijijCalculee = entityService.load(IJIJCalculee.class, idIJCalculee);
             if(ijijCalculee == null){
@@ -101,9 +103,40 @@ class IJImportationCalculAcor {
             if(prononce == null){
                 throw new PRACORException("Réponse invalide : Impossible de retrouver l'ij calculee du decompte. ");
             }
+            ijBaseIndemnisation = entityService.load(IJBaseIndemnisation.class, idBaseIndemnisation);
+            if(ijBaseIndemnisation == null){
+                throw new PRACORException("Réponse invalide : Impossible de retrouver la base d'indemnisation du decompte. ");
+            }
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
         }
+
+        /** TODO JJO 13.09.2021 : Si pas d'utiliter via retour de test supprimer le code commenté
+        // Dans le cas d'une base d'indemnistation ayant 2 prestations, on
+        // itère sur chaque prestations
+        // pour importer le résultat de acor.
+        // Lors du traitement de la 2ème prestation, il ne faut pas annuler
+        // ou restituer
+        // La base parent, car déjà fait...
+        if (!(IIJBaseIndemnisation.CS_VALIDE.equals(base.getCsEtat()) && (caViewBean.getIdsIJCalculees().size() > 1)
+                && !JadeStringUtil.isIntegerEmpty(base.getIdParent()))) {
+            // restituer ou annuler la base d'origine si celle-ci est une correction
+            IJBaseIndemnisationRegles.correction(entityService.getSession(),
+                                                 entityService.getSession().getCurrentThreadTransaction(),
+                                                 ijBaseIndemnisation);
+        }
+        **/
+
+        // reinitialiser la base si des prestations ont deja ete calculees
+        if (IIJBaseIndemnisation.CS_VALIDE.equals(ijBaseIndemnisation.getCsEtat())) {
+            try {
+                IJBaseIndemnisationRegles.reinitialiser(entityService.getSession(), entityService.getSession().getCurrentThreadTransaction(), ijBaseIndemnisation, ijijCalculee
+                        .getIdIJCalculee());
+            }catch (Exception e){
+                throw new CommonTechnicalException("Erreur lors de la réinitialisation de la base d'indemnisation.");
+            }
+        }
+
         checkAndGetNssIntegrite(fCalcul, prononce.getIdDemande());
         List prestations = new LinkedList();
         // Mapping des données liées aux bases de calcul.
