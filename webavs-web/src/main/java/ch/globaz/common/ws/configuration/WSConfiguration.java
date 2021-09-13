@@ -1,11 +1,14 @@
 package ch.globaz.common.ws.configuration;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import ch.globaz.common.ws.FilterMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
@@ -153,21 +156,35 @@ public class WSConfiguration extends Application {
     }
 
     private static void gererException(final HttpServletRequest request, final HttpServletResponse response, final Exception e) {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        Response exceptionResponse;
 
-        WSExceptionMapper wsExceptionMapper = new WSExceptionMapper();
-        wsExceptionMapper.setRequest(request);
-        wsExceptionMapper.setResponse(response);
+        try {
+            WSExceptionMapper wsExceptionMapper = new WSExceptionMapper();
+            wsExceptionMapper.setRequest(request);
+            wsExceptionMapper.setResponse(response);
 
-        Response exceptionResponse = wsExceptionMapper.toResponse(e);
-        response.setStatus(exceptionResponse.getStatus());
-        exceptionResponse.getMetadata()
-                         .forEach((key, value) ->
-                                          response.addHeader(key, value.stream().map(String::valueOf).collect(Collectors.joining(" ; ")))
-                         );
+            exceptionResponse = wsExceptionMapper.toResponse(e);
+            response.setStatus(exceptionResponse.getStatus());
+            exceptionResponse.getMetadata()
+                             .forEach((key, value) ->
+                                              response.addHeader(key, value.stream().map(String::valueOf).collect(Collectors.joining(" ; ")))
+                             );
+        } finally {
+            if (session != null) {
+                try {
+                    session.getCurrentThreadTransaction().rollback();
+                } catch (Exception ex) {
+                    throw new CommonTechnicalException(ex);
+                }
+            }
+        }
 
         Exceptions.checkedToUnChecked(() -> {
             PrintWriter out = response.getWriter();
-            out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
+            if (exceptionResponse != null) {
+                out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
+            }
             out.flush();
         });
     }
