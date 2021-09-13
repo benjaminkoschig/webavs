@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
-@ApplicationPath("/rest")
+@ApplicationPath("/api")
 public class WSConfiguration extends Application {
     public static WSConfiguration INSTANCE;
 
@@ -58,7 +58,7 @@ public class WSConfiguration extends Application {
                                                  .acceptPackages("globaz", "ch.globaz")
                                                  .scan()) {
             classesTemp = loadClasses(result);
-            exceptionMapperClassesTemp = loadExceptionHanlder(result);
+            exceptionMapperClassesTemp = loadExceptionHandler(result);
             filterMappersTemp = resolveFilter(result);
 
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class WSConfiguration extends Application {
      *
      * @return une map qui à comme clé le path ou l'on applique exception.
      */
-    private static Map<String /*path*/, ExceptionHandler> loadExceptionHanlder(final ScanResult result) {
+    private static Map<String /*path*/, ExceptionHandler> loadExceptionHandler(final ScanResult result) {
         List<Class<?>> classList = result.getClassesWithAnnotation(ExceptionMapper.class).loadClasses();
         Map<String, ExceptionHandler> map = classList.stream()
                                                      .collect(Collectors.toMap(

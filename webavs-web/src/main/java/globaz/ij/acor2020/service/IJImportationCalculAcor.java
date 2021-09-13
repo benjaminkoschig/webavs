@@ -107,6 +107,7 @@ class IJImportationCalculAcor {
             if(ijBaseIndemnisation == null){
                 throw new PRACORException("Réponse invalide : Impossible de retrouver la base d'indemnisation du decompte. ");
             }
+
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
         }

@@ -2,11 +2,12 @@ package ch.globaz.common.ws.configuration;
 
 import com.google.common.base.Throwables;
 import lombok.Data;
+import lombok.Value;
 
 /**
  * Cette à pour but d'être un dto et de remonter des informations sur une exception.
  */
-@Data
+@Value
 public class ExceptionRequestInfo {
 
     private final RequestInfo requestInfo;

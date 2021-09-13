@@ -14,13 +14,10 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
 
     private static final IJAcor2020TokenService INSTANCE = new IJAcor2020TokenService();
     private static final String API_PATH = createApiPath(IJAcor2020ApiRest.class);
-
-    private static final String EXPORT_CALCUL_URL = API_PATH + "/calcul/export";
-    private static final String IMPORT_CALCUL_URL = API_PATH + "/calcul/import";
-
-    private static final String EXPORT_DECOMPTE_URL =  API_PATH + "/decompte/export";
-    private static final String IMPORT_DECOMPTE_URL =  API_PATH + "/decompte/import";
-
+    private static final String CALCUL_URL = API_PATH + "/calcul";
+    private static final String DECOMPTE_URL =  API_PATH + "/decompte";
+    private static final String ACTION_IMPORT = "import";
+    private static final String ACTION_EXPORT = "export";
 
     private IJAcor2020TokenService() {}
 
@@ -30,9 +27,9 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
 
     public static String createTokenCalcul(BSession bSession, final String idPrononce, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
-
-        claims.put("exportIJUrl", EXPORT_CALCUL_URL + "/" + idPrononce);
-        claims.put("importUrl", IMPORT_CALCUL_URL + "/" +  idPrononce);
+        String urlBase = CALCUL_URL + "/" + idPrononce + "/";
+        claims.put("exportIJUrl",  urlBase + ACTION_EXPORT);
+        claims.put("importUrl", urlBase + ACTION_IMPORT);
         claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);
@@ -40,9 +37,9 @@ public class IJAcor2020TokenService extends Acor2020TokenServiceAbstract<IJAcor2
 
     public static String createTokenDecompte(BSession bSession, final String idijCalculee, final String idBaseIdemnisation, final String noAVSAssure) {
         Map<String, Object> claims = new HashMap<>();
-
-        claims.put("exportIJUrl", EXPORT_DECOMPTE_URL + "/" +  idijCalculee + "/" + idBaseIdemnisation);
-        claims.put("importUrl", IMPORT_DECOMPTE_URL+ "/" +  idijCalculee + "/" + idBaseIdemnisation);
+        String urlBase = DECOMPTE_URL + "/" + idijCalculee + "/" + idBaseIdemnisation + "/";
+        claims.put("exportIJUrl", urlBase + ACTION_EXPORT );
+        claims.put("importUrl", urlBase + ACTION_IMPORT);
         claims.put("recordId", noAVSAssure);
 
         return creatToken(claims, bSession);

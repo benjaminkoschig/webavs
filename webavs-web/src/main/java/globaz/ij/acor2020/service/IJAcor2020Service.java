@@ -49,6 +49,4 @@ public class IJAcor2020Service {
         IJImportationCalculAcor importer = new IJImportationCalculAcor();
         importer.importDecompteAcor(idIJCalculee, idBaseIndemnisation, fCalcul);
     }
-
-
 }

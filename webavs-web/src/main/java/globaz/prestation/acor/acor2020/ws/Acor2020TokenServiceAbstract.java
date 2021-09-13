@@ -3,6 +3,7 @@ package globaz.prestation.acor.acor2020.ws;
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.util.Slashs;
+import ch.globaz.common.ws.configuration.WSConfiguration;
 import globaz.globall.db.BSession;
 import globaz.jade.i18n.JadeI18n;
 import io.jsonwebtoken.Claims;
@@ -11,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import java.security.Key;
 import java.util.Calendar;
@@ -22,7 +24,7 @@ import java.util.Objects;
 public abstract class Acor2020TokenServiceAbstract<T extends Acor2020Token> implements Acor2020TokenService<T> {
 
     private static final String NOM_HOTE = resolveNomHote();
-    private static final String BASE_REST_URI = NOM_HOTE + "/rest";
+    private static final String BASE_REST_URI = NOM_HOTE + WSConfiguration.class.getAnnotation(ApplicationPath.class).value();
     private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final String LANGUE = "langue";
     private static final String EMAIL = "email";

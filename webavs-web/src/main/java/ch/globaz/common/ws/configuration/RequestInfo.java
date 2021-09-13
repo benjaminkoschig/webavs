@@ -1,13 +1,14 @@
 package ch.globaz.common.ws.configuration;
 
 import lombok.Data;
+import lombok.Value;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Permet d'avoir des informations sur une request qui sont facilement sérializable(DTO).
  */
-@Data
+@Value
 public class RequestInfo {
     private final String requestURI;
     private final String contextPath;

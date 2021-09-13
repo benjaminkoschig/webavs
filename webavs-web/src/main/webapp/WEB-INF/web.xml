@@ -10,15 +10,7 @@
 		<filter-name>RequestFilter</filter-name>
 		<filter-class>globaz.jade.servlet.filter.JadeRequestFilter</filter-class>
 	</filter>
-	<filter>
-		<filter-name>ServletFilter</filter-name>
-		<filter-class>ch.globaz.common.ws.configuration.WSMainFilter</filter-class>
-	</filter>
 
-	<filter-mapping>
-		<filter-name>ServletFilter</filter-name>
-		<url-pattern>/rest/*</url-pattern>
-	</filter-mapping>
 	<!--
 	<filter id="GlobazGZIPFilter">
 		<filter-name>GZIPFilter</filter-name>
@@ -302,6 +294,15 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<filter>
+		<filter-name>ServletFilter</filter-name>
+		<filter-class>ch.globaz.common.ws.configuration.WSMainFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>ServletFilter</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
 
     <servlet id="WSRestServlet">
         <servlet-name>WSRest</servlet-name>
@@ -318,7 +319,7 @@
 
     <servlet-mapping id="WSRestServletMapping">
         <servlet-name>WSRest</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
 	<servlet-mapping id="GlobazVulpeculaServletMapping">

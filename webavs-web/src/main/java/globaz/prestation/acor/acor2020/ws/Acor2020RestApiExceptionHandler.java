@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 
 @ExceptionMapper("/acor2020")
 @Slf4j
-public class Acor2020RestApiExceptionMapper implements ExceptionHandler {
+public class Acor2020RestApiExceptionHandler implements ExceptionHandler {
 
     @Override
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
