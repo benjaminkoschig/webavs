@@ -77,7 +77,7 @@ public class REAcor2020ApiRest {
     private <T> Response execute(String token, T object, BiConsumer<T, REAcor2020Token> consumer) {
         REAcor2020Token acor2020Token = REAcor2020TokenService.getInstance().convertToken(token);
         consumer.accept(object, acor2020Token);
-        return Response.ok().build();
+        return Response.ok("{}").build();
     }
 
 }

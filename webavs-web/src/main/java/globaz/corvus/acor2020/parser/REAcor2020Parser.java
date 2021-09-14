@@ -296,7 +296,7 @@ public class REAcor2020Parser {
                                             }
                                             pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
                                             pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                            if(nonAjournement) {
+                                            if (nonAjournement) {
                                                 pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
                                             }
                                             pd.setCsTypePaiement(null);
@@ -607,10 +607,10 @@ public class REAcor2020Parser {
                     case 5:
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
                         fCalcul.getAnalysePeriodes().stream().filter(analysePeriodes -> nssTiersBaseCalcul.equals(analysePeriodes.getBeneficiaire()))
-                               .findFirst()
-                               .ifPresent(analysePeriodes -> {
-                                   bc.setRevenuJeunesse(Objects.toString( analysePeriodes.getRevJTot(), StringUtils.EMPTY));
-                               });
+                                .findFirst()
+                                .ifPresent(analysePeriodes -> {
+                                    bc.setRevenuJeunesse(Objects.toString(analysePeriodes.getRevJTot(), StringUtils.EMPTY));
+                                });
 //        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
                         StringBuilder periodeJeunesse = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
                         periodeJeunesse.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
@@ -923,7 +923,7 @@ public class REAcor2020Parser {
         }
 
 //        ra.setMontantPrestation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_PRESTATION")); $r12
-        if(rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT)) {
+        if (rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT)) {
             ra.setMontantPrestation(Objects.toString(dernierEtat.getMontant(), StringUtils.EMPTY));
         }
 
@@ -935,17 +935,19 @@ public class REAcor2020Parser {
         ra.setCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
         ra.setAnneeMontantRAM(REACORParser.computeAnneeMontantRAM(ra, session));
 
-        // TODO : supplément de veuvage non trouvé dans le xml -> on set la valeur à 0
         // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
-        ra.setSupplementVeuvage("0");
-        //ra.setSupplementVeuvage(rente.isSupplementVeuvage(), StringUtils.EMPTY));
+        if (rente.isSupplementVeuvage()) {
+            ra.setSupplementVeuvage("1");
+        } else {
+            ra.setSupplementVeuvage("0");
+        }
 
 //         ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
         ra.setPrescriptionAppliquee(getNombreAnneePrescriptionAppliquee(rente));
 
         List<Integer> refugies = fCalcul.getAssure().stream().filter(assure -> StringUtils.equals(assure.getId().getValue(), prestation.getBeneficiaire())).map(assure -> assure.getRefugie()).collect(Collectors.toList());
         if (refugies.stream().anyMatch(value -> Objects.nonNull(value))) {
-        // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
+            // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
             ra.setCodeRefugie("1");
         } else {
             ra.setCodeRefugie("0");
@@ -1041,7 +1043,7 @@ public class REAcor2020Parser {
         pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getDebut(), StringUtils.EMPTY)));
         pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getFin(), StringUtils.EMPTY)));
         //        pd.setMontant(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT")); $p6
-        if(isNonAjournement) {
+        if (isNonAjournement) {
             pd.setMontant(Objects.toString(etat.getMontant(), StringUtils.EMPTY));
         }
         //        pd.setRam(REACORAbstractFlatFileParser.getField(line, fields, "RAM")); $p7
