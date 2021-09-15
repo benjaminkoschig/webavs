@@ -11,6 +11,16 @@
 		<filter-class>globaz.jade.servlet.filter.JadeRequestFilter</filter-class>
 	</filter>
 
+	<filter>
+		<filter-name>ServletFilter</filter-name>
+		<filter-class>ch.globaz.common.ws.configuration.WSMainFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>ServletFilter</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+
 	<!--
 	<filter id="GlobazGZIPFilter">
 		<filter-name>GZIPFilter</filter-name>
@@ -294,22 +304,12 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
-	<filter>
-		<filter-name>ServletFilter</filter-name>
-		<filter-class>ch.globaz.common.ws.configuration.WSMainFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>ServletFilter</filter-name>
-		<url-pattern>/api/*</url-pattern>
-	</filter-mapping>
-
     <servlet id="WSRestServlet">
         <servlet-name>WSRest</servlet-name>
         <!-- TOMCAT -->
-<!--        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <!-- IBM -->
-		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
+<!--		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>-->
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>ch.globaz.common.ws.configuration.WSConfiguration</param-value>
