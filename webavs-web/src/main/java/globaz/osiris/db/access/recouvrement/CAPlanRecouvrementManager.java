@@ -74,7 +74,7 @@ public class CAPlanRecouvrementManager extends BManager {
         idModeRecouvrementNotIn.add(CAPlanRecouvrement.CS_AVANCE_APG);
         idModeRecouvrementNotIn.add(CAPlanRecouvrement.CS_AVANCE_RENTES);
         idModeRecouvrementNotIn.add(CAPlanRecouvrement.CS_AVANCE_IJAI);
-
+        idModeRecouvrementNotIn.add(CAPlanRecouvrement.CS_AVANCE_PTRA);
         setForIdModeRecouvrementNotIn(idModeRecouvrementNotIn);
     }
 

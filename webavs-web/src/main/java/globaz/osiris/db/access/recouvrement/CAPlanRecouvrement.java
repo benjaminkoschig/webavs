@@ -44,6 +44,7 @@ public class CAPlanRecouvrement extends CABEntity {
     public static final String CS_AVANCE_APG = "223006";
     public static final String CS_AVANCE_IJAI = "223008";
     public static final String CS_AVANCE_RENTES = "223007";
+    public static final String CS_AVANCE_PTRA = "223009";
     // OSIPLRMOD : Plan de recouvrement mode
     public final static String CS_BVR = "223001";
     public final static String CS_COMPENSATION = "223004";

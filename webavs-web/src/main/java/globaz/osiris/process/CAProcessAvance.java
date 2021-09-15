@@ -151,7 +151,7 @@ public class CAProcessAvance extends BProcess {
         String idJournal = getJournal();
 
         versement.setIdJournal(idJournal);
-        versement.setIdSection(getIdDestinationSection(avance.getIdCompteAnnexe(), idJournal));
+        versement.setIdSection(getIdDestinationSection(avance.getIdCompteAnnexe(), idJournal,avance.getIdModeRecouvrement()));
         versement.setMotif(avance.getLibelle());
 
         if (avance.getIdModeRecouvrement().equals(CAPlanRecouvrement.CS_AVANCE_APG)) {
@@ -161,7 +161,9 @@ public class CAProcessAvance extends BProcess {
             versement.setMotif(avance.getIdExterneRole() + " " + avance.getLibelle());
         } else if (avance.getIdModeRecouvrement().equals(CAPlanRecouvrement.CS_AVANCE_IJAI)) {
             versement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_IJAI);
-        } else {
+        } else if (avance.getIdModeRecouvrement().equals(CAPlanRecouvrement.CS_AVANCE_PTRA)) {
+            versement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE);
+        }  else {
             versement.setNatureOrdre(CAOrdreGroupe.ORDRESTOUS);
         }
 
@@ -331,12 +333,16 @@ public class CAProcessAvance extends BProcess {
      * @return L'id de la section de destination.
      * @throws Exception
      */
-    private String getIdDestinationSection(String idCompteAnnexe, String idJournal) throws Exception {
+    private String getIdDestinationSection(String idCompteAnnexe, String idJournal,String modeRecouvrement) throws Exception {
         CASectionManager manager = new CASectionManager();
         manager.setSession(getSession());
         manager.setForIdCompteAnnexe(idCompteAnnexe);
-
         manager.setForIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
+        if(modeRecouvrement.equals(CAPlanRecouvrement.CS_AVANCE_PTRA)){
+            manager.setForIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA);
+        }else{
+            manager.setForIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
+        }
 
         manager.find(getTransaction());
 

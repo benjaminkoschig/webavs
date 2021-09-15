@@ -5,6 +5,7 @@
 <%@ page import="globaz.osiris.db.recouvrement.*,globaz.globall.util.*,globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
+<%@ page import="globaz.osiris.db.access.recouvrement.CAPlanRecouvrement" %>
 <%
 idEcran="GCA60007";
 	CAPlanRecouvrementViewBean viewBean = (globaz.osiris.db.recouvrement.CAPlanRecouvrementViewBean)session.getAttribute("viewBean");
@@ -164,6 +165,7 @@ idEcran="GCA60007";
 	    	exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_APG);
 	    	exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_RENTES);
 	    	exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_IJAI);
+			exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_PTRA);
 	    %>
 		<td class="control">
 			<ct:FWCodeSelectTag codeType="OSIPLRMOD" defaut="<%=viewBean.getIdModeRecouvrement()%>" name="idModeRecouvrement" except="<%=exceptMode%>" />

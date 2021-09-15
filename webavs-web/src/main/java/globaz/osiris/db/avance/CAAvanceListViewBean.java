@@ -29,6 +29,7 @@ public class CAAvanceListViewBean extends CAPlanRecouvrementManager implements F
         idModeRecouvrementIn.add(CAPlanRecouvrement.CS_AVANCE_APG);
         idModeRecouvrementIn.add(CAPlanRecouvrement.CS_AVANCE_RENTES);
         idModeRecouvrementIn.add(CAPlanRecouvrement.CS_AVANCE_IJAI);
+        idModeRecouvrementIn.add(CAPlanRecouvrement.CS_AVANCE_PTRA);
 
         setForIdModeRecouvrementIn(idModeRecouvrementIn);
 

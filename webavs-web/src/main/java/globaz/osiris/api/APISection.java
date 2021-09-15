@@ -76,7 +76,7 @@ public interface APISection extends BIEntity {
     String CATEGORIE_SECTION_RENTES = "28";
     String CATEGORIE_SECTION_RESTITUTIONS = "26";
     String CATEGORIE_SECTION_RETOUR = "72";
-
+    String CATEGORIE_SECTION_AVANCE_PTRA = "68";
     // Constante pour description des sections d'intérêts
     String DEC_INT_MORATOIRE_1_SEMESTRE = "256061";
     String DEC_INT_MORATOIRE_2_SEMESTRE = "256062";

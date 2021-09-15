@@ -174,6 +174,7 @@
 			exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_APG);
 			exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_RENTES);
 			exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_IJAI);
+			exceptMode.add(globaz.osiris.db.access.recouvrement.CAPlanRecouvrement.CS_AVANCE_PTRA);
 		%>
 		<td class="control">
 			<ct:FWCodeSelectTag codeType="OSIPLRMOD" defaut="<%=viewBean.getIdModeRecouvrement()%>" name="idModeRecouvrement" except="<%=exceptMode%>" />
