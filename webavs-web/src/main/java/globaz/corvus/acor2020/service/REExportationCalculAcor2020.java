@@ -363,9 +363,11 @@ public class REExportationCalculAcor2020 {
                 transaction.openTransaction();
             }
             REHistoriqueRentesJoinTiersHelper.doReloadHistorique(getSession(), transaction, idTiers);
+            if ((transaction != null) && !transaction.hasErrors() && !transaction.isRollbackOnly()) {
+                transaction.commit();
+            }
         } catch (Exception e) {
-            String message = getSession().getLabel("ERREUR_INSCRIPTIONS_CI_ENFANT");
-            message += " Parent Exception message : " + e.getMessage();
+            String message = " Parent Exception message : " + e.getMessage();
             if (transaction != null) {
                 try {
                     transaction.rollback();
