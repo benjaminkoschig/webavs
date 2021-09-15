@@ -71,7 +71,7 @@ public class AFPrevisionAcompte_Doc extends AFAbstractSalaires_Doc {
      * Genère le texte de modification de la périodicité pour le document
      * prévision pour acompte si les positions existent dans le catalogue.
      *
-     * @return String vide ou les texte du catalogues déjà initilisé avec leur paramètres
+     * @return String vide ou les texte du catalogues déjà utilisé avec leur paramètres
      * @throws Exception
      * @param niveau
      */
@@ -81,14 +81,15 @@ public class AFPrevisionAcompte_Doc extends AFAbstractSalaires_Doc {
         // Test si le niveau de catalogues pour le texte de périodicité existe
         if (StringUtils.isNotBlank(texte(niveau, 4)) && StringUtils.isNotBlank(periodiciteCode)) {
             String periodiciteLibelle = CodeSystemUtils.searchCodeSystemTraduction(periodiciteCode, getSession(), getIsoLangueDestinataire()).getTraduction().toLowerCase(Locale.ROOT);
-            periodiciteTexte = texte(5, 4) + "\n\n"; // ajouter une fin de paragraphe
+            periodiciteTexte = texte(niveau, 4) + "\n"; // ajoute une fin de paragraphe
             if (ALCSAffilie.PERIODICITE_MEN.equals(periodiciteCode)) {
-                periodiciteTexte += texte(5, 5);
+                periodiciteTexte += texte(niveau, 5);
             } else if (ALCSAffilie.PERIODICITE_TRI.equals(periodiciteCode)) {
-                periodiciteTexte += texte(5, 6);
+                periodiciteTexte += texte(niveau, 6);
             } else if (ALCSAffilie.PERIODICITE_ANN.equals(periodiciteCode)) {
-                periodiciteTexte += texte(5, 7);
+                periodiciteTexte += texte(niveau, 7);
             }
+            periodiciteTexte += "\n\n"; // ajoute une fin de paragraphe
             periodiciteTexte = format(periodiciteTexte, new String[]{periodiciteLibelle});
         }
         return periodiciteTexte;
