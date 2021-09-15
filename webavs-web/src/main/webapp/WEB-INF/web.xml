@@ -307,9 +307,9 @@
     <servlet id="WSRestServlet">
         <servlet-name>WSRest</servlet-name>
         <!-- TOMCAT -->
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+<!--        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
         <!-- IBM -->
-<!--		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>-->
+		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>ch.globaz.common.ws.configuration.WSConfiguration</param-value>
