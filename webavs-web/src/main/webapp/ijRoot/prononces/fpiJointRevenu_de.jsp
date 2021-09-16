@@ -15,7 +15,7 @@ bButtonDelete = false;
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
-<script language="JavaScript">
+<script>
 
   function add() {
   	//pas de add ici
@@ -33,11 +33,9 @@ bButtonDelete = false;
   }
 
   function cancel() {
-  	//pas de cancel ici
   }
 
   function del() {
-    //pas de delete possible ici
   }
   
   	function init(){
@@ -48,8 +46,6 @@ bButtonDelete = false;
 		document.forms[0].elements('userAction').value = "ij.prononces.fpiJointRevenu.arreterEtape5";
   		document.forms[0].submit();
  	}
- 	
-
 	
 </script>
 <%-- /tpl:put --%>
@@ -73,7 +69,7 @@ bButtonDelete = false;
 						<TR>
 							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
 							<TD><ct:select name="csSituationAssure" wantBlank="true" defaultValue="<%=viewBean.getCsSituationAssure()%>">
-									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prestations.IIJPetiteIJCalculee.CS_GROUPE_MODE_CALCUL%>">										
+									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prestations.IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI%>">
 									</ct:optionsCodesSystems>
 								</ct:select></TD>
 						</TR>

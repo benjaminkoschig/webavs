@@ -204,8 +204,7 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						<TR>
 							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
 							<TD colspan="2">
-								<%-- TODO : liste des codes pour FPI--%>
-<%--								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prestations.IIJPetiteIJCalculee.CS_GROUPE_MODE_CALCUL%>" name="csModeCalcul" defaut="<%=viewBean.getCsModeCalcul()%>"/>--%>
+								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prestations.IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI%>" name="csModeCalcul" defaut="<%=viewBean.getCsModeCalcul()%>"/>
 							</TD>
 						</TR>
 						<%}else{%>
