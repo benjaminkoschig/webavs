@@ -5,6 +5,8 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BSession;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.api.ITIAdministration;
 import globaz.pyxis.constantes.IConstantes;
@@ -12,13 +14,15 @@ import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+
+import java.util.Locale;
 
 @Slf4j
 @AllArgsConstructor
 public class PRAcorDemandeTypeMapper {
 
     private final BSession session;
+    private final PRTiersWrapper tiersRequerant;
 
     public DemandeType map() {
         DemandeType demandeType = new DemandeType();
@@ -28,7 +32,8 @@ public class PRAcorDemandeTypeMapper {
         //TODO adresse de la caisse par des propriétés applications à créer
         demandeType.setAdresseCaisse(createAdresseCaisse());
         demandeType.setMoisRapport(0);
-        demandeType.setLangue(StringUtils.lowerCase(session.getIdLangue()));
+        String langueISO = PRUtil.getISOLangueTiers(tiersRequerant.getLangue());
+        demandeType.setLangue(langueISO.toLowerCase(Locale.ROOT).substring(0,1));
         return demandeType;
     }
 

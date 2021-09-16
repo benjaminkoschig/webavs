@@ -38,6 +38,7 @@ import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.acor.BaseCalculWrapper;
 import globaz.corvus.utils.acor.DemandeRenteWrapper;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -51,12 +52,15 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.i18n.JadeI18n;
+import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -74,6 +78,7 @@ public class REImportationCalculAcor2020 {
 
     private static final Logger LOG = Logger.getLogger(REImportationCalculAcor2020.class);
 
+    private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
@@ -82,6 +87,7 @@ public class REImportationCalculAcor2020 {
         Long idCopieDemande = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
+        ISFMembreFamilleRequerant[] mf;
 
         try {
             REDemandeRente demandeRente = loadDemandeRente(session, null, idDemande);
@@ -141,7 +147,7 @@ public class REImportationCalculAcor2020 {
                 ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
                         ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
 
-                ISFMembreFamilleRequerant[] mf = sf.getMembresFamilleRequerant(idTiers);
+                mf = sf.getMembresFamilleRequerant(idTiers);
                 String idMFRequerant = "";
                 for (int i = 0; i < mf.length; i++) {
                     if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(mf[i].getRelationAuRequerant())) {
@@ -169,7 +175,7 @@ public class REImportationCalculAcor2020 {
                 ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
                         ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
 
-                ISFMembreFamilleRequerant[] mf = sf.getMembresFamilleRequerant(idTiers);
+                mf = sf.getMembresFamilleRequerant(idTiers);
                 String ids = "";
                 for (int i = 0; i < mf.length; i++) {
                     if (!JadeStringUtil.isBlankOrZero(mf[i].getIdTiers())) {
@@ -370,6 +376,30 @@ public class REImportationCalculAcor2020 {
         } finally {
             BSessionUtil.stopUsingContext(this);
         }
+
+        if (!rentesWithoutBte.isEmpty()) {
+            Iterator<String> iterator = rentesWithoutBte.iterator();
+            StringBuilder allNumber = new StringBuilder();
+            while (iterator.hasNext()) {
+                allNumber.append(iterator.next());
+                if (iterator.hasNext()) {
+                    allNumber.append(", ");
+                } else {
+                    allNumber.append(".");
+                }
+            }
+
+            List<String> nss = Arrays.stream(mf).filter(e -> StringUtils.equals(e.getIdTiers(), idTiers)).map(e -> e.getNss()).collect(Collectors.toList());
+
+            String object = FWMessageFormat.format(JadeI18n.getInstance().getMessage(session.getIdLangueISO(), "warn.acro.export.subject"), nss.isEmpty() ? "" : nss.get(0));
+            String content = FWMessageFormat.format(JadeI18n.getInstance().getMessage(session.getIdLangueISO(), "warn.acor.export.bte"), allNumber.toString());
+            sendMailWarn(session, object, content);
+        }
+
+    }
+
+    private void sendMailWarn(BSession session, String object, String content) throws Exception {
+        JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
 
     public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
@@ -768,7 +798,7 @@ public class REImportationCalculAcor2020 {
                 demande.update();
             }
         } catch (Exception e) {
-            LOG.error("Erreur lors de la réinitialisation de la demande.",e);
+            LOG.error("Erreur lors de la réinitialisation de la demande.", e);
             throw new RETechnicalException(e.toString(), e);
         }
     }
@@ -1071,13 +1101,26 @@ public class REImportationCalculAcor2020 {
          * feuille de calcul acor taux de reduction, BTE entière, demi, quart...
          */
         if ((fCalcul != null) && (fCalcul.getEvenement().size() > 0)) {
-            REAcor2020Parser.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
+            Set<String> rentesWithoutBte = REAcor2020Parser.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
+            if (!rentesWithoutBte.isEmpty()) {
+                Iterator<String> iterator = rentesWithoutBte.iterator();
+                StringBuilder allNumber = new StringBuilder();
+                while (iterator.hasNext()) {
+                    allNumber.append(iterator.next());
+                    if (iterator.hasNext()) {
+                        allNumber.append(", ");
+                    } else {
+                        allNumber.append(".");
+                    }
+                }
+                throw new PRACORException(FWMessageFormat.format(session.getLabel("JSP_BTE_MANUEL"), allNumber.toString()));
+            }
         }
 
         // Connexion au WebService ACOR pour récupérer les annonces.
         PoolMeldungZurZAS annonces = REAcor2020AnnoncesService.getInstance().getAnnonces(fCalcul);
         if (Objects.nonNull(annonces)) {
-            REImportAnnoncesAcor.getInstance().importAnnonces(session, (BTransaction) transaction,annonces,rentesAccordees);
+            REImportAnnoncesAcor.getInstance().importAnnonces(session, (BTransaction) transaction, annonces, rentesAccordees);
         }
 
         return returnedValue.getIdCopieDemande();
@@ -1133,8 +1176,8 @@ public class REImportationCalculAcor2020 {
             final String renteLimitee18ANSPlusJeuneEnfant = session.getLabel("CALCULER_DECISION_CLE_ACOR_RENTE_LIMITEE_18ANS_PLUS_JEUNE_ENFANT");
             isRenteLimitee = remarquesParticulieres.stream().anyMatch(each -> each.contains(renteLimitee18ANSPlusJeuneEnfant));
 
-            final String montantAvecSupplementPersonneVeuve  = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_AVEC_SUPPLEMENT_PERSONNE_VEUVE");
-            isRenteAvecSupplementPourPersonneVeuve =  remarquesParticulieres.stream().anyMatch(each -> each.contains(montantAvecSupplementPersonneVeuve));
+            final String montantAvecSupplementPersonneVeuve = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_AVEC_SUPPLEMENT_PERSONNE_VEUVE");
+            isRenteAvecSupplementPourPersonneVeuve = remarquesParticulieres.stream().anyMatch(each -> each.contains(montantAvecSupplementPersonneVeuve));
 
             final String debutDroit5AnsAvantDepotDemande = session.getLabel("CALCULER_DECISION_CLE_ACOR_DEBUT_DROIT_5ANS_AVANT_DEPOT_DEMANDE");
             isRenteAvecDebutDroit5AnsAvantDepotDemande = remarquesParticulieres.stream().anyMatch(each -> each.contains(debutDroit5AnsAvantDepotDemande));

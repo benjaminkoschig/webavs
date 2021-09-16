@@ -75,14 +75,6 @@
         document.forms[0].submit();
     }
 
-    function checkACORWeb() {
-        document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE%>.actionCheckACORWeb";
-        document.forms[0].submit();
-    }
-
-    function importerResultatACOR() {
-    }
-
     function calculerAPI() {
         document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE%>.actionCalculerAPI";
         document.forms[0].submit();

@@ -24,6 +24,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.db.rentesaccordees.RERenteCalculee;
 import globaz.corvus.regles.REDemandeRegles;
+import globaz.corvus.utils.REMappingGroupPrestations;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
 import globaz.globall.api.BITransaction;
@@ -568,7 +569,14 @@ public class REAcor2020Parser {
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
         bc.setCodeOfficeAi("000");
-        if (Objects.nonNull(baseCalcul.getInvalidite()) && Objects.isNull(baseCalcul.getInvalidite().getType())) {
+
+        boolean genreAI = false;
+        if (Objects.nonNull(premierePrestation.getRente())) {
+            String groupePrestation = REMappingGroupPrestations.getGroupPrestation(PRConverterUtils.formatIntegerToString(premierePrestation.getRente().getGenre()));
+            genreAI = StringUtils.equals(REMappingGroupPrestations.GROUPE_AI_REO, groupePrestation) || StringUtils.equals(REMappingGroupPrestations.GROUPE_AI_RO, groupePrestation);
+        }
+
+        if (Objects.nonNull(baseCalcul.getInvalidite()) && genreAI) {
             //        bc.setCleInfirmiteAyantDroit(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_AYANT_DROIT")); $b22
             bc.setCleInfirmiteAyantDroit(Objects.toString(baseCalcul.getInvalidite().getGenreInvalidite(), StringUtils.EMPTY));
             //        bc.setCodeOfficeAi(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_COMPETANT_AYANT_DROIT")); $b20

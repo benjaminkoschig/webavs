@@ -292,7 +292,7 @@ class IJExportationCalculAcor {
 
 
     private DemandeType toDemande(PRTiersWrapper tiersRequerant, IJPrononce prononce, BSession session) {
-        PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(session);
+        PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(session, tiersRequerant);
         DemandeType demandeType = demandeTypeAcorMapper.map();
 
         // DONNEES FICHIER DEMANDES

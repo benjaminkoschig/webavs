@@ -219,7 +219,7 @@ public class REExportationCalculAcor2020 {
     }
 
     public DemandeType createDemande(REDemandeRente demandeRente, PRTiersWrapper tiersRequerant, BSession session) {
-        PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(this.session);
+        PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(this.session, tiersRequerant);
         DemandeType demandeType = demandeTypeAcorMapper.map();
 
         // DONNEES FICHIER DEMANDES
@@ -425,18 +425,8 @@ public class REExportationCalculAcor2020 {
         // 5. date fin du droit
         commonRente.setFinDroit(Dates.toXMLGregorianCalendar(rente.getDateFinDroit(), "MM.yyyy"));
 
-        if (commonRente.getFinDroit() != null) {
-            RERenteAccordee renteAccordee = new RERenteAccordee();
-            try {
-                renteAccordee.setSession(getSession());
-                renteAccordee.setId(rente.getIdRenteAccordee());
-                renteAccordee.retrieve();
-            } catch (Exception e) {
-                getSession().addError("Erreur lors de la récupération de la rente accordée.");
-            }
-            if (StringUtils.isNotEmpty(renteAccordee.getCodeMutation())) {
-                commonRente.setCodeMutation(PRConverterUtils.formatRequiredInteger(renteAccordee.getCodeMutation()));
-            }
+        if (commonRente.getFinDroit() != null && StringUtils.isNotEmpty(rente.getCodeMutation())) {
+            commonRente.setCodeMutation(PRConverterUtils.formatRequiredInteger(rente.getCodeMutation()));
         }
         // 6. montant de la prestation
         commonRente.setMontant(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));

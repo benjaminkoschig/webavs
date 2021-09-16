@@ -17,6 +17,8 @@ import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemandeManager;
 import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REDebloquerMontantRenteAccordeeProcess;
@@ -699,17 +701,13 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         demandeRente.setIdDemandeRente(raViewBean.getIdDemandeRente());
         demandeRente.retrieve();
         if (!StringUtils.equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE,demandeRente.getCsEtat())) {
-            RERenteAccordeeManager managerRenteAccorde = new RERenteAccordeeManager();
-            managerRenteAccorde.setSession(session);
-            managerRenteAccorde.setForIdTiersBeneficiaire(raViewBean.getIdTiers());
-            managerRenteAccorde.setForCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
-            managerRenteAccorde.find(BManager.SIZE_NOLIMIT);
-            if (managerRenteAccorde.size() > 0) {
-                RERenteAccordee ra = (RERenteAccordee) managerRenteAccorde.get(0);
-                RERenteAccJoinTblTiersJoinDemandeRente demandeRenteCalcule = new RERenteAccJoinTblTiersJoinDemandeRente();
-                demandeRenteCalcule.setIdPrestationAccordee(ra.getIdPrestationAccordee());
-                demandeRenteCalcule.retrieve();
-                rechercheViewBean.setNoDemandeRente(demandeRenteCalcule.getNoDemandeRente());
+            REDemandeRenteJointDemandeManager managerDemande = new REDemandeRenteJointDemandeManager();
+            managerDemande.setForCsEtatDemande(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE);
+            managerDemande.setForIdTiersRequ(raViewBean.getIdTiers());
+            managerDemande.find(BManager.SIZE_NOLIMIT);
+            if (managerDemande.size() > 0) {
+                REDemandeRenteJointDemande demandeRenteCalcule = (REDemandeRenteJointDemande) managerDemande.get(0);
+                rechercheViewBean.setNoDemandeRente(demandeRenteCalcule.getId());
             }
         }
 
