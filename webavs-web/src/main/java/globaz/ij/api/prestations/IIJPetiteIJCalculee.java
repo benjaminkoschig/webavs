@@ -11,14 +11,13 @@ public interface IIJPetiteIJCalculee {
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
-
-    public static final String CS_ACTIVITE_AUXILLIAIRE_OU_ATELIER_PROTEGE = "52413006";
-
-    public static final String CS_ECOLE_SPECIALE = "52413001";
-    public static final String CS_ETUDIANT_AVEC_ACTIVITE_LUCRATIVE = "52413007";
-    public static final String CS_FORMATION_INITIALE_PROLONGEE = "52413004";
-    public static final String CS_FORMATION_PROFESSIONNELLE_INITIALE = "52413003";
-    public static final String CS_GROUPE_MODE_CALCUL = "IJMODECALC";
-    public static final String CS_MESURES_MEDICALES = "52413002";
-    public static final String CS_NOUVELLE_FORME_APRES_INTERRUPTION = "52413005";
+    String CS_GROUPE_MODE_CALCUL = "IJMODECALC";
+    String CS_ACTIVITE_AUXILLIAIRE_OU_ATELIER_PROTEGE = "52413006";
+    String CS_ECOLE_SPECIALE = "52413001";
+    String CS_ETUDIANT_AVEC_ACTIVITE_LUCRATIVE = "52413007";
+    String CS_FORMATION_INITIALE_PROLONGEE = "52413004";
+    String CS_FORMATION_PROFESSIONNELLE_INITIALE = "52413003";
+    String CS_MESURES_MEDICALES = "52413002";
+    String CS_NOUVELLE_FORME_APRES_INTERRUPTION = "52413005";
+    String CS_FORMATION_PROLONGE_APRES_INTERRUPTION = "52413008";
 }

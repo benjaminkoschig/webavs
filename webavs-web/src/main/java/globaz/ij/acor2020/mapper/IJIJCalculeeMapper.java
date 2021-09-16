@@ -111,11 +111,10 @@ public class IJIJCalculeeMapper {
                 // formation initiale prolongée
                 return IIJPetiteIJCalculee.CS_FORMATION_INITIALE_PROLONGEE;
             case 5:
-            case 6:
-                // TODO JJO 01.09.2021 : A confirmer
                 // formation initiale changée
-                // formation initiale changée et prolongée
                 return IIJPetiteIJCalculee.CS_NOUVELLE_FORME_APRES_INTERRUPTION;
+            case 6:
+                return IIJPetiteIJCalculee.CS_FORMATION_PROLONGE_APRES_INTERRUPTION;
             case 7:
                 // activité aux. ou atelier protégé
                 return IIJPetiteIJCalculee.CS_ACTIVITE_AUXILLIAIRE_OU_ATELIER_PROTEGE;
