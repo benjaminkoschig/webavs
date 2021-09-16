@@ -42,8 +42,6 @@ public class StrategieBienImmoPrincipal extends StrategieCalculFortune implement
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction);
             if(context.contains(CalculContext.Attribut.REFORME)){
-//                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY,checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction);
-
                 // Si la valeur du bien est inférieur à sa valeur hypothécaire, on ne tient pas compte de la valeur hypothécaire.
                 // Exigence 4.15
                 if (checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction < checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantValeurFiscale()) * fraction) {
