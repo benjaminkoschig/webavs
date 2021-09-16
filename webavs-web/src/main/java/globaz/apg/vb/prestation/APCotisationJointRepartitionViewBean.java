@@ -24,7 +24,7 @@ public class APCotisationJointRepartitionViewBean extends APCotisationJointRepar
     // --------------------------------------------------------------------------------------------------------
 
     /**
-     * @see globaz.apg.db.prestation.APAssurance#getMontant()
+     * @see globaz.apg.db.prestation.APCotisation#getMontant()
      */
     @Override
     public String getMontant() {
@@ -32,7 +32,7 @@ public class APCotisationJointRepartitionViewBean extends APCotisationJointRepar
     }
 
     /**
-     * @see globaz.apg.db.prestation.APAssurance#getMontantBrut()
+     * @see globaz.apg.db.prestation.APCotisationJointRepartition#getMontantBrut()
      */
     @Override
     public String getMontantBrut() {
@@ -40,7 +40,7 @@ public class APCotisationJointRepartitionViewBean extends APCotisationJointRepar
     }
 
     /**
-     * @see globaz.apg.db.prestation.APAssurance#setMontant(java.lang.String)
+     * @see globaz.apg.db.prestation.APCotisation#setMontant(java.lang.String)
      */
     @Override
     public void setMontant(String montant) {
@@ -48,7 +48,7 @@ public class APCotisationJointRepartitionViewBean extends APCotisationJointRepar
     }
 
     /**
-     * @see globaz.apg.db.prestation.APAssurance#setMontantBrut(java.lang.String)
+     * @see globaz.apg.db.prestation.APCotisationJointRepartition#setMontantBrut(java.lang.String)
      */
     @Override
     public void setMontantBrut(String string) {

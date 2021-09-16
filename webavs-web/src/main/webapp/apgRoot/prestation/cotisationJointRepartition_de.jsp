@@ -24,6 +24,7 @@ bButtonUpdate= bButtonDelete;
 <%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
 	<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.apg.db.prestation.APCotisation" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
@@ -71,6 +72,26 @@ bButtonUpdate= bButtonDelete;
 		}
 	<%}%>
   }
+
+  function deformatNumber(nombre) {
+	  var truc = new String(nombre);
+	  var result = truc.replace(/'/g, "");
+	  return result;
+  }
+
+  function updateMontantSelonTaux() {
+	  if (document.getElementById("taux").value != "" && document.getElementById("montant").value != "" && document.getElementById("montantBrut").value != "") {
+		  <% if (APCotisation.TYPE_IMPOT.equals(viewBean.getType())) { %>
+			  var taux = parseFloat(deformatNumber(document.getElementById('taux').value));
+			  var montantOld = parseFloat(deformatNumber(document.getElementById('montant').value));
+			  var montantBrut = parseFloat(deformatNumber(document.getElementById('montantBrut').value));
+			  var montantNew = Math.round(((taux / 100) * montantBrut)*100)/100;
+			  var isNegativ = parseFloat(montantOld) < 0;
+			  document.getElementById('montant').value = (isNegativ ? -montantNew : montantNew).toFixed(2);
+		  <% } %>
+	  }
+  }
+
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -89,18 +110,18 @@ bButtonUpdate= bButtonDelete;
 							</TD>
 						</TR>
 						<TR>
-							<TD><ct:FWLabel key="JSP_TAUX_PC"/></TD>
-							<TD colspan="3"><INPUT type="text" name="" value="<%=viewBean.getTaux()%>" class="montantDisabled" readonly></TD>
+							<TD><LABEL for="taux"><ct:FWLabel key="JSP_TAUX_PC"/></LABEL></TD>
+							<TD><INPUT id="taux" type="text" name="taux" value="<%=viewBean.getTaux()%>" onchange="updateMontantSelonTaux();" class="montant" onkeypress="return filterCharForFloat(window.event);"></TD>
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_MONTANT_BRUT"/></TD>
-							<TD><INPUT type="text" name="" value="<%=viewBean.getMontantBrutCotisation()%>" class="montantDisabled"readonly></TD>
+							<TD><INPUT id="montantBrut" type="text" name="" value="<%=viewBean.getMontantBrutCotisation()%>" class="montantDisabled"readonly></TD>
 							<TD></TD>
 							<TD></TD>
 						</TR>
 						<TR>
 							<TD><LABEL for="montant"><ct:FWLabel key="JSP_COTISATION"/></LABEL></TD>
-							<TD colspan="3"><INPUT type="text" name="montant" value="<%=viewBean.getMontant()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
+							<TD colspan="3"><INPUT id="montant" type="text" name="montant" value="<%=viewBean.getMontant()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
 						</TR>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

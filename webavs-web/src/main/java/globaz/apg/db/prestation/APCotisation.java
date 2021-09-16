@@ -129,6 +129,7 @@ public class APCotisation extends BEntity {
             // on verifie le taux
             nomExterne = getSession().getLabel("IMPOT_SOURCE");
 
+            // mise à jour du taux impot source seulement si taux non défini
             if (JadeStringUtil.isDecimalEmpty(taux)) {
                 // le taux d'imposition est stocke dans la table des taux par
                 // canton
