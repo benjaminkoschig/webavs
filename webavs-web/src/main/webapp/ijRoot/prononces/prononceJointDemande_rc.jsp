@@ -26,13 +26,13 @@ globaz.ij.vb.prononces.IJPrononceJointDemandeViewBean viewBean = (globaz.ij.vb.p
 
 String actionNewGrandeIJ 		 =  servletContext + mainServletPath + "?userAction=ij.prononces.requerant.afficher&csTypeIJ="+globaz.ij.api.prononces.IIJPrononce.CS_GRANDE_IJ+"&_method=add";
 String actionNewPetiteIJ 		 =  servletContext + mainServletPath + "?userAction=ij.prononces.requerant.afficher&csTypeIJ="+globaz.ij.api.prononces.IIJPrononce.CS_PETITE_IJ+"&_method=add";
-String actionNewPrononceAit 	 =  servletContext + mainServletPath + "?userAction=ij.prononces.requerant.afficher&csTypeIJ="+globaz.ij.api.prononces.IIJPrononce.CS_ALLOC_INIT_TRAVAIL+"&_method=add";
+String actionNewPrononceFpi 	 =  servletContext + mainServletPath + "?userAction=ij.prononces.requerant.afficher&csTypeIJ="+globaz.ij.api.prononces.IIJPrononce.CS_FPI+"&_method=add";
 String actionNewPrononceAllocAss =  servletContext + mainServletPath + "?userAction=ij.prononces.requerant.afficher&csTypeIJ="+globaz.ij.api.prononces.IIJPrononce.CS_ALLOC_ASSIST+"&_method=add";
 
 	
 String btnNewGrandeIJLabel 	  	   = objSession.getLabel("JSP_NOUVELLE_GRANDE_IJ");
 String btnNewPetiteIJLabel 	  	   = objSession.getLabel("JSP_NOUVELLE_PETITE_IJ");
-String btnNewPrononceAitLabel 	   = objSession.getLabel("JSP_NOUVELLE_AIT");
+String btnNewPrononceFpiLabel 	   = objSession.getLabel("JSP_NOUVELLE_FPI");
 String btnNewPrononceAllocAssLabel = objSession.getLabel("JSP_NOUVELLE_ALLOC_ASS");
 %>
 <%-- /tpl:put --%>
@@ -188,8 +188,11 @@ String btnNewPrononceAllocAssLabel = objSession.getLabel("JSP_NOUVELLE_ALLOC_ASS
 	 					<%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
-					<ct:ifhasright element="<%=globaz.ij.servlet.IIJActions.ACTION_SAISIE_PRONONCE_AIT%>" crud="c">
-						<INPUT type="button" name="btnNewPrononceAit" value="<%=btnNewPrononceAitLabel%>" onClick="btnNewPrononceAit.onclick='';document.location.href='<%=actionNewPrononceAit%>'" >
+<%--					<ct:ifhasright element="<%=globaz.ij.servlet.IIJActions.ACTION_SAISIE_PRONONCE_AIT%>" crud="c">--%>
+<%--						<INPUT type="button" name="btnNewPrononceAit" value="<%=btnNewPrononceAitLabel%>" onClick="btnNewPrononceAit.onclick='';document.location.href='<%=actionNewPrononceAit%>'" >--%>
+<%--					</ct:ifhasright>--%>
+					<ct:ifhasright element="<%=globaz.ij.servlet.IIJActions.ACTION_SAISIE_PRONONCE%>" crud="c">
+						<INPUT type="button" name="btnNewPrononceFpi" value="<%=btnNewPrononceFpiLabel%>" onClick="btnNewPrononceFpi.onclick='';document.location.href='<%=actionNewPrononceFpi%>'" >
 					</ct:ifhasright>
 					<ct:ifhasright element="<%=globaz.ij.servlet.IIJActions.ACTION_SAISIE_PRONONCE_ALLOC_ASSIST%>" crud="c">
 						<INPUT type="button" name="btnNewPrononceAllocAss" value="<%=btnNewPrononceAllocAssLabel%>" onClick="btnNewPrononceAllocAss.onclick='';document.location.href='<%=actionNewPrononceAllocAss%>'" >

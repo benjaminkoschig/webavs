@@ -105,8 +105,10 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 			<%if(globaz.ij.api.prononces.IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) ||
 				 globaz.ij.api.prononces.IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)){%>
 				url += "ij.prononces.situationProfessionnelle.chercher&forIdPrononce=<%=idPrononce%>&noAVS=<%=noAVS%>&dateDebutPrononce=<%=dateDebutPrononce%>&csTypeIJ=<%=csTypeIJ%>";
-			<%}else{%>	
-				url += "ij.prononces.petiteIJJointRevenu.afficher&selectedId=<%=idPrononce%>&noAVS=<%=noAVS%>&dateDebutPrononce=<%=dateDebutPrononce%>";
+			<%}else if(globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(csTypeIJ)){%>
+				url += "ij.prononces.fpiJointRevenu.afficher&selectedId=<%=idPrononce%>&noAVS=<%=noAVS%>&dateDebutPrononce=<%=dateDebutPrononce%>&csTypeIJ=<%=csTypeIJ%>";
+			<%}else{%>
+				url += "ij.prononces.petiteIJJointRevenu.afficher&selectedId=<%=idPrononce%>&noAVS=<%=noAVS%>&dateDebutPrononce=<%=dateDebutPrononce%>&csTypeIJ=<%=csTypeIJ%>";
 			<%}%>
 				
 			top.fr_main.location.href = url;

@@ -13,7 +13,8 @@
 	String csTypeIJ = request.getParameter("csTypeIJ");
 	
 	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-	   IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)){
+	   		IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
+			IIJPrononce.CS_FPI.equals(csTypeIJ)){
 		detailLink = "ij?userAction=ij.basesindemnisation.baseIndemnisation.afficher&selectedId=";	
 	}else{
 		detailLink = "ij?userAction=ij.basesindemnisation.baseIndemnisationAitAa.afficher&selectedId=";
@@ -76,7 +77,7 @@ if (iterH.isPositionPlusPetite()) { %>
 	<%
 	String link = "";
 	String link2 = "";
-	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)|| IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)){
+	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)|| IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)){
 		link = "ij?userAction=ij.controleAbsences.dossierControleAbsencesAjax.afficher&idBaseIndemnisation=" + line.getIdBaseIndemisation() + "&idTiers=" + line.getIdTiers() + "&idPrononce=" + line.getIdPrononce();
 		link2 = targetLocation + "='" + link+"'";
 	}
@@ -96,7 +97,8 @@ if (iterH.isPositionPlusPetite()) { %>
 		
 		
 		<%if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-			 IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)){ %>
+			 	IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
+				IIJPrononce.CS_FPI.equals(csTypeIJ)){ %>
 			<ct:menuExcludeNode nodeId="calculerait"/>
 			<ct:menuExcludeNode nodeId="calculeraa"/>
 		<%}else if(IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)){ %>

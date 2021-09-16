@@ -1,5 +1,6 @@
 package globaz.ij.regles;
 
+import ch.globaz.common.util.Dates;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -15,14 +16,22 @@ import globaz.ij.db.prestations.IJIJCalculeeManager;
 import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.ij.db.prestations.IJPrestationManager;
+import globaz.ij.db.prononces.IJFpi;
 import globaz.ij.db.prononces.IJGrandeIJ;
 import globaz.ij.db.prononces.IJPetiteIJ;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.utils.IJUtils;
+import globaz.ij.vb.prononces.IJAbstractPrononceProxyViewBean;
+import globaz.ij.vb.prononces.IJFpiViewBean;
+import globaz.ij.vb.prononces.IJNSSDTO;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.clone.factory.PRCloneFactory;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
+
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -98,6 +107,8 @@ public final class IJPrononceRegles {
     private static String CLONE_IJ_AIT_COR;
     private static String CLONE_PETITEIJ_COPIE;
     private static String CLONE_PETITEIJ_COR;
+
+    private static int AGE_CHANGEMENT_FPI = 25;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -727,6 +738,22 @@ public final class IJPrononceRegles {
                 prononce.update(transaction);
             }
         }
+    }
+
+    public static boolean verifieAge(IJAbstractPrononceProxyViewBean viewBean) {
+        if(viewBean.getAfficheWarning() && viewBean instanceof IJFpiViewBean) {
+            LocalDate dateNaissance = Dates.toDate(((IJFpiViewBean)viewBean).getDateNaissance());
+            LocalDate dateChangement = dateNaissance.plusYears(AGE_CHANGEMENT_FPI);
+            // prendre le 1er jours du mois suivant
+            dateChangement = dateChangement.plusMonths(1).withDayOfMonth(1);
+            LocalDate dateDebut = Dates.toDate(viewBean.getPrononce().getDateDebutPrononce());
+            LocalDate dateFin = Dates.toDate(viewBean.getPrononce().getDateFinPrononce());
+            if(dateDebut != null && dateFin != null && (dateDebut.isBefore(dateChangement) && dateFin.isAfter(dateChangement))) {
+                viewBean.setAfficheWarning(true);
+                return false;
+            }
+        }
+        return true;
     }
 
     private IJPrononceRegles() {

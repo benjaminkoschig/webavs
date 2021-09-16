@@ -1,23 +1,17 @@
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
-<%-- tpl:put name="zoneInit" --%>
+
 <%
 idEcran="PIJ0003";
-String csTypeIJ = request.getParameter("csTypeIJ");
-
-globaz.ij.vb.prononces.IJPetiteIJJointRevenuViewBean viewBean = (globaz.ij.vb.prononces.IJPetiteIJJointRevenuViewBean)(session.getAttribute("viewBean"));
+globaz.ij.vb.prononces.IJFpiJointRevenuViewBean viewBean = (globaz.ij.vb.prononces.IJFpiJointRevenuViewBean)(session.getAttribute("viewBean"));
 String noAVS = request.getParameter("noAVS");
 String detailRequerant = viewBean.getDetailRequerant();
 bButtonValidate = false;
 bButtonCancel = false;
 bButtonDelete = false;
 %>
-<%-- /tpl:put --%>
-<%-- tpl:put name="zoneBusiness" --%>
-<%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
-<%-- tpl:put name="zoneScripts" --%>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -27,13 +21,13 @@ bButtonDelete = false;
   	//pas de add ici
   }
   function upd() {
-  	document.forms[0].elements('userAction').value="ij.prononces.petiteIJJointRevenu.modifier";
+  	document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
   	document.forms[0].elements('modifie').value="true";
   }
 
   function validate() {
     state = true;
-    document.forms[0].elements('userAction').value="ij.prononces.petiteIJJointRevenu.modifier";
+    document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
   
     return state;
   }
@@ -51,7 +45,7 @@ bButtonDelete = false;
   	}
   	
   	function arret() {
-		document.forms[0].elements('userAction').value = "ij.prononces.petiteIJJointRevenu.arreterEtape5";
+		document.forms[0].elements('userAction').value = "ij.prononces.fpiJointRevenu.arreterEtape5";
   		document.forms[0].submit();
  	}
  	
@@ -60,7 +54,7 @@ bButtonDelete = false;
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_PETITE_IJ"/><%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_FPI"/><%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
 						<TR>
@@ -105,17 +99,14 @@ bButtonDelete = false;
 							<TD><INPUT type="text" name="annee" value="<%=viewBean.getAnnee()%>"></TD>
 						</TR>
 						
-						<%-- /tpl:put --%>
+
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
-				<%-- tpl:put name="zoneButtons" --%>
-				<ct:ifhasright element="ij.prononces.petiteIJJointRevenu.arreterEtape5" crud="u">
+
+				<ct:ifhasright element="ij.prononces.fpiJointRevenu.arreterEtape5" crud="u">
 					<INPUT type="button" value="<ct:FWLabel key="JSP_ARRET"/> (alt+<ct:FWLabel key="AK_PIJ_ARRET"/>)" onclick="arret()" accesskey="<ct:FWLabel key="AK_PIJ_ARRET"/>">
 				</ct:ifhasright>
-				<ct:ifhasright element="ij.prononces.petiteIJJointRevenu.modifier" crud="u">
+				<ct:ifhasright element="ij.prononces.fpiJointRevenu.modifier" crud="u">
 					<INPUT type="button" value="<ct:FWLabel key="JSP_CALCULER"/> (alt+<ct:FWLabel key="AK_PIJ_CALCULER"/>)" onclick="if(validate()) action(COMMIT);" accesskey="<ct:FWLabel key="AK_PIJ_CALCULER"/>">
 				</ct:ifhasright>
-				<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
-<%-- tpl:put name="zoneEndPage" --%><%-- /tpl:put --%>
 <%@ include file="/theme/detail/footer.jspf" %>
-<%-- /tpl:insert --%>

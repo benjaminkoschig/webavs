@@ -41,7 +41,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
             // on donne la bonne action en fonction du type d'IJ
             String action = "";
-            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)) {
+            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE;
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE_AIT;
@@ -75,7 +75,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
             // on donne la bonne action en fonction du type d'IJ
             String action = "";
-            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)) {
+            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE;
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE_AIT;
@@ -114,6 +114,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
         IJNSSDTO dto = new IJNSSDTO();
         dto.setNSS(((IJRequerantViewBean) viewBean).getNss());
+        dto.setDateNaissance(((IJRequerantViewBean) viewBean).getDateNaissance());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_NSS_DTO, dto);
 
     }

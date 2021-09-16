@@ -41,6 +41,7 @@ public class IJMainServletAction {
         IJMainServletAction.ACTIONS.put(IIJActions.ACTION_MESURE_JOINT_AGENT_EXECUTION,
                 IJMesureJointAgentExecutionAction.class);
         IJMainServletAction.ACTIONS.put(IIJActions.ACTION_PETITE_IJ_JOINT_REVENU, IJPetiteIJJointRevenuAction.class);
+        IJMainServletAction.ACTIONS.put(IIJActions.ACTION_FPI_JOINT_REVENU, IJFpiJointRevenuAction.class);
         IJMainServletAction.ACTIONS.put(IIJActions.ACTION_SITUATION_PROFESSIONNELLE,
                 IJSituationProfessionnelleAction.class);
         IJMainServletAction.ACTIONS.put(IIJActions.ACTION_CALCUL_IJ, IJCalculACORIJAction.class);

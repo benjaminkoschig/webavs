@@ -16,12 +16,7 @@ import globaz.globall.util.JAUtil;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.regles.IJPrononceRegles;
-import globaz.ij.vb.prononces.IJAbstractPrononceProxyViewBean;
-import globaz.ij.vb.prononces.IJGrandeIJPViewBean;
-import globaz.ij.vb.prononces.IJPetiteIJPViewBean;
-import globaz.ij.vb.prononces.IJPrononceAitViewBean;
-import globaz.ij.vb.prononces.IJPrononceAllocAssistanceViewBean;
-import globaz.ij.vb.prononces.IJRequerantViewBean;
+import globaz.ij.vb.prononces.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.external.IntRole;
 import globaz.pavo.api.ICICompteIndividuel;
@@ -77,6 +72,8 @@ public class IJRequerantHelper extends PRAbstractHelper {
                 prononceViewBean = new IJPrononceAitViewBean();
             } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_ALLOC_ASSIST)) {
                 prononceViewBean = new IJPrononceAllocAssistanceViewBean();
+            } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
+                prononceViewBean = new IJFpiViewBean();
             } else {
                 throw new Exception("type ij introuvable");
             }
@@ -139,6 +136,8 @@ public class IJRequerantHelper extends PRAbstractHelper {
                         prononceViewBean = new IJPrononceAitViewBean();
                     } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_ALLOC_ASSIST)) {
                         prononceViewBean = new IJPrononceAllocAssistanceViewBean();
+                    } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
+                        prononceViewBean = new IJFpiViewBean();
                     } else {
                         throw new Exception("type ij introuvable");
                     }
@@ -165,6 +164,10 @@ public class IJRequerantHelper extends PRAbstractHelper {
                         prononceViewBean.getPrononce().setTauxImpositionSource("0");
                     }
                     prononceViewBean.update(transaction);
+                    if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
+                        prononceViewBean = new IJFpiViewBean();
+                        ((IJFpiViewBean)prononceViewBean).setDateNaissance(((IJRequerantViewBean)viewBean).getDateNaissance());
+                    }
                 }
             } catch (Exception e) {
                 if (transaction != null) {
@@ -262,6 +265,8 @@ public class IJRequerantHelper extends PRAbstractHelper {
             prononceViewBean = new IJPrononceAitViewBean();
         } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_ALLOC_ASSIST)) {
             prononceViewBean = new IJPrononceAllocAssistanceViewBean();
+        } else if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
+            prononceViewBean = new IJFpiViewBean();
         } else {
             throw new Exception("type ij introuvable");
         }

@@ -234,6 +234,8 @@ public class IJPrononceJointDemandeViewBean extends IJPrononceJointDemande imple
     public String getUserAction() {
         if (IIJPrononce.CS_PETITE_IJ.equals(getCsTypeIJ())) {
             return IIJActions.ACTION_PETITE_IJ;
+        } else if (IIJPrononce.CS_FPI.equals(getCsTypeIJ())) {
+            return IIJActions.ACTION_FPI;
         } else {
             return IIJActions.ACTION_GRANDE_IJ;
         }

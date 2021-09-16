@@ -21,7 +21,8 @@
 	String csTypeIJ = "".equals(viewBean.getCsTypeIJ())?request.getParameter("csTypeIJ"):viewBean.getCsTypeIJ();
 	
 	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-	   IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)){
+			IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
+			IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){
 		//actionNew =  servletContext + mainServletPath + "?userAction=ij.basesindemnisation.baseIndemnisation.afficher&_method=add&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ;
 		//actionNew =  servletContext + mainServletPath + "?userAction=ij.controleAbsences.dossierControleAbsencesAjax.ajouter&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ + "&idTiers=" + viewBean.getIdTiers();
 		//actionNew =  servletContext + mainServletPath + "?userAction=ij.controleAbsences.dossierControleAbsencesAjax.ajouter&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ; //r&idTiers=" + viewBean.getIdTiers() + "&idBaseIndemnisation=" + viewBean.getIdBaseIndemisation();

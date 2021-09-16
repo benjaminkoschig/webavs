@@ -45,6 +45,8 @@ public abstract class IJAbstractPrononceProxyViewBean implements FWViewBeanInter
     private String noAVS = "";
     private String prenomNom = "";
     private IJPrononce prononce;
+    private String warningMessage = "";
+    private Boolean afficheWarning = true;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -1076,4 +1078,27 @@ public abstract class IJAbstractPrononceProxyViewBean implements FWViewBeanInter
         prononce.wantCallValidate(newCallValidate);
     }
 
+    public Boolean getAfficheWarning() {
+        return afficheWarning;
+    }
+
+    public void setAfficheWarning(Boolean afficheWarning) {
+        this.afficheWarning = afficheWarning;
+    }
+
+    public String getWarningMessage() {
+        return warningMessage;
+    }
+
+    public void setWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
+    }
+
+    public Boolean getMesureReadaptation8a() {
+        return prononce.getMesureReadaptation8a();
+    }
+
+    public void setMesureReadaptation8a(boolean mesureReadaptation8a) {
+        prononce.setMesureReadaptation8a(mesureReadaptation8a);
+    }
 }

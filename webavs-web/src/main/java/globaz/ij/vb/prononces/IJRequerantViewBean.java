@@ -8,11 +8,7 @@ import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSpy;
 import globaz.ij.api.prononces.IIJPrononce;
-import globaz.ij.db.prononces.IJGrandeIJ;
-import globaz.ij.db.prononces.IJPetiteIJ;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJPrononceAit;
-import globaz.ij.db.prononces.IJPrononceAllocAssistance;
+import globaz.ij.db.prononces.*;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
@@ -383,6 +379,8 @@ public class IJRequerantViewBean extends IJPrononce implements FWViewBeanInterfa
                 ij = new IJPrononceAit();
             } else if (super.getCsTypeIJ().equals(IIJPrononce.CS_ALLOC_ASSIST)) {
                 ij = new IJPrononceAllocAssistance();
+            } else if (super.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
+                ij = new IJFpi();
             }
 
             ij.setSession(getSession());

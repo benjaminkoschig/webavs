@@ -16,6 +16,7 @@ public interface IIJPrononce {
     public static final String CS_AGRICULTEUR_INDEPENDANT_LFA = "52403004";
     public final static String CS_ALLOC_ASSIST = "52402004";
     public final static String CS_ALLOC_INIT_TRAVAIL = "52402003";
+    public final static String CS_FPI = "52402005";
 
     public static final String CS_ANNULE = "52404004";
 

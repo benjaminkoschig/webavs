@@ -12,19 +12,19 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BSession;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.vb.prononces.IJAbstractPrononceProxyViewBean;
-import globaz.ij.vb.prononces.IJGrandeIJPViewBean;
-import globaz.ij.vb.prononces.IJPetiteIJPViewBean;
+import globaz.ij.vb.prononces.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.servlet.PRDefaultAction;
-import java.io.IOException;
-import java.util.Vector;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Vector;
 
 /**
  * <H1>Description</H1>
@@ -153,6 +153,8 @@ public class IJSaisiePrononceAction extends PRDefaultAction {
 
             if (csTypeIJ.equals(IIJPrononce.CS_PETITE_IJ)) {
                 viewBean = new IJPetiteIJPViewBean();
+            } else if (csTypeIJ.equals(IIJPrononce.CS_FPI)) {
+                viewBean = new IJFpiViewBean();
             } else {
                 viewBean = new IJGrandeIJPViewBean();
             }
@@ -162,6 +164,10 @@ public class IJSaisiePrononceAction extends PRDefaultAction {
             viewBean = beforeAfficher(session, request, response, viewBean);
             viewBean = mainDispatcher.dispatch(viewBean, _action);
             ((IJAbstractPrononceProxyViewBean) viewBean).setCsTypeIJ(csTypeIJ);
+            if(viewBean instanceof IJFpiViewBean) {
+                String dateNaissance = ((IJNSSDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_NSS_DTO)).getDateNaissance();
+                ((IJFpiViewBean)viewBean).setDateNaissance(dateNaissance);
+            }
             session.removeAttribute(FWServlet.VIEWBEAN);
             session.setAttribute(FWServlet.VIEWBEAN, viewBean);
 
@@ -241,7 +247,8 @@ public class IJSaisiePrononceAction extends PRDefaultAction {
              * choix de la destination _valid=fail : revient en mode edition
              */
 
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)
+                    && !viewBean.getMsgType().equals(FWViewBeanInterface.WARNING);
             if (goesToSuccessDest) {
                 destination = _getDestModifierSucces(session, request, response, viewBean);
             } else {

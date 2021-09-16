@@ -8,6 +8,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
+import globaz.ij.db.prononces.IJFpi;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.regles.IJPrestationRegles;
 import globaz.jade.client.util.JadeStringUtil;

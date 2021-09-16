@@ -23,6 +23,7 @@ public class IJNSSDTO implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     private String NSS = "";
+    private String dateNaissance = "";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -67,4 +68,11 @@ public class IJNSSDTO implements Serializable {
         NSS = string;
     }
 
+    public String getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public void setDateNaissance(String dateNaissance) {
+        this.dateNaissance = dateNaissance;
+    }
 }

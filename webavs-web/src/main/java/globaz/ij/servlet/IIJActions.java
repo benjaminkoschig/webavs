@@ -58,6 +58,7 @@ public interface IIJActions {
     public static final String ACTION_SAISIE_ABSENCE_CONTROLE_ABSENCES = "ij.controleAbsences.saisieAbsenceAjax";
     public static final String ACTION_SAISIE_PRONONCE = "ij.prononces.saisiePrononce";
     public static final String ACTION_SAISIE_PRONONCE_AIT = "ij.prononces.saisiePrononceAit";
+    public static final String ACTION_SAISIE_PRONONCE_FPI = "ij.prononces.saisiePrononceFpi";
     public static final String ACTION_SAISIE_PRONONCE_ALLOC_ASSIST = "ij.prononces.saisiePrononceAllocAssistance";
     public static final String ACTION_SAISIR_ECHEANCE = "ij.prononces.saisirEcheance";
     public static final String ACTION_SAISIR_NO_DECISION = "ij.prononces.saisirNoDecision";
@@ -65,4 +66,6 @@ public interface IIJActions {
     public static final String ACTION_SITUATION_PROFESSIONNELLE = "ij.prononces.situationProfessionnelle";
     public static final String ACTION_TERMINER_PRONONCE = "ij.prononces.terminerPrononce";
     public static final String ACTION_VALIDER_DECISION = "ij.process.validerDecision";
+    public static final String ACTION_FPI = "ij.prononces.fpi";
+    public static final String ACTION_FPI_JOINT_REVENU = "ij.prononces.fpiJointRevenu";
 }

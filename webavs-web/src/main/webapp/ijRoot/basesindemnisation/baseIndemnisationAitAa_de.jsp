@@ -33,7 +33,8 @@
 	<ct:menuSetAllParams key="forNoBaseIndemnisation" value="<%=viewBean.getIdBaseIndemisation()%>"/>
 	
 		<%if(IIJPrononce.CS_PETITE_IJ.equals(viewBean.getCsTypeIJ())||
-			 IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ())){ %>
+			 	IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ())||
+				IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){ %>
 			 <ct:menuActivateNode active="no" nodeId="calculerait"/>
 			 <ct:menuActivateNode active="no" nodeId="calculeraa"/>
 		<%}else if(IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(viewBean.getCsTypeIJ())){ %>

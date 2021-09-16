@@ -78,6 +78,11 @@ public class IJSaisiePrononceHelper extends PRAbstractHelper {
 
                 if (transaction.hasErrors()) {
                     prononceProxyViewBean.getSession().addError(transaction.getErrors().toString());
+                } else if(transaction.hasWarnings() && prononceProxyViewBean.getAfficheWarning()) {
+                    prononceProxyViewBean.getSession().addWarning(transaction.getWarnings().toString());
+                    prononceProxyViewBean.setMsgType(FWViewBeanInterface.WARNING);
+                    prononceProxyViewBean.setWarningMessage(transaction.getWarnings().toString());
+                    prononceProxyViewBean.update(transaction);
                 } else {
                     prononceProxyViewBean.setIdRevenuReadaptation(revenu.getIdRevenu());
 
@@ -91,7 +96,7 @@ public class IJSaisiePrononceHelper extends PRAbstractHelper {
             } finally {
                 if (transaction != null) {
                     try {
-                        if (transaction.hasErrors() || transaction.isRollbackOnly()) {
+                        if (transaction.hasWarnings() || transaction.hasErrors() || transaction.isRollbackOnly()) {
                             transaction.rollback();
                         } else {
                             transaction.commit();
@@ -135,6 +140,10 @@ public class IJSaisiePrononceHelper extends PRAbstractHelper {
 
             } else {
                 transaction.addErrors(viewBean.getSession().getLabel("NO_DECISION_ERR"));
+            }
+
+            if(!IJPrononceRegles.verifieAge(viewBean)) {
+                transaction.addWarnings(viewBean.getSession().getLabel("AGE_DEPASSE_ERR"));
             }
 
         } else {

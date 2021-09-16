@@ -150,6 +150,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
 
     public static final String FIELDNAME_PRONONCE_SELECTIONNE = "XBSELE";
 
+    public static final String FIELDNAME_MESURE_READAPTATION_8A = "XBBM8A";
+
     /**
 	 */
     public static final String FIELDNAME_RAM = "XBMRAM";
@@ -208,6 +210,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
             retValue = new IJPrononceAllocAssistance();
         } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
             retValue = new IJPrononceAit();
+        } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            retValue = new IJFpi();
         } else {
             // oops, ben zut alors, on n'a pas le type d'IJ
             throw new Exception("Type IJ vide ou inconnu");
@@ -254,6 +258,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
             prononces = new IJPetiteIJManager();
         } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
             prononces = new IJPrononceAitManager();
+        } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            prononces = new IJFpiManager();
         } else {
             prononces = new IJPrononceAllocAssistanceManager();
         }
@@ -316,6 +322,7 @@ public class IJPrononce extends BEntity implements IPRCloneable {
 
     private Boolean soumisImpotSource = Boolean.FALSE;
     private String tauxImpositionSource = "";
+    private Boolean mesureReadaptation8a = Boolean.FALSE;
 
     /**
      * (non-Javadoc).
@@ -440,6 +447,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
         csCantonImpositionSource = statement.dbReadNumeric(IJPrononce.FIELDNAME_CS_CANTON_IMPOSITION_SOURCE);
         isPrononceSelectionne = statement.dbReadString(IJPrononce.FIELDNAME_PRONONCE_SELECTIONNE);
         idParentCorrigeDepuis = statement.dbReadNumeric(IJPrononce.FIELDNAME_PARENT_CORRIGE_DEPUIS);
+        mesureReadaptation8a = statement.dbReadBoolean(IJPrononce.FIELDNAME_MESURE_READAPTATION_8A);
+
     }
 
     /**
@@ -542,6 +551,9 @@ public class IJPrononce extends BEntity implements IPRCloneable {
                 this._dbWriteString(statement.getTransaction(), isPrononceSelectionne, "isPrononceSelectionne"));
         statement.writeField(IJPrononce.FIELDNAME_PARENT_CORRIGE_DEPUIS,
                 this._dbWriteNumeric(statement.getTransaction(), idParentCorrigeDepuis, "idParentCorrigeDepuis"));
+        statement.writeField(IJPrononce.FIELDNAME_MESURE_READAPTATION_8A, this._dbWriteBoolean(statement.getTransaction(),
+                mesureReadaptation8a, BConstants.DB_TYPE_BOOLEAN_CHAR, "mesureReadaptation8a"));
+
     }
 
     /**
@@ -608,6 +620,7 @@ public class IJPrononce extends BEntity implements IPRCloneable {
         clone.setCsCantonImpositionSource(getCsCantonImpositionSource());
         clone.setAvecDecision(getAvecDecision());
         clone.setIdParentCorrigeDepuis(getIdParentCorrigeDepuis());
+        clone.setMesureReadaptation8a(getMesureReadaptation8a());
 
         if (action == IIJPrononce.CLONE_FILS) {
             if (JadeStringUtil.isIntegerEmpty(getIdParent())) {
@@ -623,6 +636,7 @@ public class IJPrononce extends BEntity implements IPRCloneable {
 
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
+
     }
 
     /**
@@ -760,6 +774,14 @@ public class IJPrononce extends BEntity implements IPRCloneable {
             return "";
         }
 
+    }
+
+    public String getDateNaissanceTiers() throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), loadDemande(null).getIdTiers());
+        if ((tiers != null) && !JadeStringUtil.isEmpty(tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE))) {
+            return tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE);
+        }
+        return null;
     }
 
     /**
@@ -1035,6 +1057,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
                 prononces = new IJPetiteIJManager();
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 prononces = new IJPrononceAitManager();
+            } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+                prononces = new IJFpiManager();
             } else {
                 prononces = new IJPrononceAllocAssistanceManager();
             }
@@ -1072,6 +1096,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
                 prononces = new IJPetiteIJManager();
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 prononces = new IJPrononceAitManager();
+            } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+                prononces = new IJFpiManager();
             } else {
                 prononces = new IJPrononceAllocAssistanceManager();
             }
@@ -1416,6 +1442,14 @@ public class IJPrononce extends BEntity implements IPRCloneable {
 
     public void setTauxImpositionSource(String tauxImpositionSource) {
         this.tauxImpositionSource = tauxImpositionSource;
+    }
+
+    public Boolean getMesureReadaptation8a() {
+        return mesureReadaptation8a;
+    }
+
+    public void setMesureReadaptation8a(Boolean mesureReadaptation8a) {
+        this.mesureReadaptation8a = mesureReadaptation8a;
     }
 
     /**

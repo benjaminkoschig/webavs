@@ -110,7 +110,8 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						</TR>
 						
 						<%if(globaz.ij.api.prononces.IIJPrononce.CS_PETITE_IJ.equals(viewBean.getCsTypeIJ()) ||
-							 globaz.ij.api.prononces.IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ())){ %>
+							 	globaz.ij.api.prononces.IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ()) ||
+								globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){ %>
 						<TR>
 							<TD colspan="6">&nbsp;</TD>
 						</TR>
@@ -197,6 +198,14 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
 							<TD colspan="2">							
 								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prestations.IIJPetiteIJCalculee.CS_GROUPE_MODE_CALCUL%>" name="csModeCalcul" defaut="<%=viewBean.getCsModeCalcul()%>"/>		
+							</TD>
+						</TR>
+						<%} else if (globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())) {%>
+						<TR>
+							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
+							<TD colspan="2">
+								<%-- TODO : liste des codes pour FPI--%>
+<%--								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prestations.IIJPetiteIJCalculee.CS_GROUPE_MODE_CALCUL%>" name="csModeCalcul" defaut="<%=viewBean.getCsModeCalcul()%>"/>--%>
 							</TD>
 						</TR>
 						<%}else{%>

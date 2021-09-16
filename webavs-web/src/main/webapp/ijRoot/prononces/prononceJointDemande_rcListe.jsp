@@ -140,7 +140,8 @@
 <%
 	}
 	if(IIJPrononce.CS_PETITE_IJ.equals(courant.getCsTypeIJ()) 
-		|| IIJPrononce.CS_GRANDE_IJ.equals(courant.getCsTypeIJ())) {
+			|| IIJPrononce.CS_GRANDE_IJ.equals(courant.getCsTypeIJ())
+			|| IIJPrononce.CS_FPI.equals(courant.getCsTypeIJ())) {
 %>						<ct:menuExcludeNode nodeId="calculerait" />
 						<ct:menuExcludeNode nodeId="calculeraa" />
 <%

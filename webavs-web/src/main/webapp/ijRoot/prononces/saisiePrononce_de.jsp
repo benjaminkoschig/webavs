@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -31,6 +32,7 @@
 	function upd() {
 		document.forms[0].elements('userAction').value="ij.prononces.saisiePrononce.modifier";
 		document.forms[0].elements('modifie').value="true";
+		$('#afficheWarning').prop( "checked", true);
 	}
 
 	function validate() {
@@ -62,6 +64,8 @@
 	}
 
 	function init(){
+
+		checkWarn();
 	}
 
 	function checkRevision(){
@@ -104,6 +108,40 @@
  			champ.value=valeur.substr(0, valeur.length-1);
  		}
  	}
+
+	function checkWarn() {
+		$("#dialog_warn").dialog({
+			resizable: false,
+			height: 500,
+			width: 500,
+			modal: true,
+			buttons: [{
+					id: "correct",
+					text: "<ct:FWLabel key='JSP_CORRIGER'/>",
+					click: function () {
+						$('#afficheWarning').prop( "checked", true);
+						$(this).dialog("close");
+					}
+			}, {
+				id: "continue",
+				text: "<ct:FWLabel key='JSP_CONTINUER'/>",
+				click: function () {
+					$('#afficheWarning').prop( "checked", false);
+
+					validate();
+					action(COMMIT);
+					$(this).dialog("close");
+				}
+			}],
+			open : function() {
+				$(".ui-dialog-titlebar-close",".ui-dialog-titlebar").hide();
+				$("#Ok").focus();
+				<% if(!viewBean.getWarningMessage().isEmpty()) { %>
+					$('#dialog_warn').append('<%=viewBean.getWarningMessage()%>');
+				<% } %>
+			}
+		});
+	}
 </SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -213,6 +251,8 @@
 							<TD><INPUT type="text" name="codesCasSpecial" value="<%=viewBean.getCodesCasSpecial()%>" onblur="checkCodesCasSpecial(this, this.value)"></TD>
 							<TD><ct:FWLabel key="JSP_ETAT"/></TD>
 							<TD><INPUT type="text" name="anneeRenteEnCours" value="<%=viewBean.getAnneeRenteEnCours()%>" maxlength="4" class="numeroCourt"></TD>
+							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>
+							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":"CHECKED"%>></TD>
 						</TR>
 
 				<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean){
@@ -233,8 +273,20 @@
 							<TD><ct:FWLabel key="JSP_ALLOCATION_EXPLOITATION"/></TD>
 							<TD colspan="3"><INPUT type="checkbox" name="indemniteExploitation" <%=grandeIJViewBean.getIndemniteExploitation().booleanValue()?"CHECKED":""%>></TD>
 						</TR>
-				<%}%>
+				<%} %>
 
+						<input type="checkbox"
+	   name="afficheWarning"
+	   style="display:none"
+	   id="afficheWarning"
+	   value="<%=viewBean.getAfficheWarning().booleanValue()%>" />
+
+<% if(!JadeStringUtil.isEmpty(viewBean.getWarningMessage())){ %>
+	<div style="display:none" align="center" id="dialog_warn"
+		 title="<ct:FWLabel key='JSP_ATTENTION'/>" >
+		<h3> </h3>
+	</div>
+<% } %>
 
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

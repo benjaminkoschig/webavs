@@ -319,7 +319,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
      * @return
      */
     public boolean isModifierPermis() {
-        return IIJPrononce.CS_PETITE_IJ.equals(getCsTypeIJ()) || IIJPrononce.CS_GRANDE_IJ.equals(getCsTypeIJ());
+        return IIJPrononce.CS_PETITE_IJ.equals(getCsTypeIJ()) || IIJPrononce.CS_GRANDE_IJ.equals(getCsTypeIJ()) || IIJPrononce.CS_FPI.equals(getCsTypeIJ());
     }
 
     /**
