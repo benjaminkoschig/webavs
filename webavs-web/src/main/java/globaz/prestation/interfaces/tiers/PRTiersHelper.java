@@ -429,7 +429,22 @@ public class PRTiersHelper {
 
     }
 
-   public static String getIdTiersAdministrationFiscale(BSession session, String idTiers) throws Exception {
+    public static String getTiersCanton(BSession session, String idTiers) throws Exception {
+
+        // Trouver le canton de domicile du bénéfiaire principal
+        PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(session, idTiers,
+                JACalendar.todayJJsMMsAAAA());
+
+        if (tier == null) {
+            throw new Exception(session.getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
+        }
+
+        String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+
+        return cantonDomicile;
+    }
+
+    public static String getIdTiersAdministrationFiscale(BSession session, String idTiers) throws Exception {
 
             // Trouver le canton de domicile du bénéfiaire principal
             PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(session, idTiers,

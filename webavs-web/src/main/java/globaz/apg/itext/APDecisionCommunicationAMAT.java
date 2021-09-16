@@ -789,10 +789,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         if (isCreateDocumentCopie() && paramCopie.booleanValue()) {
-            initCopieACopieA2(document, parametres);
+            initCopieACopieA2(document, parametres, demande.getIdTiers());
         }
         if (isCreateDocumentCopie() && isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
-            initCopieA2Fisc(document, parametres);
+            initCopieA2Fisc(document, parametres, demande.getIdTiers());
         }
     }
 
@@ -805,10 +805,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
     }
 
-    private void initCopieACopieA2(ICTDocument document, Map parametres) throws Exception {
+    private void initCopieACopieA2(ICTDocument document, Map parametres, String idTiers) throws Exception {
         final TITiers t = new TITiers();
         t.setSession(getSession());
-        t.setIdTiers(demande.getIdTiers());
+        t.setIdTiers(idTiers);
         // chargement de la ligne de copie avec le formater
         final String ligne = t.getAdresseAsString(TIAvoirAdresse.CS_COURRIER, APApplication.CS_DOMAINE_ADRESSE_APG,
                 JACalendar.todayJJsMMsAAAA(), new PRTiersAdresseCopyFormater01());
@@ -817,21 +817,33 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         parametres.put("P_COPIE_A2", ligne);
     }
 
-    private void initCopieA2Fisc(ICTDocument document, Map parametres) throws Exception {
-        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), demande.getIdTiers());
+    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiers) throws Exception {
+        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
 
+        parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
         parametres.putIfAbsent("P_COPIE_A2", "");
         if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
             // chargement de la ligne de copie avec le formater
             final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
                     idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
                     new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
-            parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + "\n" + ligneAdmFiscale);
+            parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + (!JadeStringUtil.isBlank(String.valueOf(parametres.get("P_COPIE_A2"))) ? "\n" : "") + ligneAdmFiscale);
         }
-        parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
     }
 
     private void ajouteTexteImpotSource(ICTDocument document, StringBuffer buffer) throws Exception {
+        String taux = getImpotSourceTauxDroitOuTauxCanton(droit);
+
+        // on récupère et on complète le texte avec les paramètres
+        String textImpotSource = getTextOrEmpty(document, 4, 105);
+        if (StringUtils.isNotBlank(textImpotSource)) {
+            buffer.setLength(0);
+            buffer.append("\n\n");
+            buffer.append(PRStringUtils.replaceString(textImpotSource, "{tauxImposition}", JANumberFormatter.format(taux, 0.01, 2, JANumberFormatter.NEAR)));
+        }
+    }
+
+    private String getImpotSourceTauxDroitOuTauxCanton(APDroitMaternite droit) throws Exception {
         String taux = droit.getTauxImpotSource();
 
         // si aucun taux n'a été défini dans le droit
@@ -850,19 +862,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             List<PRTauxImposition> tauxImpots = mgrTauxImpot.getContainerAsList();
 
-            // on retourne le premier taux trouvé
+            // on retourne le premier taux trouvé ou 0.00
             if (tauxImpots.size() > 0) {
                 taux = tauxImpots.get(0).getTaux();
+            } else {
+                taux = "0.00";
             }
         }
 
-        // on récupère et on complète le texte avec les paramètres
-        String textImpotSource = getTextOrEmpty(document, 4, 105);
-        if (StringUtils.isNotBlank(textImpotSource)) {
-            buffer.setLength(0);
-            buffer.append("\n\n");
-            buffer.append(PRStringUtils.replaceString(textImpotSource, "{tauxImposition}", JANumberFormatter.format(taux, 0.01, 2, JANumberFormatter.NEAR)));
-        }
+        return taux;
     }
 
     private Boolean hasNotOnlyMATCIAB1() throws FWIException {

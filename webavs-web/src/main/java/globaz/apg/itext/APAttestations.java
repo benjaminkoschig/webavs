@@ -38,9 +38,11 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.external.IntRole;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
+import globaz.prestation.itext.PRLettreEnTete;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITITiers;
@@ -49,16 +51,7 @@ import globaz.pyxis.db.adressecourrier.TILocaliteManager;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.text.FieldPosition;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * <H1>Description</H1>
@@ -106,6 +99,7 @@ public class APAttestations extends FWIDocumentManager {
 
     private boolean isAttestationPat = true;
     private boolean isAttestationPai = true;
+    private boolean isAttestationCopy = false;
     private Boolean isSendToGED = Boolean.FALSE;
     Iterator iter;
     String keySyso = "";
@@ -417,6 +411,42 @@ public class APAttestations extends FWIDocumentManager {
 
             // le "détail"
             // --------------------------------------------------------------------------------------
+
+            // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
+            boolean isCopyFisc = false;
+            boolean isHasCopyFisc = false;
+            boolean isAddLettreEntete = false;
+            for (Object ai : list) {
+                if (ai instanceof AttestationsInfos && (IPRDemande.CS_TYPE_PATERNITE.equals(type) || IPRDemande.CS_TYPE_APG.equals(type) || IPRDemande.CS_TYPE_PANDEMIE.equals(type) || IPRDemande.CS_TYPE_MATERNITE.equals(type) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type))) {
+                    if (((AttestationsInfos) ai).isCopyFisc()) {
+                        isCopyFisc = true;
+                    }
+                    if (((AttestationsInfos) ai).isHasCopyFisc()) {
+                        isHasCopyFisc = true;
+                    }
+                    if (((AttestationsInfos) ai).isAddLettreEntete()) {
+                        isAddLettreEntete = true;
+                    }
+                }
+            }
+
+            // si une des attestations est une copie au fisc
+            if (isCopyFisc) {
+                parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
+            }
+
+            // si une des attestations possède une copie au fisc
+            if (isHasCopyFisc) {
+                initCopieA2Fisc(document, parametres, idTiers);
+            }
+
+            // si une des attestations possède une lettre d'entête (une par canton)
+            if (isAddLettreEntete) {
+                String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+
+                // Création du document en-tête
+                createLettreEntete(idTiersAdmFiscale, true);
+            }
 
             buffer.setLength(0);
 
@@ -863,19 +893,33 @@ public class APAttestations extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
-        String suffixe;
+        StringBuilder suffixe = new StringBuilder();
         if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
-            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK");
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK"));
         } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
-            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK");
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK"));
         } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
-            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PROCHE_AIDANT_OK");
+            suffixe.append( getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PROCHE_AIDANT_OK"));
         } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
-            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK");
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK"));
         } else {
-            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK");
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK"));
         }
-        return suffixe + super.getEMailObject();
+        if (isAttestationCopy) {
+            addAttestationCopyEmailObject(suffixe);
+        }
+        return suffixe.toString() + super.getEMailObject();
+    }
+
+    private void addAttestationCopyEmailObject(StringBuilder suffixe) {
+        try {
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_COPY")).append(" - ");
+            if (!JadeStringUtil.isEmpty(idTiers)) {
+                suffixe.append(getSession().getCodeLibelle(PRTiersHelper.getTiersCanton(getSession(), idTiers))).append(" - ");
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.WARNING, "APAttestations");
+        }
     }
 
     public String getIdTiers() {
@@ -946,7 +990,7 @@ public class APAttestations extends FWIDocumentManager {
 
             setList(list);
 
-            for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+            for (Iterator iterator = list.iterator(); iterator.hasNext(); ) {
                 AttestationsInfos ai = (AttestationsInfos) iterator.next();
 
                 setIdTiers(ai.idTiers);
@@ -1144,6 +1188,72 @@ public class APAttestations extends FWIDocumentManager {
         return listObjects;
     }
 
+    /**
+     * Création de la lettre d'entête
+     *
+     * @param idTiers
+     * @return
+     * @throws FWIException
+     * @throws Exception
+     */
+    private PRLettreEnTete createLettreEntete(String idTiers, boolean isAdmFiscale) throws FWIException, Exception {
+        PRLettreEnTete lettreEnTete = new PRLettreEnTete();
+        lettreEnTete.setSession(getSession());
+        // retrieve du tiers
+        PRTiersWrapper tier;
+        if (isAdmFiscale) {
+            tier = PRTiersHelper.getAdministrationParId(getSession(), idTiers);
+        } else {
+            tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiers);
+        }
+        lettreEnTete.setTierAdresse(tier);
+        // pour l'instant, les copies sont uniquement adressées aux assurés,
+        // donc pas d'idAffilié
+        lettreEnTete.setIdAffilie("");
+        lettreEnTete.setEMailAddress(getEMailAddress());
+        lettreEnTete.setDomaineLettreEnTete(getDomaine());
+        lettreEnTete.setParent(this);
+        lettreEnTete.executeProcess();
+        return lettreEnTete;
+    }
+
+    private String getDomaine() {
+        String domaine = PRLettreEnTete.DOMAINE_APG;
+        if (isAttestationMat && !isAttestationAPG) {
+            domaine = PRLettreEnTete.DOMAINE_MAT;
+        } else if(isAttestationPat) {
+            domaine = PRLettreEnTete.DOMAINE_PAT;
+        } else if(isAttestationPai) {
+            domaine = PRLettreEnTete.DOMAINE_PAI;
+        } else if(isAttestationAPG) {
+            domaine = PRLettreEnTete.DOMAINE_APG;
+        }
+        return domaine;
+    }
+
+    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiers) throws Exception {
+        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+
+        parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
+        parametres.putIfAbsent("P_COPIE_A2", "");
+        if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
+            // chargement de la ligne de copie avec le formater
+            final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
+                    new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
+            parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + (JadeStringUtil.isBlank(String.valueOf(parametres.get("P_COPIE_A2"))) ? "" : "\n") + ligneAdmFiscale);
+        }
+    }
+
+    private String getTextOrEmpty(ICTDocument document, int niveau, int position) {
+        try {
+            return document.getTextes(niveau).getTexte(position).getDescription();
+        } catch (IndexOutOfBoundsException e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, "APAttestations");
+            return "";
+        }
+    }
+
     public boolean isAttestationPat() {
         return isAttestationPat;
     }
@@ -1158,6 +1268,14 @@ public class APAttestations extends FWIDocumentManager {
 
     public void setAttestationPai(boolean attestationPai) {
         isAttestationPai = attestationPai;
+    }
+
+    public boolean isAttestationCopy() {
+        return isAttestationCopy;
+    }
+
+    public void setAttestationCopy(boolean attestationCopy) {
+        isAttestationCopy = attestationCopy;
     }
 
 }
