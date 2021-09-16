@@ -36,8 +36,17 @@ public class StrategieBienImmoNonHabitable extends StrategieCalculFortune implem
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
             if(context.contains(CalculContext.Attribut.REFORME)) {
-                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED,
-                        checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
+//                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED,
+//                        checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
+
+                // Si la valeur du bien est inférieur à sa valeur hypothécaire, on ne tient pas compte de la valeur hypothécaire.
+                // Exigence 4.15
+                if (checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction < checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantValeurVenale()) * fraction) {
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED, checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
+                } else {
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED,
+                            0.0f);
+                }
             }
         }
 

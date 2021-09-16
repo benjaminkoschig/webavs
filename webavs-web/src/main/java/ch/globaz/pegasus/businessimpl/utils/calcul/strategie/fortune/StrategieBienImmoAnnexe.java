@@ -33,10 +33,19 @@ public class StrategieBienImmoAnnexe extends StrategieCalculFortune implements I
 
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurVenale()) * fraction);
+
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction);
+
             if (context.contains(CalculContext.Attribut.REFORME)) {
-                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction);
+                // Si la valeur du bien est inférieur à sa valeur hypothécaire, on ne tient pas compte de la valeur hypothécaire.
+                // Exigence 4.15
+                if (checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction < checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurVenale()) * fraction) {
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction);
+                } else {
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED,
+                            0.0f);
+                }
             }
         }
 
