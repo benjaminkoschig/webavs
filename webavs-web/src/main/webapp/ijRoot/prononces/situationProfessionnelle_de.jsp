@@ -38,7 +38,7 @@ bButtonDelete = bButtonDelete && viewBean.isModifierPermis();
 		parent.isNouveau=false;
 	}else{
 		<%if(IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)){%>
-			document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.§";
+			document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.calculerAit";
 		<%}else{%>
 			document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.afficher";
 		<%}%>
