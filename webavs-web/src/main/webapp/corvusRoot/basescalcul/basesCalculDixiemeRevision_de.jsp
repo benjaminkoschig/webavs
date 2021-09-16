@@ -453,7 +453,7 @@
 						name="degreInvalidite" 
 						value="<%=viewBean.getDegreInvalidite()%>" 
 						maxlength="3" 
-						size="3">
+						size="3">%
 			</td>
 			<td>
 				<ct:FWLabel key="JSP_BAC_D_CLE_INFIRM_AYANT_DROIT" />
@@ -496,8 +496,18 @@
 						maxlength="3" 
 						size="3">
 			</td>
-			<td colspan="2">
-				&nbsp;
+			<td>
+				<ct:FWLabel key="JSP_BAC_D_QUOTITE_RENTE" />
+			</td>
+			<td>
+				<input 	type="text"
+						  id="quotiteRente"
+						  name="quotiteRente"
+						  value="<%=viewBean.getQuotiteRente()%>"
+						  maxlength="6"
+						  size="5"
+						  >
+				%
 			</td>
 		</tr>
 		<tr>

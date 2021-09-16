@@ -117,6 +117,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             renteAccordee.setDateRevocationAjournement(renteAccordeeVb.getDateRevocationAjournement());
             renteAccordee.setDureeAjournement(renteAccordeeVb.getDureeAjournement());
             renteAccordee.setFractionRente(renteAccordeeVb.getFractionRente());
+            renteAccordee.setQuotiteRente(renteAccordeeVb.getQuotiteRente());
             renteAccordee.setIdBaseCalcul(renteAccordeeVb.getIdBaseCalcul());
             renteAccordee.setIdDemandePrincipaleAnnulante(renteAccordeeVb.getIdDemandePrincipaleAnnulante());
             renteAccordee.setIdInfoCompta(renteAccordeeVb.getIdInfoCompta());
@@ -387,6 +388,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             renteAccordee.setDateRevocationAjournement(renteAccordeeVb.getDateRevocationAjournement());
             renteAccordee.setDureeAjournement(renteAccordeeVb.getDureeAjournement());
             renteAccordee.setFractionRente(renteAccordeeVb.getFractionRente());
+            renteAccordee.setQuotiteRente(renteAccordeeVb.getQuotiteRente());
             renteAccordee.setIdBaseCalcul(renteAccordeeVb.getIdBaseCalcul());
             renteAccordee.setIdDemandePrincipaleAnnulante(renteAccordeeVb.getIdDemandePrincipaleAnnulante());
             renteAccordee.setReferencePmt(renteAccordeeVb.getReferencePmt());

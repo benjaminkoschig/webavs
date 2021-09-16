@@ -17,7 +17,21 @@ insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 values (52822085,'RECASSPEC',85,1,0,0,'CAS_SPECIAUX_RENTE_85',2, 1,2,2,2,2,51800022,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user));
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (52822085,'D','85','Code 85',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user));
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (52822085,'F','85','Code 85',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user));
+
 -- Nouvelle colonne dans table Prestation Accordée REPRACC
 ALTER TABLE schema.REPRACC
     ADD COLUMN QUOTITE_RENTE NUMERIC (5, 2);
 REORG table SCHEMA.REPRACC;
+-- call SYSPROC.ADMIN_CMD('reorg table REPRACC');
+
+-- Nouvelle colonne dans la table Base de Calcul REBACAL
+ALTER TABLE schema.REBACAL
+    ADD COLUMN QUOTITE_RENTE NUMERIC (5, 2);
+REORG table SCHEMA.REBACAL;
+--call SYSPROC.ADMIN_CMD('reorg table REBACAL');
+
+-- Nouvelle colonne dans la table Historique rente REHISTR
+ALTER TABLE schema.REHISTR
+    ADD COLUMN QUOTITE_RENTE NUMERIC (5, 2);
+REORG table SCHEMA.REHISTR;
+--call SYSPROC.ADMIN_CMD('reorg table REHISTR');

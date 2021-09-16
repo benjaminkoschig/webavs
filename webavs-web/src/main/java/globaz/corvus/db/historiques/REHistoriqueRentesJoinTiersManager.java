@@ -145,6 +145,7 @@ public class REHistoriqueRentesJoinTiersManager extends PRAbstractManager {
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_DUREE_COTI_ETR_AV_73).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ECHELLE).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_FRACTION_RENTE).append(",");
+        fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_QUOTITE_RENTE).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ID_HISTORIQUE_RENTES).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ID_RENTE_ACCORDEE).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ID_TIERS).append(",");

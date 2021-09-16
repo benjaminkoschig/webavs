@@ -619,7 +619,11 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 												document.getElementById("codeRefugie").maxLength ='1';
 											</SCRIPT>
 										</TD>
-										<TD colspan="2">&nbsp;</TD>
+										<TD><ct:FWLabel key="JSP_RAC_D_QUOTITE_DE_RENTE"/></TD>
+										<TD>
+											<INPUT type="text" size="5" maxlength="6" id="quotiteRente" name="quotiteRente" value="<%=viewBean.getQuotiteRente()%>">
+											%
+										</TD>
 									</TR>
 									<TR>
 										<TD><ct:FWLabel key="JSP_RAC_D_NSS_COMPLEMENTAIRE_1"/></TD>

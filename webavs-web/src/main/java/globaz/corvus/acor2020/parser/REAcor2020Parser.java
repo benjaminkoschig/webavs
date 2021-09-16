@@ -37,6 +37,7 @@ import globaz.globall.util.JADate;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
@@ -566,7 +567,6 @@ public class REAcor2020Parser {
         bc.setAnneeDeNiveau(PRConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY)));
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
-
         bc.setCodeOfficeAi("000");
         if (Objects.nonNull(baseCalcul.getInvalidite()) && Objects.isNull(baseCalcul.getInvalidite().getType())) {
             //        bc.setCleInfirmiteAyantDroit(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_AYANT_DROIT")); $b22
@@ -575,10 +575,12 @@ public class REAcor2020Parser {
             bc.setCodeOfficeAi(Objects.toString(baseCalcul.getInvalidite().getOai(), StringUtils.EMPTY));
             //        bc.setDegreInvalidite(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_AYANT_DROIT")); $b21
             bc.setDegreInvalidite(Objects.toString(baseCalcul.getInvalidite().getDegreInvalidite(), StringUtils.EMPTY));
+            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite(), StringUtils.EMPTY));
             //        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_AYANT_DROIT"))); $b24
             bc.setInvaliditePrecoce(BooleanUtils.toBoolean(baseCalcul.getInvalidite().getInvalidePrecoce()));
             //        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")), '.')); $b23
             bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(baseCalcul.getInvalidite().getSurvenanceEvAss(), StringUtils.EMPTY)), '.'));
+            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite()));
         }
         //        bc.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE")); $b11
         bc.setEchelleRente(Objects.toString(baseCalcul.getEchelle(), StringUtils.EMPTY));
@@ -843,6 +845,7 @@ public class REAcor2020Parser {
 //        String fractionRente = REACORAbstractFlatFileParser.getField(line, fields, "FRACTION_RENTE_AI"); $r7
 //         ra.setFractionRente(PRACORConst.caFractionRenteToCS(session, fractionRente));
         ra.setFractionRente(FractionRente.getConstFromValue(rente.getFraction()));
+        ra.setQuotiteRente(Objects.toString(rente.getQuotite(), "0.00"));
 
 //        ra.setCodePrestation(REACORAbstractFlatFileParser.getField(line, fields, "CODE_PRESTATION")); $r5
         ra.setCodePrestation(Objects.toString(rente.getGenre(), StringUtils.EMPTY));

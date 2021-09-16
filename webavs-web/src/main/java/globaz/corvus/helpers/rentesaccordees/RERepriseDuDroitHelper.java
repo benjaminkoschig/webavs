@@ -383,6 +383,7 @@ public class RERepriseDuDroitHelper extends PRAbstractHelper {
         newRA.setDateRevocationAjournement(ra.getDateRevocationAjournement());
         newRA.setDureeAjournement(ra.getDureeAjournement());
         newRA.setFractionRente(ra.getFractionRente());
+        newRA.setQuotiteRente(ra.getQuotiteRente());
         newRA.setIdBaseCalcul(idBaseCalcul);
         newRA.setIdTiersBaseCalcul(ra.getIdTiersBaseCalcul());
         newRA.setIdTiersBeneficiaire(ra.getIdTiersBeneficiaire());
@@ -684,6 +685,7 @@ public class RERepriseDuDroitHelper extends PRAbstractHelper {
             newBC.setCodeOfficeAi(bc.getCodeOfficeAi());
             newBC.setCsEtat(IREBasesCalcul.CS_ETAT_ACTIF);
             newBC.setDegreInvalidite(bc.getDegreInvalidite());
+            newBC.setQuotiteRente(bc.getQuotiteRente());
             newBC.setDroitApplique(bc.getDroitApplique());
             newBC.setDureeCotiAvant73(bc.getDureeCotiAvant73());
             newBC.setDureeCotiDes73(bc.getDureeCotiDes73());
@@ -731,6 +733,7 @@ public class RERepriseDuDroitHelper extends PRAbstractHelper {
             newBC.setCodeOfficeAi(bc.getCodeOfficeAi());
             newBC.setCsEtat(IREBasesCalcul.CS_ETAT_ACTIF);
             newBC.setDegreInvalidite(bc.getDegreInvalidite());
+            newBC.setQuotiteRente(bc.getQuotiteRente());
             newBC.setDroitApplique(bc.getDroitApplique());
             newBC.setDureeCotiAvant73(bc.getDureeCotiAvant73());
             newBC.setDureeCotiDes73(bc.getDureeCotiDes73());

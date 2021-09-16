@@ -45,6 +45,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     public static final String FIELDNAME_DUREE_COTI_ETR_AV_73 = "WIDCEA";
     public static final String FIELDNAME_ECHELLE = "WILECH";
     public static final String FIELDNAME_FRACTION_RENTE = "WILFRR";
+    public static final String FIELDNAME_QUOTITE_RENTE = "QUOTITE_RENTE";
     public static final String FIELDNAME_ID_HISTORIQUE_RENTES = "WIIHIS";
     public static final String FIELDNAME_ID_RENTE_ACCORDEE = "WIIRA";
     public static final String FIELDNAME_ID_TIERS = "WIITIE";
@@ -118,6 +119,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     private String dureeCotRam = "";
     private String echelle = "";
     private String fractionRente = "";
+    private String quotiteRente = "";
     private String idRenteAccordee = "";
     private String idTiers = "";
     private Boolean isInvaliditePrecoce = Boolean.FALSE;
@@ -191,6 +193,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
         dureeCotiEtrangereAv73 = statement.dbReadString(REHistoriqueRentes.FIELDNAME_DUREE_COTI_ETR_AV_73);
         echelle = statement.dbReadString(REHistoriqueRentes.FIELDNAME_ECHELLE);
         fractionRente = statement.dbReadString(REHistoriqueRentes.FIELDNAME_FRACTION_RENTE);
+        quotiteRente = statement.dbReadString(REHistoriqueRentes.FIELDNAME_QUOTITE_RENTE);
         idHistorique = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_ID_HISTORIQUE_RENTES);
         idRenteAccordee = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_ID_RENTE_ACCORDEE);
         idTiers = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_ID_TIERS);
@@ -296,6 +299,8 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
                 this._dbWriteString(statement.getTransaction(), echelle, "echelle"));
         statement.writeField(REHistoriqueRentes.FIELDNAME_FRACTION_RENTE,
                 this._dbWriteString(statement.getTransaction(), fractionRente, "fractionRente"));
+        statement.writeField(REHistoriqueRentes.FIELDNAME_QUOTITE_RENTE,
+                this._dbWriteNumeric(statement.getTransaction(), quotiteRente, "quotiteRente"));
         statement.writeField(REHistoriqueRentes.FIELDNAME_ID_RENTE_ACCORDEE,
                 this._dbWriteNumeric(statement.getTransaction(), idRenteAccordee, "idRenteAccordee"));
         statement.writeField(REHistoriqueRentes.FIELDNAME_ID_TIERS,
@@ -447,6 +452,10 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
 
     public String getFractionRente() {
         return fractionRente;
+    }
+
+    public String getQuotiteRente() {
+        return quotiteRente;
     }
 
     public String getIdRenteAccordee() {
@@ -649,6 +658,10 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
 
     public void setFractionRente(String fractionRente) {
         this.fractionRente = fractionRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
     }
 
     public void setIdRenteAccordee(String idRenteAccordee) {

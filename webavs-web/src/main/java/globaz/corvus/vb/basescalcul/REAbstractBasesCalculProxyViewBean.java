@@ -205,6 +205,10 @@ public abstract class REAbstractBasesCalculProxyViewBean implements FWViewBeanIn
         }
     }
 
+    public String getQuotiteRente() {
+        return basesCalcul.getQuotiteRente();
+    }
+
     public String getDroitApplique() {
         return basesCalcul.getDroitApplique();
     }
@@ -671,6 +675,10 @@ public abstract class REAbstractBasesCalculProxyViewBean implements FWViewBeanIn
 
     public void setDegreInvalidite(String string) {
         basesCalcul.setDegreInvalidite(string);
+    }
+
+    public void setQuotiteRente(String quotite){
+        basesCalcul.setQuotiteRente(quotite);
     }
 
     public void setDroitApplique(String string) {

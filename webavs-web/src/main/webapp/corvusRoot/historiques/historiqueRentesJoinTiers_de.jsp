@@ -5,7 +5,6 @@
 <%@page import="globaz.corvus.api.basescalcul.IRERenteAccordee" %>
 <%@page import="globaz.corvus.vb.historiques.REHistoriqueRentesJoinTiersViewBean" %>
 <%@page import="globaz.prestation.tools.PRCodeSystem" %>
-<%@page import="globaz.prestation.tools.PRDateFormater" %>
 <%@page import="globaz.framework.secure.FWSecureConstants" %>
 <%@page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@page import="globaz.corvus.servlet.IREActions" %>
@@ -710,8 +709,17 @@
                                        size="1"
                                        maxlength="1"/>
                             </td>
-                            <td colspan="2">
-                                &nbsp;
+                            <td>
+                                <ct:FWLabel key="JSP_SAM_D_QUOTITE_RENTE"/>
+                            </td>
+                            <td>
+                                <input type="text"
+                                       id="quotiteRente"
+                                       name="quotiteRente"
+                                       value="<%=viewBean.getQuotiteRente()%>"
+                                       size="5"
+                                       maxlength="6"/>
+                                %
                             </td>
                         </tr>
                     </table>

@@ -50,6 +50,7 @@ public class REBasesCalcul extends BEntity {
     public static final String FIELDNAME_CODE_OFFICE_AI = "YINOAI";
     public static final String FIELDNAME_CS_ETAT = "YITETA";
     public static final String FIELDNAME_DEGRE_INVALIDITE = "YINDIN";
+    public static final String FIELDNAME_QUOTITE_RENTE = "QUOTITE_RENTE";
     public static final String FIELDNAME_DROIT_APPLIQUE = "YILDAP";
     public static final String FIELDNAME_DUREE_COTI_AV_73 = "YIDDCA";
     public static final String FIELDNAME_DUREE_COTI_DES_73 = "YIDDCD";
@@ -120,6 +121,8 @@ public class REBasesCalcul extends BEntity {
                     && bc.getCsEtat().equals(bcParametres.getCsEtat())
                     && bc.getDegreInvalidite().equals(
                             String.valueOf(Integer.parseInt(bcParametres.getDegreInvalidite())))
+                    && bc.getQuotiteRente().equals(
+                            String.valueOf(Double.parseDouble(bcParametres.getQuotiteRente())))
                     && bc.getDroitApplique().equals(bcParametres.getDroitApplique())
                     && bc.getDureeRevenuAnnuelMoyen().equals(bcParametres.getDureeRevenuAnnuelMoyen())
                     && bc.getEchelleRente().equals(bcParametres.getEchelleRente())
@@ -181,6 +184,7 @@ public class REBasesCalcul extends BEntity {
     private String codeOfficeAi = "";
     private String csEtat = "";
     private String degreInvalidite = "";
+    private String quotiteRente = "";
     private String droitApplique = "";
     private String dureeCotiAvant73 = "";
     private String dureeCotiDes73 = "";
@@ -300,6 +304,7 @@ public class REBasesCalcul extends BEntity {
         isMinimuGaranti = statement.dbReadBoolean(REBasesCalcul.FIELDNAME_IS_MINIMU_GARANTI);
         codeOfficeAi = statement.dbReadString(REBasesCalcul.FIELDNAME_CODE_OFFICE_AI);
         degreInvalidite = statement.dbReadNumeric(REBasesCalcul.FIELDNAME_DEGRE_INVALIDITE);
+        quotiteRente = statement.dbReadNumeric(REBasesCalcul.FIELDNAME_QUOTITE_RENTE);
         cleInfirmiteAyantDroit = statement.dbReadNumeric(REBasesCalcul.FIELDNAME_CLE_INFIRMITE_AYANT_DROIT);
         survenanceEvtAssAyantDroit = RENumberFormatter.fmt(PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
                 .dbReadNumeric(REBasesCalcul.FIELDNAME_SURVENANCE_EVT_ASS_AYANT_DROIT)), false, false, true, 4, 2);
@@ -548,6 +553,8 @@ public class REBasesCalcul extends BEntity {
                 this._dbWriteString(statement.getTransaction(), codeOfficeAi, "officeAi"));
         statement.writeField(REBasesCalcul.FIELDNAME_DEGRE_INVALIDITE,
                 this._dbWriteNumeric(statement.getTransaction(), degreInvalidite, "degreInvalidite"));
+        statement.writeField(REBasesCalcul.FIELDNAME_QUOTITE_RENTE,
+                this._dbWriteNumeric(statement.getTransaction(), quotiteRente, "quotiteRente"));
         statement.writeField(REBasesCalcul.FIELDNAME_CLE_INFIRMITE_AYANT_DROIT,
                 this._dbWriteNumeric(statement.getTransaction(), cleInfirmiteAyantDroit, "cleInfirmiteAyantDroit"));
         statement.writeField(REBasesCalcul.FIELDNAME_SURVENANCE_EVT_ASS_AYANT_DROIT, this._dbWriteNumeric(
@@ -702,6 +709,13 @@ public class REBasesCalcul extends BEntity {
      */
     public String getDegreInvalidite() {
         return degreInvalidite;
+    }
+
+    /**
+     * @return
+     */
+    public String getQuotiteRente() {
+        return quotiteRente;
     }
 
     /**
@@ -1042,6 +1056,13 @@ public class REBasesCalcul extends BEntity {
      */
     public void setDegreInvalidite(String string) {
         degreInvalidite = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setQuotiteRente(String string) {
+        quotiteRente = string;
     }
 
     /**

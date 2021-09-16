@@ -419,6 +419,7 @@ public class REExportationCalculAcor2020 {
         commonRente.setIndemniteForfaitaire(false);
         // 3. fraction de rente
         commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
+        commonRente.setQuotite(Double.valueOf(rente.getQuotiteRente()));
         // 4. date début du droit
         commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit
