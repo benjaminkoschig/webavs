@@ -30,6 +30,7 @@ public class REPrestationsAccordees extends BEntity {
     public static final String FIELDNAME_DATE_ECHEANCE = "ZTDECH";
     public static final String FIELDNAME_DATE_FIN_DROIT = "ZTDFDR";
     public static final String FIELDNAME_FRACTION_RENTE = "ZTLFRR";
+    public static final String FIELDNAME_QUOTITE_RENTE = "QUOTITE_RENTE";
     public static final String FIELDNAME_GENRE_PRESTATION_ACCORDEE = "ZTTGEN";
     public static final String FIELDNAME_ID_CALCUL_INTERET_MORATOIRE = "ZTICIM";
     public static final String FIELDNAME_ID_DEMANDE_PRINCIPALE_ANNULANTE = "ZTIDPA";
@@ -124,6 +125,7 @@ public class REPrestationsAccordees extends BEntity {
     private String dateEcheance = "";
     private String dateFinDroit = "";
     private String fractionRente = "";
+    private String quotiteRente = "";
     private String idCalculInteretMoratoire = "";
     private String idDemandePrincipaleAnnulante = "";
     private String idEnteteBlocage = "";
@@ -188,6 +190,7 @@ public class REPrestationsAccordees extends BEntity {
         codePrestation = statement.dbReadString(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
         sousTypeGenrePrestation = statement.dbReadString(REPrestationsAccordees.FIELDNAME_SOUS_TYPE_GENRE_PRESTATION);
         fractionRente = statement.dbReadString(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE);
+        quotiteRente = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE);
         montantPrestation = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION);
         dateDebutDroit = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
                 .dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT));
@@ -277,6 +280,8 @@ public class REPrestationsAccordees extends BEntity {
                 this._dbWriteString(statement.getTransaction(), codePrestation, "codePrestation"));
         statement.writeField(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE,
                 this._dbWriteString(statement.getTransaction(), fractionRente, "fractionRente"));
+        statement.writeField(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE,
+                this._dbWriteNumeric(statement.getTransaction(), quotiteRente, "quotiteRente"));
         statement.writeField(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION,
                 this._dbWriteNumeric(statement.getTransaction(), montantPrestation, "monatantPrestation"));
         statement.writeField(
@@ -382,6 +387,10 @@ public class REPrestationsAccordees extends BEntity {
         }
 
         return fractionRente;
+    }
+
+    public String getQuotiteRente(){
+        return quotiteRente;
     }
 
     public int getGroupeGenreRente() {
@@ -574,6 +583,10 @@ public class REPrestationsAccordees extends BEntity {
      */
     public void setFractionRente(final String string) {
         fractionRente = string;
+    }
+
+    public void setQuotiteRente(final String quotite){
+        this.quotiteRente = quotite;
     }
 
     /**

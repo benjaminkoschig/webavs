@@ -317,6 +317,13 @@ public class RERenteAccordee extends REPrestationsAccordees {
                     setMessage(getSession().getLabel("ERREUR_VAL_POSSIBLES_FRACTION_RENTES"));
                 }
             }
+
+            // TODO JJO
+            if(JadeStringUtil.isBlankOrZero(getQuotiteRente())) {
+                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_FRACTION_RENTE_OBL_50_76"));
+                setMsgType(FWViewBeanInterface.ERROR);
+                setMessage(getSession().getLabel("ERREUR_FRACTION_RENTE_OBL_50_76"));
+            }
         }
 
         // champs obligatoires pour la retraite flexible (anticipation)
