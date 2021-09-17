@@ -885,28 +885,29 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             }
 
-            // Pour maternité, si Assuré et impôt source, alors ajouter ce texte sur les décomptes.
+            // Pour maternité, si document Assuré et impôt source, alors ajouter ce texte sur les décomptes.
             if (IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot()) && impotSource && !decompteCourant.getIsPaiementEmployeur()) {
                 buffer.append(document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
 
-            // Pour paternité, si Assuré indépendant, alors il faut ajouter ce texte sur les décomptes.
+            // Pour paternité/proche aidant, si document Assuré indépendant, alors il faut ajouter ce texte sur les décomptes.
             if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
                 buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
 
-            // Texte Impot source
-            if(impotSource && !decompteCourant.getIsPaiementEmployeur()) {
-                // TODO: Voir si positionner le texte pour tous les types de document à la même position (5,10 ?)
-                if(IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
-                    if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
-                        calculRevenuAnnuel();
-                    }
-                    String texte = document.getTextes(5).getTexte(10).getDescription();
-                    texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}",revenuAnnuelDeterminant);
-                    texte = PRStringUtils.replaceString(texte,"{tauxImposition}",JANumberFormatter.formatNoRound(tauxImposition));
-                    buffer.append("\n"+texte+"\n");
+            // Pour paternité/proche aidant ou APG/pandémie si document Assuré et impôt source, alors ajouter ce texte sur les décomptes.
+            if (impotSource && (
+                    ((IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) && !decompteCourant.getIsPaiementEmployeur())
+                    ||
+                    (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))
+                )) {
+                if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
+                    calculRevenuAnnuel();
                 }
+                String texte = document.getTextes(5).getTexte(10).getDescription();
+                texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}", revenuAnnuelDeterminant);
+                texte = PRStringUtils.replaceString(texte,"{tauxImposition}", JANumberFormatter.formatNoRound(tauxImposition));
+                buffer.append("\n"+texte+"\n");
             }
 
             parametres.put("PARAM_PIED", buffer.toString());
