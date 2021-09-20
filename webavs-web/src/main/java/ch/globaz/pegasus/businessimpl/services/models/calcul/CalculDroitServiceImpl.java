@@ -6,6 +6,10 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement;
+import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
+import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordeesSearch;
+import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
@@ -75,7 +79,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     private final String CONJOINT_MNT_SEJOUR = "CONJOINT_SEJ";
     //Variable pour savoir si il faut reporter les créances/retenus des versement en home pour les cas où les données en home ne sont pas touché et ignoré dans le calculteur.
     private boolean aDonneeHomeEncoreValide = false;
-
+    private Map<String,SimplePCAccordee> mapCsRoleToPCAWithoutDateFin = new LinkedHashMap<>();
     //LABEL
     private final String LOG_ERROR_MESSAGE_SEUIL_FORTUNE_DEPASSE = "pegasus.calcul.seuil.fortune.depasse";
 
@@ -576,6 +580,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         }
 
         createCreancierHystoriqueOld(pcaReplaced);
+        /**
+         * Mapper requérant conjoint pour les PCA sans date de fin (faccilité le report des retenus anciennes et valides)
+         */
+        mapPCASansDateFin(allNewPca);
+        /**
+         * Revert les anciennes retenus pour les cas quand on recalcul car on a mis fin aux anciennes retenus
+         */
+        revertRetenuesOldPca(droit);
         for (SimplePCAccordee simplePCAccordee : allNewPca) {
             reporterLaRetenuSiExistant(pcaReplaced, simplePCAccordee, homeVersementList);
             clotrerAncienneRetenus(pcaReplaced, simplePCAccordee);
@@ -613,6 +625,42 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             for (JadeBusinessMessage warnMess : calculProcessWarns) {
                 JadeThread.logWarn("", warnMess.getMessageId());
             }
+        }
+    }
+
+    private void mapPCASansDateFin(List<SimplePCAccordee> allNewPca) {
+        for (SimplePCAccordee pca : allNewPca){
+            if(JadeStringUtil.isBlankOrZero(pca.getDateFin())){
+                mapCsRoleToPCAWithoutDateFin.put(pca.getCsRoleBeneficiaire(),pca);
+            }
+        }
+    }
+    private void revertRetenuesOldPca(Droit droit) throws DroitException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
+        pcaRetenueSearch.setForIdDroit(droit.getId());
+        int noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion());
+        if (noVersion > 1) {
+            noVersion--;
+        }
+        pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
+        pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
+        String dateProchainPaiement = null;
+        try {
+            dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+            for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
+                PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
+                if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                    retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
+                    PegasusServiceLocator.getRetenueService().update(retenueAncienne);
+                    SimplePrestationsAccordees simplePrestationsAccordees = PegasusImplServiceLocator.getSimplePrestatioAccordeeService().read(retenueAncienne.getSimpleRetenue().getIdRenteAccordee());
+                    simplePrestationsAccordees.setIsRetenues(Boolean.TRUE);
+                    PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
+                }
+            }
+        } catch (PmtMensuelException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
+        } catch (JadeApplicationException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
         }
     }
 
@@ -768,6 +816,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         CalculPcaReplace anciennePCACourante;
         DonneeInterneHomeVersement donneeInterneHomeVersementNew;
         String idPcaOld;
+
         Map<String, DonneeInterneHomeVersement> mapNewRetenues = new HashMap<>();
         Map<String, PcaRetenue> mapOldHomeRetenues = new HashMap<>();
         Map<String, JadeAbstractModel> mapAutreRetenues = new HashMap<>();
@@ -780,9 +829,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getDateFin())) {
             for (JadeAbstractModel absDonnee : anciennesPCAccordees.getSearchResults()) {
                 CalculPcaReplace ancienneDonnee = (CalculPcaReplace) absDonnee;
-                if (JadeStringUtil.isBlankOrZero(ancienneDonnee.getSimplePCAccordee().getDateFin())
-                        && IPCPCAccordee.CS_ETAT_PCA_VALIDE.equals(ancienneDonnee.getSimplePCAccordee().getCsEtatPC())) {
-                    if (ancienneDonnee.getSimplePrestationsAccordees().getIsRetenues()) {
+                if ( IPCPCAccordee.CS_ETAT_PCA_VALIDE.equals(ancienneDonnee.getSimplePCAccordee().getCsEtatPC())) {
                         idPcaOld = ancienneDonnee.getSimplePCAccordee().getIdPCAccordee();
                         PcaRetenueSearch search = new PcaRetenueSearch();
                         search.setForIdPca(idPcaOld);
@@ -793,7 +840,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             if (isHome(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())) {
                                 mapOldHomeRetenues.put(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt() + "" + retenueAncienne.getCsRoleFamillePC(), retenueAncienne);
                             } else {
-                                if (JadeStringUtil.isBlankOrZero(retenueAncienne.getSimpleRetenue().getDateFinRetenue()) || isDateAfterOrEquals(retenueAncienne.getSimpleRetenue().getDateFinRetenue(), PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt())) {
+                                if (canReportRetenue(simplePCAccordee,retenueAncienne)) {
                                     mapAutreRetenues.put(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt() + "" + retenueAncienne.getCsRoleFamillePC(), model);
                                 }
                             }
@@ -801,7 +848,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     }
                 }
             }
-        }
+
         for (Map.Entry<String, PcaRetenue> pcaRetenueEntry : mapOldHomeRetenues.entrySet()) {
             if (mapNewRetenues.containsKey(pcaRetenueEntry.getKey())) {
                 donneeInterneHomeVersementNew = mapNewRetenues.get(pcaRetenueEntry.getKey());
@@ -846,6 +893,22 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
         }
 
+    }
+
+    private boolean canReportRetenue(SimplePCAccordee simplePCAccordee, PcaRetenue retenueAncienne) throws JadeApplicationServiceNotAvailableException, PmtMensuelException {
+        String dateFinRetenueAncienne = retenueAncienne.getSimpleRetenue().getDateFinRetenue();
+        String dateProchainPaiementMensuel =  PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+        if( (JadeStringUtil.isBlankOrZero(dateFinRetenueAncienne)
+                || isDateAfterOrEquals(dateFinRetenueAncienne, dateProchainPaiementMensuel))
+         && (retenueAncienne.getCsRoleFamillePC().equals(simplePCAccordee.getCsRoleBeneficiaire())
+                ||
+                //Cas 2DomRente où la retenue à reporter est celui du conjoint et qu'il faut reporter sur le requérant.
+                (retenueAncienne.getCsRoleFamillePC().equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)
+                && mapCsRoleToPCAWithoutDateFin.size() == 1
+                && mapCsRoleToPCAWithoutDateFin.containsKey(IPCDroits.CS_ROLE_FAMILLE_REQUERANT)))){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1401,6 +1464,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                                 }
                                 retenue.getSimpleRetenue().setDateFinRetenue(dateProchainPaiement);
                                 PegasusServiceLocator.getRetenueService().updateWithoutCheck(retenue);
+                                SimplePrestationsAccordees simplePrestationsAccordees = anciennePCACourante.getSimplePrestationsAccordees();
+                                simplePrestationsAccordees.setIsRetenues(Boolean.FALSE);
+                                PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
                             }
                         }
                     }
