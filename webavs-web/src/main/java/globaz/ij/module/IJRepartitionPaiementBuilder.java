@@ -1,5 +1,6 @@
 package globaz.ij.module;
 
+import ch.globaz.common.util.Dates;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
@@ -12,13 +13,7 @@ import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
-import globaz.ij.db.prestations.IJCotisation;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
-import globaz.ij.db.prestations.IJPrestation;
-import globaz.ij.db.prestations.IJPrestationManager;
-import globaz.ij.db.prestations.IJRepartitionPaiements;
+import globaz.ij.db.prestations.*;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJSituationProfessionnelle;
 import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
@@ -30,6 +25,7 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRCalcul;
+
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
@@ -435,8 +431,12 @@ public class IJRepartitionPaiementBuilder {
             }
 
             // calculer les cotisations d'assurances et impots
-            double somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
-                    prestation.getMontantBrut(), montantJrnExt);
+            double somme = 0D;
+
+            if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+                somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
+                        prestation.getMontantBrut(), montantJrnExt);
+            }
 
             repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
                     .getMontantBrut()) + somme));
@@ -538,7 +538,11 @@ public class IJRepartitionPaiementBuilder {
             repartition.add(transaction);
 
             // calculer les cotisations d'assurances et impots
-            double somme = buildCotisationsEmployeur(session, transaction, prononce, baseIndemnisation, repartition);
+            double somme = 0D;
+
+            if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+                somme = buildCotisationsEmployeur(session, transaction, prononce, baseIndemnisation, repartition);
+            }
 
             repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
                     .getMontantBrut()) + somme));
@@ -703,8 +707,12 @@ public class IJRepartitionPaiementBuilder {
         }
 
         // calculer les cotisations d'assurances et impots
-        double somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
-                prestation.getMontantBrut(), montantJrnExt);
+        double somme = 0D;
+
+        if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+            somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
+                    prestation.getMontantBrut(), montantJrnExt);
+        }
 
         repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition.getMontantBrut())
                 + somme));

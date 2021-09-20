@@ -27,6 +27,7 @@ import java.util.Locale;
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyddMM");
+    public static final Integer AGE_18ANS = 18;
 
     /**
      * Permet de formater une date au format Suisse.
@@ -210,4 +211,19 @@ public class Dates {
         }
     }
 
+    public static boolean isAnneeMajeur(String date, String dateDeNaissance) {
+        return isDansOuApresAnnee(date, dateDeNaissance, AGE_18ANS);
+    }
+
+    public static boolean isDansOuApresAnnee(String date, String dateDeNaissance, int annee) {
+        LocalDate dateNaissance = Dates.toDate(dateDeNaissance);
+        LocalDate dateComparaison = Dates.toDate(date);
+        if(dateNaissance != null && dateComparaison != null) {
+            int anneeMajorite = dateNaissance.plusYears(annee).getYear();
+            int anneeComparaison = dateComparaison.getYear();
+            // si dans ou après l'année des 18 ans
+            return anneeComparaison >= anneeMajorite;
+        }
+        return true;
+    }
 }

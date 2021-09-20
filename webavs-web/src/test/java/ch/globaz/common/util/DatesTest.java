@@ -128,5 +128,15 @@ DatesTest {
         assertThat(localDate.getMonthValue()).isEqualTo(xmlGregorianCalendar.getMonth());
         assertThat(localDate.getDayOfMonth()).isEqualTo(xmlGregorianCalendar.getDay());
     }
-
+    @Test
+    public void isAnneeMajeur() {
+        Assertions.assertThat(Dates.isAnneeMajeur("01.01.2020","01.01.2002")).isTrue();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.01.2020","01.06.2002")).isTrue();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.01.2020","01.01.2003")).isFalse();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.01.2020","01.06.2003")).isFalse();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.04.2020","01.01.2002")).isTrue();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.04.2020","01.06.2002")).isTrue();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.04.2020","01.01.2003")).isFalse();
+        Assertions.assertThat(Dates.isAnneeMajeur("01.04.2020","01.06.2003")).isFalse();
+    }
 }
