@@ -31,8 +31,7 @@ public class IJIJCalculeeMapper {
             ijijCalculee = createAndMapGrandeIJ(basesCalcul);
         }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapPetiteIJ(basesCalcul, prononce);
-        }else{
-            throw new PRAcorDomaineException("Réponse invalide : Type d' IJ non réconnu.");
+        }else{throw new PRAcorDomaineException("Réponse invalide : Type d' IJ non réconnu.");
         }
 
         return mapIJIJCalculee(basesCalcul, nss, prononce, entityService, ijijCalculee);
@@ -79,20 +78,20 @@ public class IJIJCalculeeMapper {
     }
 
     private IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
-        IJIJCalculee ijijCalculee;
         IJPetiteIJCalculee petiteIJ = new IJPetiteIJCalculee();
         petiteIJ.setCsModeCalcul(Strings.toStringOrNull(mapModeCalcul(basesCalcul, prononce)));
-        ijijCalculee = petiteIJ;
-        return ijijCalculee;
+        return petiteIJ;
     }
 
     private IJIJCalculee createAndMapGrandeIJ(FCalcul.Cycle.BasesCalcul basesCalcul) {
-        IJIJCalculee ijijCalculee;
         IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
         grandeIJ.setMontantIndemniteEnfant(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
         grandeIJ.setNbEnfants(Strings.toStringOrNull(basesCalcul.getNEnfants()));
-        ijijCalculee = grandeIJ;
-        return ijijCalculee;
+        return grandeIJ;
+    }
+
+    private IJIJCalculee createAndMaFPI(FCalcul.Cycle.BasesCalcul basesCalcul) {
+        return null;
     }
 
     private String mapModeCalcul(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononceEncours){

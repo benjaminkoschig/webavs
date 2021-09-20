@@ -10,100 +10,6 @@
 			<xs:documentation xml:lang="fr">Code de mutation d'une prestation</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:unsignedByte">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">Abgang : Tod der berechtigten Person*</xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : décès de l'ayant-droit à la prestation.
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Änderung im Zivilstand der leistungsberechtigten Person (Heirat, Verwitwung, Scheidung)
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Changement d’état civil de l’ayant droit à la prestation (mariage, veuvage,
-                        divorce)
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Erreichen der für die Leistung ausschlaggebenden Altersgrenze (Waise wird 18 bzw. 25
-                        Jahre alt, über 18jährige Waise beendet Ausbildung; bei Witwerrenten, jüngste Waise wird 18
-                        Jahre alt)
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Survenance de la limite d’âge de l’ayant droit à la prestation (orphelin atteignant
-                        18 ou 25 ans, orphelin de plus de 18 ans finissant sa formation professionnelle; pour une rente
-                        de veuf, le plus jeune orphelin atteignant 18 ans)
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="4">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Umwandlung einer ganzen in eine Dreiviertels-, halbe oder Viertelsrente und umgekehrt
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Conversion d'une rente entière d’invalidité en une trois-quarts de rente,
-                        demi-rente ou un quart de rente ou vice versa.
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="5">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Umwandlung einer IV-Leistung in eine AHV-Leistung bzw. Ablösung der Witwen-/Witwerrente
-                        durch die höhere IV-Rente
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Conversion d’une prestation AI en une prestation AVS ou succession de la rente AI
-                        d'un montant supérieur à la rente de veuve/veuf.
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="6">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Wegfall der leistungsbegründenden Invalidität oder Hilflosigkeit
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Suppression du degré d’invalidité ou d’impotence donnant droit aux prestations.
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="7">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Ursachen, welche die Angehörigen der leistungsberechtigten Person betreffen - Ehegatte
-                        wird ebenfalls rentenberechtigt (Splitting, Plafonierung) - Tod des Ehegatten (Entplafonierung,
-                        Verwitwetenzuschlag) - Wegfall der Kinderrente - wegen Erreichens des 18. bzw. 25. Altersjahres
-                        - Tod des Kindes – Adoption des Kindes
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : donnant droit à la prestation. - Droit du conjoint à la rente-2e cas d’assurance
-                        (partage des revenus, plafonnement) - Décès du conjoint (suppression supplément de veuvage) -
-                        Suppression de la rente pour enfant - parce qu’il atteint sa 18e ou 25e - décès de l’enfant -
-                        adoption de l’enfant
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="8">
-				<xs:annotation>
-					<xs:documentation xml:lang="de">
-                        Abgang : Übrige Ursachen (z.B. Kassenwechsel, Verlegung des Wohnsitzes ins Ausland)
-                    </xs:documentation>
-					<xs:documentation xml:lang="fr">
-                        Diminution : Autres événements (par exemple changement de Caisse de compensation, domicile à
-                        l'étranger)
-                    </xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="9"/>
 			<xs:enumeration value="77">
 				<xs:annotation>
 					<xs:documentation xml:lang="de">Aenderung : ??</xs:documentation>
@@ -132,6 +38,108 @@
 					<xs:documentation xml:lang="fr">Modification : dans les autres cas</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Grundabgang_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Grund zur Abgang einer Leistung</xs:documentation>
+			<xs:documentation xml:lang="fr">Raison de diminution d'une prestation</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Abgang : Tod der berechtigten Person*</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : décès de l'ayant-droit à la prestation.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="2">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Änderung im Zivilstand der leistungsberechtigten Person (Heirat, Verwitwung, Scheidung)
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Changement d’état civil de l’ayant droit à la prestation (mariage, veuvage,
+						divorce)
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="3">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Erreichen der für die Leistung ausschlaggebenden Altersgrenze (Waise wird 18 bzw. 25
+						Jahre alt, über 18jährige Waise beendet Ausbildung; bei Witwerrenten, jüngste Waise wird 18
+						Jahre alt)
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Survenance de la limite d’âge de l’ayant droit à la prestation (orphelin atteignant
+						18 ou 25 ans, orphelin de plus de 18 ans finissant sa formation professionnelle; pour une rente
+						de veuf, le plus jeune orphelin atteignant 18 ans)
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="4">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Umwandlung einer ganzen in eine Dreiviertels-, halbe oder Viertelsrente und umgekehrt
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Conversion d'une rente entière d’invalidité en une trois-quarts de rente,
+						demi-rente ou un quart de rente ou vice versa.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="5">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Umwandlung einer IV-Leistung in eine AHV-Leistung bzw. Ablösung der Witwen-/Witwerrente
+						durch die höhere IV-Rente
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Conversion d’une prestation AI en une prestation AVS ou succession de la rente AI
+						d'un montant supérieur à la rente de veuve/veuf.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="6">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Wegfall der leistungsbegründenden Invalidität oder Hilflosigkeit
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Suppression du degré d’invalidité ou d’impotence donnant droit aux prestations.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="7">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Ursachen, welche die Angehörigen der leistungsberechtigten Person betreffen - Ehegatte
+						wird ebenfalls rentenberechtigt (Splitting, Plafonierung) - Tod des Ehegatten (Entplafonierung,
+						Verwitwetenzuschlag) - Wegfall der Kinderrente - wegen Erreichens des 18. bzw. 25. Altersjahres
+						- Tod des Kindes – Adoption des Kindes
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : donnant droit à la prestation. - Droit du conjoint à la rente-2e cas d’assurance
+						(partage des revenus, plafonnement) - Décès du conjoint (suppression supplément de veuvage) -
+						Suppression de la rente pour enfant - parce qu’il atteint sa 18e ou 25e - décès de l’enfant -
+						adoption de l’enfant
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="8">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						Abgang : Übrige Ursachen (z.B. Kassenwechsel, Verlegung des Wohnsitzes ins Ausland)
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						Diminution : Autres événements (par exemple changement de Caisse de compensation, domicile à
+						l'étranger)
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="9"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Rentenskala_Type">

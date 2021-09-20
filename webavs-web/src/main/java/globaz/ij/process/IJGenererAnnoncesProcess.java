@@ -259,14 +259,6 @@ public class IJGenererAnnoncesProcess extends BProcess {
                  * 
                  * Grande IJ / Petite IJ -- 8G
                  */
-
-                // else if
-                // (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
-                // generationAnnonce.getDateDebut(),
-                // ((IJApplication) getSession().getApplication())
-                // .getProperty(IJApplication.PROPERTY_DATE_DEBUT_4EME_REVISION)))
-                // {
-
                 else {
 
                     // nouveau droit
@@ -279,8 +271,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
                     annonceACreer.setCodeGenreCarte(getSession().getCode(generationAnnonce.getCsTypePrestation()));
 
-                    annonceACreer.setPetiteIJ(generationAnnonce.getCsTypeIJ().equals(IIJPrononce.CS_PETITE_IJ) ? "2"
-                            : "1");
+                    annonceACreer.setPetiteIJ(generationAnnonce.getCsTypeIJ().equals(IIJPrononce.CS_GRANDE_IJ) ? "1" : "2");
                     annonceACreer.setNoAssure(JAStringFormatter.deformatAvs(generationAnnonce.getNoAVSPrononce()));
                     annonceACreer.setNoAssureConjoint(JAStringFormatter.deformatAvs(generationAnnonce
                             .getNoAssureConjoint()));
@@ -290,11 +281,8 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setRevenuJournalierDeterminant(generationAnnonce
                             .getRevenuMoyenDeterminantNonPlafonne());
                     annonceACreer.setOfficeAI(generationAnnonce.getOfficeAI());
-                    annonceACreer.setCodeGenreReadaptation(getSession().getCode(
-                            generationAnnonce.getCsGenreReadaptation()));
-                    annonceACreer
-                            .setGarantieAA(JadeStringUtil.isDecimalEmpty(generationAnnonce.getMontantGarantieAA()) ? "0"
-                                    : "1");
+                    annonceACreer.setCodeGenreReadaptation(getSession().getCode(generationAnnonce.getCsGenreReadaptation()));
+                    annonceACreer.setGarantieAA(JadeStringUtil.isDecimalEmpty(generationAnnonce.getMontantGarantieAA()) ? "0" : "1");
                     annonceACreer.setIjReduite(generationAnnonce.getGarantieAAReduite().booleanValue() ? "1" : "0");
 
                     String noRevision = generationAnnonce.getNoRevision();
@@ -474,211 +462,6 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     }
                 }
 
-                // //On ne doit plus envoyer d'annonces 85, car refusées par la
-                // centrale
-                //
-                // /*
-                // *
-                // * Grande IJ / Petite IJ -- 85
-                // *
-                // *
-                // */
-                // else {
-                // // ancien droit
-                //
-                // // code application
-                // annonceACreer.setCodeApplication("85");
-                //
-                // // code enregistrement
-                // annonceACreer.setCodeEnregistrement("01");
-                //
-                // // noCaisse
-                // annonceACreer.setNoCaisse(CaisseHelperFactory.getInstance().getNoCaisse(getSession()
-                // .getApplication()));
-                //
-                // // noAgence
-                // annonceACreer.setNoAgence(CaisseHelperFactory.getInstance().getNoAgence(getSession()
-                // .getApplication()));
-                //
-                // // moisAnneeComptable
-                // annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
-                //
-                // // genre de carte
-                // annonceACreer.setCodeGenreCarte(getSession().getCode(generationAnnonce.getCsTypePrestation()));
-                //
-                // // noAssure
-                // annonceACreer.setNoAssure(JAStringFormatter.deformatAvs(generationAnnonce.getNoAVSPrononce()));
-                //
-                // // etat civil
-                // annonceACreer.setCodeEtatCivil(PRACORConst.csEtatCivilHeraToAcor(getSession(),
-                // generationAnnonce.getCsEtatCivil()));
-                //
-                // // nombre d'enfants à charge
-                // annonceACreer.setNombreEnfants(generationAnnonce.getNombreEnfants());
-                //
-                // // revenu journalier moyen effectif (non plafonné)
-                // annonceACreer.setRevenuJournalierDeterminant(generationAnnonce
-                // .getRevenuMoyenDeterminantNonPlafonne());
-                //
-                // // OfficeAI
-                // annonceACreer.setOfficeAI(generationAnnonce.getOfficeAI());
-                //
-                // // petite ij ?
-                // annonceACreer.setPetiteIJ(generationAnnonce.getCsTypeIJ().equals(IIJPrononce.CS_PETITE_IJ)
-                // ? "1"
-                // : "0");
-                //
-                // // genre readaptation
-                // annonceACreer.setCodeGenreReadaptation(getSession().getCode(generationAnnonce
-                // .getCsGenreReadaptation()));
-                //
-                // // garantieAA
-                // annonceACreer.setGarantieAA(JadeStringUtil.isDecimalEmpty(generationAnnonce.getMontantGarantieAA())
-                // ? "0"
-                // : "1");
-                //
-                // // garantie AA reduite
-                // annonceACreer.setIjReduite(generationAnnonce.getGarantieAAReduite().booleanValue()
-                // ? "1" : "0");
-                //
-                // // premiere periode (il y en a forcement une)
-                // // on prend d'abord l'interne. Si elle n'existe pas, on prens
-                // l'externe
-                // boolean isSupplementReadaptation = false;
-                // IJIndemniteJournaliere indemniteJournaliere =
-                // generationAnnonce
-                // .getIndemnitesJournalieresInternes();
-                //
-                // if (indemniteJournaliere == null) {
-                // indemniteJournaliere =
-                // generationAnnonce.getIndemnitesJournalieresExternes();
-                // }
-                //
-                // periodeAnnonce1 = new IJPeriodeAnnonce();
-                // periodeAnnonce1.setSession(getSession());
-                //
-                // // periode de
-                // periodeAnnonce1.setPeriodeDe(generationAnnonce.getPeriodeDe());
-                //
-                // // periode a
-                // periodeAnnonce1.setPeriodeA(generationAnnonce.getPeriodeA());
-                //
-                //
-                // // nb jours et totalIJ
-                // if
-                // (indemniteJournaliere.getCsTypeIndemnisation().equals(IIJMesure.CS_INTERNE))
-                // {
-                // periodeAnnonce1.setNombreJours(generationAnnonce.getNbJoursInternes());
-                // periodeAnnonce1.setTotalIJ(generationAnnonce.getMontantBrutInterne());
-                // // taux journalier
-                // periodeAnnonce1.setTauxJournalier(generationAnnonce.getTauxJournalierInterne());
-                //
-                //
-                // } else {
-                // periodeAnnonce1.setNombreJours(generationAnnonce.getNbJoursExternes());
-                // periodeAnnonce1.setTotalIJ(generationAnnonce.getMontantBrutExterne());
-                // periodeAnnonce1.setTauxJournalier(generationAnnonce.getTauxJournalierExterne());
-                // }
-                //
-                //
-                // if
-                // (IIJPrestation.CS_RESTITUTION.equals(generationAnnonce.getCsTypePrestation()))
-                // {
-                // periodeAnnonce1.setCodeValeurTotalIJ("1");
-                // }
-                // else {
-                // periodeAnnonce1.setCodeValeurTotalIJ("0");
-                // }
-                //
-                //
-                //
-                // FWCurrency currencyTotalIJ = new
-                // FWCurrency(periodeAnnonce1.getTotalIJ());
-                //
-                //
-                //
-                // if (!currencyTotalIJ.isPositive()) {
-                // currencyTotalIJ.negate();
-                // }
-                //
-                // periodeAnnonce1.setTotalIJ(currencyTotalIJ.toString());
-                // isSupplementReadaptation =
-                // !JadeStringUtil.isDecimalEmpty(indemniteJournaliere
-                // .getMontantSupplementaireReadaptation());
-                //
-                // // deuxieme periode si elle existe
-                // // on prend l'externe. S'il y avait une interne, elle a été
-                // prise comme premiere periode
-                // if
-                // (indemniteJournaliere.getCsTypeIndemnisation().equals(IIJMesure.CS_INTERNE))
-                // {
-                // indemniteJournaliere =
-                // generationAnnonce.getIndemnitesJournalieresExternes();
-                // } else {
-                // indemniteJournaliere = null;
-                // }
-                //
-                // if (indemniteJournaliere != null) {
-                // periodeAnnonce2 = new IJPeriodeAnnonce();
-                // periodeAnnonce2.setSession(getSession());
-                //
-                // // periode de
-                // periodeAnnonce2.setPeriodeDe(generationAnnonce.getPeriodeDe());
-                //
-                // // periode a
-                // periodeAnnonce2.setPeriodeA(generationAnnonce.getPeriodeA());
-                //
-                // // taux journalier
-                // periodeAnnonce2.setTauxJournalier(generationAnnonce.getTauxJournalierExterne());
-                //
-                // periodeAnnonce2.setNombreJours(generationAnnonce.getNbJoursExternes());
-                // periodeAnnonce2.setTotalIJ(generationAnnonce.getMontantBrutExterne());
-                //
-                // if
-                // (IIJPrestation.CS_RESTITUTION.equals(generationAnnonce.getCsTypePrestation()))
-                // {
-                // periodeAnnonce2.setCodeValeurTotalIJ("1");
-                // }
-                // else {
-                // periodeAnnonce2.setCodeValeurTotalIJ("0");
-                // }
-                //
-                //
-                //
-                // currencyTotalIJ = new
-                // FWCurrency(periodeAnnonce2.getTotalIJ());
-                //
-                // if (!currencyTotalIJ.isPositive()) {
-                // currencyTotalIJ.negate();
-                // }
-                // periodeAnnonce2.setTotalIJ(currencyTotalIJ.toString());
-                //
-                //
-                // isSupplementReadaptation |=
-                // !JadeStringUtil.isDecimalEmpty(indemniteJournaliere
-                // .getMontantSupplementaireReadaptation());
-                // }
-                //
-                // // allocation personne seule, menage, assistance,
-                // exploitation, supplement readaptation
-                // StringBuffer lesCinqChamps = new StringBuffer();
-                //
-                // if
-                // (generationAnnonce.getCsTypeBaseIJCalculee().equals(IIJIJCalculee.CS_PERSONNE_SEULE))
-                // {
-                // lesCinqChamps.append("10");
-                // } else {
-                // lesCinqChamps.append("01");
-                // }
-                //
-                // lesCinqChamps.append(generationAnnonce.isAllocationAssistance()
-                // ? "1" : "0");
-                // lesCinqChamps.append(generationAnnonce.isAllocationExploitation()
-                // ? "1" : "0");
-                // lesCinqChamps.append(isSupplementReadaptation ? "1" : "0");
-                // annonceACreer.setParamSpecifique3emeRevisionSur5Positions(lesCinqChamps.toString());
-                // } // fin else (ancienne revision)
-
                 doValidationAnnonce(annonceACreer, periodeAnnonce1, periodeAnnonce2);
 
                 // ajout de l'annonce.
@@ -701,12 +484,6 @@ public class IJGenererAnnoncesProcess extends BProcess {
             } // fin while
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
-
-            // try {
-            // getTransaction().rollback();
-            // } catch (Exception e1) {
-            // return false;
-            // }
 
             return false;
         }

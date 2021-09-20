@@ -50,21 +50,18 @@
 			</xs:element>
 			<xs:element name="Taggeldart" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation xml:lang="de">1 = grosses Taggeld
-2 = kleines Taggeld
-3 = Einarbeitungszuschuss (5.IV-Revision)
-4 = Entschädigung für Betreuungskosten (5.IV-Revision)</xs:documentation>
-					<xs:documentation xml:lang="fr">1 = grande IJ
-2 = petite IJ
-3 = allocation d'initiation au travail (5e révision AI)
-4 = allocation pour frais d'assistance (5e révision AI)</xs:documentation>
+					<xs:documentation xml:lang="de">1 = Taggeld mit massgebendem Tageseinkommen
+2 = Taggeld ohne massgebendes Einkommen
+3 = Betreuungskostenzulage</xs:documentation>
+					<xs:documentation xml:lang="fr">1 = IJ avec revenu déterminant
+2 = IJ sans revenu déterminant
+3 = Allocation pour frais de garde</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="1"/>
 						<xs:enumeration value="2"/>
 						<xs:enumeration value="3"/>
-						<xs:enumeration value="4"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -83,22 +80,28 @@
 			<xs:element name="Eingliederungsart" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="de">1 = Untersuchung bzw. Abklärung
-2 = Wartezeit
-3 = med. Eingliederung
-4 = Arbeitsversuch (IVRevision 6a)
-5 = erstm. Berufliche Ausbildung
-6 = Umschulung
-7 = warten auf Arbeitsantritt nach Umschulung
-8 = Anlehre
-9 = Integrationsmassnahme</xs:documentation>
-					<xs:documentation xml:lang="fr">1 = examen ou instruction
-2 = délai d’attente
-3 = mesure médicale de réadaptation
-4 = formation scolaire spéciale (jusqu'au 31 déc 2007)
-5 = formation professionnelle initiale					6 = reclassement professionnel
-7 = dans l’attente de l’emploi après reclassement professionnel
-8 = mise au courant
-9 = mesure de réinsertion</xs:documentation>
+2 = Wartezeit vor Massnahme (Art. 18 IVV)
+3 = Warten vor Arbeitsantritt (Art. 19 IVV)
+4 = Taggeld während Massnahme nach Art. 14a, 15, 17, 18a IVG
+5 = ebA nach BBG mit Lehrvertrag
+6 = ebA nach BBG ohne Lehrvertrag
+7 = Tertiäre Ausbildung
+8 = Tertiäre Ausbildung mit Praktikumsvertrag
+9 = PRA INSOS oder gezielte vorbereitende Massnahmen auf ebA
+10 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 12 IVG
+11 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 14a IVG</xs:documentation>
+					<xs:documentation xml:lang="fr">1 = Examen ou instruction
+2 = Délai d’attente avant les mesures (art. 18 RAI)
+3 = Délai d’attente avant le début du travail (art. 19 RAI)
+4 = Indemnité journalière pendant les mesures prévues aux art. 14a, 15, 17, 18a LAI
+5 = FPI selon LFPr avec contrat d’apprentissage
+6 = FPI selon LFPr sans contrat d’apprentissage
+7 = Formation tertiaire
+8 = Formation tertiaire avec contrat de stage
+9 = Formation pratique INSOS ou mesures préparatoires ciblées pour les FPI
+10 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 12 LAI
+11 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 14 LAI
+					</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
@@ -111,17 +114,19 @@
 						<xs:enumeration value="7"/>
 						<xs:enumeration value="8"/>
 						<xs:enumeration value="9"/>
+						<xs:enumeration value="10"/>
+						<xs:enumeration value="11"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
 			<xs:element name="UVGarantie" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="GekuerztesTaggeld" type="xs:boolean" minOccurs="0"/>
-			<xs:element name="Besitzstand4IVRevision" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="BesitzstandWEIVRevision" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="NrVerfuegung" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation xml:lang="de">25-/27-stellige Verfuegungsnummer 
+					<xs:documentation xml:lang="de">27-stellige Verfuegungsnummer
 (nur für neu zugesprochene Taggelder; bleibt leer bei bereits laufenden Faellen)</xs:documentation>
-					<xs:documentation xml:lang="fr">numéro de décision à 25 ou 27 positions 
+					<xs:documentation xml:lang="fr">numéro de décision à 27 positions
 (seulement en cas d'une nouvelle IJ, reste vide pour les cas en cours)</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -133,7 +138,7 @@
 								<xs:documentation xml:lang="fr">AAAA + NNNNNN + chiffre de contrôle</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type"/>
+						<xs:element name="Versichertennummer" type="Versichertennummer13Stellen_Type"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -151,17 +156,17 @@
 						<xs:element name="GrundDerUnterbrechung" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation xml:lang="de">
-									1 = Krankheit/Unfall (nicht im Zusammenhang mit Eingliederung)
-									2 = Krankheit/Unfall (im Zusammenhang mit Eingliederung)
-									3 = Schwangerschaft
-									4 = Niederkunft
+									1 = Krankheit
+									2 = Unfall
+									3 = Mutterschaft/Vaterschaft
+									4 = Betreuungsurlaub
 									5 = andere Gründe
 								</xs:documentation>
 								<xs:documentation xml:lang="fr">
-									1 = maladie/accident (sans rapport avec la réadaptation)
-									2 = maladie/accident (en rapport avec la réadaptation)
-									3 = grossesse
-									4 = accouchement
+									1 = maladie
+									2 = accident
+									3 = maternité/paternité
+									4 = congé proche aidant
 									5 = autres motifs
 								</xs:documentation>
 							</xs:annotation>
@@ -176,19 +181,21 @@
 							<xs:annotation>
 								<xs:documentation xml:lang="de">
 									1 = Versicherte Person
-									2 = Arbeitgeber/Eingliederungsstätte
-									3 = Aufteilung zwischen Arbeitgeber und versicherter
+									2 = Arbeitgeber
+									3 = Aufteilung zwischen Arbeitgeber und versicherter Person
+									4 = Eingliederungsstätte/Institution
 								</xs:documentation>
 								<xs:documentation xml:lang="fr">
 									1 = personne assurée
-									2 = employeur/centre de réadaptation
+									2 = employeur
 									3 = répartition entre employeur et personne assurée
+									4 = centre de réadaptation/institution
 								</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:short">
 									<xs:minInclusive value="1"/>
-									<xs:maxInclusive value="3"/>
+									<xs:maxInclusive value="4"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -214,16 +221,6 @@ false,0 = nein
 true,1   = ja</xs:documentation>
 								<xs:documentation xml:lang="fr">Droit à la prestation pour enfant
 (Seulement si droit à des IJ selon 5e révision AI, sans garantie des droits acquis):
-false,0 = non
-true,1   = oui</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="Besitzstand5IVRevision" type="xs:boolean" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation xml:lang="de">Besitzstand 5.IV-Revision:
-false,0 = Nein
-true,1   = Ja</xs:documentation>
-								<xs:documentation xml:lang="fr">Garantie des droits acquis 5e révision AI:
 false,0 = non
 true,1   = oui</xs:documentation>
 							</xs:annotation>
@@ -241,17 +238,17 @@ true,1   = oui</xs:documentation>
 						<xs:element name="GrundDerUnterbrechung" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation xml:lang="de">
-									1 = Krankheit/Unfall (nicht im Zusammenhang mit Eingliederung)
-									2 = Krankheit/Unfall (im Zusammenhang mit Eingliederung)
-									3 = Schwangerschaft
-									4 = Niederkunft
+									1 = Krankheit
+									2 = Unfall
+									3 = Mutterschaft/Vaterschaft
+									4 = Betreuungsurlaub
 									5 = andere Gründe
 								</xs:documentation>
 								<xs:documentation xml:lang="fr">
-									1 = maladie/accident (sans rapport avec la réadaptation)
-									2 = maladie/accident (en rapport avec la réadaptation)
-									3 = grossesse
-									4 = accouchement
+									1 = maladie
+									2 = accident
+									3 = maternité/paternité
+									4 = congé proche aidant
 									5 = autres motifs
 								</xs:documentation>
 							</xs:annotation>
@@ -266,19 +263,21 @@ true,1   = oui</xs:documentation>
 							<xs:annotation>
 								<xs:documentation xml:lang="de">
 									1 = Versicherte Person
-									2 = Arbeitgeber/Eingliederungsstätte
-									3 = Aufteilung zwischen Arbeitgeber und versicherter
+									2 = Arbeitgeber
+									3 = Aufteilung zwischen Arbeitgeber und versicherter Person
+									4 = Eingliederungsstätte/Institution
 								</xs:documentation>
 								<xs:documentation xml:lang="fr">
 									1 = personne assurée
-									2 = employeur/centre de réadaptation
+									2 = employeur
 									3 = répartition entre employeur et personne assurée
+									4 = centre de réadaptation/institution
 								</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:short">
 									<xs:minInclusive value="1"/>
-									<xs:maxInclusive value="3"/>
+									<xs:maxInclusive value="4"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -308,26 +307,10 @@ false,0 = non
 true,1   = oui</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="Besitzstand5IVRevision" type="xs:boolean" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation xml:lang="de">Besitzstand 5.IV-Revision:
-false,0 = Nein
-true,1   = Ja</xs:documentation>
-								<xs:documentation xml:lang="fr">Garantie des droits acquis 5e révision AI:
-false,0 = non
-true,1   = oui</xs:documentation>
-							</xs:annotation>
-						</xs:element>
 						<xs:element name="BetragEntschaedigungBetreuungskosten" type="BetragFRRP5_Type" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation xml:lang="de">5.IV-Revision: Hoehe der Entschaedigung fuer Betreuungskosten (Betrag FFFFFRR)</xs:documentation>
-								<xs:documentation xml:lang="fr">5e révision AI: Montant de l'allocation pour frais d'assistance (FFFFFCC)</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="BetragEinarbeitungszuschuss" type="BetragFRRP5_Type" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation xml:lang="de">5.IV-Revision: Höhe Einarbeitungszuschuss (FFFFFRR)</xs:documentation>
-								<xs:documentation xml:lang="fr">5e révision AI: montant allocation d'initiation au travail (FFFFFFCC)</xs:documentation>
+								<xs:documentation xml:lang="de">Hoehe der Entschaedigung fuer Betreuungskosten (Betrag FFFFFRR)</xs:documentation>
+								<xs:documentation xml:lang="fr">Montant de l'allocation pour frais d'assistance (FFFFFCC)</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>

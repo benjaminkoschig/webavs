@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+    <xsd:element name="quotite" type="ProzentualAnteil_Type"/>
+
+    <xsd:simpleType name="ProzentualAnteil_Type">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="de">TODO</xsd:documentation>
+            <xsd:documentation xml:lang="fr">TODO</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:decimal">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="100"/>
+            <xsd:fractionDigits value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

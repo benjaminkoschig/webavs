@@ -2,6 +2,7 @@ package globaz.prestation.acor;
 
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.SexType;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -417,7 +418,7 @@ public class PRACORConst {
      */
     public static final String caGenreReadaptationToCS(BSession session, String caGenreReadaptation) {
         // le code est le code utilisateur
-        return session.getSystemCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION, caGenreReadaptation);
+       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION,caGenreReadaptation).getIdCodeSysteme();
     }
 
     /**

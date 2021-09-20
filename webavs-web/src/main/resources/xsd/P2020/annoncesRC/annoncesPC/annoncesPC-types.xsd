@@ -17,7 +17,7 @@
 	<xs:include schemaLocation="../../Typebase/PersPhys/EtatCivil-types.xsd" />
 	<xs:include schemaLocation="../../Typebase/Prestations/Prestations-types.xsd" />
 	<xs:include schemaLocation="../../Typebase/AI/AI-types.xsd" />
-	<xs:include schemaLocation="../../Typebase/AI/FractionRente-types.xsd" />
+	<xs:include schemaLocation="../../Typebase/AI/ProzentualAnteil-types.xsd" />
 
 	<xs:complexType name="ELMeldung_Type">
 		<xs:annotation>
@@ -70,13 +70,13 @@
 			<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="AnspruchsEnde" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="ZustaendigeIVStelle" type="IVStelle_strongType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_weakType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Gebrechensschluessel" type="UnsignedInt5stellig_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="InvalideHinterlassene" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Leistungsart" type="Leistungsart_alle_Revisionen_strongType" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="BruchteilRente" type="IVRentenbruchteil_Type" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ProzentualAnteil" type="ProzentualAnteil_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="MonatsbetragNeu" type="BetragFR5MitNull_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="MonatsbetragAlt" type="BetragFR5MitNull_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="BemerkungenZAS" type="xs:string" minOccurs="0" maxOccurs="1"/>
@@ -174,7 +174,7 @@
 			<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="AnspruchsEnde" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_weakType" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 		
