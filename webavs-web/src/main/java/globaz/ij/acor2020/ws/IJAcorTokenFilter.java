@@ -7,7 +7,7 @@ import globaz.ij.application.IJApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
-
+@SuppressWarnings("unused" /*Cette class est appelé par réflexion par la class WSConfiguration */)
 public class IJAcorTokenFilter extends AcorTokenFilterAbstract {
 
     @Override

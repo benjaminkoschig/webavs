@@ -8,6 +8,7 @@ import globaz.corvus.application.REApplication;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 
+@SuppressWarnings("unused" /*Cette class est appelé par réflexion par la class WSConfiguration */)
 public class REAcorTokenFilter extends AcorTokenFilterAbstract {
 
     @Override
