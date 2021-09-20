@@ -1015,6 +1015,18 @@ public class IJPrononce extends BEntity implements IPRCloneable {
     }
 
     /**
+     * retourne vrai si cette ij est une FPI.
+     * <p>
+     * Cette méthode est fournie juste pour accelerer un peu les tests dans les autres classes.
+     * </p>
+     *
+     * @return la valeur courante de l'attribut grande
+     */
+    public boolean isFpi() {
+        return IIJPrononce.CS_FPI.equals(csTypeIJ);
+    }
+
+    /**
      * DOCUMENT ME!
      * 
      * @return DOCUMENT ME!

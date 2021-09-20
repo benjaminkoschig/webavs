@@ -5,13 +5,7 @@ import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.rentes.xsd.in.ij.BasesCalculIJ;
 import acor.rentes.xsd.in.ij.BasesCalculRevenusIJ;
 import acor.rentes.xsd.in.ij.IndemniteJournaliereIJ;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
@@ -30,13 +24,7 @@ import globaz.ij.acor2020.mapper.IJCalculDecompteIJMapper;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJGrandeIJ;
-import globaz.ij.db.prononces.IJPetiteIJ;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJRevenu;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prononces.*;
 import globaz.ij.module.IJSalaireFilter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -197,7 +185,7 @@ class IJExportationCalculAcor {
         }
 
         basesCalculCouranteIJ.setId(prononce.getId());
-        basesCalculCouranteIJ.setGenreIndemnite(prononce.isGrandeIJ() ? 1 : 2);
+        basesCalculCouranteIJ.setGenreIndemnite(prononce.isGrandeIJ() ? 1 : prononce.isPetiteIJ() ? 2 : 3);
         basesCalculCouranteIJ.setOfficeAI(prononce.getOfficeAI());
 
         basesCalculCouranteIJ.setDatePrononce(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));
@@ -217,9 +205,13 @@ class IJExportationCalculAcor {
             String revenu = loadRevenuReadaptation(ijPetiteIJ).getRevenu();
 
             basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
+        } else if(prononce.isFpi()) {
+            IJFpi ijFpi = loadFpi(prononce.getIdPrononce());
+            basesCalculCouranteIJ.setFormationFPI(Integer.parseInt(session.getCode(ijFpi.getCsSituationAssure())));
+            String revenu = loadRevenuReadaptation(ijFpi).getRevenu();
+            basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
         }
-        //TODO DMA 27.08.2021: à mapper
-        //basesCalculCouranteIJ.setFormationFPI()
+
         basesCalculCouranteIJ.setStatut(loadCodeOrNull(session, prononce.getCsStatutProfessionnel()));
         basesCalculCouranteIJ.setDemiIJAC(Double.parseDouble(prononce.getDemiIJAC()));
 
@@ -239,7 +231,7 @@ class IJExportationCalculAcor {
             basesCalculCouranteIJ.setCantonImpots(Integer.parseInt(PRACORConst.csCantonToAcor(prononce.getCsCantonImpositionSource())));
         }
         //Choix fait par défaut à false
-        basesCalculCouranteIJ.setMesureRea8A(false);
+        basesCalculCouranteIJ.setMesureRea8A(prononce.getMesureReadaptation8a());
         //Choix fait par défaut à false
         basesCalculCouranteIJ.setNouvelleMesure(false);
 
@@ -264,6 +256,14 @@ class IJExportationCalculAcor {
             return ijGrandeIJ.loadRevenuReadaptation(null);
         } catch (Exception e) {
             throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijGrandeIJ.getId());
+        }
+    }
+
+    private IJRevenu loadRevenuReadaptation(final IJFpi ijFpi) {
+        try {
+            return ijFpi.loadRevenuReadaptation(null);
+        } catch (Exception e) {
+            throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijFpi.getId());
         }
     }
 
@@ -342,6 +342,10 @@ class IJExportationCalculAcor {
 
     private IJGrandeIJ loadGrandeIJ(String idPronnonce) {
         return entityService.load(IJGrandeIJ.class, idPronnonce);
+    }
+
+    private IJFpi loadFpi(String idPronnonce) {
+        return entityService.load(IJFpi.class, idPronnonce);
     }
 
     private IJBaseIndemnisation loadBaseIndemnisation(String idBaseIndemnisation) {
