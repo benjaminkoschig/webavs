@@ -66,9 +66,9 @@ public class CalculImpotSource {
 
     /**
      * Permet de récupérer le canton d'imposition suivant les règles suivantes :
+     *  - Si canton d'imposition forcé renseigné : canton imposition forcé.
      *  - Si résident Suisse : canton de résidence de l'allocataire.
-     *  - Si résident hors Suisse et tarif forcé : canton imposition relatif au tarif forcé.
-     *  - Si résident hors Suisse sans tarif forcé : canton de l'affilié.
+     *  - Si résident hors Suisse : canton de l'affilié.
      *
      * @param dossierComplexModel
      * @param cantonAffiliation
@@ -77,19 +77,13 @@ public class CalculImpotSource {
     public static String getCantonImposition(DossierComplexModel dossierComplexModel, String cantonAffiliation) throws JadeApplicationException {
         String cantonImposition;
         AllocataireModel allocataireModel = dossierComplexModel.getAllocataireComplexModel().getAllocataireModel();
-        if (StringUtils.equals(ALCSPays.PAYS_SUISSE, allocataireModel.getIdPaysResidence())) {
+        String cantonImpositionForce =  dossierComplexModel.getDossierModel().getCantonImposition();
+        if (StringUtils.isNotEmpty(cantonImpositionForce) && !StringUtils.equals("0", cantonImpositionForce)) {
+            cantonImposition = cantonImpositionForce;
+        } else if (StringUtils.equals(ALCSPays.PAYS_SUISSE, allocataireModel.getIdPaysResidence())) {
             cantonImposition = allocataireModel.getCantonResidence();
         } else {
-            DossierModel dossierModel = dossierComplexModel.getDossierModel();
-            if (StringUtils.isNotEmpty(dossierModel.getTarifForce()) && !StringUtils.equals("0", dossierModel.getTarifForce())) {
-                String cantonImpositionForce = dossierModel.getCantonImposition();
-                if (StringUtils.isEmpty(cantonImpositionForce) || StringUtils.equals("0", cantonImpositionForce)) {
-                    throw new CantonImpositionNotFoundException("Le canton d'imposition forcé n'a pas été trouvé.");
-                }
-                cantonImposition = dossierModel.getCantonImposition();
-            } else {
-                cantonImposition = ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(cantonAffiliation);
-            }
+            cantonImposition = ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(cantonAffiliation);
         }
         return cantonImposition;
     }

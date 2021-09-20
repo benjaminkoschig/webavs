@@ -51,15 +51,6 @@
     function validate() {
         state = validateFields();
 
-        // on contrôle que le canton d'imposition est bien saisi lorsqu'un tarif forcé est renseigné.
-        var tarif = $('#tarifForce').val();
-        var cantonImposition = $('#cantonImposition').val();
-        if (tarif != "" && cantonImposition == "") {
-            var msgErreur = '<%= JavascriptEncoder.getInstance().encode(objSession.getLabel("AL0005_DOSSIER_POPUP_ERREUR"))%>';
-            showErrorMessage(msgErreur);
-            return;
-        }
-
         if (document.forms[0].elements('_method').value == "add")
             document.forms[0].elements('userAction').value = "al.dossier.dossier.ajouter";
         else
