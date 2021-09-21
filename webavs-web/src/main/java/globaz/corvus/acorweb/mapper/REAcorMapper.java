@@ -582,12 +582,11 @@ public class REAcorMapper {
             bc.setCodeOfficeAi(Objects.toString(baseCalcul.getInvalidite().getOai(), StringUtils.EMPTY));
             //        bc.setDegreInvalidite(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_AYANT_DROIT")); $b21
             bc.setDegreInvalidite(Objects.toString(baseCalcul.getInvalidite().getDegreInvalidite(), StringUtils.EMPTY));
-            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite(), StringUtils.EMPTY));
+            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite(), "0.00"));
             //        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_AYANT_DROIT"))); $b24
             bc.setInvaliditePrecoce(BooleanUtils.toBoolean(baseCalcul.getInvalidite().getInvalidePrecoce()));
             //        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")), '.')); $b23
             bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(baseCalcul.getInvalidite().getSurvenanceEvAss(), StringUtils.EMPTY)), '.'));
-            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite()));
         }
         //        bc.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE")); $b11
         bc.setEchelleRente(Objects.toString(baseCalcul.getEchelle(), StringUtils.EMPTY));
