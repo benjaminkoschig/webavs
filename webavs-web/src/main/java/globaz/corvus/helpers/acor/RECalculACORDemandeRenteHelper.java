@@ -21,7 +21,7 @@ import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor.parser.rev09.REACORParser.ReturnedValue;
 import globaz.corvus.acor.parser.xml.rev10.REACORAnnonceXmlReader;
-import globaz.corvus.acor2020.service.REImportAnnoncesAcor;
+import globaz.corvus.acorweb.service.REImportAnnoncesAcor;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;

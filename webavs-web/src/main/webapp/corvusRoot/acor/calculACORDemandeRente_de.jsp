@@ -10,7 +10,7 @@
 <%@ page import="globaz.prestation.acor.PRACORConst" %>
 <%@ page import="globaz.prestation.jsp.taglib.PRDisplayRequerantInfoTag" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
-<%@ page import="globaz.corvus.acor2020.ws.token.REAcor2020TokenService" %>
+<%@ page import="globaz.corvus.acorweb.ws.token.REAcorTokenService" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersWrapper" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersHelper" %>
 <%@ page import="globaz.jade.client.util.JadeDateUtil" %>
@@ -260,7 +260,7 @@
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
     Date actualDate = new Date();
     String day = JadeDateUtil.getDMYDate(actualDate);
-    String token = REAcor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
+    String token = REAcorTokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")

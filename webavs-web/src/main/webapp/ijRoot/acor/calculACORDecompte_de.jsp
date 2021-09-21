@@ -29,7 +29,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%@page import="globaz.prestation.acor.PRACORConst"%>
 <%@ page import="globaz.corvus.properties.REProperties" %>
 <%@ page import="globaz.globall.db.BSession" %>
-<%@ page import="globaz.ij.acor2020.ws.token.IJAcor2020TokenService" %>
+<%@ page import="globaz.ij.acorweb.ws.token.IJAcorTokenService" %>
 <%@ page import="globaz.corvus.servlet.IREActions" %>
 <%@ page import="globaz.ij.servlet.IIJActions" %>
 <%@ page import="globaz.ij.db.prestations.IJIJCalculee" %>
@@ -191,7 +191,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <% } else if (viewBean.isAcorV4Web()) { %>
 <%
 	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-	String token = IJAcor2020TokenService.createTokenDecompte(bSession,
+	String token = IJAcorTokenService.createTokenDecompte(bSession,
                                                               ijijCalculee.getIdIJCalculee(),
                                                               viewBean.getIdBaseIndemnisation(),
                                                               viewBean.getNoAVSAssure());
