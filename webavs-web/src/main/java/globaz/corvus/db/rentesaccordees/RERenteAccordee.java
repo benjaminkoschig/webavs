@@ -300,25 +300,6 @@ public class RERenteAccordee extends REPrestationsAccordees {
             }
         }
 
-        // fraction de rente obligatoire pour les genres de prestations entre 50 et 76
-//        if ((Integer.parseInt(getCodePrestation()) >= 50) && (Integer.parseInt(getCodePrestation()) <= 76)) {
-//
-//            if (JadeStringUtil.isBlankOrZero(getFractionRente())) {
-//                _addWarning(statement.getTransaction(), getSession().getLabel("ERREUR_FRACTION_RENTE_OBL_50_76"));
-//                setMsgType(FWViewBeanInterface.WARNING);
-//                setMessage(getSession().getLabel("ERREUR_FRACTION_RENTE_OBL_50_76"));
-//            } else {
-//
-//                // la valeurs possibles pour la fraction de rente sont 1,2,3,4
-//                if (!((Integer.parseInt(getFractionRente()) >= 1) && (Integer.parseInt(getFractionRente()) <= 4))) {
-//
-//                    _addWarning(statement.getTransaction(), getSession().getLabel("ERREUR_VAL_POSSIBLES_FRACTION_RENTES"));
-//                    setMsgType(FWViewBeanInterface.WARNING);
-//                    setMessage(getSession().getLabel("ERREUR_VAL_POSSIBLES_FRACTION_RENTES"));
-//                }
-//            }
-//        }
-
         // champs obligatoires pour la retraite flexible (anticipation)
         // si un des champs est rempli, les autres doivent l'etre egalement
         if ((!JadeStringUtil.isBlankOrZero(anneeAnticipation)

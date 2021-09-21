@@ -3,7 +3,6 @@
  */
 package globaz.corvus.db.basescalcul;
 
-import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 

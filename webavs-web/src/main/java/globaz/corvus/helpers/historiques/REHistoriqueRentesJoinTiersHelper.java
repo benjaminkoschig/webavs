@@ -162,7 +162,6 @@ public class REHistoriqueRentesJoinTiersHelper extends PRAbstractHelper {
                 String dateRevocationAjournement = ra.getDateRevocationAjournement();
                 hr.setDateRevocationAjournement(dateRevocationAjournement);
                 hr.setDegreInvalidite(bc.getDegreInvalidite());
-                hr.setQuotiteRente(bc.getQuotiteRente());
                 hr.setDroitApplique(bc.getDroitApplique());
                 hr.setDureeAjournement(ra.getDureeAjournement());
                 hr.setDureeCotAp73(bc.getDureeCotiDes73());
