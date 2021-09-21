@@ -356,11 +356,17 @@ public class CAProcessAvance extends BProcess {
             section.setSession(getSession());
 
             section.setIdCompteAnnexe(idCompteAnnexe);
-
-            section.setIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
-
+            if(modeRecouvrement.equals(CAPlanRecouvrement.CS_AVANCE_PTRA)){
+                section.setIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA);
+            }else{
+                section.setIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
+            }
             section.setIdJournal(idJournal);
-            section.setIdTypeSection(APISection.ID_TYPE_SECTION_AVANCES);
+            if(modeRecouvrement.equals(CAPlanRecouvrement.CS_AVANCE_PTRA)){
+                section.setIdTypeSection(APISection.ID_TYPE_SECTION_AVANCE_PTRA);
+            }else{
+                section.setIdTypeSection(APISection.ID_TYPE_SECTION_AVANCES);
+            }
             section.setDateSection(JACalendar.today().toString());
 
             section.add(getTransaction());
