@@ -16,6 +16,7 @@ import globaz.ij.acor.IJACORBatchFilePrinter;
 import globaz.ij.acor.adapter.IJAttestationsJoursAdapter;
 import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
 import globaz.ij.api.basseindemnisation.IIJFormulaireIndemnisation;
+import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
@@ -28,6 +29,7 @@ import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
 import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
 import globaz.ij.db.prestations.IJPrestation;
+import globaz.ij.db.prononces.IJFpi;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.module.IJRepartitionPaiementBuilder;
 import globaz.ij.regles.IJBaseIndemnisationRegles;
@@ -387,6 +389,10 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
             if (IIJBaseIndemnisation.CS_VALIDE.equals(base.getCsEtat())) {
                 IJBaseIndemnisationRegles.reinitialiser(session, transaction, base, caViewBean.loadIJCalculee()
                         .getIdIJCalculee());
+            }
+
+            if(IIJPrononce.CS_FPI.equals(base.getCsTypeIJ())) {
+                base.setNombreJoursExterne(IIJPrestation.JOUR_FPI);
             }
 
             // importer les decomptes

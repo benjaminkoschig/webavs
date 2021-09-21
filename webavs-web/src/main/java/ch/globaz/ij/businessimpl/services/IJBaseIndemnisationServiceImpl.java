@@ -4,6 +4,9 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
+import globaz.ij.api.prestations.IIJIJCalculee;
+import globaz.ij.api.prestations.IIJPrestation;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisationManager;
 import globaz.ij.db.prononces.IJPrononce;
@@ -266,6 +269,9 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
         setDefaultDate(baseIndemnisation);
         baseIndemnisation.setCsCantonImposition(prononce.getCsCantonImpositionSource());
         baseIndemnisation.setTauxImposition(prononce.getTauxImpositionSource());
+        if(IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ())) {
+            baseIndemnisation.setJoursExternes(IIJPrestation.JOUR_FPI);
+        }
         return baseIndemnisation;
     }
 
