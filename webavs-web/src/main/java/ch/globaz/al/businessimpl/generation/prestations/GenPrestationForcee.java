@@ -101,7 +101,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
                         TauxImpositions tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
                         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossierModel, getDateCalcul(dossierComplex));
                         String cantonImposition = CalculImpotSource.getCantonImposition(dossierComplex ,infos.getCanton());
-                        CalculImpotSource.computeISforDroit(droitCalcule, montant
+                        CalculImpotSource.computeISforDroit(dossierModel, droitCalcule, montant
                                 , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, getDateCalcul(dossierComplex));
                     }
                     addDetailPrestation(context, droitCalcule);

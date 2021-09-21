@@ -1,8 +1,6 @@
 package ch.globaz.al.businessimpl.calcul.modes;
 
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSPays;
-import ch.globaz.al.business.constantes.ALConstParametres;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.allocataire.AllocataireModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
@@ -10,23 +8,29 @@ import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationGenComplexModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationGenComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.businessimpl.generation.prestations.GenPrestationDossier;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
-import ch.globaz.al.exception.CantonImpositionNotFoundException;
 import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.al.impotsource.domain.TypeImposition;
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.service.ParamServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CalculImpotSource {
@@ -41,27 +45,73 @@ public class CalculImpotSource {
         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), dateCalcul);
         if (dossier.getDossierModel().getRetenueImpot()
                 && !ALCSDossier.PAIEMENT_INDIRECT.equals(getPaiementMode((DossierComplexModel) dossier, dateCalcul))) {
-                    String cantonImposition = getCantonImposition((DossierComplexModel) dossier, infos.getCanton());
+            String cantonImposition = getCantonImposition((DossierComplexModel) dossier, infos.getCanton());
             for (CalculBusinessModel droitCalcule : droitsCalcules) {
                 if (droitCalcule.getDroit().equals(droit)) {
-                    computeISforDroit(droitCalcule, droitCalcule.getCalculResultMontantBase(), tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateCalcul);
+                    computeISforDroit(dossier.getDossierModel(), droitCalcule, droitCalcule.getCalculResultMontantBase(), tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateCalcul);
                 }
             }
         }
     }
 
-    public static void computeISforDroit(CalculBusinessModel droitCalcule, String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String dateCalcul)
+    public static void computeISforDroit(DossierModel dossierModel, CalculBusinessModel droitCalcule, String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String date)
             throws JadeApplicationException {
-        Taux tauxApplicable;
         try {
-            tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository,
-                    cantonImposition, dateCalcul);
+            // si le droit de ce dossier ne possède pas de prestations déjà comptabilisé à extourner pour la période en cours de traitement,
+            // on utilise la date du jour pour trouver l'impôt source au lieu de la date de comptabilisation
+            if (!hasPrestationAExtourner(dossierModel, droitCalcule)) {
+                date = JadeDateUtil.getGlobazFormattedDate(new java.util.Date());
+            }
+            Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
+            Montant montantPrestation = new Montant(montant);
+            Montant impots = montantPrestation.multiply(tauxApplicable).normalize();
+            droitCalcule.setCalculResultMontantIS(impots.getValue());
         } catch (TauxImpositionNotFoundException e) {
             throw new ALCalculException(e.getMessage());
         }
-        Montant montantPrestation = new Montant(montant);
-        Montant impots = montantPrestation.multiply(tauxApplicable).normalize();
-        droitCalcule.setCalculResultMontantIS(impots.getValue());
+    }
+
+    public static boolean hasPrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule) {
+        try {
+            DetailPrestationGenComplexSearchModel search = GenPrestationDossier.searchExistingPrestSansContextAffilie(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dossierModel.getDateFinPeriode(), droitCalcule.getDroit().getId());
+
+            ArrayList<String> processed = new ArrayList<String>();
+            String lastDate = null;
+            String lastPeriod = null;
+
+            // si des prestations existent, génération d'une prestation inverse
+            if (search.getSize() > 0) {
+                for (int i = 0; i < search.getSize(); i++) {
+                    DetailPrestationGenComplexModel oldPrest = (DetailPrestationGenComplexModel) search.getSearchResults()[i];
+
+                    if (JadeStringUtil.isBlank(lastPeriod)) {
+                        lastPeriod = oldPrest.getPeriodeValidite();
+                    }
+
+                    if (JadeStringUtil.isBlank(lastDate)) {
+                        lastDate = oldPrest.getDateVersement();
+                    }
+
+                    if (!oldPrest.getPeriodeValidite().equals(lastPeriod) || !oldPrest.getDateVersement().equals(lastDate)) {
+                        lastDate = oldPrest.getDateVersement();
+                        processed.add(lastPeriod);
+                        lastPeriod = oldPrest.getPeriodeValidite();
+                    }
+
+                    if (!processed.contains(lastPeriod)) {
+                        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                                && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+        } catch (JadeApplicationException | JadePersistenceException e) {
+            JadeLogger.error(e, "Une erreur s'est produite pendant la recherche de prestations extournables." + e.getMessage());
+        }
+
+        return false;
     }
 
     /**

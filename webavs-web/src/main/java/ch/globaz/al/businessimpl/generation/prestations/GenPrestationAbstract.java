@@ -334,13 +334,17 @@ public abstract class GenPrestationAbstract implements GenPrestation {
      */
     protected DetailPrestationGenComplexSearchModel searchExistingPrest(ContextAffilie context)
             throws JadeApplicationException, JadePersistenceException {
+        return searchExistingPrestSansContextAffilie(context.getContextDossier().getDossier().getId(), context.getContextDossier().getDebutPeriode(), context.getContextDossier().getFinPeriode(), context.getContextDossier().getIdDroit());
+    }
+
+    public static DetailPrestationGenComplexSearchModel searchExistingPrestSansContextAffilie(String idDossier, String  debutPeriode, String finPeriode, String idDroit) throws JadeApplicationException, JadePersistenceException {
         // recherche de prestations existante pour dans la période en cours de
         // génération
         DetailPrestationGenComplexSearchModel search = new DetailPrestationGenComplexSearchModel();
-        search.setForIdDossier(context.getContextDossier().getDossier().getId());
-        search.setForPeriodeDebut(context.getContextDossier().getDebutPeriode());
-        search.setForPeriodeFin(context.getContextDossier().getFinPeriode());
-        search.setForIdDroit(context.getContextDossier().getIdDroit());
+        search.setForIdDossier(idDossier);
+        search.setForPeriodeDebut(debutPeriode);
+        search.setForPeriodeFin(finPeriode);
+        search.setForIdDroit(idDroit);
         // recherche les prest dont l'état est différent de TMP
         search.setForEtatPrestation(ALCSPrestation.ETAT_TMP);
         // recherche les montants supérieur à 0

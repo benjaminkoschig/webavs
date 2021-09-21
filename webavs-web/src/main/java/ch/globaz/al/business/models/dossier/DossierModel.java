@@ -99,6 +99,16 @@ public class DossierModel extends DossierFkModel {
     private String cantonImposition = null;
 
     /**
+     * La date de début période à générer entrée sur l'écran de regénération des prestations d'allocations familiales
+     */
+    private String dateDebutPeriode = null;
+
+    /**
+     * La date de fin période à générer entrée sur l'écran de regénération des prestations d'allocations familiales
+     */
+    private String dateFinPeriode = null;
+
+    /**
      *
      * Id du gestionnaire ayant réalisée le dernière modification sur le dossier.</br>
      * Cette information est utilisée pour l'impression par file d'attente.
@@ -454,5 +464,21 @@ public class DossierModel extends DossierFkModel {
 
     public void setCantonImposition(String cantonImposition) {
         this.cantonImposition = cantonImposition;
+    }
+
+    public String getDateDebutPeriode() {
+        return dateDebutPeriode;
+    }
+
+    public void setDateDebutPeriode(String dateDebutPeriode) {
+        this.dateDebutPeriode = dateDebutPeriode;
+    }
+
+    public String getDateFinPeriode() {
+        return dateFinPeriode;
+    }
+
+    public void setDateFinPeriode(String dateFinPeriode) {
+        this.dateFinPeriode = dateFinPeriode;
     }
 }

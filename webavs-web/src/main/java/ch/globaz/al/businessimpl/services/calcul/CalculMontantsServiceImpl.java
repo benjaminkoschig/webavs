@@ -446,7 +446,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
                         && !JadeStringUtil.isBlankOrZero(calculDroit.getCalculResultMontantIS())) {
                     AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), date);
                     String cantonImposition = CalculImpotSource.getCantonImposition(dossier ,infos.getCanton());
-                    CalculImpotSource.computeISforDroit(calculDroit, calculDroit.getCalculResultMontantEffectif()
+                    CalculImpotSource.computeISforDroit(dossier.getDossierModel(), calculDroit, calculDroit.getCalculResultMontantEffectif()
                             , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                 }
             }
@@ -481,7 +481,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
                             && !JadeStringUtil.isBlankOrZero(droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantIS())) {
                         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), date);
                         String cantonImposition = CalculImpotSource.getCantonImposition(dossier ,infos.getCanton());
-                        CalculImpotSource.computeISforDroit(droitsCalcules.get(indexPrest.get(i)), droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantEffectif()
+                        CalculImpotSource.computeISforDroit(dossier.getDossierModel(), droitsCalcules.get(indexPrest.get(i)), droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantEffectif()
                                 , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                     }
                 }

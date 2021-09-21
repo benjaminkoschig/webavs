@@ -386,12 +386,12 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         }
 
         // Génération effective de la prestation ADI
-        DossierModel dossier = ALServiceLocator.getDossierModelService().read(decompte.getIdDossier());
-        String bonification = JadeNumericUtil.isEmptyOrZero(dossier.getIdTiersBeneficiaire()) ? ALCSPrestation.BONI_INDIRECT
+        DossierModel dossierModel = ALServiceLocator.getDossierModelService().read(decompte.getIdDossier());
+        String bonification = JadeNumericUtil.isEmptyOrZero(dossierModel.getIdTiersBeneficiaire()) ? ALCSPrestation.BONI_INDIRECT
                 : ALCSPrestation.BONI_DIRECT;
 
         String periodicite = ALServiceLocator.getAffiliationBusinessService()
-                .getAssuranceInfo(dossier, "01." + periodeTraitement).getPeriodicitieAffiliation();
+                .getAssuranceInfo(dossierModel, "01." + periodeTraitement).getPeriodicitieAffiliation();
 
         String periodeDebutTraitement = periodeTraitement;
         // dans le cas des dossiers indirects, périodes récaps varient selon
@@ -409,17 +409,17 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         DossierComplexModel dossierComplex = ALServiceLocator.getDossierComplexModelService().read(decompte.getIdDossier());
 
         if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
-                && dossier.getRetenueImpot()
+                && dossierModel.getRetenueImpot()
                 && !ALCSDossier.PAIEMENT_INDIRECT.equals(CalculImpotSource.getPaiementMode(dossierComplex, JadeDateUtil.getFirstDateOfMonth(periodeTraitement)))) {
             TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator.getTauxImpositionRepository();
             TauxImpositions tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
 
             for(String period : listeCalculAdiEnfant.keySet()) {
                 String date = JadeDateUtil.getFirstDateOfMonth(period);
-                AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossierModel, date);
                 String cantonImposition = CalculImpotSource.getCantonImposition(dossierComplex ,infos.getCanton());
                 for(CalculBusinessModel calcul:listeCalculAdiEnfant.get(period)) {
-                    CalculImpotSource.computeISforDroit(calcul, calcul.getCalculResultMontantEffectif()
+                    CalculImpotSource.computeISforDroit(dossierModel, calcul, calcul.getCalculResultMontantEffectif()
                             , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                 }
             }

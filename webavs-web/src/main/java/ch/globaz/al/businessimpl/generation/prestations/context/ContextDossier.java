@@ -97,6 +97,8 @@ public class ContextDossier {
         context.contextAffilie = contextAffilie;
         context.debutPeriode = debutPeriode;
         context.finPeriode = finPeriode;
+        dossier.getDossierModel().setDateDebutPeriode(debutPeriode);
+        dossier.getDossierModel().setDateFinPeriode(finPeriode);
         context.montantForce = montantForce;
         context.bonification = bonification;
         context.unite = dossier.getDossierModel().getUniteCalcul();
