@@ -1474,4 +1474,16 @@ public class IJPrononce extends BEntity implements IPRCloneable {
     public void setUniquePrimaryKey(String pk) {
         setIdPrononce(pk);
     }
+
+    /**
+     * test si de type petite IJ, grande IJ ou FPI
+     * @param csTypeIJ
+     * @return true si de type petite IJ, grande IJ ou FPI
+     */
+    public static boolean isCommonTypeIJ(String csTypeIJ) {
+        return IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) ||
+            IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) ||
+            IIJPrononce.CS_FPI.equals(csTypeIJ);
+    }
+
 }

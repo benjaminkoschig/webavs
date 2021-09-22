@@ -6,6 +6,7 @@
 <%@page import="globaz.ij.api.prononces.IIJPrononce"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.ij.application.IJApplication"%>
+<%@ page import="globaz.ij.db.prononces.IJPrononce" %>
 
 <%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -139,9 +140,7 @@
 %>						<ct:menuExcludeNode nodeId="annulerdepuis" />
 <%
 	}
-	if(IIJPrononce.CS_PETITE_IJ.equals(courant.getCsTypeIJ()) 
-			|| IIJPrononce.CS_GRANDE_IJ.equals(courant.getCsTypeIJ())
-			|| IIJPrononce.CS_FPI.equals(courant.getCsTypeIJ())) {
+	if(IJPrononce.isCommonTypeIJ(courant.getCsTypeIJ())) {
 %>						<ct:menuExcludeNode nodeId="calculerait" />
 						<ct:menuExcludeNode nodeId="calculeraa" />
 <%

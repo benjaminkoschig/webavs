@@ -20,12 +20,7 @@
 	
 	String csTypeIJ = "".equals(viewBean.getCsTypeIJ())?request.getParameter("csTypeIJ"):viewBean.getCsTypeIJ();
 	
-	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-			IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
-			IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){
-		//actionNew =  servletContext + mainServletPath + "?userAction=ij.basesindemnisation.baseIndemnisation.afficher&_method=add&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ;
-		//actionNew =  servletContext + mainServletPath + "?userAction=ij.controleAbsences.dossierControleAbsencesAjax.ajouter&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ + "&idTiers=" + viewBean.getIdTiers();
-		//actionNew =  servletContext + mainServletPath + "?userAction=ij.controleAbsences.dossierControleAbsencesAjax.ajouter&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ; //r&idTiers=" + viewBean.getIdTiers() + "&idBaseIndemnisation=" + viewBean.getIdBaseIndemisation();
+	if(IJPrononce.isCommonTypeIJ(csTypeIJ)){
 		actionNew =  servletContext + mainServletPath + "?userAction=ij.controleAbsences.dossierControleAbsencesAjax.afficher&idTiers=" + viewBean.getIdTiers() + "&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ;// + "&idBaseIndemnisation=" + viewBean.getIdBaseIndemisation();
 	}else{
 		actionNew =  servletContext + mainServletPath + "?userAction=ij.basesindemnisation.baseIndemnisationAitAa.afficher&_method=add&idPrononce=" + idPrononce + "&csTypeIJ=" +csTypeIJ;
@@ -36,6 +31,7 @@
 <%@ include file="/theme/find/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.ij.api.prononces.IIJPrononce"%>
+<%@ page import="globaz.ij.db.prononces.IJPrononce" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 

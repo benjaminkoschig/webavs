@@ -12,9 +12,7 @@
 	
 	String csTypeIJ = request.getParameter("csTypeIJ");
 	
-	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-	   		IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
-			IIJPrononce.CS_FPI.equals(csTypeIJ)){
+	if(IJPrononce.isCommonTypeIJ(csTypeIJ)){
 		detailLink = "ij?userAction=ij.basesindemnisation.baseIndemnisation.afficher&selectedId=";	
 	}else{
 		detailLink = "ij?userAction=ij.basesindemnisation.baseIndemnisationAitAa.afficher&selectedId=";
@@ -24,6 +22,7 @@
 
 <%@page import="globaz.ij.api.prononces.IIJPrononce"%>
 <%@page import="globaz.ij.application.IJApplication"%>
+<%@ page import="globaz.ij.db.prononces.IJPrononce" %>
 <SCRIPT language="JavaScript">
 	function afficherCacher(id) {
 		if (document.all("groupe_" + id).style.display == "none") {
@@ -77,7 +76,7 @@ if (iterH.isPositionPlusPetite()) { %>
 	<%
 	String link = "";
 	String link2 = "";
-	if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)|| IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)){
+	if(IJPrononce.isCommonTypeIJ(csTypeIJ)){
 		link = "ij?userAction=ij.controleAbsences.dossierControleAbsencesAjax.afficher&idBaseIndemnisation=" + line.getIdBaseIndemisation() + "&idTiers=" + line.getIdTiers() + "&idPrononce=" + line.getIdPrononce();
 		link2 = targetLocation + "='" + link+"'";
 	}
@@ -96,9 +95,7 @@ if (iterH.isPositionPlusPetite()) { %>
 		
 		
 		
-		<%if(IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)||
-			 	IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ)||
-				IIJPrononce.CS_FPI.equals(csTypeIJ)){ %>
+		<%if(IJPrononce.isCommonTypeIJ(csTypeIJ)){ %>
 			<ct:menuExcludeNode nodeId="calculerait"/>
 			<ct:menuExcludeNode nodeId="calculeraa"/>
 		<%}else if(IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)){ %>

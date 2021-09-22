@@ -9,6 +9,7 @@ import globaz.framework.servlets.FWServlet;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.ISFUrlEncode;
 import globaz.ij.api.prononces.IIJPrononce;
+import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.vb.prononces.IJNSSDTO;
 import globaz.ij.vb.prononces.IJRequerantViewBean;
 import globaz.jade.client.util.JadeStringUtil;
@@ -41,7 +42,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
             // on donne la bonne action en fonction du type d'IJ
             String action = "";
-            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            if (IJPrononce.isCommonTypeIJ(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE;
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE_AIT;
@@ -75,7 +76,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
             // on donne la bonne action en fonction du type d'IJ
             String action = "";
-            if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ) || IIJPrononce.CS_GRANDE_IJ.equals(csTypeIJ) || IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            if (IJPrononce.isCommonTypeIJ(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE;
             } else if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(csTypeIJ)) {
                 action = IIJActions.ACTION_SAISIE_PRONONCE_AIT;

@@ -27,14 +27,13 @@
 <%@page import="globaz.ij.api.prononces.IIJPrononce"%>
 <%@page import="globaz.ij.application.IJApplication"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@ page import="globaz.ij.db.prononces.IJPrononce" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal"/>
 <ct:menuChange displayId="options" menuId="ij-basesindemnisations" showTab="options">
 	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdBaseIndemisation()%>"/>
 	<ct:menuSetAllParams key="forNoBaseIndemnisation" value="<%=viewBean.getIdBaseIndemisation()%>"/>
 	
-		<%if(IIJPrononce.CS_PETITE_IJ.equals(viewBean.getCsTypeIJ())||
-			 	IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ())||
-				IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){ %>
+		<%if(IJPrononce.isCommonTypeIJ(viewBean.getCsTypeIJ())){ %>
 			 <ct:menuActivateNode active="no" nodeId="calculerait"/>
 			 <ct:menuActivateNode active="no" nodeId="calculeraa"/>
 		<%}else if(IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(viewBean.getCsTypeIJ())){ %>

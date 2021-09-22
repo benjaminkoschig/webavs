@@ -18,6 +18,7 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@ page import="globaz.ij.db.prononces.IJPrononce" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -109,9 +110,7 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 							<TD><INPUT type="text" name="officeAI" value="<%=viewBean.getOfficeAI()%>"></TD>
 						</TR>
 						
-						<%if(globaz.ij.api.prononces.IIJPrononce.CS_PETITE_IJ.equals(viewBean.getCsTypeIJ()) ||
-							 	globaz.ij.api.prononces.IIJPrononce.CS_GRANDE_IJ.equals(viewBean.getCsTypeIJ()) ||
-								globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())){ %>
+						<%if(IJPrononce.isCommonTypeIJ(viewBean.getCsTypeIJ())){ %>
 						<TR>
 							<TD colspan="6">&nbsp;</TD>
 						</TR>
