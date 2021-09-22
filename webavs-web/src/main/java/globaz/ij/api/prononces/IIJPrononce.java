@@ -76,5 +76,4 @@ public interface IIJPrononce {
     public final static String CS_VERSEMENT_RENTE_AI = "52424002";
     /** Motif_transfer_dossier */
     public final static String CS_VERSEMENT_RENTE_AVS = "52424001";
-
 }
