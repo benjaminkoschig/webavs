@@ -1,4 +1,4 @@
-package globaz.ij.acor2020.service;
+package globaz.ij.acorweb.service;
 
 import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
 import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
