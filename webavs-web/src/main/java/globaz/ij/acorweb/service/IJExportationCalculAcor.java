@@ -187,7 +187,10 @@ class IJExportationCalculAcor {
         }
 
         basesCalculCouranteIJ.setId(prononce.getId());
-        basesCalculCouranteIJ.setGenreIndemnite(prononce.isGrandeIJ() ? 1 : prononce.isPetiteIJ() ? 2 : 3);
+        basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(prononce.isGrandeIJ() ?
+                PRACORConst.CA_TYPE_IJ_GRANDE : prononce.isPetiteIJ() ?
+                PRACORConst.CA_TYPE_IJ_PETITE :
+                PRACORConst.CA_TYPE_FPI));
         basesCalculCouranteIJ.setOfficeAI(prononce.getOfficeAI());
 
         basesCalculCouranteIJ.setDatePrononce(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));
