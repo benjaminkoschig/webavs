@@ -177,7 +177,9 @@ class IJExportationCalculAcor {
         if (prononce.isGrandeIJ()) {
             IJGrandeIJ ijGrandeIJ = this.loadGrandeIJ(prononce.getIdPrononce());
             IJRevenu ijRevenu = loadRevenu(ijGrandeIJ);
-            basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(ijRevenu.getRevenu()));
+            if(ijRevenu != null && !ijRevenu.getRevenu().isEmpty()) {
+                basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(ijRevenu.getRevenu()));
+            }
             List<IJSituationProfessionnelle> ijSituationProfessionnelles = this.loadSituationProfessionelle(prononce.getIdPrononce());
             for (IJSituationProfessionnelle situationProfessionnelle : ijSituationProfessionnelles) {
                 basesCalculCouranteIJ.getRevenus().add(mapToBaseCalculeRevenus(situationProfessionnelle, session));
@@ -194,25 +196,28 @@ class IJExportationCalculAcor {
         basesCalculCouranteIJ.setStatutij(1);
         //On n'utilise pas cette information car on est toujours en statut 1
         basesCalculCouranteIJ.setIdIJModifiee(null);
-
-        basesCalculCouranteIJ.setGenreReadaptation(loadCodeOrNull(session, prononce.getCsGenre()));
+        Integer genreRea = loadCodeOrNull(session, prononce.getCsGenre());
+        if(genreRea != null) {
+            basesCalculCouranteIJ.setGenreReadaptation(genreRea.intValue());
+        }
         basesCalculCouranteIJ.setDebutBases(Dates.toXMLGregorianCalendar(prononce.getDateDebutPrononce()));
         basesCalculCouranteIJ.setFinBases(Dates.toXMLGregorianCalendar(prononce.getDateFinPrononce()));
 
         if (prononce.isPetiteIJ()) {
             IJPetiteIJ ijPetiteIJ = loadPetiteIJ(prononce.getIdPrononce());
             basesCalculCouranteIJ.setFormation(Integer.parseInt(session.getCode(ijPetiteIJ.getCsSituationAssure())));
-            String revenu = loadRevenuReadaptation(ijPetiteIJ).getRevenu();
-
-            basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
+            IJRevenu ijRevenu = loadRevenuReadaptation(ijPetiteIJ);
+            mapRevenuMensuelDurantRea(basesCalculCouranteIJ, ijRevenu);
         } else if(prononce.isFpi()) {
             IJFpi ijFpi = loadFpi(prononce.getIdPrononce());
             basesCalculCouranteIJ.setFormationFPI(Integer.parseInt(session.getCode(ijFpi.getCsSituationAssure())));
-            String revenu = loadRevenuReadaptation(ijFpi).getRevenu();
-            basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
+            IJRevenu ijRevenu = loadRevenuReadaptation(ijFpi);
+            mapRevenuMensuelDurantRea(basesCalculCouranteIJ, ijRevenu);
         }
-
-        basesCalculCouranteIJ.setStatut(loadCodeOrNull(session, prononce.getCsStatutProfessionnel()));
+        Integer statutProf = loadCodeOrNull(session, prononce.getCsStatutProfessionnel());
+        if(statutProf != null) {
+            basesCalculCouranteIJ.setStatut(statutProf.intValue());
+        }
         basesCalculCouranteIJ.setDemiIJAC(Double.parseDouble(prononce.getDemiIJAC()));
 
         if (!JadeStringUtil.isBlankOrZero(prononce.getMontantGarantiAA())) {
@@ -239,6 +244,13 @@ class IJExportationCalculAcor {
             basesCalculCouranteIJ.getBasesCalculDecomptes().add(ijCalculDecompteIJMapper.map());
         }
         return basesCalculCouranteIJ;
+    }
+
+    private void mapRevenuMensuelDurantRea(BasesCalculCouranteIJ basesCalculCouranteIJ, IJRevenu ijRevenu) {
+        if(ijRevenu != null) {
+            String revenu = ijRevenu.getRevenu();
+            basesCalculCouranteIJ.setRevenuMensuelDurantRea(Double.parseDouble(revenu));
+        }
     }
 
     private IJRevenu loadRevenuReadaptation(final IJPetiteIJ ijPetiteIJ) {
