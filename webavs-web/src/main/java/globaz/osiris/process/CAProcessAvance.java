@@ -339,7 +339,7 @@ public class CAProcessAvance extends BProcess {
         manager.setForIdCompteAnnexe(idCompteAnnexe);
         manager.setForIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
         if(modeRecouvrement.equals(CAPlanRecouvrement.CS_AVANCE_PTRA)){
-            manager.setForIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA);
+            manager.setForIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA+ "000");
         }else{
             manager.setForIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
         }
@@ -357,7 +357,7 @@ public class CAProcessAvance extends BProcess {
 
             section.setIdCompteAnnexe(idCompteAnnexe);
             if(modeRecouvrement.equals(CAPlanRecouvrement.CS_AVANCE_PTRA)){
-                section.setIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA);
+                section.setIdExterne("" + JACalendar.today().getYear()+APISection.CATEGORIE_SECTION_AVANCE_PTRA+ "000");
             }else{
                 section.setIdExterne("" + JACalendar.today().getYear() + APISection.CATEGORIE_SECTION_AVANCE + "000");
             }
