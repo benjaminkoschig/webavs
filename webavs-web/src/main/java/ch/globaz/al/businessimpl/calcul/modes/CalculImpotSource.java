@@ -23,6 +23,7 @@ import ch.globaz.param.business.service.ParamServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -54,26 +55,30 @@ public class CalculImpotSource {
         }
     }
 
-    public static void computeISforDroit(DossierModel dossierModel, CalculBusinessModel droitCalcule, String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String date)
+    public static void computeISforDroit(DossierModel dossierModel, CalculBusinessModel droitCalcule, String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String dateFinMoisPourPeriode)
             throws JadeApplicationException {
         try {
-            // si le droit de ce dossier ne possède pas de prestations déjà comptabilisé à extourner pour la période en cours de traitement,
-            // on utilise la date du jour pour trouver l'impôt source au lieu de la date de comptabilisation
-            if (!hasPrestationAExtourner(dossierModel, droitCalcule)) {
-                date = JadeDateUtil.getGlobazFormattedDate(new java.util.Date());
+            // cherche si le droit de ce dossier possède une prestations déjà comptabilisée à extourner pour la période en cours de traitement,
+            String prestationImpotSourceAExtourner = hasPrestationAExtourner(dossierModel, droitCalcule, JACalendar.format(dateFinMoisPourPeriode, JACalendar.FORMAT_MMsYYYY));
+
+            // si montantIS de la prestationImpotSourceAExtourner existe on l'utilise tel quel
+            if (!JadeStringUtil.isEmpty(prestationImpotSourceAExtourner)) {
+                droitCalcule.setCalculResultMontantIS(prestationImpotSourceAExtourner);
+            } else { // sinon on utilise le taux impot source à la date d'aujourd'hui pour recalculer le montantIS
+                String dateAujourdhuiPourCalculImpotSource = JadeDateUtil.getGlobazFormattedDate(new java.util.Date());
+                Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateAujourdhuiPourCalculImpotSource);
+                Montant montantPrestation = new Montant(montant);
+                Montant impots = montantPrestation.multiply(tauxApplicable).normalize();
+                droitCalcule.setCalculResultMontantIS(impots.getValue());
             }
-            Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
-            Montant montantPrestation = new Montant(montant);
-            Montant impots = montantPrestation.multiply(tauxApplicable).normalize();
-            droitCalcule.setCalculResultMontantIS(impots.getValue());
         } catch (TauxImpositionNotFoundException e) {
             throw new ALCalculException(e.getMessage());
         }
     }
 
-    public static boolean hasPrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule) {
+    public static String hasPrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule, String dateFinMoisPourPeriode) {
         try {
-            DetailPrestationGenComplexSearchModel search = GenPrestationDossier.searchExistingPrestSansContextAffilie(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dossierModel.getDateFinPeriode(), droitCalcule.getDroit().getId());
+            DetailPrestationGenComplexSearchModel search = GenPrestationDossier.searchExistingPrestSansContextAffilie(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dateFinMoisPourPeriode, droitCalcule.getDroit().getId());
 
             ArrayList<String> processed = new ArrayList<String>();
             String lastDate = null;
@@ -101,7 +106,7 @@ public class CalculImpotSource {
                     if (!processed.contains(lastPeriod)) {
                         if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
                                 && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())) {
-                            return true;
+                            return oldPrest.getMontantIS();
                         }
                     }
                 }
@@ -111,7 +116,7 @@ public class CalculImpotSource {
             JadeLogger.error(e, "Une erreur s'est produite pendant la recherche de prestations extournables." + e.getMessage());
         }
 
-        return false;
+        return null;
     }
 
     /**
