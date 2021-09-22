@@ -252,7 +252,7 @@
 							<TD><ct:FWLabel key="JSP_ETAT"/></TD>
 							<TD><INPUT type="text" name="anneeRenteEnCours" value="<%=viewBean.getAnneeRenteEnCours()%>" maxlength="4" class="numeroCourt"></TD>
 							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>
-							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":"CHECKED"%>></TD>
+							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":""%>></TD>
 						</TR>
 
 				<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean){
