@@ -4,7 +4,6 @@
 <%-- tpl:put name="zoneInit" --%>
 <%
 idEcran="PIJ0003";
-String csTypeIJ = request.getParameter("csTypeIJ");
 
 globaz.ij.vb.prononces.IJPetiteIJJointRevenuViewBean viewBean = (globaz.ij.vb.prononces.IJPetiteIJJointRevenuViewBean)(session.getAttribute("viewBean"));
 String noAVS = request.getParameter("noAVS");

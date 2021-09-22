@@ -507,7 +507,6 @@
 						  maxlength="6"
 						  size="5"
 						  >
-				%
 			</td>
 		</tr>
 		<tr>

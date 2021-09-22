@@ -719,7 +719,6 @@
                                        value="<%=viewBean.getQuotiteRente()%>"
                                        size="5"
                                        maxlength="6"/>
-                                %
                             </td>
                         </tr>
                     </table>

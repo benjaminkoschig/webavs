@@ -622,7 +622,6 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 										<TD><ct:FWLabel key="JSP_RAC_D_QUOTITE_DE_RENTE"/></TD>
 										<TD>
 											<INPUT type="text" size="5" maxlength="6" id="quotiteRente" name="quotiteRente" value="<%=viewBean.getQuotiteRente()%>">
-											%
 										</TD>
 									</TR>
 									<TR>
