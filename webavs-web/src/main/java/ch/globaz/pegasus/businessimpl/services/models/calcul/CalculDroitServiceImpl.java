@@ -1669,8 +1669,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      * @throws JadePersistenceException
      */
     private void uniquementReformeDroitPrecedant(Droit droit, List<PeriodePCAccordee> listePCAccordes, String noVersionPrecedante) throws JadePersistenceException {
-        List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourrante(droit.getId(), noVersionPrecedante);
-        PCAccordeePlanCalculReforme pca = listPcaPrecedentes.get(listPcaPrecedentes.size() - 1);
+        List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourranteWithDateDebutDesc(droit.getId(), noVersionPrecedante);
+        PCAccordeePlanCalculReforme pca = listPcaPrecedentes.get(0);
         if (pca.getReformePc() != null && pca.getReformePc()) {
             listePCAccordes.clear();
         }
