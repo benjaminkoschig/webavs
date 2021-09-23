@@ -599,6 +599,10 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
                 }
 
                 cacheDonnees.put(ConstantesCalcul.CONTAINER_DONNEES_HOMES, homeSearch);
+                homeSearch.setForIsSupprime(true);
+                homeSearch.setWhereKey(CalculDonneesHomeSearch.SEARCH_HOME_FOR_VERSEMENT_DIRECT);
+                homeSearch = PegasusImplServiceLocator.getCalculDonneesHomeService().search(homeSearch);
+                cacheDonnees.put(ConstantesCalcul.CONTAINER_DONNEES_HOMES_FOR_VERSEMENT_DIRECT, homeSearch);
             }
 
             // Si rtype de chambre dans la liste et pas de dop

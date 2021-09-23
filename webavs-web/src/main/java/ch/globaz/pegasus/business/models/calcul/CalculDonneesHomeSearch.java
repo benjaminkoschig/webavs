@@ -11,13 +11,14 @@ public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
      */
     private static final long serialVersionUID = 1L;
     public final static String SEARCH_HOME_FOR_LAPRAMS = "searchHomeForLAPRAMS";
+    public final static String SEARCH_HOME_FOR_VERSEMENT_DIRECT = "searchHomeForVersementDirect";
     private String forDateDebut = null;
     private String forDateFin = null;
     private String forIdDroit = null;
     private String forIdHome = null;
     private String forIdTypeChambre = null;
-
     private String forIdVersionDroit = null;
+    private boolean forIsSupprime = false;
 
     private Collection<String> inIdTypeChambre = new ArrayList<String>();
 
@@ -75,6 +76,14 @@ public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
 
     public void setInIdTypeChambre(Collection<String> inIdTypeChambre) {
         this.inIdTypeChambre = inIdTypeChambre;
+    }
+
+    public boolean getForIsSupprime() {
+        return forIsSupprime;
+    }
+
+    public void setForIsSupprime(boolean forIsSupprime) {
+        this.forIsSupprime = forIsSupprime;
     }
 
     @Override

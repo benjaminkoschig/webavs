@@ -110,6 +110,27 @@
 				</search-group>
 			</search-group>
 		</search-definition>
+
+		<search-definition name="searchHomeForVersementDirect">
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleHome.idHome" />
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre" />
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDonneesFinanciereHeader.idVersionDroit" />
+				<search-field name="inIdTypeChambre" operation="IN" field-ref="simpleTypeChambre.idTypeChambre" />
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit" />
+				<search-field name="forIsSupprime" field-ref="simpleDonneesFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePrixChambre.dateFin" />
+					</search-group>
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePeriodeServiceEtat.dateFin" />
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
 		
 		
 		<search-definition name="searchHomeForLAPRAMS">

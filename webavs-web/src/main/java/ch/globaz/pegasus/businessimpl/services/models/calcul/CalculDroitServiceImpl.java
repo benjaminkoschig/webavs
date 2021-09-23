@@ -75,8 +75,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     private final String CONJOINT_HOME = "CONJOINT_HOME";
     private final String REQUERANT_DEP_PERS = "REQUERANT_DEP_PERS";
     private final String CONJOINT_DEP_PERS = "CONJOINT_DEP_PERS";
-    private final String REQUERANT_MNT_SEJOUR = "REQUERANT_SEJ";
-    private final String CONJOINT_MNT_SEJOUR = "CONJOINT_SEJ";
     //Variable pour savoir si il faut reporter les créances/retenus des versement en home pour les cas où les données en home ne sont pas touché et ignoré dans le calculteur.
     private boolean aDonneeHomeEncoreValide = false;
     private Map<String,SimplePCAccordee> mapCsRoleToPCAWithoutDateFin = new LinkedHashMap<>();
@@ -519,7 +517,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
  *
  */
         CalculDonneesHomeSearch homeReplaced = (CalculDonneesHomeSearch) cacheDonneesBD
-                .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES);
+                .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES_FOR_VERSEMENT_DIRECT);
 
         for (PeriodePCAccordee pcAccordee : listePCAccordes) {
             pcAccordee.setCalculRetro(retroactif);
@@ -531,7 +529,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
                     String fKey = pcAccordee.getIdSimplePcAccordee() + "-";
-                    mapMontantTotalHome.put(fKey + REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome() && !JadeStringUtil.isBlankOrZero(montantTotalHome)) {
                             mapMontantTotalHome.put(fKey + REQUERANT_HOME, montantTotalHome);
@@ -547,7 +544,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
                     String fKey = pcAccordee.getIdSimplePcAccordeeConjoint() + "-";
-                    mapMontantTotalHome.put(fKey + CONJOINT_MNT_SEJOUR, montantDepensePersonnel.toString());
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome() && !JadeStringUtil.isBlankOrZero(montantTotalHome)) {
                             mapMontantTotalHome.put(fKey + CONJOINT_HOME, montantTotalHome);
@@ -590,7 +586,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         revertRetenuesOldPca(droit);
         for (SimplePCAccordee simplePCAccordee : allNewPca) {
             reporterLaRetenuSiExistant(pcaReplaced, simplePCAccordee, homeVersementList);
-            clotrerAncienneRetenus(pcaReplaced, simplePCAccordee);
+            clotrerAncienneRetenus(pcaReplaced, simplePCAccordee,copies);
         }
         filterCreancier(pcaReplaced, homeVersementList);
         createRetenusForVersementsHome(homeVersementList);
@@ -1433,14 +1429,15 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     /**
      * Fermer tout les retenues des pcas de l'ancien droit pour éviter un blocage de ceux qui ont des retenues sans dates de fins
      *
+     * @param isVersementHome
      * @param anciennesPCAccordees
      * @param simplePCAccordee
-     * @param isVersementHome
+     * @param copies
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
 
-    private void clotrerAncienneRetenus(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee) throws JadeApplicationException, JadePersistenceException {
+    private void clotrerAncienneRetenus(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee, List<CalculPcaReplace> copies) throws JadeApplicationException, JadePersistenceException {
         CalculPcaReplace anciennePCACourante;
         String idPcaOld;
         String dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
@@ -1467,10 +1464,26 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                                 SimplePrestationsAccordees simplePrestationsAccordees = anciennePCACourante.getSimplePrestationsAccordees();
                                 simplePrestationsAccordees.setIsRetenues(Boolean.FALSE);
                                 PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
+                                simplePrestationsAccordees = anciennePCACourante.getSimplePrestationsAccordeesConjoint();
+                                if(simplePrestationsAccordees != null){
+                                    simplePrestationsAccordees.setIsRetenues(Boolean.FALSE);
+                                    PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        for(CalculPcaReplace calculPcaReplace : copies){
+            SimplePrestationsAccordees simplePrestationsAccordees = calculPcaReplace.getSimplePrestationsAccordees();
+            simplePrestationsAccordees.setIsRetenues(Boolean.FALSE);
+            PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
+            simplePrestationsAccordees = calculPcaReplace.getSimplePrestationsAccordeesConjoint();
+            if(simplePrestationsAccordees != null){
+                simplePrestationsAccordees.setIsRetenues(Boolean.FALSE);
+                PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(simplePrestationsAccordees);
             }
         }
     }

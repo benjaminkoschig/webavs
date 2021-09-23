@@ -107,6 +107,12 @@ public class CopiesGenerate {
 					pca.getSimplePCAccordee().setDateFin(dateFCloturePca);
 					pca.setId(idPCa);
 					pca.getSimplePCAccordee().setIdVersionDroit(droit.getIdVersionDroit());
+					if(pca.getSimplePrestationsAccordees().getIsRetenues()){
+						pca.getSimplePrestationsAccordees().setIsRetenues(Boolean.FALSE);
+					}
+					if(pca.getSimplePrestationsAccordeesConjoint() != null &&pca.getSimplePrestationsAccordeesConjoint().getIsRetenues() ){
+						pca.getSimplePrestationsAccordeesConjoint().setIsRetenues(Boolean.FALSE);
+					}
 					pcas.add(pca);
 					detectIfhasMoreCopieHasExpected(pca.getSimplePrestationsAccordees().getIdTiersBeneficiaire(),
 							dateFCloturePca);

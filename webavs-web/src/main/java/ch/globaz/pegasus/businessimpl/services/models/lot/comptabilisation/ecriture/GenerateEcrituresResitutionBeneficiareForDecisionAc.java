@@ -1,23 +1,30 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import ch.globaz.osiris.business.service.CABusinessServiceLocator;
+import ch.globaz.perseus.businessimpl.checkers.qd.FactureChecker;
+import ch.globaz.pyxis.domaine.PersonneAVS;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.osiris.api.APIEcriture;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
+
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ComptabilisationUtil;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.OrdreVersementPeriode;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.PrestationPeriode;
+import globaz.osiris.external.IntRole;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+
 
 class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperationBasic {
     Map<Integer, List<Ecriture>> ecritures = new TreeMap<Integer, List<Ecriture>>();
-
+    Map<String,String> mapReqConjToIdCompteAnnexe = new HashMap<>();
     private void addEcriture(SectionPegasus sectionPegasus, String debitCredit, BigDecimal montants,
             String idCompteAnnexe, String csRoleFamille, Integer noGroupePeriode, OrdreVersement ov)
             throws JadeApplicationException {
@@ -39,6 +46,23 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
 
     private List<Ecriture> generateEcrituresBeneficiaireRestiution(List<PrestationPeriode> periodes)
             throws JadeApplicationException {
+        for (PrestationPeriode periode : periodes) {
+           if( periode.getRequerant().hasDom2R()){
+               mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_REQUERANT,periode.getRequerant().getIdCompteAnnexe());
+               PRTiersWrapper tiersW = null;
+               try {
+                   if(!JadeStringUtil.isBlankOrZero(periode.getRequerant().getBeneficiaire().getIdTiersConjoint()) && !mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)){
+                       tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),periode.getRequerant().getBeneficiaire().getIdTiersConjoint());
+                       String idCompteAnnexeConjoint = CABusinessServiceLocator.getCompteAnnexeService()
+                               .getCompteAnnexe(null, periode.getRequerant().getBeneficiaire().getIdTiersConjoint(), IntRole.ROLE_RENTIER, tiersW.getNSS(), false).getIdCompteAnnexe();
+                       mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
+                   }
+               } catch (Exception e) {
+                   JadeThread.logError(GenerateEcrituresResitutionBeneficiareForDecisionAc.class.getName(),"Error when search NSS for conjoint : "+ e.getMessage());
+               }
+
+           }
+        }
         for (PrestationPeriode periode : periodes) {
             this.generateEcrituresBeneficiaireRestiution(periode.getRequerant(), IPCDroits.CS_ROLE_FAMILLE_REQUERANT,
                     periode.getNoGroupePeriode());
@@ -67,7 +91,7 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
                 BigDecimal[] montantsBeneficiare = ComptabilisationUtil.splitMontant(ov.getMontant().setScale(0));
                 addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[0], idCompteAnnexe,
                         IPCDroits.CS_ROLE_FAMILLE_REQUERANT, noGroupePeriode, ov);
-                addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[1], idCompteAnnexe,
+                addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[1], mapReqConjToIdCompteAnnexe.get(IPCDroits.CS_ROLE_FAMILLE_CONJOINT),
                         IPCDroits.CS_ROLE_FAMILLE_CONJOINT, noGroupePeriode, ov);
             } else {
                 addEcriture(sectionPegasus, debitCredit, ov.getMontant(), idCompteAnnexe, csRoleFamilleRequerant,

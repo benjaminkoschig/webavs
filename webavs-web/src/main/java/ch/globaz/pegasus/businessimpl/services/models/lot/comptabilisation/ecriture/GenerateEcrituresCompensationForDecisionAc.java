@@ -69,7 +69,7 @@ class GenerateEcrituresCompensationForDecisionAc extends GenerateOperationBasic 
             montantRestitutionMin = infosResitution.getMontantAdispositionDom2R().min(montantNonRembourse);
             montantNonRembourse = montantNonRembourse.subtract(montantRestitutionMin);
             infosResitution.substractMontantAdispositionDom2R(montantRestitutionMin);
-            this.generateCompensation(montantRestitutionMin, idCompteAnnexRequerant, idCompteAnnexRestitution,
+            this.generateCompensation(montantRestitutionMin, idCompteAnnexDecision, idCompteAnnexRestitution,
                     typeEcriture);
         }
         if ((infosResitution.hasMontantAdisposition()) && (montantNonRembourse.signum() == 1)) {
@@ -157,7 +157,7 @@ class GenerateEcrituresCompensationForDecisionAc extends GenerateOperationBasic 
             BigDecimal montantRestitutionMin = ecituresPeriode.resolveMontantMin();
 
             BigDecimal montantNonRembourse = ecituresPeriode.getMontantRestitution().subtract(montantRestitutionMin);
-            if (montantNonRembourse.signum() != 0) {
+            if (montantNonRembourse.signum() != 0 ) {
                 infosResitution.getMapRestiutionNonRemboursee().put(ecituresPeriode, montantNonRembourse);
             }
 
