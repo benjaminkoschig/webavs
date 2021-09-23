@@ -21,6 +21,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -67,7 +68,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
     @Override
     protected void _validate(BStatement statement) throws Exception {
         if (IRECreancier.CS_IMPOT_SOURCE.equals(getCsType())) {
-            if (JadeStringUtil.isDecimalEmpty(getRevenuAnnuelDeterminant()) || JadeStringUtil.isDecimalEmpty(getTauxImposition())) {
+            if (JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getRevenuAnnuelDeterminant())) || JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getTauxImposition()))) {
                 _addError(statement.getTransaction(), getSession().getLabel("JSP_CRE_D_ERREUR_CREANCIER_TAUX_IMPOSITION_REVENU_ANNUEL_DETERMINANT"));
             }
         }

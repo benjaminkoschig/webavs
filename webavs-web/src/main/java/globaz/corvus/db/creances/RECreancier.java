@@ -8,6 +8,7 @@ import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.globall.util.JANumberFormatter;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 /**
@@ -412,21 +413,21 @@ public class RECreancier extends BEntity {
      * @param string
      */
     public void setMontantRevandique(String string) {
-        montantRevandique = string;
+        montantRevandique = JANumberFormatter.deQuote(string);
     }
 
     /**
      * @param revenuAnnuelDeterminant
      */
     public void setRevenuAnnuelDeterminant(String revenuAnnuelDeterminant) {
-        this.revenuAnnuelDeterminant = revenuAnnuelDeterminant;
+        this.revenuAnnuelDeterminant = JANumberFormatter.deQuote(revenuAnnuelDeterminant);
     }
 
     /**
      * @param tauxImposition
      */
     public void setTauxImposition(String tauxImposition) {
-        this.tauxImposition = tauxImposition;
+        this.tauxImposition = JANumberFormatter.deQuote(tauxImposition);
     }
 
     /**
