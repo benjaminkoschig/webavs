@@ -16,7 +16,7 @@
 --         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 
------ POAVS-3768
+----- POAVS-3768 - SPEN
 
 --Ajout code sys SPEN
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
@@ -201,18 +201,62 @@ VALUES (64008098, 'F', '          ', 'DGEJ-FA',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 
------- POAVS-3766
--- Creation code sys
+------ POAVS-3766 - Frais entretien plus de 20 ans
+-- Creation code sys Immobilier Principale
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
                            PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
-VALUES (64008099, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS', 2, 2, 2, 2, 2, 2, 10200038, 0,
+VALUES (64008099, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_PRINCIPALE', 2, 2, 2, 2, 2, 2, 10200038, 0,
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
-VALUES (64008099, 'D', '          ', '[de]Frais entretien immeubles de plus de 20 ans',
+VALUES (64008099, 'D', '          ', '[de]Frais entretien immeubles habitation principale de plus de 20 ans',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
-VALUES (64008099, 'F', '          ', 'Frais entretien immeubles de plus de 20 ans',
+VALUES (64008099, 'F', '          ', 'Frais entretien immeubles habitation principale de plus de 20 ans',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
+-- Creation code sys Immobilier Annexe plus de 20 ans
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
+                           PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
+VALUES (64008100, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008100, 'D', '          ', '[de]Frais entretien immeubles habitation annexe de plus de 20 ans',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008100, 'F', '          ', 'Frais entretien immeubles habitation annexe de plus de 20 ans',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+-- Creation code sys Immobilier Annexe moins de 20 ans
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
+                           PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
+VALUES (64008101, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_MOINS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008101, 'D', '          ', '[de]Frais entretien immeubles habitation annexe de moins de 20 ans',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008101, 'F', '          ', 'Frais entretien immeubles habitation annexe de moins de 20 ans',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+-- Update variable actuelle
+
+
+-- POAVS-3766 - Entretien batiment plus de 20 ans
+-- Ajout nouvelles colonnes
+ALTER TABLE SCHEMA.PCBISHP
+    ADD COLUMN CIBHPA NUMERIC(1) DEFAULT 0;
+
+REORG TABLE SCHEMA.PCBISHP;
+-- call SYSPROC.ADMIN_CMD('reorg TABLE SCHEMA.PCBISHP');
+
+ALTER TABLE SCHEMA.PCBISPH
+    ADD COLUMN CHBHPA NUMERIC(1) DEFAULT 0;
+
+REORG TABLE SCHEMA.PCBISHP;
+-- call SYSPROC.ADMIN_CMD('reorg TABLE SCHEMA.PCBISHP');
