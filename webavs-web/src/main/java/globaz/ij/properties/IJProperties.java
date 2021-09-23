@@ -29,7 +29,8 @@ public enum IJProperties implements IProperties {
             "donne la raçine nom du fichier à envoyer à la centrale"),
     FTP_CENTRALE_PATH("centrale.url", "donne l'url de la centrale"),
     CENTRALE_TEST("centrale.test",
-            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale");
+            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale"),
+    ACOR_UTILISER_VERSION_WEB("acor.utiliser.version.web","Boolean, si true, utilisation de la version Web d'ACOR");
 
     private String description;
     private String propertyName;
