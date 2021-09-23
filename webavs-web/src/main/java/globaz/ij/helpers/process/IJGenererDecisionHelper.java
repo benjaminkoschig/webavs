@@ -472,9 +472,7 @@ public class IJGenererDecisionHelper extends FWHelper {
     }
 
     private void addCopieEmployeurs(BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
-        IJSituationProfessionnelleManager sitProMgr = new IJSituationProfessionnelleManager();
         IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
-        agentMgr.setForIdPrononce(vb.getIdPrononce());
         agentMgr.setSession((BSession) session);
         agentMgr.setForIdPrononce(vb.getIdPrononce());
 
