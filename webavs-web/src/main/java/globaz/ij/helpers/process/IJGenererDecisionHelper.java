@@ -20,10 +20,7 @@ import globaz.ij.db.decisions.IJAnnexeDecisionManager;
 import globaz.ij.db.decisions.IJCopieDecision;
 import globaz.ij.db.decisions.IJCopieDecisionManager;
 import globaz.ij.db.decisions.IJDecisionIJAI;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prononces.*;
 import globaz.ij.itext.IJDecision;
 import globaz.ij.vb.process.IJDecisionIJAIViewBean;
 import globaz.ij.vb.process.IJGenererDecisionViewBean;
@@ -476,21 +473,18 @@ public class IJGenererDecisionHelper extends FWHelper {
 
     private void addCopieEmployeurs(BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
         IJSituationProfessionnelleManager sitProMgr = new IJSituationProfessionnelleManager();
-        sitProMgr.setSession((BSession) session);
-        sitProMgr.setForIdPrononce(vb.getIdPrononce());
-        sitProMgr.find(BManager.SIZE_NOLIMIT);
+        IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
+        agentMgr.setForIdPrononce(vb.getIdPrononce());
+        agentMgr.setSession((BSession) session);
+        agentMgr.setForIdPrononce(vb.getIdPrononce());
 
-        for(IJSituationProfessionnelle sitPro: sitProMgr.<IJSituationProfessionnelle>getContainerAsList()) {
-            IJEmployeur employeur = new IJEmployeur();
-            employeur.setSession((BSession) session);
-            employeur.setIdEmployeur(sitPro.getIdEmployeur());
-            employeur.retrieve();
-            String idTiersEmployeur = employeur.getIdTiers();
+        agentMgr.find(BManager.SIZE_NOLIMIT);
+        for(IJMesureJointAgentExecution agent: agentMgr.<IJMesureJointAgentExecution>getContainerAsList()) {
             ICTScalableDocumentCopie copieEmployeur = factory.createNewScalableDocumentCopie();
 
-            copieEmployeur.setIdTiers(idTiersEmployeur);
+            copieEmployeur.setIdTiers(agent.getIdTiers());
             String nom = CTTiersUtils
-                    .getPrenomNomTiersParIdTiers(session, idTiersEmployeur);
+                    .getPrenomNomTiersParIdTiers(session, agent.getIdTiers());
             copieEmployeur.setPrenomNomTiers(nom);
             addCopie((ICTScalableDocument) vb, copieEmployeur);
         }
