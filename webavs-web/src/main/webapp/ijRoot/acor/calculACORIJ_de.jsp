@@ -226,9 +226,6 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 			</ct:ifhasright>
 		</p>
 <%--        <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>--%>
-        <p>---------------------------------------------------------------------------------------------</p>
-        <p>ANCIEN ACOR</p>
-        <p>---------------------------------------------------------------------------------------------</p>
     </TD>
 </TR>
 
@@ -237,7 +234,9 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 						<TR>
 
 							<TD colspan="4">
-
+								<p>---------------------------------------------------------------------------------------------</p>
+								<p>ANCIEN ACOR</p>
+								<p>---------------------------------------------------------------------------------------------</p>
 								<H6><A href="#" style="color:black;" onclick="exporterScriptACOR()"><ct:FWLabel key="JSP_CAI_D_ETAPE_1"/></A></H6>							
 								<P><A href="#" onclick="exporterScriptACOR2()"><ct:FWLabel key="JSP_CAI_D_TELECHARGER_SCRIPT"/></A></P>
 								<H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_2"/></u></H6>

@@ -33,6 +33,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%@ page import="globaz.corvus.servlet.IREActions" %>
 <%@ page import="globaz.ij.servlet.IIJActions" %>
 <%@ page import="globaz.ij.db.prestations.IJIJCalculee" %>
+<%@ page import="globaz.ij.properties.IJProperties" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -298,7 +299,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 								<table border="1" width = "100%">
 											<th><ct:FWLabel key="JSP_CAD_PAR_ACOR"/></th>
             <%
-                if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
+                if (IJProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
             %>
 											<tr>
 											<td>
@@ -317,15 +318,15 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 													</ct:ifhasright>
 												</p>
 <%--                    <P><A href="#" onclick="afficherPrestation()" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>--%>
-                    <p>---------------------------------------------------------------------------------------------</p>
-                    <p>ANCIEN ACOR</p>
-                    <p>---------------------------------------------------------------------------------------------</p>
                 </td>
             </tr>
             <% } %>
 
             <tr>
                 <td>
+					<p>---------------------------------------------------------------------------------------------</p>
+					<p>ANCIEN ACOR</p>
+					<p>---------------------------------------------------------------------------------------------</p>
 												<H6><A style="color:black;" href="#" onclick="exporterScriptACOR()"><ct:FWLabel key="JSP_CAD_D_ETAPE_1"/></A></H6>
 												<P><A href="#" onclick="exporterScriptACOR2()"><ct:FWLabel key="JSP_CAD_D_TELECHARGER_SCRIPT"/></A></P>
 												<H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_2"/></u></H6>

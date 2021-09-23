@@ -337,7 +337,7 @@
 </td>
 </tr>
 <% }  else { %>
-<%-- if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>--%>
+<% if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>
 <tr>
     <td colspan="4">
         <h6>
@@ -366,7 +366,7 @@
         </p>
     </td>
 </tr>
-<%--<%    } else {  %>--%>
+<% } %>
 <tr>
     <td colspan="4">
         <br/>
@@ -399,7 +399,6 @@
         </p>
     </td>
 </tr>
-<%--<% } %>--%>
 <% } %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <input type="button"
