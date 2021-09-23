@@ -47,7 +47,7 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
     private List<Ecriture> generateEcrituresBeneficiaireRestiution(List<PrestationPeriode> periodes)
             throws JadeApplicationException {
         for (PrestationPeriode periode : periodes) {
-           if( periode.getRequerant().hasDom2R()){
+           if(periode.getRequerant() != null && periode.getRequerant().hasDom2R()){
                mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_REQUERANT,periode.getRequerant().getIdCompteAnnexe());
                PRTiersWrapper tiersW = null;
                try {
@@ -91,7 +91,7 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
                 BigDecimal[] montantsBeneficiare = ComptabilisationUtil.splitMontant(ov.getMontant().setScale(0));
                 addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[0], idCompteAnnexe,
                         IPCDroits.CS_ROLE_FAMILLE_REQUERANT, noGroupePeriode, ov);
-                addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[1], mapReqConjToIdCompteAnnexe.get(IPCDroits.CS_ROLE_FAMILLE_CONJOINT),
+                addEcriture(sectionPegasus, debitCredit, montantsBeneficiare[1], mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT) ? mapReqConjToIdCompteAnnexe.get(IPCDroits.CS_ROLE_FAMILLE_CONJOINT):idCompteAnnexe ,
                         IPCDroits.CS_ROLE_FAMILLE_CONJOINT, noGroupePeriode, ov);
             } else {
                 addEcriture(sectionPegasus, debitCredit, ov.getMontant(), idCompteAnnexe, csRoleFamilleRequerant,

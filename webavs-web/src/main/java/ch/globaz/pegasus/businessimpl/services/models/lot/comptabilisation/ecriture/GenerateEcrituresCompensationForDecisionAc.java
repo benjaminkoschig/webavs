@@ -69,7 +69,7 @@ class GenerateEcrituresCompensationForDecisionAc extends GenerateOperationBasic 
             montantRestitutionMin = infosResitution.getMontantAdispositionDom2R().min(montantNonRembourse);
             montantNonRembourse = montantNonRembourse.subtract(montantRestitutionMin);
             infosResitution.substractMontantAdispositionDom2R(montantRestitutionMin);
-            this.generateCompensation(montantRestitutionMin, idCompteAnnexDecision, idCompteAnnexRestitution,
+            this.generateCompensation(montantRestitutionMin, idCompteAnnexRequerant, idCompteAnnexRestitution,
                     typeEcriture);
         }
         if ((infosResitution.hasMontantAdisposition()) && (montantNonRembourse.signum() == 1)) {
