@@ -7,6 +7,7 @@
 <%@ page import="globaz.ij.vb.process.IJGenererDecisionViewBean"%>
 
 <%@ page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@ page import="globaz.ij.itext.IJDecision" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -362,10 +363,10 @@
 								<select	id="beneficiaire" 
 										name="beneficiaire" 
 										value="<%=viewBean.getBeneficiaire()%>">
-									<option	value="assure" <%="assure".equals(viewBean.getBeneficiaire()) ? "selected=\"selected\"" : ""%>>
+									<option	value="<%=IJDecision.BENEFICIAIRE_ASSURE%>" <%=IJDecision.BENEFICIAIRE_ASSURE.equals(viewBean.getBeneficiaire()) ? "selected=\"selected\"" : ""%>>
 										<ct:FWLabel key="JSP_ASSURE" />
 									</option>
-									<option value="employeur" <%="employeur".equals(viewBean.getBeneficiaire()) ? "selected=\"selected\"" : ""%>>
+									<option value="<%=IJDecision.BENEFICIAIRE_EMPLOYEUR%>" <%=IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(viewBean.getBeneficiaire()) ? "selected=\"selected\"" : ""%>>
 										<ct:FWLabel key="JSP_EMPLOYEUR" />
 									</option>
 								</select>

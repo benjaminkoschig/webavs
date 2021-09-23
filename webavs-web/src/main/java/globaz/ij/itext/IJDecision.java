@@ -162,6 +162,8 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     private static final String NO5EMEREVISION = "5";
     private static final String PREFIX_HEADER_DECISION = "Header_Dec_";
     private static final String SUFIX_HEADER_DECISION = ".jasper";
+    public static final String BENEFICIAIRE_EMPLOYEUR = "employeur";
+    public static final String BENEFICIAIRE_ASSURE = "assure";
 
     /**
      * Donne le montant journalier arrondi au franc supp. correspondant a la situation professionnelle
@@ -630,7 +632,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     adressePaiement = "";
                     adresseCourrier = document.getTextes(4).getTexte(9).getDescription() + "\n";
                 }
-            } else if ("employeur".equals(documentProperties.getParameter("beneficiaire"))) {
+            } else if (BENEFICIAIRE_EMPLOYEUR.equals(documentProperties.getParameter("beneficiaire"))) {
                 // Gestion des adresses courrier/Paiement de l'employeur
                 TIAdressePaiementData adressePaiementEmployeur;
                 String idTierEmployeur = "";

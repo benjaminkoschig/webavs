@@ -11,6 +11,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.ij.api.prononces.IIJPrononce;
@@ -23,6 +24,7 @@ import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJSituationProfessionnelle;
 import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.itext.IJDecision;
 import globaz.ij.vb.process.IJDecisionIJAIViewBean;
 import globaz.ij.vb.process.IJGenererDecisionViewBean;
 import globaz.jade.client.util.JadeStringUtil;
@@ -247,6 +249,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                 }
             }
         }
+        vb.initFirst();
     }
 
     @Override
@@ -381,7 +384,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                         addAnnexe((ICTScalableDocument) viewBean, scalableAnnexe);
                     }
 
-                    addCopieFisc((ICTScalableDocument) viewBean, session, vb, factory);
+                    addCopieFisc(session, vb, factory);
                 }
             }
 
@@ -435,7 +438,11 @@ public class IJGenererDecisionHelper extends FWHelper {
                     }
                 }
 
-                addCopieFisc((ICTScalableDocument) viewBean, session, vb, factory);
+                addCopieFisc(session, vb, factory);
+
+                if(IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(vb.getBeneficiaire())) {
+                    addCopieEmployeurs(session, vb, factory);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -450,7 +457,7 @@ public class IJGenererDecisionHelper extends FWHelper {
      * @param factory
      * @throws Exception
      */
-    private void addCopieFisc(ICTScalableDocument viewBean, BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
+    private void addCopieFisc(BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
         if (!JadeStringUtil.isEmpty(vb.getCsCantonImpotSource())) {
             ICTScalableDocumentCopie copieFisc = factory.createNewScalableDocumentCopie();
             PRTiersWrapper tiersl = PRTiersHelper.getTiersParId(session, vb.getIdTierDemandeDecision());
@@ -461,9 +468,31 @@ public class IJGenererDecisionHelper extends FWHelper {
                     String nom = CTTiersUtils
                             .getPrenomNomTiersParIdTiers(session, idTiersAdmin);
                     copieFisc.setPrenomNomTiers(nom);
-                    addCopie(viewBean, copieFisc);
+                    addCopie((ICTScalableDocument) vb, copieFisc);
                 }
             }
+        }
+    }
+
+    private void addCopieEmployeurs(BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
+        IJSituationProfessionnelleManager sitProMgr = new IJSituationProfessionnelleManager();
+        sitProMgr.setSession((BSession) session);
+        sitProMgr.setForIdPrononce(vb.getIdPrononce());
+        sitProMgr.find(BManager.SIZE_NOLIMIT);
+
+        for(IJSituationProfessionnelle sitPro: sitProMgr.<IJSituationProfessionnelle>getContainerAsList()) {
+            IJEmployeur employeur = new IJEmployeur();
+            employeur.setSession((BSession) session);
+            employeur.setIdEmployeur(sitPro.getIdEmployeur());
+            employeur.retrieve();
+            String idTiersEmployeur = employeur.getIdTiers();
+            ICTScalableDocumentCopie copieEmployeur = factory.createNewScalableDocumentCopie();
+
+            copieEmployeur.setIdTiers(idTiersEmployeur);
+            String nom = CTTiersUtils
+                    .getPrenomNomTiersParIdTiers(session, idTiersEmployeur);
+            copieEmployeur.setPrenomNomTiers(nom);
+            addCopie((ICTScalableDocument) vb, copieEmployeur);
         }
     }
 

@@ -819,4 +819,8 @@ public class CTScalableDocumentAbstractViewBeanDefaultImpl implements ICTScalabl
         return true;
     }
 
+    public void initFirst() {
+        ecranPrecedant = ICTScalableDocument.FROM_ECRAN_INIT;
+    }
+
 }

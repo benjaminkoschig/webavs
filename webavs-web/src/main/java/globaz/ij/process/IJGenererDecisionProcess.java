@@ -318,9 +318,9 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
             decision.setIsDecisionValidee(Boolean.FALSE);
 
             if ("standard".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
-                if ("assure".equals(documentProperties.getParameter("beneficiaire"))) {
+                if (IJDecision.BENEFICIAIRE_ASSURE.equals(documentProperties.getParameter("beneficiaire"))) {
                     decision.setIdTiersAdrPmt(documentProperties.getParameter("idTierAssureAdressePaiement"));
-                } else if ("employeur".equals(documentProperties.getParameter("beneficiaire"))) {
+                } else if (IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(documentProperties.getParameter("beneficiaire"))) {
                     decision.setIdTiersAdrPmt(documentProperties.getParameter("idTierEmployeurAdressePaiement"));
                 }
             } else if ("personnalise".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
@@ -395,9 +395,9 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
             decision.setTauxImposition(documentProperties.getParameter("tauxImposition"));
 
             if ("standard".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
-                if ("assure".equals(documentProperties.getParameter("beneficiaire"))) {
+                if (IJDecision.BENEFICIAIRE_ASSURE.equals(documentProperties.getParameter("beneficiaire"))) {
                     decision.setIdTiersAdrPmt(documentProperties.getParameter("idTierAssureAdressePaiement"));
-                } else if ("employeur".equals(documentProperties.getParameter("beneficiaire"))) {
+                } else if (IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(documentProperties.getParameter("beneficiaire"))) {
                     decision.setIdTiersAdrPmt(documentProperties.getParameter("idTierEmployeurAdressePaiement"));
                 }
             } else if ("personnalise".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
