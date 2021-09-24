@@ -1,5 +1,6 @@
 package globaz.ij.vb.process;
 
+import ch.globaz.common.util.Dates;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.babel.api.doc.impl.CTScalableDocumentAbstractViewBeanDefaultImpl;
@@ -39,6 +40,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
             new String[] { "idTiersAdressePaiementPersonnalisee", "idTiers" },
             new String[] { "idDomaineApplicationAdressePaiementPersonnalisee", "idApplication" },
             new String[] { "numAffilieAdressePaiementPersonnalisee", "idExterneAvoirPaiement" } };
+    private static String POSITION_AGE_COTISATION = "100";
 
     private String adresseCourrierAssureFormatee = "";
     private String adresseCourrierEmployeurFormatee = "";
@@ -346,7 +348,11 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
             for (Iterator iterator = document.getTextes(9).iterator(); iterator.hasNext();) {
                 ICTTexte texte = (ICTTexte) iterator.next();
 
-                buffer.append(texte.getDescriptionBrut());
+                if(POSITION_AGE_COTISATION.equals(texte.getPosition())) {
+                    textAgeCotisation(texte, buffer);
+                } else {
+                    buffer.append(texte.getDescriptionBrut());
+                }
 
             }
 
@@ -354,6 +360,17 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         }
 
         return remarque;
+    }
+
+    public void textAgeCotisation(ICTTexte texte, StringBuffer buffer) throws Exception {
+        IJPrononce prononce = new IJPrononce();
+        prononce.setSession(getSession());
+        prononce.setIdPrononce(getIdPrononce());
+        prononce.retrieve();
+
+        if(!Dates.isAnneeMajeur(prononce.getDateDebutPrononce(), prononce.getDateNaissanceTiers())) {
+            buffer.append(texte.getDescriptionBrut());
+        }
     }
 
     public Vector getRevisionAGarantir() {
