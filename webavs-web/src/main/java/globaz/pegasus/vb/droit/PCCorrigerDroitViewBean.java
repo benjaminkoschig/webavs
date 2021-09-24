@@ -225,18 +225,20 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
             int noVersion =Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion()) ;
             do{
                 List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourranteWithDateDebutDesc(droit.getId(), String.valueOf(noVersion));
-                PCAccordeePlanCalculReforme pcaCourrant = listPcaPrecedentes.get(0);
-                String idBeneficiaire = membreFamilleEtendu.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getId();
-                PCPlanCalculHandler planCalculHandler = PCPlanCalculHandler.getHandlerForIdPlanCalcul(getISession(), pcaCourrant.getIdPlanDeCalcul(), idBeneficiaire);
-                SimplePlanDeCalcul planDeCalcul = planCalculHandler.getPlanDeCalcul();
-                if(planDeCalcul.getResultatCalcul() != null && planDeCalcul.getResultatCalcul().length > 0){
-                    byteArrayToString = new String(planDeCalcul.getResultatCalcul());
-                }else{
-                    byteArrayToString = "";
+                if (!listPcaPrecedentes.isEmpty()) {
+                    PCAccordeePlanCalculReforme pcaCourrant = listPcaPrecedentes.get(0);
+                    String idBeneficiaire = membreFamilleEtendu.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getId();
+                    PCPlanCalculHandler planCalculHandler = PCPlanCalculHandler.getHandlerForIdPlanCalcul(getISession(), pcaCourrant.getIdPlanDeCalcul(), idBeneficiaire);
+                    SimplePlanDeCalcul planDeCalcul = planCalculHandler.getPlanDeCalcul();
+                    if(planDeCalcul.getResultatCalcul() != null && planDeCalcul.getResultatCalcul().length > 0){
+                        byteArrayToString = new String(planDeCalcul.getResultatCalcul());
+                    }else{
+                        byteArrayToString = "";
+                    }
                 }
                 i++;
                 noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion())-i;
-            }while(JadeStringUtil.isBlankOrZero(byteArrayToString) && !(noVersion==1));
+            }while(JadeStringUtil.isBlankOrZero(byteArrayToString) && !(noVersion<=1));
             if(JadeStringUtil.isBlankOrZero(byteArrayToString)){
                 return false;
             }
