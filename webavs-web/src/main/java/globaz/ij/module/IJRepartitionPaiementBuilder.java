@@ -2,6 +2,7 @@ package globaz.ij.module;
 
 import ch.globaz.common.util.Dates;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -358,7 +359,7 @@ public class IJRepartitionPaiementBuilder {
         prestations.setForIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
         prestations.setNotForCsType(IIJPrestation.CS_RESTITUTION);
         prestations.setSession(session);
-        prestations.find();
+        prestations.find(BManager.SIZE_NOLIMIT);
 
         this.buildRepartitionPaiements(session, transaction, prononce, baseIndemnisation, prestations.getContainer());
     }
@@ -372,43 +373,81 @@ public class IJRepartitionPaiementBuilder {
      * </p>
      * 
      * @param session
-     *            DOCUMENT ME!
      * @param transaction
-     *            DOCUMENT ME!
      * @param prononce
-     *            DOCUMENT ME!
      * @param baseIndemnisation
-     *            DOCUMENT ME!
      * @param prestationsList
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     public void buildRepartitionPaiements(BSession session, BITransaction transaction, IJPrononce prononce,
-            IJBaseIndemnisation baseIndemnisation, List prestationsList) throws Exception {
-        for (Iterator prestations = prestationsList.iterator(); prestations.hasNext();) {
-            IJPrestation prestation = (IJPrestation) prestations.next();
+            IJBaseIndemnisation baseIndemnisation, List<IJPrestation> prestationsList) throws Exception {
+        for (IJPrestation prestation : prestationsList) {
+            buildRepartitionPaiements(session, transaction, prononce, baseIndemnisation, prestation, true);
+        }
+    }
 
-            // creer la repartition de paiement
-            IJRepartitionPaiements repartition = new IJRepartitionPaiements();
-            String idTiers = prononce.loadDemande(transaction).getIdTiers();
+    /**
+     * Cree la repartition de paiement pour toutes les prestations d'une base qui ne sont pas du type restitution.
+     *
+     * <p>
+     * Note: le versement est toujours effectue à l'assure.
+     * </p>
+     *
+     * @param session
+     * @param transaction
+     * @param prononce
+     * @param baseIndemnisation
+     *
+     * @throws Exception
+     */
+    public void buildRepartitionPaiementsSansCotisations(BSession session, BITransaction transaction,
+                                                         IJPrononce prononce, IJBaseIndemnisation baseIndemnisation) throws Exception {
+        IJPrestationManager prestations = new IJPrestationManager();
 
-            repartition.setIdPrestation(prestation.getIdPrestation());
-            repartition.setIdTiers(idTiers);
+        prestations.setForIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
+        prestations.setNotForCsType(IIJPrestation.CS_RESTITUTION);
+        prestations.setSession(session);
+        prestations.find(BManager.SIZE_NOLIMIT);
 
-            repartition.setNom(prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM)
-                    + " " + prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+        for (IJPrestation prestation: prestations.<IJPrestation>getContainerAsList()) {
+            buildRepartitionPaiements(session, transaction, prononce, baseIndemnisation, prestation, false);
+        }
+    }
 
-            // le montant à verser
-            repartition.setMontantBrut(prestation.getMontantBrut());
-            repartition.setMontantNet(prestation.getMontantBrut());
-            repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
+    public void buildRepartitionPaiementsPourUnePrestation(BSession session, BITransaction transaction,
+                                                           IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, String idPrestation) throws Exception {
 
-            // sauver dans la base
-            repartition.setSession(session);
-            repartition.add(transaction);
+        IJPrestation prestation = new IJPrestation();
+        prestation.setSession(session);
+        prestation.setIdPrestation(idPrestation);
+        prestation.retrieve(transaction);
 
+        // creer la repartition de paiement
+        buildRepartitionPaiements(session, transaction, prononce, baseIndemnisation, prestation, true);
+    }
+
+    private void buildRepartitionPaiements(BSession session, BITransaction transaction, IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, IJPrestation prestation, boolean avecCotisation) throws Exception {
+        // creer la repartition de paiement
+        IJRepartitionPaiements repartition = new IJRepartitionPaiements();
+        String idTiers = prononce.loadDemande(transaction).getIdTiers();
+
+        repartition.setIdPrestation(prestation.getIdPrestation());
+        repartition.setIdTiers(idTiers);
+
+        repartition.setNom(prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM)
+                + " " + prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+
+        // le montant à verser
+        repartition.setMontantBrut(prestation.getMontantBrut());
+        repartition.setMontantNet(prestation.getMontantBrut());
+        repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
+
+        // sauver dans la base
+        repartition.setSession(session);
+        repartition.add(transaction);
+
+        if(avecCotisation && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
             // La nouvelle version de ACOR n'importe plus le montant jrn ext si
             // la base ne contient que des code interne.
             // Il faut donc aller le rechercher dans IJIndemniteJournaliere.
@@ -424,19 +463,15 @@ public class IJRepartitionPaiementBuilder {
                 ijMgr.setSession(session);
                 ijMgr.setForIdIJCalculee(ijc.getIdIJCalculee());
                 ijMgr.setForCsTypeIndemnite(IIJMesure.CS_EXTERNE);
-                ijMgr.find(transaction);
+                ijMgr.find(transaction, BManager.SIZE_NOLIMIT);
                 if (!ijMgr.isEmpty()) {
                     montantJrnExt = ((IJIndemniteJournaliere) ijMgr.getFirstEntity()).getMontantJournalierIndemnite();
                 }
             }
 
             // calculer les cotisations d'assurances et impots
-            double somme = 0D;
-
-            if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
-                somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
+            double somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
                         prestation.getMontantBrut(), montantJrnExt);
-            }
 
             repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
                     .getMontantBrut()) + somme));
@@ -453,16 +488,11 @@ public class IJRepartitionPaiementBuilder {
      * </p>
      * 
      * @param session
-     *            DOCUMENT ME!
      * @param transaction
-     *            DOCUMENT ME!
      * @param prononce
-     *            DOCUMENT ME!
      * @param baseIndemnisation
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     public void buildRepartitionPaiementsEmployeur(BSession session, BITransaction transaction, IJPrononce prononce,
             IJBaseIndemnisation baseIndemnisation) throws Exception {
@@ -471,7 +501,7 @@ public class IJRepartitionPaiementBuilder {
         prestations.setForIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
         prestations.setNotForCsType(IIJPrestation.CS_RESTITUTION);
         prestations.setSession(session);
-        prestations.find();
+        prestations.find(BManager.SIZE_NOLIMIT);
 
         this.buildRepartitionPaiementsEmployeur(session, transaction, prononce, baseIndemnisation,
                 prestations.getContainer());
@@ -486,316 +516,106 @@ public class IJRepartitionPaiementBuilder {
      * </p>
      * 
      * @param session
-     *            DOCUMENT ME!
      * @param transaction
-     *            DOCUMENT ME!
      * @param prononce
-     *            DOCUMENT ME!
      * @param baseIndemnisation
-     *            DOCUMENT ME!
      * @param prestationsList
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     public void buildRepartitionPaiementsEmployeur(BSession session, BITransaction transaction, IJPrononce prononce,
-            IJBaseIndemnisation baseIndemnisation, List prestationsList) throws Exception {
-        for (Iterator prestations = prestationsList.iterator(); prestations.hasNext();) {
-            IJPrestation prestation = (IJPrestation) prestations.next();
+            IJBaseIndemnisation baseIndemnisation, List<IJPrestation> prestationsList) throws Exception {
 
-            // creer la repartition de paiement
-            // Dans ce cas le paiement est fait a l'employeur
-            // Il ne doit y avoir qu'un seul employeur
-            IJRepartitionPaiements repartition = new IJRepartitionPaiements();
-
-            // on cherche l'employeur dans la situation prof.
-            IJSituationProfessionnelleManager spManager = new IJSituationProfessionnelleManager();
-            spManager.setSession(session);
-            spManager.setForIdPrononce(prononce.getIdPrononce());
-            spManager.find(transaction);
-
-            if (spManager.getSize() == 0) {
-                throw new Exception(session.getLabel("AUCUN_EMPL_PRONONCE") + " - " + prononce.getIdPrononce());
-            }
-
-            IJSituationProfessionnelle sp = (IJSituationProfessionnelle) spManager.getFirstEntity();
-            String idTiers = sp.loadEmployeur().getIdTiers();
-
-            repartition.setIdPrestation(prestation.getIdPrestation());
-            repartition.setIdTiers(idTiers);
-
-            repartition.setNom(sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                    + sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-
-            // le montant à verser
-            repartition.setMontantBrut(prestation.getMontantBrut());
-            repartition.setMontantNet(prestation.getMontantBrut());
-            repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
-
-            // sauver dans la base
-            repartition.setSession(session);
-            repartition.add(transaction);
-
-            // calculer les cotisations d'assurances et impots
-            double somme = 0D;
-
-            if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
-                somme = buildCotisationsEmployeur(session, transaction, prononce, baseIndemnisation, repartition);
-            }
-
-            repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
-                    .getMontantBrut()) + somme));
-            repartition.update(transaction);
+        for (IJPrestation prestation : prestationsList) {
+            buildRepartitionPaiementsEmployeur(session, transaction, prononce, baseIndemnisation, prestation, true);
         }
     }
 
     /**
      * Cree la repartition de paiement pour toutes les prestations d'une base qui ne sont pas du type restitution.
-     * 
+     *
      * <p>
      * Note: le versement est toujours effectue à l'employeur.
      * </p>
-     * 
+     *
      * @param session
-     *            DOCUMENT ME!
      * @param transaction
-     *            DOCUMENT ME!
      * @param prononce
-     *            DOCUMENT ME!
      * @param baseIndemnisation
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     public void buildRepartitionPaiementsEmployeurSansCotisations(BSession session, BITransaction transaction,
-            IJPrononce prononce, IJBaseIndemnisation baseIndemnisation) throws Exception {
+                                                                  IJPrononce prononce, IJBaseIndemnisation baseIndemnisation) throws Exception {
         IJPrestationManager prestations = new IJPrestationManager();
 
         prestations.setForIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
         prestations.setNotForCsType(IIJPrestation.CS_RESTITUTION);
         prestations.setSession(session);
-        prestations.find();
+        prestations.find(BManager.SIZE_NOLIMIT);
 
-        this.buildRepartitionPaiementsEmployeurSansCotisations(session, transaction, prononce, baseIndemnisation,
-                prestations.getContainer());
-    }
-
-    /**
-     * Cree la repartition de paiement pour toutes les prestations d'une liste.
-     * 
-     * <p>
-     * Note: le versement est toujours effectue à l'employeur.
-     * </p>
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param prononce
-     *            DOCUMENT ME!
-     * @param baseIndemnisation
-     *            DOCUMENT ME!
-     * @param prestationsList
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
-    public void buildRepartitionPaiementsEmployeurSansCotisations(BSession session, BITransaction transaction,
-            IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, List prestationsList) throws Exception {
-        for (Iterator prestations = prestationsList.iterator(); prestations.hasNext();) {
-            IJPrestation prestation = (IJPrestation) prestations.next();
-
-            // creer la repartition de paiement
-            // Dans ce cas le paiement est fait a l'employeur
-            // Il ne doit y avoir qu'un seul employeur
-            IJRepartitionPaiements repartition = new IJRepartitionPaiements();
-
-            // on cherche l'employeur dans la situation prof.
-            IJSituationProfessionnelleManager spManager = new IJSituationProfessionnelleManager();
-            spManager.setSession(session);
-            spManager.setForIdPrononce(prononce.getIdPrononce());
-            spManager.find(transaction);
-
-            if (spManager.getSize() == 0) {
-                throw new Exception(session.getLabel("AUCUN_EMPL_PRONONCE") + " - " + prononce.getIdPrononce());
-            }
-
-            IJSituationProfessionnelle sp = (IJSituationProfessionnelle) spManager.getFirstEntity();
-            String idTiers = sp.loadEmployeur().getIdTiers();
-
-            repartition.setIdPrestation(prestation.getIdPrestation());
-            repartition.setIdTiers(idTiers);
-
-            repartition.setNom(sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                    + sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-
-            // le montant à verser
-            repartition.setMontantBrut(prestation.getMontantBrut());
-            repartition.setMontantNet(prestation.getMontantBrut());
-            repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
-
-            // Dans le cas des AIT uniquement, mais a priori cette methode est
-            // appelée uniquement
-            // dans les calcul des AIT !!!
-            // 1 seul employeur pour une AIT !!!
-            // On récupère l'idAffilié de la sit. prof. et on le set dans la
-            // répartition des pmts.
-            // Nécessaire d'avoir cet idAffilié pour avoir d'eventuelle
-            // compensation pour cet affilié.
-            if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(prononce.getCsTypeIJ())) {
-                if (sp.loadEmployeur() != null) {
-                    repartition.setIdAffilie(sp.loadEmployeur().getIdAffilie());
-                    repartition.setIdAffilieAdrPmt(sp.loadEmployeur().getIdAffilie());
-                }
-            }
-
-            // sauver dans la base
-            repartition.setSession(session);
-            repartition.add(transaction);
+        for (IJPrestation prestation : prestations.<IJPrestation>getContainerAsList()) {
+            buildRepartitionPaiementsEmployeur(session, transaction, prononce, baseIndemnisation, prestation, false);
         }
     }
 
-    public void buildRepartitionPaiementsPourUnePrestation(BSession session, BITransaction transaction,
-            IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, String idPrestation) throws Exception {
-
-        IJPrestation prestation = new IJPrestation();
-        prestation.setSession(session);
-        prestation.setIdPrestation(idPrestation);
-        prestation.retrieve(transaction);
+    private void buildRepartitionPaiementsEmployeur(BSession session, BITransaction transaction, IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, IJPrestation prestation, boolean avecCotisation) throws Exception {
 
         // creer la repartition de paiement
+        // Dans ce cas le paiement est fait a l'employeur
+        // Il ne doit y avoir qu'un seul employeur
         IJRepartitionPaiements repartition = new IJRepartitionPaiements();
-        String idTiers = prononce.loadDemande(transaction).getIdTiers();
+
+        // on cherche l'employeur dans la situation prof.
+        IJSituationProfessionnelleManager spManager = new IJSituationProfessionnelleManager();
+        spManager.setSession(session);
+        spManager.setForIdPrononce(prononce.getIdPrononce());
+        spManager.find(transaction, BManager.SIZE_NOLIMIT);
+
+        if (spManager.getSize() == 0) {
+            throw new Exception(session.getLabel("AUCUN_EMPL_PRONONCE") + " - " + prononce.getIdPrononce());
+        }
+
+        IJSituationProfessionnelle sp = (IJSituationProfessionnelle) spManager.getFirstEntity();
+        String idTiers = sp.loadEmployeur().getIdTiers();
 
         repartition.setIdPrestation(prestation.getIdPrestation());
         repartition.setIdTiers(idTiers);
 
-        repartition.setNom(prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                + prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+        repartition.setNom(sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                + sp.loadEmployeur().loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
 
         // le montant à verser
         repartition.setMontantBrut(prestation.getMontantBrut());
         repartition.setMontantNet(prestation.getMontantBrut());
         repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
 
+        // Dans le cas des AIT uniquement, mais a priori cette methode est
+        // appelée uniquement
+        // dans les calcul des AIT !!!
+        // 1 seul employeur pour une AIT !!!
+        // On récupère l'idAffilié de la sit. prof. et on le set dans la
+        // répartition des pmts.
+        // Nécessaire d'avoir cet idAffilié pour avoir d'eventuelle
+        // compensation pour cet affilié.
+        if (IIJPrononce.CS_ALLOC_INIT_TRAVAIL.equals(prononce.getCsTypeIJ())) {
+            if (sp.loadEmployeur() != null) {
+                repartition.setIdAffilie(sp.loadEmployeur().getIdAffilie());
+                repartition.setIdAffilieAdrPmt(sp.loadEmployeur().getIdAffilie());
+            }
+        }
+
         // sauver dans la base
         repartition.setSession(session);
         repartition.add(transaction);
 
-        // La nouvelle version de ACOR n'importe plus le montant jrn ext si
-        // la base ne contient que des code interne.
-        // Il faut donc aller le rechercher dans IJIndemniteJournaliere.
-        String montantJrnExt = prestation.getMontantJournalierExterne();
+        if(avecCotisation && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+            // calculer les cotisations d'assurances et impots
+            double somme = buildCotisationsEmployeur(session, transaction, prononce, baseIndemnisation, repartition);
 
-        if (JadeStringUtil.isBlankOrZero(montantJrnExt)) {
-            IJIJCalculee ijc = new IJIJCalculee();
-            ijc.setSession(session);
-            ijc.setIdIJCalculee(prestation.getIdIJCalculee());
-            ijc.retrieve(transaction);
-
-            IJIndemniteJournaliereManager ijMgr = new IJIndemniteJournaliereManager();
-            ijMgr.setSession(session);
-            ijMgr.setForIdIJCalculee(ijc.getIdIJCalculee());
-            ijMgr.setForCsTypeIndemnite(IIJMesure.CS_EXTERNE);
-            ijMgr.find(transaction);
-            if (!ijMgr.isEmpty()) {
-                montantJrnExt = ((IJIndemniteJournaliere) ijMgr.getFirstEntity()).getMontantJournalierIndemnite();
-            }
-        }
-
-        // calculer les cotisations d'assurances et impots
-        double somme = 0D;
-
-        if(Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
-            somme = buildCotisationsAssure(session, transaction, prononce, baseIndemnisation, repartition,
-                    prestation.getMontantBrut(), montantJrnExt);
-        }
-
-        repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition.getMontantBrut())
-                + somme));
-        repartition.update(transaction);
-
-    }
-
-    /**
-     * Cree la repartition de paiement pour toutes les prestations d'une base qui ne sont pas du type restitution.
-     * 
-     * <p>
-     * Note: le versement est toujours effectue à l'assure.
-     * </p>
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param prononce
-     *            DOCUMENT ME!
-     * @param baseIndemnisation
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
-    public void buildRepartitionPaiementsSansCotisations(BSession session, BITransaction transaction,
-            IJPrononce prononce, IJBaseIndemnisation baseIndemnisation) throws Exception {
-        IJPrestationManager prestations = new IJPrestationManager();
-
-        prestations.setForIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
-        prestations.setNotForCsType(IIJPrestation.CS_RESTITUTION);
-        prestations.setSession(session);
-        prestations.find();
-
-        this.buildRepartitionPaiementsSansCotisations(session, transaction, prononce, baseIndemnisation,
-                prestations.getContainer());
-    }
-
-    /**
-     * Cree la repartition de paiement pour toutes les prestations d'une liste.
-     * 
-     * <p>
-     * Note: le versement est toujours effectue à l'assure.
-     * </p>
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param prononce
-     *            DOCUMENT ME!
-     * @param baseIndemnisation
-     *            DOCUMENT ME!
-     * @param prestationsList
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
-    public void buildRepartitionPaiementsSansCotisations(BSession session, BITransaction transaction,
-            IJPrononce prononce, IJBaseIndemnisation baseIndemnisation, List prestationsList) throws Exception {
-        for (Iterator prestations = prestationsList.iterator(); prestations.hasNext();) {
-            IJPrestation prestation = (IJPrestation) prestations.next();
-
-            // creer la repartition de paiement
-            IJRepartitionPaiements repartition = new IJRepartitionPaiements();
-            String idTiers = prononce.loadDemande(transaction).getIdTiers();
-
-            repartition.setIdPrestation(prestation.getIdPrestation());
-            repartition.setIdTiers(idTiers);
-
-            repartition.setNom(prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM)
-                    + " " + prononce.loadDemande(transaction).loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-
-            // le montant à verser
-            repartition.setMontantBrut(prestation.getMontantBrut());
-            repartition.setMontantNet(prestation.getMontantBrut());
-            repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
-
-            // sauver dans la base
-            repartition.setSession(session);
-            repartition.add(transaction);
+            repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
+                    .getMontantBrut()) + somme));
+            repartition.update(transaction);
         }
     }
 
@@ -975,7 +795,7 @@ public class IJRepartitionPaiementBuilder {
         tauxManager.setOrderBy(PRTauxImposition.FIELDNAME_DATEDEBUT);
 
         tauxManager.setSession(session);
-        tauxManager.find();
+        tauxManager.find(BManager.SIZE_NOLIMIT);
 
         // s'il n'y a aucun taux d'imposition pour ce canton, on ne fait rien
         if (tauxManager.isEmpty()) {
