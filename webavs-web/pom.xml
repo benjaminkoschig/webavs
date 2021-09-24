@@ -223,7 +223,6 @@
                                 <include>acorRentes/xsd/acor-rentes-out-f-calcul.xsd</include>
                                 <include>acorRentes/xsd/acor-standard-error.xsd</include>
                                 <include>acorRentes/xsd/annoncesRC/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/CACI/*.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
@@ -1162,6 +1161,13 @@
         <!--            <version>1.0.11</version>-->
         <!--        </dependency>-->
         <!-- END ACOR V4 -->
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
