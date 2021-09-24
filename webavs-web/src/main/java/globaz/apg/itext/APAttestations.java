@@ -1169,6 +1169,11 @@ public class APAttestations extends FWIDocumentManager {
                             }
                             // mise à jour automatique
 
+                            // reporte les paramètres de copies au fisc et de lettre d'entête de la lignes d'attestation supprimée dans la lignes d'attestation conservé
+                            if (aiPrec.isCopyFisc()) { ai.setIsCopyFisc(aiPrec.isCopyFisc()); }
+                            if (aiPrec.isHasCopyFisc()) { ai.setIsHasCopyFisc(aiPrec.isHasCopyFisc()); }
+                            if (aiPrec.isAddLettreEntete()) { ai.setIsAddLettreEntete(aiPrec.isAddLettreEntete()); }
+
                             // suppression de aiPrec dans la liste
                             listObjects.remove(aiPrec);
                         }
