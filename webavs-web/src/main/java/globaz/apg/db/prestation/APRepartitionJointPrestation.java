@@ -100,6 +100,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
     private String nbJoursSoldes = "";
     private String remarque = "";
     private String contenuAnnonce = "";
+    private String revenuMoyenDeterminant = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -152,6 +153,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         genrePrestationPrestation = statement.dbReadNumeric(APPrestation.FIELDNAME_GENRE_PRESTATION);
         typePrestationPrestation = statement.dbReadNumeric(APPrestation.FIELDNAME_TYPE);
         contenuAnnonce = statement.dbReadNumeric(APPrestation.FIELDNAME_CONTENUANNONCE);
+        revenuMoyenDeterminant = statement.dbReadNumeric(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT);
     }
 
     /**
@@ -476,4 +478,11 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         return Comparator.comparing(o1 -> Dates.toDate(o1.getDateDebut()));
     }
 
+    public String getRevenuMoyenDeterminant() {
+        return revenuMoyenDeterminant;
+    }
+
+    public void setRevenuMoyenDeterminant(String revenuMoyenDeterminant) {
+        this.revenuMoyenDeterminant = revenuMoyenDeterminant;
+    }
 }
