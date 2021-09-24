@@ -11,12 +11,11 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.Filter;
+import javax.annotation.Priority;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -31,10 +30,10 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -105,26 +104,43 @@ public class WSConfiguration extends Application {
      * On récupère toutes les classes "WebService" en s'appuyant sur l'annotation "Path" et tout les provider.
      * On parcours uniquement les sous-packages de "globaz" et on filtre sur les packages ".ws".
      * <p>
-     * Malheureusement on est obligé de faire cette recherche pour trouver les classes dédiées à jax-rs car la dédéction de ces class ne fonctionne
-     * pas avec webSphere :(.  Avec tomact clea fonctionne parfaitement et toutes les fonctions de cette class pour être supprimé.
+     * Malheureusement on est obligé de faire cette recherche pour trouver les classes dédiées à jax-rs car la détection de ces class ne fonctionne
+     * pas avec webSphere :(. Avec Tomcat clea fonctionne parfaitement et toutes les fonctions de cette class pourraient être supprimé.
      *
-     * @return le set de classes WS
+     * @return le set de classes WS.
      */
     private static Set<Class<?>> loadClasses(ScanResult result) {
-        ClassInfoList classInfos = result.getClassesWithAnnotation(Path.class);
 
-        Set<Class<?>> allClasses = new HashSet<>(classInfos.loadClasses());
-        classInfos = result.getClassesWithAnnotation(Provider.class);
-        allClasses.addAll(classInfos.loadClasses());
+        Set<Class<?>> allClasses = new TreeSet<>(WSConfiguration::orderByPriorityAnnotation);
+        allClasses.addAll(result.getClassesWithAnnotation(Path.class).loadClasses());
+        allClasses.addAll(result.getClassesWithAnnotation(Provider.class).loadClasses());
+
+        allClasses = allClasses.stream()
+                               .filter(aClass -> Arrays.stream(aClass.getInterfaces()).noneMatch(o -> o.equals(FilterMapper.class)))
+                               .collect(Collectors.toCollection(() -> new TreeSet<>(WSConfiguration::orderByPriorityAnnotation)));
 
         LOG.info("° Nb classes used for jax-rs Path and Provider is {} :", allClasses.size());
-        allClasses.stream()
-                  .filter(aClass -> Arrays.stream(aClass.getInterfaces()).noneMatch(o -> o.equals(FilterMapper.class)))
-                  .filter(aClass -> Arrays.stream(aClass.getInterfaces()).noneMatch(o -> o.equals(Filter.class)))
-                  .sorted(Comparator.comparing(Class::getCanonicalName))
-                  .forEach(aClass -> LOG.info("   {}", aClass.getCanonicalName()));
+
+        allClasses.forEach(aClass -> LOG.info("   {}", aClass.getCanonicalName()));
 
         return allClasses;
+    }
+
+    private static int orderByPriorityAnnotation(final FilterMapper filterMapper1, final FilterMapper filterMapper2) {
+        return orderByPriorityAnnotation(filterMapper1.getClass(), filterMapper2.getClass());
+    }
+
+    private static int orderByPriorityAnnotation(final Class<?> o1, final Class<?> o2) {
+        Priority annotation1 = o1.getAnnotation(Priority.class);
+        Priority annotation2 = o2.getAnnotation(Priority.class);
+
+        if (annotation1 != null && annotation2 != null) {
+            return Integer.compare(annotation1.value(), annotation2.value());
+        }
+        if (annotation1 != null) {
+            return -1;
+        }
+        return o1.getCanonicalName().compareTo(o2.getCanonicalName());
     }
 
     private static Set<FilterMapper> resolveFilter(final ScanResult result) {
@@ -132,11 +148,12 @@ public class WSConfiguration extends Application {
                                                 .filter(classInfo -> !classInfo.isAbstract())
                                                 .map(ClassInfo::loadClass)
                                                 .map(aClass -> (FilterMapper) Exceptions.checkedToUnChecked(aClass::newInstance, "error with this classe :" + aClass))
-                                                .collect(Collectors.toSet());
+                                                .sorted(WSConfiguration::orderByPriorityAnnotation)
+                                                .collect(Collectors.toCollection(() -> new TreeSet<>(WSConfiguration::orderByPriorityAnnotation)));
+
         LOG.info("° Nb filter used for jax-rs is {} :", filterMappers.size());
         filterMappers.stream()
                      .map(FilterMapper::getClass)
-                     .sorted(Comparator.comparing(Class::getCanonicalName))
                      .forEach(aClass -> LOG.info("   {}", aClass.getCanonicalName()));
 
         return filterMappers;
@@ -182,9 +199,7 @@ public class WSConfiguration extends Application {
 
         Exceptions.checkedToUnChecked(() -> {
             PrintWriter out = response.getWriter();
-            if (exceptionResponse != null) {
-                out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
-            }
+            out.print(JacksonJsonProvider.getInstance().writeValueAsString(exceptionResponse.getEntity()));
             out.flush();
         });
     }
