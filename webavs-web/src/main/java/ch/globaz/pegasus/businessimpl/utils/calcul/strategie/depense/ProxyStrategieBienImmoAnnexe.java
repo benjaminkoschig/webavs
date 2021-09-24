@@ -5,6 +5,7 @@ import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoAnnexe.StrategieBienImmoAnnexe;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoAnnexe.StrategieBienImmoAnnexeVD;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoAnnexe.StrategieBienImmoAnnexeVS;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
 
@@ -16,6 +17,8 @@ public class ProxyStrategieBienImmoAnnexe extends StrategieCalculDepense {
 
         if (PCApplicationUtil.isCantonVS()) {
             return new StrategieBienImmoAnnexeVS().calcule(donnee, context, resultatExistant);
+        } else if (PCApplicationUtil.isCantonVD()) {
+            return new StrategieBienImmoAnnexeVD().calcule(donnee, context, resultatExistant);
         } else {
             return new StrategieBienImmoAnnexe().calcule(donnee, context, resultatExistant);
         }

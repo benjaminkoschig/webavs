@@ -85,6 +85,9 @@ public class CalculDonneesCC extends JadeComplexModel {
     private Boolean isBienImmoPrincipalDeMoinsDe10Ans = Boolean.FALSE;
     private Boolean isBienImmoAnnexeDeMoinsDe10Ans = Boolean.FALSE;
 
+    private Boolean isBienImmoPrincipalDePlusDe20Ans = Boolean.FALSE;
+    private Boolean isBienImmoAnnexeDePlusDe20Ans = Boolean.FALSE;
+
     private String capitalLPPCsTypePropriete = null;
     private String capitalLPPFractionDenominateur = null;
     private String capitalLPPFractionNumerateur = null;
@@ -2418,5 +2421,21 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
         this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
+    }
+
+    public Boolean getIsBienImmoPrincipalDePlusDe20Ans() {
+        return isBienImmoPrincipalDePlusDe20Ans;
+    }
+
+    public void setIsBienImmoPrincipalDePlusDe20Ans(Boolean bienImmoPrincipalDePlusDe20Ans) {
+        isBienImmoPrincipalDePlusDe20Ans = bienImmoPrincipalDePlusDe20Ans;
+    }
+
+    public Boolean getIsBienImmoAnnexeDePlusDe20Ans() {
+        return isBienImmoAnnexeDePlusDe20Ans;
+    }
+
+    public void setIsBienImmoAnnexeDePlusDe20Ans(Boolean bienImmoAnnexeDePlusDe20Ans) {
+        isBienImmoAnnexeDePlusDe20Ans = bienImmoAnnexeDePlusDe20Ans;
     }
 }

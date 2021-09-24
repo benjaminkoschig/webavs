@@ -46,7 +46,7 @@ public class StrategieBienImmoPrincipalVS extends StrategieCalculDepense {
                     isConstructionMoins10Ans);
 
             // taux frais entretirn en fonction de l'age du batiment
-            float tauxFraisEntretien = getTauxFraisEntretien(isConstructionMoins10Ans, context);
+            float tauxFraisEntretien = getTauxFraisEntretienPrincipale(isConstructionMoins10Ans, false, context);
 
             // Cs type propriété
             tupleHabitatPrincipal.setLegende(donnee.getBienImmoPrincipalCSPropriete());

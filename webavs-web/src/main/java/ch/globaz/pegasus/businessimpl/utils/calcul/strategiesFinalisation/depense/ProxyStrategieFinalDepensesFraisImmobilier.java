@@ -6,6 +6,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategieFinalDepensesFraisImmobilier.StrategieFinalDepenseFraisImmobilier;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategieFinalDepensesFraisImmobilier.StrategieFinalDepenseFraisImmobilierVD;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategieFinalDepensesFraisImmobilier.StrategieFinalDepenseFraisImmobilierVS;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
 
@@ -16,6 +17,8 @@ public class ProxyStrategieFinalDepensesFraisImmobilier implements StrategieCalc
 
         if (PCApplicationUtil.isCantonVS()) {
             new StrategieFinalDepenseFraisImmobilierVS().calcule(donnee, context, dateDebut);
+        } else if (PCApplicationUtil.isCantonVD()) {
+            new StrategieFinalDepenseFraisImmobilierVD().calcule(donnee, context, dateDebut);
         } else {
             new StrategieFinalDepenseFraisImmobilier().calcule(donnee, context, dateDebut);
         }

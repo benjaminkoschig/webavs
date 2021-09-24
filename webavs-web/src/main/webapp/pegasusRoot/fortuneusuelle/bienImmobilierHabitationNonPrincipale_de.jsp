@@ -224,13 +224,18 @@ $(function(){
 					<ct:optionsCodesSystems csFamille="PCTYPBHA"/>					
 				</ct:select>
 			 </td>
-			  <%
+			  				<%
 								 if(PCApplicationUtil.isCantonVS()){
 							 %>
 								<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE_D_CONSTRUCTION_MOINS_10_ANS"/></td>
 								<td><input id="isConstructionMoinsDixAns" name="isConstructionMoinsDixAns" class="isConstructionMoinsDixAns" type="checkbox"/></td>
 							<%
-								 }
+								} else if(PCApplicationUtil.isCantonVD()) {
+							%>
+							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE_D_CONSTRUCTION_PLUS_20_ANS"/></td>
+							<td><input id="isConstructionPlusVingtAns" name="isConstructionPlusVingtAns" class="isConstructionPlusVingtAns" type="checkbox"/></td>
+							<%
+								}
 							%>
 			<td class="cacherAutres"><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE_D_AUTRES"/></td>
 			<td class="cacherAutres">

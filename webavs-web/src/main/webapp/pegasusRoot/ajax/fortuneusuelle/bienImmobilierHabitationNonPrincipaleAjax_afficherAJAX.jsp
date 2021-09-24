@@ -24,6 +24,7 @@ BSession objSession = (BSession)controller.getSession();
 		<csTypePropriete><%=JadeStringUtil.isBlankOrZero(entity.getCsTypePropriete())?"":entity.getCsTypePropriete()%></csTypePropriete>
 		<part><%=entity.getPartProprieteNumerateur()%> / <%=entity.getPartProprieteDenominateur()%></part>
 		<isConstructionMoinsDixAns><%=entity.getIsConstructionMoinsDixAns()%></isConstructionMoinsDixAns>
+		<isConstructionPlusVingtAns><%=entity.getIsConstructionPlusVingtAns()%></isConstructionPlusVingtAns>
 		<csTypeBien><%=JadeStringUtil.isBlankOrZero(entity.getCsTypeBien())?"":entity.getCsTypeBien()%></csTypeBien>
 		<autres><%=entity.getAutresTypeBien()%></autres>
 		<valeurLocative><%=entity.getMontantValeurLocative() %></valeurLocative>

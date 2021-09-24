@@ -23,6 +23,7 @@
 			<field name="montantSousLocation" column="CINMSL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_SOUS_LOCATION"/>
 			<field name="montantValeurFiscale" mandatory="true" column="CINMVF" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_VALEUR_FISCALE"/>	
 			<field name="isConstructionMoinsDixAns" mandatory="true" column="CIBHMA" type="BOOLEAN" comment="IS_HABITATION_MOINS_10_ANS"/>	
+			<field name="isConstructionPlusVingtAns" mandatory="true" column="CIBHPA" type="BOOLEAN" comment="IS_HABITATION_PLUS_20_ANS"/>
 			</fields>
 		<search-definition>
 			<search-group operator="AND">

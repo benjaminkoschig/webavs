@@ -35,17 +35,38 @@ public abstract class StrategieCalculDepense extends StrategieCalcul {
     protected abstract TupleDonneeRapport calculeDepense(CalculDonneesCC donnee, CalculContext context,
             TupleDonneeRapport resultatExistant) throws CalculException;
 
-    protected float getTauxFraisEntretien(boolean isConstructionMoins10Ans, CalculContext context)
-            throws CalculBusinessException, NumberFormatException, CalculException {
+    protected float getTauxFraisEntretien(boolean isConstructionMoins10Ans, boolean isConstructionPlus20Ans, CalculContext context, boolean isAnnexe)
+            throws NumberFormatException, CalculException {
 
-        if (isConstructionMoins10Ans) {
+        if (isConstructionMoins10Ans && !isAnnexe) {
             return Float.parseFloat(((ControlleurVariablesMetier) context
                     .get(Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS)).getValeurCourante());
+        } else if (isConstructionPlus20Ans && !isAnnexe) {
+            return Float.parseFloat(((ControlleurVariablesMetier) context
+                    .get(Attribut.FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_PRINCIPALE)).getValeurCourante());
+        } else if (!isConstructionPlus20Ans && isAnnexe) {
+            return Float.parseFloat(((ControlleurVariablesMetier) context
+                    .get(Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_20_ANS_ANNEXE)).getValeurCourante());
+        } else if (isConstructionPlus20Ans && isAnnexe) {
+            return Float.parseFloat(((ControlleurVariablesMetier) context
+                    .get(Attribut.FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE)).getValeurCourante());
         } else {
             return Float.parseFloat(((ControlleurVariablesMetier) context.get(Attribut.FRAIS_ENTRETIEN_IMMEUBLE))
                     .getValeurCourante());
         }
 
+    }
+
+    protected float getTauxFraisEntretienPrincipale(boolean isConstructionMoins10Ans, boolean isConstructionPlus20Ans, CalculContext context)
+            throws NumberFormatException, CalculException {
+
+        return getTauxFraisEntretien(isConstructionMoins10Ans, isConstructionPlus20Ans, context, false);
+    }
+
+    protected float getTauxFraisEntretienAnnexe(boolean isConstructionMoins10Ans, boolean isConstructionPlus20Ans, CalculContext context)
+            throws NumberFormatException, CalculException {
+
+        return getTauxFraisEntretien(isConstructionMoins10Ans, isConstructionPlus20Ans, context, true);
     }
 
 }

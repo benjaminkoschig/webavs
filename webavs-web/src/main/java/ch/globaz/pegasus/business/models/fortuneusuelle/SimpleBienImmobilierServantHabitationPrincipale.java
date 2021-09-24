@@ -27,6 +27,7 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
     private String partProprieteDenominateur = null;
     private String partProprieteNumerateur = null;
     private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
+    private Boolean isConstructionPlusVingtAns = Boolean.FALSE;
 
     public String getAutresTypeBien() {
         return autresTypeBien;
@@ -200,4 +201,11 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
         this.isConstructionMoinsDixAns = isConstructionMoinsDixAns;
     }
 
+    public Boolean getIsConstructionPlusVingtAns() {
+        return isConstructionPlusVingtAns;
+    }
+
+    public void setIsConstructionPlusVingtAns(Boolean isConstructionPlusVingtAns) {
+        this.isConstructionPlusVingtAns = isConstructionPlusVingtAns;
+    }
 }

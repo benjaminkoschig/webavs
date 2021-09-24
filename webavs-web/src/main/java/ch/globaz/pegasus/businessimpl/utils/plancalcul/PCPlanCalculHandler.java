@@ -279,9 +279,14 @@ public class PCPlanCalculHandler {
                     }
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE)) {
-                        lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
-                        lib[0] = lib[0].replace("{libelle}",
-                                getLibelleForFraisEntretienImmeubleTaux(LanguageResolver.resolveISOCode(langueTiers)));
+                        // Pour le canton Vaudois, nous n'affichons pas la légende, car il existe plusieurs taux dans les frais d'entretien, en afficher qu'un seul n'est pas correct
+                        if (PCApplicationUtil.isCantonVD()) {
+                            lib[0] = lib[0].replace("({fraction} {libelle})", "");
+                        } else {
+                            lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
+                            lib[0] = lib[0].replace("{libelle}",
+                                    getLibelleForFraisEntretienImmeubleTaux(LanguageResolver.resolveISOCode(langueTiers)));
+                        }
                     }
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND)) {

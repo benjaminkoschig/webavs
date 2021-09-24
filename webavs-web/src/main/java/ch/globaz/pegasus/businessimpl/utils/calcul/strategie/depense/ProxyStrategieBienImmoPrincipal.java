@@ -5,6 +5,7 @@ import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoPrincipal.StrategieBienImmoPrincipal;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoPrincipal.StrategieBienImmoPrincipalVD;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoPrincipal.StrategieBienImmoPrincipalVS;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
 
@@ -16,6 +17,8 @@ public class ProxyStrategieBienImmoPrincipal extends StrategieCalculDepense {
 
         if (PCApplicationUtil.isCantonVS()) {
             return new StrategieBienImmoPrincipalVS().calcule(donnee, context, resultatExistant);
+        } else if (PCApplicationUtil.isCantonVD()) {
+            return new StrategieBienImmoPrincipalVD().calcule(donnee, context, resultatExistant);
         } else {
             return new StrategieBienImmoPrincipal().calcule(donnee, context, resultatExistant);
         }

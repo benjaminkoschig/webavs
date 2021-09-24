@@ -27,6 +27,7 @@ public class SimpleBienImmobilierHabitationNonPrincipale extends JadeSimpleModel
     private String partProprieteNumerateur = null;
     private String valeurVenale = null;
     private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
+    private Boolean isConstructionPlusVingtAns = Boolean.FALSE;
 
     public Boolean getIsConstructionMoinsDixAns() {
         return isConstructionMoinsDixAns;
@@ -190,4 +191,11 @@ public class SimpleBienImmobilierHabitationNonPrincipale extends JadeSimpleModel
         this.valeurVenale = valeurVenale;
     }
 
+    public Boolean getIsConstructionPlusVingtAns() {
+        return isConstructionPlusVingtAns;
+    }
+
+    public void setIsConstructionPlusVingtAns(Boolean isConstructionPlusVingtAns) {
+        this.isConstructionPlusVingtAns = isConstructionPlusVingtAns;
+    }
 }

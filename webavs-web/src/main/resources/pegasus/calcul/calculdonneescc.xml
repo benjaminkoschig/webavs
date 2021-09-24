@@ -79,6 +79,9 @@
 
 			<select-field name="isBienImmoPrincipalDeMoinsDe10Ans" field-ref="simpleBienImmoPrincipal.isConstructionMoinsDixAns"/>
 			<select-field name="isBienImmoAnnexeDeMoinsDe10Ans" field-ref="simpleBienImmoAnnexe.isConstructionMoinsDixAns"/>
+
+			<select-field name="isBienImmoPrincipalDePlusDe20Ans" field-ref="simpleBienImmoPrincipal.isConstructionPlusVingtAns"/>
+			<select-field name="isBienImmoAnnexeDePlusDe20Ans" field-ref="simpleBienImmoAnnexe.isConstructionPlusVingtAns"/>
 			
 			<select-field name="bienImmoAnnexeMontantValeurLocative" field-ref="simpleBienImmoAnnexe.montantValeurLocative"/>
 			<select-field name="bienImmoAnnexeMontantValeurVenale" field-ref="simpleBienImmoAnnexe.valeurVenale"/>
