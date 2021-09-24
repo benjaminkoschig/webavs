@@ -223,6 +223,7 @@
                                 <include>acorRentes/xsd/acor-rentes-out-f-calcul.xsd</include>
                                 <include>acorRentes/xsd/acor-standard-error.xsd</include>
                                 <include>acorRentes/xsd/annoncesRC/*.xsd</include>
+                                <include>acorRentes/xsd/annoncesRC/CACI/*.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
