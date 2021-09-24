@@ -218,25 +218,11 @@
                             <schemaDirectory>src/main/resources/xsd</schemaDirectory>
                             <generateDirectory>target/generated-sources/xjc-acor-rentes</generateDirectory>
                             <schemaIncludes>
-                                <include>acorRentes/swap/xsd/*.xsd</include>
-                                <include>acorRentes/xsd/*.xsd</include>
+                                <include>acorRentes/xsd/acor-rentes-in-host.xsd</include>
+                                <include>acorRentes/xsd/acor-rentes9-out-resultat.xsd</include>
+                                <include>acorRentes/xsd/acor-rentes-out-f-calcul.xsd</include>
+                                <include>acorRentes/xsd/acor-standard-error.xsd</include>
                                 <include>acorRentes/xsd/annoncesRC/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesAI/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesApgIj/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesCompta/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/annoncesPC/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/assuranceMilitaire/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/CACI/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/Prestations/*.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/testAnnonce/*.xsd</include>
-                                <include>acorRentes/xsd/euro/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/AI/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/ARC/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/CI/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/Compta/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/General/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/PersPhys/*.xsd</include>
-                                <include>acorRentes/xsd/Typebase/Prestations/*.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
@@ -267,28 +253,10 @@
                         </goals>
                         <configuration>
                             <specVersion>2.1</specVersion>
-                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <schemaDirectory>src/main/resources/xsd/acorIJ/xsd</schemaDirectory>
                             <generateDirectory>target/generated-sources/xjc-acor-ij</generateDirectory>
                             <schemaIncludes>
-                                <include>acorIJ/swap/xsd/*.xsd</include>
-                                <include>acorIJ/xsd/*.xsd</include>
-                                <include>acorIJ/xsd/annoncesRC/*.xsd</include>
-                                <include>acorIJ/xsd/annoncesRC/annoncesAI/*.xsd</include>
-                                <include>acorIJ/xsd/annoncesRC/annoncesApgIj/*.xsd</include>
-<!--                                <include>acorIJ/xsd/annoncesRC/annoncesCompta/*.xsd</include>-->
-<!--                                <include>acorIJ/xsd/annoncesRC/annoncesPC/*.xsd</include>-->
-<!--                                <include>acorIJ/xsd/annoncesRC/assuranceMilitaire/*.xsd</include>-->
-                                <include>acorIJ/xsd/annoncesRC/CACI/*.xsd</include>
-                                <include>acorIJ/xsd/annoncesRC/Prestations/*.xsd</include>
-<!--                                <include>acorIJ/xsd/annoncesRC/testAnnonce/*.xsd</include>-->
-                                <include>acorIJ/xsd/euro/*.xsd</include>
-                                <include>acorIJ/xsd/Typebase/AI/*.xsd</include>
-<!--                                <include>acorIJ/xsd/Typebase/ARC/*.xsd</include>-->
-                                <include>acorIJ/xsd/Typebase/CI/*.xsd</include>
-<!--                                <include>acorIJ/xsd/Typebase/Compta/*.xsd</include>-->
-                                <include>acorIJ/xsd/Typebase/General/*.xsd</include>
-                                <include>acorIJ/xsd/Typebase/PersPhys/*.xsd</include>
-                                <include>acorIJ/xsd/Typebase/Prestations/*.xsd</include>
+                                <include>acor-ij-out.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>

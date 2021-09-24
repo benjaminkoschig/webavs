@@ -16,12 +16,12 @@
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
-    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-health.xsd"
-                   node="//xs:schema">
-        <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.health"/>
-        </jaxb:schemaBindings>
-    </jaxb:bindings>
+    <!--    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-health.xsd"-->
+    <!--                   node="//xs:schema">-->
+    <!--        <jaxb:schemaBindings>-->
+    <!--            <jaxb:package name="acor.rentes.xsd.health"/>-->
+    <!--        </jaxb:schemaBindings>-->
+    <!--    </jaxb:bindings>-->
 
     <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-im.xsd"
                    node="//xs:schema">
@@ -37,12 +37,12 @@
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
-    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-informations.xsd"
-                   node="//xs:schema">
-        <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.informations"/>
-        </jaxb:schemaBindings>
-    </jaxb:bindings>
+    <!--    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-informations.xsd"-->
+    <!--                   node="//xs:schema">-->
+    <!--        <jaxb:schemaBindings>-->
+    <!--            <jaxb:package name="acor.rentes.xsd.informations"/>-->
+    <!--        </jaxb:schemaBindings>-->
+    <!--    </jaxb:bindings>-->
 
     <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/acor-standard-error.xsd"
                    node="//xs:schema">
@@ -51,19 +51,19 @@
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
-    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/arc95-out.xsd"
-                   node="//xs:schema">
-        <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.arc95.out"/>
-        </jaxb:schemaBindings>
-    </jaxb:bindings>
+    <!--    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/arc95-out.xsd"-->
+    <!--                   node="//xs:schema">-->
+    <!--        <jaxb:schemaBindings>-->
+    <!--            <jaxb:package name="acor.rentes.xsd.arc95.out"/>-->
+    <!--        </jaxb:schemaBindings>-->
+    <!--    </jaxb:bindings>-->
 
-    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/arf-out.xsd"
-                   node="//xs:schema">
-        <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.arf.out"/>
-        </jaxb:schemaBindings>
-    </jaxb:bindings>
+    <!--    <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/arf-out.xsd"-->
+    <!--                   node="//xs:schema">-->
+    <!--        <jaxb:schemaBindings>-->
+    <!--            <jaxb:package name="acor.rentes.xsd.arf.out"/>-->
+    <!--        </jaxb:schemaBindings>-->
+    <!--    </jaxb:bindings>-->
 
     <jaxb:bindings schemaLocation="../xsd/acorRentes/xsd/splitting-interne-out.xsd"
                    node="//xs:schema">

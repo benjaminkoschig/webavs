@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright : Centrale de Compensation AVS/AI, Genève (2009). -->
 <xs:schema xmlns="http://www.zas.admin.ch/RC" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.zas.admin.ch/RC" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
-	<!-- Include de schémas -->
-	<xs:include schemaLocation="./annoncesRC/annoncesApgIj/annoncesApgIj-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/annoncesCompta/annoncesCompta-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/annoncesPC/annoncesPC-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/annoncesAI/annoncesAI-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/assuranceMilitaire/assuranceMilitaire-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/annonceEnteteFin-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceAccuseReceptionRA-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceCI-types.xsd"/>
-    <xs:include schemaLocation="./annoncesRC/CACI/annonceRA-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceAutorisationCI-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceOrdreTransmissionCI-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceCIComplement-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceComparaisonEnteteCI-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceConfirmationRCISplitting-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/CACI/annonceRevocation-types.xsd"/>
-	<xs:include schemaLocation="./annoncesRC/Prestations/annonceRente.xsd"/>
+    <!-- Include de schémas -->
+    <!--	<xs:include schemaLocation="./annoncesRC/annoncesApgIj/annoncesApgIj-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/annoncesCompta/annoncesCompta-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/annoncesPC/annoncesPC-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/annoncesAI/annoncesAI-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/assuranceMilitaire/assuranceMilitaire-types.xsd"/>-->
+    <xs:include schemaLocation="./annoncesRC/annonceEnteteFin-types.xsd"/>
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceAccuseReceptionRA-types.xsd"/>-->
+    <xs:include schemaLocation="./annoncesRC/CACI/annonceCI-types.xsd"/>
+    <!-- 	<xs:include schemaLocation="./annoncesRC/CACI/annonceRA-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceAutorisationCI-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceOrdreTransmissionCI-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceCIComplement-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceComparaisonEnteteCI-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceConfirmationRCISplitting-types.xsd"/>-->
+    <!--	<xs:include schemaLocation="./annoncesRC/CACI/annonceRevocation-types.xsd"/>-->
+    <xs:include schemaLocation="./annoncesRC/Prestations/annonceRente.xsd"/>
+    <!--    <xs:include schemaLocation="./Typebase/CI/typesCI-types.xsd"/>-->
+    <!--    <xs:include schemaLocation="./Typebase/CI/BrancheEco-types.xsd"/>-->
 </xs:schema>
