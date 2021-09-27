@@ -181,7 +181,7 @@ public class RFRetrieveInfoDroitPCService {
         // Si il ne s'agit pas d'un couple séparé par la maladie (idDossier PC1 != idDossier PC2), on parse la liste
         // pour supprimmer les PCAccordées dont le tiers n'est pas compris dans le calcul (car personne comprises dans
         // plusieurs calcul PC)
-        if ((null != pcAccPlaCalAndMemFamVOList) && (pcAccPlaCalAndMemFamVOList.size() == 2)) {
+        if ((null != pcAccPlaCalAndMemFamVOList) && (pcAccPlaCalAndMemFamVOList.size() >= 2)) {
             String idDossierPcAcc = "";
             boolean premiereIteration = true;
             boolean isCoupleSepare = false;
