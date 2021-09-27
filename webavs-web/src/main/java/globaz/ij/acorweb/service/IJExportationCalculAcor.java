@@ -1,10 +1,10 @@
 package globaz.ij.acorweb.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
-import acor.rentes.xsd.in.ij.BasesCalculCouranteIJ;
-import acor.rentes.xsd.in.ij.BasesCalculIJ;
-import acor.rentes.xsd.in.ij.BasesCalculRevenusIJ;
-import acor.rentes.xsd.in.ij.IndemniteJournaliereIJ;
+import acor.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
+import acor.xsd.in.ij.BasesCalculCouranteIJ;
+import acor.xsd.in.ij.BasesCalculIJ;
+import acor.xsd.in.ij.BasesCalculRevenusIJ;
+import acor.xsd.in.ij.IndemniteJournaliereIJ;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
@@ -21,6 +21,7 @@ import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.domaine.membrefamille.SFMembresFamilleRequerant;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.ij.acorweb.mapper.IJCalculDecompteIJMapper;
+import globaz.ij.api.prononces.IIJSituationProfessionnelle;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
