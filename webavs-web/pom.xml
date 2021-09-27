@@ -209,58 +209,25 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-acor-rentes</id>
+                        <id>generate-acor</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <specVersion>2.1</specVersion>
-                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
-                            <generateDirectory>target/generated-sources/xjc-acor-rentes</generateDirectory>
+                            <schemaDirectory>src/main/resources/xsd/acor</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-acor</generateDirectory>
                             <schemaIncludes>
-                                <include>acorRentes/xsd/acor-rentes-in-host.xsd</include>
-                                <include>acorRentes/xsd/acor-rentes9-out-resultat.xsd</include>
-                                <include>acorRentes/xsd/acor-rentes-out-f-calcul.xsd</include>
-                                <include>acorRentes/xsd/acor-standard-error.xsd</include>
-                                <include>acorRentes/xsd/annoncesRC/*.xsd</include>
+                                <include>xsd/acor-rentes-in-host.xsd</include>
+                                <include>xsd/acor-rentes9-out-resultat.xsd</include>
+                                <include>xsd/acor-rentes-out-f-calcul.xsd</include>
+                                <include>xsd/acor-standard-error.xsd</include>
+                                <include>xsd/annoncesRC/*.xsd</include>
+                                <include>xsd/acor-ij-out.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
                                 <include>acor-rentes-bindings.xjb</include>
-                            </bindingIncludes>
-                            <extension>true</extension>
-                            <args>
-                                <arg>-Xannotate</arg>
-                            </args>
-                            <plugins>
-                                <plugin>
-                                    <groupId>org.jvnet.jaxb2_commons</groupId>
-                                    <artifactId>jaxb2-basics-annotate</artifactId>
-                                    <version>0.6.3</version>
-                                </plugin>
-                                <plugin>
-                                    <groupId>org.jvnet.jaxb2_commons</groupId>
-                                    <artifactId>jaxb2-basics</artifactId>
-                                    <version>0.6.3</version>
-                                </plugin>
-                            </plugins>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-acor-ij</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <specVersion>2.1</specVersion>
-                            <schemaDirectory>src/main/resources/xsd/acorIJ/xsd</schemaDirectory>
-                            <generateDirectory>target/generated-sources/xjc-acor-ij</generateDirectory>
-                            <schemaIncludes>
-                                <include>acor-ij-out.xsd</include>
-                            </schemaIncludes>
-                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
-                            <bindingIncludes>
-                                <include>acor-ij-bindings.xjb</include>
                             </bindingIncludes>
                             <extension>true</extension>
                             <args>

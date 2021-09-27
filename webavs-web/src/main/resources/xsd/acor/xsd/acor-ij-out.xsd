@@ -7,8 +7,10 @@
 			xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xmlns:inhost="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
-			elementFormDefault="unqualified"
-			attributeFormDefault="unqualified"
+            targetNamespace="http://www.zas.admin.ch/xmlns/acor-ij-out/0"
+            xmlns="http://www.zas.admin.ch/xmlns/acor-ij-out/0"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
 			version="1.0"
 			jaxb:version="2.1"
 			jaxb:extensionBindingPrefixes="annox">
