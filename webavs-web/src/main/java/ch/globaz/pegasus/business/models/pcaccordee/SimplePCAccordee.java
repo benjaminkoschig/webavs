@@ -34,7 +34,6 @@ public class SimplePCAccordee extends JadeSimpleModel {
 
     //NOT IN DB
     private String montantMensuel = "";
-    private boolean isCoupleInHome = false;
 
 
     public String getCodeRente() {
@@ -253,11 +252,4 @@ public class SimplePCAccordee extends JadeSimpleModel {
         this.idTiersBeneficiaire = idTiersBeneficiaire;
     }
 
-    public boolean isCoupleInHome() {
-        return isCoupleInHome;
-    }
-
-    public void setCoupleInHome(boolean coupleInHome) {
-        isCoupleInHome = coupleInHome;
-    }
 }
