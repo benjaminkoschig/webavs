@@ -810,11 +810,11 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
 
     // Initialisation des variables QR
-    public void initVariableQR(FWCurrency montantTotal, String idTier) {
+    public void initVariableQR(String langueTier, FWCurrency montantTotal, String idTier) {
 
         qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
         qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
-        qrFacture.setLangueDoc(_getLangue());
+        qrFacture.setLangueDoc(langueTier);
 
 
         try {

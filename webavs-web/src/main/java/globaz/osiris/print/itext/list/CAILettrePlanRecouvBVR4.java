@@ -156,7 +156,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                 qrFacture = new ReferenceQR();
                 qrFacture.setSession(getSession());
                 // Initialisation des variables du document
-                initVariableQR(new FWCurrency(echeance.getMontant()), getPlanRecouvrement().getCompteAnnexe().getIdTiers());
+                initVariableQR(_getLangue(), new FWCurrency(echeance.getMontant()), getPlanRecouvrement().getCompteAnnexe().getIdTiers());
 
                 // Génération du document QR
                 qrFacture.initQR(this);

@@ -746,7 +746,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
-            initVariableQR();
+            initVariableQR(currentDataSource.getEnteteFacture().getISOLangueTiers());
             // Génération du document QR
             qrFacture.initQR(this);
 

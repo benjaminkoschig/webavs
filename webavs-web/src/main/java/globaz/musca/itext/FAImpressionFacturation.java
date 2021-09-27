@@ -338,11 +338,10 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
         this.isEbusiness = isEbusiness;
     }
 
-    public void initVariableQR() {
+    public void initVariableQR(String langueTier) {
 
         qrFacture.setMontant(Objects.isNull(tmpCurrency)? "" : tmpCurrency.toString());
-        qrFacture.setLangueDoc(currentDataSource.getEnteteFacture().getISOLangueTiers());
-
+        qrFacture.setLangueDoc(langueTier);
 
         try {
             // La monnaie n'est pas géré dans le module Facturation. Par défaut nous mettrons CHF
