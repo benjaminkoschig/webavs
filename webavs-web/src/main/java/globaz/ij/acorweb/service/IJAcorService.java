@@ -34,7 +34,7 @@ public class IJAcorService {
 
     private static JaxbHandler<InHostType> createJaxbValidator() {
         if (Debug.isEnvironnementInDebug()) {
-            return JaxbHandler.build("/xsd/acorRentes/xsd/acor-rentes-in-host.xsd", InHostType.class,
+            return JaxbHandler.build("/xsd/acor/xsd/acor-rentes-in-host.xsd", InHostType.class,
                                      inHost -> new ObjectFactory().createInHost(inHost));
         }
         return null;

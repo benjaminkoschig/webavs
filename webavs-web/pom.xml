@@ -208,6 +208,8 @@
                             </bindingIncludes>
                         </configuration>
                     </execution>
+                    <!-- Pour la configuration des xsd et jaxb voir la configuration pour ACOR
+                    qui se trouve ici -> https://confluence.globaz.ch/x/dRcQBg -->
                     <execution>
                         <id>generate-acor</id>
                         <goals>
@@ -227,7 +229,7 @@
                             </schemaIncludes>
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
-                                <include>acor-rentes-bindings.xjb</include>
+                                <include>acor-bindings.xjb</include>
                             </bindingIncludes>
                             <extension>true</extension>
                             <args>

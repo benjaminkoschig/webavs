@@ -1,7 +1,7 @@
 package globaz.prestation.acor.web.ws;
 
-import acor.rentes.xsd.standard.error.OriginType;
-import acor.rentes.xsd.standard.error.StandardError;
+import acor.xsd.standard.error.OriginType;
+import acor.xsd.standard.error.StandardError;
 import com.google.common.base.Throwables;
 
 public final class AcorStandardErrorUtil {

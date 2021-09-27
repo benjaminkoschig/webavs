@@ -1,8 +1,8 @@
 package globaz.corvus.acorweb.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
-import ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
+import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;

@@ -1,6 +1,6 @@
 package globaz.corvus.acorweb.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import globaz.corvus.acorweb.ws.token.REAcorTokenService;

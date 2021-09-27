@@ -1,7 +1,7 @@
 package globaz.prestation.acor.web.ws;
 
-import acor.rentes.xsd.standard.error.OriginType;
-import acor.rentes.xsd.standard.error.StandardError;
+import acor.xsd.standard.error.OriginType;
+import acor.xsd.standard.error.StandardError;
 import ch.globaz.common.ws.FilterMapper;
 import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import lombok.extern.slf4j.Slf4j;

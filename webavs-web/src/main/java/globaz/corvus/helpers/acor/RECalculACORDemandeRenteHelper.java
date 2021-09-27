@@ -1,6 +1,6 @@
 package globaz.corvus.helpers.acor;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;

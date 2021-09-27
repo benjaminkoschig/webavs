@@ -1,6 +1,6 @@
 package globaz.prestation.acor.web.mapper;
 
-import acor.rentes.xsd.common.OrganisationAdresseType;
+import acor.xsd.common.OrganisationAdresseType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.caisse.helper.CaisseHelperFactory;

@@ -21,10 +21,25 @@
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
+    <!-- Configure our custom xsd for acor-->
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-rentes9-out-resultat.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-rentes-in-host.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.admin.zas.xmlns.acor_rentes_in_host._0"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-common.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.common"/>
+            <jaxb:package name="acor.xsd.common"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
@@ -38,49 +53,41 @@
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-im.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.im"/>
+            <jaxb:package name="acor.xsd.im"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-in-ij.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.in.ij"/>
+            <jaxb:package name="acor.xsd.in.ij"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
-
-    <!--    <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-informations.xsd"-->
-    <!--                   node="//xs:schema">-->
-    <!--        <jaxb:schemaBindings>-->
-    <!--            <jaxb:package name="acor.rentes.xsd.informations"/>-->
-    <!--        </jaxb:schemaBindings>-->
-    <!--    </jaxb:bindings>-->
+    
 
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-standard-error.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.standard.error"/>
+            <jaxb:package name="acor.xsd.standard.error"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
-    <!--    <jaxb:bindings schemaLocation="../xsd/acor/xsd/arc95-out.xsd"-->
-    <!--                   node="//xs:schema">-->
-    <!--        <jaxb:schemaBindings>-->
-    <!--            <jaxb:package name="acor.rentes.xsd.arc95.out"/>-->
-    <!--        </jaxb:schemaBindings>-->
-    <!--    </jaxb:bindings>-->
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/arc95-out.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.admin.zas.xmlns.arc95_out._0"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
 
-    <!--    <jaxb:bindings schemaLocation="../xsd/acor/xsd/arf-out.xsd"-->
-    <!--                   node="//xs:schema">-->
-    <!--        <jaxb:schemaBindings>-->
-    <!--            <jaxb:package name="acor.rentes.xsd.arf.out"/>-->
-    <!--        </jaxb:schemaBindings>-->
-    <!--    </jaxb:bindings>-->
-
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/arf-out.xsd" node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.admin.zas.xmlns.arf_out._0"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/splitting-interne-out.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.splitting.interne"/>
+            <jaxb:package name="acor.xsd.splitting.interne"/>
             <jaxb:nameXmlTransform>
                 <jaxb:elementName suffix="Element"/>
             </jaxb:nameXmlTransform>
@@ -97,79 +104,79 @@
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-2401-000501-1-1.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1" />
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-2401-common-1-1.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.eahv_iv.xmlns.eahv_iv_2401_common._1" />
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_2401_common._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-common-4-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.eahv_iv.xmlns.eahv_iv_common._4" />
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_common._4" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0006-2-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0006._2" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0006._2" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0007-5-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0007_f._5" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0007_f._5" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0008-3-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0008_f._3" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0008_f._3" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0010-5-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0010_f._5" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0010_f._5" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0010-6-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0010_f._6" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0010_f._6" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0011-7-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0011_f._7" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0011_f._7" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0044-3-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0044_f._3" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0044_f._3" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0044-4-1f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0044_f._4" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0044_f._4" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0046-3-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0046_f._3" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0046_f._3" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0058-4-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0058._4" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0058._4" />
             <jaxb:nameXmlTransform>
                 <jaxb:elementName suffix="Element"/>
             </jaxb:nameXmlTransform>
@@ -178,13 +185,13 @@
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0097-1-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0097_f._1" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0097_f._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0135-1-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_0135._1" />
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0135._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
@@ -192,37 +199,37 @@
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/core.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.core"/>
+            <jaxb:package name="acor.xsd.euro.core"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/e202.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.e202"/>
+            <jaxb:package name="acor.xsd.euro.e202"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/e203.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.e203"/>
+            <jaxb:package name="acor.xsd.euro.e203"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/e205.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.e205"/>
+            <jaxb:package name="acor.xsd.euro.e205"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/e210.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.e210"/>
+            <jaxb:package name="acor.xsd.euro.e210"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/euro/xlink.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.xsd.euro.xlink"/>
+            <jaxb:package name="acor.xsd.euro.xlink"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
@@ -230,13 +237,13 @@
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/eCH-0044-4-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_044._4"/>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_044._4"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/eCH-0010-6-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.ech.xmlns.ech_010._6"/>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_010._6"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
@@ -244,13 +251,13 @@
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/annoncesRC/AccuseReceptionNotOk.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.admin.zas.rc.annonces.rente.pool"/>
+            <jaxb:package name="acor.ch.admin.zas.rc.annonces.rente.pool"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/annoncesRC/annonces.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.rentes.ch.admin.zas.rc.annonces.rente.rc"/>
+            <jaxb:package name="acor.ch.admin.zas.rc.annonces.rente.rc"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 

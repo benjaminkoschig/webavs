@@ -1,7 +1,7 @@
 package ch.globaz.common.ws;
 
 
-import acor.rentes.xsd.standard.error.StandardError;
+import acor.xsd.standard.error.StandardError;
 import globaz.prestation.acor.web.ws.AcorStandardErrorUtil;
 import ch.globaz.common.ws.configuration.WSExceptionMapper;
 import globaz.corvus.exceptions.RETechnicalException;

@@ -1,11 +1,11 @@
 package globaz.corvus.acorweb.service;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9WeakType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
-import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
+import acor.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9WeakType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiCurrentType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.AiInformations;

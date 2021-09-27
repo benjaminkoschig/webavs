@@ -1,7 +1,7 @@
 package globaz.corvus.acorweb.service;
 
 import acor.rentes.xsd.fcalcul.FCalcul;
-import ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
+import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import globaz.corvus.acorweb.ws.token.REAcorToken;
 import globaz.corvus.exceptions.RETechnicalException;

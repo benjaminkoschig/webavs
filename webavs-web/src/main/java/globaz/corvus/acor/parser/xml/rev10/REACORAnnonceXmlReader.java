@@ -1,6 +1,6 @@
 package globaz.corvus.acor.parser.xml.rev10;
 
-import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 

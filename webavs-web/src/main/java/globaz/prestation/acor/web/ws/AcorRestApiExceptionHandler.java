@@ -1,6 +1,6 @@
 package globaz.prestation.acor.web.ws;
 
-import acor.rentes.xsd.standard.error.OriginType;
+import acor.xsd.standard.error.OriginType;
 import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import ch.globaz.common.ws.configuration.ExceptionRequestInfo;

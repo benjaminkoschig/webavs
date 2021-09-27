@@ -1,6 +1,6 @@
 package globaz.ij.acorweb.mapper;
 
-import acor.rentes.xsd.in.ij.BasesCalculDecompteCourantIJ;
+import acor.xsd.in.ij.BasesCalculDecompteCourantIJ;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import globaz.globall.util.JACalendar;
