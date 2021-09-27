@@ -519,6 +519,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         CalculDonneesHomeSearch homeReplaced = (CalculDonneesHomeSearch) cacheDonneesBD
                 .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES_FOR_VERSEMENT_DIRECT);
 
+
         for (PeriodePCAccordee pcAccordee : listePCAccordes) {
             pcAccordee.setCalculRetro(retroactif);
             pcas.addAll(PegasusImplServiceLocator.getCalculPersistanceService().sauvePCAccordee(droit, pcAccordee,
@@ -560,11 +561,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             simplePCAccordee.setMontantMensuel(pca.getSimplePlanDeCalcul().getMontantPCMensuelle());
             allNewPca.add(simplePCAccordee);
         }
-
         for (CalculPcaReplace pca : copies) {
             allNewPca.add(pca.getSimplePCAccordee());
         }
-
         /**
          * Gestion des versement en home (futur,retenus)
          * 1 ) Filtrer les homes
@@ -572,12 +571,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
          */
         if (homeReplaced != null) {
             homeReplaced = filterHome(homeReplaced, droit.getSimpleVersionDroit().getIdVersionDroit());
-            mappingHomes(homeVersementList, homeReplaced, allNewPca, mapMontantTotalHome, droit);
+            if(homeReplaced != null){
+                mappingHomes(homeVersementList, homeReplaced, allNewPca, mapMontantTotalHome, droit);
+            }
         }
 
         createCreancierHystoriqueOld(pcaReplaced);
         /**
-         * Mapper requérant conjoint pour les PCA sans date de fin (faccilité le report des retenus anciennes et valides)
+         * Mapper requérant conjoint pour les PCA sans date de fin (facilite le report des retenus anciennes et valides)
          */
         mapPCASansDateFin(allNewPca);
         /**
@@ -693,24 +694,23 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             }
         }
         if (mapOldDroitHome.size() == 0) {
-            /**
-             * Cas : Si c'est pour une période rétro et que le couple est en home => Montant déjà versé est divisé par 2 (1 pour Req + 1 pour Conj)
-             */
-            if(mapNewDroitHome.size() == 2){
-                for(JadeAbstractModel model : mapNewDroitHome.values()){
-                    CalculDonneesHome donneesHome = (CalculDonneesHome)model;
-                    donneesHome.setDoitDiviserMontantPCMensuel(true);
-                    list.add(donneesHome);
+
+            for(JadeAbstractModel homeRawData :mapNewDroitHome.values() ){
+                CalculDonneesHome homeNew = (CalculDonneesHome) homeRawData;
+                if (homeNew.getIsVersementDirect()) {
+                    list.add(homeRawData);
                 }
-            }else{
-                list.addAll(mapNewDroitHome.values());
             }
         }
-        list = list.stream().filter(home -> ((CalculDonneesHome) home).getIsVersementDirect()).collect(Collectors.toList());
-        array = new JadeAbstractModel[list.size()];
-        list.toArray(array);
-        homeReplaced.setSearchResults(array);
-        return homeReplaced;
+        if(!list.isEmpty()){
+            list = list.stream().filter(home -> ((CalculDonneesHome) home).getIsVersementDirect()).collect(Collectors.toList());
+            array = new JadeAbstractModel[list.size()];
+            list.toArray(array);
+            homeReplaced.setSearchResults(array);
+            return homeReplaced;
+        }else{
+            return null;
+        }
     }
 
     private void checkSejourMoisPartiel(Droit droit, PeriodePCAccordee pcAccordee, CalculComparatif cc, List<DonneeInterneHomeVersement> sejourVersementList) throws JadeApplicationException, JadePersistenceException {
@@ -781,11 +781,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         donnee.setMontantDepenses(Float.toString(cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL)));
         Periode periode = new Periode(pcAccordee.getStrDateDebut(), pcAccordee.getStrDateFin());
         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion(), pca.getSimplePCAccordee().getCsRoleBeneficiaire());
-        if (pca.getSimplePCAccordee().isCoupleInHome()) {
-            donnee.setMontantDejaVerser(new Montant(montantDejaVerser).divide(2).toStringValue());
-        } else {
-            donnee.setMontantDejaVerser(montantDejaVerser);
-        }
+        donnee.setMontantDejaVerser(montantDejaVerser);
         donnee.setCsTypeVersement(DonneeInterneHomeVersement.TYPE_CREANCIER);
         donnee.setDateDebut(pcAccordee.getStrDateDebut());
         donnee.setDateFin(pcAccordee.getStrDateFin());
@@ -1109,12 +1105,15 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             if (!creancier.isCreatedForOther() && !calculDonneesHome.getCsRoleBeneficiaire().equals(creancier.getCsRole())) {
                 addMontant = true;
                 creancier.setCreatedForOther(true);
-                mapCreancierDejaCreer.put(key, creancier);
+
             }
             if (addMontant) {
                 Float montant = Float.parseFloat(creancier.getSimpleCreancier().getMontant()) + montantAVerser;
                 creancier.getSimpleCreancier().setMontant(montant.toString());
                 PegasusServiceLocator.getCreancierService().update(creancier);
+                if(creancier.isCreatedForOther()){
+                    mapCreancierDejaCreer.put(key, creancier);
+                }
             }
         }
         return creancier;
@@ -1265,11 +1264,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + CONJOINT_DEP_PERS));
                         }
                         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion(), simplePCAccordeeBenef.getCsRoleBeneficiaire());
-                        if (home.isDoitDiviserMontantPCMensuel()) {
-                            donnee.setMontantDejaVerser(new Montant(montantDejaVerser).divide(2).toStringValue());
-                        } else {
-                            donnee.setMontantDejaVerser(montantDejaVerser);
-                        }
+                        donnee.setMontantDejaVerser(montantDejaVerser);
                         donnee.setCsTypeVersement(csTypeVersement);
                         donnee.setDateDebut(periode.getDateDebut());
                         donnee.setDateFin(periode.getDateFin());
@@ -1334,7 +1329,12 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             List<PcaForDecompte> pcaDejaVerser = PcaPrecedante.findPcaToReplaced(dateMin, dateMax, idDroit,
                     noVersionDroitCourant);
             if (pcaDejaVerser.size() == 1) {
-                return pcaDejaVerser.get(0).getMontantPCMensuelle();
+                if(csRoleBeneficiaire.equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)
+                        && pcaDejaVerser.get(0).getSimplePrestationsAccordeesConjoint() !=null){
+                    return pcaDejaVerser.get(0).getSimplePrestationsAccordeesConjoint().getMontantPrestation();
+                }else{
+                    return pcaDejaVerser.get(0).getSimplePrestationsAccordees().getMontantPrestation();
+                }
             } else if (pcaDejaVerser.size() == 2) {
                 for (PcaForDecompte pcaOld : pcaDejaVerser) {
                     if (pcaOld.getSimplePCAccordee().getCsRoleBeneficiaire().equals(csRoleBeneficiaire)) {
