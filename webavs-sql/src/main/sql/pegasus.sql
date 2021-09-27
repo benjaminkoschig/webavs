@@ -208,6 +208,20 @@ INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSL
 VALUES (64008099, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_PRINCIPALE', 2, 2, 2, 2, 2, 2, 10200038, 0,
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
+-- UPDATE SCHEMA.FWCOSP
+-- SET PCOSLI = 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_PRINCIPALE'
+-- WHERE PCOSID = 64008099;
+
+-- UPDATE SCHEMA.FWCOUP
+--     SET PCOLUT = '[de]Frais entretien immeubles habitation principale de plus de 20 ans'
+-- WHERE PCOSID = 64008099
+-- AND PLAIDE = 'D';
+--
+-- UPDATE SCHEMA.FWCOUP
+-- SET PCOLUT = 'Frais entretien immeubles habitation principale de plus de 20 ans'
+-- WHERE PCOSID = 64008099
+--   AND PLAIDE = 'F';
+
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (64008099, 'D', '          ', '[de]Frais entretien immeubles habitation principale de plus de 20 ans',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
