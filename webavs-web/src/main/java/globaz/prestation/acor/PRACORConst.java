@@ -1,7 +1,7 @@
 package globaz.prestation.acor;
 
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.SexType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.SexType;
 import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.db.BSession;

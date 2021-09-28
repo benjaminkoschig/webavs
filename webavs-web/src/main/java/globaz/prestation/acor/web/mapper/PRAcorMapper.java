@@ -2,7 +2,7 @@ package globaz.prestation.acor.web.mapper;
 
 import acor.xsd.common.AdresseType;
 import acor.xsd.common.BanqueAdresseType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesPostalesType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesPostalesType;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;

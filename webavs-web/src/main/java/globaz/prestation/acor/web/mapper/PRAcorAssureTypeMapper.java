@@ -1,11 +1,11 @@
 package globaz.prestation.acor.web.mapper;
 
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEtrangereType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeIJType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTravailType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeTypeEnum;
 import ch.globaz.common.util.Dates;
 import ch.globaz.utils.Pair;
 import globaz.hera.api.ISFMembreFamilleRequerant;

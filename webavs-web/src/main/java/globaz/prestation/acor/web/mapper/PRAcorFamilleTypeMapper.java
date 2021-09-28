@@ -1,7 +1,7 @@
 package globaz.prestation.acor.web.mapper;
 
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeJour;
 import ch.globaz.common.util.Dates;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
 import globaz.corvus.acorweb.business.ImplMembreFamilleRequerantWrapper;

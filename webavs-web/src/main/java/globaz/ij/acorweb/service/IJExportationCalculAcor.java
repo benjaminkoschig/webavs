@@ -5,7 +5,7 @@ import acor.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.xsd.in.ij.BasesCalculIJ;
 import acor.xsd.in.ij.BasesCalculRevenusIJ;
 import acor.xsd.in.ij.IndemniteJournaliereIJ;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;

@@ -32,7 +32,7 @@
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-rentes-in-host.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="ch.admin.zas.xmlns.acor_rentes_in_host._0"/>
+            <jaxb:package name="acor.ch.admin.zas.xmlns.acor_rentes_in_host._0"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
@@ -63,7 +63,7 @@
             <jaxb:package name="acor.xsd.in.ij"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
-    
+
 
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-standard-error.xsd"
                    node="//xs:schema">

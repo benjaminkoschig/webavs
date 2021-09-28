@@ -1,8 +1,8 @@
 package globaz.ij.acorweb.service;
 
 import acor.ij.xsd.ij.out.FCalcul;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.ObjectFactory;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.ObjectFactory;
 import ch.globaz.common.util.Debug;
 import ch.globaz.common.xml.JaxbHandler;
 import lombok.extern.slf4j.Slf4j;

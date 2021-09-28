@@ -1,6 +1,6 @@
 package globaz.prestation.acor.web.mapper;
 
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
 import ch.globaz.common.util.Dates;
 import globaz.hera.api.ISFPeriode;
 import globaz.hera.wrapper.SFPeriodeWrapper;
