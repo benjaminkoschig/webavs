@@ -365,9 +365,6 @@ public class APGenererAttestationsProcess extends BProcess {
             }
         }
 
-        // enlève de la map des copies d'attestations au fisc les attestations qui ne possède aucun impôts source sur aucune de leurs prestations
-        mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
-
         if (nbRep == 0) {
             if (getIsGenerationUnique().booleanValue()) {
                 getMemoryLog().logMessage(getSession().getLabel("ERREUR_AUCUNE_ATT_POUR_TIERS"),
@@ -382,6 +379,9 @@ public class APGenererAttestationsProcess extends BProcess {
 
             }
         }
+
+        // enlève de la map des copies au fisc les attestations qui ne possède aucun impôts source sur leurs prestations
+        mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
 
         // génère les attestations originales
         createAttestation(annee, dateDebut, dateFin, isAttestationPat, isAttestationPai, map, false);
@@ -598,7 +598,7 @@ public class APGenererAttestationsProcess extends BProcess {
         return (Double.parseDouble(totalMontantAPG) != 0) && APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre());
     }
     private boolean isPrestationAmat(APPrestation prest) throws Exception {
-        return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE); // 52001012
+        return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE);
     }
     private boolean isPrestationLapat(APPrestation prest) throws Exception {
         return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);

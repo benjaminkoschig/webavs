@@ -5,6 +5,7 @@ package globaz.ij.process;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
@@ -28,11 +29,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author hpe
@@ -47,18 +44,24 @@ public class IJGenererAttestationsProcess extends BProcess {
      * 
      */
     private static final long serialVersionUID = 1L;
+    private Set cantonsLettreEntete = new HashSet();
 
     // Classe interne pour les infos repris des requêtes pour le tri par tiers
     public class AttestationsInfos implements Comparable {
         public String dateDebut = "";
         public String dateFin = "";
-        public String idBaseInd = "";
         public Set idsRPVentilations = new TreeSet();
+        public String idTiers = "";
+        public String idBaseInd = "";
         public BigDecimal montantTotal = new BigDecimal(0);
         public BigDecimal montantVentilations = new BigDecimal(0);
         public BigDecimal totalMontantCotisations = new BigDecimal(0);
         public BigDecimal totalMontantIJ = new BigDecimal(0);
         public BigDecimal totalMontantImpotSource = new BigDecimal(0);
+        private boolean isAddLettreEntete = false;
+        private boolean isCopyFisc = false;
+        private boolean isHasCopyFisc = false;
+        private String canton = "";
 
         @Override
         public int compareTo(Object o) {
@@ -69,6 +72,37 @@ public class IJGenererAttestationsProcess extends BProcess {
             }
         }
 
+        public boolean isAddLettreEntete() {
+            return isAddLettreEntete;
+        }
+
+        public void setIsAddLettreEntete(boolean addLettreEntete) {
+            isAddLettreEntete = addLettreEntete;
+        }
+
+        public boolean isCopyFisc() {
+            return isCopyFisc;
+        }
+
+        public void setIsCopyFisc(boolean copy) {
+            isCopyFisc = copy;
+        }
+
+        public boolean isHasCopyFisc() {
+            return isHasCopyFisc;
+        }
+
+        public void setIsHasCopyFisc(boolean hasCopy) {
+            isHasCopyFisc = hasCopy;
+        }
+
+        public String getCanton() {
+            return canton;
+        }
+
+        public void setCanton(String canton) {
+            this.canton = canton;
+        }
     }
 
     // Classe interne qui défini les clés pour le tri par idTiers
@@ -104,10 +138,12 @@ public class IJGenererAttestationsProcess extends BProcess {
     private String eMailObject = "";
     // private String montantVentilation = "";
     private String idBaseInd = "";
+    private String idTiers = "";
     private Boolean isGenerationUnique = Boolean.TRUE;
     private Boolean isSendToGed = Boolean.FALSE;
 
-    TreeMap map = new TreeMap();
+    Map<Key, ArrayList<AttestationsInfos>> map = new TreeMap();
+    Map<Key, ArrayList<AttestationsInfos>> mapFisc = new LinkedHashMap<>();
 
     private JadePublishDocumentInfo mergedDocInfo = null;
     private String montantTotal = "";
@@ -224,6 +260,7 @@ public class IJGenererAttestationsProcess extends BProcess {
                 montantTotal = rep.getMontantRestant();
                 totalMontantIJ = rep.getMontantBrut();
                 idBaseInd = repPres.getIdBaseIndemnisation();
+                idTiers = repPres.getIdTiers();
 
                 IJPrestation prest = new IJPrestation();
                 prest.setSession(getSession());
@@ -296,12 +333,28 @@ public class IJGenererAttestationsProcess extends BProcess {
                     // Si la clé est encore inexistante
                     if (!map.containsKey(k)) {
 
-                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k);
+                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false);
 
                     } else { // si la clé existe déjà
 
-                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k);
+                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false);
 
+                    }
+
+                    if (isPrestationIJ(prest)) {
+
+                        // Si la clé est encore inexistante
+                        if (!mapFisc.containsKey(k)) {
+
+                            // crée une copie d'attestation dans la map pour les copies d'attestations au fisc
+                            createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true);
+
+                        } else { // si la clé existe déjà
+
+                            // ajoute une copie d'attestation dans la map pour les copies d'attestations au fisc
+                            putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true);
+
+                        }
                     }
                 }
             }
@@ -322,13 +375,92 @@ public class IJGenererAttestationsProcess extends BProcess {
             }
         }
 
+        // enlève de la map des copies au fisc les attestations qui ne possède aucun impôts source sur leurs prestations
+        mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
+
         // génère les attestations originales
-        createAttestation(annee, dateDebut, dateFin);
+        createAttestation(annee, dateDebut, dateFin, map, false);
+
+        // si il y a des copies d'attestations à générer
+        if (!mapFisc.isEmpty()) {
+
+            // regroupe les copies d'attestation par canton
+            LinkedHashMap<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> mapFiscRegroupedByCanton = groupMapFiscByCanton(mapFisc);
+
+            // génère les copies d'attestations regroupées par canton (cas avec impôt source)
+            for (Map.Entry<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> entry : mapFiscRegroupedByCanton.entrySet()) {
+                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true);
+            }
+        }
 
         return true;
     }
 
-    private void putAttestationInfoInList(IJPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k) throws JAException {
+    private boolean findOneImpotSourceForTiers(Map<Key, ArrayList<AttestationsInfos>> mapFisc, String idTiers) {
+        boolean foundOneImpotSource = false;
+        for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
+            for (AttestationsInfos attestationsInfos : entry.getValue()) {
+                if (entry.getKey().idTiers.equals(idTiers) && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                    foundOneImpotSource = true;
+                    break;
+                }
+            }
+            if (foundOneImpotSource) {
+                break;
+            }
+        }
+        return foundOneImpotSource;
+    }
+
+    private LinkedHashMap<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> groupMapFiscByCanton(Map<Key, ArrayList<AttestationsInfos>> mapFisc) {
+        LinkedHashMap<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> mapFiscByCanton = new LinkedHashMap<>();
+        for (Map.Entry<Key, ArrayList<AttestationsInfos>> mapFiscEntry : mapFisc.entrySet()) {
+            ArrayList<AttestationsInfos> attestationInfos = mapFiscEntry.getValue();
+            Key key = mapFiscEntry.getKey();
+
+            // on prends le premier car toutes les prestations d'un tiers possède le même canton
+            String canton = mapFiscEntry.getValue().get(0).getCanton();
+
+            LinkedHashMap<Key, ArrayList<AttestationsInfos>> linkedHashMap = mapFiscByCanton.get(canton);
+            if (linkedHashMap == null) {
+                linkedHashMap = new LinkedHashMap<>();
+            }
+            linkedHashMap.put(key, attestationInfos);
+            mapFiscByCanton.put(canton, linkedHashMap);
+        }
+        return mapFiscByCanton;
+    }
+
+    private void createAttestationInfoAndPutInMap(IJPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
+        // On crée un objet
+        AttestationsInfos ai = new AttestationsInfos();
+
+        ai.idTiers = idTiers;
+        ai.idBaseInd = idBaseInd;
+        ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
+        ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
+        ai.totalMontantIJ = ai.totalMontantIJ.add(new BigDecimal(totalMontantIJ.toString()));
+        ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
+                totalMontantCotisations.toString()));
+        ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
+                totalMontantImpotSource.toString()));
+        ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
+        ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
+                .toString()));
+
+        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
+
+        ai.idsRPVentilations = idsVentilation;
+        // Comme la clé est inexistante, on crée la liste
+        // d'objet
+        ArrayList list = new ArrayList();
+        list.add(ai);
+
+        // On insère la clé et la liste dans la map
+        map.put(k, list);
+    }
+
+    private void putAttestationInfoInList(IJPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
         // On récupère la liste
         ArrayList list = (ArrayList) map.get(k);
 
@@ -359,6 +491,7 @@ public class IJGenererAttestationsProcess extends BProcess {
 
                 // on ajoute simplement tous les montants à
                 // l'objet ai
+                ai.idTiers = idTiers;
                 ai.idBaseInd = idBaseInd;
                 ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateDebutPrest);
                 ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(dateFinPrest);
@@ -371,6 +504,8 @@ public class IJGenererAttestationsProcess extends BProcess {
                 ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
                         .toString()));
 
+                initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
+
                 isFusion = true;
 
             }
@@ -380,6 +515,7 @@ public class IJGenererAttestationsProcess extends BProcess {
 
             AttestationsInfos ai1 = new AttestationsInfos();
 
+            ai1.idTiers = idTiers;
             ai1.idBaseInd = idBaseInd;
             ai1.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
             ai1.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
@@ -393,37 +529,50 @@ public class IJGenererAttestationsProcess extends BProcess {
                     .toString()));
             ai1.idsRPVentilations = idsVentilation;
 
+            initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai1);
+
             list.add(ai1);
         }
     }
 
-    private void createAttestationInfoAndPutInMap(IJPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k) throws JAException {
-        // On crée un objet
-        AttestationsInfos ai = new AttestationsInfos();
+    private void initCopyFisc(IJPrestation prest, FWCurrency totalMontantImpotSource, boolean isCopyFisc, AttestationsInfos ai) {
+        try {
+            if (isPrestationIJ(prest)) {
 
-        ai.idBaseInd = idBaseInd;
-        ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
-        ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
-        ai.totalMontantIJ = ai.totalMontantIJ.add(new BigDecimal(totalMontantIJ.toString()));
-        ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
-                totalMontantCotisations.toString()));
-        ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
-                totalMontantImpotSource.toString()));
-        ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
-        ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
-                .toString()));
+                if (isCopyFisc) {
+                    // set le flag isCopyFisc qui définit si le document est une copie au fisc
+                    ai.setIsCopyFisc(isCopyFisc);
 
-        ai.idsRPVentilations = idsVentilation;
-        // Comme la clé est inexistante, on crée la liste
-        // d'objet
-        ArrayList list = new ArrayList();
-        list.add(ai);
+                    // set le canton de l'attestation d'imposition
+                    String canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+                    ai.setCanton(canton);
 
-        // On insère la clé et la liste dans la map
-        map.put(k, list);
+                    if (!totalMontantImpotSource.isZero()) {
+                        // évite l'envoi de lettre entete en doublon pour le même canton
+                        if (!cantonsLettreEntete.contains(canton)) {
+                            cantonsLettreEntete.add(canton);
+                            // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
+                            ai.setIsAddLettreEntete(true);
+                        }
+                    }
+                }
+
+                // set le flag isHasCopyFisc pour les documents original et pour la copie
+                if (!totalMontantImpotSource.isZero()) {
+                    ai.setIsHasCopyFisc(true);
+                }
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Erreur lors de l'initialisation de la copie au fisc : " + e.toString(), FWMessage.ERREUR,
+                    "APGenererAttestationsProcess");
+        }
     }
 
-    private void createAttestation(String annee, String dateDebut, String dateFin) throws Exception {
+    private boolean isPrestationIJ(IJPrestation prest) {
+        return (Double.parseDouble(totalMontantIJ) != 0) && (IIJPrestation.CS_NORMAL.equals(prest.getCsType()) || IIJPrestation.CS_RESTITUTION.equals(prest.getCsType()));
+    }
+
+    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy) throws Exception {
         IJAttestations attestations = new IJAttestations(getSession());
         attestations.setAttestationsMap(map);
         attestations.setDateDebut(dateDebut);
@@ -433,6 +582,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         attestations.setTailleLot(1);
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setIsGenerationUnique(isGenerationUnique);
+        attestations.setAttestationCopy(isAttestationCopy);
         attestations.executeProcess();
     }
 

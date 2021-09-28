@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import globaz.apg.application.APApplication;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -50,9 +51,11 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.external.IntRole;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
+import globaz.prestation.itext.PRLettreEnTete;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITITiers;
@@ -97,6 +100,7 @@ public class IJAttestations extends FWIDocumentManager {
     private ICTDocument documentHelper;
 
     public String idBaseInd = "";
+    public String idTiers = "";
 
     private Boolean isSendToGED = Boolean.FALSE;
     Iterator iter;
@@ -120,6 +124,8 @@ public class IJAttestations extends FWIDocumentManager {
     public FWCurrency totalVentilation = new FWCurrency();
     
     private Boolean isGenerationUnique;
+
+    private boolean isAttestationCopy = false;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -207,7 +213,18 @@ public class IJAttestations extends FWIDocumentManager {
             docInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, getEMailAddress());
             docInfo.setDocumentTitle(getSession().getLabel("DOC_ATTEST_FISCAL_TITLE"));
             docInfo.setDocumentDate(JACalendar.todayJJsMMsAAAA());
-            docInfo.setDocumentSubject(getSession().getLabel("ATTEST_FISC_ANNEE") + " " + annee);
+
+            // remplace le titre de l'email seulement pour les documents qui regroupent plusieurs tiers
+            if ((!isAttestationCopy && getAttachedDocuments().size() > 1) || (isAttestationCopy && getAttachedDocuments().size() > 2)) {
+                StringBuilder suffixe = new StringBuilder();
+                suffixe.append(addAttestationTypeEmailObject());
+                if (isAttestationCopy) {
+                    suffixe.append(addAttestationCopyEmailObject());
+                }
+                suffixe.append(getSession().getLabel("ATTEST_FISC_ANNEE")).append(" ").append(annee);
+                docInfo.setDocumentSubject(suffixe.toString());
+            }
+
             docInfo.setDocumentProperty("annee", getAnnee());
 
             // Pour les decomptes definitifs et les client qui possedent une GED
@@ -356,6 +373,9 @@ public class IJAttestations extends FWIDocumentManager {
 
             // le "détail"
             // --------------------------------------------------------------------------------------
+
+            initCopyFisc(parametres);
+
             buffer.setLength(0);
 
             parametres.put("PARAM_FIELD_COTISATIONS", document.getTextes(3).getTexte(2).toString());
@@ -533,6 +553,45 @@ public class IJAttestations extends FWIDocumentManager {
         } catch (Exception e) {
             getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, "IJAttestations");
             abort();
+        }
+    }
+
+    private void initCopyFisc(Map parametres) throws Exception {
+
+        // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
+        boolean isCopyFisc = false;
+        boolean isHasCopyFisc = false;
+        boolean isAddLettreEntete = false;
+        for (Object ai : list) {
+            if (ai instanceof AttestationsInfos) {
+                if (((AttestationsInfos) ai).isCopyFisc()) {
+                    isCopyFisc = true;
+                }
+                if (((AttestationsInfos) ai).isHasCopyFisc()) {
+                    isHasCopyFisc = true;
+                }
+                if (((AttestationsInfos) ai).isAddLettreEntete()) {
+                    isAddLettreEntete = true;
+                }
+            }
+        }
+
+        // si une des attestations est une copie au fisc
+        if (isCopyFisc) {
+            parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
+        }
+
+        // si une des attestations possède une copie au fisc
+        if (isHasCopyFisc) {
+            initCopieA2Fisc(document, parametres, idTiers);
+        }
+
+        // si une des attestations possède une lettre d'entête (une par canton)
+        if (isAddLettreEntete) {
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+
+            // Création du document en-tête
+            createLettreEntete(idTiersAdmFiscale, true);
         }
     }
 
@@ -775,7 +834,33 @@ public class IJAttestations extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
-        return super.getEMailObject();
+        StringBuilder suffixe = new StringBuilder();
+        suffixe.append(addAttestationTypeEmailObject());
+        if (isAttestationCopy) {
+            suffixe.append(addAttestationCopyEmailObject());
+        }
+        return suffixe.append(super.getEMailObject()).toString();
+    }
+
+    private String addAttestationTypeEmailObject() {
+        return getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_IJAI_OK");
+    }
+
+    private StringBuilder addAttestationCopyEmailObject() {
+        StringBuilder suffixe = new StringBuilder();
+        try {
+            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_COPY")).append(" - ");
+            if (!JadeStringUtil.isEmpty(idTiers)) {
+                suffixe.append(getSession().getCodeLibelle(PRTiersHelper.getTiersCanton(getSession(), idTiers))).append(" - ");
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.WARNING, "IJAttestations");
+        }
+        return suffixe;
+    }
+
+    public String getIdTiers() {
+        return idTiers;
     }
 
     public String getIdBaseInd() {
@@ -849,6 +934,7 @@ public class IJAttestations extends FWIDocumentManager {
                 AttestationsInfos ai = (AttestationsInfos) iterator.next();
 
                 setIdBaseInd(ai.idBaseInd);
+                setIdTiers(ai.idTiers);
 
             }
 
@@ -885,6 +971,10 @@ public class IJAttestations extends FWIDocumentManager {
 
     public void setDocument(ICTDocument document) {
         this.document = document;
+    }
+
+    public void setIdTiers(String idTiers) {
+        this.idTiers = idTiers;
     }
 
     public void setIdBaseInd(String idBaseInd) {
@@ -1008,8 +1098,12 @@ public class IJAttestations extends FWIDocumentManager {
                                     ai.idsRPVentilations.add(id);
                                 }
                             }
-
                             // mise à jour automatique
+
+                            // reporte les paramètres de copies au fisc et de lettre d'entête de la lignes d'attestation supprimée dans la lignes d'attestation conservé
+                            if (aiPrec.isCopyFisc()) { ai.setIsCopyFisc(aiPrec.isCopyFisc()); }
+                            if (aiPrec.isHasCopyFisc()) { ai.setIsHasCopyFisc(aiPrec.isHasCopyFisc()); }
+                            if (aiPrec.isAddLettreEntete()) { ai.setIsAddLettreEntete(aiPrec.isAddLettreEntete()); }
 
                             // suppression de aiPrec dans la liste
                             listObjects.remove(aiPrec);
@@ -1028,6 +1122,66 @@ public class IJAttestations extends FWIDocumentManager {
         }
 
         return listObjects;
+    }
+
+    /**
+     * Création de la lettre d'entête
+     *
+     * @param idTiers
+     * @return
+     * @throws FWIException
+     * @throws Exception
+     */
+    private PRLettreEnTete createLettreEntete(String idTiers, boolean isAdmFiscale) throws FWIException, Exception {
+        PRLettreEnTete lettreEnTete = new PRLettreEnTete();
+        lettreEnTete.setSession(getSession());
+        // retrieve du tiers
+        PRTiersWrapper tier;
+        if (isAdmFiscale) {
+            tier = PRTiersHelper.getAdministrationParId(getSession(), idTiers);
+        } else {
+            tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiers);
+        }
+        lettreEnTete.setTierAdresse(tier);
+        // pour l'instant, les copies sont uniquement adressées aux assurés,
+        // donc pas d'idAffilié
+        lettreEnTete.setIdAffilie("");
+        lettreEnTete.setEMailAddress(getEMailAddress());
+        lettreEnTete.setDomaineLettreEnTete(PRLettreEnTete.DOMAINE_MAT);
+        lettreEnTete.setParent(this);
+        lettreEnTete.executeProcess();
+        return lettreEnTete;
+    }
+
+    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiers) throws Exception {
+        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+
+        parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
+        parametres.putIfAbsent("P_COPIE_A2", "");
+        if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
+            // chargement de la ligne de copie avec le formater
+            final String ligneAdmFiscale = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    idTiersAdmFiscale, APApplication.CS_DOMAINE_ADRESSE_APG, "", "",
+                    new PRTiersAdresseCopyFormater02(), JACalendar.todayJJsMMsAAAA());
+            parametres.put("P_COPIE_A2", parametres.get("P_COPIE_A2") + (JadeStringUtil.isBlank(String.valueOf(parametres.get("P_COPIE_A2"))) ? "" : "\n") + ligneAdmFiscale);
+        }
+    }
+
+    private String getTextOrEmpty(ICTDocument document, int niveau, int position) {
+        try {
+            return document.getTextes(niveau).getTexte(position).getDescription();
+        } catch (IndexOutOfBoundsException e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, "APAttestations");
+            return "";
+        }
+    }
+
+    public boolean isAttestationCopy() {
+        return isAttestationCopy;
+    }
+
+    public void setAttestationCopy(boolean attestationCopy) {
+        isAttestationCopy = attestationCopy;
     }
 
 }

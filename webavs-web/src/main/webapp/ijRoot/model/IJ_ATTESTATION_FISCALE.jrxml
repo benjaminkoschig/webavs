@@ -36,6 +36,9 @@
 	<parameter name="PARAM_FIELD_IMPOT" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_MONTANT_IMPOT" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_DEVISE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_COPIE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE_A" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE_A2" isForPrompting="false" class="java.lang.String"/>
 	<field name="FIELD_PERIODE" class="java.lang.String"/>
 	<field name="FIELD_MONTANT_IJ" class="java.lang.String"/>
 		<group  name="group2" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
@@ -539,7 +542,7 @@
 						x="-59"
 						y="0"
 						width="592"
-						height="258"
+						height="235"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-1"
@@ -555,7 +558,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="296"
+						y="292"
 						width="510"
 						height="39"
 						forecolor="#000000"
@@ -575,7 +578,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="1"
-						y="257"
+						y="263"
 						width="507"
 						height="20"
 						forecolor="#000000"
@@ -591,6 +594,28 @@
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_TITRE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="1"
+						y="239"
+						width="126"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-59"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE}!=null && !"".equals($P{P_COPIE}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</title>
@@ -676,6 +701,54 @@
 			<band height="0"  isSplitAllowed="true" >
 			</band>
 		</pageFooter>
+		<lastPageFooter>
+			<band height="31"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="0"
+						width="47"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-61"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="52"
+						y="0"
+						width="442"
+						height="30"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-62"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</lastPageFooter>
 		<summary>
 			<band height="0"  isSplitAllowed="false" >
 			</band>

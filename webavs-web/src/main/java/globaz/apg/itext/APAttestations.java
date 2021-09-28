@@ -255,6 +255,18 @@ public class APAttestations extends FWIDocumentManager {
             docInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, getEMailAddress());
             docInfo.setDocumentTitle(getSession().getLabel("DOC_ATTEST_FISCAL_TITLE"));
             docInfo.setDocumentDate(JACalendar.todayJJsMMsAAAA());
+
+            // remplace le titre de l'email seulement pour les documents qui regroupent plusieurs tiers
+            if ((!isAttestationCopy && getAttachedDocuments().size() > 1) || (isAttestationCopy && getAttachedDocuments().size() > 2)) {
+                StringBuilder suffixe = new StringBuilder();
+                suffixe.append(addAttestationTypeEmailObject());
+                if (isAttestationCopy) {
+                    suffixe.append(addAttestationCopyEmailObject());
+                }
+                suffixe.append(getSession().getLabel("ATTEST_FISC_ANNEE")).append(" ").append(annee);
+                docInfo.setDocumentSubject(suffixe.toString());
+            }
+
             docInfo.setDocumentProperty("annee", annee);
 
             // Pour les decomptes definitifs et les client qui possedent une GED
@@ -412,41 +424,7 @@ public class APAttestations extends FWIDocumentManager {
             // le "détail"
             // --------------------------------------------------------------------------------------
 
-            // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
-            boolean isCopyFisc = false;
-            boolean isHasCopyFisc = false;
-            boolean isAddLettreEntete = false;
-            for (Object ai : list) {
-                if (ai instanceof AttestationsInfos && (IPRDemande.CS_TYPE_PATERNITE.equals(type) || IPRDemande.CS_TYPE_APG.equals(type) || IPRDemande.CS_TYPE_PANDEMIE.equals(type) || IPRDemande.CS_TYPE_MATERNITE.equals(type) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type))) {
-                    if (((AttestationsInfos) ai).isCopyFisc()) {
-                        isCopyFisc = true;
-                    }
-                    if (((AttestationsInfos) ai).isHasCopyFisc()) {
-                        isHasCopyFisc = true;
-                    }
-                    if (((AttestationsInfos) ai).isAddLettreEntete()) {
-                        isAddLettreEntete = true;
-                    }
-                }
-            }
-
-            // si une des attestations est une copie au fisc
-            if (isCopyFisc) {
-                parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
-            }
-
-            // si une des attestations possède une copie au fisc
-            if (isHasCopyFisc) {
-                initCopieA2Fisc(document, parametres, idTiers);
-            }
-
-            // si une des attestations possède une lettre d'entête (une par canton)
-            if (isAddLettreEntete) {
-                String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
-
-                // Création du document en-tête
-                createLettreEntete(idTiersAdmFiscale, true);
-            }
+            initCopyFisc(parametres);
 
             buffer.setLength(0);
 
@@ -625,6 +603,45 @@ public class APAttestations extends FWIDocumentManager {
         } catch (Exception e) {
             getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, "APAttestations");
             abort();
+        }
+    }
+
+    private void initCopyFisc(Map parametres) throws Exception {
+
+        // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
+        boolean isCopyFisc = false;
+        boolean isHasCopyFisc = false;
+        boolean isAddLettreEntete = false;
+        for (Object ai : list) {
+            if (ai instanceof AttestationsInfos && (IPRDemande.CS_TYPE_PATERNITE.equals(type) || IPRDemande.CS_TYPE_APG.equals(type) || IPRDemande.CS_TYPE_PANDEMIE.equals(type) || IPRDemande.CS_TYPE_MATERNITE.equals(type) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type))) {
+                if (((AttestationsInfos) ai).isCopyFisc()) {
+                    isCopyFisc = true;
+                }
+                if (((AttestationsInfos) ai).isHasCopyFisc()) {
+                    isHasCopyFisc = true;
+                }
+                if (((AttestationsInfos) ai).isAddLettreEntete()) {
+                    isAddLettreEntete = true;
+                }
+            }
+        }
+
+        // si une des attestations est une copie au fisc
+        if (isCopyFisc) {
+            parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
+        }
+
+        // si une des attestations possède une copie au fisc
+        if (isHasCopyFisc) {
+            initCopieA2Fisc(document, parametres, idTiers);
+        }
+
+        // si une des attestations possède une lettre d'entête (une par canton)
+        if (isAddLettreEntete) {
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+
+            // Création du document en-tête
+            createLettreEntete(idTiersAdmFiscale, true);
         }
     }
 
@@ -894,24 +911,31 @@ public class APAttestations extends FWIDocumentManager {
     @Override
     protected String getEMailObject() {
         StringBuilder suffixe = new StringBuilder();
-        if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
-            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK"));
-        } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
-            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK"));
-        } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
-            suffixe.append( getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PROCHE_AIDANT_OK"));
-        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
-            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK"));
-        } else {
-            suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK"));
-        }
+        suffixe.append(addAttestationTypeEmailObject());
         if (isAttestationCopy) {
-            addAttestationCopyEmailObject(suffixe);
+            suffixe.append(addAttestationCopyEmailObject());
         }
-        return suffixe.toString() + super.getEMailObject();
+        return suffixe.append(super.getEMailObject()).toString();
     }
 
-    private void addAttestationCopyEmailObject(StringBuilder suffixe) {
+    private String addAttestationTypeEmailObject() {
+        String suffixe;
+        if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK");
+        } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK");
+        } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PROCHE_AIDANT_OK");
+        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK");
+        } else {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK");
+        }
+        return suffixe;
+    }
+
+    private StringBuilder addAttestationCopyEmailObject() {
+        StringBuilder suffixe = new StringBuilder();
         try {
             suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_COPY")).append(" - ");
             if (!JadeStringUtil.isEmpty(idTiers)) {
@@ -920,6 +944,7 @@ public class APAttestations extends FWIDocumentManager {
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.WARNING, "APAttestations");
         }
+        return suffixe;
     }
 
     public String getIdTiers() {
