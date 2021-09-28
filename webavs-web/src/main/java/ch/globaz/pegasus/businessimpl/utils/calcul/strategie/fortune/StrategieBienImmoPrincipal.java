@@ -48,7 +48,7 @@ public class StrategieBienImmoPrincipal extends StrategieCalculFortune implement
                     this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY, checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction);
                 } else {
                     this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY,
-                            0.0f);
+                            checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantValeurFiscale()) * fraction);
                 }
             }
 
