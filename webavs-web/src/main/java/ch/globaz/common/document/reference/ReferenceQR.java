@@ -11,23 +11,18 @@ import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BManager;
 import globaz.globall.util.JABVR;
-import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.i18n.JadeI18n;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
 import globaz.osiris.exceptions.CATechnicalException;
-import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
-import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
-import jdk.nashorn.internal.runtime.logging.Logger;
-import lombok.extern.log4j.Log4j;
+import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
+import globaz.pyxis.db.tiers.TITiers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -45,15 +40,15 @@ public class ReferenceQR extends AbstractReference {
     private String subReportQR = "QR_FACTURE_TEMPLATE.jasper";
     private String subReportQRCurrentPage = "QR_FACTURE_TEMPLATE_CURRENT_PAGE.jasper";
 
-    private static final String QR_IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.qr.iban");
-    private static final String IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.iban");
-    private static final String SANS_REF = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.sans.reference");
-    private static final String END_OF_PAYMENT = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"end.of.payment");
-    private static final String QR_TYPE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.qr");
-    private static final String DEFAULT_VERSION = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"default.version");
-    private static final String CODING_TYPE= JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"coding.type");
-    public static final String COMBINE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"adresse.combine");
-    public static final String STRUCTURE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"adresse.structure");
+    private static final String QR_IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "type.reference.qr.iban");
+    private static final String IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "type.reference.iban");
+    private static final String SANS_REF = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "type.sans.reference");
+    private static final String END_OF_PAYMENT = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "end.of.payment");
+    private static final String QR_TYPE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "type.qr");
+    private static final String DEFAULT_VERSION = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "default.version");
+    private static final String CODING_TYPE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "coding.type");
+    public static final String COMBINE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "adresse.combine");
+    public static final String STRUCTURE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT, "adresse.structure");
 
     private String adresseCopy = StringUtils.EMPTY;
     private String adresseDebiteur = StringUtils.EMPTY;
@@ -70,9 +65,9 @@ public class ReferenceQR extends AbstractReference {
     private String version = DEFAULT_VERSION;
     private String codingType = CODING_TYPE;
     private String creNom = StringUtils.EMPTY;
-    private String creAdressTyp  = StringUtils.EMPTY;
-    private String creRueOuLigneAdresse1  = StringUtils.EMPTY;
-    private String creNumMaisonOuLigneAdresse2  = StringUtils.EMPTY;
+    private String creAdressTyp = StringUtils.EMPTY;
+    private String creRueOuLigneAdresse1 = StringUtils.EMPTY;
+    private String creNumMaisonOuLigneAdresse2 = StringUtils.EMPTY;
     private String creCodePostal = StringUtils.EMPTY;
     private String creLieu = StringUtils.EMPTY;
     private String crePays = StringUtils.EMPTY;
@@ -123,11 +118,11 @@ public class ReferenceQR extends AbstractReference {
         initEnteteQR(document);
 
         // Initialisation des params de la QR-Facture
-         initParamQR();
+        initParamQR();
 
-         for (Map.Entry element : parameters.entrySet()){
-             document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
-         }
+        for (Map.Entry element : parameters.entrySet()) {
+            document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
+        }
 
         return document;
     }
@@ -137,7 +132,7 @@ public class ReferenceQR extends AbstractReference {
      *
      * @param document
      */
-    private void initEnteteQR(FWIDocumentManager document)  {
+    private void initEnteteQR(FWIDocumentManager document) {
 
         try {
             parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + subReportQR);
@@ -165,12 +160,11 @@ public class ReferenceQR extends AbstractReference {
 
     /**
      * Méthode qui charge les paramètres variables de la QR-Facture
-     *
      */
-    public void initParamQR()  {
+    public void initParamQR() {
         parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
         // Activation ou non des traitillés et ciseaux sur Qr Facture
-        if (addTraitille()){
+        if (addTraitille()) {
             parameters.put(COParameter.P_CISEAU_VERTICAL_PATH, getDefaultModelPath() + "/ciseau_vertical.jpg");
             parameters.put(COParameter.P_CISEAU_HORIZ_PATH, getDefaultModelPath() + "/ciseau_horiz.png");
         }
@@ -198,10 +192,10 @@ public class ReferenceQR extends AbstractReference {
         } else {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
         }
-        if (!COMBINE.equals(debfAdressTyp)){
+        if (!COMBINE.equals(debfAdressTyp)) {
             parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
         } else {
-            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE +debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
+            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
         }
 
 
@@ -230,17 +224,17 @@ public class ReferenceQR extends AbstractReference {
         builder.append(getCompteWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(creNom.isEmpty()?creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ") : creNom ).append(CHAR_FIN_LIGNE);
+        builder.append(creNom.isEmpty() ? creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ") : creNom).append(CHAR_FIN_LIGNE);
 
         // replace des CHAR_FIN_LIGNE compris dans le string.
-        builder.append(creNom.isEmpty()? "" : creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(creNom.isEmpty() ? "" : creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
         builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : getCrePaysVar()).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrePays()) ? CODE_PAYS_DEFAUT : getCrePaysVar()).append(CHAR_FIN_LIGNE);
 
         builder.append(crefAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(crefNom.isEmpty()? crefRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : crefNom ).append(CHAR_FIN_LIGNE);
+        builder.append(crefNom.isEmpty() ? crefRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : crefNom).append(CHAR_FIN_LIGNE);
         builder.append(crefNom.isEmpty() ? "" : crefRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
         builder.append(crefNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
@@ -248,7 +242,7 @@ public class ReferenceQR extends AbstractReference {
         if (crefNom.isEmpty()) {
             builder.append(CHAR_FIN_LIGNE);
         } else {
-            builder.append(Objects.isNull(getCrefPays())? CODE_PAYS_DEFAUT : getCrefPays()).append(CHAR_FIN_LIGNE);
+            builder.append(Objects.isNull(getCrefPays()) ? CODE_PAYS_DEFAUT : getCrefPays()).append(CHAR_FIN_LIGNE);
         }
 
         // Débiteur final
@@ -269,13 +263,13 @@ public class ReferenceQR extends AbstractReference {
             }
             builder.append(monnaie).append(CHAR_FIN_LIGNE);
             builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
-            builder.append(debfNom.isEmpty()? debfRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : debfNom).append(CHAR_FIN_LIGNE);
-            builder.append(debfNom.isEmpty()? "" : debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty() ? debfRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty() ? "" : debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
             builder.append(debfNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
         }
-        builder.append(Objects.isNull(getDebfPays())? CODE_PAYS_DEFAUT : getDebfPays()).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getDebfPays()) ? CODE_PAYS_DEFAUT : getDebfPays()).append(CHAR_FIN_LIGNE);
 
         // Référence paiement
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
@@ -283,12 +277,12 @@ public class ReferenceQR extends AbstractReference {
 
         // Info Supp
         if (qrNeutre && new Montant(montant).isNegative()) {
-            builder.append(pInfoAddErreur + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
+            builder.append(pInfoAddErreur + " " + communicationNonStructuree).append(CHAR_FIN_LIGNE);
         } else {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
         }
         builder.append(trailer).append(CHAR_FIN_LIGNE);
-        if(!StringUtils.isEmpty(infoFacture)) {
+        if (!StringUtils.isEmpty(infoFacture)) {
             builder.append(infoFacture).append(CHAR_FIN_LIGNE);
         }
         // Procédure alternative
@@ -302,7 +296,6 @@ public class ReferenceQR extends AbstractReference {
      * Méthode de génération de la référence QR pour Contentieux depuis la section
      * <p>
      *
-     *
      * @param section la section
      */
     public void genererReferenceQR(APISection section) throws CATechnicalException {
@@ -312,7 +305,6 @@ public class ReferenceQR extends AbstractReference {
     }
 
     /**
-     *
      * Méthode de génération de la référence QR
      *
      * @param idRole
@@ -324,8 +316,8 @@ public class ReferenceQR extends AbstractReference {
      */
     public void genererReferenceQR(String idRole, String idExterneRole, Boolean isPlanPaiement, String idTypeSection, String idExterne, String idCompteAnnexe, String solde) throws CATechnicalException {
 
-        try{
-            this.reference = genererNumReference(idRole, idExterneRole , isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
+        try {
+            this.reference = genererNumReference(idRole, idExterneRole, isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
         } catch (Exception e) {
             throw new CATechnicalException("Erreur à la génération de la référence QR :", e);
         }
@@ -355,7 +347,7 @@ public class ReferenceQR extends AbstractReference {
 
     public void genererReference(String reference, String montant) throws CATechnicalException {
         if (new FWCurrency(montant).isPositive()) {
-            try{
+            try {
                 JABVR bvr = new JABVR(montant, reference, getNoAdherent());
                 setReference(bvr.get_ligneReference());
             } catch (Exception e) {
@@ -367,7 +359,6 @@ public class ReferenceQR extends AbstractReference {
     /**
      * Méthode de génération de la référence QR pour Facturation
      * <p>
-     *
      *
      * @param enteteFacture l'entête facture
      */
@@ -413,33 +404,21 @@ public class ReferenceQR extends AbstractReference {
      * @return Boolean
      * @throws Exception
      */
-    public Boolean genererAdresseDebiteur(String idTiers) throws Exception {
+    public Boolean genererAdresseDebiteur(String idTiers, String typeAdresse, String domaineCourrier, String idExterneRole, String date) throws Exception {
 
-        TIAdresseDataManager adresseDataManager = new TIAdresseDataManager();
-        adresseDataManager.setSession(getSession());
-        adresseDataManager.setForIdTiers(idTiers);
-        adresseDataManager.setForDateEntreDebutEtFin(JACalendar.todayJJsMMsAAAA());
-        adresseDataManager.find(BManager.SIZE_NOLIMIT);
+        TITiers tiers = getTiers(idTiers);
+        TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(typeAdresse, domaineCourrier, idExterneRole, date, true, getLangueDoc());
 
 
-        ArrayList<TIAbstractAdresseData> listAdresses = new ArrayList<>();
-
-        for (int i = 0; i < adresseDataManager.size(); i++) {
-            TIAbstractAdresseData adresseTemp = ((TIAbstractAdresseData) adresseDataManager.getEntity(i));
-            if (adresseTemp.getDateFinRelation().isEmpty()) {
-                listAdresses.add(adresseTemp);
-            }
-        }
-
-        // Chargement des données débiteurs sur le QR
-        if (listAdresses.size() == 1) {
+        if (Objects.nonNull(adresse)) {
+            // Chargement des données débiteurs sur le QR
             debfAdressTyp = STRUCTURE;
-            debfNom = listAdresses.get(0).getNom();
-            debfPays = listAdresses.get(0).getPaysIso();
-            debfCodePostal = listAdresses.get(0).getNpa();
-            debfLieu = listAdresses.get(0).getLocalite();
-            debfRueOuLigneAdresse1 = listAdresses.get(0).getRue();
-            debfNumMaisonOuLigneAdresse2 = listAdresses.get(0).getNumero();
+            debfNom = adresse.fullLigne1;
+            debfPays = adresse.paysIso;
+            debfCodePostal = adresse.localiteNpa;
+            debfLieu = adresse.localiteNom;
+            debfRueOuLigneAdresse1 = adresse.rue;
+            debfNumMaisonOuLigneAdresse2 = adresse.numeroRue;
             return true;
         } else {
             return false;
@@ -454,21 +433,20 @@ public class ReferenceQR extends AbstractReference {
     /**
      * Méthode qui va setter l'adresse créditeur
      * depuis une adresse combinée
-     *
      */
     public void genererCreAdresse() {
 
-        String[] adresseSplit =  getAdresse().split("\r\n");
+        String[] adresseSplit = getAdresse().split("\r\n");
 
         this.creAdressTyp = COMBINE;
 
         StringBuilder creRueOuLigneAdresse1SB = new StringBuilder(creRueOuLigneAdresse1);
 
-        for(int i = 0; i < adresseSplit.length ; i++) {
+        for (int i = 0; i < adresseSplit.length; i++) {
             if (i == (adresseSplit.length - 1)) {
                 this.creNumMaisonOuLigneAdresse2 = adresseSplit[i];
             } else {
-                creRueOuLigneAdresse1SB.append(adresseSplit[i] +"\r\n");
+                creRueOuLigneAdresse1SB.append(adresseSplit[i] + "\r\n");
             }
         }
         creRueOuLigneAdresse1 = creRueOuLigneAdresse1SB.toString();
@@ -634,7 +612,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getCreNumMaisonOuLigneAdresse2() {
-        if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)){
+        if (getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 pour les adresses structurées ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 16) {
                 return creNumMaisonOuLigneAdresse2.substring(0, 16);
@@ -649,7 +627,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public void setCreNumMaisonOuLigneAdresse2(String creNumMaisonOuLigneAdresse2) {
-        if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
+        if (getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 16) {
                 this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2.substring(0, 16);
@@ -692,9 +670,9 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getCrePays() {
-        try{
+        try {
             return getCodePays();
-        } catch (Exception e){
+        } catch (Exception e) {
             // Le code pays n'a pas été trouvé
             return null;
         }
@@ -763,7 +741,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getDebfNumMaisonOuLigneAdresse2() {
-        if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
+        if (getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 16) {
                 return debfNumMaisonOuLigneAdresse2.substring(0, 16);
@@ -777,14 +755,14 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public void setDebfNumMaisonOuLigneAdresse2(String debfNumMaisonOuLigneAdresse2) {
-        if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
+        if (getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 16) {
                 this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(0, 16);
             } else this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2;
         } else {
             int indexDepart = 0;
-            if (debfNumMaisonOuLigneAdresse2.indexOf('\n') != -1 && debfNumMaisonOuLigneAdresse2.indexOf('\n') == 0 && debfNumMaisonOuLigneAdresse2.length()>2) {
+            if (debfNumMaisonOuLigneAdresse2.indexOf('\n') != -1 && debfNumMaisonOuLigneAdresse2.indexOf('\n') == 0 && debfNumMaisonOuLigneAdresse2.length() > 2) {
                 indexDepart = 1;
             }
 
@@ -797,11 +775,11 @@ public class ReferenceQR extends AbstractReference {
         }
     }
 
-    public void insertAdresseDebFAsStringInQrFacture(String adresseDebiteurAsString){
+    public void insertAdresseDebFAsStringInQrFacture(String adresseDebiteurAsString) {
         this.setDebfNom(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
-        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
+        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n') + 1, adresseDebiteurAsString.length());
         this.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
-        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
+        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n') + 1, adresseDebiteurAsString.length());
         this.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString);
     }
 
@@ -834,7 +812,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getDebfPays() {
-        if (debfPays.isEmpty()){
+        if (debfPays.isEmpty()) {
             return CODE_PAYS_DEFAUT;
         }
         return debfPays;

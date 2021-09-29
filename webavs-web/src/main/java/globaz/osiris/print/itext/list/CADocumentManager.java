@@ -47,21 +47,25 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static globaz.pyxis.constantes.IConstantes.CS_AVOIR_ADRESSE_COURRIER;
+
 /**
  * Classe abstraite parente de tous les documents du projet osiris. Centralise les fonctionalités communes aux documents
- * 
- * @see globaz.framework.printing.itext.FWIDocumentManager
+ *
  * @author Kurus, 10-mai-2005
+ * @see globaz.framework.printing.itext.FWIDocumentManager
  */
 public abstract class CADocumentManager extends FWIDocumentManager {
     /**
-     * 
+     *
      */
     private static final Logger LOG = LoggerFactory.getLogger(CADocumentManager.class);
 
     private static final long serialVersionUID = 1L;
     public final static String JASP_PROP_BODY_ADR_CAISSE_BVR = "body.adr.caisse.bvr.";
-    /** Template properties */
+    /**
+     * Template properties
+     */
     public final static String JASP_PROP_BODY_AFFILIE = "body.affilie.";
     public final static String JASP_PROP_BODY_CACLIBELLE = "body.caclibelle.";
     public final static String JASP_PROP_BODY_CACMONTANT = "body.cacmontant.";
@@ -81,7 +85,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public final static String JASP_PROP_BODY_NUMERO_COMPTE = "body.numero.compte.";
     public final static String JASP_PROP_BODY_TRI_NOM = "body.tri.nom.";
     public final static String JASP_PROP_BODY_TRI_NUMERO = "body.tri.numero.";
-    /** Seuil de l'exécution directe ou différée */
+    /**
+     * Seuil de l'exécution directe ou différée
+     */
     private static final int JOB_QUEUE_THRESHOLD = 10;
     protected int factureImpressionNo = 0;
     protected Boolean computePageActive = false;
@@ -97,11 +103,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * <p>
      * En attendant qu'elle soit dans le framework.
      * </p>
-     * 
-     * @param message
-     *            le message dans lequel se trouve les groupes à remplacer
-     * @param args
-     *            les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
+     *
+     * @param message le message dans lequel se trouve les groupes à remplacer
+     * @param args    les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
      * @return le message formatté
      * @see MessageFormat
      */
@@ -136,10 +140,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * <LI><I>décimales :</I>2</LI>;
      * <LI><I>arrondi : </I>au plus proche</LI>.
      * </UL>
-     * 
+     *
+     * @param montant montant à formatter.
      * @return un String représentant le montant formattée.
-     * @param montant
-     *            montant à formatter.
      */
     public static final String formatMontant(String montant) {
         if (JadeStringUtil.isBlank(montant)) {
@@ -149,36 +152,56 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         return JANumberFormatter.format(montant);
     }
 
-    /** Collection pour un DataSource */
+    /**
+     * Collection pour un DataSource
+     */
     private ArrayList beanList = new ArrayList();
-    /** Entité courante */
+    /**
+     * Entité courante
+     */
     private Object currentEntity = null;
     // Champs pour le catalogue de textes
     protected ICTDocument document;
-    /** Liste des entités à traiter */
+    /**
+     * Liste des entités à traiter
+     */
     private ArrayList entityList = new ArrayList();
-    /** Document principal */
+    /**
+     * Document principal
+     */
     private CADocumentManager firstDocument = null;
     protected String idDocument = "";
-    /** Itérateur sur la liste des entités */
+    /**
+     * Itérateur sur la liste des entités
+     */
     private Iterator iEntityList = null;
     /** L'annonce de l'assuré */
     // protected CAExtraitAnnonceAssureBean annonceAssure = null;
-    /** Langue du document */
+    /**
+     * Langue du document
+     */
     private String langue = getSession().getIdLangueISO();
 
-    /** Liste annexes */
+    /**
+     * Liste annexes
+     */
     private String listeAnnexes = "";
     protected String nomDocument = "";
     protected int numDocument = 0;
     private String numeroReferenceInforom = "";
-    /** PrintCompletionDoc */
+    /**
+     * PrintCompletionDoc
+     */
     private boolean printCompletionDoc = true;
 
-    /** PrintOutline */
+    /**
+     * PrintOutline
+     */
     private boolean printOutline = false;
 
-    /** Map d'une ligne de données */
+    /**
+     * Map d'une ligne de données
+     */
     private Map row = new HashMap();
 
     protected String typeDocument = "";
@@ -203,13 +226,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Initialise le document
-     * 
-     * @param parent
-     *            Le processus parent
-     * @param fileName
-     *            Le nom du fichier
-     * @throws FWIException
-     *             En cas de problème d'initialisaion
+     *
+     * @param parent   Le processus parent
+     * @param fileName Le nom du fichier
+     * @throws FWIException En cas de problème d'initialisaion
      */
     public CADocumentManager(BProcess parent, String fileName) throws FWIException {
         this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, fileName);
@@ -231,13 +251,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Initialise le document
-     * 
-     * @param parent
-     *            La session parente
-     * @param fileName
-     *            Le nom du fichier
-     * @throws FWIException
-     *             En cas de problème d'initialisaion
+     *
+     * @param parent   La session parente
+     * @param fileName Le nom du fichier
+     * @throws FWIException En cas de problème d'initialisaion
      */
     public CADocumentManager(BSession parent, String fileName) throws FWIException {
         this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, fileName);
@@ -281,11 +298,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne un String représentant la valeur de la propriété
-     * 
-     * @param property
-     *            Le nom de la propriété
-     * @param additionalValue
-     *            Une valeur additionnelle
+     *
+     * @param property        Le nom de la propriété
+     * @param additionalValue Une valeur additionnelle
      * @return La valeur de la propriété
      */
     protected String _getProperty(String property, String additionalValue) {
@@ -302,17 +317,12 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Gestion de l'en-tête/pied de page/signature
-     * 
-     * @param adresseDestination
-     *            L'adresse du destinataire du document
-     * @param hasHeader
-     *            <code>true</code> si le document contient un en-tête
-     * @param hasFooter
-     *            <code>true</code> si le document contient un pied de page
-     * @param hasSignature
-     *            <code>true</code> si le document contient une signature
-     * @throws Exception
-     *             En cas de problème
+     *
+     * @param adresseDestination L'adresse du destinataire du document
+     * @param hasHeader          <code>true</code> si le document contient un en-tête
+     * @param hasFooter          <code>true</code> si le document contient un pied de page
+     * @param hasSignature       <code>true</code> si le document contient une signature
+     * @throws Exception En cas de problème
      */
     protected void _handleHeaders(Object adresseDestination, boolean hasHeader, boolean hasFooter, boolean hasSignature)
             throws Exception {
@@ -321,20 +331,15 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Gestion de l'en-tête/pied de page/signature
-     * 
-     * @param adresseDestination
-     *            L'adresse du destinataire du document
-     * @param hasHeader
-     *            <code>true</code> si le document contient un en-tête
-     * @param hasFooter
-     *            <code>true</code> si le document contient un pied de page
-     * @param hasSignature
-     *            <code>true</code> si le document contient une signature
-     * @throws Exception
-     *             En cas de problème
+     *
+     * @param adresseDestination L'adresse du destinataire du document
+     * @param hasHeader          <code>true</code> si le document contient un en-tête
+     * @param hasFooter          <code>true</code> si le document contient un pied de page
+     * @param hasSignature       <code>true</code> si le document contient une signature
+     * @throws Exception En cas de problème
      */
     protected void _handleHeaders(Object adresseDestination, boolean hasHeader, boolean hasFooter,
-            boolean hasSignature, String date) throws Exception {
+                                  boolean hasSignature, String date) throws Exception {
         getDocumentInfo().setTemplateName("");
         ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
                 getDocumentInfo(), getSession().getApplication(), _getLangue());
@@ -400,9 +405,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Spécifie la langue du document
-     * 
-     * @param langueDoc
-     *            La langue du document
+     *
+     * @param langueDoc La langue du document
      */
     protected void _setLangueDocument(String langueDoc) {
         if (!JadeStringUtil.isBlank(langueDoc)) {
@@ -412,9 +416,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Spécifie la langue du document en fonction de la langue de l'affilié
-     * 
-     * @param affilie
-     *            La langue de l'affilié
+     *
+     * @param affilie La langue de l'affilié
      */
     protected void _setLangueFromAffilie(TITiersViewBean affilie) {
         if (affilie != null) {
@@ -424,9 +427,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Spécifie la langue du document en fonction de la langue d'un tiers
-     * 
-     * @param tiers
-     *            Le tiers
+     *
+     * @param tiers Le tiers
      */
     protected void _setLangueFromTiers(IntTiers tiers) {
         if (tiers != null) {
@@ -436,9 +438,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Ajoute un groupe d'entités à la liste
-     * 
-     * @param allEntities
-     *            Le groupe d'entités
+     *
+     * @param allEntities Le groupe d'entités
      * @return <code>true</code> si l'ajout s'est bien passé
      */
     public boolean addAllEntities(Collection allEntities) {
@@ -447,9 +448,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Ajoute une entité à la liste
-     * 
-     * @param entity
-     *            L'entité
+     *
+     * @param entity L'entité
      * @return <code>true</code> si l'ajout s'est bien passé
      */
     public boolean addEntity(Object entity) {
@@ -458,7 +458,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Ne fait rien par défaut
-     * 
+     *
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeBuildReport()
      */
     @Override
@@ -467,7 +467,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Ne fait rien par défaut
-     * 
+     *
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeExecuteReport()
      */
     @Override
@@ -499,7 +499,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne l'entité courante
-     * 
+     *
      * @return L'entité
      */
     public Object currentEntity() {
@@ -508,17 +508,14 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Regroupe tous les textes du même niveau en les séparant par la chaine de caractères passée en paramètre.
-     * 
-     * @param niveau
-     *            du catalogue de texte
-     * @param out
-     *            buffer regroupant les textes du même niveau
-     * @param paraSep
-     *            Chaine de séparation entre les positions du niveau.
+     *
+     * @param niveau  du catalogue de texte
+     * @param out     buffer regroupant les textes du même niveau
+     * @param paraSep Chaine de séparation entre les positions du niveau.
      */
     protected void dumpNiveau(int niveau, StringBuilder out, String paraSep) {
         try {
-            for (Iterator paraIter = loadCatalogue().getTextes(niveau).iterator(); paraIter.hasNext();) {
+            for (Iterator paraIter = loadCatalogue().getTextes(niveau).iterator(); paraIter.hasNext(); ) {
                 if (out.length() > 0) {
                     out.append(paraSep);
                 }
@@ -535,9 +532,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Transforme une date au format jj.mm.aaaa en une date en toutes lettres en utilisant la langue du document.
-     * 
-     * @param date
-     *            une date au format jj.mm.aaaa
+     *
+     * @param date une date au format jj.mm.aaaa
      * @return une date au format java.text FULL (exemple 1er juiller 2005)
      */
     protected String formatDate(String date) {
@@ -555,11 +551,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * Evite que {@link MessageFormat} ne lance une erreur ou ne se comporte pas correctement si le message contient des
      * apostrophes.
      * </p>
-     * 
-     * @param message
-     *            le message dans lequel se trouve les groupes à remplacer
-     * @param args
-     *            les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
+     *
+     * @param message le message dans lequel se trouve les groupes à remplacer
+     * @param args    les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
      * @return le message formatté
      * @see MessageFormat
      */
@@ -625,7 +619,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Récupère les textes du catalogue de texte
-     * 
+     *
      * @param niveau
      * @param position
      * @return
@@ -671,10 +665,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * retourne le catalogue de texte pour le document courant.
-     * 
+     *
      * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     protected ICTDocument loadCatalogue() throws Exception {
         if (document == null) {
@@ -712,11 +705,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne <code>true</code> s'il reste des entités à traiter et prépare l'entité courante.
-     * 
-     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
+     *
      * @return <code>true</code> s'il reste des entités
-     * @throws FWIException
-     *             En cas de problème
+     * @throws FWIException En cas de problème
+     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
      */
     @Override
     public boolean next() throws FWIException {
@@ -732,7 +724,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Set un champ d'information pour la Map JRDataSource
-     * 
+     *
      * @param name
      * @param obj
      */
@@ -741,40 +733,35 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param document
-     *            Document principal
+     * @param document Document principal
      */
     public void setFirstDocument(CADocumentManager document) {
         firstDocument = document;
     }
 
     /**
-     * @param idDocument
-     *            the idDocument to set
+     * @param idDocument the idDocument to set
      */
     public void setIdDocument(String idDocument) {
         this.idDocument = idDocument;
     }
 
     /**
-     * @param string
-     *            des annexes
+     * @param string des annexes
      */
     public void setListeAnnexes(String string) {
         listeAnnexes = string;
     }
 
     /**
-     * @param nomDocument
-     *            the nomDocument to set
+     * @param nomDocument the nomDocument to set
      */
     protected void setNomDocument(String nomDocument) {
         this.nomDocument = nomDocument;
     }
 
     /**
-     * @param numDocument
-     *            the numDocument to set
+     * @param numDocument the numDocument to set
      */
     protected void setNumDocument(int numDocument) {
         this.numDocument = numDocument;
@@ -782,9 +769,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Référence Inforom du document
-     * 
-     * @param numeroReferenceInforom
-     *            the numeroReferenceInforom to set
+     *
+     * @param numeroReferenceInforom the numeroReferenceInforom to set
      */
     public void setNumeroReferenceInforom(String numeroReferenceInforom) {
         this.numeroReferenceInforom = numeroReferenceInforom;
@@ -801,8 +787,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     /**
      * Définit le type du document
      *
-     * @param typeDocument
-     *            the typeDocument to set
+     * @param typeDocument the typeDocument to set
      */
     protected void setTypeDocument(String typeDocument) {
         this.typeDocument = typeDocument;
@@ -813,39 +798,41 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public void initVariableQR(String langueTier, FWCurrency montantTotal, String idTier) {
 
         qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
-        qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
+        qrFacture.setMontant(Objects.isNull(montantTotal) ? "" : montantTotal.toString());
         qrFacture.setLangueDoc(langueTier);
-
 
         try {
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(idTier)) {
+            boolean generationAdresseDebiteur;
+            // Si la sectionCourante est null, c'est que les informations sont contenues dans le plan de recouvrement.
+            if (Objects.isNull(sectionCourante)) {
+                CAPlanRecouvrement plan = echeance.getPlanRecouvrement();
+                compteAnnexe = plan.getCompteAnnexe();
+                String idRole = compteAnnexe.getIdRole();
+                String idExterneRole = compteAnnexe.getIdExterneRole();
+                String idPlan = plan.getIdPlanRecouvrement();
+
+                generationAdresseDebiteur = qrFacture.genererAdresseDebiteur(idTier, CS_AVOIR_ADRESSE_COURRIER, compteAnnexe._getDefaultDomainFromRole(), idExterneRole, JACalendar.today().toStr("."));
+                qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), Objects.isNull(montantTotal) ? "" : montantTotal.toString());
+            } else {
+                generationAdresseDebiteur = qrFacture.genererAdresseDebiteur(idTier, section.getTypeAdresse(), section.getDomaine(), compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+                qrFacture.genererReferenceQR(sectionCourante.getSection());
+            }
+
+            if (!generationAdresseDebiteur) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
 
                 // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
                 // Il faut donc séparé l'adresse sur deux lignes, et mettre la deuxième partie sur la ligne 2
-                String adresseDebiteur = _getAdressePrincipale();
                 try {
+                    String adresseDebiteur = _getAdressePrincipale();
                     qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteur);
                 } catch (Exception e) {
                     LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
                 }
 
             }
-
-            // Si la sectionCourante est null, c'est que les informations sont contenues dans le plan de recouvrement.
-            if (Objects.isNull(sectionCourante)) {
-                CAPlanRecouvrement plan = echeance.getPlanRecouvrement();
-                String idRole = plan.getCompteAnnexe().getIdRole();
-                String idExterneRole = plan.getCompteAnnexe().getIdExterneRole();
-                String idPlan = plan.getIdPlanRecouvrement();
-
-                qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), Objects.isNull(montantTotal)? "" : montantTotal.toString());
-            } else {
-                qrFacture.genererReferenceQR(sectionCourante.getSection());
-            }
-
 
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
@@ -881,12 +868,14 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     public String _getAdresseCourrier() throws Exception {
-        IntTiers tiers = compteAnnexe.getTiers();
-        if (tiers == null) {
+        if (Objects.isNull(compteAnnexe) || Objects.isNull(compteAnnexe.getTiers())) {
             return "";
         } else {
-            String domaine = section.getDomaine();
-            if (JadeStringUtil.isBlankOrZero(domaine)) {
+            IntTiers tiers = compteAnnexe.getTiers();
+            String domaine;
+            if (Objects.nonNull(section) && JadeStringUtil.isBlankOrZero(section.getDomaine())) {
+                domaine = section.getDomaine();
+            } else {
                 domaine = compteAnnexe._getDefaultDomainFromRole();
             }
             return tiers.getAdresseAsString(getDocumentInfo(), section.getTypeAdresse(), domaine,

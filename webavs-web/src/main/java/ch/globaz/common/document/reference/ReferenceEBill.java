@@ -209,7 +209,7 @@ public class ReferenceEBill extends AbstractReference {
 
     private TIAdresseDataSource getAdressePrincipale(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
         // l'adresse de paiement est l'adresse de courrier
-        TITiers tiers = getTiers(enteteFacture);
+        TITiers tiers = getTiers(enteteFacture.getIdTiers());
         if (Objects.isNull(tiers)) {
             return null;
         }
@@ -241,19 +241,6 @@ public class ReferenceEBill extends AbstractReference {
     private TIAdresseDataSource getAdresseDomicile(TITiers tiers, FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
         return tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
                 enteteFacture.getIdExterneRole(), dateFacturation, true, enteteFacture.getISOLangueTiers());
-    }
-
-    private TITiers getTiers(FAEnteteFacture enteteFacture) {
-        TITiers tiers = null;
-        try {
-            tiers = new TITiers();
-            tiers.setSession(getSession());
-            tiers.setIdTiers(enteteFacture.getIdTiers());
-            tiers.retrieve();
-        } catch (Exception exception) {
-            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", enteteFacture.getIdTiers(), exception);
-        }
-        return tiers;
     }
 
     public void addIfNotEmpty(String value, StringBuffer stringBuffer, String separator) {

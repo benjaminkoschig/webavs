@@ -488,7 +488,6 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
 
         try {
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(decompte.getIdTiers())) {
 
                 Adresse adresseDebiteurAsData = decompte.getEmployeur().getAdressePrincipale();
                 if (Objects.nonNull(adresseDebiteurAsData)) {
@@ -500,7 +499,6 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
                     qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsData.getRue());
                     qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsData.getRueNumero());
                 }
-            }
 
             // Création du numRef
             NumeroReference numRef = NumeroReferenceFactory.createNumeroReference(Role.AFFILIE_PARITAIRE, decompte

@@ -45,9 +45,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.api.APIOperation;
-import globaz.osiris.db.comptes.CARubrique;
-import globaz.osiris.db.comptes.CATypeOperation;
-import globaz.osiris.db.comptes.CATypeOperationManager;
+import globaz.osiris.db.comptes.*;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
@@ -73,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * Classe abstraite parente de touts les documents du projet aquila.<br>
  * Centralise les fonctionalités communes aux documents.<br>
  * 19-aug-2004
- * 
+ *
  * @author Alexandre Cuva, sel
  */
 public abstract class CODocumentManager extends FWIDocumentManager {
@@ -84,14 +82,14 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     private static final Logger LOG = LoggerFactory.getLogger(CODocumentManager.class);
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public ReferenceQR qrFacture = null;
 
     /**
      * <H1>Description</H1>
-     * 
+     *
      * @author vre
      */
     public static class COIDContentieux implements Serializable {
@@ -116,9 +114,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * Crée une nouvelle instance de la classe COIDContentieux.
-         * 
-         * @param contentieux
-         *            DOCUMENT ME!
+         *
+         * @param contentieux DOCUMENT ME!
          */
         public COIDContentieux(COContentieux contentieux) {
             idContentieux = contentieux.getIdContentieux();
@@ -135,7 +132,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * getter pour l'attribut id contentieux.
-         * 
+         *
          * @return la valeur courante de l'attribut id contentieux
          */
         public String getIdContentieux() {
@@ -144,7 +141,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * getter pour l'attribut lib sequence.
-         * 
+         *
          * @return la valeur courante de l'attribut lib sequence
          */
         public String getLibSequence() {
@@ -153,9 +150,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * setter pour l'attribut id contentieux.
-         * 
-         * @param string
-         *            une nouvelle valeur pour cet attribut
+         *
+         * @param string une nouvelle valeur pour cet attribut
          */
         public void setIdContentieux(String string) {
             idContentieux = string;
@@ -163,9 +159,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * setter pour l'attribut lib sequence.
-         * 
-         * @param string
-         *            une nouvelle valeur pour cet attribut
+         *
+         * @param string une nouvelle valeur pour cet attribut
          */
         public void setLibSequence(String string) {
             libSequence = string;
@@ -190,7 +185,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * été recopiées car les informations concernant les intérêts ne sont pas disponibles dans les classes de Osiris et
      * que selon DDA, il n'est pas recommmandé de modifier les classes de Osiris.
      * </p>
-     * 
+     *
      * @author vre
      */
     protected class COSituationCompteItem {
@@ -214,7 +209,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * getter pour l'attribut date operation.
-         * 
+         *
          * @return la valeur courante de l'attribut date operation
          */
         public String getDateOperation() {
@@ -237,6 +232,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         }
 
         /**
+         *
          */
         public FWCurrency getMontant() {
             if (montant == null) {
@@ -269,7 +265,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * getter pour l'attribut montant different zero.
-         * 
+         *
          * @return la valeur courante de l'attribut montant different zero
          */
         public boolean isMontantDifferentZero() {
@@ -278,7 +274,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * getter pour l'attribut montant negatif.
-         * 
+         *
          * @return la valeur courante de l'attribut montant negatif
          */
         public boolean isMontantNegatif() {
@@ -287,7 +283,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * retourne vrai si le montant est positif.
-         * 
+         *
          * @return true si le montant est positif.
          */
         public boolean isMontantPositif() {
@@ -311,10 +307,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         /**
          * Si j'ai une rubrique et qu'elle fait partis de la liste des soumis à intérêt (cfr : compta.aux.)
-         * 
+         *
          * @param session pour le manager des rubrique
          * @return si trouvé l'id rubrique de l'item courant dans la table des rubrique soumises à IM <br/>
-         *         (sans session ou en erreur retourne faux)
+         * (sans session ou en erreur retourne faux)
          */
         public boolean isSoumisInteret(BSession session) {
             if (extraitCompte.getRubrique() != null) {
@@ -359,13 +355,17 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     public static final String JASP_PROP_BODY_NOM_ETAPE_RADIEE = "body.nom.etape.radiee.";
     protected static final String JASP_PROP_BODY_PARA = "body.para.";
-    /** Template properties. */
+    /**
+     * Template properties.
+     */
     protected static final String JASP_PROP_BODY_POURCENT_INTERET_MORATOIRE = "body.pourcent.interet.moratoire.";
 
     protected static final String JASP_PROP_DOCUMENT_TITLE = "document.title.";
     protected static final String JASP_PROP_TITRE_PARA = "body.titre.";
 
-    /** Seuil de l'exécution directe ou différée. */
+    /**
+     * Seuil de l'exécution directe ou différée.
+     */
     private static final int JOB_QUEUE_THRESHOLD = 10;
 
     private static Map TYPE_OP_CACHE;
@@ -391,7 +391,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     private FWCurrency montantTotalDetail = null;
     private FWCurrency montantTotalPaiement = null;
 
-    /** Est prévisionnel et n'existe pas encore au contentieux ! **/
+    /**
+     * Est prévisionnel et n'existe pas encore au contentieux !
+     **/
     protected transient Boolean nouveauContentieux = null;
     private String numeroReferenceInforom = null;
     protected transient Boolean previsionnel = null;
@@ -408,7 +410,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public void setMontantTotalIM(String montantTotalIM) {
         this.montantTotalIM = montantTotalIM;
     }
-    
+
     public String getMontantTotalIM() {
         return montantTotalIM;
     }
@@ -420,7 +422,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * le boolean {@link TITiers#getAdresseAsDataSource(String, String, String, boolean) hérité} à vrai) pour le cas où
      * l'adresse pour le domaine d'application retourné par cette méthode ne serait pas renseigné pour un tiers.
      * </p>
-     * 
+     *
      * @return le domaine d'adresse standard à utiliser par tous les documents.
      */
     public static final String getIdApplicationAdresse() {
@@ -452,7 +454,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe CODocumentManager.
-     * 
+     *
      * @param session
      * @throws FWIException
      */
@@ -463,8 +465,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * @param session
-     * @param fileName
-     *            : nom du document PDF
+     * @param fileName : nom du document PDF
      * @throws FWIException
      */
     public CODocumentManager(BSession session, String fileName) throws FWIException {
@@ -524,7 +525,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * La langue du document.
-     * 
+     *
      * @return La langue du document
      */
     protected String _getLangue() {
@@ -533,9 +534,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne un String représentant la valeur de la propriété.
-     * 
-     * @param property
-     *            Le nom de la propriété
+     *
+     * @param property Le nom de la propriété
      * @return La valeur de la propriété
      */
     protected String _getProperty(String property) {
@@ -544,11 +544,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne un String représentant la valeur de la propriété.
-     * 
-     * @param property
-     *            Le nom de la propriété
-     * @param additionalValue
-     *            Une valeur additionnelle
+     *
+     * @param property        Le nom de la propriété
+     * @param additionalValue Une valeur additionnelle
      * @return La valeur de la propriété
      */
     protected String _getProperty(String property, String additionalValue) {
@@ -572,21 +570,15 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Gestion de l'en-tête/pied de page/signature.
      *
-     * @param contentieux
-     *            Le contentieux concerné par ce document
-     * @param hasHeader
-     *            <code>true</code> si le document contient un en-tête
-     * @param hasFooter
-     *            <code>true</code> si le document contient un pied de page
-     * @param hasSignature
-     *            <code>true</code> si le document contient une signature
-     * @param adresse
-     *            l'adresse du destinataire
-     * @throws Exception
-     *             En cas de problème
+     * @param contentieux  Le contentieux concerné par ce document
+     * @param hasHeader    <code>true</code> si le document contient un en-tête
+     * @param hasFooter    <code>true</code> si le document contient un pied de page
+     * @param hasSignature <code>true</code> si le document contient une signature
+     * @param adresse      l'adresse du destinataire
+     * @throws Exception En cas de problème
      */
     protected void _handleHeaders(COContentieux contentieux, boolean hasHeader, boolean hasFooter,
-            boolean hasSignature, String adresse) throws Exception {
+                                  boolean hasSignature, String adresse) throws Exception {
         String date = getDateExecution(); // Date d'exécution correspond à la date sur document.
 
         if (JadeStringUtil.isEmpty(date)) {
@@ -597,23 +589,16 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param contentieux
-     *            Le contentieux concerné par ce document
-     * @param hasHeader
-     *            <code>true</code> si le document contient un en-tête
-     * @param hasFooter
-     *            <code>true</code> si le document contient un pied de page
-     * @param hasSignature
-     *            <code>true</code> si le document contient une signature
-     * @param adresse
-     *            l'adresse du destinataire
-     * @param date
-     *            la date sur le document
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @param contentieux  Le contentieux concerné par ce document
+     * @param hasHeader    <code>true</code> si le document contient un en-tête
+     * @param hasFooter    <code>true</code> si le document contient un pied de page
+     * @param hasSignature <code>true</code> si le document contient une signature
+     * @param adresse      l'adresse du destinataire
+     * @param date         la date sur le document
+     * @throws Exception DOCUMENT ME!
      */
     protected void _handleHeaders(COContentieux contentieux, boolean hasHeader, boolean hasFooter,
-            boolean hasSignature, String adresse, String date) throws Exception {
+                                  boolean hasSignature, String adresse, String date) throws Exception {
         ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
                 getDocumentInfo(), getSession().getApplication(), _getLangue());
         CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
@@ -663,30 +648,23 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Gestion de l'en-tête/pied de page/signature.
-     * 
-     * @param destinataire
-     *            Le destinataire du document
-     * @param contentieux
-     *            Le contentieux concerné par ce document
-     * @param hasHeader
-     *            <code>true</code> si le document contient un en-tête
-     * @param hasFooter
-     *            <code>true</code> si le document contient un pied de page
-     * @param hasSignature
-     *            <code>true</code> si le document contient une signature
-     * @throws Exception
-     *             En cas de problème
+     *
+     * @param destinataire Le destinataire du document
+     * @param contentieux  Le contentieux concerné par ce document
+     * @param hasHeader    <code>true</code> si le document contient un en-tête
+     * @param hasFooter    <code>true</code> si le document contient un pied de page
+     * @param hasSignature <code>true</code> si le document contient une signature
+     * @throws Exception En cas de problème
      */
     protected void _handleHeaders(IntTiers destinataire, COContentieux contentieux, boolean hasHeader,
-            boolean hasFooter, boolean hasSignature) throws Exception {
+                                  boolean hasFooter, boolean hasSignature) throws Exception {
         this._handleHeaders(contentieux, hasHeader, hasFooter, hasSignature, getAdressePrincipaleEnvoiOP(destinataire));
     }
 
     /**
      * Spécifie la langue du document en fonction de la langue d'un tiers.
-     * 
-     * @param tiers
-     *            Le tiers
+     *
+     * @param tiers Le tiers
      */
     protected void _setLangueFromTiers(IntTiers tiers) {
         if (tiers != null) {
@@ -699,9 +677,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Ajoute une entité à la liste.
-     * 
-     * @param contentieux
-     *            L'entité
+     *
+     * @param contentieux L'entité
      * @return <code>true</code> si l'ajout s'est bien passé
      */
     public boolean addContentieux(COContentieux contentieux) {
@@ -714,15 +691,14 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Ajoute un groupe d'entités à la liste.
-     * 
-     * @param contentieuxList
-     *            Le groupe d'entités
+     *
+     * @param contentieuxList Le groupe d'entités
      * @return <code>true</code> si l'ajout s'est bien passé
      */
     public boolean addContentieux(Collection contentieuxList) {
         boolean retValue = true;
 
-        for (Iterator contentieux = contentieuxList.iterator(); contentieux.hasNext();) {
+        for (Iterator contentieux = contentieuxList.iterator(); contentieux.hasNext(); ) {
             retValue = retValue && this.addContentieux((COContentieux) contentieux.next());
         }
 
@@ -731,9 +707,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Ajoute une entité à la liste pour un cas prévisionnel qui n'a pas encore de dossier au contentieux
-     * 
-     * @param contentieux
-     *            L'entité
+     *
+     * @param contentieux L'entité
      * @return <code>true</code> si l'ajout s'est bien passé
      */
     public boolean addContentieuxPrevisionnel(COContentieux contentieux) {
@@ -746,7 +721,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Place le séparateur à la fin
-     * 
+     *
      * @param info
      * @param separator
      * @return
@@ -761,27 +736,21 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Ajoute les lignes pour les {@link #getTaxes() nouvelles taxes} à la source de donnée et retourne le total des
      * nouvelles taxes.
-     * 
-     * @param dataSource
-     *            la source de données à modifier
-     * @param fDesc
-     *            le nom du champ du document dans lequel afficher la description de l'opération
-     * @param fMontant
-     *            le nom du champ du document dans lequel afficher le montant de l'opération
-     * @param fDevise
-     *            le nom du champ du document dans lequel afficher le libellé de la devise
-     * @param devise
-     *            le libellé de la devise
+     *
+     * @param dataSource la source de données à modifier
+     * @param fDesc      le nom du champ du document dans lequel afficher la description de l'opération
+     * @param fMontant   le nom du champ du document dans lequel afficher le montant de l'opération
+     * @param fDevise    le nom du champ du document dans lequel afficher le libellé de la devise
+     * @param devise     le libellé de la devise
      * @return le montant total des nouvelles taxes
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     protected FWCurrency addTaxesToDS(List dataSource, String fDesc, String fMontant, String fDevise, String devise)
             throws Exception {
         FWCurrency totalNouvellesTaxes = null;
 
         if ((getTaxes() != null) && (getTaxes().size() > 0)) {
-            for (Iterator taxeIter = getTaxes().iterator(); taxeIter.hasNext();) {
+            for (Iterator taxeIter = getTaxes().iterator(); taxeIter.hasNext(); ) {
                 COTaxe taxe = (COTaxe) taxeIter.next();
                 HashMap fields = new HashMap();
 
@@ -815,7 +784,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
             /*
              * Configuration dans JadePublishResourceLocator.xml Exemple de configuration :
-             * 
+             *
              * <resource name="PdfPropertyPrevisionnel" archiving="false"
              * class="globaz.jade.publish.provider.pdfproperty.JadePublishResourceImpl">
              * <next.resource>MailWithXML</next.resource> <properties> <property name ="previsionnel">
@@ -839,9 +808,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Ne fait rien par défaut.
-     * 
-     * @throws FWIException
-     *             DOCUMENT ME!
+     *
+     * @throws FWIException DOCUMENT ME!
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeBuildReport()
      */
     @Override
@@ -850,7 +818,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Initialise le catalogue de textes.
-     * 
+     *
      * @throws FWIException
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeExecuteReport()
      */
@@ -896,26 +864,18 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param fromDate
-     *            la date à partir de laquelle la situation de compte doit débuter
-     * @param fDesc
-     *            le nom du champ du document dans lequel afficher la description de l'opération
-     * @param fMontant
-     *            le nom du champ du document dans lequel afficher le montant de l'opération
-     * @param fDevise
-     *            le nom du champ du document dans lequel afficher le libellé de la devise
-     * @param devise
-     *            le libellé de la devise
-     * @param csEtape
-     *            concernée
-     * @param idJournal
-     *            du premier journal de la section
+     * @param fromDate  la date à partir de laquelle la situation de compte doit débuter
+     * @param fDesc     le nom du champ du document dans lequel afficher la description de l'opération
+     * @param fMontant  le nom du champ du document dans lequel afficher le montant de l'opération
+     * @param fDevise   le nom du champ du document dans lequel afficher le libellé de la devise
+     * @param devise    le libellé de la devise
+     * @param csEtape   concernée
+     * @param idJournal du premier journal de la section
      * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     protected List<Map<String, String>> createSituationCompteDS(String fromDate, String fDesc, String fMontant,
-            String fDevise, String devise, String csEtape, String idJournal) throws Exception {
+                                                                String fDevise, String devise, String csEtape, String idJournal) throws Exception {
 
         return createSituationCompteDSApresDateRP(fromDate, false, fDesc, fMontant, fDevise, devise, csEtape, idJournal);
     }
@@ -923,27 +883,19 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Methode prenant toutes les creances et va les assembler par nature rubrique et gardera toujours la date la plus
      * récente. Les compensations/paiements sont uniquement totalisés sur leurs montants.
-     * 
-     * @param fromDate
-     *            la date à partir de laquelle la situation de compte doit débuter
-     * @param fDesc
-     *            le nom du champ du document dans lequel afficher la description de l'opération
-     * @param fMontant
-     *            le nom du champ du document dans lequel afficher le montant de l'opération
-     * @param fDevise
-     *            le nom du champ du document dans lequel afficher le libellé de la devise
-     * @param devise
-     *            le libellé de la devise
-     * @param csEtape
-     *            concernée
-     * @param idJournal
-     *            du premier journal de la section
+     *
+     * @param fromDate  la date à partir de laquelle la situation de compte doit débuter
+     * @param fDesc     le nom du champ du document dans lequel afficher la description de l'opération
+     * @param fMontant  le nom du champ du document dans lequel afficher le montant de l'opération
+     * @param fDevise   le nom du champ du document dans lequel afficher le libellé de la devise
+     * @param devise    le libellé de la devise
+     * @param csEtape   concernée
+     * @param idJournal du premier journal de la section
      * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     protected LinkedList<Map<String, String>> createSituationCompteDSNouveauRegimePourRdP(String fromDate,
-            String fDesc, String fMontant, String fDevise, String devise, String csEtape, String idJournal)
+                                                                                          String fDesc, String fMontant, String fDevise, String devise, String csEtape, String idJournal)
             throws Exception {
         FWCurrency totalPaiement = new FWCurrency(0);
         // [
@@ -953,7 +905,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         Map<String, Map<String, String>> lignes = new HashMap<String, Map<String, String>>();
 
         for (Iterator<COSituationCompteItem> operIter = situationCompte(fromDate, idJournal, csEtape).iterator(); operIter
-                .hasNext();) {
+                .hasNext(); ) {
             COSituationCompteItem item = operIter.next();
 
             if (!item.isLineBlocked(csEtape) && item.isMontantDifferentZero()) {
@@ -1006,7 +958,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Methode prenant toutes les creances a partir d'une date si le booléen useDate est actif.
-     * 
+     *
      * @param fromAfterDateExecutionRP
      * @param useDate
      * @param fDesc
@@ -1019,13 +971,13 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     protected List<Map<String, String>> createSituationCompteDSApresDateRP(String fromAfterDateExecutionRP,
-            boolean useDate, String fDesc, String fMontant, String fDevise, String devise, String csEtape,
-            String idJournal) throws Exception {
+                                                                           boolean useDate, String fDesc, String fMontant, String fDevise, String devise, String csEtape,
+                                                                           String idJournal) throws Exception {
 
         List<Map<String, String>> lignes = new LinkedList<Map<String, String>>();
 
         for (Iterator<COSituationCompteItem> operIter = situationCompteNouveauRegime(fromAfterDateExecutionRP, useDate,
-                idJournal, csEtape).iterator(); operIter.hasNext();) {
+                idJournal, csEtape).iterator(); operIter.hasNext(); ) {
             COSituationCompteItem item = operIter.next();
 
             if (!item.isLineBlocked(csEtape) && item.isMontantDifferentZero()) {
@@ -1049,7 +1001,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Methode prenant toutes les creances et va uniquement garder les créances ayant été comptabilisé jusqu'à une date
      * donnée (fromAfterDateExecutionRP)
-     * 
+     *
      * @param fromDate
      * @param fromAfterDateExecutionRP
      * @param fDesc
@@ -1062,8 +1014,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     protected LinkedList<Map<String, String>> createSituationCompteDSNouveauRegimePourRCPetRV(String fromDate,
-            String fromAfterDateExecutionRP, String fDesc, String fMontant, String fDevise, String devise,
-            String csEtape, String idJournal) throws Exception {
+                                                                                              String fromAfterDateExecutionRP, String fDesc, String fMontant, String fDevise, String devise,
+                                                                                              String csEtape, String idJournal) throws Exception {
         FWCurrency totalPaiement = new FWCurrency(0);
         // [
         // KEY1;({KEY2,VALUE2}{KEY2,VALUE2}{KEY2,VALUE2}),
@@ -1072,7 +1024,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         Map<String, Map<String, String>> lignes = new HashMap<String, Map<String, String>>();
 
         for (Iterator<COSituationCompteItem> operIter = situationCompte(fromDate, idJournal, csEtape).iterator(); operIter
-                .hasNext();) {
+                .hasNext(); ) {
             COSituationCompteItem item = operIter.next();
 
             if (!item.isLineBlocked(csEtape) && item.isMontantDifferentZero()) {
@@ -1131,9 +1083,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Transforme une date au format jj.mm.aaaa en une date en toutes lettres en utilisant la langue du document.
-     * 
-     * @param date
-     *            une date au format jj.mm.aaaa
+     *
+     * @param date une date au format jj.mm.aaaa
      * @return une date au format java.text FULL (exemple 1er juiller 2005)
      */
     protected String formatDate(String date) {
@@ -1151,11 +1102,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * Evite que {@link MessageFormat} ne lance une erreur ou ne se comporte pas correctement si le message contient des
      * apostrophes.
      * </p>
-     * 
-     * @param message
-     *            le message dans lequel se trouve les groupes à remplacer
-     * @param args
-     *            les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
+     *
+     * @param message le message dans lequel se trouve les groupes à remplacer
+     * @param args    les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
      * @return le message formatté
      * @see MessageFormat
      */
@@ -1171,10 +1120,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * <LI><I>décimales :</I>2</LI>;
      * <LI><I>arrondi : </I>au plus proche</LI>.
      * </UL>
-     * 
+     *
+     * @param montant montant à formatter.
      * @return un String représentant le montant formattée.
-     * @param montant
-     *            montant à formatter.
      */
     protected String formatMontant(String montant) {
         if (JadeStringUtil.isBlank(montant)) {
@@ -1187,7 +1135,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Si le domaine et le type d'adresse n'est pas défini dans la section, retourne l'adresse de courrier du tiers du
      * domaine par défaut.
-     * 
+     *
      * @param tiers
      * @return String
      * @throws Exception
@@ -1206,7 +1154,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Si le domaine et le type d'adresse n'est pas défini dans la section, retourne l'adresse de courrier du tiers du
      * domaine par défaut.
-     * 
+     *
      * @param tiers
      * @return TIAdresseDataSource
      * @throws Exception
@@ -1224,7 +1172,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut adresse data source.
-     * 
+     *
      * @param tiers
      * @return la valeur courante de l'attribut adresse data source
      * @throws Exception
@@ -1235,7 +1183,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut adresse data source.
-     * 
+     *
      * @param tiers
      * @param langue
      * @return la valeur courante de l'attribut adresse data source
@@ -1263,7 +1211,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * <li>Domaine : standard, Type : <b>domicile</b></li>
      * <li>Domaine : standard, Type : <b>courrier</b></li>
      * </ol>
-     * 
+     *
      * @param tiers
      * @return TIAdresseDataSource pour les documents à destination de l'OP ou du tribunal.
      * @throws Exception
@@ -1307,7 +1255,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne l'adresse de domicile du tiers
-     * 
+     *
      * @param tiers
      * @return String
      * @throws Exception
@@ -1325,7 +1273,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne l'adresse de domicile du tiers
-     * 
+     *
      * @param tiers
      * @return TIAdresseDataSource
      * @throws Exception
@@ -1353,8 +1301,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * @param affilie
-     * @param separator
-     *            entre les éléments de l'adresse
+     * @param separator entre les éléments de l'adresse
      * @return l'adresse du tiers avec le séparateur définit.
      * @throws Exception
      */
@@ -1383,12 +1330,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut adresse paiement string.
-     * 
-     * @param tiers
-     *            DOCUMENT ME!
+     *
+     * @param tiers DOCUMENT ME!
      * @return la valeur courante de l'attribut adresse paiement string
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      * @deprecated
      */
     @Deprecated
@@ -1405,7 +1350,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne l'adresse de courrier. Si aucune adresse de courrier n'est définit, retourne l'adresse de domicile.
-     * 
+     *
      * @param tiers
      * @return String
      * @throws Exception
@@ -1437,7 +1382,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * sinon retourne l'adresse contentieux si elle est définie<br/>
      * sinon retourne l'adresse de domicile<br/>
      * sinon retourne l'adresse de courrier
-     * 
+     *
      * @param tiers
      * @return String pour les documents à destination de l'OP ou du tribunal.
      * @throws Exception
@@ -1502,10 +1447,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * La valeur courante de la propriété.
-     * 
+     *
      * @return La valeur courante de la propriété
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     private JadeUser getCollaborateur() throws Exception {
         if ((userCollaborateur == null) && !JadeStringUtil.isEmpty(userIdCollaborateur)) {
@@ -1517,7 +1461,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut dateExecution.
-     * 
+     *
      * @return la valeur courante de l'attribut dateExecution
      */
     public String getDateExecution() {
@@ -1542,8 +1486,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
                 // TODO sel : ne devrait pas utiliser texte
                 buffer.append(formatMessage(
                         new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 90)),
-                        new Object[] { formatDate(extraitCompte.getDate()),
-                                getSession().getCodeLibelle(extraitCompte.getProvenancePmt()), "" }));
+                        new Object[]{formatDate(extraitCompte.getDate()),
+                                getSession().getCodeLibelle(extraitCompte.getProvenancePmt()), ""}));
 
                 return buffer.toString();
             }
@@ -1552,7 +1496,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Si le domaine n'est pas défini dans la section, retourne TIApplication.CS_DEFAUT
-     * 
+     *
      * @return
      */
     private String getDomaineDefaut() {
@@ -1568,9 +1512,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne la formule de politesse pour ce tiers.
-     * 
-     * @param tiers
-     *            un tiers osiris
+     *
+     * @param tiers un tiers osiris
      * @return une formule de politesse
      * @throws Exception
      * @see globaz.pyxis.db.tiers.TITiers#getFormulePolitesse(String)
@@ -1581,7 +1524,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut ids contentieux list.
-     * 
+     *
      * @return la valeur courante de l'attribut ids contentieux list
      */
     public List getIdsContentieuxList() {
@@ -1590,7 +1533,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut id transition.
-     * 
+     *
      * @return la valeur courante de l'attribut id transition
      */
     public String getIdTransition() {
@@ -1599,7 +1542,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * retourne le code iso de la langue pour ce document.
-     * 
+     *
      * @return la valeur courante de l'attribut langue
      */
     protected String getLangue() {
@@ -1612,7 +1555,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Utilisé pour la demande de mainlevée {@link CO006ExecuterRetraitOpposition} La liste des annexes.
-     * 
+     *
      * @return La liste des annexes
      */
     public String getListeAnnexes() {
@@ -1630,9 +1573,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * Retourne le label passser en paramètre suivi de l'idContentieux, idExterneRole du compte annexe et idExterne de
      * la section.<br>
      * Exemple : Erreur contentieux [21] 123.456 200801000
-     * 
-     * @param label
-     *            label : message d'erreur
+     *
+     * @param label label : message d'erreur
      * @return label [idContentieux] idExterneRole idExterne
      */
     private String getMsgErreurContentieux(String label) {
@@ -1659,10 +1601,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne le CCP principal de la caisse
-     * 
-     * @author: sel Créé le : 28 nov. 06
+     *
      * @return le N° du compte (ex: 01-12345-1)
      * @throws Exception
+     * @author: sel Créé le : 28 nov. 06
      */
     public String getNumeroCCP() throws Exception {
         String resString = "";
@@ -1688,7 +1630,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Est prévisionnel et n'existe pas encore au contentieux !
-     * 
+     *
      * @return the previsionnel
      */
     public Boolean getPrevisionnel() {
@@ -1697,7 +1639,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut taxes.
-     * 
+     *
      * @return la valeur courante de l'attribut taxes
      */
     public List getTaxes() {
@@ -1713,10 +1655,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * La valeur courante de la propriété.
-     * 
+     *
      * @return La valeur courante de la propriété
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     protected COTransition getTransition() throws Exception {
         if (curTransition == null) {
@@ -1731,7 +1672,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Si le type d'adresse n'est pas défini dans la section, retourne TIAvoirAdresse.CS_COURRIER
-     * 
+     *
      * @return
      */
     private String getTypeAdresseCourrier() {
@@ -1746,6 +1687,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
+     *
      */
     protected String getTypeOperationDescriptionFromCache(String typeOperation, String language) {
         if (CODocumentManager.TYPE_OP_CACHE == null) {
@@ -1795,7 +1737,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut user id collaborateur.
-     * 
+     *
      * @return la valeur courante de l'attribut user id collaborateur
      */
     public String getUserIdCollaborateur() {
@@ -1833,7 +1775,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut print completion doc.
-     * 
+     *
      * @return la valeur courante de l'attribut print completion doc
      */
     public boolean isPrintCompletionDoc() {
@@ -1842,7 +1784,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut print outline.
-     * 
+     *
      * @return la valeur courante de l'attribut print outline
      */
     public boolean isPrintOutline() {
@@ -1863,9 +1805,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * ajoute un message de type erreur dans le memory log.
-     * 
-     * @param message
-     *            le message a logger
+     *
+     * @param message le message a logger
      */
     protected void log(String message) {
         this.log(message, FWMessage.ERREUR);
@@ -1873,11 +1814,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * ajoute un message du type donné dans le memory log.
-     * 
-     * @param message
-     *            le message à logger
-     * @param msgType
-     *            le type de message à logger
+     *
+     * @param message le message à logger
+     * @param msgType le type de message à logger
      */
     protected void log(String message, String msgType) {
         getMemoryLog().logMessage(getMsgErreurContentieux(message), msgType, this.getClass().getName());
@@ -1885,10 +1824,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Retourne <code>true</code> si il reste des entités à traiter et prépare l'entité courante.
-     * 
+     *
      * @return <code>true</code> si il reste des entités
-     * @throws FWIException
-     *             En cas de problème
+     * @throws FWIException En cas de problème
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
      */
     @Override
@@ -1927,16 +1865,14 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param catalogueTextesUtil
-     *            the catalogueTextesUtil to set
+     * @param catalogueTextesUtil the catalogueTextesUtil to set
      */
     public void setCatalogueTextesUtil(COCatalogueTextesService catalogueTextesUtil) {
         this.catalogueTextesUtil = catalogueTextesUtil;
     }
 
     /**
-     * @param userCollaborateur
-     *            La nouvelle valeur de la propriété
+     * @param userCollaborateur La nouvelle valeur de la propriété
      */
     public void setCollaborateur(JadeUser userCollaborateur) {
         this.userCollaborateur = userCollaborateur;
@@ -1945,17 +1881,15 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut dateExecution.
-     * 
-     * @param dateExecution
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateExecution une nouvelle valeur pour cet attribut
      */
     public void setDateExecution(String dateExecution) {
         this.dateExecution = dateExecution;
     }
 
     /**
-     * @param documentConfidentiel
-     *            the documentConfidentiel to set
+     * @param documentConfidentiel the documentConfidentiel to set
      */
     public void setDocumentConfidentiel(boolean documentConfidentiel) {
         this.documentConfidentiel = documentConfidentiel;
@@ -1963,9 +1897,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut EMail using collaborateur.
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @throws Exception DOCUMENT ME!
      */
     public void setEMailUsingCollaborateur() throws Exception {
         if (getCollaborateur() != null) {
@@ -1977,17 +1910,15 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut ids contentieux list.
-     * 
-     * @param list
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param list une nouvelle valeur pour cet attribut
      */
     public void setIdsContentieuxList(List list) {
         idsContentieuxList = list;
     }
 
     /**
-     * @param idTransition
-     *            La nouvelle valeur de la propriété
+     * @param idTransition La nouvelle valeur de la propriété
      */
     public void setIdTransition(String idTransition) {
         this.idTransition = idTransition;
@@ -1995,33 +1926,29 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Utilisé pour la demande de mainlevée {@link CO007ExecuterDemandeMainlevee}
-     * 
-     * @param string
-     *            des annexes
+     *
+     * @param string des annexes
      */
     public void setListeAnnexes(String string) {
         listeAnnexes = string;
     }
 
     /**
-     * @param montantTotalDetail
-     *            the montantTotalDetail to set
+     * @param montantTotalDetail the montantTotalDetail to set
      */
     public void setMontantTotalDetail(FWCurrency montantTotalDetail) {
         this.montantTotalDetail = montantTotalDetail;
     }
 
     /**
-     * @param nouveauContentieux
-     *            the nouveauContentieux to set
+     * @param nouveauContentieux the nouveauContentieux to set
      */
     public void setNouveauContentieux(Boolean nouveauContentieux) {
         this.nouveauContentieux = nouveauContentieux;
     }
 
     /**
-     * @param numeroReferenceInforom
-     *            the numeroReferenceInforom to set
+     * @param numeroReferenceInforom the numeroReferenceInforom to set
      */
     public void setNumeroReferenceInforom(String numeroReferenceInforom) {
         this.numeroReferenceInforom = numeroReferenceInforom;
@@ -2029,9 +1956,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Est prévisionnel et n'existe pas encore au contentieux !
-     * 
-     * @param previsionnel
-     *            the previsionnel to set
+     *
+     * @param previsionnel the previsionnel to set
      */
     public void setPrevisionnel(Boolean previsionnel) {
         this.previsionnel = previsionnel;
@@ -2039,9 +1965,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut print completion doc.
-     * 
-     * @param b
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param b une nouvelle valeur pour cet attribut
      */
     public void setPrintCompletionDoc(boolean b) {
         printCompletionDoc = b;
@@ -2049,9 +1974,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut print outline.
-     * 
-     * @param b
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param b une nouvelle valeur pour cet attribut
      */
     public void setPrintOutline(boolean b) {
         printOutline = b;
@@ -2059,9 +1983,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut taxes.
-     * 
-     * @param list
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param list une nouvelle valeur pour cet attribut
      */
     public void setTaxes(List list) {
         taxes = list;
@@ -2069,9 +1992,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut user id collaborateur.
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setUserIdCollaborateur(String string) {
         userIdCollaborateur = string;
@@ -2080,13 +2002,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Retourne un résumé des opérations sur une section sous la forme d'une liste d'instance de SituationCompteItem
      * triées par type d'opération.
-     * 
-     * @param fromDate
-     *            seules les opérations effectuées après cette date sont retournées
-     * @param idJournal
-     *            premier journal de la section
-     * @param csEtape
-     *            Etape du contentieurx en cours
+     *
+     * @param fromDate  seules les opérations effectuées après cette date sont retournées
+     * @param idJournal premier journal de la section
+     * @param csEtape   Etape du contentieurx en cours
      * @return une liste jamais nulle, peut-être vide d'instances de SituationCompteItem
      * @throws Exception
      */
@@ -2099,18 +2018,15 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     /**
      * Retourne un résumé des opérations sur une section sous la forme d'une liste d'instance de SituationCompteItem
      * triées par type d'opération.
-     * 
-     * @param fromDate
-     *            seules les opérations effectuées après cette date sont retournées
-     * @param idJournal
-     *            premier journal de la section
-     * @param csEtape
-     *            Etape du contentieurx en cours
+     *
+     * @param fromDate  seules les opérations effectuées après cette date sont retournées
+     * @param idJournal premier journal de la section
+     * @param csEtape   Etape du contentieurx en cours
      * @return une liste jamais nulle, peut-être vide d'instances de SituationCompteItem
      * @throws Exception
      */
     protected List<COSituationCompteItem> situationCompteNouveauRegime(String fromDate, Boolean useDate,
-            String idJournal, String csEtape) throws Exception {
+                                                                       String idJournal, String csEtape) throws Exception {
         LinkedList<COSituationCompteItem> retValue = new LinkedList<COSituationCompteItem>();
         COExtraitCompteManager extraitCompteManager = new COExtraitCompteManager();
         // initialiser le manager des extraits de compte
@@ -2137,7 +2053,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * Permet de corriger un problème de iText. <br/>
      * Force un retour à la ligne (<code>\n</code>) tous les X ligne.<br/>
      * X étant définit par le paramètre nbCharPerLine.
-     * 
+     *
      * @param source
      * @param nbCharPerLine
      * @return la source avec des \n tous les nbCharPerLine
@@ -2177,45 +2093,41 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     *
      * Initialisation la QR facture
      *
      * @param montantTotal : le montant de la facture
      */
     public void initVariableQR(FWCurrency montantTotal) {
 
-        qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2).contains(COCatalogueTextesService.TEXTE_INTROUVABLE)?
-                qrFacture.DEVISE_DEFAUT : getCatalogueTextesUtil().texte(getParent(), 3, 2) );
-        qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
+        qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2).contains(COCatalogueTextesService.TEXTE_INTROUVABLE) ?
+                qrFacture.DEVISE_DEFAUT : getCatalogueTextesUtil().texte(getParent(), 3, 2));
+        qrFacture.setMontant(Objects.isNull(montantTotal) ? "" : montantTotal.toString());
         qrFacture.setLangueDoc(langueDoc);
 
         try {
-            //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
 
-                // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
-                // Il faut donc séparé l'adresse sur deux lignes, et mettre la deuxième partie sur la ligne 2
-                String adresseDebiteurAsString = getAdresseDestinataire();
-                TIAdresseDataSource adresseDebiteurAsData = getAdresseDestinataireAsData();
-                if (Objects.nonNull(adresseDebiteurAsData)) {
-                    qrFacture.setDebfAdressTyp(ReferenceQR.STRUCTURE);
-                    qrFacture.setDebfNom(adresseDebiteurAsData.fullLigne1);
-                    qrFacture.setDebfPays(adresseDebiteurAsData.paysIso);
-                    qrFacture.setDebfCodePostal(adresseDebiteurAsData.localiteNpa);
-                    qrFacture.setDebfLieu(adresseDebiteurAsData.localiteNom);
-                    qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsData.rue);
-                    qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsData.numeroRue);
-                } else {
-                    // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                    qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
-                    try {
-                        qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteurAsString);
-                    } catch (Exception e) {
-                        LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
-                    }
-
+            // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
+            // Il faut donc séparé l'adresse sur deux lignes, et mettre la deuxième partie sur la ligne 2
+            String adresseDebiteurAsString = getAdresseDestinataire();
+            TIAdresseDataSource adresseDebiteurAsData = getAdresseDestinataireAsData();
+            if (Objects.nonNull(adresseDebiteurAsData)) {
+                qrFacture.setDebfAdressTyp(ReferenceQR.STRUCTURE);
+                qrFacture.setDebfNom(adresseDebiteurAsData.fullLigne1);
+                qrFacture.setDebfPays(adresseDebiteurAsData.paysIso);
+                qrFacture.setDebfCodePostal(adresseDebiteurAsData.localiteNpa);
+                qrFacture.setDebfLieu(adresseDebiteurAsData.localiteNom);
+                qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsData.rue);
+                qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsData.numeroRue);
+            } else {
+                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
+                try {
+                    qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteurAsString);
+                } catch (Exception e) {
+                    LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
                 }
+
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
 

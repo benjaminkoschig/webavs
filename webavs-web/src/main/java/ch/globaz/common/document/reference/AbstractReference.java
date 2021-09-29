@@ -13,12 +13,15 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.parser.IntReferenceBVRParser;
+import globaz.pyxis.db.tiers.TITiers;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+@Slf4j
 public abstract class AbstractReference {
 
     public static final String REFERENCE_NON_FACTURABLE = "XXXXXXXXXXXXXXXXX";
@@ -66,6 +69,19 @@ public abstract class AbstractReference {
         this.ligneReference = ligneReference;
     }
 
+
+    protected TITiers getTiers(String idTiers) {
+        TITiers tiers = null;
+        try {
+            tiers = new TITiers();
+            tiers.setSession(getSession());
+            tiers.setIdTiers(idTiers);
+            tiers.retrieve();
+        } catch (Exception exception) {
+            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", idTiers, exception);
+        }
+        return tiers;
+    }
 
     /**
      * Retourne l'adresse pour le BVR (va rechercher dans le catalogue de textes MUSCA)

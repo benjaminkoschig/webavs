@@ -347,8 +347,9 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
             // La monnaie n'est pas géré dans le module Facturation. Par défaut nous mettrons CHF
             qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
 
+            FAEnteteFacture enteteFacture = currentDataSource.getEnteteFacture();
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(currentDataSource.getEnteteFacture().getIdTiers())) {
+            if (!qrFacture.genererAdresseDebiteur(enteteFacture.getIdTiers(), enteteFacture.getIdTypeCourrier(), enteteFacture.getIdDomaineCourrier(), enteteFacture.getIdExterneRole(), enteteFacture.getPassage().getDateFacturation())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
                 // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
