@@ -251,8 +251,9 @@
 							<TD><INPUT type="text" name="codesCasSpecial" value="<%=viewBean.getCodesCasSpecial()%>" onblur="checkCodesCasSpecial(this, this.value)"></TD>
 							<TD><ct:FWLabel key="JSP_ETAT"/></TD>
 							<TD><INPUT type="text" name="anneeRenteEnCours" value="<%=viewBean.getAnneeRenteEnCours()%>" maxlength="4" class="numeroCourt"></TD>
-							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>
-							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":""%>></TD>
+<%--							Pour 1.27.1--%>
+<%--							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>--%>
+<%--							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":""%>></TD>--%>
 						</TR>
 
 				<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean){

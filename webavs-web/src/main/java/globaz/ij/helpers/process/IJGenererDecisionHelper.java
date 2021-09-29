@@ -437,9 +437,10 @@ public class IJGenererDecisionHelper extends FWHelper {
 
                 addCopieFisc(session, vb, factory);
 
-                if(IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(vb.getBeneficiaire())) {
-                    addCopieEmployeurs(session, vb, factory);
-                }
+//                pour : 1.27.1
+//                if(IJDecision.BENEFICIAIRE_EMPLOYEUR.equals(vb.getBeneficiaire())) {
+//                    addCopieEmployeurs(session, vb, factory);
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

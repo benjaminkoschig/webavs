@@ -447,7 +447,10 @@ public class IJRepartitionPaiementBuilder {
         repartition.setSession(session);
         repartition.add(transaction);
 
-        if(avecCotisation && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+        if(avecCotisation) {
+//          pour : 1.27.1
+//          && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+
             // La nouvelle version de ACOR n'importe plus le montant jrn ext si
             // la base ne contient que des code interne.
             // Il faut donc aller le rechercher dans IJIndemniteJournaliere.
@@ -609,7 +612,10 @@ public class IJRepartitionPaiementBuilder {
         repartition.setSession(session);
         repartition.add(transaction);
 
-        if(avecCotisation && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+        if(avecCotisation) {
+//          pour : 1.27.1
+//          && Dates.isAnneeMajeur(prestation.getDateDebut(), prononce.getDateNaissanceTiers())) {
+
             // calculer les cotisations d'assurances et impots
             double somme = buildCotisationsEmployeur(session, transaction, prononce, baseIndemnisation, repartition);
 
