@@ -178,7 +178,7 @@
                     <xs:element name="debutBases" type="xs:date"/>
                     <xs:element name="finBases" type="xs:date" minOccurs="0"/>
                     <xs:element name="revenuMensuelDurantRea" type="xs:double" minOccurs="0"/>
-                    <xs:element name="formation" minOccurs="0">
+                    <xs:element name="formation" minOccurs="0" >
                         <xs:annotation>
                             <xs:documentation>
                                 Champ pertinentn uniquement pour une petite indemnite (voir genreIndemnite)
@@ -621,25 +621,30 @@
     </xs:complexType>
     <xs:complexType name="BeneficiaireIJ">
         <xs:annotation><xs:documentation>beneficiaire d'un paiement d'IJ</xs:documentation></xs:annotation>
-        <xs:sequence>
-            <xs:element name="id" type="xs:string"/>
-            <xs:element name="denomination" type="xs:string"/>
-            <xs:element name="designationSupplementaire" type="xs:string"/>
-            <xs:element name="adresseBeneficiaire" type="acor-common:adresseType"/>
-            <xs:element name="adressePaiement" type="acor-common:banqueAdresseType"/>
-            <xs:element name="genre">
-                <xs:annotation><xs:documentation>0=assure, 1=employeur 2=tiers</xs:documentation></xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:int">
-                        <xs:enumeration value="0"/>
-                        <xs:enumeration value="1"/>
-                        <xs:enumeration value="2"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
-            <xs:element name="modifie" type="xs:boolean"/>
-            <xs:element name="actif" type="xs:boolean"/>
-        </xs:sequence>
+        <xs:complexContent>
+            <xs:extension base="acor-common:Meta">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string"/>
+                    <xs:element name="denomination" type="xs:string"/>
+                    <xs:element name="designationSupplementaire" type="xs:string"/>
+                    <xs:element name="adresseBeneficiaire" type="acor-common:adresseType"/>
+                    <xs:element name="adressePaiement" type="acor-common:banqueAdresseType"/>
+                    <xs:element name="genre">
+                        <xs:annotation><xs:documentation>0=assure, 1=employeur 2=tiers</xs:documentation></xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:int">
+                                <xs:enumeration value="0"/>
+                                <xs:enumeration value="1"/>
+                                <xs:enumeration value="2"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="modifie" type="xs:boolean"/>
+                    <xs:element name="actif" type="xs:boolean"/>
+                    <xs:element name="nouveau" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
     <xs:complexType name="RecapitulatifPaiementIJ">
         <xs:annotation><xs:documentation>Recapitulatif des paiements effectués</xs:documentation></xs:annotation>
