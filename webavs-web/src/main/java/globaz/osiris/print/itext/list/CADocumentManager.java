@@ -890,10 +890,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     public String _getAdresseDomicile() throws Exception {
-        IntTiers tiers = compteAnnexe.getTiers();
-        if (tiers == null) {
+        if (Objects.isNull(compteAnnexe) || Objects.isNull(compteAnnexe.getTiers())) {
             return "";
         } else {
+            IntTiers tiers = compteAnnexe.getTiers();
             return tiers.getAdresseAsString(getDocumentInfo(), IConstantes.CS_AVOIR_ADRESSE_DOMICILE,
                     IConstantes.CS_APPLICATION_DEFAUT, compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
         }
