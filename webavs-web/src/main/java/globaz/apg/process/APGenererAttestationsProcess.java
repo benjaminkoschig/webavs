@@ -605,11 +605,15 @@ public class APGenererAttestationsProcess extends BProcess {
     }
     private boolean isPrestationAPG(APPrestation prest) throws Exception {
         return (Double.parseDouble(totalMontantAPG) != 0)
-                && IPRDemande.CS_TYPE_APG.equals(typePrestation)
+                && (IPRDemande.CS_TYPE_APG.equals(typePrestation)
+                || IAPPrestation.CS_TYPE_NORMAL.equals(prest.getType())
+                || IAPPrestation.CS_TYPE_ANNULATION.equals(prest.getType()))
                 && !isPrestationLamat(prest) && !isPrestationAmat(prest) && !isPrestationLapat(prest) && !isPrestationPandemie(prest) && !isPrestationLapai(prest);
     }
-    private boolean isPrestationPandemie(APPrestation prest) throws Exception {
-        return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypeAllocationPandemie(prest.getType());
+    private boolean isPrestationPandemie(APPrestation prest) {
+        return (Double.parseDouble(totalMontantAPG) != 0)
+                && (IPRDemande.CS_TYPE_PANDEMIE.equals(typePrestation)
+                || APGUtils.isTypeAllocationPandemie(prest.getType()));
     }
     private boolean isPrestationLapai(APPrestation prest) throws Exception {
         return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT);
