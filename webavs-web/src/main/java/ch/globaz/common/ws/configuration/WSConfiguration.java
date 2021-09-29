@@ -2,6 +2,7 @@ package ch.globaz.common.ws.configuration;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.exceptions.Exceptions;
+import ch.globaz.common.ws.ApiHealthChecker;
 import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import ch.globaz.common.ws.FilterMapper;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,12 +55,14 @@ public class WSConfiguration extends Application {
         Set<Class<?>> classesTemp = Collections.emptySet();
         Map<String  /*path*/, ExceptionHandler> exceptionMapperClassesTemp = Collections.emptyMap();
         Set<FilterMapper> filterMappersTemp = Collections.emptySet();
+        List<Class<ApiHealthChecker>> apiHealthCheckers = new ArrayList<>();
         try (ScanResult result = new ClassGraph().enableAnnotationInfo()
                                                  .acceptPackages("globaz", "ch.globaz")
                                                  .scan()) {
             classesTemp = loadClasses(result);
             exceptionMapperClassesTemp = loadExceptionHandler(result);
             filterMappersTemp = resolveFilter(result);
+            apiHealthCheckers = loadApiChecker(result);
 
         } catch (Exception e) {
             LOG.error("Impossible de récupérer les classes des API Rest. ", e);
@@ -68,6 +72,7 @@ public class WSConfiguration extends Application {
         this.exceptionMapperClasses = ImmutableMap.copyOf(exceptionMapperClassesTemp);
         this.filterMappers = ImmutableSet.copyOf(filterMappersTemp);
         this.INSTANCE = this;
+        ApiHealthCheckerService.check(apiHealthCheckers);
     }
 
     @Override
@@ -124,6 +129,14 @@ public class WSConfiguration extends Application {
         allClasses.forEach(aClass -> LOG.info("   {}", aClass.getCanonicalName()));
 
         return allClasses;
+    }
+
+    private static List<Class<ApiHealthChecker>> loadApiChecker(final ScanResult result) {
+        List<Class<?>> classList = result.getClassesImplementing(ApiHealthChecker.class).loadClasses();
+
+        LOG.info("° Nb classes used to check the API is {} :", classList.size());
+
+        return classList.stream().map(it->(Class<ApiHealthChecker>)it).collect(Collectors.toList());
     }
 
     private static int orderByPriorityAnnotation(final FilterMapper filterMapper1, final FilterMapper filterMapper2) {
