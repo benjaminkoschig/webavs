@@ -88,6 +88,9 @@ public class CalculDonneesCC extends JadeComplexModel {
     private Boolean isBienImmoPrincipalDePlusDe20Ans = Boolean.FALSE;
     private Boolean isBienImmoAnnexeDePlusDe20Ans = Boolean.FALSE;
 
+    private Boolean isImmeubleCommercialePrincipale = Boolean.FALSE;
+    private Boolean isImmeubleCommercialeAnnexe = Boolean.FALSE;
+
     private String capitalLPPCsTypePropriete = null;
     private String capitalLPPFractionDenominateur = null;
     private String capitalLPPFractionNumerateur = null;
@@ -2428,7 +2431,7 @@ public class CalculDonneesCC extends JadeComplexModel {
     }
 
     public void setIsBienImmoPrincipalDePlusDe20Ans(Boolean bienImmoPrincipalDePlusDe20Ans) {
-        isBienImmoPrincipalDePlusDe20Ans = bienImmoPrincipalDePlusDe20Ans;
+        this.isBienImmoPrincipalDePlusDe20Ans = bienImmoPrincipalDePlusDe20Ans;
     }
 
     public Boolean getIsBienImmoAnnexeDePlusDe20Ans() {
@@ -2436,6 +2439,22 @@ public class CalculDonneesCC extends JadeComplexModel {
     }
 
     public void setIsBienImmoAnnexeDePlusDe20Ans(Boolean bienImmoAnnexeDePlusDe20Ans) {
-        isBienImmoAnnexeDePlusDe20Ans = bienImmoAnnexeDePlusDe20Ans;
+        this.isBienImmoAnnexeDePlusDe20Ans = bienImmoAnnexeDePlusDe20Ans;
+    }
+
+    public Boolean getIsImmeubleCommercialePrincipale() {
+        return isImmeubleCommercialePrincipale;
+    }
+
+    public void setIsImmeubleCommercialePrincipale(Boolean isImmeubleCommercialePrincipale) {
+        this.isImmeubleCommercialePrincipale = isImmeubleCommercialePrincipale;
+    }
+
+    public Boolean getIsImmeubleCommercialeAnnexe() {
+        return isImmeubleCommercialeAnnexe;
+    }
+
+    public void setIsImmeubleCommercialeAnnexe(Boolean isImmeubleCommercialeAnnexe) {
+        this.isImmeubleCommercialeAnnexe = isImmeubleCommercialeAnnexe;
     }
 }

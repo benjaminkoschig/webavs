@@ -226,6 +226,9 @@
 								<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_CONSTRUCTION_PLUS_20_ANS"/></td>
 								<td><input id="isConstructionPlusVingtAns" name="isConstructionPlusVingtAns" class="isConstructionPlusVingtAns" type="checkbox"/></td>
 
+								<td><ct:FWLabel key="JSP_PC_IMMEUBLE_FIN_COMMERCIALE"/></td>
+								<td><input id="isImmeubleCommerciale" name="isImmeubleCommerciale" class="isImmeubleCommerciale" type="checkbox"/></td>
+
 							<%
 								}
 							%>

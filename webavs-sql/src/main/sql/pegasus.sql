@@ -233,7 +233,7 @@ VALUES (64008099, 'F', '          ', 'Frais entretien immeubles habitation princ
 -- Creation code sys Immobilier Annexe plus de 20 ans
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
                            PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
-VALUES (64008100, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
+VALUES (64008100, 'PCTYPVMET  ', 90, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
@@ -247,7 +247,7 @@ VALUES (64008100, 'F', '          ', 'Frais entretien immeubles habitation annex
 -- Creation code sys Immobilier Annexe moins de 20 ans
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
                            PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
-VALUES (64008101, 'PCTYPVMET  ', 89, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_MOINS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
+VALUES (64008101, 'PCTYPVMET  ', 91, 1, 0, 0, 'FRAIS_ENTRETIEN_IMMEUBLE_MOINS_20_ANS_ANNEXE', 2, 2, 2, 2, 2, 2, 10200038, 0,
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
@@ -256,6 +256,20 @@ VALUES (64008101, 'D', '          ', '[de]Frais entretien immeubles habitation a
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (64008101, 'F', '          ', 'Frais entretien immeubles habitation annexe de moins de 20 ans',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+-- Creation code sys Plafond loyer encaissé
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
+                           PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
+VALUES (64008102, 'PCTYPVMET  ', 92, 1, 0, 0, 'PLAFOND_LOYERS_ENCAISSES', 2, 2, 2, 2, 2, 2, 10200038, 0,
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008102, 'D', '          ', '[de]Plafond loyers encaissés',
+        VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+VALUES (64008102, 'F', '          ', 'Plafond loyers encaissés',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 -- Update variable actuelle
@@ -274,3 +288,17 @@ ALTER TABLE SCHEMA.PCBISPH
 
 REORG TABLE SCHEMA.PCBISPH;
 -- call SYSPROC.ADMIN_CMD('reorg TABLE SCHEMA.PCBISPH');
+
+-- Colonne pour Immeuble commerciale
+ALTER TABLE SCHEMA.PCBISHP
+    ADD COLUMN CIBHIC NUMERIC(1) DEFAULT 0;
+
+REORG TABLE SCHEMA.PCBISHP;
+-- call SYSPROC.ADMIN_CMD('reorg TABLE SCHEMA.PCBISHP');
+
+ALTER TABLE SCHEMA.PCBISPH
+    ADD COLUMN CHBHIC NUMERIC(1) DEFAULT 0;
+
+REORG TABLE SCHEMA.PCBISPH;
+-- call SYSPROC.ADMIN_CMD('reorg TABLE SCHEMA.PCBISPH');
+

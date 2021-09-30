@@ -41,13 +41,13 @@ public class StrategieFinalDepenseFraisImmobilierVD implements StrategieCalculFi
         // Si type de propriété n'est pas droit d'habitation
         if ((typeHabitationCS == null)
                 || ((donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE) != null) && !donnee
-                        .getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE).equals(
-                                IPCBienImmoPrincipal.CS_TYPE_DROIT_HABITATION))) {
+                .getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE).equals(
+                        IPCBienImmoPrincipal.CS_TYPE_DROIT_HABITATION))) {
 
-            // Récupération du flag booléen pour savoir si le bine à moins de 10ans
+            // Récupération du flag booléen pour savoir si le bien à moins de 10ans
             boolean isConstructionMoinsDixAns = false;
 
-            // Récupération du flag booléen pour savoir si le bine à plus de 20ans
+            // Récupération du flag booléen pour savoir si le bien à plus de 20ans
             boolean isConstructionPlusVingtAnsPrincipale = false;
             boolean isConstructionPlusVingtAnsAnnexe = false;
 
@@ -94,7 +94,6 @@ public class StrategieFinalDepenseFraisImmobilierVD implements StrategieCalculFi
                     .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE);
 
             // On l'ajoute aux frais calculés
-
             donnee.addEnfantTuple(new TupleDonneeRapport(
                     IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE, fraisEntretien, legende));
             somme += fraisEntretien;

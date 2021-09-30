@@ -10,7 +10,9 @@ import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
+import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieCalculDepense;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 import static ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport.arronditValeur;
 
@@ -45,10 +47,16 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
                 this.getOrCreateChild(resultatExistant,
                         IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_PLUS_DE_20_ANS,
                         donnee.getIsBienImmoPrincipalDePlusDe20Ans());
+
+                this.getOrCreateChild(resultatExistant,
+                        IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_COMMERCIALE_PRINCIPALE,
+                        donnee.getIsImmeubleCommercialePrincipale());
+
             }
 
             // L'habitation principale à t'elle plus de 20 ans
             boolean isConstructionPlus20Ans = donnee.getIsBienImmoPrincipalDePlusDe20Ans();
+            boolean isImmeubleCommerciale = donnee.getIsImmeubleCommercialePrincipale();
 
             float fraction = checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartNumerateur())
                     / checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartDenominateur());
@@ -81,9 +89,18 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
 
                 // taux frais entretien en fonction de l'age du batiment
                 float tauxFraisEntretien = getTauxFraisEntretienPrincipale(false, isConstructionPlus20Ans, context);
+                float montantFraisEntretien = 0;
+                float montantLoyerEncaisse = checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantLoyersEncaisses()) * fraction;
 
-                float montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
+                float plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
+
+                montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
                         .getBienImmoPrincipalMontantValeurLocative()) * tauxFraisEntretien * fraction);
+                // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
+                if ((isImmeubleCommerciale || (montantLoyerEncaisse > plafondLoyerEncaisse))) {
+                    montantFraisEntretien = 0;
+                }
 
                 // ajout des frais d'entretien
                 this.getOrCreateChild(resultatExistant,

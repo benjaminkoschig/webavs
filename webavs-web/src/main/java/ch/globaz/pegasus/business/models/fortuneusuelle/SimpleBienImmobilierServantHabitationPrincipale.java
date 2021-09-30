@@ -28,6 +28,7 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
     private String partProprieteNumerateur = null;
     private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
     private Boolean isConstructionPlusVingtAns = Boolean.FALSE;
+    private Boolean isImmeubleCommerciale = Boolean.FALSE;
 
     public String getAutresTypeBien() {
         return autresTypeBien;
@@ -194,8 +195,8 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
 
     /**
      * Définit à l'aide d'une valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
-     * 
-     * @param constructionMoinsDixAns valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
+     *
+     * @param isConstructionMoinsDixAns
      */
     public void setIsConstructionMoinsDixAns(Boolean isConstructionMoinsDixAns) {
         this.isConstructionMoinsDixAns = isConstructionMoinsDixAns;
@@ -207,5 +208,13 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
 
     public void setIsConstructionPlusVingtAns(Boolean isConstructionPlusVingtAns) {
         this.isConstructionPlusVingtAns = isConstructionPlusVingtAns;
+    }
+
+    public Boolean getIsImmeubleCommerciale() {
+        return isImmeubleCommerciale;
+    }
+
+    public void setIsImmeubleCommerciale(Boolean isImmeubleCommerciale) {
+        this.isImmeubleCommerciale = isImmeubleCommerciale;
     }
 }

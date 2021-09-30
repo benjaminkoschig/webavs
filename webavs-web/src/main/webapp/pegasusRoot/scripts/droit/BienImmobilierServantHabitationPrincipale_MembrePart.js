@@ -24,6 +24,7 @@ function BienImmobilierServantHabitationPrincipalePart(container) {
 				.find('.typeBien').val($data.find('csTypeBien').text()).end()
 				.find('.isConstructionMoinsDixAns').attr('checked', $data.find('isConstructionMoinsDixAns').text()=='true').end()
 				.find('.isConstructionPlusVingtAns').attr('checked', $data.find('isConstructionPlusVingtAns').text()=='true').end()
+				.find('.isImmeubleCommerciale').attr('checked', $data.find('isImmeubleCommerciale').text()=='true').end()
 				.find('.selecteurCommune').val($data.find('nomCommune').text()).end()
 				.find('.autres').val(
 				$data.find('autres').text()).end().find('.commune').val(
@@ -70,12 +71,12 @@ function BienImmobilierServantHabitationPrincipalePart(container) {
 			
 			'bienImmobilierServantHabitationPrincipale.simpleBienImmobilierServantHabitationPrincipale.csTypeBien' : this.detail
 					.find('.typeBien').val(),
-					
 			'bienImmobilierServantHabitationPrincipale.simpleBienImmobilierServantHabitationPrincipale.isConstructionMoinsDixAns' : this.detail
 					.find('.isConstructionMoinsDixAns').prop('checked'),
-
 			'bienImmobilierServantHabitationPrincipale.simpleBienImmobilierServantHabitationPrincipale.isConstructionPlusVingtAns' : this.detail
 					.find('.isConstructionPlusVingtAns').prop('checked'),
+			'bienImmobilierServantHabitationPrincipale.simpleBienImmobilierServantHabitationPrincipale.isImmeubleCommerciale' : this.detail
+					.find('.isImmeubleCommerciale').prop('checked'),
 					
 			'bienImmobilierServantHabitationPrincipale.simpleBienImmobilierServantHabitationPrincipale.autresTypeBien' : this.detail
 					.find('.autres').val(),

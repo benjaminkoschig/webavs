@@ -24,6 +24,7 @@
 			<field name="montantSousLocation" column="CHNMSL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_SOUS_LOCATION"/>
 			<field name="isConstructionMoinsDixAns" mandatory="true" column="CHBHMA" type="BOOLEAN" comment="IS_HABITATION_MOINS_10_ANS"/>	
 			<field name="isConstructionPlusVingtAns" mandatory="true" column="CHBHPA" type="BOOLEAN" comment="IS_HABITATION_PLUS_20_ANS"/>
+			<field name="isImmeubleCommerciale" mandatory="true" column="CHBHIC" type="BOOLEAN" comment="IS_IMMEUBLE_COMMERCIALE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

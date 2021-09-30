@@ -20,6 +20,7 @@ SimpleBienImmobilierServantHabitationPrincipale entity=viewBean.getBienImmobilie
 		<csTypeBien><%=JadeStringUtil.isBlankOrZero(entity.getCsTypeBien())?"":entity.getCsTypeBien()%></csTypeBien>
 		<isConstructionMoinsDixAns><%=entity.getIsConstructionMoinsDixAns()%></isConstructionMoinsDixAns>
 		<isConstructionPlusVingtAns><%=entity.getIsConstructionPlusVingtAns()%></isConstructionPlusVingtAns>
+		<isImmeubleCommerciale><%=entity.getIsImmeubleCommerciale()%></isImmeubleCommerciale>
 		<autres><%=entity.getAutresTypeBien()%></autres>
 		<commune><%=entity.getIdCommuneDuBien()%></commune>
 		<nomCommune><%=viewBean.getNomCommune()%></nomCommune>

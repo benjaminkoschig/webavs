@@ -28,6 +28,7 @@ public class SimpleBienImmobilierHabitationNonPrincipale extends JadeSimpleModel
     private String valeurVenale = null;
     private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
     private Boolean isConstructionPlusVingtAns = Boolean.FALSE;
+    private Boolean isImmeubleCommerciale = Boolean.FALSE;
 
     public Boolean getIsConstructionMoinsDixAns() {
         return isConstructionMoinsDixAns;
@@ -197,5 +198,13 @@ public class SimpleBienImmobilierHabitationNonPrincipale extends JadeSimpleModel
 
     public void setIsConstructionPlusVingtAns(Boolean isConstructionPlusVingtAns) {
         this.isConstructionPlusVingtAns = isConstructionPlusVingtAns;
+    }
+
+    public Boolean getIsImmeubleCommerciale() {
+        return isImmeubleCommerciale;
+    }
+
+    public void setIsImmeubleCommerciale(Boolean isImmeubleCommerciale) {
+        this.isImmeubleCommerciale = isImmeubleCommerciale;
     }
 }

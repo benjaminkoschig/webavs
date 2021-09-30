@@ -24,6 +24,7 @@
 			<field name="montantValeurFiscale" mandatory="true" column="CINMVF" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_VALEUR_FISCALE"/>	
 			<field name="isConstructionMoinsDixAns" mandatory="true" column="CIBHMA" type="BOOLEAN" comment="IS_HABITATION_MOINS_10_ANS"/>	
 			<field name="isConstructionPlusVingtAns" mandatory="true" column="CIBHPA" type="BOOLEAN" comment="IS_HABITATION_PLUS_20_ANS"/>
+			<field name="isImmeubleCommerciale" mandatory="true" column="CIBHIC" type="BOOLEAN" comment="IS_IMMEUBLE_COMMERCIALE"/>
 			</fields>
 		<search-definition>
 			<search-group operator="AND">
