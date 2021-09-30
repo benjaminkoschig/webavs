@@ -21,7 +21,7 @@ import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * @author ebko
- * 
+ *
  */
 public class IJAnnoncesXmlService {
 
@@ -83,7 +83,7 @@ public class IJAnnoncesXmlService {
             if (!JadeStringUtil.isEmpty(annonce.getIjReduite()) && !isCasSpecial) {
                 annonceXml.setGekuerztesTaggeld(convertIntToBoolean(annonce.getIjReduite()));
             }
-            annonceXml.setBesitzstandWEIVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
+            annonceXml.setBesitzstand4IVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
             annonceXml.setNrVerfuegung(resolveNumeroDecision(annonce.getNoDecisionAiCommunication()));
 
             // Si aucun jour attesté pour 1ère période, on rempli avec les
@@ -125,7 +125,7 @@ public class IJAnnoncesXmlService {
         if(!JadeStringUtil.isEmpty(annonce.getNoAssureConjoint())) {
             annonceXml.setVNrEhepartner(JadeStringUtil.removeChar(annonce.getNoAssureConjoint(), '.'));
         }
-        annonceXml.setBesitzstandWEIVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
+        annonceXml.setBesitzstand4IVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
         annonceXml.setNrVerfuegung(resolveNumeroDecision(annonce.getNoDecisionAiCommunication()));
 
         if (!"3".equals(annonce.getCodeGenreCarte()) && !"4".equals(annonce.getCodeGenreCarte())) {
@@ -163,15 +163,15 @@ public class IJAnnoncesXmlService {
         }
         return annonceXml;
     }
-    
+
     private IVTaggelderMeldungType genereAnnonceAllocAssistance(IJAnnonce annonce) throws DatatypeConfigurationException, ParseException {
         return genereAnnonceAITouAllocAssitance(annonce, false);
     }
-    
+
     private IVTaggelderMeldungType genereAnnonceAIT(IJAnnonce annonce) throws DatatypeConfigurationException, ParseException {
         return genereAnnonceAITouAllocAssitance(annonce, true);
     }
-    
+
 
     private IVTaggelderMeldungType genereAnnonceAITouAllocAssitance(IJAnnonce annonce, boolean isAIT)
             throws DatatypeConfigurationException, ParseException {
@@ -184,7 +184,7 @@ public class IJAnnoncesXmlService {
         annonceXml.setZivilstand(Integer.valueOf(annonce.getCodeEtatCivil()).shortValue());
         annonceXml.setZustaendigeIVStelle(Integer.valueOf(annonce.getOfficeAI()));
         annonceXml.setNrVerfuegung(resolveNumeroDecision(annonce.getNoDecisionAiCommunication()));
-        
+
         if(!isAIT) {
             annonceXml.setEingliederungsart(Integer.valueOf(annonce.getCodeGenreReadaptation()).shortValue());
         }
@@ -210,6 +210,7 @@ public class IJAnnoncesXmlService {
         // set a 0
         periode1Xml.setVorzeichenCode(false);
         periode1Xml.setAnspruchKindergeld(false);
+        periode1Xml.setBesitzstand5IVRevision(false);
         periode1Xml.setTagesansatz(new BigDecimal("0.00"));
         periode1Xml.setIVTaggeldTotal(new BigDecimal("0.00"));
 
@@ -222,7 +223,7 @@ public class IJAnnoncesXmlService {
             periode2Xml.setTagesansatz(new BigDecimal("0.00"));
             periode2Xml.setIVTaggeldTotal(new BigDecimal("0.00"));
         }
-        
+
         if (!JadeStringUtil.isIntegerEmpty(annonce.getPeriodeAnnonce1().getNombreJoursInterruption())) {
             periode2Xml.setAnzahlTageEingliederungsunterbruchMitTaggeld(
                     Integer.valueOf(annonce.getPeriodeAnnonce1().getNombreJoursInterruption()));
@@ -233,8 +234,10 @@ public class IJAnnoncesXmlService {
         periode2Xml.setVorzeichenCode("1".equals(annonce.getPeriodeAnnonce1().getCodeValeurTotalIJ()));
         periode2Xml.setPeriodeBeginn(retourneXMLGregorianCalendar(annonce.getPeriodeAnnonce1().getPeriodeDe()));
         periode2Xml.setPeriodeEnde(retourneXMLGregorianCalendar(annonce.getPeriodeAnnonce1().getPeriodeA()));
-        
-        if(!isAIT) {
+
+        if(isAIT) {
+            periode2Xml.setBetragEinarbeitungszuschuss(new BigDecimal(annonce.getPeriodeAnnonce1().getMontantAit()));
+        } else {
             periode2Xml.setBetragEntschaedigungBetreuungskosten(new BigDecimal(annonce.getPeriodeAnnonce1().getMontantAllocAssistance()));
         }
 
@@ -250,19 +253,20 @@ public class IJAnnoncesXmlService {
 
         // set a 0
         periode2Xml.setAnspruchKindergeld(false);
+        periode2Xml.setBesitzstand5IVRevision(false);
 
         annonceXml.setErsteTaggeldPeriode(periode1Xml);
         annonceXml.getTaggeldPeriode().add(periode2Xml);
 
         return annonceXml;
     }
-    
+
     private NrVerfuegung resolveNumeroDecision(String numero) {
         NrVerfuegung num = new NrVerfuegung();
         String intNum = numero.replaceFirst("^0*", "");
-        num.setZustaendigeIVStelle(Integer.parseInt(intNum.substring(0, 3)));
-        num.setElfstelligeNrVerfuegung(Long.parseLong(intNum.substring(3, 14)));
-        num.setVersichertennummer(Long.parseLong(intNum.substring(14)));
+        num.setZustaendigeIVStelle(Integer.valueOf(intNum.substring(0, 3)));
+        num.setElfstelligeNrVerfuegung(Long.valueOf(intNum.substring(3, 14)));
+        num.setVersichertennummer(intNum.substring(14));
         return num;
     }
 
@@ -290,6 +294,7 @@ public class IJAnnoncesXmlService {
         periodeXml.setPeriodeBeginn(retourneXMLGregorianCalendar(periode.getPeriodeDe()));
         periodeXml.setPeriodeEnde(retourneXMLGregorianCalendar(periode.getPeriodeA()));
         periodeXml.setAnspruchKindergeld(convertIntToBoolean(periode.getDroitPrestationPourEnfant()));
+        periodeXml.setBesitzstand5IVRevision(convertIntToBoolean(periode.getGarantieDroitAcquis5emeRevision()));
         return periodeXml;
     }
 
@@ -316,6 +321,7 @@ public class IJAnnoncesXmlService {
         periodeXml.setPeriodeBeginn(retourneXMLGregorianCalendar(periode.getPeriodeDe()));
         periodeXml.setPeriodeEnde(retourneXMLGregorianCalendar(periode.getPeriodeA()));
         periodeXml.setAnspruchKindergeld(convertIntToBoolean(periode.getDroitPrestationPourEnfant()));
+        periodeXml.setBesitzstand5IVRevision(convertIntToBoolean(periode.getGarantieDroitAcquis5emeRevision()));
 
         return periodeXml;
     }
@@ -353,7 +359,7 @@ public class IJAnnoncesXmlService {
     }
 
     /**
-     * 
+     *
      * @param jaDate dd.MM.yyyy
      * @return
      * @throws ParseException
@@ -374,5 +380,5 @@ public class IJAnnoncesXmlService {
         return xmlGrogerianCalendar;
 
     }
-    
+
 }
