@@ -11,6 +11,8 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.Strate
 
 import java.util.Date;
 
+import static ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport.arronditValeur;
+
 public class StrategieFinalDepenseFraisImmobilierVD implements StrategieCalculFinalisation {
 
     @Override
@@ -89,9 +91,18 @@ public class StrategieFinalDepenseFraisImmobilierVD implements StrategieCalculFi
 
             String legende = ((ControlleurVariablesMetier) context.get(attribut)).getLegendeCourante();
 
-            // Récupération des frais d'entretien calculé précédement
-            float fraisEntretien = donnee
-                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE);
+            float montantLoyerEncaisse = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_REVENUS_LOCATIONS);
+
+            float plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
+                    .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
+            float fraisEntretien = 0f;
+
+            // Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
+            if (montantLoyerEncaisse <= plafondLoyerEncaisse) {
+                // Récupération des frais d'entretien calculé précédement
+                fraisEntretien = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE);
+            }
+
 
             // On l'ajoute aux frais calculés
             donnee.addEnfantTuple(new TupleDonneeRapport(

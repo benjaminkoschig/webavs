@@ -89,17 +89,12 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
 
                 // taux frais entretien en fonction de l'age du batiment
                 float tauxFraisEntretien = getTauxFraisEntretienPrincipale(false, isConstructionPlus20Ans, context);
-                float montantFraisEntretien = 0;
-                float montantLoyerEncaisse = checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantLoyersEncaisses()) * fraction;
+                float montantFraisEntretien = 0f;
 
-                float plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
-                        .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
-
-                montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
-                        .getBienImmoPrincipalMontantValeurLocative()) * tauxFraisEntretien * fraction);
                 // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
-                if ((isImmeubleCommerciale || (montantLoyerEncaisse > plafondLoyerEncaisse))) {
-                    montantFraisEntretien = 0;
+                if (!isImmeubleCommerciale) {
+                    montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
+                            .getBienImmoPrincipalMontantValeurLocative()) * tauxFraisEntretien * fraction);
                 }
 
                 // ajout des frais d'entretien
