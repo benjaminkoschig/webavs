@@ -175,7 +175,8 @@ public class WSConfiguration extends Application {
     static void executeOthersFilters(final ServletRequest request, final ServletResponse servletResponse, final FilterChain chain) {
         INSTANCE.getFilterMappers()
                 .forEach(filter -> {
-                    if (!servletResponse.isCommitted() && filter.isFilterable((HttpServletRequest) request)) {
+                    HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+                    if (!servletResponse.isCommitted() && httpServletRequest.getPathInfo()!=null && filter.isFilterable(httpServletRequest)) {
                         try {
                             filter.doFilter(request, servletResponse, chain);
                         } catch (Exception e) {

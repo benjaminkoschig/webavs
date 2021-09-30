@@ -1,5 +1,6 @@
 package ch.globaz.common.ws.configuration;
 
+import ch.globaz.common.ws.HealthDto;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
@@ -8,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Slf4j
 @Path("/infos")
@@ -15,9 +17,26 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class HealthApiRest {
 
-    @GET()
+    @GET
     @Path("/health")
     public Response health() {
+        return Response.ok(new ApiHealthCheckerService().checkApi()).build();
+    }
+
+    @GET
+    @Path("/health1")
+    public List<HealthDto> test1() {
+        return new ApiHealthCheckerService().checkApi();
+    }
+
+    @GET
+    @Path("/health2")
+    public Response health2() {
+        return Response.ok(new ApiHealthCheckerService().checkApi()).build();
+    }
+
+    @GET
+    public Response health1() {
         return Response.ok(new ApiHealthCheckerService().checkApi()).build();
     }
 }
