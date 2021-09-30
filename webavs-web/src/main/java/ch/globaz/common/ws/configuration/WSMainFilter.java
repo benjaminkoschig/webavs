@@ -26,8 +26,8 @@ public class WSMainFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        LOG.info("WSMainFilter");
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
         httpResponse.addHeader("Access-Control-Allow-Origin", "*");
         httpResponse.addHeader(
                 "Access-Control-Allow-Headers",
@@ -39,6 +39,8 @@ public class WSMainFilter implements Filter {
         httpResponse.addHeader("Access", "HEAD, GET, OPTIONS");
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        LOG.debug("WSMainFilter: {}", httpRequest.getMethod());
+
         if (HttpMethod.OPTIONS.equals(httpRequest.getMethod())) {
             httpResponse.setStatus(Response.Status.NO_CONTENT.getStatusCode());
         } else {

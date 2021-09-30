@@ -10,14 +10,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Slf4j
-@Path("/health")
+@Path("/infos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class HealthApiRest {
 
     @GET()
+    @Path("/health")
     public Response health() {
-        return Response.ok(new ApiHealthCheckerService().checkApi())
-                .build();
+        return Response.ok(new ApiHealthCheckerService().checkApi()).build();
     }
 }
