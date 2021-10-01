@@ -1,5 +1,6 @@
 package globaz.osiris.print.itext.list;
 
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.util.GenerationQRCode;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
@@ -8,6 +9,7 @@ import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -26,7 +28,6 @@ import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
-import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.external.IntTiers;
 import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_DS;
 import globaz.osiris.translation.CACodeSystem;
@@ -34,11 +35,6 @@ import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.*;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -47,7 +43,9 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static globaz.pyxis.constantes.IConstantes.CS_AVOIR_ADRESSE_COURRIER;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * Classe abstraite parente de tous les documents du projet osiris. Centralise les fonctionalités communes aux documents
@@ -812,10 +810,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
                 String idExterneRole = compteAnnexe.getIdExterneRole();
                 String idPlan = plan.getIdPlanRecouvrement();
 
-                generationAdresseDebiteur = qrFacture.genererAdresseDebiteur(idTier, CS_AVOIR_ADRESSE_COURRIER, compteAnnexe._getDefaultDomainFromRole(), idExterneRole, JACalendar.today().toStr("."));
+                generationAdresseDebiteur = getAdresseDebiteurRecouvrementStructure();
                 qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), Objects.isNull(montantTotal) ? "" : montantTotal.toString());
             } else {
-                generationAdresseDebiteur = qrFacture.genererAdresseDebiteur(idTier, section.getTypeAdresse(), section.getDomaine(), compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+                generationAdresseDebiteur = getAdressePrincipaleStructure();
                 qrFacture.genererReferenceQR(sectionCourante.getSection());
             }
 
@@ -846,6 +844,26 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     }
 
+    public boolean getAdresseDebiteurRecouvrementStructure() throws Exception {
+        boolean result;
+        if (compteAnnexe == null) {
+            // appel page neuve
+            return false;
+        }
+        result = qrFacture.genererAdresseDebiteur(compteAnnexe.getIdTiers(), IConstantes.CS_AVOIR_ADRESSE_COURRIER, IConstantes.CS_APPLICATION_SURSIS_PAIEMENT, compteAnnexe.getIdExterneRole(), false, JACalendar.today().toStr("."));
+        if (!result) {
+            result = qrFacture.genererAdresseDebiteur(compteAnnexe.getIdTiers(), IConstantes.CS_AVOIR_ADRESSE_COURRIER, IConstantes.CS_APPLICATION_SURSIS_PAIEMENT, "", false, JACalendar.today().toStr("."));
+        }
+        if (!result) {
+            result = qrFacture.genererAdresseDebiteur(compteAnnexe.getIdTiers(), IConstantes.CS_AVOIR_ADRESSE_COURRIER, IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", false, JACalendar.today().toStr("."));
+        }
+        if (!result) {
+            result = qrFacture.genererAdresseDebiteur(compteAnnexe.getIdTiers(), IConstantes.CS_AVOIR_ADRESSE_COURRIER, IConstantes.CS_APPLICATION_FACTURATION, compteAnnexe.getIdExterneRole(), true, JACalendar.today().toStr("."));
+        }
+        return result;
+
+    }
+
     /**
      * L'adresse de paiement est l'adresse de courrier
      *
@@ -862,6 +880,37 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     }
 
     /**
+     * L'adresse de paiement est l'adresse de courrier
+     *
+     * @return l'adresse courrier du domaine facturation sinon l'adresse de domicile du domaine standard
+     * @throws Exception
+     */
+    public boolean getAdressePrincipaleStructure() throws Exception {
+        if (Objects.isNull(compteAnnexe) || Objects.isNull(compteAnnexe.getTiers())) {
+            return false;
+        } else {
+            String typeAdresse = null;
+            String domaine = null;
+            if (Objects.nonNull(section)) {
+                if (JadeStringUtil.isBlankOrZero(section.getDomaine())) {
+                    domaine = section.getDomaine();
+                }
+                if (JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
+                    typeAdresse = section.getTypeAdresse();
+                }
+            }
+            if (JadeStringUtil.isBlankOrZero(domaine)) {
+                domaine = compteAnnexe._getDefaultDomainFromRole();
+            }
+            if (JadeStringUtil.isBlankOrZero(typeAdresse)) {
+                typeAdresse = IConstantes.CS_AVOIR_ADRESSE_COURRIER;
+            }
+            return qrFacture.genererAdresseDebiteur(compteAnnexe.getIdTiers(), typeAdresse, domaine,
+                    compteAnnexe.getIdExterneRole(), true, JACalendar.today().toStr("."));
+        }
+    }
+
+    /**
      * Via le tiers du compte annexe.
      *
      * @return l'adresse du domaine Facturation de type Courrier
@@ -870,17 +919,27 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public String _getAdresseCourrier() throws Exception {
         if (Objects.isNull(compteAnnexe) || Objects.isNull(compteAnnexe.getTiers())) {
             return "";
-        } else {
+        }
             IntTiers tiers = compteAnnexe.getTiers();
-            String domaine;
-            if (Objects.nonNull(section) && JadeStringUtil.isBlankOrZero(section.getDomaine())) {
+        String typeAdresse = null;
+        String domaine = null;
+        if (Objects.nonNull(section)) {
+            if (JadeStringUtil.isBlankOrZero(section.getDomaine())) {
                 domaine = section.getDomaine();
-            } else {
+            }
+            if (JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
+                typeAdresse = section.getTypeAdresse();
+            }
+        }
+        if (JadeStringUtil.isBlankOrZero(domaine)) {
                 domaine = compteAnnexe._getDefaultDomainFromRole();
             }
-            return tiers.getAdresseAsString(getDocumentInfo(), section.getTypeAdresse(), domaine,
-                    compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+        if (JadeStringUtil.isBlankOrZero(typeAdresse)) {
+            typeAdresse = IConstantes.CS_AVOIR_ADRESSE_COURRIER;
         }
+        return tiers.getAdresseAsString(getDocumentInfo(), typeAdresse, domaine,
+                    compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+
     }
 
     /**

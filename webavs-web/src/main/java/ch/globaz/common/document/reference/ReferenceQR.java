@@ -404,10 +404,10 @@ public class ReferenceQR extends AbstractReference {
      * @return Boolean
      * @throws Exception
      */
-    public Boolean genererAdresseDebiteur(String idTiers, String typeAdresse, String domaineCourrier, String idExterneRole, String date) throws Exception {
+    public Boolean genererAdresseDebiteur(String idTiers, String typeAdresse, String domaineCourrier, String idExterneRole, boolean herite, String date) throws Exception {
 
         TITiers tiers = getTiers(idTiers);
-        TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(typeAdresse, domaineCourrier, idExterneRole, date, true, getLangueDoc());
+        TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(typeAdresse, domaineCourrier, idExterneRole, date, herite, getLangueDoc());
 
 
         if (Objects.nonNull(adresse)) {

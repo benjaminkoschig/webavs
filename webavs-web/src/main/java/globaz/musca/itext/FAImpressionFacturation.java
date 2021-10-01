@@ -1,8 +1,9 @@
 package globaz.musca.itext;
 
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.util.GenerationQRCode;
 import globaz.framework.printing.itext.FWIDocumentManager;
-import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
@@ -11,14 +12,12 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAPassage;
 import globaz.musca.itext.impfactbvrutil.FAImpFactDataSource;
 import globaz.musca.itext.newimpbvrutil.FANewImpFactDataSource;
-import ch.globaz.common.document.reference.ReferenceBVR;
-import ch.globaz.common.document.reference.ReferenceQR;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
+import globaz.pyxis.constantes.IConstantes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -349,7 +348,8 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
 
             FAEnteteFacture enteteFacture = currentDataSource.getEnteteFacture();
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(enteteFacture.getIdTiers(), enteteFacture.getIdTypeCourrier(), enteteFacture.getIdDomaineCourrier(), enteteFacture.getIdExterneRole(), enteteFacture.getPassage().getDateFacturation())) {
+
+            if (!getAdresseDebiteurStructure(enteteFacture)) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
                 // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
@@ -374,7 +374,22 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
 
+    }
 
+    public boolean getAdresseDebiteurStructure(FAEnteteFacture enteteFacture) throws Exception {
+        String courrier;
+        String domaineCourrier;
+        if (!JadeStringUtil.isIntegerEmpty(enteteFacture.getIdTypeCourrier())) {
+            courrier = enteteFacture.getIdTypeCourrier();
+        } else {
+            courrier = IConstantes.CS_AVOIR_ADRESSE_COURRIER;
+        }
+        if (!JadeStringUtil.isIntegerEmpty(enteteFacture.getIdDomaineCourrier())) {
+            domaineCourrier = enteteFacture.getIdDomaineCourrier();
+        } else {
+            domaineCourrier = IConstantes.CS_APPLICATION_FACTURATION;
+        }
+        return qrFacture.genererAdresseDebiteur(enteteFacture.getIdTiers(), courrier, domaineCourrier, enteteFacture.getIdExterneRole(), true, enteteFacture.getPassage().getDateFacturation());
     }
 
     protected void initCommonVar() {
