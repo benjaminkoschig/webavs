@@ -6,4 +6,10 @@ import lombok.Value;
 public class ResponseEntity<T> {
     private Integer status;
     private T entity;
+
+
+    public static <T> ResponseEntity<T> ofKo(){
+        return new ResponseEntity<>(null, null);
+    }
+
 }
