@@ -57,6 +57,38 @@ public class HealthApiRest {
     }
 
     @GET
+    @Path("/health4")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response health4() {
+        return Response.ok("test")
+                .build();
+    }
+
+    @GET
+    @Path("/health5")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String health5() {
+        try {
+            List<HealthDto> healthDtos = new ApiHealthCheckerService().checkApi();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
+
+    @GET
+    @Path("/health6")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String health6() {
+        try {
+            List<HealthDto> healthDtos = new ApiHealthCheckerService().checkApi();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
+
+    @GET
     public Response health1() {
         return Response.ok(new ApiHealthCheckerService().checkApi())
                 .build();
