@@ -30,6 +30,18 @@ public class HealthApiRest {
     }
 
     @GET
+    @Path(value= "/healthv")
+    public Response testv() {
+        return Response.ok(new ApiHealthCheckerService().checkApi()).build();
+    }
+
+    @GET
+    @Path(value= "/healthv2")
+    public  List<HealthDto> testv2() {
+        return new ApiHealthCheckerService().checkApi();
+    }
+
+    @GET
     @Path("/health2")
     public Response health2() {
         return Response.ok(new ApiHealthCheckerService().checkApi()).build();
