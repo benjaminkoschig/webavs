@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -86,6 +87,32 @@ public class HealthApiRest {
             e.printStackTrace();
         }
         return "ok";
+    }
+
+
+    @GET
+    @Path("/health7")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<HealthDto> health7() {
+        List<HealthDto> healthDtos = new ArrayList<>();
+        try {
+            healthDtos = new ApiHealthCheckerService().checkApi();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return healthDtos;
+    }
+
+    @GET
+    @Path("/health8")
+    public List<HealthDto> health8() {
+        List<HealthDto> healthDtos = new ArrayList<>();
+        try {
+            healthDtos = new ApiHealthCheckerService().checkApi();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return healthDtos;
     }
 
     @GET

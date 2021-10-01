@@ -16,10 +16,12 @@ class ApiHealthCheckerService {
     private static List<ApiHealthChecker> apiHealthCheckers;
 
     static void check(List<Class<ApiHealthChecker>> apiHealthCheckerClass) {
+        LOG.info("Start Initialize checker");
         ApiHealthCheckerService.apiHealthCheckers = apiHealthCheckerClass.stream()
                                                                          .map(it -> Exceptions.checkedToUnChecked(it::newInstance, "New instance is impossible with this class: " + it))
                                                                          .collect(Collectors.toList());
         ApiHealthCheckerService checkWebService = new ApiHealthCheckerService();
+        LOG.info("Initialize checker");
         Executors.newSingleThreadScheduledExecutor().schedule(checkWebService::checkApiWithLog, 10, TimeUnit.SECONDS);
     }
 
