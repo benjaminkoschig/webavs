@@ -385,7 +385,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             // flag les calculs en réforme
             for (PeriodePCAccordee pcAccordesReforme : listePCAccordesReforme) {
                 getCalculReforme(pcAccordesReforme.getCalculsComparatifs());
-                if (isRefusFortune(pcAccordesReforme)) {
+                if (!pcAccordesReforme.getCalculsComparatifs().isEmpty() && isRefusFortune(pcAccordesReforme)) {
                     throw new CalculException(LOG_ERROR_MESSAGE_SEUIL_FORTUNE_DEPASSE, pcAccordesReforme.getCalculsComparatifs().get(0).getFortune());
                 }
             }
