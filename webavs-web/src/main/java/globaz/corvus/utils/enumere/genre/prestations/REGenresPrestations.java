@@ -77,10 +77,17 @@ public interface REGenresPrestations {
     public static final String PC_SOUS_TYPE_AI_HOME = "112";
     public static final String PC_SOUS_TYPE_AI_HOME_EPS = "117";
     public static final String PC_SOUS_TYPE_AI_HOME_EPS_HORS_CANTON = "118";
-    // TODO Définir valeur SPEN
-    public static final String PC_SOUS_TYPE_HOME_SPEN = "119";
-//    public static final String PC_SOUS_TYPE_AI_HOME_SPEN = "119";
-//    public static final String PC_SOUS_TYPE_AI_HOME_SPEN_HORS_CANTON = "120";
+    // valeur SPEN
+    public static final String PC_SOUS_TYPE_AI_HOME_SPEN = "119";
+    public static final String PC_SOUS_TYPE_AI_HOME_SPEN_HORS_CANTON = "120";
+    // valeur pour DGEJ
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_SESAF = "129";
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_FOYER = "131";
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_FA = "133";
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_SESAF_HORS_CANTON = "130";
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_FOYER_HORS_CANTON = "132";
+    public static final String PC_SOUS_TYPE_AI_HOME_DGEJ_FA_HORS_CANTON = "134";
+
 
 
     public static final String PC_SOUS_TYPE_AVS_COTISATION_AVS = "105";
@@ -92,9 +99,17 @@ public interface REGenresPrestations {
     public static final String PC_SOUS_TYPE_AVS_HOME = "114";
     public static final String PC_SOUS_TYPE_AVS_HOME_EPS = "115";
     public static final String PC_SOUS_TYPE_AVS_HOME_EPS_HORS_CANTON = "116";
-    // TODO Définir valeur SPEN
-//    public static final String PC_SOUS_TYPE_AVS_HOME_SPEN = "121";
-//    public static final String PC_SOUS_TYPE_AVS_HOME_SPEN_HORS_CANTON = "122";
+    // valeur SPEN
+    public static final String PC_SOUS_TYPE_AVS_HOME_SPEN = "121";
+    public static final String PC_SOUS_TYPE_AVS_HOME_SPEN_HORS_CANTON = "122";
+
+    // valeur pour DGEJ
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_SESAF = "123";
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_FOYER = "125";
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_FA = "127";
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_SESAF_HORS_CANTON = "124";
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_FOYER_HORS_CANTON = "126";
+    public static final String PC_SOUS_TYPE_AVS_HOME_DGEJ_FA_HORS_CANTON = "128";
 
     public static final int RENTE_API_DOMICILE_DEGRE_FAIBLE_IMPOTENCE_AI = 81;
     public static final int RENTE_API_DOMICILE_DEGRE_FAIBLE_IMPOTENCE_AVEC_ACCOMPAGNEMENT_AI = 84;

@@ -17,8 +17,15 @@ public enum PRSousTypeCodePrestationPC {
     PC_AI_118("118", 118, PRDomainDePrestation.AI),
     // TODO Definir code prestation pour SPEN
     PC_AI_119("119", 119, PRDomainDePrestation.AI),
-//    PC_AI_119("119", 119, PRDomainDePrestation.AI),
-//    PC_AI_120("120", 120, PRDomainDePrestation.AI),
+    PC_AI_120("120", 120, PRDomainDePrestation.AI),
+
+    // TODO Definir code prestation pour DGEJ
+    PC_AI_129("129", 129, PRDomainDePrestation.AI),
+    PC_AI_130("130", 130, PRDomainDePrestation.AI),
+    PC_AI_131("131", 131, PRDomainDePrestation.AI),
+    PC_AI_132("132", 132, PRDomainDePrestation.AI),
+    PC_AI_133("133", 132, PRDomainDePrestation.AI),
+    PC_AI_134("134", 134, PRDomainDePrestation.AI),
 
     // Sous types PC AVS
     PC_AVS_100("100", 100, PRDomainDePrestation.AVS),
@@ -28,10 +35,18 @@ public enum PRSousTypeCodePrestationPC {
     PC_AVS_104("104", 104, PRDomainDePrestation.AVS),
     PC_AVS_114("114", 114, PRDomainDePrestation.AVS),
     PC_AVS_115("115", 115, PRDomainDePrestation.AVS),
-    PC_AVS_116("116", 116, PRDomainDePrestation.AVS);
+    PC_AVS_116("116", 116, PRDomainDePrestation.AVS),
     // TODO A traiter lorsque les références rubriques auront été définies
-//    PC_AVS_121("121", 121, PRDomainDePrestation.AVS),
-//    PC_AVS_122("122", 122, PRDomainDePrestation.AVS);
+    PC_AVS_121("121", 121, PRDomainDePrestation.AVS),
+    PC_AVS_122("122", 122, PRDomainDePrestation.AVS),
+
+    // TODO Definir code prestation pour DGEJ
+    PC_AVS_123("123", 123, PRDomainDePrestation.AVS),
+    PC_AVS_124("124", 124, PRDomainDePrestation.AVS),
+    PC_AVS_125("125", 125, PRDomainDePrestation.AVS),
+    PC_AVS_126("126", 126, PRDomainDePrestation.AVS),
+    PC_AVS_127("127", 127, PRDomainDePrestation.AVS),
+    PC_AVS_128("128", 128, PRDomainDePrestation.AVS);
 
     private static PRSousTypeCodePrestationPC[] convert(List<PRSousTypeCodePrestationPC> list) {
         PRSousTypeCodePrestationPC[] array = new PRSousTypeCodePrestationPC[list.size()];

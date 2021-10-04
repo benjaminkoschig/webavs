@@ -48,32 +48,41 @@ public class VdSousCodePrestation extends DetermineSousCodePrestation {
         mapAI.put(IPCHomes.CS_SERVICE_ETAT_SASH, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SASH);
         mapAI.put(IPCHomes.CS_SERVICE_ETAT_EPS, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_EPS);
         // TODO A traiter lorsque les références rubriques auront été définies
-        mapAI.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_HOME_SPEN);
-//        mapAI.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPEN);
+        mapAI.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPEN);
+        mapAI.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_SESAF);
+        mapAI.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_FOYER);
+        mapAI.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FA, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_FA);
+
 
         Map<String, String> mapAIHorsCanton = new HashMap<String, String>();
         mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPAS, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPAS_HORS_CANTON);
         mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SASH, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SASH_HORS_CANTON);
         mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_EPS, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_EPS_HORS_CANTON);
         // TODO A traiter lorsque les références rubriques auront été définies
-        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_HOME_SPEN);
-//        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPEN_HORS_CANTON);
+        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPEN_HORS_CANTON);
+        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_SESAF_HORS_CANTON);
+        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_FOYER_HORS_CANTON);
+        mapAIHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FA, REGenresPrestations.PC_SOUS_TYPE_AI_HOME_DGEJ_FA_HORS_CANTON);
 
         Map<String, String> mapAVS = new HashMap<String, String>();
         mapAVS.put(IPCHomes.CS_SERVICE_ETAT_SPAS, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPAS);
         mapAVS.put(IPCHomes.CS_SERVICE_ETAT_SASH, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SASH);
         mapAVS.put(IPCHomes.CS_SERVICE_ETAT_EPS, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_EPS);
         // TODO A traiter lorsque les références rubriques auront été définies
-        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_HOME_SPEN);
-//        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPEN);
+        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPEN);
+        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_SESAF);
+        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_FOYER);
+        mapAVS.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FA, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_FA);
 
         Map<String, String> mapAVSHorsCanton = new HashMap<String, String>();
         mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPAS, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPAS_HORS_CANTON);
         mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SASH, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SASH_HORS_CANTON);
         mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_EPS, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_EPS_HORS_CANTON);
         // TODO A traiter lorsque les références rubriques auront été définies
-        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_HOME_SPEN);
-//        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPEN_HORS_CANTON);
+        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_SPEN, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPEN_HORS_CANTON);
+        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_SESAF_HORS_CANTON);
+        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_FOYER_HORS_CANTON);
+        mapAVSHorsCanton.put(IPCHomes.CS_SERVICE_ETAT_DGEJ_FA, REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_DGEJ_FA_HORS_CANTON);
 
         String csServiceEtat = null;
         Boolean isHorsCanton = false;

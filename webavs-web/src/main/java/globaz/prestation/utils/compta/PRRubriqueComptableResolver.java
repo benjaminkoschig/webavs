@@ -45,11 +45,26 @@ public class PRRubriqueComptableResolver {
                     APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS);
 
             // TODO A traiter lorsque les rubrique et code presta auront été définies
-//            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AVS_EN_HOME_SPEN);
-//
-//            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPEN);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_123.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_SESAF);
+            put(PRSousTypeCodePrestationPC.PC_AVS_124.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_125.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FOYER);
+            put(PRSousTypeCodePrestationPC.PC_AVS_126.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_127.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FA);
+            put(PRSousTypeCodePrestationPC.PC_AVS_128.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FA);
+
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_A_DOMICILE_ORDINAIRES_ESPECES);
@@ -76,11 +91,25 @@ public class PRRubriqueComptableResolver {
                     APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS);
 
             // TODO A traiter lorsque les références rubriques auront été définies
-//            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AI_EN_HOME_SPEN);
-//
-//            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPEN);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_129.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_SESAF);
+            put(PRSousTypeCodePrestationPC.PC_AI_130.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_131.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FOYER);
+            put(PRSousTypeCodePrestationPC.PC_AI_132.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_133.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FA);
+            put(PRSousTypeCodePrestationPC.PC_AI_134.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FA);
 
         }
     };
@@ -114,11 +143,25 @@ public class PRRubriqueComptableResolver {
                     APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_EPS);
 
             // TODO A traiter lorsques les rubriques comptables et les codes presta auront été définies
-//            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_SPEN);
-//
-//            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AVS_121.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AVS_122.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_123.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_DGEJ_SESAF);
+            put(PRSousTypeCodePrestationPC.PC_AVS_124.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_125.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_DGEJ_FOYER);
+            put(PRSousTypeCodePrestationPC.PC_AVS_126.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+
+            put(PRSousTypeCodePrestationPC.PC_AVS_127.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_DGEJ_FA);
+            put(PRSousTypeCodePrestationPC.PC_AVS_128.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_FA);
 
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
@@ -145,14 +188,28 @@ public class PRRubriqueComptableResolver {
             put(PRSousTypeCodePrestationPC.PC_AI_118.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_EPS);
 
-            // TODO A traiter lorsque les références rubriques auront été définies
+            // SPEN
             put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
-                    APIReferenceRubrique.PC_HOME_SPEN);
-//            put(PRSousTypeCodePrestationPC.PC_AI_119.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_SPEN);
-//
-//            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
-//                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_SPEN);
+            put(PRSousTypeCodePrestationPC.PC_AI_120.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SPEN);
+
+            // DGEJ
+            put(PRSousTypeCodePrestationPC.PC_AI_129.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_DGEJ_SESAF);
+            put(PRSousTypeCodePrestationPC.PC_AI_130.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_131.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_DGEJ_FOYER);
+            put(PRSousTypeCodePrestationPC.PC_AI_132.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_133.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_DGEJ_FA);
+            put(PRSousTypeCodePrestationPC.PC_AI_134.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_DGEJ_FA);
+
         }
     };
 
