@@ -10,19 +10,19 @@ import globaz.globall.util.JAException;
 import globaz.ij.acor.adapter.IJAttestationsJoursAdapter;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
+import globaz.ij.db.prononces.IJPrononce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang.math.NumberUtils;
 
 import static globaz.prestation.acor.web.mapper.PRAcorMapper.loadCodeOrNull;
 
+@AllArgsConstructor
 public class IJCalculDecompteIJMapper {
+    private final IJPrononce prononce;
     private final IJBaseIndemnisation baseIndemnisation;
     private final IJIJCalculee ijijCalculee;
-
-    public IJCalculDecompteIJMapper(final IJBaseIndemnisation baseIndemnisation, final IJIJCalculee ijijCalculee) {
-        this.baseIndemnisation = baseIndemnisation;
-        this.ijijCalculee = ijijCalculee;
-    }
 
     public BasesCalculDecompteCourantIJ map() {
         try {
@@ -35,7 +35,7 @@ public class IJCalculDecompteIJMapper {
             basesCalculDecompteCourantIJ.setFin(Dates.toXMLGregorianCalendar(attestationsJours.getDateFinPeriode()));
             basesCalculDecompteCourantIJ.setDateCreation(Dates.toXMLGregorianCalendar(Dates.nowFormatSwiss()));
             basesCalculDecompteCourantIJ.setJoursAPayer(computJourAPayer(attestationsJours));
-            basesCalculDecompteCourantIJ.setTauxImposition(null);
+            basesCalculDecompteCourantIJ.setTauxImposition(NumberUtils.createDouble(this.prononce.getTauxImpositionSource()));
             basesCalculDecompteCourantIJ.setRaisonInterruption(loadCodeOrNull(
                     this.baseIndemnisation.getSession(),
                     this.baseIndemnisation.getCsMotifInterruption()));
