@@ -22,7 +22,7 @@ import java.util.Objects;
 @Slf4j
 public abstract class AcorFilterAbstract implements FilterMapper{
 
-    public abstract AcorTokenService<AcorToken> getInstanceTokenService();
+    public abstract AcorTokenService getInstanceTokenService();
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse servletResponse, final FilterChain chain) throws IOException, ServletException {

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class AcorTokenServiceAbstract<T extends AcorToken> implements AcorTokenService<T> {
+public abstract class AcorTokenServiceAbstract implements AcorTokenService {
 
     private static final String NOM_HOTE = resolveNomHote();
     private static final String BASE_REST_URI = NOM_HOTE + WSConfiguration.class.getAnnotation(ApplicationPath.class).value();
@@ -78,24 +78,21 @@ public abstract class AcorTokenServiceAbstract<T extends AcorToken> implements A
     }
 
     @Override
-    public T convertToken(String tokenJson) {
+    public AcorToken convertToken(String tokenJson) {
         if (Objects.isNull(tokenJson)) {
             return null;
         }
 
         Jws<Claims> jws = this.convertTokenToJws(tokenJson);
 
-        T token = this.convertToken(jws);
+        AcorToken token = new AcorToken();
 
-        if (token != null) {
-            token.setLangue(jws.getBody().get(LANGUE).toString());
-            token.setEmail(jws.getBody().get(EMAIL).toString());
-            token.setUserId(jws.getBody().get(USER_ID).toString());
-        }
+        token.setLangue(jws.getBody().get(LANGUE).toString());
+        token.setEmail(jws.getBody().get(EMAIL).toString());
+        token.setUserId(jws.getBody().get(USER_ID).toString());
+
         return token;
     }
-
-    protected abstract T convertToken(Jws<Claims> jws);
 
     public Jws<Claims> convertTokenToJws(String token) {
         if (token.startsWith("Bearer ")) {

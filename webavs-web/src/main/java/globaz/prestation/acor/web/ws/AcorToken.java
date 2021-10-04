@@ -1,16 +1,11 @@
 package globaz.prestation.acor.web.ws;
 
-public interface AcorToken {
-    AcorToken setUserId(String userId);
 
-    String getUserId();
+import lombok.Data;
 
-    AcorToken setLangue(String langue);
-
-    String getLangue();
-
-    AcorToken setEmail(String email);
-
-    String getEmail();
-
+@Data
+public class AcorToken {
+    private String langue;
+    private String email;
+    private String userId;
 }

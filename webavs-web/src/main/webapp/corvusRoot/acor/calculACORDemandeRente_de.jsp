@@ -258,9 +258,7 @@
 } else if (viewBean.isAcorV4Web()) {
 
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-    Date actualDate = new Date();
-    String day = JadeDateUtil.getDMYDate(actualDate);
-    String token = REAcorTokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
+    String token = REAcorTokenService.createToken(viewBean, bSession);
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
