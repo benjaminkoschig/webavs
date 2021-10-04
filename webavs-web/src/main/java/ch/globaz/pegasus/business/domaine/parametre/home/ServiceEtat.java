@@ -14,6 +14,9 @@ public enum ServiceEtat implements CodeSystemEnum<ServiceEtat> {
     INSTITUTION("64025008"),
     EPS("64025009"),
     SPEN("64025010"),
+    DGEJ_SESAF("64025011"),
+    DGEJ_FOYER("64025012"),
+    DGEJ_FA("64025013"),
     INDEFINIT("");
 
     private String value;

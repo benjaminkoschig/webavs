@@ -75,6 +75,19 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AI_HOME_EPS_HORS_CANTON = null;
     public APIRubrique PC_AI_EN_HOME = null;
     public APIRubrique PC_AI_PART_CANTONALE = null;
+
+    // Nouvelle Rubrique SPEN AI
+    public APIRubrique PC_AI_HOME_SPEN = null;
+    public APIRubrique PC_AI_HOME_HORS_CANTON_SPEN = null;
+
+    // Nouvelle Rubrique DGEJ AI
+    public APIRubrique PC_AI_HOME_DGEJ_SESAF = null;
+    public APIRubrique PC_AI_HOME_HORS_CANTON_DGEJ_SESAF = null;
+    public APIRubrique PC_AI_HOME_DGEJ_FOYER = null;
+    public APIRubrique PC_AI_HOME_HORS_CANTON_DGEJ_FOYER = null;
+    public APIRubrique PC_AI_HOME_DGEJ_FA = null;
+    public APIRubrique PC_AI_HOME_HORS_CANTON_DGEJ_FA = null;
+
     /**
      * Rubrique PC AVS standard
      */
@@ -92,6 +105,18 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AVS_EN_HOME_EPS = null;
     public APIRubrique PC_AVS_EN_HOME = null;
     public APIRubrique PC_AVS_PART_CANTONALE = null;
+
+    // Nouvelle Rubrique SPEN AVS
+    public APIRubrique PC_AVS_HOME_SPEN = null;
+    public APIRubrique PC_AVS_HOME_HORS_CANTON_SPEN = null;
+
+    // Nouvelle Rubrique GDEJ AVS
+    public APIRubrique PC_AVS_HOME_DGEJ_SESAF = null;
+    public APIRubrique PC_AVS_HOME_HORS_CANTON_DGEJ_SESAF = null;
+    public APIRubrique PC_AVS_HOME_DGEJ_FOYER = null;
+    public APIRubrique PC_AVS_HOME_HORS_CANTON_DGEJ_FOYER = null;
+    public APIRubrique PC_AVS_HOME_DGEJ_FA = null;
+    public APIRubrique PC_AVS_HOME_HORS_CANTON_DGEJ_FA = null;
 
     public APIRubrique PRST_AI_RESTITUER = null;
     public APIRubrique PRST_API_AI_RESTITUER = null;
@@ -368,6 +393,22 @@ public class REModuleComptableFactory {
             return PC_AI_HOME_EPS_HORS_CANTON;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_PART_CANTONALE)) {
             return PC_AI_PART_CANTONALE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_SPEN)) {
+            return PC_AI_HOME_SPEN;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPEN)) {
+            return PC_AI_HOME_HORS_CANTON_SPEN;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_SESAF)) {
+            return PC_AI_HOME_DGEJ_SESAF;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_SESAF)) {
+            return PC_AI_HOME_HORS_CANTON_DGEJ_SESAF;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FA)) {
+            return PC_AI_HOME_DGEJ_FA;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FA)) {
+            return PC_AI_HOME_HORS_CANTON_DGEJ_FA;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FOYER)) {
+            return PC_AI_HOME_DGEJ_FOYER;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FOYER)) {
+            return PC_AI_HOME_HORS_CANTON_DGEJ_FOYER;
         }
 
         // AVS
@@ -393,6 +434,22 @@ public class REModuleComptableFactory {
             return PC_AVS_EN_HOME_HORS_CANTON_EPS;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_PART_CANTONALE)) {
             return PC_AVS_PART_CANTONALE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_SPEN)) {
+            return PC_AVS_HOME_SPEN;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPEN)) {
+            return PC_AVS_HOME_HORS_CANTON_SPEN;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_SESAF)) {
+            return PC_AVS_HOME_DGEJ_SESAF;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_SESAF)) {
+            return PC_AVS_HOME_HORS_CANTON_DGEJ_SESAF;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FA)) {
+            return PC_AVS_HOME_DGEJ_FA;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FA)) {
+            return PC_AVS_HOME_HORS_CANTON_DGEJ_FA;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FOYER)) {
+            return PC_AVS_HOME_DGEJ_FOYER;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FOYER)) {
+            return PC_AVS_HOME_HORS_CANTON_DGEJ_FOYER;
         }
 
         throw new Exception("Can not return an APIRubrique for requested rubrique [" + codeRubrique
@@ -523,6 +580,22 @@ public class REModuleComptableFactory {
         PC_AI_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME);
         PC_AI_PART_CANTONALE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_PART_CANTONALE);
 
+            // SPEN
+        PC_AI_HOME_SPEN = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_SPEN);
+        PC_AI_HOME_HORS_CANTON_SPEN = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPEN);
+
+            // DGEJ
+        PC_AI_HOME_DGEJ_SESAF = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_SESAF);
+        PC_AI_HOME_HORS_CANTON_DGEJ_SESAF = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+        PC_AI_HOME_DGEJ_FOYER = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FOYER);
+        PC_AI_HOME_HORS_CANTON_DGEJ_FOYER = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+        PC_AI_HOME_DGEJ_FA = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_DGEJ_FA);
+        PC_AI_HOME_HORS_CANTON_DGEJ_FA = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_DGEJ_FA);
+
         // PC AVS rubrique Initialization
         PC_AVS_ALLOCATIONS_DE_NOEL = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_ALLOCATIONS_DE_NOEL);
@@ -540,6 +613,22 @@ public class REModuleComptableFactory {
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS);
         PC_AVS_PART_CANTONALE = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_PART_CANTONALE);
+
+            // SPEN
+        PC_AVS_HOME_SPEN = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_SPEN);
+        PC_AVS_HOME_HORS_CANTON_SPEN = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPEN);
+
+            // DGEJ
+        PC_AVS_HOME_DGEJ_SESAF = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_SESAF);
+        PC_AVS_HOME_HORS_CANTON_DGEJ_SESAF = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_SESAF);
+        PC_AVS_HOME_DGEJ_FOYER = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FOYER);
+        PC_AVS_HOME_HORS_CANTON_DGEJ_FOYER = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FOYER);
+        PC_AVS_HOME_DGEJ_FA = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_DGEJ_FA);
+        PC_AVS_HOME_HORS_CANTON_DGEJ_FA = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_DGEJ_FA);
 
         PC_AVS_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME);
 

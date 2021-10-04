@@ -22,4 +22,10 @@ public interface IPCTaxeJournaliere {
     public static final String CS_CATEGORIE_EPS = "64072005";
 
     public static final String CS_CATEGORIE_SPEN = "64072006";
+
+    public static final String CS_CATEGORIE_DGEJ_SESAF = "64072007";
+
+    public static final String CS_CATEGORIE_DGEJ_FOYER = "64072008";
+
+    public static final String CS_CATEGORIE_DGEJ_FA = "64072009";
 }

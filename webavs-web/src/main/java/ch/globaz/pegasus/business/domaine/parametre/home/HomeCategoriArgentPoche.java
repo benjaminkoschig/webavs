@@ -10,6 +10,9 @@ public enum HomeCategoriArgentPoche implements CodeSystemEnum<HomeCategoriArgent
     NON_DEFINIE("64072004"),
     EPS("64072005"),
     SPEN("64072006"),
+    DGEJ_SESAF("64072007"),
+    DGEJ_FOYER("64072008"),
+    DGEJ_FA("64072009"),
     INDEFINIT("");
 
     private String value;

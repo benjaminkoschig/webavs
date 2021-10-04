@@ -111,6 +111,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE, Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_SPEN, Attribut.MONTANT_TYPE_CHAMBRE_SPEN);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_SESAF, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_SESAF);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FOYER, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FOYER);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FA, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FA);
             put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_HOME, Attribut.CS_REFORME_FRACTIONS_FORTUNE_HOME_LEGENDE);
             put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT, Attribut.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT_LEGENDE);
             put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_MOITIE, Attribut.CS_REFORME_FRACTIONS_FORTUNE_MOITIE_LEGENDE);
@@ -145,6 +148,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE_PLUS_20_ANS_ANNEXE);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_SPEN, Attribut.MONTANT_TYPE_CHAMBRE_SPEN);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_SESAF, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_SESAF);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FOYER, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FOYER);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FA, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FA);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT, Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10, Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
@@ -218,6 +224,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_PLAFOND_LOYERS_ENCAISSES, Attribut.PLAFOND_LOYERS_ENCAISSES);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_SPEN, Attribut.MONTANT_TYPE_CHAMBRE_SPEN);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_SESAF, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_SESAF);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FOYER, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FOYER);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FA, Attribut.MONTANT_TYPE_CHAMBRE_DGEJ_FA);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT, Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10, Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
@@ -594,10 +603,17 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
             List<PersonnePCAccordee> combinaisonPersonnesSepare = new ArrayList<PersonnePCAccordee>();
             combinaisonPersonnesSepare.add(parent);
+
+            // TODO Ajouter
+//            for(PersonnePCAccordee enfant : enfants) {
+//                combinaisonPersonnesSepare.add(enfant);
+//            }
+
             CalculComparatif ccSeul = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_SEUL, combinaisonPersonnesSepare, context);
 
             // calcul par combinaison d'enfants
-            int nbEnfants = enfants.size();
+            // Si un parent est en home, l'enfant ne doit pas être comptabilisé dans le calcul comparatif
+            int nbEnfants = (parent.getIsHome()? 0 : enfants.size());
             for (int idxCC = 0; idxCC < Math.pow(2, nbEnfants); idxCC++) {
 
                 combinaisonPersonnesSepare = new ArrayList<>();
