@@ -11,20 +11,21 @@ import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.itext.APAttestations;
 import globaz.apg.utils.APGUtils;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class APGenererAttestationsProcess extends BProcess {
     // -------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private Set cantonsLettreEntete = new HashSet();
@@ -139,6 +140,7 @@ public class APGenererAttestationsProcess extends BProcess {
     private String eMailObject = "";
     // private String montantVentilation = "";
     private String idTiers = "";
+    private List<APSitProJointEmployeur> situationsProf;
     private Boolean isGenerationUnique = Boolean.TRUE;
     private Boolean isSendToGed = Boolean.FALSE;
 
@@ -170,9 +172,8 @@ public class APGenererAttestationsProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererAttestationsProcess.
-     * 
-     * @param parent
-     *            DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
      */
     public APGenererAttestationsProcess(BProcess parent) {
         super(parent);
@@ -180,9 +181,8 @@ public class APGenererAttestationsProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererAttestationsProcess.
-     * 
-     * @param session
-     *            DOCUMENT ME!
+     *
+     * @param session DOCUMENT ME!
      */
     public APGenererAttestationsProcess(BSession session) {
         super(session);
@@ -190,7 +190,7 @@ public class APGenererAttestationsProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -257,6 +257,11 @@ public class APGenererAttestationsProcess extends BProcess {
             sitPro.setIdSituationProf(rep.getIdSituationProfessionnelle());
             sitPro.retrieve();
 
+            APSitProJointEmployeurManager sitProJointEmployeurManager = new APSitProJointEmployeurManager();
+            sitProJointEmployeurManager.setSession(getSession());
+            sitProJointEmployeurManager.setForIdDroit(repPres.getIdDroit());
+            sitProJointEmployeurManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+
             // Si pas une ventilation,
             // et (un payement direct ou un payement a l'employeur pour un
             // independant)
@@ -267,6 +272,8 @@ public class APGenererAttestationsProcess extends BProcess {
                 montantTotal = rep.getMontantRestant();
                 totalMontantAPG = rep.getMontantBrut();
                 idTiers = repPres.getIdTiers();
+                tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
+                situationsProf = sitProJointEmployeurManager.getContainerAsList();
 
                 // Rechercher les ventilations pour cette répartition
                 APRepartitionPaiementsManager repartitions = new APRepartitionPaiementsManager();
@@ -423,7 +430,7 @@ public class APGenererAttestationsProcess extends BProcess {
             ArrayList<AttestationsInfos> attestationInfos = mapFiscEntry.getValue();
             Key key = mapFiscEntry.getKey();
 
-            // on prends le premier car toutes les prestations d'un tiers possède le même canton
+            // on prends le premier car toutes les prestations d'un tiers devrait possèder le même canton
             String canton = mapFiscEntry.getValue().get(0).getCanton();
 
             LinkedHashMap<Key, ArrayList<AttestationsInfos>> linkedHashMap = mapFiscByCanton.get(canton);
@@ -437,35 +444,35 @@ public class APGenererAttestationsProcess extends BProcess {
     }
 
     private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
-         // On crée un objet
-         AttestationsInfos ai = new AttestationsInfos();
+        // On crée un objet
+        AttestationsInfos ai = new AttestationsInfos();
 
-         ai.idTiers = idTiers;
-         ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
-         ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
-         ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
-         ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
-                 totalMontantCotisations.toString()));
-         ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
-                 totalMontantImpotSource.toString()));
-         ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
-         ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
-                 .toString()));
-         ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
+        ai.idTiers = idTiers;
+        ai.dateDebut = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateDebut());
+        ai.dateFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(prest.getDateFin());
+        ai.totalMontantAPG = ai.totalMontantAPG.add(new BigDecimal(totalMontantAPG.toString()));
+        ai.totalMontantCotisations = ai.totalMontantCotisations.add(new BigDecimal(
+                totalMontantCotisations.toString()));
+        ai.totalMontantImpotSource = ai.totalMontantImpotSource.add(new BigDecimal(
+                totalMontantImpotSource.toString()));
+        ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
+        ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
+                .toString()));
+        ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
-         initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
+        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
 
-         ai.idsRPVentilations = idsVentilation;
-         // Comme la clé est inexistante, on crée la liste
-         // d'objet
-         ArrayList list = new ArrayList();
-         list.add(ai);
+        ai.idsRPVentilations = idsVentilation;
+        // Comme la clé est inexistante, on crée la liste
+        // d'objet
+        ArrayList list = new ArrayList();
+        list.add(ai);
 
         // On insère la clé et la liste dans la map
         map.put(k, list);
     }
 
-    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource,  Key k, Map map, boolean isCopyFisc) throws JAException {
+    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
         // On récupère la liste
         ArrayList list = (ArrayList) map.get(k);
 
@@ -549,13 +556,13 @@ public class APGenererAttestationsProcess extends BProcess {
         try {
             if (isPrestationLapat(prest) || (isPrestationAPG(prest) || isPrestationPandemie(prest) || isPrestationAmat(prest) || isPrestationLapai(prest))) {
 
+                // cherche le canton impôt source de l'attestation d'imposition
+                String canton = searchCantonImpotSourceCascade(prest);
+                ai.setCanton(canton);
+
                 if (isCopyFisc) {
                     // set le flag isCopyFisc qui définit si le document est une copie au fisc
                     ai.setIsCopyFisc(isCopyFisc);
-
-                    // set le canton de l'attestation d'imposition
-                    String canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
-                    ai.setCanton(canton);
 
                     if (!totalMontantImpotSource.isZero()) {
                         // évite l'envoi de lettre entete en doublon pour le même canton
@@ -576,6 +583,108 @@ public class APGenererAttestationsProcess extends BProcess {
             getMemoryLog().logMessage("Erreur lors de l'initialisation de la copie au fisc : " + e.toString(), FWMessage.ERREUR,
                     "APGenererAttestationsProcess");
         }
+    }
+
+    private String searchCantonImpotSourceCascade(APPrestation prest) {
+        String canton = "";
+
+        try {
+            APDroitLAPG droit = APGUtils.loadDroit(getSession(), getTransaction(), prest.getIdDroit(), rechercheTypeDroit(prest));
+
+            if (droit.getIsSoumisImpotSource()) {
+
+                // recherche du canton dans le droit
+                canton = droit.getCsCantonDomicile();
+
+                // si canton vide dans le droit ou si la valeur est set à ETRANGER
+                if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                    // recherche du canton dans l'adresse de domicile
+                    canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+
+                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                    if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                        // recherche du canton dans l'adresse de l'employeur
+                        canton = rechercheCantonAdressePaiementSitProf(rechercheDomaine(prest), situationsProf, prest.getDateDebut());
+
+                        if (JadeStringUtil.isBlankOrZero(canton)) {
+                            getMemoryLog().logMessage("impossible de déterminer le canton d'imposition", FWMessage.ERREUR,
+                                    "APGenererAttestationsProcess");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + e.toString(), FWMessage.ERREUR,
+                    "APGenererAttestationsProcess");
+        }
+
+        return canton;
+    }
+
+    private String rechercheTypeDroit(APPrestation prest) throws Exception {
+        String typeDroit = "ANY";
+        if (isPrestationAPG(prest)) {
+            typeDroit = "ANY";
+        } else if (isPrestationAmat(prest)) {
+            typeDroit = IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE;
+        } else if (isPrestationLapat(prest)) {
+            typeDroit = IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE;
+        } else if (isPrestationLapai(prest)) {
+            typeDroit = IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT;
+        } else if (isPrestationPandemie(prest)) {
+            typeDroit = "ANY";
+        }
+        return typeDroit;
+    }
+
+    private String rechercheDomaine(APPrestation prest) throws Exception {
+        String domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        if (isPrestationAPG(prest)) {
+            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        } else if (isPrestationAmat(prest)) {
+            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+        } else if (isPrestationLapat(prest)) {
+            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
+        } else if (isPrestationLapai(prest)) {
+            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_PROCHE_AIDANT;
+        } else if (isPrestationPandemie(prest)) {
+            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        }
+        return domaine;
+    }
+
+    /**
+     * recherche le canton dans les situations professionnelles
+     * @param situationsProf
+     * @return
+     * @throws Exception
+     */
+    private String rechercheCantonAdressePaiementSitProf(String domaine, List<APSitProJointEmployeur> situationsProf, String dateDebut) throws Exception {
+        String canton = "";
+        // vérification du canton de la situation professionnelle
+        for (APSitProJointEmployeur sit : situationsProf) {
+            TIAdressePaiementData data = PRTiersHelper.getAdressePaiementData(getSession(), getSession().getCurrentThreadTransaction(), sit.getIdTiers(),
+                    domaine, sit.getIdAffilie(), dateDebut);
+
+            if (!data.isNew()) {
+                String cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa());
+                if(cantonComparaison == null) {
+                    // canton de l'adresse de paiement de la banque (indépendant étranger ?)
+                    cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa_banque());
+                }
+                // toutes les situations professionnelles du droit doivent avoir le même canton sinon impossible de déterminer
+                if (!canton.isEmpty() && !canton.equals(cantonComparaison)) {
+                    getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs", FWMessage.ERREUR,
+                            "APGenererAttestationsProcess");
+                } else {
+                    canton = cantonComparaison;
+                }
+            }
+
+        }
+        return canton;
     }
 
     private void createAttestation(String annee, String dateDebut, String dateFin, boolean isAttestationPat, boolean isAttestationPai, Map map, boolean isAttestationCopy) throws Exception {
@@ -693,5 +802,13 @@ public class APGenererAttestationsProcess extends BProcess {
 
     public void setTypePrestation(String typePrestation) {
         this.typePrestation = typePrestation;
+    }
+
+    public List<APSitProJointEmployeur> getSituationsProf() {
+        return situationsProf;
+    }
+
+    public void setSituationsProf(List<APSitProJointEmployeur> situationsProf) {
+        this.situationsProf = situationsProf;
     }
 }

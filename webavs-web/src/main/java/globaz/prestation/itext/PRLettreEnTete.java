@@ -447,7 +447,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
             documentHelper = PRBabelHelper.getDocumentHelper(getISession());
 
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
-                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)) {
                 documentHelper.setCsDomaine("52018001");
                 documentHelper.setCsTypeDocument("52019008");
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {

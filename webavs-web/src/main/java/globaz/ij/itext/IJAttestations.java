@@ -127,6 +127,8 @@ public class IJAttestations extends FWIDocumentManager {
 
     private boolean isAttestationCopy = false;
 
+    private String cantonAttestationCopy = "";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -581,17 +583,20 @@ public class IJAttestations extends FWIDocumentManager {
             parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
         }
 
-        // si une des attestations possède une copie au fisc
-        if (isHasCopyFisc) {
-            initCopieA2Fisc(document, parametres, idTiers);
-        }
+        if (isHasCopyFisc || isAddLettreEntete) {
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE), cantonAttestationCopy);
 
-        // si une des attestations possède une lettre d'entête (une par canton)
-        if (isAddLettreEntete) {
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
+            // si une des attestations possède une copie au fisc
+            if (isHasCopyFisc) {
+                initCopieA2Fisc(document, parametres, idTiersAdmFiscale);
+            }
 
-            // Création du document en-tête
-            createLettreEntete(idTiersAdmFiscale, true);
+            // si une des attestations possède une lettre d'entête (une par canton)
+            if (isAddLettreEntete) {
+
+                // Création du document en-tête
+                createLettreEntete(idTiersAdmFiscale, true);
+            }
         }
     }
 
@@ -851,7 +856,7 @@ public class IJAttestations extends FWIDocumentManager {
         try {
             suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_COPY")).append(" - ");
             if (!JadeStringUtil.isEmpty(idTiers)) {
-                suffixe.append(getSession().getCodeLibelle(PRTiersHelper.getTiersCanton(getSession(), idTiers))).append(" - ");
+                suffixe.append(getSession().getCodeLibelle(getCantonAttestationCopy())).append(" - ");
             }
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.WARNING, "IJAttestations");
@@ -935,6 +940,7 @@ public class IJAttestations extends FWIDocumentManager {
 
                 setIdBaseInd(ai.idBaseInd);
                 setIdTiers(ai.idTiers);
+                setCantonAttestationCopy(ai.getCanton());
 
             }
 
@@ -1153,9 +1159,7 @@ public class IJAttestations extends FWIDocumentManager {
         return lettreEnTete;
     }
 
-    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiers) throws Exception {
-        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
-
+    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiersAdmFiscale) throws Exception {
         parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
         parametres.putIfAbsent("P_COPIE_A2", "");
         if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
@@ -1182,6 +1186,14 @@ public class IJAttestations extends FWIDocumentManager {
 
     public void setAttestationCopy(boolean attestationCopy) {
         isAttestationCopy = attestationCopy;
+    }
+
+    public String getCantonAttestationCopy() {
+        return cantonAttestationCopy;
+    }
+
+    public void setCantonAttestationCopy(String cantonAttestation) {
+        this.cantonAttestationCopy = cantonAttestation;
     }
 
 }

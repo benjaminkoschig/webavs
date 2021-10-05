@@ -3,13 +3,11 @@
  */
 package globaz.ij.process;
 
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JAException;
 import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prestations.IIJRepartitionPaiements;
@@ -21,13 +19,20 @@ import globaz.ij.db.prestations.IJRepartitionJointPrestation;
 import globaz.ij.db.prestations.IJRepartitionJointPrestationJointLotManager;
 import globaz.ij.db.prestations.IJRepartitionPaiements;
 import globaz.ij.db.prestations.IJRepartitionPaiementsManager;
+import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJPrononce;
+import globaz.ij.db.prononces.IJSituationProfessionnelle;
+import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
 import globaz.ij.itext.IJAttestations;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeException;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -139,6 +144,8 @@ public class IJGenererAttestationsProcess extends BProcess {
     // private String montantVentilation = "";
     private String idBaseInd = "";
     private String idTiers = "";
+    private IJPrononce prononce;
+    private List<IJSituationProfessionnelle> situationsProf;
     private Boolean isGenerationUnique = Boolean.TRUE;
     private Boolean isSendToGed = Boolean.FALSE;
 
@@ -245,22 +252,29 @@ public class IJGenererAttestationsProcess extends BProcess {
             rep.retrieve();
 
             // recherche le prononce
-            IJPrononce prononce = new IJPrononce();
-            prononce.setSession(getSession());
-            prononce.setIdPrononce(repPres.getIdPrononce());
-            prononce.retrieve();
+            IJPrononce prononceLocal = new IJPrononce();
+            prononceLocal.setSession(getSession());
+            prononceLocal.setIdPrononce(repPres.getIdPrononce());
+            prononceLocal.retrieve();
 
             // Si pas une ventilation,
             // et (un payement direct ou un payement a l'employeur pour un
             // independant)
             if (JadeStringUtil.isIntegerEmpty(rep.getIdParent())
                     && (IIJRepartitionPaiements.CS_PAIEMENT_DIRECT.equals(rep.getTypePaiement()) || IIJPrononce.CS_INDEPENDANT
-                            .equals(prononce.getCsStatutProfessionnel()))) {
+                            .equals(prononceLocal.getCsStatutProfessionnel()))) {
 
                 montantTotal = rep.getMontantRestant();
                 totalMontantIJ = rep.getMontantBrut();
                 idBaseInd = repPres.getIdBaseIndemnisation();
                 idTiers = repPres.getIdTiers();
+                prononce = prononceLocal;
+
+                IJSituationProfessionnelleManager spMgr = new IJSituationProfessionnelleManager();
+                spMgr.setSession(getSession());
+                spMgr.setForIdPrononce(prononce.getIdPrononce());
+                spMgr.find(getTransaction(), BManager.SIZE_NOLIMIT);
+                situationsProf = spMgr.getContainerAsList();
 
                 IJPrestation prest = new IJPrestation();
                 prest.setSession(getSession());
@@ -539,13 +553,13 @@ public class IJGenererAttestationsProcess extends BProcess {
         try {
             if (isPrestationIJ(prest)) {
 
+                // cherche le canton impôt source de l'attestation d'imposition
+                String canton = searchCantonImpotSourceCascade(prest);
+                ai.setCanton(canton);
+
                 if (isCopyFisc) {
                     // set le flag isCopyFisc qui définit si le document est une copie au fisc
                     ai.setIsCopyFisc(isCopyFisc);
-
-                    // set le canton de l'attestation d'imposition
-                    String canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
-                    ai.setCanton(canton);
 
                     if (!totalMontantImpotSource.isZero()) {
                         // évite l'envoi de lettre entete en doublon pour le même canton
@@ -566,6 +580,82 @@ public class IJGenererAttestationsProcess extends BProcess {
             getMemoryLog().logMessage("Erreur lors de l'initialisation de la copie au fisc : " + e.toString(), FWMessage.ERREUR,
                     "APGenererAttestationsProcess");
         }
+    }
+
+    private String searchCantonImpotSourceCascade(IJPrestation prest) {
+        String canton = "";
+
+        try {
+
+            if (prononce.getSoumisImpotSource()) {
+
+                // recherche du canton dans le prononce
+                canton = prononce.getCsCantonImpositionSource();
+
+                // si canton vide dans le droit ou si la valeur est set à ETRANGER
+                if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                    // recherche du canton dans l'adresse de domicile
+                    canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+
+                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                    if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                        // recherche du canton dans l'adresse de l'employeur
+                        canton = rechercheCantonAdressePaiementSitProf(rechercheDomaine(), situationsProf, prest.getDateDebut());
+
+                        if (JadeStringUtil.isBlankOrZero(canton)) {
+                            getMemoryLog().logMessage("impossible de déterminer le canton d'imposition.", FWMessage.ERREUR,
+                                    "IJGenererAttestationsProcess");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + e.toString(), FWMessage.ERREUR,
+                    "APGenererAttestationsProcess");
+        }
+
+        return canton;
+    }
+
+    private String rechercheDomaine() throws Exception {
+        return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI;
+    }
+
+    /**
+     * recherche le canton dans les situations professionnelles
+     * @param situationsProf
+     * @return
+     * @throws Exception
+     */
+    private String rechercheCantonAdressePaiementSitProf(String domaine, List<IJSituationProfessionnelle> situationsProf, String dateDebut) throws Exception {
+        String canton = "";
+        // vérification du canton de la situation professionnelle
+         for (IJSituationProfessionnelle sit : situationsProf) {
+            if (!JadeStringUtil.isEmpty(sit.getIdEmployeur())) {
+                IJEmployeur employeur = sit.loadEmployeur();
+                TIAdressePaiementData data = PRTiersHelper.getAdressePaiementData(getSession(), getSession().getCurrentThreadTransaction(), employeur.getIdTiers(),
+                        domaine, employeur.getIdAffilie(), dateDebut);
+
+                if (!data.isNew()) {
+                    String cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa());
+                    if (cantonComparaison == null) {
+                        // canton de l'adresse de paiement de la banque (indépendant étranger ?)
+                        cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa_banque());
+                    }
+                    // toutes les situations professionnelles du droit doivent avoir le même canton sinon impossible de déterminer
+                    if (!canton.isEmpty() && !canton.equals(cantonComparaison)) {
+                        getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs", FWMessage.ERREUR,
+                            "IJGenererAttestationsProcess");
+                    } else {
+                        canton = cantonComparaison;
+                    }
+                }
+
+            }
+        }
+        return canton;
     }
 
     private boolean isPrestationIJ(IJPrestation prest) {
@@ -654,4 +744,11 @@ public class IJGenererAttestationsProcess extends BProcess {
         NSS = string;
     }
 
+    public List<IJSituationProfessionnelle> getSituationsProf() {
+        return situationsProf;
+    }
+
+    public void setSituationsProf(List<IJSituationProfessionnelle> situationsProf) {
+        this.situationsProf = situationsProf;
+    }
 }

@@ -7,10 +7,7 @@ import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.db.droits.*;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APPrestationManager;
-import globaz.apg.db.prestation.APRepartitionPaiements;
-import globaz.apg.db.prestation.APRepartitionPaiementsManager;
+import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
@@ -45,12 +42,14 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeException;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.api.IAFAssurance;
 import globaz.naos.application.AFApplication;
 import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.tauxImposition.PRTauxImposition;
@@ -235,6 +234,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private String codeIsoLangue = "FR";
     private boolean createDocumentCopie = false;
     private boolean createDocumentCopieFisc = false;
+    private String cantonDecisionCopyFisc = "";
     private String csTypeDocument;
     private String date;
     private PRDemande demande = null;
@@ -791,10 +791,43 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (isCreateDocumentCopie() && paramCopie.booleanValue()) {
             initCopieACopieA2(document, parametres, demande.getIdTiers());
         }
-        if (isCreateDocumentCopie() && isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
-            initCopieA2Fisc(document, parametres, demande.getIdTiers());
+
+        // si le document est une copie au fisc
+        if (isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
+
+            // cherche le canton impôt source de l'attestation d'imposition
+            String canton = searchCantonImpotSourceCascade(demande.getIdTiers());
+            setCantonDecisionCopyFisc(canton);
+
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), codeIsoLangue, canton);
+            initCopieA2Fisc(document, parametres, idTiersAdmFiscale);
+
         }
     }
+
+     private String searchCantonImpotSourceCascade(String idTiers) throws Exception {
+        String canton = "";
+
+         if (droit.getIsSoumisImpotSource()) {
+
+            // recherche du canton dans le droit
+            canton = droit.getCsCantonDomicile();
+
+            // si canton vide dans le droit ou si la valeur est set à ETRANGER
+            if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                // recherche du canton dans l'adresse de domicile
+                canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+
+                // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+                   throw new JadeException("impossible de déterminer le canton d'imposition");
+                }
+            }
+        }
+
+        return canton;
+     }
 
     private String getTextOrEmpty(ICTDocument document, int niveau, int position) {
         try {
@@ -817,9 +850,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         parametres.put("P_COPIE_A2", ligne);
     }
 
-    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiers) throws Exception {
-        String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), idTiers);
-
+    private void initCopieA2Fisc(ICTDocument document, Map parametres, String idTiersAdmFiscale) throws Exception {
         parametres.putIfAbsent("P_COPIE_A", getTextOrEmpty(document, 1, 8));
         parametres.putIfAbsent("P_COPIE_A2", "");
         if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
@@ -3005,6 +3036,14 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         return suite;
     }
 
+    public String getCodeIsoLangue() {
+        return codeIsoLangue;
+    }
+
+    public void setCodeIsoLangue(String codeIsoLangue) {
+        this.codeIsoLangue = codeIsoLangue;
+    }
+
     /**
      * Indique si création de document de copie
      *
@@ -3076,4 +3115,11 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
     }
 
+    public String getCantonDecisionCopyFisc() {
+        return cantonDecisionCopyFisc;
+    }
+
+    public void setCantonDecisionCopyFisc(String cantonDecisionCopyFisc) {
+        this.cantonDecisionCopyFisc = cantonDecisionCopyFisc;
+    }
 }

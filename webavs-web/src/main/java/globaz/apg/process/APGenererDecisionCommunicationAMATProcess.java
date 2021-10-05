@@ -103,7 +103,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
         // génère une copie a l'administration fiscale du tiers si nécessaire (cas impôt source)
         if (decisionOriginale.isCreateDocumentCopieFisc()) {
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), demande.getIdTiers());
+            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), decisionOriginale.getCodeIsoLangue(), decisionOriginale.getCantonDecisionCopyFisc());
             // Création du document en-tête
             createLettreEntete(idTiersAdmFiscale, true);
             // Création de la lettre de copie à l'assuré

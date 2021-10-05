@@ -472,9 +472,6 @@ public class PRTiersHelper {
         admAdrMgr.find();
 
         if (admAdrMgr.isEmpty()) {
-            /*if (!JadeStringUtil.contains(warningCopy.toString(), session.getLabel("WARNING_ADM_FISCALE"))) {
-                warningCopy.append(session.getLabel("WARNING_ADM_FISCALE") + "\n");
-            }*/
             throw new Exception(session.getLabel("WARNING_ADM_FISCALE"));
         }
 

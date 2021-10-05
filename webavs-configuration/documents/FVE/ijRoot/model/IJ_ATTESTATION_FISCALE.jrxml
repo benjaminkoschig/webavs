@@ -766,7 +766,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="51"
+						x="50"
 						y="32"
 						width="442"
 						height="30"
