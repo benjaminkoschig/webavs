@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depen
 
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCBienImmoPrincipal;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
@@ -92,16 +93,21 @@ public class StrategieFinalDepenseFraisImmobilierVD implements StrategieCalculFi
             String legende = ((ControlleurVariablesMetier) context.get(attribut)).getLegendeCourante();
 
             float montantLoyerEncaisse = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_REVENUS_LOCATIONS);
-
-            float plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
             float fraisEntretien = 0f;
-
-            // Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
-            if (montantLoyerEncaisse <= plafondLoyerEncaisse) {
-                // Récupération des frais d'entretien calculé précédement
-                fraisEntretien = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE);
+            try {
+                float plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
+                // Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
+                if (montantLoyerEncaisse <= plafondLoyerEncaisse) {
+                    // Récupération des frais d'entretien calculé précédement
+                    fraisEntretien = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE);
+                }
+            } catch (CalculBusinessException e) {
+                // la variable n'existe pas pour la période, on ne traite donc pas les plafonds des loyers encaissés
             }
+
+
+
 
 
             // On l'ajoute aux frais calculés
