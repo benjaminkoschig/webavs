@@ -403,13 +403,8 @@
     </build>
 
     <profiles>
-        <!-- DEV is enabled by default -->
         <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
+            <id>tomcat</id>
             <dependencies>
                 <!--DEPENDANCES POUR TOMCAT EN LOCAL-->
                 <dependency>
@@ -424,6 +419,14 @@
                 </dependency>
                 <!--FIN DEPENDANCES POUR TOMCAT EN LOCAL-->
             </dependencies>
+
+        </profile>
+        <!-- DEV is enabled by default -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <resources>
                     <!-- the properties are only included in the artifact if we are building
