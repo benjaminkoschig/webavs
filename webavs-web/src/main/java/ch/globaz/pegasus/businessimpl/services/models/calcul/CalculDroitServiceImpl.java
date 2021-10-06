@@ -781,7 +781,12 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         donnee.setMontantDepenses(Float.toString(cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL)));
         Periode periode = new Periode(pcAccordee.getStrDateDebut(), pcAccordee.getStrDateFin());
         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion(), pca.getSimplePCAccordee().getCsRoleBeneficiaire());
-        donnee.setMontantDejaVerser(montantDejaVerser);
+        if (JadeStringUtil.isBlankOrZero(montantDejaVerser)){
+            donnee.setMontantDejaVerser("0.0");
+        }else{
+            donnee.setMontantDejaVerser(montantDejaVerser);
+        }
+
         donnee.setCsTypeVersement(DonneeInterneHomeVersement.TYPE_CREANCIER);
         donnee.setDateDebut(pcAccordee.getStrDateDebut());
         donnee.setDateFin(pcAccordee.getStrDateFin());
@@ -1264,7 +1269,11 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + CONJOINT_DEP_PERS));
                         }
                         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion(), simplePCAccordeeBenef.getCsRoleBeneficiaire());
-                        donnee.setMontantDejaVerser(montantDejaVerser);
+                        if (JadeStringUtil.isBlankOrZero(montantDejaVerser)){
+                            donnee.setMontantDejaVerser("0.0");
+                        }else{
+                            donnee.setMontantDejaVerser(montantDejaVerser);
+                        }
                         donnee.setCsTypeVersement(csTypeVersement);
                         donnee.setDateDebut(periode.getDateDebut());
                         donnee.setDateFin(periode.getDateFin());
