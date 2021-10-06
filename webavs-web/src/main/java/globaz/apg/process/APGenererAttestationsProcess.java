@@ -3,6 +3,7 @@
  */
 package globaz.apg.process;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
@@ -430,8 +431,24 @@ public class APGenererAttestationsProcess extends BProcess {
             ArrayList<AttestationsInfos> attestationInfos = mapFiscEntry.getValue();
             Key key = mapFiscEntry.getKey();
 
-            // on prends le premier car toutes les prestations d'un tiers devrait possèder le même canton
-            String canton = mapFiscEntry.getValue().get(0).getCanton();
+            // on prends le canton de l'attestation la plus récente ou la première de la liste
+            AttestationsInfos newestAttestationInfos = attestationInfos.stream()
+                    .filter(ai -> JadeStringUtil.isEmpty(ai.dateFin))
+                    .filter(ai -> JadeStringUtil.isBlankOrZero(ai.getCanton()))
+                    .max(Comparator.comparing(ai -> Dates.toDate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(ai.dateFin))))
+                    .orElse(attestationInfos.get(0));
+
+            String canton = newestAttestationInfos.getCanton();
+
+            long countCantonDifferent = attestationInfos.stream()
+                    .filter(ai -> JadeStringUtil.isBlankOrZero(ai.getCanton()))
+                    .filter(ai -> !ai.getCanton().equals(canton))
+                    .count();
+
+            if (countCantonDifferent > 0) {
+                getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents trouvés pour le tiers : " + newestAttestationInfos.idTiers, FWMessage.AVERTISSEMENT,
+                    "APGenererAttestationsProcess");
+            }
 
             LinkedHashMap<Key, ArrayList<AttestationsInfos>> linkedHashMap = mapFiscByCanton.get(canton);
             if (linkedHashMap == null) {
@@ -580,7 +597,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 }
             }
         } catch (Exception e) {
-            getMemoryLog().logMessage("Erreur lors de l'initialisation de la copie au fisc : " + e.toString(), FWMessage.ERREUR,
+            getMemoryLog().logMessage("Erreur lors de l'initialisation de la copie au fisc : " + tiers.getNSS() + " " + e.toString(), FWMessage.AVERTISSEMENT,
                     "APGenererAttestationsProcess");
         }
     }
@@ -602,21 +619,22 @@ public class APGenererAttestationsProcess extends BProcess {
                     // recherche du canton dans l'adresse de domicile
                     canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
 
-                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à l'étranger alors on vas rechercher l'adresse de l'employeur
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                         // recherche du canton dans l'adresse de l'employeur
                         canton = rechercheCantonAdressePaiementSitProf(rechercheDomaine(prest), situationsProf, prest.getDateDebut());
 
-                        if (JadeStringUtil.isBlankOrZero(canton)) {
-                            getMemoryLog().logMessage("impossible de déterminer le canton d'imposition", FWMessage.ERREUR,
+                        // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
+                        if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+                            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
                                     "APGenererAttestationsProcess");
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + e.toString(), FWMessage.ERREUR,
+            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + tiers.getNSS() + " " + e.toString(), FWMessage.AVERTISSEMENT,
                     "APGenererAttestationsProcess");
         }
 
@@ -657,6 +675,7 @@ public class APGenererAttestationsProcess extends BProcess {
 
     /**
      * recherche le canton dans les situations professionnelles
+     * @param domaine
      * @param situationsProf
      * @return
      * @throws Exception
@@ -676,7 +695,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 }
                 // toutes les situations professionnelles du droit doivent avoir le même canton sinon impossible de déterminer
                 if (!canton.isEmpty() && !canton.equals(cantonComparaison)) {
-                    getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs", FWMessage.ERREUR,
+                    getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
                             "APGenererAttestationsProcess");
                 } else {
                     canton = cantonComparaison;
