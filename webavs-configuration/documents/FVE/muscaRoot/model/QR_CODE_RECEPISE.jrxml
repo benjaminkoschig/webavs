@@ -169,7 +169,7 @@
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-6"
-						stretchType="NoStretch"
+						stretchType="RelativeToBandHeight"
 						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="true"
@@ -342,25 +342,6 @@
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="0"
-						y="371"
-						width="594"
-						height="297"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="subreport-2"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
-				</subreport>
 			</band>
 		</pageFooter>
 		<summary>
