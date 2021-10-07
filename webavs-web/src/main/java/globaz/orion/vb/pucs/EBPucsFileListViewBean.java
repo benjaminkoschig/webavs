@@ -191,7 +191,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         PucsFile pucsFile = pucsFilesFinal.get(idx);
         List<String> particularites = mapNumAffiliationParticularite.get(pucsFile.getIdAffiliation());
         AFAffiliation afAffiliation = mapAffiliation.get(pucsFile.getIdAffiliation());
-
+        // test
         return pucsFilesFinal.size() > idx ? new EBPucsFileViewBean(pucsFile, particularites, afAffiliation)
                 : new EBPucsFileViewBean();
     }
