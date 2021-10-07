@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Slf4j
 @Path("/acor")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class AcorApiRest {
 
     private static final LocalDateTime START_TIME = LocalDateTime.now();
