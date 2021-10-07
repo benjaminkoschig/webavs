@@ -11,6 +11,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -103,9 +104,18 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
         // génère une copie a l'administration fiscale du tiers si nécessaire (cas impôt source)
         if (decisionOriginale.isCreateDocumentCopieFisc()) {
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), decisionOriginale.getCodeIsoLangue(), decisionOriginale.getCantonDecisionCopyFisc());
-            // Création du document en-tête
-            createLettreEntete(idTiersAdmFiscale, true);
+
+            String idTiersAdmFiscale = "";
+            if (!JadeStringUtil.isBlankOrZero(decisionOriginale.getCantonDecisionCopyFisc())) {
+                idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), decisionOriginale.getCodeIsoLangue(), decisionOriginale.getCantonDecisionCopyFisc());
+            }
+
+            if (!JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
+
+                // Création du document en-tête
+                createLettreEntete(idTiersAdmFiscale, true);
+            }
+
             // Création de la lettre de copie à l'assuré
             createDecisionCopy();
         }

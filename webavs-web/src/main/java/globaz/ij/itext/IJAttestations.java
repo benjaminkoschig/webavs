@@ -127,7 +127,7 @@ public class IJAttestations extends FWIDocumentManager {
 
     private boolean isAttestationCopy = false;
 
-    private String cantonAttestationCopy = "";
+    private String cantonAttestationCopyFisc = "";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -584,7 +584,11 @@ public class IJAttestations extends FWIDocumentManager {
         }
 
         if (isHasCopyFisc || isAddLettreEntete) {
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE), cantonAttestationCopy);
+
+            String idTiersAdmFiscale = "";
+            if (!JadeStringUtil.isBlankOrZero(cantonAttestationCopyFisc)) {
+                idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE), cantonAttestationCopyFisc);
+            }
 
             // si une des attestations possède une copie au fisc
             if (isHasCopyFisc) {
@@ -592,7 +596,7 @@ public class IJAttestations extends FWIDocumentManager {
             }
 
             // si une des attestations possède une lettre d'entête (une par canton)
-            if (isAddLettreEntete) {
+            if (isAddLettreEntete && !JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
 
                 // Création du document en-tête
                 createLettreEntete(idTiersAdmFiscale, true);
@@ -856,7 +860,7 @@ public class IJAttestations extends FWIDocumentManager {
         try {
             suffixe.append(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_COPY")).append(" - ");
             if (!JadeStringUtil.isEmpty(idTiers)) {
-                suffixe.append(getSession().getCodeLibelle(getCantonAttestationCopy())).append(" - ");
+                suffixe.append(getSession().getCodeLibelle(getCantonAttestationCopyFisc())).append(" - ");
             }
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.WARNING, "IJAttestations");
@@ -940,7 +944,7 @@ public class IJAttestations extends FWIDocumentManager {
 
                 setIdBaseInd(ai.idBaseInd);
                 setIdTiers(ai.idTiers);
-                setCantonAttestationCopy(ai.getCanton());
+                setCantonAttestationCopyFisc(ai.getCanton());
 
             }
 
@@ -1188,12 +1192,12 @@ public class IJAttestations extends FWIDocumentManager {
         isAttestationCopy = attestationCopy;
     }
 
-    public String getCantonAttestationCopy() {
-        return cantonAttestationCopy;
+    public String getCantonAttestationCopyFisc() {
+        return cantonAttestationCopyFisc;
     }
 
-    public void setCantonAttestationCopy(String cantonAttestation) {
-        this.cantonAttestationCopy = cantonAttestation;
+    public void setCantonAttestationCopyFisc(String cantonAttestation) {
+        this.cantonAttestationCopyFisc = cantonAttestation;
     }
 
 }

@@ -5,6 +5,7 @@ import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
+import globaz.apg.business.service.APDroitAPGService;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
@@ -69,6 +70,7 @@ import globaz.prestation.utils.PRDateUtils;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import java.io.File;
 import java.math.BigDecimal;
@@ -799,34 +801,59 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             String canton = searchCantonImpotSourceCascade(demande.getIdTiers());
             setCantonDecisionCopyFisc(canton);
 
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), codeIsoLangue, canton);
+            String idTiersAdmFiscale = "";
+            if (!JadeStringUtil.isBlankOrZero(canton)) {
+                idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), codeIsoLangue, canton);
+            }
+
             initCopieA2Fisc(document, parametres, idTiersAdmFiscale);
 
         }
     }
 
-     private String searchCantonImpotSourceCascade(String idTiers) throws Exception {
+     private String searchCantonImpotSourceCascade(String idTiers) {
         String canton = "";
 
-         if (droit.getIsSoumisImpotSource()) {
+         try {
 
-            // recherche du canton dans le droit
-            canton = droit.getCsCantonDomicile();
+             if (droit.getIsSoumisImpotSource()) {
 
-            // si canton vide dans le droit ou si la valeur est set à ETRANGER
-            if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+                // recherche du canton dans le droit
+                canton = droit.getCsCantonDomicile();
 
-                // recherche du canton dans l'adresse de domicile
-                canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
-
-                // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                // si canton vide dans le droit ou si la valeur est set à ETRANGER
                 if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
-                   throw new JadeException("impossible de déterminer le canton d'imposition");
+
+                    // recherche du canton dans l'adresse de domicile
+                    canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+
+                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
+                    if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+
+                        // recherche du canton dans l'adresse de l'employeur
+                        final APEntityService apEntityService = ApgServiceLocator.getEntityService();
+                        final APDroitAPGService apDroitAPGService = ApgServiceLocator.getDroitAPGService();
+                        final List<APSitProJointEmployeur> apSitProJointEmployeurs = apEntityService.getSituationProfJointEmployeur(getSession(), getTransaction(), idDroit);
+                        canton = apDroitAPGService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), apSitProJointEmployeurs, droit.getDateDebutDroit());
+
+                        // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
+                        if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
+                            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + idTiers, FWMessage.AVERTISSEMENT,
+                                    "APGenererAttestationsProcess");
+                        }
+                    }
                 }
             }
+         } catch (Exception e) {
+            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + idTiers + " " + e.toString(), FWMessage.AVERTISSEMENT,
+                    "APDecisionCommunicationAMAT");
         }
 
         return canton;
+     }
+
+     private String rechercheDomaine() {
+        return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
      }
 
     private String getTextOrEmpty(ICTDocument document, int niveau, int position) {

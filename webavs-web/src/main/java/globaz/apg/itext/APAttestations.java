@@ -633,7 +633,11 @@ public class APAttestations extends FWIDocumentManager {
         }
 
         if (isHasCopyFisc || isAddLettreEntete) {
-            String idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE), cantonAttestationCopyFisc);
+
+            String idTiersAdmFiscale = "";
+            if (!JadeStringUtil.isBlankOrZero(cantonAttestationCopyFisc)) {
+                idTiersAdmFiscale = PRTiersHelper.getIdTiersAdministrationFiscale(getSession(), tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE), cantonAttestationCopyFisc);
+            }
 
             // si une des attestations possède une copie au fisc
             if (isHasCopyFisc) {
@@ -641,7 +645,7 @@ public class APAttestations extends FWIDocumentManager {
             }
 
             // si une des attestations possède une lettre d'entête (une par canton)
-            if (isAddLettreEntete) {
+            if (isAddLettreEntete && !JadeStringUtil.isEmpty(idTiersAdmFiscale)) {
 
                 // Création du document en-tête
                 createLettreEntete(idTiersAdmFiscale, true);

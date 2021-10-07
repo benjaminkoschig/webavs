@@ -4,9 +4,11 @@
 package globaz.apg.process;
 
 import ch.globaz.common.util.Dates;
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
+import globaz.apg.business.service.APDroitAPGService;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
@@ -623,7 +625,8 @@ public class APGenererAttestationsProcess extends BProcess {
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                         // recherche du canton dans l'adresse de l'employeur
-                        canton = rechercheCantonAdressePaiementSitProf(rechercheDomaine(prest), situationsProf, prest.getDateDebut());
+                        final APDroitAPGService apDroitAPGService = ApgServiceLocator.getDroitAPGService();
+                        canton = apDroitAPGService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(prest), situationsProf, prest.getDateDebut());
 
                         // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                         if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
@@ -673,38 +676,7 @@ public class APGenererAttestationsProcess extends BProcess {
         return domaine;
     }
 
-    /**
-     * recherche le canton dans les situations professionnelles
-     * @param domaine
-     * @param situationsProf
-     * @return
-     * @throws Exception
-     */
-    private String rechercheCantonAdressePaiementSitProf(String domaine, List<APSitProJointEmployeur> situationsProf, String dateDebut) throws Exception {
-        String canton = "";
-        // vérification du canton de la situation professionnelle
-        for (APSitProJointEmployeur sit : situationsProf) {
-            TIAdressePaiementData data = PRTiersHelper.getAdressePaiementData(getSession(), getSession().getCurrentThreadTransaction(), sit.getIdTiers(),
-                    domaine, sit.getIdAffilie(), dateDebut);
 
-            if (!data.isNew()) {
-                String cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa());
-                if(cantonComparaison == null) {
-                    // canton de l'adresse de paiement de la banque (indépendant étranger ?)
-                    cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa_banque());
-                }
-                // toutes les situations professionnelles du droit doivent avoir le même canton sinon impossible de déterminer
-                if (!canton.isEmpty() && !canton.equals(cantonComparaison)) {
-                    getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
-                            "APGenererAttestationsProcess");
-                } else {
-                    canton = cantonComparaison;
-                }
-            }
-
-        }
-        return canton;
-    }
 
     private void createAttestation(String annee, String dateDebut, String dateFin, boolean isAttestationPat, boolean isAttestationPai, Map map, boolean isAttestationCopy) throws Exception {
         APAttestations attestations = new APAttestations(getSession());

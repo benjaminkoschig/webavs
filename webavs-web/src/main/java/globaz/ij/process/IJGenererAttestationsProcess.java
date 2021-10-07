@@ -4,6 +4,8 @@
 package globaz.ij.process;
 
 import ch.globaz.common.util.Dates;
+import ch.globaz.ij.business.services.IJPrononceService;
+import ch.globaz.ij.business.services.IJServiceLocator;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -620,7 +622,8 @@ public class IJGenererAttestationsProcess extends BProcess {
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                         // recherche du canton dans l'adresse de l'employeur
-                        canton = rechercheCantonAdressePaiementSitProf(rechercheDomaine(), situationsProf, prest.getDateDebut());
+                        final IJPrononceService ijPrononceService = IJServiceLocator.getPrononceService();
+                        canton = ijPrononceService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), situationsProf, prest.getDateDebut());
 
                         // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                         if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
@@ -638,44 +641,8 @@ public class IJGenererAttestationsProcess extends BProcess {
         return canton;
     }
 
-    private String rechercheDomaine() throws Exception {
+    private String rechercheDomaine() {
         return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI;
-    }
-
-    /**
-     * recherche le canton dans les situations professionnelles
-     * @param domaine
-     * @param situationsProf
-     * @return
-     * @throws Exception
-     */
-    private String rechercheCantonAdressePaiementSitProf(String domaine, List<IJSituationProfessionnelle> situationsProf, String dateDebut) throws Exception {
-        String canton = "";
-        // vérification du canton de la situation professionnelle
-         for (IJSituationProfessionnelle sit : situationsProf) {
-            if (!JadeStringUtil.isEmpty(sit.getIdEmployeur())) {
-                IJEmployeur employeur = sit.loadEmployeur();
-                TIAdressePaiementData data = PRTiersHelper.getAdressePaiementData(getSession(), getSession().getCurrentThreadTransaction(), employeur.getIdTiers(),
-                        domaine, employeur.getIdAffilie(), dateDebut);
-
-                if (!data.isNew()) {
-                    String cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa());
-                    if (cantonComparaison == null) {
-                        // canton de l'adresse de paiement de la banque (indépendant étranger ?)
-                        cantonComparaison = PRTiersHelper.getCanton(getSession(), data.getNpa_banque());
-                    }
-                    // toutes les situations professionnelles du droit doivent avoir le même canton sinon impossible de déterminer
-                    if (!canton.isEmpty() && !canton.equals(cantonComparaison)) {
-                        getMemoryLog().logMessage("impossible de déterminer le canton d'imposition : plusieurs cantons différents pour plusieurs employeurs : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
-                            "IJGenererAttestationsProcess");
-                    } else {
-                        canton = cantonComparaison;
-                    }
-                }
-
-            }
-        }
-        return canton;
     }
 
     private boolean isPrestationIJ(IJPrestation prest) {

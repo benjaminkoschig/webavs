@@ -2,6 +2,8 @@ package globaz.apg.business.service;
 
 import globaz.apg.db.droits.APEnfantAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
+import globaz.apg.db.droits.APSitProJointEmployeur;
+import globaz.globall.db.BSession;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.prestation.beans.PRPeriode;
 import java.util.List;
@@ -20,4 +22,7 @@ public interface APDroitAPGService extends JadeApplicationService {
      */
     public boolean isDecoupageDesPeriodesAPGNecessaire(List<APPeriodeAPG> periodesAControler,
             List<APEnfantAPG> enfantsDuTiers) throws Exception;
+
+    public String rechercheCantonAdressePaiementSitProf(BSession session, String domaine, List<APSitProJointEmployeur> situationsProf, String dateDebut)
+            throws Exception;
 }
