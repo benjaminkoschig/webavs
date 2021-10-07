@@ -16,17 +16,9 @@ public interface ApiHealthChecker {
 
     HealthDto check();
 
-    default boolean isCheckable() {
-        return true;
-    }
-
     default ResponseEntity<HealthDto> getHealth(final String apiPath) {
-        return get(apiPath + "/health");
-    }
-
-    default ResponseEntity<HealthDto> get(String urlCompletPath) {
         try {
-            URL url = new URL(urlCompletPath);
+            URL url = new URL(apiPath + "/health");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestProperty("Content-Type", MediaType.APPLICATION_JSON);
             con.setRequestMethod("GET");
@@ -40,7 +32,7 @@ public interface ApiHealthChecker {
             return responsEntity;
         } catch (IOException e) {
             Logger logger = LoggerFactory.getLogger(ApiHealthChecker.class);
-            logger.error("Impossible to check this api :" + urlCompletPath, e);
+            logger.error("Impossible to check this api :" + apiPath, e);
         }
         return ResponseEntity.ofKo();
     }

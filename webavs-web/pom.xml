@@ -164,6 +164,201 @@
                 </configuration>
             </plugin>
 
+            <!-- Used to dynamically generate .class file from XSD with XJB binding -->
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <schemaIncludes>
+                                <include>ree/*.xsd</include>
+                                <include>P2020/annoncesRC/*.xsd</include>
+                                <include>rpc/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>ree-bindings.xjb</include>
+                                <include>rpc-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-al</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-al</generateDirectory>
+                            <schemaIncludes>
+                                <include>al/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>al-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <!-- Pour la configuration des xsd et jaxb voir la configuration pour ACOR
+                    qui se trouve ici -> https://confluence.globaz.ch/x/dRcQBg -->
+                    <execution>
+                        <id>generate-acor</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd/acor</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-acor</generateDirectory>
+                            <schemaIncludes>
+                                <include>xsd/acor-rentes-in-host.xsd</include>
+                                <include>xsd/acor-rentes9-out-resultat.xsd</include>
+                                <include>xsd/acor-rentes-out-f-calcul.xsd</include>
+                                <include>xsd/acor-standard-error.xsd</include>
+                                <include>xsd/annoncesRC/*.xsd</include>
+                                <include>xsd/acor-ij-out.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>acor-bindings.xjb</include>
+                            </bindingIncludes>
+                            <extension>true</extension>
+                            <args>
+                                <arg>-Xannotate</arg>
+                            </args>
+                            <plugins>
+                                <plugin>
+                                    <groupId>org.jvnet.jaxb2_commons</groupId>
+                                    <artifactId>jaxb2-basics-annotate</artifactId>
+                                    <version>0.6.3</version>
+                                </plugin>
+                                <plugin>
+                                    <groupId>org.jvnet.jaxb2_commons</groupId>
+                                    <artifactId>jaxb2-basics</artifactId>
+                                    <version>0.6.3</version>
+                                </plugin>
+                            </plugins>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-apg-pandemie</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-pandemie</generateDirectory>
+                            <schemaIncludes>
+                                <include>pandemie/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>pandemie-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-apg-amatapat</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-amatapat</generateDirectory>
+                            <schemaIncludes>
+                                <include>amatapat/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>amatapat-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-aquila</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-aquila</generateDirectory>
+                            <schemaIncludes>
+                                <include>aquila/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>aquila-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+					<execution>
+                        <id>generate-ebill-invoice</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-ebill-invoice</generateDirectory>
+                            <schemaIncludes>
+                                <include>ebill/invoice/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>ebill-invoice-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-ebill-protocole</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-ebill-protocole</generateDirectory>
+                            <schemaIncludes>
+                                <include>ebill/protocole/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>ebill-protocole-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+					<execution>
+						<id>generate-rapg</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<specVersion>2.1</specVersion>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-rapg</generateDirectory>
+							<schemaIncludes>
+								<include>rapg/xsd/*.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>rapg-bindings.xjb</include>
+							</bindingIncludes>
+						</configuration>
+					</execution>
+                </executions>
+            </plugin>
             <!-- Generated class from WSDL-->
             <plugin>
                 <groupId>org.apache.cxf</groupId>
@@ -956,11 +1151,6 @@
             <version>4.8.115</version>
         </dependency>
 
-        <dependency>
-            <groupId>ch.globaz.avs</groupId>
-            <artifactId>external-xsd</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
 
 
         <!--  TEST -->
@@ -986,7 +1176,5 @@
 <!--            <version>${jersey.version}</version>-->
 <!--            <scope>test</scope>-->
 <!--        </dependency>-->
-
-
     </dependencies>
 </project>

@@ -106,10 +106,6 @@ public enum CommonProperties implements IProperties {
         return CommonPropertiesUtils.getIntegerWithDefaultValue(this, String.valueOf(defaultValue));
     }
 
-    public boolean exist() {
-        return CommonPropertiesUtils.exist(this);
-    }
-
     @Override
     public String getDescription() {
         return description;

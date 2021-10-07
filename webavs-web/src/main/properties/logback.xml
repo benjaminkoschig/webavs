@@ -14,17 +14,17 @@
     </appender>
 
 	<!-- Configuration du logger -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logFolderPath}webavs.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>webavs.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>${fileHistory}</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern><![CDATA[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
-        </encoder>
-    </appender>
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>${logFolderPath}webavs.log</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash; daily rollover &ndash;&gt;-->
+<!--            <fileNamePattern>webavs.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+<!--            <maxHistory>${fileHistory}</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder>-->
+<!--            <pattern><![CDATA[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
 
     <!--  Configuration des niveaux de log : TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF-->
     <!-- Configuration du niveau de log pour toutes les API/Produits Globaz -->
