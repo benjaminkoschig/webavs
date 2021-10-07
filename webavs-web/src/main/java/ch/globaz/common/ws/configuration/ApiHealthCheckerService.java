@@ -22,7 +22,7 @@ class ApiHealthCheckerService {
                                                                          .collect(Collectors.toList());
         ApiHealthCheckerService checkWebService = new ApiHealthCheckerService();
         LOG.info("Initialize checker");
-        Executors.newSingleThreadScheduledExecutor().schedule(checkWebService::checkApiWithLog, 10, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().schedule(checkWebService::checkApiWithLog, 60, TimeUnit.SECONDS);
     }
 
     private void checkApiWithLog() {
@@ -35,6 +35,7 @@ class ApiHealthCheckerService {
 
     List<HealthDto> checkApi() {
         return apiHealthCheckers.stream()
+                                .filter(ApiHealthChecker::isCheckable)
                                 .map(ApiHealthChecker::check)
                                 .collect(Collectors.toList());
     }

@@ -28,7 +28,7 @@ public class CommonPropertiesUtils {
     /**
      * Permet de transformer un valeur boolean d'une properties. Si on arrive pas à convertir la properties une
      * exception est lancé.
-     * 
+     *
      * @param properties
      *            La propriété voulue
      * @return La valeur de la property sous forme booléenne. Si la valeur de la propriété est null ou vide une
@@ -80,6 +80,20 @@ public class CommonPropertiesUtils {
         return toInteger(properties, value);
     }
 
+    /**
+     * Permet de savoir si la propriété a été définit.
+     *
+     * @param properties La propriété que l'on veut tester.
+     * @return si elle exist.
+     */
+    public static boolean exist(final IProperties properties) {
+        try {
+            return CommonPropertiesUtils.getValueWithoutException(properties) != null;
+        } catch (PropertiesException e) {
+            return false;
+        }
+    }
+
     private static Integer toInteger(final IProperties properties, final String value) {
         try {
             if(value == null){
@@ -95,7 +109,7 @@ public class CommonPropertiesUtils {
     /**
      * Ne doit pas être appelé directement. Cette class est directement utilisé par CommonProperties pour résoudre la
      * valeur des propriétés
-     * 
+     *
      * @return L'unique instance de CommonPropertiesUtils
      */
     public static CommonPropertiesUtils getInstance() {
@@ -111,7 +125,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Permet de retrouver la valeur de la properties si cette properties n'existe pas on lance une exception.
-     * 
+     *
      * @param properties
      *            La propriété voulue
      * @return La valeur de la propriété en String
@@ -182,7 +196,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Valide que la valeur passé en argument correspond à la chaîne 'true' ou 'false'
-     * 
+     *
      * @param value
      *            La valeur à tester
      * @return <code>true</code> si la valeur passé en argument correspond à la chaîne 'true' ou 'false'
@@ -196,7 +210,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Contrôle que la valeur fourie en paramètre soit un nombre entier
-     * 
+     *
      * @param value
      * @return
      */
@@ -211,7 +225,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Contrôle que la valeur passée en argument soit égale à une chaîne contenue dans la liste values.
-     * 
+     *
      * @param value
      *            La valeur à évaluer. Ne doit pas être null ou une chaîne vide
      * @return <code>true</code> si la chaîne value n'est pas null ou vide et correspond à une chaîne de caractère
@@ -231,7 +245,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Valide la valeur d'une propriété en fonction de la liste de valeurs 'values' passées en arguments
-     * 
+     *
      * @param property
      *            La propriété en question. Ne doit pas être null ou vide
      * @param propertyValue
@@ -258,7 +272,7 @@ public class CommonPropertiesUtils {
 
     /**
      * Retourne true si la property est vide ou null
-     * 
+     *
      * @param property
      * @return
      * @throws PropertiesException
@@ -279,7 +293,7 @@ public class CommonPropertiesUtils {
      * Permet de retrouver la valeur de la properties si cette properties n'existe pas on lance une exception.
      * La propriété définit une liste de valeur séparée par une virgule.
      * Le résultat est retourné sous forme de liste de valeur
-     * 
+     *
      * @param properties La propriété voulue
      * @return Une liste de valeur
      * @throws PropertiesException
