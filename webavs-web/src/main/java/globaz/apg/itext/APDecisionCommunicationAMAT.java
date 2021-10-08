@@ -5,12 +5,12 @@ import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
-import globaz.apg.business.service.APDroitAPGService;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
+import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.apg.properties.APProperties;
@@ -43,7 +43,6 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeException;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.api.IAFAssurance;
@@ -70,7 +69,6 @@ import globaz.prestation.utils.PRDateUtils;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import java.io.File;
 import java.math.BigDecimal;
@@ -832,9 +830,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                         // recherche du canton dans l'adresse de l'employeur
                         final APEntityService apEntityService = ApgServiceLocator.getEntityService();
-                        final APDroitAPGService apDroitAPGService = ApgServiceLocator.getDroitAPGService();
                         final List<APSitProJointEmployeur> apSitProJointEmployeurs = apEntityService.getSituationProfJointEmployeur(getSession(), getTransaction(), idDroit);
-                        canton = apDroitAPGService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), apSitProJointEmployeurs, droit.getDateDebutDroit());
+                        APSituationProfessionnelleHelper apSituationProfessionnelleHelper = new APSituationProfessionnelleHelper();
+                        canton = apSituationProfessionnelleHelper.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), apSitProJointEmployeurs, droit.getDateDebutDroit());
 
                         // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                         if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {

@@ -22,19 +22,17 @@ import globaz.ij.db.prestations.IJRepartitionJointPrestation;
 import globaz.ij.db.prestations.IJRepartitionJointPrestationJointLotManager;
 import globaz.ij.db.prestations.IJRepartitionPaiements;
 import globaz.ij.db.prestations.IJRepartitionPaiementsManager;
-import globaz.ij.db.prononces.IJEmployeur;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJSituationProfessionnelle;
 import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.helpers.prononces.IJSituationProfessionnelleHelper;
 import globaz.ij.itext.IJAttestations;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeException;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -622,8 +620,8 @@ public class IJGenererAttestationsProcess extends BProcess {
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                         // recherche du canton dans l'adresse de l'employeur
-                        final IJPrononceService ijPrononceService = IJServiceLocator.getPrononceService();
-                        canton = ijPrononceService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), situationsProf, prest.getDateDebut());
+                        IJSituationProfessionnelleHelper ijSituationProfessionnelleHelper = new IJSituationProfessionnelleHelper();
+                        canton = ijSituationProfessionnelleHelper.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), situationsProf, prest.getDateDebut());
 
                         // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                         if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {

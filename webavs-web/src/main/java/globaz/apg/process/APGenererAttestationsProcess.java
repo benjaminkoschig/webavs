@@ -4,14 +4,13 @@
 package globaz.apg.process;
 
 import ch.globaz.common.util.Dates;
-import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
-import globaz.apg.business.service.APDroitAPGService;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.itext.APAttestations;
 import globaz.apg.utils.APGUtils;
 import globaz.externe.IPRConstantesExternes;
@@ -27,7 +26,6 @@ import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -625,8 +623,8 @@ public class APGenererAttestationsProcess extends BProcess {
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                         // recherche du canton dans l'adresse de l'employeur
-                        final APDroitAPGService apDroitAPGService = ApgServiceLocator.getDroitAPGService();
-                        canton = apDroitAPGService.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(prest), situationsProf, prest.getDateDebut());
+                        APSituationProfessionnelleHelper apSituationProfessionnelleHelper = new APSituationProfessionnelleHelper();
+                        canton = apSituationProfessionnelleHelper.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(prest), situationsProf, prest.getDateDebut());
 
                         // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                         if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
