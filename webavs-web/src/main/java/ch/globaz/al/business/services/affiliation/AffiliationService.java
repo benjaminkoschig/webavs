@@ -21,4 +21,15 @@ public interface AffiliationService extends JadeApplicationService {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     public String convertCantonNaos2CantonAF(String cantonNaos) throws JadeApplicationException;
+
+    /**
+     * Retourne le code système d'un canton affiliations correspondant au code système d'un canton AF
+     *
+     * @param cantonAF
+     *            code système d'un canton dans AF
+     * @return code système naos correspondant
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    public String convertCantonAF2Naos(String cantonAF) throws JadeApplicationException;
 }
