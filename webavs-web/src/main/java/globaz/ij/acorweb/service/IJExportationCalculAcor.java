@@ -268,7 +268,7 @@ class IJExportationCalculAcor {
             basesCalculCouranteIJ.setGarantieAA(garantieAA);
         }
         if (prononce.getSoumisImpotSource()) {
-            basesCalculCouranteIJ.setTauxLibre(JadeStringUtil.isBlankOrZero(prononce.getTauxImpositionSource()));
+            basesCalculCouranteIJ.setTauxLibre(!JadeStringUtil.isBlankOrZero(prononce.getTauxImpositionSource()));
             basesCalculCouranteIJ.setCantonImpots(Integer.parseInt(PRACORConst.csCantonToAcor(prononce.getCsCantonImpositionSource())));
         }
         //Choix fait par défaut à false
