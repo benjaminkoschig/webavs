@@ -58,28 +58,6 @@
         return state;
     }
 
-    function showErrorMessage(message){
-        var html = '<div>';
-        html += message;
-        html += '</div>';
-
-        $html = $(html);
-        $html.dialog({
-            position: 'center',
-            title: "Erreur",
-            width: 400,
-            height: 50,
-            show: "blind",
-            hide: "blind",
-            closeOnEscape: true,
-            buttons: {'Close':popupClose}
-        });
-    }
-
-    function popupClose(){
-        $html.dialog( "close" );
-    }
-
     function cancel() {
         var methodElement = document.forms[0].elements('_method');
         action(methodElement.value);
