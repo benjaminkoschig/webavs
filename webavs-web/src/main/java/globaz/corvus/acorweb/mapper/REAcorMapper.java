@@ -557,7 +557,11 @@ public class REAcorMapper {
                 // On met la même valeur que le revenu splitté.
                 bc.setIsPartageRevenuActuel(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
                 //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
-                bc.setFacteurRevalorisation(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getFacRev(), StringUtils.EMPTY));
+                if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr().getFacRev())) {
+                    bc.setFacteurRevalorisation(String.format("%.03f", baseCalcul.getBaseRam().getRevLucr().getFacRev()));
+                } else {
+                    bc.setFacteurRevalorisation(StringUtils.EMPTY);
+                }
 
                 //        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
                 bc.setDureeRevenuAnnuelMoyen(PRConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
@@ -888,7 +892,7 @@ public class REAcorMapper {
 
         // TODO : anticipation : aller chercher dans le dernier état de la rente
         if (Objects.nonNull(baseCalcul.getAnticipation())) {
-            ra = setAnticipationToRA(baseCalcul, ra, rente);
+            ra = setAnticipationToRA(baseCalcul, dernierEtat, ra);
         }
 
 //        ra.setDateDebutDroit(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DEBUT_DROIT"))); $r17
@@ -1007,26 +1011,19 @@ public class REAcorMapper {
      * Ajout des données d'anticipation dans la rente accordée.
      *
      * @param baseCalcul : la base de calcul
+     * @param dernierEtat  : le dernier état de la rente.
      * @param ra         : la rente accordée
-     * @param rente      : la rente
      * @return la rente accordée mis à jour.
      */
-    private static RERenteAccordee setAnticipationToRA(FCalcul.Evenement.BasesCalcul baseCalcul, RERenteAccordee ra, Rente rente) {
+    private static RERenteAccordee setAnticipationToRA(FCalcul.Evenement.BasesCalcul baseCalcul, Rente.Etat dernierEtat, RERenteAccordee ra) {
         for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche eachTranche : baseCalcul.getAnticipation().getTranche()) {
-            for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche.Rente eachRente : eachTranche.getRente()) {
-                if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
-                    //                        ra.setAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_ANTICIPATION")); $r23
+           if (Objects.nonNull(dernierEtat) && Objects.nonNull(dernierEtat.getRedAnt())){
                     ra.setAnneeAnticipation(PRConverterUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
                     ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
-                    if (Objects.nonNull(eachTranche.getMontantReduction())) {
-                        ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachTranche.getMontantReduction()), StringUtils.EMPTY));
-                    } else {
-                        ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachRente.getMontantReduction()), StringUtils.EMPTY));
-                    }
-                    return ra;
-                }
+                   ra.setMontantReducationAnticipation(Objects.toString(dernierEtat.getRedAnt()));
+
             }
         }
         return ra;

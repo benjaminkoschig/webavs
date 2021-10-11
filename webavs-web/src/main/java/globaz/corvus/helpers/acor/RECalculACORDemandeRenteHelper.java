@@ -1682,7 +1682,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws JAXBException
      */
     private FCalcul unmarshalXml(String xml) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance("acor.xsd.fcalcul:acor.xsd.euro.core");
+        JAXBContext jc = JAXBContext.newInstance("acor.rentes.xsd.fcalcul:acor.xsd.euro.core");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         try {
             return (FCalcul) unmarshaller.unmarshal(new StringReader(xml));

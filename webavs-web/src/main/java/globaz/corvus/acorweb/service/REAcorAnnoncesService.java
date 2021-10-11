@@ -4,6 +4,7 @@ import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import globaz.corvus.acorweb.ws.token.REAcorTokenService;
+import globaz.prestation.acor.PRACORException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class REAcorAnnoncesService {
      * @param fCalcul le json fCalcul
      * @returns les annonces
      */
-    public PoolMeldungZurZAS getAnnonces(FCalcul fCalcul) {
+    public PoolMeldungZurZAS getAnnonces(FCalcul fCalcul) throws PRACORException {
         URL url;
         HttpURLConnection con;
         String acorBaseUrl = REAcorTokenService.getAcorBaseUrl();
@@ -61,11 +62,11 @@ public class REAcorAnnoncesService {
             }
             con.disconnect();
         } catch (MalformedURLException e) {
-            LOG.error("Un problème est intervenu lors de la récupération de l'URL du webService {} ", acorBaseUrl, e);
+            throw new PRACORException("Un problème est intervenu lors de la récupération de l'URL du webService " + acorBaseUrl, e);
         } catch (ProtocolException e) {
-            LOG.error("Un problème de protocole est intervenu lors de la connexion au webService ", e);
+            throw new PRACORException("Un problème de protocole est intervenu lors de la connexion au webService ", e);
         } catch (IOException e) {
-            LOG.error("Un problème de connexion au webService", e);
+            throw new PRACORException("Un problème de connexion au webService ", e);
         }
         return annonces;
     }

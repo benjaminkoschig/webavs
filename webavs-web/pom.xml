@@ -234,6 +234,7 @@
                             <extension>true</extension>
                             <args>
                                 <arg>-Xannotate</arg>
+                                <arg>-Xsimplify</arg>
                             </args>
                             <plugins>
                                 <plugin>

@@ -1142,14 +1142,14 @@ public class REImportationCalculAcor {
             throws PRACORException, Exception {
 
         // On récupère l'ancien fichier .pay pour conserver le mapping
-        StringReader annoncePayReader = new StringReader(resultat9.getAnnexes().getPay());
-        // Ancien parsing du fichier annonce.pay
-        REACORParser.ReturnedValue returnedValue = REACORParser.parse(session, transaction, demande,
-                annoncePayReader, noCasATraiter);
+            StringReader annoncePayReader = new StringReader(resultat9.getAnnexes().getPay());
+            // Ancien parsing du fichier annonce.pay
+            REACORParser.ReturnedValue returnedValue = REACORParser.parse(session, transaction, demande,
+                    annoncePayReader, noCasATraiter);
 
-        rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
+            rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
 
-        return returnedValue.getIdCopieDemande();
+            return returnedValue.getIdCopieDemande();
     }
 
 

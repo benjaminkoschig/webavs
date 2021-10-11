@@ -1,6 +1,8 @@
 <jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
-               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-
+               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:simplify="http://jaxb2-commons.dev.java.net/basic/simplify"
+               jaxb:extensionBindingPrefixes="xjc simplify"
+               jaxb:version="2.1">
 
     <!-- Configure our custom xsd for IJ -->
     <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-ij-out.xsd" node="//xs:schema">
@@ -288,6 +290,14 @@
         <jaxb:javaType name="java.lang.Integer"
                        parseMethod="javax.xml.bind.DatatypeConverter.parseInt"
                        printMethod="javax.xml.bind.DatatypeConverter.printInt"/>
+    </jaxb:bindings>
+
+
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/annoncesRC/MeldungZurZas.xsd"
+                   node="//xs:schema">
+        <jaxb:bindings multiple="true" node="/xs:schema/xs:element[@name='PoolMeldungZurZAS']/xs:complexType/xs:sequence/xs:element[@name='lot']/xs:complexType/xs:sequence/xs:choice">
+            <simplify:as-element-property/>
+        </jaxb:bindings>
     </jaxb:bindings>
 
 
