@@ -2347,7 +2347,7 @@
 			<band height="1"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="14"
+						x="0"
 						y="-73"
 						width="462"
 						height="12"
@@ -2365,27 +2365,9 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE}]]></textFieldExpression>
 				</textField>
-				<rectangle radius="0" >
-					<reportElement
-						mode="Transparent"
-						x="0"
-						y="-73"
-						width="12"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="rectangle-41"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
-				</rectangle>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="14"
+						x="0"
 						y="-62"
 						width="462"
 						height="12"
