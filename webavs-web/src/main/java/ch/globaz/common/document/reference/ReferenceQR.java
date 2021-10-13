@@ -407,6 +407,9 @@ public class ReferenceQR extends AbstractReference {
     public Boolean genererAdresseDebiteur(String idTiers, String typeAdresse, String domaineCourrier, String idExterneRole, boolean herite, String date) throws Exception {
 
         TITiers tiers = getTiers(idTiers);
+        if(Objects.isNull(tiers)){
+            return false;
+        }
         TIAdresseDataSource adresse = tiers.getAdresseAsDataSource(typeAdresse, domaineCourrier, idExterneRole, date, herite, getLangueDoc());
 
 
