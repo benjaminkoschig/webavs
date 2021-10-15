@@ -169,7 +169,7 @@ public class COImportMessageELP extends BProcess {
                     File eLPFile = new File(tmpLocalWorkFile);
                     boolean traitementInSucces = false;
                     if (eLPFile.isFile()) {
-                        if(validateXml(eLPFile, infos)) {
+                        if (validateXml(eLPFile, infos)) {
                             traitementInSucces = traitementFichier(getDocument(eLPFile), infos);
                         }
                         movingFile(nomFichierDistant, tmpLocalWorkFile, nameOriginalFile, traitementInSucces);
@@ -483,6 +483,7 @@ public class COImportMessageELP extends BProcess {
 
     /**
      * On filtre les erreurs pour ne pas afficher plusieurs fois le même message.
+     *
      * @param errors : les erreurs de la session
      * @return le message d'erreurs à afficher.
      */
@@ -678,7 +679,7 @@ public class COImportMessageELP extends BProcess {
      */
     private Set<String> getTypeSaisie(SpType spType) {
         Set<String> result = new HashSet<>();
-        if(Objects.nonNull(spType.getOutcome())) {
+        if (Objects.nonNull(spType.getOutcome())) {
             SpType.Outcome.Seizure seizure = spType.getOutcome().getSeizure();
             if (Objects.nonNull(seizure)) {
                 SpType.Outcome.Seizure.Deed deed = seizure.getDeed();
@@ -877,7 +878,7 @@ public class COImportMessageELP extends BProcess {
     /**
      * Récupère les frais et les intérêts depuis le fichier xml.
      *
-     * @param elpDto         : le dto de type RC ou SP -> type 206 ou 303.
+     * @param elpDto           : le dto de type RC ou SP -> type 206 ou 303.
      * @param genreAffiliation : le genre de l'affiliation.
      * @return la liste des frais et intérêts s'il y en a.
      */
@@ -893,14 +894,22 @@ public class COImportMessageELP extends BProcess {
             switch (genreAffiliation) {
                 case IntRole.ROLE_AFFILIE_PARITAIRE:
                     rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PARITAIRE);
-                    mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
-                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
-                    break;
+                    if (Objects.nonNull(rubrique)) {
+                        mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
+                        mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
+                        break;
+                    } else {
+                        throw new COELPException("La rubrique des intérêts moratoires n'a pas pu être récupérée pour la référence paritaire.");
+                    }
                 case IntRole.ROLE_AFFILIE_PERSONNEL:
                     rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PERSONNEL);
-                    mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
-                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
-                    break;
+                    if (Objects.nonNull(rubrique)) {
+                        mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
+                        mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
+                        break;
+                    } else {
+                        throw new COELPException("La rubrique des intérêts moratoires n'a pas pu être récupérée pour la référence personnel.");
+                    }
                 default:
                     throw new COELPException("Ce type de rubrique n'est pas géré automatiquement.");
             }
@@ -952,7 +961,7 @@ public class COImportMessageELP extends BProcess {
     private boolean validateXml(File xmlFile, COInfoFileELP infos) {
         try {
             Optional<Schema> theSchema = loadXsdSchema();
-            if(theSchema.isPresent()){
+            if (theSchema.isPresent()) {
                 xsdSchema = theSchema.get();
                 Validator validator = xsdSchema.newValidator();
                 validator.validate(new StreamSource(xmlFile));
