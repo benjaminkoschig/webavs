@@ -131,11 +131,6 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
                 IPCValeursPlanCalcul.CLE_INTER_DEPENSE_CS_TYPE_CHAMBRE, csTypeChambre);
         tupleTypeChambre.setLegende(csTypeChambre);
 
-        // Ajout du type Service Etat, utile dans stratégie final pour CCJU
-        TupleDonneeRapport tuplePeriodeServiceEtat = this.getOrCreateChild(resultatExistant,
-                IPCValeursPlanCalcul.CLE_INTER_DEPENSE_CS_PERIODE_SERVICE_ETAT, csPeriodeServiceEtat);
-        tuplePeriodeServiceEtat.setLegende(csPeriodeServiceEtat);
-
         TupleDonneeRapport tupleCsArgentDePocheTypeChambre = this.getOrCreateChild(resultatExistant,
                 IPCValeursPlanCalcul.CLE_INTER_DEPENSE_CS_TYPE_ARGENT_DE_POCHE_TYPE_CHAMBRE, csCategorieTypeChambre);
         tupleCsArgentDePocheTypeChambre.setLegende(csCategorieTypeChambre);
