@@ -94,6 +94,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -142,8 +143,8 @@ public class REExportationCalculAcor {
                 typeAdressePourRequerant = IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER;
             }
             this.prAcorMapper = new PRAcorMapper(typeAdressePourRequerant, this.tiersRequerant,
-                                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
-                                                 this.session);
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
+                    this.session);
             ISFSituationFamiliale situationFamiliale = this.situationFamiliale();
             inHost.setDemande(createDemande(demandeRente, tiersRequerant, session));
             List<ISFMembreFamilleRequerant> membresFamille = getToutesLesMembresFamillesEtEtendue();
@@ -156,7 +157,7 @@ public class REExportationCalculAcor {
 
             PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, conjoints, this.prAcorMapper);
 
-            inHost.getAssure().addAll(createListAssures(membresCatAssures,situationFamiliale));
+            inHost.getAssure().addAll(createListAssures(membresCatAssures, situationFamiliale));
             inHost.getFamille().addAll(familleTypeMapper.map());
 
             PRAcorEnfantTypeMapper prAcorEnfantTypeMapper = new PRAcorEnfantTypeMapper(situationFamiliale, membresCatEnfants, this.prAcorMapper);
@@ -316,7 +317,10 @@ public class REExportationCalculAcor {
             flexibilisationType = new FlexibilisationType();
             // Revocation
             if (StringUtils.isNotEmpty(dateRevocation)) {
-                flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(dateRevocation));
+                LocalDate date = Dates.toDate(dateRevocation);
+                date = date.plusMonths(1);
+                date = date.withDayOfMonth(1);
+                flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(date));
                 flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour un ajournement révoqué
             } else {
                 // Ajournement
@@ -329,7 +333,7 @@ public class REExportationCalculAcor {
 
     private void addRentesAssures(AssureType assure, ISFMembreFamilleRequerant membre) {
         try {
-            if(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(membre.getRelationAuRequerant())) {
+            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(membre.getRelationAuRequerant())) {
                 reloadHistorique(membre.getIdTiers());
             }
             for (REHistoriqueRentes rente : getRentesEnCours(membre.getIdTiers())) {
@@ -400,7 +404,8 @@ public class REExportationCalculAcor {
         return false;
     }
 
-    private CommonRenteType createCommonRenteType(REHistoriqueRentes rente, boolean is10emeRevision, boolean isOrdinaire) {
+    private CommonRenteType createCommonRenteType(REHistoriqueRentes rente, boolean is10emeRevision,
+                                                  boolean isOrdinaire) {
         CommonRenteType commonRente;
         if (is10emeRevision && isOrdinaire) {
             commonRente = new RenteOrdinaire10Type();
@@ -618,7 +623,8 @@ public class REExportationCalculAcor {
         return donneesBonification;
     }
 
-    private Gutschriften9WeakType createDonneesBonification9(REHistoriqueRentes rente, BigDecimal durchschnittlichesJahreseinkommen) {
+    private Gutschriften9WeakType createDonneesBonification9(REHistoriqueRentes rente, BigDecimal
+            durchschnittlichesJahreseinkommen) {
         Gutschriften9WeakType donneesBonification = new Gutschriften9WeakType();
         // 27. montant bonus éducatif
         BigDecimal montantBTE = PRConverterUtils.formatRequiredBigDecimal(rente.getMontantBTE());
@@ -700,7 +706,6 @@ public class REExportationCalculAcor {
      * Créations des informations AI.
      *
      * @param demandeRenteInvalidite : demande de rente invalidité.
-     *
      * @return les informations AI.
      */
     private AiInformations createAiInformations(REDemandeRenteInvalidite demandeRenteInvalidite) {
@@ -927,7 +932,7 @@ public class REExportationCalculAcor {
             // Tri par date de rassemblement (plus récente à plus
             // ancienne) et motif (ordre croissant)
             mgrRCI.setOrderBy(RERassemblementCI.FIELDNAME_DATE_RASSEMBLEMENT + " DESC, "
-                                      + RERassemblementCI.FIELDNAME_MOTIF + " ASC ");
+                    + RERassemblementCI.FIELDNAME_MOTIF + " ASC ");
 
             mgrRCI.find(transaction, BManager.SIZE_NOLIMIT);
             RCIContainer rciCo = new RCIContainer();
@@ -1131,7 +1136,6 @@ public class REExportationCalculAcor {
      * Recherche les membres de la famille du tiers requérant
      *
      * @return
-     *
      * @throws Exception
      */
     protected List<ISFMembreFamilleRequerant> getToutesLesMembresFamillesEtEtendue() throws Exception {
@@ -1149,7 +1153,7 @@ public class REExportationCalculAcor {
                     antiDoublon.add(getKey(membresFamille[i]));
 
                     if (ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(membresFamille[i]
-                                                                                       .getRelationAuRequerant())) {
+                            .getRelationAuRequerant())) {
 
                         // On récupére également les éventuelles conjoints des conjoints
 
@@ -1166,7 +1170,7 @@ public class REExportationCalculAcor {
 
                                         // On parle du (ex)conjoint du conjoint du requérant.
                                         if (ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(m
-                                                                                                           .getRelationAuRequerant())
+                                                .getRelationAuRequerant())
                                                 && !tiersRequerant.getIdTiers().equals(m.getIdTiers())) {
                                             m.setRelationAuRequerant(REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT);
                                             m.setIdMFDuConjoint(membresFamille[i].getIdMembreFamille());
@@ -1177,7 +1181,7 @@ public class REExportationCalculAcor {
                                             if (tiersRequerant.getIdTiers().equals(m.getIdTiers())) {
                                                 m.setRelationAuRequerant(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT);
                                             } else if (ISFSituationFamiliale.CS_TYPE_RELATION_ENFANT.equals(m
-                                                                                                                    .getRelationAuRequerant())) {
+                                                    .getRelationAuRequerant())) {
                                                 ;
                                             } else {
                                                 m.setRelationAuRequerant(REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_BLANK);
@@ -1230,17 +1234,16 @@ public class REExportationCalculAcor {
      *
      * @param idTiersRequerant
      * @param session
-     *
      * @return
-     *
      * @throws Exception
      */
-    protected ISFMembreFamilleRequerant[] getToutesLesMembresFamilles(String idTiersRequerant, BSession session) throws Exception {
+    protected ISFMembreFamilleRequerant[] getToutesLesMembresFamilles(String idTiersRequerant, BSession session) throws
+            Exception {
         Map<ISFMembreFamilleRequerant, ISFRelationFamiliale[]> relations = new HashMap<>();
 
         // On recherche la sit famille du tiers requérant
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                                                                                     ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
+                ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
 
         // On récupère tous les membres de la famille
         ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(idTiersRequerant);
@@ -1254,9 +1257,7 @@ public class REExportationCalculAcor {
      * @param membreFamille
      * @param idTiersRequerant
      * @param session
-     *
      * @return
-     *
      * @throws Exception
      */
     protected boolean hasUniquementRelationEnfantCommun(ISFMembreFamilleRequerant[] membreFamille,
@@ -1283,12 +1284,12 @@ public class REExportationCalculAcor {
 
             // On recherche la sit famille du tiers requérant
             ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                                                                                         ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
+                    ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
 
             // On récupère les relations au tiers pour chaque conjoint
             for (ISFMembreFamilleRequerant conjoint : conjoints) {
                 ISFRelationFamiliale[] relations = sf.getToutesRelationsConjoints(idMembreFamilleRequerant,
-                                                                                  conjoint.getIdMembreFamille(), false);
+                        conjoint.getIdMembreFamille(), false);
                 for (ISFRelationFamiliale relation : relations) {
                     // On anaylse ses relations par rapport au tiers requerant
                     if (ISFRelationConjoint.CS_REL_CONJ_ENFANT_COMMUN.equals(relation.getTypeRelation())) {
@@ -1342,7 +1343,8 @@ public class REExportationCalculAcor {
         return nss;
     }
 
-    private List<ISFMembreFamilleRequerant> recupererEnfants(ISFMembreFamilleRequerant[] membresFamille, String idTiersRequerant) {
+    private List<ISFMembreFamilleRequerant> recupererEnfants(ISFMembreFamilleRequerant[] membresFamille, String
+            idTiersRequerant) {
         List<ISFMembreFamilleRequerant> enfants = new ArrayList<>();
         for (ISFMembreFamilleRequerant tiers : membresFamille) {
             // On ne veut pas traiter le tiers requérant
@@ -1448,7 +1450,6 @@ public class REExportationCalculAcor {
      * Recherche d'une demande AI du conjoint, non validée
      *
      * @param membre
-     *
      * @return la demande AI du conjoint
      */
     public REDemandeRente rechercheDemandeAiConjoint(ISFMembreFamilleRequerant membre) {
@@ -1457,8 +1458,8 @@ public class REExportationCalculAcor {
         mgr.setSession(getSession());
         mgr.setForIdTiersRequ(idTiersConjoint);
         mgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                                          + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                                          + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
+                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
+                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
 
         mgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
         mgr.setOrderBy(REDemandeRente.FIELDNAME_DATE_DEBUT + " DESC ");
@@ -1474,7 +1475,7 @@ public class REExportationCalculAcor {
                 REDemandeRenteJointDemande elm = (REDemandeRenteJointDemande) mgr.getFirstEntity();
                 REDemandeRente demConjoint = null;
                 demConjoint = REDemandeRente.loadDemandeRente(getSession(), null,
-                                                              elm.getIdDemandeRente(), elm.getCsTypeDemande());
+                        elm.getIdDemandeRente(), elm.getCsTypeDemande());
                 return demConjoint;
             }
         } catch (Exception e) {

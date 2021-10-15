@@ -200,7 +200,7 @@ public class REAcorMapper {
                         }
                     }
                     if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, fCalcul);
+                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul);
 
 
                         // Si la demande à déjà été clonée et que l'on passe une
@@ -515,7 +515,7 @@ public class REAcorMapper {
      * @param premierePrestation
      * @return
      */
-    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul fCalcul) {
+    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul.Evenement evenement, FCalcul fCalcul) {
 
         REBasesCalcul bc = new REBasesCalculDixiemeRevision();
         bc.setSession(session);
@@ -536,6 +536,9 @@ public class REAcorMapper {
 //        bc.setDroitApplique(REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE"));  $b37
         bc.setDroitApplique(IREDemandeRente.REVISION_10EME_REVISION);
 
+//        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU")));
+        bc.setIsPartageRevenuActuel(!evenement.getSplitting().isEmpty());
+
         if (Objects.nonNull(baseCalcul.getBaseRam())) {
             if (Objects.nonNull(baseCalcul.getBaseRam().getBass())) {
                 //        bc.setAnneeBonifTacheAssistance(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
@@ -554,8 +557,7 @@ public class REAcorMapper {
             if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr())) {
                 //        bc.setRevenuSplitte(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_SPLITTE"))); $b38
                 bc.setRevenuSplitte(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
-                // On met la même valeur que le revenu splitté.
-                bc.setIsPartageRevenuActuel(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
+
                 //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
                 if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr().getFacRev())) {
                     bc.setFacteurRevalorisation(String.format("%.03f", baseCalcul.getBaseRam().getRevLucr().getFacRev()));
@@ -1291,7 +1293,7 @@ public class REAcorMapper {
                         }
                     }
                     if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, fCalcul);
+                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul);
 
                         if (fcParBaseCalculVO != null) {
                             retValue.add(fcParBaseCalculVO);
