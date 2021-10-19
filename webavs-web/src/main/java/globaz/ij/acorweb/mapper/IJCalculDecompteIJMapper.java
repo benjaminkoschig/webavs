@@ -16,6 +16,8 @@ import globaz.prestation.acor.PRACORException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.math.NumberUtils;
 
+import java.time.LocalDate;
+
 import static globaz.prestation.acor.web.mapper.PRAcorMapper.loadCodeOrNull;
 
 @AllArgsConstructor
@@ -29,13 +31,16 @@ public class IJCalculDecompteIJMapper {
             IJAttestationsJoursAdapter attestationsJours = new IJAttestationsJoursAdapter(this.baseIndemnisation, this.ijijCalculee);
 
             BasesCalculDecompteCourantIJ basesCalculDecompteCourantIJ = new BasesCalculDecompteCourantIJ();
+            basesCalculDecompteCourantIJ.setDateCreation(Dates.toXMLGregorianCalendar(LocalDate.now()));
             basesCalculDecompteCourantIJ.setStatut(1);
             basesCalculDecompteCourantIJ.setId(this.ijijCalculee.getIdIJCalculee());
             basesCalculDecompteCourantIJ.setDebut(Dates.toXMLGregorianCalendar(attestationsJours.getDateDebutPeriode()));
             basesCalculDecompteCourantIJ.setFin(Dates.toXMLGregorianCalendar(attestationsJours.getDateFinPeriode()));
             basesCalculDecompteCourantIJ.setDateCreation(Dates.toXMLGregorianCalendar(Dates.nowFormatSwiss()));
             basesCalculDecompteCourantIJ.setJoursAPayer(computJourAPayer(attestationsJours));
-            basesCalculDecompteCourantIJ.setTauxImposition(NumberUtils.createDouble(this.prononce.getTauxImpositionSource()));
+            // Le taux d'imposition n'est pas un pourcentage mais une quotité (valeur comprise entre 0 et 1, 1 représentant 100%)
+            // d'où l'obligation de diviser le taux par 100.
+            basesCalculDecompteCourantIJ.setTauxImposition(NumberUtils.createDouble(this.prononce.getTauxImpositionSource()) / 100.00);
             basesCalculDecompteCourantIJ.setRaisonInterruption(loadCodeOrNull(
                     this.baseIndemnisation.getSession(),
                     this.baseIndemnisation.getCsMotifInterruption()));
