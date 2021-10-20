@@ -308,7 +308,7 @@
         <servlet-name>WSRest</servlet-name>
         <!-- TOMCAT -->
 <!--        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
-<!--         IBM -->
+        <!-- IBM -->
 		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>

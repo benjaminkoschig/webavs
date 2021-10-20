@@ -43,8 +43,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/properties" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/rapg" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor-ij" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor-rentes" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-al" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-amatapat" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-aquila" isTestSource="false" generated="true" />
@@ -52,12 +51,15 @@
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-ebill-protocole" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-pandemie" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-rapg" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor-ij" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/xjc-acor-rentes" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: ch.globaz:mercato.notification:1.0.6" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13.2" level="project" />
@@ -106,14 +108,6 @@
     <orderEntry type="library" name="Maven: jaxen:jaxen:1.1-beta-8" level="project" />
     <orderEntry type="library" name="Maven: xerces:xercesImpl:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.4.01" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-core:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.0.10.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-web:5.0.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" name="Maven: javax.jms:jms:1.1" level="project" />
     <orderEntry type="library" name="Maven: javax.mail:javax.mail-api:1.5.2" level="project" />
@@ -130,6 +124,8 @@
     <orderEntry type="library" name="Maven: org.openoffice:unoil:3.3" level="project" />
     <orderEntry type="library" name="Maven: org.openoffice:unoloader:3.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.odftoolkit:simple-odf:0.8.1-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.odftoolkit:odfdom-java:0.8.8-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.odftoolkit:taglets:0.8.8-incubating" level="project" />
     <orderEntry type="library" name="Maven: ch.globaz:itext:5-0-17" level="project" />
     <orderEntry type="library" name="Maven: ch.globaz:zStyleReport:4.2" level="project" />
     <orderEntry type="library" name="Maven: com.enterprisedt:edtftpj:1.5.6" level="project" />
@@ -212,6 +208,14 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.cxf:cxf-rt-ws-policy:3.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.neethi:neethi:3.1.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.cxf:cxf-rt-transports-http:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-core:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.0.10.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-web:5.0.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: ch.globaz:ListPandemieAPGtoCDF:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.lingala.zip4j:zip4j:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: ch.globaz:list-adapt-rentes:1.0.1" level="project" />
@@ -223,19 +227,14 @@
     <orderEntry type="library" name="Maven: com.ibm.db2.jcc:db2jcc:db2jcc4" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.itextpdf:itextpdf:5.5.10" level="project" />
-    <orderEntry type="library" name="Maven: io.jsonwebtoken:jjwt-api:0.11.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.jsonwebtoken:jjwt-impl:0.11.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.jsonwebtoken:jjwt-gson:0.11.2" level="project" />
+    <orderEntry type="library" name="Maven: io.jsonwebtoken:jjwt-api:0.11.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.jsonwebtoken:jjwt-impl:0.11.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.jsonwebtoken:jjwt-gson:0.11.1" level="project" />
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.module:jackson-module-parameter-names:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.annotation:javax.annotation-api:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20200518" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.5.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.20" level="project" />
-    <orderEntry type="library" name="Maven: io.github.classgraph:classgraph:4.8.115" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.assertj:assertj-core:3.19.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-core:3.10.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy:1.11.0" level="project" />
@@ -245,21 +244,9 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.powermock:powermock-api-support:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.powermock:powermock-reflect:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.powermock:powermock-core:2.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.powermock:powermock-module-junit4:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.powermock:powermock-module-junit4-common:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-server:2.13" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.13" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.13" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-client:2.13" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-api:2.3.0-b10" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-utils:2.3.0-b10" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2.external:aopalliance-repackaged:2.3.0-b10" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2.external:javax.inject:2.3.0-b10" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-locator:2.3.0-b10" level="project" />
-    <orderEntry type="library" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet:2.13" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet-core:2.13" level="project" />
   </component>
 </module>
