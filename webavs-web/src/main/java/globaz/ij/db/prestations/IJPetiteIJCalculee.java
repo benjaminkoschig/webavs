@@ -193,7 +193,10 @@ public class IJPetiteIJCalculee extends IJIJCalculee {
      */
     @Override
     public boolean isEgalPourCalcul(IJIJCalculee ij) throws Exception {
-        return csModeCalcul.equals(((IJPetiteIJCalculee) ij).csModeCalcul) && super.isEgalPourCalcul(ij);
+        if(ij instanceof IJPetiteIJCalculee) {
+            return csModeCalcul.equals(((IJPetiteIJCalculee) ij).csModeCalcul) && super.isEgalPourCalcul(ij);
+        }
+        return false;
     }
 
     /**

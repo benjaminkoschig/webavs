@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 public class IJAcorService {
 
     private static final JaxbHandler<InHostType> IN_HOST_TYPE_VALIDATEUR = createJaxbValidator();
+    private static  final String XSD_FOLDER = "/xsd/acor/xsd/";
+    private static final String XSD_NAME = "acor-rentes-in-host.xsd";
 
     public InHostType createInHostCalcul(String idPrononce) {
         IJExportationCalculAcor exporter = new IJExportationCalculAcor();
@@ -34,8 +36,13 @@ public class IJAcorService {
 
     private static JaxbHandler<InHostType> createJaxbValidator() {
         if (Debug.isEnvironnementInDebug()) {
-            return JaxbHandler.build("/xsd/acor/xsd/acor-rentes-in-host.xsd", InHostType.class,
-                                     inHost -> new ObjectFactory().createInHost(inHost));
+            String xsdPath = XSD_FOLDER + XSD_NAME;
+            try {
+                return JaxbHandler.build(xsdPath, InHostType.class,
+                        inHost -> new ObjectFactory().createInHost(inHost));
+            }catch(Exception e){
+                LOG.error("Erreur durant la récupération du fichier xsd {} pour la validation des envois à Acor en mode debug. La validation ne sera pas possible.", xsdPath);
+            }
         }
         return null;
     }

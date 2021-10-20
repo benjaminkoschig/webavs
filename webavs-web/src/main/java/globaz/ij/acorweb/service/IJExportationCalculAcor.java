@@ -53,6 +53,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -346,9 +347,9 @@ class IJExportationCalculAcor {
         // DONNEES FICHIER DEMANDES
         demandeType.setNavs(PRConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
         demandeType.setTypeDemande(TypeDemandeEnum.IJ);
-        demandeType.setDateTraitement(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));
+        demandeType.setDateTraitement(Dates.toXMLGregorianCalendar(LocalDate.now()));
         // Il n'y a pas de date dépot pour les IJ
-        //demandeType.setDateDepot()
+        demandeType.setDateDepot(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));
         demandeType.setTypeCalcul(Integer.parseInt(PRACORConst.CA_TYPE_CALCUL_STANDARD));
 
         return demandeType;

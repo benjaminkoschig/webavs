@@ -254,15 +254,16 @@ public class IJGrandeIJCalculee extends IJIJCalculee {
      */
     @Override
     public boolean isEgalPourCalcul(IJIJCalculee ij) throws Exception {
-        IJGrandeIJCalculee gij = (IJGrandeIJCalculee) ij;
+        if(ij instanceof IJGrandeIJCalculee) {
+            IJGrandeIJCalculee gij = (IJGrandeIJCalculee) ij;
 
-        if (PRCalcul.isIEgaux(nbEnfants, gij.nbEnfants)
-                && PRCalcul.isDEgaux(montantIndemniteEnfant, gij.montantIndemniteEnfant)
-                && PRCalcul.isDEgaux(montantIndemniteAssistance, gij.montantIndemniteAssistance)
-                && PRCalcul.isDEgaux(montantIndemniteExploitation, gij.montantIndemniteExploitation)) {
-            return super.isEgalPourCalcul(ij);
+            if (PRCalcul.isIEgaux(nbEnfants, gij.nbEnfants)
+                    && PRCalcul.isDEgaux(montantIndemniteEnfant, gij.montantIndemniteEnfant)
+                    && PRCalcul.isDEgaux(montantIndemniteAssistance, gij.montantIndemniteAssistance)
+                    && PRCalcul.isDEgaux(montantIndemniteExploitation, gij.montantIndemniteExploitation)) {
+                return super.isEgalPourCalcul(ij);
+            }
         }
-
         return false;
     }
 

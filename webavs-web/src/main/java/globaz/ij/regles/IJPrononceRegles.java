@@ -525,9 +525,9 @@ public final class IJPrononceRegles {
         // charger les ij calculees du prononce d'origine
         IJIJCalculeeManager ijs = null;
 
-        if (prononceOrigine instanceof IJGrandeIJ) {
+        if (IIJPrononce.CS_GRANDE_IJ.equals(prononceOrigine.getCsTypeIJ())) {
             ijs = new IJGrandeIJCalculeeManager();
-        } else if (prononceOrigine instanceof IJPetiteIJ) {
+        } else if (IIJPrononce.CS_PETITE_IJ.equals(prononceOrigine.getCsTypeIJ())) {
             ijs = new IJPetiteIJCalculeeManager();
         } else {
             ijs = new IJIJCalculeeManager();
