@@ -48,15 +48,15 @@ VALUES (64008095, 'F', '          ', 'SPEN',
 -- SPEN - CCVS Variable Métier - Plafond SPEN
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN,
                            PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
-VALUES (64008100, 'PCTYPVMET ', 93, 1, 0, 0, 'PLAFOND_ANNUEL_SPEN', 2, 1, 2, 2, 2, 2, 63000008, 0,
+VALUES (64008103, 'PCTYPVMET ', 93, 1, 0, 0, 'PLAFOND_ANNUEL_SPEN', 2, 1, 2, 2, 2, 2, 63000008, 0,
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
-VALUES (64008100, 'D', '          ', '[de]Plafond journalier SPEN',
+VALUES (64008103, 'D', '          ', '[de]Plafond journalier SPEN',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
-VALUES (64008100, 'F', '          ', 'Plafond journalier SPEN',
+VALUES (64008103, 'F', '          ', 'Plafond journalier SPEN',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 ------------POAVS-3769 : DGEJ
