@@ -166,6 +166,9 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         } else if (csPeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_LITS_ATTENTE)) {
             return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE))
                     .getValeurCourante());
+        } else if (csPeriodeServiceEtat.equals(IPCHomes.CS_SERVICE_ETAT_SPEN)) {
+            return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_LITS_SPEN))
+                    .getValeurCourante());
         } else {
             throw new CalculException("The plafond cant be found with the cs periode servce etat["
                     + csPeriodeServiceEtat + "]");

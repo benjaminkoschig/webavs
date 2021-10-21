@@ -66,6 +66,7 @@ public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
             IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FOYER,
             IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_DGEJ_FA,
             IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE,
+            IPCVariableMetier.CS_PLAFOND_ANNUEL_SPEN,
             IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
             IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
             IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF,

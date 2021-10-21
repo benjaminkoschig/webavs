@@ -47,6 +47,10 @@ public class VariablesMetier extends MapWithListSortedByDate<VariableMetierType,
         return getParameters(VariableMetierType.TAUX_PENSION_NON_RECONNUE);
     }
 
+    public VariablesMetier getPlafondAnnuelSpen() {
+        return getParameters(VariableMetierType.PLAFOND_ANNUEL_SPEN);
+    }
+
     @Override
     public Class<VariablesMetier> getTypeClass() {
         return VariablesMetier.class;

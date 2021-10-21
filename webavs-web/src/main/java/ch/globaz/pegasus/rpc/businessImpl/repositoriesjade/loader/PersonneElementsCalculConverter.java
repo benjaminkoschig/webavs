@@ -442,6 +442,8 @@ public class PersonneElementsCalculConverter {
             plafonds = variablesMetier.getPlafondAnnuelInstitution();
         } else if (serviceEtat.isListAttente()) {
             plafonds = variablesMetier.getPlafondAnnuelListAttente();
+        } else if (serviceEtat.isSpen()) {
+            plafonds = variablesMetier.getPlafondAnnuelSpen();
         } else {
             throw new RpcTechnicalException(
                     "The plafond cant be found with the cs periode serivce etat[" + serviceEtat.getValue() + "]");

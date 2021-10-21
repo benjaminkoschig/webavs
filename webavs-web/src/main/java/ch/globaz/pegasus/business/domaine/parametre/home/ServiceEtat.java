@@ -49,6 +49,10 @@ public enum ServiceEtat implements CodeSystemEnum<ServiceEtat> {
         return INDEFINIT.equals(this);
     }
 
+    public boolean isSpen() {
+        return SPEN.equals(this);
+    }
+
     @Override
     public String getValue() {
         return value;

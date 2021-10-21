@@ -385,6 +385,8 @@ public class HomeServiceImpl extends PegasusAbstractServiceImpl implements HomeS
             return IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION;
         } else if (csTypePeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_LITS_ATTENTE)) {
             return IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE;
+        } else if (csTypePeriodeServiceEtat.equals(IPCHomes.CS_SERVICE_ETAT_SPEN)) {
+            return IPCVariableMetier.CS_PLAFOND_ANNUEL_SPEN;
         } else {
             throw new CalculException("The plafond cant be found with the cs periode servce etat["
                     + csTypePeriodeServiceEtat + "]");
