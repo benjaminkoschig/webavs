@@ -416,7 +416,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         boolean foundOneImpotSource = false;
         for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
             for (AttestationsInfos attestationsInfos : entry.getValue()) {
-                if (entry.getKey().idTiers.equals(idTiers) && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc() && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
                     foundOneImpotSource = true;
                     break;
                 }
@@ -571,27 +571,30 @@ public class IJGenererAttestationsProcess extends BProcess {
         try {
             if (isPrestationIJ(prest)) {
 
-                // cherche le canton impôt source de l'attestation d'imposition
-                String canton = searchCantonImpotSourceCascade(prest);
-                ai.setCanton(canton);
+                if (prononce.getSoumisImpotSource()) {
 
-                if (isCopyFisc) {
-                    // set le flag isCopyFisc qui définit si le document est une copie au fisc
-                    ai.setIsCopyFisc(isCopyFisc);
+                    // cherche le canton impôt source de l'attestation d'imposition
+                    String canton = searchCantonImpotSourceCascade(prononce, prest);
+                    ai.setCanton(canton);
 
-                    if (!totalMontantImpotSource.isZero()) {
-                        // évite l'envoi de lettre entete en doublon pour le même canton
-                        if (!cantonsLettreEntete.contains(canton)) {
-                            cantonsLettreEntete.add(canton);
-                            // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
-                            ai.setIsAddLettreEntete(true);
+                    if (isCopyFisc) {
+                        // set le flag isCopyFisc qui définit si le document est une copie au fisc
+                        ai.setIsCopyFisc(isCopyFisc);
+
+                        if (!totalMontantImpotSource.isZero()) {
+                            // évite l'envoi de lettre entete en doublon pour le même canton
+                            if (!cantonsLettreEntete.contains(canton)) {
+                                cantonsLettreEntete.add(canton);
+                                // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
+                                ai.setIsAddLettreEntete(true);
+                            }
                         }
                     }
-                }
 
-                // set le flag isHasCopyFisc pour les documents original et pour la copie
-                if (!totalMontantImpotSource.isZero()) {
-                    ai.setIsHasCopyFisc(true);
+                    // set le flag isHasCopyFisc pour les documents original et pour la copie
+                    if (!totalMontantImpotSource.isZero()) {
+                        ai.setIsHasCopyFisc(true);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -600,34 +603,30 @@ public class IJGenererAttestationsProcess extends BProcess {
         }
     }
 
-    private String searchCantonImpotSourceCascade(IJPrestation prest) {
+    private String searchCantonImpotSourceCascade(IJPrononce prononce, IJPrestation prest) {
         String canton = "";
 
         try {
+            // recherche du canton dans le prononce
+            canton = prononce.getCsCantonImpositionSource();
 
-            if (prononce.getSoumisImpotSource()) {
+            // si canton vide dans le droit ou si la valeur est set à ETRANGER
+            if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
-                // recherche du canton dans le prononce
-                canton = prononce.getCsCantonImpositionSource();
+                // recherche du canton dans l'adresse de domicile
+                canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
 
-                // si canton vide dans le droit ou si la valeur est set à ETRANGER
+                // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à l'étranger alors on vas rechercher l'adresse de l'employeur
                 if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
-                    // recherche du canton dans l'adresse de domicile
-                    canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+                    // recherche du canton dans l'adresse de l'employeur
+                    IJSituationProfessionnelleHelper ijSituationProfessionnelleHelper = new IJSituationProfessionnelleHelper();
+                    canton = ijSituationProfessionnelleHelper.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), situationsProf, prest.getDateDebut());
 
-                    // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à l'étranger alors on vas rechercher l'adresse de l'employeur
+                    // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
-
-                        // recherche du canton dans l'adresse de l'employeur
-                        IJSituationProfessionnelleHelper ijSituationProfessionnelleHelper = new IJSituationProfessionnelleHelper();
-                        canton = ijSituationProfessionnelleHelper.rechercheCantonAdressePaiementSitProf(getSession(), rechercheDomaine(), situationsProf, prest.getDateDebut());
-
-                        // si canton vide il n'y a pas de sitProf ou si adresse sitProf est à l'étranger alors on génère une alerte
-                        if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
-                            getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
-                                    "IJGenererAttestationsProcess");
-                        }
+                        getMemoryLog().logMessage("Erreur lors de la recherche du canton d'imposition à l'impôt source : " + tiers.getNSS(), FWMessage.AVERTISSEMENT,
+                                "IJGenererAttestationsProcess");
                     }
                 }
             }

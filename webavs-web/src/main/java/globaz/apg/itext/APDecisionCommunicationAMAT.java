@@ -796,7 +796,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
 
             // cherche le canton impôt source de l'attestation d'imposition
-            String canton = searchCantonImpotSourceCascade(demande.getIdTiers());
+            String canton = searchCantonImpotSourceCascade(droit, demande.getIdTiers());
             setCantonDecisionCopyFisc(canton);
 
             String idTiersAdmFiscale = "";
@@ -809,7 +809,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
     }
 
-     private String searchCantonImpotSourceCascade(String idTiers) {
+     private String searchCantonImpotSourceCascade(APDroitMaternite droit, String idTiers) {
         String canton = "";
 
          try {
