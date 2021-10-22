@@ -423,7 +423,9 @@ public class REExportationCalculAcor {
         commonRente.setIndemniteForfaitaire(false);
         // 3. fraction de rente
         commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
-        commonRente.setQuotite(Double.valueOf(rente.getQuotiteRente()));
+        if (StringUtils.isNotEmpty(rente.getQuotiteRente())) {
+            commonRente.setQuotite(Double.valueOf(rente.getQuotiteRente()));
+        }
         // 4. date début du droit
         commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit

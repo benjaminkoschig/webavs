@@ -60,14 +60,15 @@ import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class REImportationCalculAcor {
 
     public static final int CAS_NOUVEAU_CALCUL = 1;
@@ -75,8 +76,6 @@ public class REImportationCalculAcor {
     public static final int CAS_RECALCUL_DEMANDE_NON_VALIDEE = 3;
     private static final String DATE_FIN_DEMANDE = "01.01.1000";
     private static final String DATE_DEBUT_DEMANDE = "31.12.9999";
-
-    private static final Logger LOG = Logger.getLogger(REImportationCalculAcor.class);
 
     private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
@@ -1101,20 +1100,7 @@ public class REImportationCalculAcor {
          * feuille de calcul acor taux de reduction, BTE entière, demi, quart...
          */
         if ((fCalcul != null) && (fCalcul.getEvenement().size() > 0)) {
-            Set<String> rentesWithoutBte = REAcorMapper.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
-            if (!rentesWithoutBte.isEmpty()) {
-                Iterator<String> iterator = rentesWithoutBte.iterator();
-                StringBuilder allNumber = new StringBuilder();
-                while (iterator.hasNext()) {
-                    allNumber.append(iterator.next());
-                    if (iterator.hasNext()) {
-                        allNumber.append(", ");
-                    } else {
-                        allNumber.append(".");
-                    }
-                }
-                throw new PRACORException(FWMessageFormat.format(session.getLabel("JSP_BTE_MANUEL"), allNumber.toString()));
-            }
+           rentesWithoutBte = REAcorMapper.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
         }
 
         // Connexion au WebService ACOR pour récupérer les annonces.

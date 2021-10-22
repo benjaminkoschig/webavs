@@ -3,6 +3,8 @@ package globaz.corvus.acorweb.service;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.api.annonces.IREAnnonces;
@@ -53,13 +55,42 @@ public class REImportAnnoncesAcor {
             if (annonces.getLot() != null) {
                 List<PoolMeldungZurZAS.Lot> lots = annonces.getLot();
                 for (PoolMeldungZurZAS.Lot lot : lots) {
-                    List<RRMeldung10Type> list = lot.getRRMeldung10();
-                    for (RRMeldung10Type meldung10 : list) {
+//                    List<RRMeldung10Type> list = lot.getRRMeldung10();
+//                    for (RRMeldung10Type meldung10 : list) {
+//                            try {
+//                                addAnnoncesToList(annoncesOrdinaires10emeRev, annoncesExtraOrdinaires10emeRev, meldung10);
+//                            } catch (Exception e) {
+//                                LOG.error("L'objet n'a pas pu être converti. Il ne s'agit pas d'une annonce de 10e révision.", e);
+//                            }
+//                    }
+                    List<Object> list = lot
+                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr();
+                    for (Object o : list) {
+                        if (o instanceof RRMeldung9Type) {
+                            /*
+                             * Ce fichier peut contenir des annonces de diminution de la 9ème révision. Ces annonces ne
+                             * nous intéresse pas donc on ne les lit pas !
+                             */
+                        } else if (o instanceof RRMeldung10Type) {
+                            // On ne lit que les annonces d'augmentation (Zuwachsmeldung)
+                            // Rente ordinaire
+                            addAnnoncesToList(annoncesOrdinaires10emeRev, annoncesExtraOrdinaires10emeRev, (RRMeldung10Type) o);
+                        } else if (o instanceof LinkedHashMap) {
                             try {
+                                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                                RRMeldung10Type meldung10 = mapper.convertValue(o, RRMeldung10Type.class);
                                 addAnnoncesToList(annoncesOrdinaires10emeRev, annoncesExtraOrdinaires10emeRev, meldung10);
                             } catch (Exception e) {
                                 LOG.error("L'objet n'a pas pu être converti. Il ne s'agit pas d'une annonce de 10e révision.", e);
                             }
+                        } else {
+                            String message = session.getLabel("ERREUR_CALCUL_ACOR_LECTURE_ANNONCE_TYPE_INATTENDU");
+                            String type = "null";
+                            if (o != null) {
+                                type = o.getClass().getName();
+                            }
+                            message = message.replace("{0}", type);
+                        }
                     }
                 }
             }

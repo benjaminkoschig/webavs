@@ -190,6 +190,9 @@ public class REAcorMapper {
                 FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation = null;
                 for (FCalcul.Evenement.BasesCalcul eachBaseCalcul : eachEvenement.getBasesCalcul()) {
 
+                    // TODO : dans le cadre d'une rente survivant, de nouvelles règles d'implémentation pour la création des bases de calcul doivent s'appliquer
+
+
                     // On récupère la première prestation "valide" de la base de calcul pour récupérer le type du droit et le bénéficiaire.
                     for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                         for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
@@ -588,7 +591,7 @@ public class REAcorMapper {
             bc.setCodeOfficeAi(Objects.toString(baseCalcul.getInvalidite().getOai(), StringUtils.EMPTY));
             //        bc.setDegreInvalidite(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_AYANT_DROIT")); $b21
             bc.setDegreInvalidite(Objects.toString(baseCalcul.getInvalidite().getDegreInvalidite(), StringUtils.EMPTY));
-            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite(), "0.00"));
+            bc.setQuotiteRente(Objects.toString(baseCalcul.getInvalidite().getQuotite(), StringUtils.EMPTY));
             //        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_AYANT_DROIT"))); $b24
             bc.setInvaliditePrecoce(BooleanUtils.toBoolean(baseCalcul.getInvalidite().getInvalidePrecoce()));
             //        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")), '.')); $b23
@@ -857,7 +860,7 @@ public class REAcorMapper {
 //        String fractionRente = REACORAbstractFlatFileParser.getField(line, fields, "FRACTION_RENTE_AI"); $r7
 //         ra.setFractionRente(PRACORConst.caFractionRenteToCS(session, fractionRente));
         ra.setFractionRente(FractionRente.getConstFromValue(rente.getFraction()));
-        ra.setQuotiteRente(Objects.toString(rente.getQuotite(), "0.00"));
+        ra.setQuotiteRente(Objects.toString(rente.getQuotite(), StringUtils.EMPTY));
 
 //        ra.setCodePrestation(REACORAbstractFlatFileParser.getField(line, fields, "CODE_PRESTATION")); $r5
         ra.setCodePrestation(Objects.toString(rente.getGenre(), StringUtils.EMPTY));
@@ -873,6 +876,7 @@ public class REAcorMapper {
         ISFMembreFamilleRequerant[] mf = sf.getMembresFamilleRequerant(demande.loadDemandePrestation(transaction).getIdTiers());
 
 //        String nssTiersBaseCalcul = REACORAbstractFlatFileParser.getField(line, fields, "NSS_BASE_CALCUL"); $b2
+        // TODO : dans le cadre d'une rente survivant, le NSS base calcul est différent de la balise générateur de la base de calcul
         PRTiersWrapper tiersBaseCalcul = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(baseCalcul.getGenerateur()));
         if (tiersBaseCalcul != null) {
             ra.setIdTiersBaseCalcul(tiersBaseCalcul.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));

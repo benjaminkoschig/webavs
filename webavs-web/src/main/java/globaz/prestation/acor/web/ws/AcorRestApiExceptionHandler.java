@@ -23,9 +23,9 @@ public class AcorRestApiExceptionHandler implements ExceptionHandler {
 
     @Override
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
         RequestInfo requestInfo = new RequestInfo(request);
         ExceptionRequestInfo exceptionRequestInfo = new ExceptionRequestInfo(requestInfo, e);
-        BSession session = BSessionUtil.getSessionFromThreadContext();
         try {
             if (StringUtils.contains(requestInfo.getPathInfo(), "import")) {
                 LOG.error("Une erreur est intervenue lors de l'importation.", e);
@@ -45,14 +45,14 @@ public class AcorRestApiExceptionHandler implements ExceptionHandler {
         }
         LOG.error("Une erreur imprévue s'est produite.", e);
         String label = "Global error";
-        if(session!=null) {
-             label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_GLOBAL);
+        if (session != null) {
+            label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_GLOBAL);
         }
         return responseBuilder.entity(AcorStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
     }
 
     private void sendMailError(BSession session, ExceptionRequestInfo exceptionRequestInfo, String object) throws Exception {
-        if(session!=null) {
+        if (session != null) {
             BTransaction transaction = session.getCurrentThreadTransaction();
             StringBuilder content = new StringBuilder();
             if (session.hasErrors()) {
