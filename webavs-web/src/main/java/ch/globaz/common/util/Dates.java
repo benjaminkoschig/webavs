@@ -26,7 +26,7 @@ import java.util.Locale;
  */
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyddMM");
+    private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
     public static final Integer AGE_18ANS = 18;
 
     /**
