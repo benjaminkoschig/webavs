@@ -622,16 +622,18 @@ public class REAcorMapper {
 
                     //année de jeunesse
                     case 5:
+//        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
+                        StringBuilder periodeJeunesse = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
+                        periodeJeunesse.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
+                        bc.setPeriodeJeunesse(periodeJeunesse.toString());
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
+                        if (!StringUtils.equals("0000", periodeJeunesse.toString())) {
                         fCalcul.getAnalysePeriodes().stream().filter(analysePeriodes -> nssTiersBaseCalcul.equals(analysePeriodes.getBeneficiaire()))
                                 .findFirst()
                                 .ifPresent(analysePeriodes -> {
                                     bc.setRevenuJeunesse(Objects.toString(analysePeriodes.getRevJTot(), StringUtils.EMPTY));
                                 });
-//        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
-                        StringBuilder periodeJeunesse = new StringBuilder(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
-                        periodeJeunesse.append(PRConverterUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
-                        bc.setPeriodeJeunesse(periodeJeunesse.toString());
+                        }
                         break;
                     case 6:
 //        bc.setMoisAppointsAvant73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_AV_73")); $b13
@@ -1016,19 +1018,19 @@ public class REAcorMapper {
     /**
      * Ajout des données d'anticipation dans la rente accordée.
      *
-     * @param baseCalcul : la base de calcul
-     * @param dernierEtat  : le dernier état de la rente.
-     * @param ra         : la rente accordée
+     * @param baseCalcul  : la base de calcul
+     * @param dernierEtat : le dernier état de la rente.
+     * @param ra          : la rente accordée
      * @return la rente accordée mis à jour.
      */
     private static RERenteAccordee setAnticipationToRA(FCalcul.Evenement.BasesCalcul baseCalcul, Rente.Etat dernierEtat, RERenteAccordee ra) {
         for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche eachTranche : baseCalcul.getAnticipation().getTranche()) {
-           if (Objects.nonNull(dernierEtat) && Objects.nonNull(dernierEtat.getRedAnt())){
-                    ra.setAnneeAnticipation(PRConverterUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
+            if (Objects.nonNull(dernierEtat) && Objects.nonNull(dernierEtat.getRedAnt())) {
+                ra.setAnneeAnticipation(PRConverterUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
-                    ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
+                ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
-                   ra.setMontantReducationAnticipation(Objects.toString(dernierEtat.getRedAnt()));
+                ra.setMontantReducationAnticipation(Objects.toString(dernierEtat.getRedAnt()));
 
             }
         }

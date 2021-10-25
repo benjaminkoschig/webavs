@@ -267,8 +267,16 @@ public class REExportationCalculAcor {
         }
 
         // Anticipation ou ajournement
-        if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) && demandeRente instanceof REDemandeRenteVieillesse) {
-            FlexibilisationType flexibilisationType = createFlexibilisationType();
+//        StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) &&
+        if (demandeRente instanceof REDemandeRenteVieillesse) {
+            FlexibilisationType flexibilisationType = null;
+            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant())) {
+            flexibilisationType = createFlexibilisationType((REDemandeRenteVieillesse)demandeRente);
+            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
+                REDemandeRenteVieillesse demandeRenteConjoint = (REDemandeRenteVieillesse) rechercheDemandeVieillesseConjoint(membre);
+                    flexibilisationType = createFlexibilisationType(demandeRenteConjoint);
+            }
+
             if (Objects.nonNull(flexibilisationType)) {
                 assureType.setFlexibilisation(flexibilisationType);
             }
@@ -300,19 +308,20 @@ public class REExportationCalculAcor {
     /**
      * Création d'une flexibisation si on est sur un ajournement, une anticipation ou une révocation (rente vieillesse)
      *
+     * @param demandeRente demande de rente
      * @return la flexibilisation s'il y a un ajournement, une anticipation ou une révocation. Null sinon.
      */
-    private FlexibilisationType createFlexibilisationType() {
+    private FlexibilisationType createFlexibilisationType(REDemandeRenteVieillesse demandeRente) {
         FlexibilisationType flexibilisationType = null;
-        String anticipation = ((REDemandeRenteVieillesse) demandeRente).getCsAnneeAnticipation();
+        String anticipation = demandeRente.getCsAnneeAnticipation();
         // Anticipation
         if (StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES, anticipation) || StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE, anticipation)) {
             flexibilisationType = new FlexibilisationType();
             flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(demandeRente.getDateDebut()));
             flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour une anticipation
         }
-        boolean ajournement = ((REDemandeRenteVieillesse) demandeRente).getIsAjournementRequerant();
-        String dateRevocation = ((REDemandeRenteVieillesse) demandeRente).getDateRevocationRequerant();
+        boolean ajournement =  demandeRente.getIsAjournementRequerant();
+        String dateRevocation = demandeRente.getDateRevocationRequerant();
         if (ajournement) {
             flexibilisationType = new FlexibilisationType();
             // Revocation
@@ -1485,6 +1494,55 @@ public class REExportationCalculAcor {
         }
         return null;
     }
+
+    /**
+     * Recherche d'une demande de vieillesse du conjoint.
+     *
+     * @param membre
+     * @return
+     */
+    public REDemandeRente rechercheDemandeVieillesseConjoint(ISFMembreFamilleRequerant membre) {
+        String idTiersConjoint = membre.getIdTiers();
+        REDemandeRenteJointDemandeManager mgr = new REDemandeRenteJointDemandeManager();
+        mgr.setSession(getSession());
+        mgr.setForIdTiersRequ(idTiersConjoint);
+        mgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_VALIDE + ", "
+                + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_COURANT_VALIDE);
+        // On reset ce champ, précédemment setté.
+        mgr.setForCsEtatDemande(null);
+        mgr.setForCsType(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
+        mgr.setOrderBy(REDemandeRente.FIELDNAME_DATE_DEBUT + " DESC ");
+        mgr.setForCsTypeCalcul(IREDemandeRente.CS_TYPE_CALCUL_STANDARD);
+        try {
+            mgr.find(1);
+
+            // Si pas de demande vieillesse validée, on tente de récupérer une
+            // demande vieillesse non validée.
+            if (mgr.isEmpty()) {
+                mgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
+                        + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
+                        + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
+
+                mgr.find(1);
+            }
+
+            // ---------------------------------------------------------
+            // Traitement des paramètres du conjoint s'il possède une demande de
+            // type Vieillesse
+            // ---------------------------------------------------------
+            if (!mgr.isEmpty()) {
+                REDemandeRenteJointDemande elm = (REDemandeRenteJointDemande) mgr.getFirstEntity();
+                REDemandeRenteVieillesse demConjoint = (REDemandeRenteVieillesse) REDemandeRente.loadDemandeRente(
+                        getSession(), null, elm.getIdDemandeRente(), elm.getCsTypeDemande());
+                return demConjoint;
+            }
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer la demande du conjoint.", e);
+        }
+        return null;
+
+    }
+
 
     private ISFPeriode[] addPeriodeForSurvivant(final ISFMembreFamilleRequerant membre, ISFPeriode[] periodes) {
         // si demande survivant
