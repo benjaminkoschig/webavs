@@ -105,13 +105,13 @@ public class CopiesDecisionHandler {
         } else if (IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL.equals(typeCopie) || IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL.equals(typeCopie)) {
             home = CopiesDecisionHandler.getHomePartielForDecision(CopiesDecisionHandler.decision);
         }
-
+        String nss = CopiesDecisionHandler.decision.getPcAccordee().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel();
         if (home == null) {
-            throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
+            throw new DecisionException("NSS : "+nss+" - "+BSessionUtil.getSessionFromThreadContext().getLabel(
                     "DECISION_COPIES_HOME_INTROUVABLE"));
         }
         if (JadeStringUtil.isBlankOrZero(home.getId()) || home.isNew()) {
-            throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
+            throw new DecisionException("NSS : "+nss+" - "+BSessionUtil.getSessionFromThreadContext().getLabel(
                     "DECISION_COPIES_HOME_INTROUVABLE"));
         }
 
