@@ -419,7 +419,7 @@ public class PRACORConst {
      */
     public static final String caGenreReadaptationToCS(BSession session, String caGenreReadaptation) {
         // le code est le code utilisateur
-       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION,caGenreReadaptation).getIdCodeSysteme();
+        return session.getSystemCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION, caGenreReadaptation);
     }
 
     /**
