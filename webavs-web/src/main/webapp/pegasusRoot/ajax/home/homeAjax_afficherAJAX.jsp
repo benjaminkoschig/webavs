@@ -19,8 +19,8 @@ String jsonError = RenderTransportJson.renderTransport(viewBean.getMessage());
 <message>
 	<contenu>
 		<idTiers><%=viewBean.getHome().getSimpleHome().getIdTiersHome()%></idTiers>
-		<adresseTiers><c:out value="${viewBean.homeAdresseFormatee}"></c:out></adresseTiers>
-		<nomBatiment><c:out value="${viewBean.home.simpleHome.nomBatiment}"></c:out><%=JadeStringUtil.escapeXML(viewBean.getHome().getSimpleHome().getNomBatiment()) %></nomBatiment>
+		<adresseTiers><%=viewBean.getHomeAdresseFormatee()%></adresseTiers>
+		<nomBatiment><%=JadeStringUtil.escapeXML(viewBean.getHome().getSimpleHome().getNomBatiment()) %></nomBatiment>
 		<noIdentification><%=viewBean.getHome().getSimpleHome().getNumeroIdentification()%></noIdentification>
 		<parentViewBean><ct:serializeObject objectName="viewBean.home.simpleHome"/></parentViewBean>
 		<isHorCanton><%=viewBean.getHome().getSimpleHome().getIsHorsCanton() %></isHorCanton>

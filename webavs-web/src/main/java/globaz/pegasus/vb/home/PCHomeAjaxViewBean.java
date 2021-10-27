@@ -19,6 +19,8 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
+import static globaz.externe.IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
+
 /**
  * @author ECO
  * 
@@ -30,7 +32,15 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
      */
     private static final long serialVersionUID = 1L;
     private Home home = null;
-    private String homeAdresseFormatee;
+    /**
+     * L'adresse formatee du home
+     */
+    private String homeAdresseFormatee = null;
+
+    /**
+     * L'adresse formatee du home
+     */
+    private String homeAdressePaiementFormatee = null;
 
     /**
 	 * 
@@ -58,6 +68,9 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
                 .getAdresseTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE, JACalendar.todayJJsMMsAAAA(),
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER, null)
                 .getAdresseFormate();
+    }
+    private void generateAdressePaiement() throws JadeApplicationException, JadePersistenceException {
+        homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE,   TIERS_CS_DOMAINE_APPLICATION_RENTE,JACalendar.todayJJsMMsAAAA(),"").getAdresseFormate();
     }
 
     /**
@@ -105,6 +118,7 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
         home = PegasusServiceLocator.getHomeService().read(home.getId());
 
         generateAdresse();
+        generateAdressePaiement();
 
     }
 
@@ -121,6 +135,7 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
         this.home = home;
         if (home != null) {
             generateAdresse();
+            generateAdressePaiement();
         }
     }
 

@@ -75,6 +75,12 @@
 	font-size:x-small;
 	font-weight:bold;
 }
+.detailAdresseTiersPaiement {
+	width:7cm;
+	font-family:Verdana,Arial;
+	font-size:x-small;
+	font-weight:bold;
+}
 
 fieldset {
 	border : 0px solid #356AA0;

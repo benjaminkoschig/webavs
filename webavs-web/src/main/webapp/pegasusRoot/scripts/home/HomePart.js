@@ -13,7 +13,7 @@ function HomePart(container) {
 	this.onRetrieve = function ($data) {
 		$(this.mainContainer)
 				.find('#home\\.simpleHome\\.idTiersHome').val($data.find('idTiers').text()).end()
-				.find('.detailAdresseTiers').html($data.find('adresseTiers').text().replace('\n', '<br>')).end()
+				.find('.detailAdresseTiers').html($data.find('adresseTiers').text().replaceAll('\n', '<br>')).end()
 				.find('#tiersWidget').val('').end()
 				.find('.external_link').attr('href', urlTiers + $data.find('idTierss').text()).end()
 				.find('#home\\.simpleHome\\.nomBatiment').val($data.find('nomBatiment').text()).end()

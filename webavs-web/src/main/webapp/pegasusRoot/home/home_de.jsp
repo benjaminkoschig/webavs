@@ -116,7 +116,12 @@
 														$(element).attr('adresse.rue')+' '+$(element).attr('adresse.numeroRue')+'<br>'+
 														$(element).attr('localite.numPostal')+' '+$(element).attr('localite.localite')+'<br>'
 													);
-															$('#home\\.simpleHome\\.idTiersHome').val($(element).attr('tiers.id'));
+													$('.detailAdresseTiersPaiement').html(
+															$(element).attr('cs(tiers.titreTiers)')+' '+$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2')+'<br>'+
+															$(element).attr('adresse.rue')+' '+$(element).attr('adresse.numeroRue')+'<br>'+
+															$(element).attr('localite.numPostal')+' '+$(element).attr('localite.localite')+'<br>'
+													);
+													$('#home\\.simpleHome\\.idTiersHome').val($(element).attr('tiers.id'));
 													$('.external_link').attr('href',urlTiers+$(element).attr('tiers.id'));
 												}
 											</script>										
@@ -172,7 +177,7 @@
 							</TD>
 							<td valign="top">
 								<span class="titreHome"><ct:FWLabel key="JSP_PC_ADRESSE_PAIEMENT"/></span>
-								<PRE><span class="detailAdresseTiers"><%=viewBean.getHomeAdressePaiementFormatee()%></span></PRE>
+								<PRE><span class="detailAdresseTiersPaiement"><%=viewBean.getHomeAdressePaiementFormatee()%></span></PRE>
 							</td>
 						</TR>
 						<TR><TD colspan="3">&nbsp;</TD></TR>		
