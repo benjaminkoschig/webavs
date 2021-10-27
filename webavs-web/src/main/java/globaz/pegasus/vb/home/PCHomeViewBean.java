@@ -212,11 +212,16 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
         ajaxViewBean = new PCHomeAjaxViewBean();
         ajaxViewBean.setHome(home);
 
-        // on recherche l'adresse formatee du home
-        initHomeAdresseFormatee();
+        if(home != null && home.getSimpleHome().getIdTiersHome() != null){
+            // on recherche l'adresse formatee du home
+            initHomeAdresseFormatee();
+            // on recherche l'adresse du paiement formaté du home
+            initHomeAdressePaiementFormatee();
+        }
 
-        // on recherche l'adresse du paiement formaté du home
-        initHomeAdressePaiementFormatee();
+
+
+
 
         // les periodes de service de l'etat du home
         PeriodeServiceEtatSearch periodeServiceEtatSearch = new PeriodeServiceEtatSearch();

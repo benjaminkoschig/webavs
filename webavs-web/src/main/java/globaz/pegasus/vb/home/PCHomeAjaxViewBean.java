@@ -68,6 +68,7 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
                 .getAdresseTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE, JACalendar.todayJJsMMsAAAA(),
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER, null)
                 .getAdresseFormate();
+
     }
     private void generateAdressePaiement() throws JadeApplicationException, JadePersistenceException {
         homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE,   TIERS_CS_DOMAINE_APPLICATION_RENTE,JACalendar.todayJJsMMsAAAA(),"").getAdresseFormate();
@@ -114,12 +115,11 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
 
     @Override
     public void retrieve() throws Exception {
-
         home = PegasusServiceLocator.getHomeService().read(home.getId());
-
-        generateAdresse();
-        generateAdressePaiement();
-
+        if(home != null && home.getSimpleHome().getIdTiersHome() != null){
+            generateAdresse();
+            generateAdressePaiement();
+        }
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PCHomeAjaxViewBean extends BJadePersistentObjectViewBean implements
      */
     public void setHome(Home home) throws Exception {
         this.home = home;
-        if (home != null) {
+        if(home != null && home.getSimpleHome().getIdTiersHome() != null){
             generateAdresse();
             generateAdressePaiement();
         }
