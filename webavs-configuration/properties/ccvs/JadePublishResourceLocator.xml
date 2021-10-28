@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.publish.provider.JadePublishResourceLocator: liste des ressources disponibles pour la publication-->
+<globaz.jade.publish.provider.JadePublishResourceLocator>
+	<!--resources: liste des ressources-->
+	<resources>
+		<!--resource: declaration d'une ressource -->
+		<!--  name [REQUIRED]: nom de la ressource -->
+		<!--  class [REQUIRED]: classe a utiliser pour la ressource (doit implementer JadePublishResource) -->
+		<!--  archiving: true si la resource est destinee a l'archivage, false sinon  defaut=false-->
+		<resource name="Mail" class="globaz.jade.publish.provider.mail.JadePublishResourceImpl">
+			<export.xml>false</export.xml>
+		</resource>
+		<resource name="ecmtcp" archiving="true" class="globaz.jade.publish.provider.ged.JadePublishResourceImpl">
+			<!--adapter: adaptateur a utiliser; si pas declare ou vide, on utilise l'adaptateur JadeGedFacade-->
+			<!--  name [REQUIRED]: nom de l'adaptateur-->
+			<adapter name="ecmtcp"/>
+		</resource>
+		<resource name="ecmtcp2" archiving="true" class="globaz.jade.publish.provider.ged.JadePublishResourceImpl">
+			<!--adapter: adaptateur a utiliser; si pas declare ou vide, on utilise l'adaptateur JadeGedFacade-->
+			<!--  name [REQUIRED]: nom de l'adaptateur-->
+			<adapter name="ecmtcp2"/>
+		</resource>
+		<!-- publication sur système de fichier pour décision prevalidé -->
+		<resource name="FileDecisionAdaptation" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>/job/jobadm1/editing</destination.url>
+		</resource>
+		<resource name="MailWithoutUID" class="globaz.jade.publish.provider.mail.JadePublishResourceImpl">
+			<!--export.xml: indique si DocumentInfo doit egalement etre publie au format XML-->
+			<export.xml>false</export.xml>
+			<remove.uid>true</remove.uid>
+		</resource>
+		<resource name="MailWithXML" archiving="true" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<!--export.xml: indique si DocumentInfo doit egalement etre publie au format XML-->
+			<export.xml>true</export.xml>
+		</resource>
+		<resource name="Zip" class="globaz.jade.publish.provider.zip.JadePublishResourceImpl">
+			<!--next.resource: indique le nom de la resource vers laquelle publier le fichier apres compression-->
+			<next.resource>Mail</next.resource>
+		</resource>
+		<resource name="IMP_MASSE" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<!-- destination.url [REQUIRED]: URL de destination pour la copie de fichier -->
+			<!-- remove.uid: indique si l'extension UUID doit etre enlevee du nom de fichier, false par defaut -->
+			<default.resource>REP_MASSE</default.resource>
+			<properties>
+				<property name="documentType" value="0099CFA">
+					<resource>REP_FACTURE</resource>
+				</property>
+				<property name="documentType" value="0100CFA">
+					<resource>REP_FACTURE</resource>
+				</property>
+				<property name="rejectDocument" value="true">
+					<resource>Mail</resource>
+				</property>
+				<property name="preventFromPublish" value="true">
+					<resource>Mail</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="REP_MASSE" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>/job/jobadm1/editing/masse</destination.url>
+			<pdf.extension>pdf</pdf.extension>
+		</resource>
+		<resource name="REP_AGENCE" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>/job/jobadm1/editing/masse</destination.url>
+			<remove.prefix>true</remove.prefix>
+			<remove.uid>true</remove.uid>
+			<export.xml>false</export.xml>
+		</resource>
+		<resource name="REP_FACTURE" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>/job/jobadm1/editing/masse</destination.url>
+			<pdf.extension>pdf</pdf.extension>
+		</resource>
+		<resource name="SWITCH" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<!--default.resource [REQUIRED]: ressource par defaut-->
+			<!--properties: valeurs de proprietes a tester-->
+			<default.resource>Mail</default.resource>
+			<properties>
+				<property name="ownerId" value="operagence">
+					<!--resource : nom de la ressource vers laquelle router le document si la propriete est egale a la valeur-->
+					<resource>REP_AGENCE</resource>
+				</property>
+				<!-- property: configuration d une propriete a tester-->
+				<!--  name  : nom de la propriete-->
+				<!--  value : valeur de la propriete-->
+				<property name="currentFileExtension" value="pdf">
+					<resource>PdfProperty</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="BarCode1" class="globaz.jade.publish.provider.barcode.JadePublishResourceImpl">
+			<code.type>CODE128</code.type>
+			<page>all</page>
+			<cm.from.left>1</cm.from.left>
+			<cm.from.bottom>1</cm.from.bottom>
+			<next.resource>Mail</next.resource>
+		</resource>
+		<resource name="gedSwitch" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>ecmtcp</default.resource>
+			<properties>
+				<property name="ownerId" value="operprest">
+					<resource>ecmtcp2</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="BarCode2" class="globaz.jade.publish.provider.barcode.JadePublishResourceImpl">
+			<!--code.type [REQUIRED]: type de code-->
+			<!--page: page ou imprimer le code (all, first, last), all par defaut-->
+			<!--cm.from.left [REQUIRED]: distance depuis le bord gauche de la page (en centimetres)-->
+			<!--cm.from.bottom [REQUIRED]: distance depuis le bas de la page (en centimetres)-->
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout du code-->
+			<code.type>CODE128</code.type>
+			<page>2</page>
+			<cm.from.left>23.0</cm.from.left>
+			<cm.from.bottom>19.0</cm.from.bottom>
+			<next.resource>Mail</next.resource>
+		</resource>
+		<resource name="PdfProperty" archiving="false" class="globaz.jade.publish.provider.pdfproperty.JadePublishResourceImpl">
+			<next.resource>SWICTH_SORTIE</next.resource>
+			<properties>
+				<!--property: declaration d'une propriete a ajouter dans le fichier-->
+				<!--  name [REQUIRED]: nom de la propriete a ajouter dans le fichier-->
+				<!--  cm.from.left: distance depuis le bord gauche de la page (en centimetres)-->
+				<!--  cm.from.right: distance depuis le bord droit de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.left=0)-->
+				<!--  cm.from.bottom [REQUIRED]: distance depuis le bas de la page (en centimetres)-->
+				<!--  cm.from.top: distance depuis le haut de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.bottom=0)-->
+				<!--  font.name: nom de la police a utiliser, Helvetica par defaut-->
+				<!--  font.size: taille de la police, 6 par defaut-->
+				<!--  font.color: couleur du texte, composants rouge, vert et bleu (0-255), separés par des virgules-->
+
+				<!-- Numero de reference inforon -->
+				<property name="documentTypeNumber">
+					<cm.from.left>0.0</cm.from.left>
+					<cm.from.right>2.0</cm.from.right>
+					<cm.from.bottom>0.5</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>255,255,255</font.color>
+				</property>
+				<!-- Numero Affilie -->
+				<property name="numero.role.non.formatte">
+					<cm.from.left>0.0</cm.from.left>
+					<cm.from.right>5.0</cm.from.right>
+					<cm.from.bottom>0.5</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>255,255,255</font.color>
+				</property>
+				<!-- Annee sur laquelle porte le contenu du document -->
+				<property name="annee">
+					<cm.from.left>0.0</cm.from.left>
+					<cm.from.right>8.0</cm.from.right>
+					<cm.from.bottom>0.5</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>255,255,255</font.color>
+				</property>
+				<property name="pyxis.role.tiers.document">
+					<cm.from.left>6.0</cm.from.left>
+					<cm.from.right>0.0</cm.from.right>
+					<cm.from.bottom>0.5</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>255,255,255</font.color>
+				</property>
+			</properties>
+		</resource>
+		<resource name="ZipDecisions" class="globaz.jade.publish.provider.zip.JadePublishResourceImpl">
+			<next.resource>Mail</next.resource>
+		</resource>
+		<resource name="SWICTH_SORTIE" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>Mail</default.resource>
+			<!--default.resource [REQUIRED]: ressource par defaut-->
+			<!--properties: valeurs de proprietes a tester-->
+			<properties>
+				<!-- property: configuration d une propriete a tester-->
+				<!--  name  : nom de la propriete-->
+				<!--  value : valeur de la propriete-->
+				<property name="ownerId" value="opercot1">
+					<!--resource : nom de la ressource vers laquelle router le document si la propriete est egale a la valeur-->
+					<resource>IMP_MASSE</resource>
+				</property>
+				<property name="ownerId" value="opercot2">
+					<!--resource : nom de la ressource vers laquelle router le document si la propriete est egale a la valeur-->
+					<resource>IMP_MASSE</resource>
+				</property>
+				<property name="ownerId" value="opercot3">
+					<!--resource : nom de la ressource vers laquelle router le document si la propriete est egale a la valeur-->
+					<resource>IMP_MASSE</resource>
+				</property>
+				<property name="rejectDocument" value="true">
+					<resource>Mail</resource>
+				</property>
+				<property name="preventFromPublish" value="true">
+					<resource>Mail</resource>
+				</property>
+				<property name="IsFromAdaptationAnnuelle" value="true">
+					<resource>ZipDecisions</resource>
+				</property>
+			</properties>
+		</resource>
+		<!--###################################-->
+		<!--Traitement du flux pour mise en GED-->
+		<!--###################################-->
+		<resource name="GED_ARCHIVE_SWITCH" archiving="true" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<!--Rootage par défaut-->
+			<default.resource>GED_ARCHIVE_UNITAIRE</default.resource>
+			<properties>
+				<!--Rootage pour utilisateur de masse-->
+				<property name="ownerId" value="opercot1">
+					<resource>GED_ARCHIVE_MASSE</resource>
+				</property>
+				<property name="ownerId" value="co7001">
+					<resource>GED_ARCHIVE_MASSE</resource>
+				</property>
+				<property name="ownerId" value="co7002">
+					<resource>GED_ARCHIVE_MASSE</resource>
+				</property>
+			</properties>
+		</resource>
+		<!--Ressource pour le retouge lorsque nous avons un traitement unitaire-->
+		<resource name="GED_ARCHIVE_UNITAIRE" archiving="true" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<export.xml>true</export.xml>
+			<destination.url>D:\gedArchiveUnitaire</destination.url>
+		</resource>
+		<!--Ressource pour le retouge lorsque nous avons un traitement de masse (identifié par l'utilisation d'un user de masse)-->
+		<resource name="GED_ARCHIVE_MASSE" archiving="true" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<export.xml>true</export.xml>
+			<destination.url>/job/jobadm1/editing/masse</destination.url>
+		</resource>
+
+		<!-- Watermark Non Validée SWITCH -->
+		<resource name="SWITCHWatermarkSwitcher" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>WatermarkDecisionNonValideeSWITCH</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>SwitchProvisoire</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="SwitchProvisoire" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>SWITCH</default.resource>
+			<properties>
+				<property name="isDecisionProvisoire" value="true">
+					<resource>WatermarkProvisoire</resource>
+				</property>
+				<property name="isDecisionProvisoireDe" value="true">
+					<resource>WatermarkProvisoireDe</resource>
+				</property>
+			</properties>
+		</resource>
+		<!-- ajout watermark si decision provisoire
+    redirection ensuite vers le switch mail/ftp
+    -->
+		<resource name="WatermarkProvisoire" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>SWITCH</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_decision_provisoire.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+		<!-- ajout watermark si decision provisoire
+		redirection ensuite vers le switch mail/ftp-->
+		<resource name="WatermarkProvisoireDe" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>SWITCH</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_decision_provisoire_de.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+
+		<resource name="WatermarkDecisionNonValideeSWITCH" class="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl">
+			<next.resource>SWITCH</next.resource>
+			<properties>
+				<add>
+					<text>Décision non validée</text>
+					<cm.from.left>2.5</cm.from.left>
+					<cm.from.right>1.0</cm.from.right>
+					<cm.from.bottom>2.0</cm.from.bottom>
+					<cm.from.top>2.0</cm.from.top>
+					<rotation>55</rotation>
+					<font.name>Helvetica</font.name>
+					<font.size>95</font.size>
+					<font.color>192,192,192</font.color>
+					<layer>back</layer>
+				</add>
+			</properties>
+		</resource>
+
+		<!-- Watermark Non Validée gedSwitch -->
+		<resource name="gedSwitchWatermarkSwitcher" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>gedSwitchWatermarkSwitcher2emeEtape</default.resource>
+			<properties>
+				<property name="IsFromAdaptationAnnuelle" value="true">
+					<resource>FromAdaptationAnnuelleSwitcherArchiving</resource>
+				</property>
+			</properties>
+		</resource>
+
+		<resource name="FromAdaptationAnnuelleSwitcherArchiving"  archiving="true" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>WatermarkDecisionNonValideeGedSwitch</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>gedSwitchProvisoire</resource>
+				</property>
+			</properties>
+		</resource>
+
+		<resource name="gedSwitchWatermarkSwitcher2emeEtape"  class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>WatermarkDecisionNonValideeGedSwitch</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>gedSwitchProvisoire</resource>
+				</property>
+			</properties>
+		</resource>
+
+		<resource name="gedSwitchProvisoire" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>gedSwitch</default.resource>
+			<properties>
+				<property name="isDecisionProvisoire" value="true">
+					<resource>gedWatermarkProvisoire</resource>
+				</property>
+				<property name="isDecisionProvisoireDe" value="true">
+					<resource>gedWatermarkProvisoireDe</resource>
+				</property>
+			</properties>
+		</resource>
+		<!-- ajout watermark si decision provisoire
+    redirection ensuite vers le switch mail/ftp-->
+		<resource name="gedWatermarkProvisoire" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>gedSwitch</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_decision_provisoire.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+		<!-- ajout watermark si decision provisoire
+    redirection ensuite vers le switch mail/ftp-->
+		<resource name="gedWatermarkProvisoireDe" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>gedSwitch</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_decision_provisoire_de.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+
+		<resource name="WatermarkDecisionNonValideeGedSwitch" class="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl">
+			<next.resource>gedSwitch</next.resource>
+			<properties>
+				<add>
+					<text>Décision non validée</text>
+					<cm.from.left>2.5</cm.from.left>
+					<cm.from.right>1.0</cm.from.right>
+					<cm.from.bottom>2.0</cm.from.bottom>
+					<cm.from.top>2.0</cm.from.top>
+					<rotation>55</rotation>
+					<font.name>Helvetica</font.name>
+					<font.size>95</font.size>
+					<font.color>192,192,192</font.color>
+					<layer>back</layer>
+				</add>
+			</properties>
+		</resource>
+
+
+
+		<!--simulation RFM SWITCH -->
+		<resource name="SWITCHWatermarkSimulationSwitcher" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>SWITCH</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>WatermarkSimulationSWITCH</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="WatermarkSimulationSWITCH" class="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout des textes-->
+			<next.resource>SWITCH</next.resource>
+			<!-- images-->
+			<properties>
+				<add>
+					<text>Décision non validée</text>
+					<cm.from.left>2.5</cm.from.left>
+					<cm.from.right>1.0</cm.from.right>
+					<cm.from.bottom>2.0</cm.from.bottom>
+					<cm.from.top>2.0</cm.from.top>
+					<rotation>55</rotation>
+					<font.name>Helvetica</font.name>
+					<font.size>95</font.size>
+					<font.color>192,192,192</font.color>
+					<layer>back</layer>
+				</add>
+			</properties>
+		</resource>
+
+
+		<!--simulation RFM GED_ARCHIVE_SWITCH -->
+		<resource name="GED_ARCHIVE_SWITCHWatermarkSimulationSwitcher" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>GED_ARCHIVE_SWITCH</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>WatermarkSimulationGED_ARCHIVE_SWITCH</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="WatermarkSimulationGED_ARCHIVE_SWITCH" class="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout des textes-->
+			<next.resource>GED_ARCHIVE_SWITCH</next.resource>
+			<!-- images-->
+			<properties>
+				<add>
+					<text>Décision non validée</text>
+					<cm.from.left>2.5</cm.from.left>
+					<cm.from.right>1.0</cm.from.right>
+					<cm.from.bottom>2.0</cm.from.bottom>
+					<cm.from.top>2.0</cm.from.top>
+					<rotation>55</rotation>
+					<font.name>Helvetica</font.name>
+					<font.size>95</font.size>
+					<font.color>192,192,192</font.color>
+					<layer>back</layer>
+				</add>
+			</properties>
+		</resource>
+
+		<!--simulation RFM ecmtcp -->
+		<resource name="ecmtcpWatermarkSimulationSwitcher" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>ecmtcp</default.resource>
+			<properties>
+				<property name="isDecisionValidee" value="true">
+					<resource>WatermarkSimulationEcmtcp</resource>
+				</property>
+			</properties>
+		</resource>
+		<resource name="WatermarkSimulationEcmtcp" class="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout des textes-->
+			<next.resource>ecmtcp</next.resource>
+			<!-- images-->
+			<properties>
+				<add>
+					<text>Décision non validée</text>
+					<cm.from.left>2.5</cm.from.left>
+					<cm.from.right>1.0</cm.from.right>
+					<cm.from.bottom>2.0</cm.from.bottom>
+					<cm.from.top>2.0</cm.from.top>
+					<rotation>55</rotation>
+					<font.name>Helvetica</font.name>
+					<font.size>95</font.size>
+					<font.color>192,192,192</font.color>
+					<layer>back</layer>
+				</add>
+			</properties>
+		</resource>
+	</resources>
+</globaz.jade.publish.provider.JadePublishResourceLocator>

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.service.provider.JadeClientServiceLocator: liste des adaptateurs clients-->
+<globaz.jade.service.provider.JadeClientServiceLocator>
+	<!--adapters: liste des adaptateurs-->
+	<adapters>
+		<!--adapter: declaration d'un adaptateur-->
+		<!--  name [REQUIRED]: nom de l'adaptateur-->
+		<!--  class [REQUIRED]: classe a utiliser pour l'adaptateur (doit implementer JadeTarget) -->
+		<!--		<adapter name="globazSMTP" class="globaz.jade.service.provider.smtp.JadeExportClient">-->
+		<!--			<host>postfix.ju.globaz.ch</host>-->
+		<!--			<port>25</port>-->
+		<!--		</adapter>-->
+		<adapter name="defaultSMTP" class="globaz.jade.service.provider.smtp.JadeExportClient">
+			<!--		 			host [REQUIRED]: nom ou adresse du serveur SMTP-->
+			<!--		 			port: port du serveur SMTP (25 par defaut)-->
+			<host>postfix.ju.globaz.ch</host>
+			<port>25</port>
+		</adapter>
+		<adapter name="JadeJobServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+
+		<adapter name="JadeSchedulerServerFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadePublishServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+
+		<adapter name="JadeVFSFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadeFsFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadePrintServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+		<adapter name="JadeGedFacade" class="globaz.jade.service.provider.JadeServiceProxy">
+			<adapter>ecmtcp</adapter>
+		</adapter>
+		<adapter name="ecmtcp" class="globaz.jade.ged.adapter.ecmtcp.JadeGedAdapter" verbose="true">
+			<!--simulate: mode simulation (aucun appel au serveur GED), par defaut: false-->
+			<!--select.service.jsp: page JSP pour selectionner un service, par defaut: common/ged/selectService.jsp-->
+			<!--import.url [REQUIRED]: URL ou deposer les fichiers pour importation dans le GED-->
+			<!--host [REQUIRED]: nom du systeme hote contenant ECM-->
+			<!--domain [REQUIRED]: nom du domaine reseau-->
+			<!--environment [REQUIRED]: nom de l'environnement ECM-->
+			<!--user: utilisateur pour la connexion DCOM, par defaut: XDOCADM-->
+			<!--password: mot de passe pour la connexion DCOM, par defaut: le mot de passe standard de XDOCADM-->
+			<!--tcp.port: port ou TCP Springboard attend les commandes de la GED sur tous les clients, par defaut: 3005-->
+			<!--import.final: true ou false selon que les documents doivent etre importes comme FINAL ou non-->
+			<!--use.document.date: true ou false selon que la date sur les documents doit etre utilisee ou non-->
+			<simulate>false</simulate>
+			<import.url>D:\ged</import.url>
+			<host></host>
+			<port></port>
+			<domain></domain>
+			<environment></environment>
+			<backup.path></backup.path>
+			<user></user>
+			<password></password>
+			<tcp.port></tcp.port>
+			<import.final>true</import.final>
+			<use.document.date>true</use.document.date>
+			<!--services [REQUIRED]: liste des services GED-->
+			<services>
+				<!--service: declaration d'un service-->
+				<!--  name [REQUIRED]: nom du service-->
+				<!--  text : description du service-->
+				<service name="PRESTATIONS" text="Prestations"/>
+			</services>
+			<folder name="assure">
+				<!--groupdoc.database [REQUIRED]: code base de documents GroupDoc-->
+				<!--level [REQUIRED]: affichage de la liste des dossiers (folders) ou des documents (documents)-->
+				<!--folder.selection.criteria: critere pour la recherche (id, text, description), par defaut: id-->
+				<!--indices [REQUIRED]: liste des champs composant le texte a rechercher-->
+				<groupdoc.database>PRESTATIONS</groupdoc.database>
+				<level>folders</level>
+				<folder.selection.criteria>id</folder.selection.criteria>
+				<indices>
+					<!--index: champ composant le texte a rechercher (declarer les champs dans le bon ordre !!!)-->
+					<index>pyxis.tiers.numero.avs.formatte</index>
+				</indices>
+			</folder>
+			<keyword name="type">
+				<!--groupdoc.database [REQUIRED]: code base de documents GroupDoc-->
+				<!--groupdoc.keyword [REQUIRED]: nom du mot-cle dans GroupDoc-->
+				<!--field: nom du champ correspondant au mot-cle-->
+				<groupdoc.database>PRESTATIONS</groupdoc.database>
+				<groupdoc.keyword>TYPE</groupdoc.keyword>
+				<field>type.demande.rente</field>
+			</keyword>
+			<keyword name="valid">
+				<!--groupdoc.database [REQUIRED]: code base de documents GroupDoc-->
+				<!--groupdoc.keyword [REQUIRED]: nom du mot-cle dans GroupDoc-->
+				<!--field: nom du champ correspondant au mot-cle-->
+				<groupdoc.database>PRESTATIONS</groupdoc.database>
+				<groupdoc.keyword>VALID</groupdoc.keyword>
+				<field>isDecisionValidee</field>
+			</keyword>
+			<documents>
+				<!--document [REQUIRED]: mapping entre le type de document de l'application et le type GroupDoc-->
+				<!--  application [REQUIRED]: type de document de l'application-->
+				<!--  groupdoc [REQUIRED]: type de document GroupDoc-->
+				<!-- Nouveaux documents -->
+				<!-- Attestation fiscale -->
+				<document application="5011PIJ" ged="5011PIJ" department="IJ">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décompte d'IJAI -->
+				<document application="5012PIJ" ged="5012PIJ" department="IJ">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision IJAI -->
+				<document application="5042PIJ" ged="5042PIJ" department="IJ">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision de rentes -->
+				<document application="5100PRE" ged="5100PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+					<keywords>
+						<!--keyword: declaration d'un mot-cle du document-->
+						<!--  name [REQUIRED]: nom du mot-cle-->
+						<keyword name="type"/>
+					</keywords>
+				</document>
+				<!-- Transfert à caisse compétente -->
+				<document application="5101PRE" ged="5101PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Transfert dossier en cours à une autre caisse -->
+				<document application="5102PRE" ged="5102PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Transfert à caisse compétente pour calcul prévisionnel -->
+				<document application="5103PRE" ged="5103PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Demande de compensation -->
+				<document application="5104PRE" ged="5104PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance enfant 18 ans -->
+				<document application="5105PRE" ged="5105PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance enfant 25 ans -->
+				<document application="5106PRE" ged="5106PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance études -->
+				<document application="5107PRE" ged="5107PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance homme vieillesse -->
+				<document application="5108PRE" ged="5108PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance femme vieillesse -->
+				<document application="5109PRE" ged="5109PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance ajournement -->
+				<document application="5110PRE" ged="5110PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Échéance rente de veuf -->
+				<document application="5111PRE" ged="5111PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Attestations fiscales (Batch) -->
+				<document application="5113PRE" ged="5113PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Attestations fiscales  (Lettre au poste de travail) -->
+				<document application="5114PRE" ged="5114PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Attestations fiscales  (Lettre au poste de travail) -->
+				<document application="5114PRE" ged="5114PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Rente de veuve perdure -->
+				<document application="5134PRE" ged="5134PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Lettre pour indication de changement de caisse à la centrale (sort avec 5102) -->
+				<document application="5136PRE" ged="5136PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Attestation de prolongation d'étude -->
+				<document application="5137PRE" ged="5137PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Accusé de réception -->
+				<document application="5147PRE" ged="5147PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision rente vieillesse -->
+				<document application="5151PRE" ged="5151PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision rente survivant -->
+				<document application="5152PRE" ged="5152PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision rente AI -->
+				<document application="5153PRE" ged="5153PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision rente AI -->
+				<document application="5154PRE" ged="5154PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Lettre d'ajournement de rentes -->
+				<document application="5156PRE" ged="5156PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Communication mutation office AI -->
+				<document application="5157PRE" ged="5157PRE" department="Rentes">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Demande - Attestation Billag -->
+				<document application="6505PPC" ged="6505PPC" department="PC">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Decision PC -->
+				<document application="6500PPC" ged="6500PPC" department="PC">
+					<keywords>
+						<!--keyword: declaration d'un mot-cle du document-->
+						<!--  name [REQUIRED]: nom du mot-cle-->
+						<keyword name="valid"/>
+					</keywords>
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Communication d'adaptation -->
+				<document application="6508PPC" ged="6508PPC" department="PC">
+					<folders>
+						<folder name="assure" />
+					</folders>
+				</document>
+				<!-- Décision ponctuelle -->
+				<document application="7000PRF" ged="7000PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision de restitution -->
+				<document application="7002PRF" ged="7002PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision de régime -->
+				<document application="7001PRF" ged="7001PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision de régime avec excedent - refus / CCVD -->
+				<document application="7042PRF" ged="7042PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Décision de régime avec excedent - octroi / CCVD -->
+				<document application="7043PRF" ged="7043PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Bordereau -->
+				<document application="7003PRF" ged="7003PRF" department="RFM">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+				<!-- Lettre d'en-tête-->
+				<!-- Décision IJAI -->
+				<document application="5019PIJ" ged="5019PIJ" department="IJ">
+					<folders>
+						<folder name="assure">
+						</folder>
+					</folders>
+				</document>
+			</documents>
+		</adapter>
+	</adapters>
+</globaz.jade.service.provider.JadeClientServiceLocator>
