@@ -28,6 +28,7 @@ import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
@@ -105,6 +106,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class REExportationCalculAcor {
 
@@ -269,16 +271,12 @@ public class REExportationCalculAcor {
         // Anticipation ou ajournement
 //        StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) &&
         if (demandeRente instanceof REDemandeRenteVieillesse) {
-            FlexibilisationType flexibilisationType = null;
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant())) {
-            flexibilisationType = createFlexibilisationType((REDemandeRenteVieillesse)demandeRente);
+                assureType.setFlexibilisation(createFlexibilisationType((REDemandeRenteVieillesse)demandeRente));
             } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
-                REDemandeRenteVieillesse demandeRenteConjoint = (REDemandeRenteVieillesse) rechercheDemandeVieillesseConjoint(membre);
-                    flexibilisationType = createFlexibilisationType(demandeRenteConjoint);
-            }
-
-            if (Objects.nonNull(flexibilisationType)) {
-                assureType.setFlexibilisation(flexibilisationType);
+                Optional<REDemandeRenteVieillesse> demandeRenteConjoint = rechercheDemandeVieillesseConjoint(membre);
+                demandeRenteConjoint.map(this::createFlexibilisationType)
+                                    .ifPresent(assureType::setFlexibilisation);
             }
         }
 
@@ -1501,7 +1499,7 @@ public class REExportationCalculAcor {
      * @param membre
      * @return
      */
-    public REDemandeRente rechercheDemandeVieillesseConjoint(ISFMembreFamilleRequerant membre) {
+    private Optional<REDemandeRenteVieillesse> rechercheDemandeVieillesseConjoint(ISFMembreFamilleRequerant membre) {
         String idTiersConjoint = membre.getIdTiers();
         REDemandeRenteJointDemandeManager mgr = new REDemandeRenteJointDemandeManager();
         mgr.setSession(getSession());
@@ -1534,15 +1532,14 @@ public class REExportationCalculAcor {
                 REDemandeRenteJointDemande elm = (REDemandeRenteJointDemande) mgr.getFirstEntity();
                 REDemandeRenteVieillesse demConjoint = (REDemandeRenteVieillesse) REDemandeRente.loadDemandeRente(
                         getSession(), null, elm.getIdDemandeRente(), elm.getCsTypeDemande());
-                return demConjoint;
+                return Optional.of(demConjoint);
             }
         } catch (Exception e) {
             LOG.error("Impossible de récupérer la demande du conjoint.", e);
+            throw new CommonTechnicalException("Impossible de récupérer la demande du conjoint avec l'id: idTiersConjoint:"+idTiersConjoint,e);
         }
-        return null;
-
+        return Optional.empty();
     }
-
 
     private ISFPeriode[] addPeriodeForSurvivant(final ISFMembreFamilleRequerant membre, ISFPeriode[] periodes) {
         // si demande survivant
