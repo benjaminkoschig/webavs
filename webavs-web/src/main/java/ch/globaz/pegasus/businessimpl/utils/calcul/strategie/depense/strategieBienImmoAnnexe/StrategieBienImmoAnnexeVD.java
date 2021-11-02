@@ -52,8 +52,10 @@ public class StrategieBienImmoAnnexeVD extends StrategieCalculDepense {
 
             // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
             if (!isImmeubleCommerciale) {
-                montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
-                        .getBienImmoAnnexeMontantValeurLocative()) * tauxFraisEntretien * fraction);
+                float montantValeur = checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurLocative())
+                        + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses())
+                        + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantSousLocation());
+                montantFraisEntretien = arronditValeur(montantValeur * tauxFraisEntretien * fraction);
             }
 
             // ajout des frais d'entretien
