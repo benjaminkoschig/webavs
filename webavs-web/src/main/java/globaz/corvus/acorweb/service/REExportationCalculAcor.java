@@ -272,10 +272,10 @@ public class REExportationCalculAcor {
 //        StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) &&
         if (demandeRente instanceof REDemandeRenteVieillesse) {
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant())) {
-                assureType.setFlexibilisation(createFlexibilisationType((REDemandeRenteVieillesse)demandeRente));
+                createFlexibilisationType((REDemandeRenteVieillesse)demandeRente).ifPresent(assureType::setFlexibilisation);
             } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
                 Optional<REDemandeRenteVieillesse> demandeRenteConjoint = rechercheDemandeVieillesseConjoint(membre);
-                demandeRenteConjoint.map(this::createFlexibilisationType)
+                demandeRenteConjoint.flatMap(this::createFlexibilisationType)
                                     .ifPresent(assureType::setFlexibilisation);
             }
         }
@@ -309,7 +309,7 @@ public class REExportationCalculAcor {
      * @param demandeRente demande de rente
      * @return la flexibilisation s'il y a un ajournement, une anticipation ou une révocation. Null sinon.
      */
-    private FlexibilisationType createFlexibilisationType(REDemandeRenteVieillesse demandeRente) {
+    private Optional<FlexibilisationType> createFlexibilisationType(REDemandeRenteVieillesse demandeRente) {
         FlexibilisationType flexibilisationType = null;
         String anticipation = demandeRente.getCsAnneeAnticipation();
         // Anticipation
@@ -335,7 +335,7 @@ public class REExportationCalculAcor {
                 flexibilisationType.setPartPercue(AJOURNEMENT); // Pour un ajournement demandé
             }
         }
-        return flexibilisationType;
+        return Optional.ofNullable(flexibilisationType);
     }
 
     private void addRentesAssures(AssureType assure, ISFMembreFamilleRequerant membre) {
