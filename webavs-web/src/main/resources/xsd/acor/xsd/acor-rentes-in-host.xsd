@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Mit XMLSpy v2019 sp1 (http://www.altova.com) von ﻿Bundesamt für Informatik und (Bundesamt für Informatik und) bearbeitet -->
-<!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" xmlns:acor-common="http://www.zas.admin.ch/xmlns/acor-common/0" xmlns:ij="http://www.zas.admin.ch/xmlns/in-ij/0" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4" xmlns:trax="http://www.zas.admin.ch/RC" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:annox="http://annox.dev.java.net" targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.4" jaxb:version="2.1" jaxb:extensionBindingPrefixes="annox">
+<xs:schema
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
+		xmlns:acor-common="http://www.zas.admin.ch/xmlns/acor-common/0" xmlns:ij="http://www.zas.admin.ch/xmlns/in-ij/0"
+		xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4"
+		xmlns:trax="http://www.zas.admin.ch/RC"
+		xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		xmlns:annox="http://annox.dev.java.net"
+		targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
+		elementFormDefault="qualified"
+		attributeFormDefault="unqualified"
+		version="5.5"
+		jaxb:version="2.1"
+		jaxb:extensionBindingPrefixes="annox">
 	<xs:import namespace="http://www.zas.admin.ch/xmlns/acor-common/0" schemaLocation="acor-common.xsd"/>
 	<xs:import namespace="http://www.zas.admin.ch/xmlns/in-ij/0" schemaLocation="acor-in-ij.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/4" schemaLocation="eCH-0044-4-0.xsd"/>
@@ -43,7 +55,16 @@
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="caisseAgence" type="trax:IrgendeineZweigstelle_weakType"/>
-					<xs:element name="adresseCaisse" type="acor-common:organisationAdresseType"/>
+					<xs:element name="adresseCaisse" type="acor-common:organisationAdresseType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+								The 'adresseCaisse' is mandatory for european formular (module rente 10th) but it can be deduced by Acor GUI V4 from the 'config.json' file of the GUI.
+							</xs:documentation>
+							<xs:appinfo>
+								<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(description = "The 'adresseCaisse' is mandatory for european formular (module rente 10th) but it can be deduced by Acor GUI V4 from the 'config.json' file of the GUI.", required = false)</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="moisRapport">
 						<xs:annotation>
 							<xs:documentation>
@@ -346,6 +367,9 @@
 			<xs:element name="adresse" type="acor-common:adresseType"/>
 			<xs:element name="banque" type="acor-common:banqueAdresseType" minOccurs="0"/>
 			<xs:element name="mandataire" type="acor-common:organisationAdresseType" minOccurs="0"/>
+			<xs:element name="aDomicile" type="xs:boolean" minOccurs="0">
+				<xs:annotation><xs:documentation>Les paiements se font sans adresse bancaire</xs:documentation></xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="donneesEuroType">
@@ -644,6 +668,12 @@
 					<xs:element name="indemniteForfaitaire" type="xs:boolean"/>
 					<xs:choice>
 						<xs:element name="fraction">
+							<xs:annotation>
+								<xs:documentation>fraction de rente AI</xs:documentation>
+								<xs:appinfo>
+									<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="fraction",description = "fraction de rente (exclusif avec la quotite)",required=false)</annox:annotate>
+								</xs:appinfo>
+							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:float">
 									<xs:enumeration value="0.25"/>
@@ -656,7 +686,10 @@
 						</xs:element>
 						<xs:element name="quotite">
 							<xs:annotation>
-								<xs:documentation>quotité de rente AI</xs:documentation>
+								<xs:documentation>quotite de rente AI</xs:documentation>
+								<xs:appinfo>
+									<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="quotite",description = "quotite de rente (exclusif avec la fraction)",required=false)</annox:annotate>
+								</xs:appinfo>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:double">

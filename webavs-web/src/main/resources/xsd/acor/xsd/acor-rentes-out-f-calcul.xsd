@@ -3109,6 +3109,12 @@
 													</xs:element>
 													<xs:choice>
 													<xs:element name="fraction">
+														<xs:annotation>
+															<xs:documentation>fraction de rente AI</xs:documentation>
+															<xs:appinfo>
+																<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="fraction",description = "fraction de rente (exclusif avec la quotite)",required=false)</annox:annotate>
+															</xs:appinfo>
+														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:float">
 																<xs:pattern value="[0-1]+\.[0257][05]?"/>
@@ -3118,6 +3124,9 @@
 													<xs:element name="quotite">
 														<xs:annotation>
 															<xs:documentation>quotité de rente AI</xs:documentation>
+															<xs:appinfo>
+																<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="quotite",description = "quotite de rente (exclusif avec la fraction)",required=false)</annox:annotate>
+															</xs:appinfo>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:double">

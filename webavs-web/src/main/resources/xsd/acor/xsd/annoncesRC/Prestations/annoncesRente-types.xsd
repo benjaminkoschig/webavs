@@ -536,7 +536,7 @@
 						<xs:element name="Leistungsart" type="OrdentlicheRente9_strongType"/>
 						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
 						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
-						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
 						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
 						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
 							<xs:complexType>
@@ -771,7 +771,7 @@
 						<xs:element name="Leistungsart" type="Hilflosenentschaedigungen9_strongType"/>
 						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
 						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
-						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
 						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
 						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
 							<xs:complexType>
@@ -863,7 +863,7 @@
 						<xs:element name="Leistungsart" type="OrdentlicheRente10_strongType"/>
 						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
 						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
-						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
 						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
 						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
 							<xs:complexType>
@@ -942,7 +942,7 @@
 						<xs:element name="Leistungsart" type="AusserordentlicheRente10_strongType"/>
 						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
 						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
-						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
 						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
 						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
 							<xs:complexType>
@@ -1011,7 +1011,7 @@
 						<xs:element name="Leistungsart" type="Hilflosenentschaedigung10_strongType"/>
 						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
 						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
-						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
 						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
 						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
 							<xs:complexType>

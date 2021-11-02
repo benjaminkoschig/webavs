@@ -49,6 +49,7 @@
 			<xs:element name="Hoechstgrenze" type="BetragFRRP7_Type" minOccurs="0"/>
 			<xs:element name="StatusVerfuegung" type="Short3stellig_Type" minOccurs="0"/>
 			<xs:element name="Wiedereingliederung" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Revisionsart" type="Short3stellig_Type" minOccurs="0"/>
 			<xs:element name="Revisionscode" type="Short3stellig_Type" minOccurs="0"/>
 			<xs:element name="Auflagezeitpunkt" type="Short3stellig_Type" minOccurs="0"/>
 			<xs:element name="VerfahrenAbklaerungmassnahmen" type="Short3stellig_Type" minOccurs="0"/>
@@ -286,7 +287,7 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 			</xs:documentation>
 		</xs:annotation>
 		<xs:choice>
-			<xs:element name="Frueerfassung" type="Frueerfassung_Type"/>
+			<xs:element name="Frueherfassung" type="Frueherfassung_Type"/>
 			<xs:element name="Anmeldung" type="Anmeldung_Type"/>
 		</xs:choice>
 	</xs:complexType>
@@ -361,10 +362,31 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 				Branchen/Tätigkeiten. Code Anwendungsgebiet 76
 			</xs:documentation>
 		</xs:annotation>
-		<xs:choice>
-			<xs:element name="Regelfall" type="Regelfall_Type"/>
-			<xs:element name="Wiedereingliederung" type="Wiedereingliederung_Type"/>
-		</xs:choice>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="IVStelle_strongType"/>
+			<xs:element name="Versichertennummer" type="Versichertennummer13Stellen_Type"/>
+			<xs:element name="DatumAnmeldung" type="AHVDatumJMT_Type"/>
+			<xs:element name="WohnortVersichertePerson">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ArbeitsplatzBeiAnmeldung">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Branchencode" type="String2stellig_Type"/>
+			<xs:element name="CodeHoechsteAusbildung" type="String2stellig_Type"/>
+			<xs:element name="Funktionscode" type="String2stellig_Type"/>
+			<xs:element name="CodeAusgeuebterBeruf" type="String2stellig_Type"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="IVIntegrationsmassnahmenMeldung_Type">
 		<xs:annotation>
@@ -1031,7 +1053,7 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 			<xs:element name="Anmeldungsformular" type="UnsignedByte1stellig_Type"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="Frueerfassung_Type">
+	<xs:complexType name="Frueherfassung_Type">
 		<xs:complexContent>
 			<xs:extension base="IVAnmeldungMeldung_Subtype">
 				<xs:sequence>
@@ -1131,51 +1153,11 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="IVBranchenTaetigkeitenMeldung_Subtype">
-		<xs:sequence>
-			<xs:element name="CodeZustaendigeIVStelle" type="IVStelle_strongType"/>
-			<xs:element name="Versichertennummer" type="Versichertennummer13Stellen_Type"/>
-			<xs:element name="DatumAnmeldung" type="AHVDatumJMT_Type"/>
-			<xs:element name="WohnortVersichertePerson">
-				<xs:complexType>
-					<xs:choice>
-						<xs:element name="SchluesselzahlStaat" type="LandNrBSV_weakType"/>
-						<xs:element name="InlandPLZ" type="PLZ_Type"/>
-					</xs:choice>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="ArbeitsplatzBeiAnmeldung">
-				<xs:simpleType>
-					<xs:restriction base="xs:unsignedByte">
-						<xs:minInclusive value="0"/>
-						<xs:maxInclusive value="1"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="Branchencode" type="String2stellig_Type"/>
-			<xs:element name="CodeHoechsteAusbildung" type="String2stellig_Type"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="Regelfall_Type">
-		<xs:complexContent>
-			<xs:extension base="IVBranchenTaetigkeitenMeldung_Subtype">
-				<xs:sequence>
-					<xs:element name="Funktionscode" type="String2stellig_Type"/>
-					<xs:element name="CodeAusgeuebterBeruf" type="String2stellig_Type"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="Wiedereingliederung_Type">
-		<xs:complexContent>
-			<xs:extension base="IVBranchenTaetigkeitenMeldung_Subtype"/>
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:complexType name="IVAbbruchAbschluss_Subtype">
 		<xs:sequence>
 			<xs:element name="CodeZustaendigeIVStelle" type="IVStelle_strongType"/>
 			<xs:element name="Versichertennummer" type="Versichertennummer13Stellen_Type"/>
-			<xs:element name="DatumAbbruchBI" type="AHVDatumJMT_Type"/>
+			<xs:element name="Datum" type="AHVDatumJMT_Type"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="AbbruchBI_Type">

@@ -84,24 +84,21 @@
 3 = Warten vor Arbeitsantritt (Art. 19 IVV)
 4 = Taggeld während Massnahme nach Art. 14a, 15, 17, 18a IVG
 5 = ebA nach BBG mit Lehrvertrag
-6 = ebA nach BBG ohne Lehrvertrag
+6 = ebA mit Lehrvertrag
 7 = Tertiäre Ausbildung
-8 = Tertiäre Ausbildung mit Praktikumsvertrag
-9 = PRA INSOS oder gezielte vorbereitende Massnahmen auf ebA
-10 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 12 IVG
-11 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 14a IVG</xs:documentation>
+8 = Vorbereitung auf eine Hilfstätigkeit nach Art. 16 Abs. 3 IVG oder gezielte Vorbereitung nach Art. 5 Abs. 2 IVV
+9 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 12 IVG
+10 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 14a IVG</xs:documentation>
 					<xs:documentation xml:lang="fr">1 = Examen ou instruction
 2 = Délai d’attente avant les mesures (art. 18 RAI)
 3 = Délai d’attente avant le début du travail (art. 19 RAI)
 4 = Indemnité journalière pendant les mesures prévues aux art. 14a, 15, 17, 18a LAI
 5 = FPI selon LFPr avec contrat d’apprentissage
-6 = FPI selon LFPr sans contrat d’apprentissage
+6 = FPI avec contrat d’apprentissage
 7 = Formation tertiaire
-8 = Formation tertiaire avec contrat de stage
-9 = Formation pratique INSOS ou mesures préparatoires ciblées pour les FPI
-10 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 12 LAI
-11 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 14 LAI
-					</xs:documentation>
+8 = Préparation à un travail auxiliaire selon art. 16 al. 3 LAI ou mesures préparatoires ciblées selon art. 5 al. 2 RAI
+9 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 12 LAI
+10 = Indemnité journalière selon l'art. 22 al. 2 let. b et selon l'art. 14a LAI</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
@@ -115,7 +112,6 @@
 						<xs:enumeration value="8"/>
 						<xs:enumeration value="9"/>
 						<xs:enumeration value="10"/>
-						<xs:enumeration value="11"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -181,7 +177,7 @@
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:short">
-									<xs:minInclusive value="01"/>
+									<xs:minInclusive value="1"/>
 									<xs:maxInclusive value="5"/>
 								</xs:restriction>
 							</xs:simpleType>

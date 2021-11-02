@@ -2,10 +2,14 @@
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		   xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0"
+		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		   xmlns:annox="http://annox.dev.java.net"
 		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-im/0"
 		   elementFormDefault="qualified"
 		   attributeFormDefault="unqualified"
-		   version="2.1">
+		   version="2.1"
+		   jaxb:version="2.1"
+		   jaxb:extensionBindingPrefixes="annox">
 	<xs:simpleType name="ref_idType">
 		<xs:annotation>
 			<xs:documentation>fait référence à l'id de l'élément "assure"</xs:documentation>
@@ -142,8 +146,21 @@
 			<xs:element name="debut_droit" type="xs:date"/>
 			<xs:element name="fin_droit" type="xs:date" minOccurs="0"/>
 			<xs:choice>
-			<xs:element name="fraction" type="xs:double"/>
+			<xs:element name="fraction" type="xs:double">
+				<xs:annotation>
+					<xs:documentation>fraction de rente AI</xs:documentation>
+					<xs:appinfo>
+						<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="fraction",description = "fraction de rente (exclusif avec la quotite)",required=false)</annox:annotate>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="quotite">
+				<xs:annotation>
+					<xs:documentation>fraction de rente AI</xs:documentation>
+					<xs:appinfo>
+						<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(name="quotite",description = "quotite de rente (exclusif avec la fraction)",required=false)</annox:annotate>
+					</xs:appinfo>
+				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:double">
 						<xs:minInclusive value="0.0"/>

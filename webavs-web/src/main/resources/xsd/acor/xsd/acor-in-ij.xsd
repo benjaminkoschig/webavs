@@ -9,7 +9,7 @@
            targetNamespace="http://www.zas.admin.ch/xmlns/in-ij/0"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified"
-           version="1.0"
+           version="1.2"
            jaxb:version="2.1"
            jaxb:extensionBindingPrefixes="annox">
     <xs:import namespace="http://www.zas.admin.ch/xmlns/acor-common/0" schemaLocation="./acor-common.xsd"/>
@@ -117,15 +117,19 @@
                     <xs:element name="genreIndemnite">
                         <xs:annotation>
                             <xs:documentation>
-                                Genre de l'indemnité : 1 (grande), 2 (petite), 3 (FPI)
+                                Genre de l'indemnité : 1 = grande (avant devai), 2=petite (avant devai), 3= Einarbeitungszuschuss (5.IV-Revision)
+                                4 = Taggeld mit massgebendem Tageseinkommen (après devai), 5=Taggeld ohne massgebendes Einkommen (après devai), 6 = Betreuungskostenzulage (après devai)
+                                Note : 4,5,6 deviennent 1,2,3 dans le format d'annonce officiel 8G
                             </xs:documentation>
                         </xs:annotation>
                         <xs:simpleType>
                             <xs:restriction base="xs:int">
                                 <xs:enumeration value="1"/>
                                 <xs:enumeration value="2"/>
-                                <xs:enumeration value="2"/>
                                 <xs:enumeration value="3"/>
+                                <xs:enumeration value="4"/>
+                                <xs:enumeration value="5"/>
+                                <xs:enumeration value="6"/>
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:element>
@@ -163,15 +167,67 @@
                     </xs:element>
                     <xs:element name="genreReadaptation">
                         <xs:annotation>
-                            <xs:documentation>1 = observation/instruction, 2 = attente de readaptation, 3 = readaptation
-                                medicale, 4= placement à l’essai, 5 = formation profess. initiale, 6 = reclassement, 7 =
-                                attente d'emploi, 8 = mise au courant, 9=mesures de réinsertion
+                            <xs:documentation>
+                                "1": "Observation/Instruction",
+                                "2": "Attente de réadaptation",
+                                "3": "Réadaptation médicale",
+                                "4": "Placement à l'essai",
+                                "5": "Formation prof. initiale",
+                                "6": "Reclassement",
+                                "7": "Attente d'emploi",
+                                "8": "Mise au courant",
+                                "9": "Mesures de réinsertion",
+                                "296": "296 Berufliche und medizinische Abklärungen zur Eingliederungsfähigkeit",
+                                "584": "584 Arbeit zur Zeitüberbrückung",
+                                "590": "590 Integrationsmassnahmen für Jugendliche",
+                                "591": "591 Aufbautraining",
+                                "592": "592 Arbeitstraining",
+                                "532": "532 Massnahmen zur Vorbereitung auf eine Ausbildung",
+                                "533": "533 Vertiefte Klärung möglicher Berufsrichtungen",
+                                "401": "401 Ausbildungen auf Tertiärstufe",
+                                "1401": "401 Ausbildungen auf Tertiärstufe (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2401": "401 Ausbildungen auf Tertiärstufe (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "410": "410 Berufliche Grundbildung EFZ",
+                                "1410": "410 Berufliche Grundbildung EFZ (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2410": "410 Berufliche Grundbildung EFZ (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "420": "420 Berufliche Grundbildung EBA",
+                                "1420": "420 Berufliche Grundbildung EBA (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2420": "420 Berufliche Grundbildung EBA  (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "425": "425 Vorbereitung auf Hilfstätigkeit oder Tätigkeit in geschützter Werkstätte (z.B. PRA INSOS, IV-Anlehre)",
+                                "1425": "425 Vorbereitung auf Hilfstätigkeit oder Tätigkeit in geschützter Werkstätte (z.B. PRA INSOS, IV-Anlehre) (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2425": "425 Vorbereitung auf Hilfstätigkeit oder Tätigkeit in geschützter Werkstätte (z.B. PRA INSOS, IV-Anlehre) (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "426": "426 Andere Ausbildungen zur beruflichen Eingliederung (non formale Ausbildungen) ",
+                                "1426": "426 Andere Ausbildungen zur beruflichen Eingliederung (non formale Ausbildungen) (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2426": "426 Andere Ausbildungen zur beruflichen Eingliederung (non formale Ausbildungen)   (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "427": "427 Gezielte Vorbereitung",
+                                "1427": "427 Gezielte Vorbereitung (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 12))",
+                                "2427": "427 Gezielte Vorbereitung  (Spezialfall: Taggeld gemäss Art. 22 Abs. 2 Bst. b IVG (i.V.m. Art. 14a))",
+                                "451": "451 Ausbildungen auf Tertiärstufe",
+                                "1451": "451 Ausbildungen auf Tertiärstufe (Attente)",
+                                "452": "452 Allgemeinbildende Schulen",
+                                "1452": "452 Allgemeinbildende Schulen (Attente)",
+                                "460": "460 Berufliche Grundbildung EFZ",
+                                "1460": "460 Berufliche Grundbildung EFZ (Attente)",
+                                "470": "470 Berufliche Grundbildung EBA",
+                                "1470": "470 Berufliche Grundbildung EBA (Attente)",
+                                "475": "475 Vorbereitung auf Hilfstätigkeit oder Tätigkeit in geschützter Werkstätte (z.B. PRA INSOS, IV-Anlehre)",
+                                "1475": "475 Vorbereitung auf Hilfstätigkeit oder Tätigkeit in geschützter Werkstätte (z.B. PRA INSOS, IV-Anlehre) (Attente)",
+                                "476": "476 Andere Ausbildungen zur beruflichen Eingliederung",
+                                "1476": "476 Andere Ausbildungen zur beruflichen Eingliederung (Attente)",
+                                "477": "477 Gezielte Vorbereitung",
+                                "1477": "477 Gezielte Vorbereitung (Attente)",
+                                "500": "500 Wiedereinschulung in den bisherigen Beruf",
+                                "1500": "500 Wiedereinschulung in den bisherigen Beruf (Attente)",
+                                "538": "538 Stellensuche",
+                                "540": "540 Arbeitsversuch",
+                                "302": "302 Medizinische Massnahmen zur Eingliederung",
+                                "301": "301 Medizinische Massnahmen zur Behandlung von Geburtsgebrechen"
                             </xs:documentation>
                         </xs:annotation>
                         <xs:simpleType>
                             <xs:restriction base="xs:int">
                                 <xs:minInclusive value="1"/>
-                                <xs:maxInclusive value="9"/>
+                                <xs:maxInclusive value="2427"/>
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:element>
@@ -218,6 +274,7 @@
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:element>
+                    <xs:element name="debutFormation" type="xs:date" minOccurs="0"/>
                     <xs:element name="statut">
                         <xs:annotation>
                             <xs:documentation>
@@ -628,7 +685,10 @@
                     <xs:element name="denomination" type="xs:string"/>
                     <xs:element name="designationSupplementaire" type="xs:string"/>
                     <xs:element name="adresseBeneficiaire" type="acor-common:adresseType"/>
-                    <xs:element name="adressePaiement" type="acor-common:banqueAdresseType"/>
+                    <xs:element name="adressePaiement" type="acor-common:banqueAdresseType" minOccurs="0"/>
+                    <xs:element name="aDomicile" type="xs:boolean" minOccurs="0">
+                        <xs:annotation><xs:documentation>Les paiements se font sans adresse bancaire</xs:documentation></xs:annotation>
+                    </xs:element>
                     <xs:element name="genre">
                         <xs:annotation><xs:documentation>0=assure, 1=employeur 2=tiers</xs:documentation></xs:annotation>
                         <xs:simpleType>
@@ -642,6 +702,15 @@
                     <xs:element name="modifie" type="xs:boolean"/>
                     <xs:element name="actif" type="xs:boolean"/>
                     <xs:element name="nouveau" type="xs:boolean"/>
+                    <xs:element name="dateSaisie" type="xs:date" minOccurs="0"/>
+                    <xs:element name="noRef" minOccurs="0">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:maxLength value="30"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
