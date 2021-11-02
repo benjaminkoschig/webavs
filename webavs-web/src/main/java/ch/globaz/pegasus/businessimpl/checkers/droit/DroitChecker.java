@@ -5,6 +5,9 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
@@ -33,7 +36,7 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
         }
 
         // La demande du droit ne doit pas avoir de date de fin
-        if (isDemandeGetDatedeFin(droit)) {
+        if (isDemandeGetDatedeFin(droit) && !isDateValable(droit.getDemande().getSimpleDemande().getDateFin())) {
             JadeThread.logError(DroitChecker.class.getName(),"pegasus.droit.corriger.demandeNonReouverte.integrity");
         }
 
@@ -48,6 +51,20 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             JadeThread.logError(droit.getClass().getName(), "pegasus.droit.corriger.droitNonValideExistant.integrity");
         }
 
+    }
+
+    /**
+     * Méthode qui permet de savoir si la date est valable, ultérieur à la date du jour
+     *
+     * @param dateFin
+     * @return
+     */
+    private static boolean isDateValable(String dateFin) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateFinDroit = LocalDate.parse("01."+dateFin, formatter);
+        dateFinDroit = dateFinDroit.withDayOfMonth(dateFinDroit.lengthOfMonth());
+        LocalDate today = LocalDate.now();
+        return dateFinDroit.isAfter(today);
     }
 
     private static boolean isDemandeGetDatedeFin(Droit droit) {
