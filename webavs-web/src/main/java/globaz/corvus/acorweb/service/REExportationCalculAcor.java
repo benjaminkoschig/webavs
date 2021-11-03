@@ -96,17 +96,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class REExportationCalculAcor {
 
@@ -272,11 +262,11 @@ public class REExportationCalculAcor {
 //        StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) &&
         if (demandeRente instanceof REDemandeRenteVieillesse) {
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant())) {
-                createFlexibilisationType((REDemandeRenteVieillesse)demandeRente).ifPresent(assureType::setFlexibilisation);
+                createFlexibilisationType((REDemandeRenteVieillesse) demandeRente).ifPresent(assureType::setFlexibilisation);
             } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
                 Optional<REDemandeRenteVieillesse> demandeRenteConjoint = rechercheDemandeVieillesseConjoint(membre);
                 demandeRenteConjoint.flatMap(this::createFlexibilisationType)
-                                    .ifPresent(assureType::setFlexibilisation);
+                        .ifPresent(assureType::setFlexibilisation);
             }
         }
 
@@ -318,7 +308,7 @@ public class REExportationCalculAcor {
             flexibilisationType.setDebut(Dates.toXMLGregorianCalendar(demandeRente.getDateDebut()));
             flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour une anticipation
         }
-        boolean ajournement =  demandeRente.getIsAjournementRequerant();
+        boolean ajournement = demandeRente.getIsAjournementRequerant();
         String dateRevocation = demandeRente.getDateRevocationRequerant();
         if (ajournement) {
             flexibilisationType = new FlexibilisationType();
@@ -436,7 +426,12 @@ public class REExportationCalculAcor {
         // 4. date début du droit
         commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit
-        commonRente.setFinDroit(Dates.toXMLGregorianCalendar(rente.getDateFinDroit(), "MM.yyyy"));
+        XMLGregorianCalendar dateFinDroit = Dates.toXMLGregorianCalendar(rente.getDateFinDroit(), "MM.yyyy");
+        if (Objects.nonNull(dateFinDroit)) {
+            int lastDayOfMonth = dateFinDroit.toGregorianCalendar().getActualMaximum(Calendar.DAY_OF_MONTH);
+            dateFinDroit.setDay(lastDayOfMonth);
+            commonRente.setFinDroit(dateFinDroit);
+        }
 
         if (commonRente.getFinDroit() != null && StringUtils.isNotEmpty(rente.getCodeMutation())) {
             commonRente.setCodeMutation(PRConverterUtils.formatRequiredInteger(rente.getCodeMutation()));
@@ -1536,7 +1531,7 @@ public class REExportationCalculAcor {
             }
         } catch (Exception e) {
             LOG.error("Impossible de récupérer la demande du conjoint.", e);
-            throw new CommonTechnicalException("Impossible de récupérer la demande du conjoint avec l'id: idTiersConjoint:"+idTiersConjoint,e);
+            throw new CommonTechnicalException("Impossible de récupérer la demande du conjoint avec l'id: idTiersConjoint:" + idTiersConjoint, e);
         }
         return Optional.empty();
     }
