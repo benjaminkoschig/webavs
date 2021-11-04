@@ -43,6 +43,8 @@ public class StrategieBienImmoNonHabitable extends StrategieCalculFortune implem
                 } else {
                     this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED,
                             checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantValeurVenale()) * fraction);
+                    // Si le montant est plafonné, on ajoute un élément de légende
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NON_HABITABLE_PLAFONNEE, "1");
                 }
             }
         }

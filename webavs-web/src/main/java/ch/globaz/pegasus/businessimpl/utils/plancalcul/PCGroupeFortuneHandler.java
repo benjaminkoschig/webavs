@@ -212,7 +212,7 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
         if (valeurPlanDetteHypo != null) {
             ligneForBienImmo = createLignePlanCalcul(csValeurImmo, getLegende(csValeurImmo), valeurForBienImmoMobil,
                     VALEUR_VIDE, VALEUR_VIDE);
-            ligneForBienImmoHypo = createLignePlanCalcul(csValeurHypoForLegende, getLegende(csValeurHypoForLegende), valeurPlanDetteHypo,
+            ligneForBienImmoHypo = createLignePlanCalcul(csValeurHypoForLegende, getLegende(csValeurHypo), valeurPlanDetteHypo,
                     valeurPlanTotal, VALEUR_VIDE);
         } else {
             ligneForBienImmo = createLignePlanCalcul(csValeurImmo, getLegende(csValeurImmo), valeurForBienImmoMobil,

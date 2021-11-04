@@ -319,6 +319,15 @@ public class PCPlanCalculHandler {
                         lib[0] = lib[0].replace("{Montant}", new FWCurrency(ligne.getLegende()).toStringFormat());
                     }
 
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL)) {
+                        if (!ligne.getLegende().isEmpty()) {
+                            lib[0] = lib[0].replace("{libelle}", ligne.getLegende());
+                        } else {
+                            lib[0] = lib[0].replace("{libelle}", "");
+
+                        }
+                    }
+
                     // si une ligne libelle, pas description
                     if (lib.length == 1) {
                         libelle = lib[0];

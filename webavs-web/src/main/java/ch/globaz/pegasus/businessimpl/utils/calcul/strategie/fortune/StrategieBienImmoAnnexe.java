@@ -45,6 +45,8 @@ public class StrategieBienImmoAnnexe extends StrategieCalculFortune implements I
                 } else {
                     this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED,
                             checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurVenale()) * fraction);
+                    // Si le montant est plafonné, on ajoute un élément de légende
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_ANNEXE_PLAFONNEE, "1");
                 }
             }
         }

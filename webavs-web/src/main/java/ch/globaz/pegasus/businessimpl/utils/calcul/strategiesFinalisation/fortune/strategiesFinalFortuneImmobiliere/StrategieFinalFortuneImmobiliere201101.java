@@ -84,6 +84,25 @@ public class StrategieFinalFortuneImmobiliere201101 implements StrategieCalculFi
                     IPCValeursPlanCalcul.CLE_INTER_FORTUNE_IMMOBILIER_TOTAL_NON_HABITABLE, fortune_bien_immo_non_habitable_deduit_hypo);
             turpleSommeTotalParTypeBien.setLegende(label);
             donnee.addEnfantTuple(turpleSommeTotalParTypeBien);
+
+
+            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_PRINCIPAL_PLAFONNEE)) {
+                float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY);
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY, montant, "Plafonnée"));
+            }
+
+            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_ANNEXE_PLAFONNEE)) {
+                float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED);
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, montant, "Plafonnée"));
+            }
+
+            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NON_HABITABLE_PLAFONNEE)) {
+                float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED);
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED, montant, "Plafonnée"));
+            }
         }else{
             somme = UtilStrategieFinalFortuneImmobiliere.plafonneValeurBiensImmoDeduit(somme);
             somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE);

@@ -49,6 +49,8 @@ public class StrategieBienImmoPrincipal extends StrategieCalculFortune implement
                 } else {
                     this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY,
                             checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantValeurFiscale()) * fraction);
+                    // Si le montant est plafonné, on ajoute un élément de légende
+                    this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_PRINCIPAL_PLAFONNEE, "1");
                 }
             }
 
