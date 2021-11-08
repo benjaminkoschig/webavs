@@ -32,7 +32,7 @@ public class IJDecompteMapper {
             prestation.setIdBaseIndemnisation(idBaseIndemnisation);
             prestation.setNombreJoursExt(Strings.toStringOrNull(decompte.getNjoursExt()));
             prestation.setNombreJoursInt(Strings.toStringOrNull(decompte.getNjoursInt()));
-            prestation.setMontantBrut(Strings.toStringOrNull(decompte.getMontantGlobal()));
+            prestation.setMontantBrut(Strings.toStringOrNullCurrencyFormat(decompte.getMontantGlobal()));
             setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_EXTERNE);
             setPrestationDataFromDecompteCategorie(prestation, decompte, PRACORConst.CA_TYPE_MESURE_INTERNE);
 
@@ -48,11 +48,11 @@ public class IJDecompteMapper {
                         typeMesure.equals(String.valueOf(decompCat.getCategorie()))).findFirst();
         if(decompteCategorie.isPresent()) {
             if(PRACORConst.CA_TYPE_MESURE_EXTERNE.equals(typeMesure)) {
-                prestation.setMontantBrutExterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieTotal()));
-                prestation.setMontantJournalierExterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieJ()));
+                prestation.setMontantBrutExterne(Strings.toStringOrNullCurrencyFormat(decompteCategorie.get().getMontantCategorieTotal()));
+                prestation.setMontantJournalierExterne(Strings.toStringOrNullCurrencyFormat(decompteCategorie.get().getMontantCategorieJ()));
             }else if(PRACORConst.CA_TYPE_MESURE_INTERNE.equals(typeMesure)){
-                prestation.setMontantBrutInterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieTotal()));
-                prestation.setMontantJournalierInterne(Strings.toStringOrNull(decompteCategorie.get().getMontantCategorieJ()));
+                prestation.setMontantBrutInterne(Strings.toStringOrNullCurrencyFormat(decompteCategorie.get().getMontantCategorieTotal()));
+                prestation.setMontantJournalierInterne(Strings.toStringOrNullCurrencyFormat(decompteCategorie.get().getMontantCategorieJ()));
             }
         }
     }
