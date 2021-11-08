@@ -110,7 +110,7 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
         PeriodeEtrangereType periode = new PeriodeEtrangereType();
         periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
         periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
-        periode.setEtat(PRConverterUtils.formatRequiredInteger(isfPeriode.getPays()));
+        periode.setEtat(getCodePays(this.getSession().getCode(isfPeriode.getPays())));
         return periode;
     }
 
