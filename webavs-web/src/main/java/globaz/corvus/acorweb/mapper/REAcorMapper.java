@@ -47,17 +47,16 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class REAcorMapper {
 
 
@@ -187,132 +186,351 @@ public class REAcorMapper {
             boolean isDemandeCloneCreated = false;
 
             for (FCalcul.Evenement eachEvenement : fCalcul.getEvenement()) {
-                FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation = null;
+
                 for (FCalcul.Evenement.BasesCalcul eachBaseCalcul : eachEvenement.getBasesCalcul()) {
 
-                    // TODO : dans le cadre d'une rente survivant, de nouvelles règles d'implémentation pour la création des bases de calcul doivent s'appliquer
+                    // On contrôle si on est sur une base de calcul de survivant.
+                    if (StringUtils.equals("s", eachBaseCalcul.getTypeBase())) {
 
+                        Map<String, REBasesCalcul> bcByIdTiers = new HashMap<>();
+                        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestationsGroupe1et3 = eachBaseCalcul.getDecision().stream()
+                                .filter(decision -> !Objects.equals(2, decision.getGroupe()))
+                                .flatMap(decision -> decision.getPrestation().stream())
+                                .filter(prestation -> Objects.nonNull(prestation.getRente()))
+                                .collect(Collectors.toList());
 
-                    // On récupère la première prestation "valide" de la base de calcul pour récupérer le type du droit et le bénéficiaire.
-                    for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
-                        for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
-                            if (Objects.nonNull(eachPrestation.getRente())) {
-                                premierePrestation = eachPrestation;
-                                break;
+                        prestationsGroupe1et3.sort(comparerRentes());
+
+                        for (FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation : prestationsGroupe1et3) {
+                            String idTiersBC;
+                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), "3")) {
+                                idTiersBC = chaquePrestation.getBeneficiaire();
+                                bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
+                                bcByIdTiers.put(idTiersBC, bc);
+                            } else {
+
+                                idTiersBC = getIdTiersBC(session, chaquePrestation);
+
+                                if (!bcByIdTiers.containsKey(idTiersBC)) {
+                                    bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
+                                    bcByIdTiers.put(idTiersBC, bc);
+                                } else {
+                                    bc = bcByIdTiers.get(idTiersBC);
+                                }
+                            }
+
+                            // Si la demande à déjà été clonée et que l'on passe une
+                            // 2ème fois dans le traitement de la BC,
+                            // on la traite comme s'il s'agissait d'un cas de
+                            // nouveau calcul pour éviter de créer un 2ème clone de
+                            // la demande.
+                            /**
+                             * ACK, nous avons besoin de connaître l'id de la copie de la demande qui est fait dans la
+                             * méthode doTraiterBaseCalcul(..)
+                             * Et oui doTraiterBaseCalcul(..) fait également plein de chose comme son nom ne l'indique
+                             * pas....
+                             */
+                            IdDemandeRente idCopieDemande = new IdDemandeRente();
+                            if ((noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) && isDemandeCloneCreated) {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, REImportationCalculAcor.CAS_NOUVEAU_CALCUL, idCopieDemande);
+                            } else {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, noCasATraiter, idCopieDemande);
+                            }
+                            returnedValue.setIdCopieDemande(idCopieDemande.getId());
+                            if (noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) {
+                                isDemandeCloneCreated = true;
+                            }
+
+                            // importer les rentes accordées
+                            ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, chaquePrestation, eachBaseCalcul, fCalcul);
+                            // si il y a une relation au requerant => la rente
+                            // accordee est pour un des membres de la famille
+                            isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
+
+                            ra.setIdBaseCalcul(bc.getIdBasesCalcul());
+
+                            // BZ 4427
+                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
+                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
+                            ids.add(idRA);
+
+                            // Traitement des prestations dues...
+                            Rente rente = chaquePrestation.getRente();
+                            if (Objects.nonNull(rente)) {
+                                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+                                returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
+                                Rente.Versement versement = rente.getVersement();
+                                // Si versement est non null, on est sur un $t (total)
+                                if (Objects.nonNull(versement)) {
+                                    REPrestationDue pd = new REPrestationDue();
+                                    pd.setSession(session);
+                                    // si versement non null, on est sur $t
+                                    pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
+                                    String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
+
+                                    String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+                                    JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
+                                    JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
+
+                                    JACalendar cal = new JACalendarGregorian();
+                                    if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
+
+                                        throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
+                                    }
+                                    pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
+                                    pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+                                    if (nonAjournement) {
+                                        pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                                    }
+                                    pd.setCsTypePaiement(null);
+                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                    pd.add(transaction);
+                                }
+
+                                for (Rente.Etat eachEtat : rente.getEtat()) {
+                                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+
+                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                    pd.add(transaction);
+                                }
                             }
                         }
-                    }
-                    if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul);
 
 
-                        // Si la demande à déjà été clonée et que l'on passe une
-                        // 2ème fois dans le traitement de la BC,
-                        // on la traite comme s'il s'agissait d'un cas de
-                        // nouveau calcul pour éviter de créer un 2ème clone de
-                        // la demande.
-                        /**
-                         * ACK, nous avons besoin de connaître l'id de la copie de la demande qui est fait dans la
-                         * méthode doTraiterBaseCalcul(..)
-                         * Et oui doTraiterBaseCalcul(..) fait également plein de chose comme son nom ne l'indique
-                         * pas....
-                         */
-                        IdDemandeRente idCopieDemande = new IdDemandeRente();
-                        if ((noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) && isDemandeCloneCreated) {
-                            bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
-                                    bc, REImportationCalculAcor.CAS_NOUVEAU_CALCUL, idCopieDemande);
-                        } else {
-                            bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
-                                    bc, noCasATraiter, idCopieDemande);
+                        Map<KeyIdTiersAndYear, REBasesCalcul> bcByIdTiersAndYear = new HashMap<>();
+                        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestationsGroupe2 = eachBaseCalcul.getDecision().stream()
+                                .filter(decision -> Objects.equals(2, decision.getGroupe()))
+                                .flatMap(decision -> decision.getPrestation().stream())
+                                .filter(prestation -> Objects.nonNull(prestation.getRente()))
+                                .collect(Collectors.toList());
+
+                        prestationsGroupe2.sort(comparerRentes());
+
+                        for (FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation : prestationsGroupe2) {
+                            String idTiersBC;
+                            Integer anneeTraitement = chaquePrestation.getRente().getFinDroit();
+                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), "3")) {
+                                idTiersBC = chaquePrestation.getBeneficiaire();
+                                KeyIdTiersAndYear key = new KeyIdTiersAndYear(idTiersBC, anneeTraitement);
+                                bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
+                                bcByIdTiersAndYear.put(key, bc);
+                            } else {
+                                idTiersBC = getIdTiersBC(session, chaquePrestation);
+                                KeyIdTiersAndYear key = new KeyIdTiersAndYear(idTiersBC, anneeTraitement);
+                                if (!bcByIdTiersAndYear.containsKey(key)) {
+                                    bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
+                                    bcByIdTiersAndYear.put(key, bc);
+                                } else {
+                                    bc = bcByIdTiersAndYear.get(key);
+                                }
+
+                            }
+
+                            // Si la demande à déjà été clonée et que l'on passe une
+                            // 2ème fois dans le traitement de la BC,
+                            // on la traite comme s'il s'agissait d'un cas de
+                            // nouveau calcul pour éviter de créer un 2ème clone de
+                            // la demande.
+                            /**
+                             * ACK, nous avons besoin de connaître l'id de la copie de la demande qui est fait dans la
+                             * méthode doTraiterBaseCalcul(..)
+                             * Et oui doTraiterBaseCalcul(..) fait également plein de chose comme son nom ne l'indique
+                             * pas....
+                             */
+                            IdDemandeRente idCopieDemande = new IdDemandeRente();
+                            if ((noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) && isDemandeCloneCreated) {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, REImportationCalculAcor.CAS_NOUVEAU_CALCUL, idCopieDemande);
+                            } else {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, noCasATraiter, idCopieDemande);
+                            }
+                            returnedValue.setIdCopieDemande(idCopieDemande.getId());
+                            if (noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) {
+                                isDemandeCloneCreated = true;
+                            }
+
+                            // importer les rentes accordées
+                            ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, chaquePrestation, eachBaseCalcul, fCalcul);
+                            // si il y a une relation au requerant => la rente
+                            // accordee est pour un des membres de la famille
+                            isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
+
+                            ra.setIdBaseCalcul(bc.getIdBasesCalcul());
+
+                            // BZ 4427
+                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
+                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
+                            ids.add(idRA);
+
+                            // Traitement des prestations dues...
+                            Rente rente = chaquePrestation.getRente();
+                            if (Objects.nonNull(rente)) {
+                                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+                                returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
+                                Rente.Versement versement = rente.getVersement();
+                                // Si versement est non null, on est sur un $t (total)
+                                if (Objects.nonNull(versement)) {
+                                    REPrestationDue pd = new REPrestationDue();
+                                    pd.setSession(session);
+                                    // si versement non null, on est sur $t
+                                    pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
+                                    String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
+
+                                    String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+                                    JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
+                                    JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
+
+                                    JACalendar cal = new JACalendarGregorian();
+                                    if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
+
+                                        throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
+                                    }
+                                    pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
+                                    pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+                                    if (nonAjournement) {
+                                        pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                                    }
+                                    pd.setCsTypePaiement(null);
+                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                    pd.add(transaction);
+                                }
+
+                                for (Rente.Etat eachEtat : rente.getEtat()) {
+                                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+
+                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                    pd.add(transaction);
+                                }
+                            }
                         }
-                        returnedValue.setIdCopieDemande(idCopieDemande.getId());
-                        if (noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) {
-                            isDemandeCloneCreated = true;
-                        }
 
-                        // TODO : le booléen isAjournement est true lorsque la ligne commence par $a sur ancien ACOR ...
-//                        boolean isAjournement = Objects.nonNull(eachBaseCalcul.getAjournement());
-                        boolean isAjournement = false;
+                    } else {
+
+                        FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation = null;
+                        // On récupère la première prestation "valide" de la base de calcul pour récupérer le type du droit et le bénéficiaire.
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                                 if (Objects.nonNull(eachPrestation.getRente())) {
-                                    // importer les rentes accordées
-                                    ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
-                                    // si il y a une relation au requerant => la rente
-                                    // accordee est pour un des membres de la famille
-                                    isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
+                                    premierePrestation = eachPrestation;
+                                    break;
+                                }
+                            }
+                        }
+                        if (Objects.nonNull(premierePrestation)) {
+                            bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul, premierePrestation.getBeneficiaire());
 
-                                    ra.setIdBaseCalcul(bc.getIdBasesCalcul());
 
-                                    // BZ 4427
-                                    boolean isCreerRA = true;
-                                    if (isAjournement) {
-                                        ra.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
+                            // Si la demande à déjà été clonée et que l'on passe une
+                            // 2ème fois dans le traitement de la BC,
+                            // on la traite comme s'il s'agissait d'un cas de
+                            // nouveau calcul pour éviter de créer un 2ème clone de
+                            // la demande.
+                            /**
+                             * ACK, nous avons besoin de connaître l'id de la copie de la demande qui est fait dans la
+                             * méthode doTraiterBaseCalcul(..)
+                             * Et oui doTraiterBaseCalcul(..) fait également plein de chose comme son nom ne l'indique
+                             * pas....
+                             */
+                            IdDemandeRente idCopieDemande = new IdDemandeRente();
+                            if ((noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) && isDemandeCloneCreated) {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, REImportationCalculAcor.CAS_NOUVEAU_CALCUL, idCopieDemande);
+                            } else {
+                                bc = doTraiterBaseCalcul(session, (BTransaction) transaction, demandeSource,
+                                        bc, noCasATraiter, idCopieDemande);
+                            }
+                            returnedValue.setIdCopieDemande(idCopieDemande.getId());
+                            if (noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) {
+                                isDemandeCloneCreated = true;
+                            }
 
-                                        // si les 3 champs sont vide, on remonte
-                                        if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
-                                                && JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
-                                                && JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
+                            // TODO : le booléen isAjournement est true lorsque la ligne commence par $a sur ancien ACOR ...
+//                        boolean isAjournement = Objects.nonNull(eachBaseCalcul.getAjournement());
+                            boolean isAjournement = false;
+                            for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
+                                for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
+                                    if (Objects.nonNull(eachPrestation.getRente())) {
+                                        // importer les rentes accordées
+                                        ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
+                                        // si il y a une relation au requerant => la rente
+                                        // accordee est pour un des membres de la famille
+                                        isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
 
-                                            isCreerRA = true;
+                                        ra.setIdBaseCalcul(bc.getIdBasesCalcul());
 
-                                        } else // si un des 3 champs vide, on créé pas la RA
+                                        // BZ 4427
+                                        boolean isCreerRA = true;
+                                        if (isAjournement) {
+                                            ra.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
+
+                                            // si les 3 champs sont vide, on remonte
                                             if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
-                                                    || JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
-                                                    || JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
-                                                isCreerRA = false;
+                                                    && JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
+                                                    && JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
 
-                                                REBasesCalcul bcToDel = new REBasesCalcul();
-                                                bcToDel.setSession(session);
-                                                bcToDel.setIdBasesCalcul(ra.getIdBaseCalcul());
-                                                bcToDel.retrieve();
-                                                bcToDel.delete();
-                                            }
-                                    }
-                                    if (isCreerRA) {
-                                        Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
-                                                transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
-                                        ids.add(idRA);
-                                    }
+                                                isCreerRA = true;
 
-                                    // Traitement des prestations dues...
-                                    Rente rente = eachPrestation.getRente();
-                                    if (Objects.nonNull(rente)) {
-                                        boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
-                                        returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
-                                        Rente.Versement versement = rente.getVersement();
-                                        // Si versement est non null, on est sur un $t (total)
-                                        if (Objects.nonNull(versement)) {
-                                            REPrestationDue pd = new REPrestationDue();
-                                            pd.setSession(session);
-                                            // si versement non null, on est sur $t
-                                            pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
-                                            String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
+                                            } else // si un des 3 champs vide, on créé pas la RA
+                                                if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
+                                                        || JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
+                                                        || JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
+                                                    isCreerRA = false;
 
-                                            String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
-                                            JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
-                                            JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
-
-                                            JACalendar cal = new JACalendarGregorian();
-                                            if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
-
-                                                throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
-                                            }
-                                            pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
-                                            pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                            if (nonAjournement) {
-                                                pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
-                                            }
-                                            pd.setCsTypePaiement(null);
-                                            pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                            pd.add(transaction);
+                                                    REBasesCalcul bcToDel = new REBasesCalcul();
+                                                    bcToDel.setSession(session);
+                                                    bcToDel.setIdBasesCalcul(ra.getIdBaseCalcul());
+                                                    bcToDel.retrieve();
+                                                    bcToDel.delete();
+                                                }
+                                        }
+                                        if (isCreerRA) {
+                                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
+                                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
+                                            ids.add(idRA);
                                         }
 
-                                        for (Rente.Etat eachEtat : rente.getEtat()) {
-                                            REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+                                        // Traitement des prestations dues...
+                                        Rente rente = eachPrestation.getRente();
+                                        if (Objects.nonNull(rente)) {
+                                            boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+                                            returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
+                                            Rente.Versement versement = rente.getVersement();
+                                            // Si versement est non null, on est sur un $t (total)
+                                            if (Objects.nonNull(versement)) {
+                                                REPrestationDue pd = new REPrestationDue();
+                                                pd.setSession(session);
+                                                // si versement non null, on est sur $t
+                                                pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
+                                                String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
 
-                                            pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                            pd.add(transaction);
+                                                String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+                                                JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
+                                                JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
+
+                                                JACalendar cal = new JACalendarGregorian();
+                                                if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
+
+                                                    throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
+                                                }
+                                                pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
+                                                pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+                                                if (nonAjournement) {
+                                                    pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                                                }
+                                                pd.setCsTypePaiement(null);
+                                                pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                                pd.add(transaction);
+                                            }
+
+                                            for (Rente.Etat eachEtat : rente.getEtat()) {
+                                                REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+
+                                                pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                                                pd.add(transaction);
+                                            }
                                         }
                                     }
                                 }
@@ -323,7 +541,7 @@ public class REAcorMapper {
             }
 
             if (!isAnnoncePayForDemandeRente) {
-                throw new PRACORException("Le fichier annonce.pay ne correspond pas à la demande de rente.");
+                throw new PRACORException("Le json fcalcul ne correspond pas à la demande de rente.");
             }
 
             // Settage de tous les idRA
@@ -502,12 +720,45 @@ public class REAcorMapper {
             // Dernière étape : MAJ des adresse de pmt des rentes accordées
             // créées
             REBeneficiairePrincipal.doMajAdressePmtDesRentesAccordees(session, transaction, ids);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             throw new PRACORException("impossible de parser : " + e.getMessage(), e);
         }
 
         return returnedValue;
-//        return;
+    }
+
+    private static String getIdTiersBC(BSession session, FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation) {
+        String idTiersBC;
+        if (Objects.nonNull(chaquePrestation.getRente().getNcpl2())) {
+            try {
+                PRTiersWrapper tiersBaseCalcul = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(chaquePrestation.getRente().getNcpl2()));
+                if (Objects.nonNull(tiersBaseCalcul) && StringUtils.isEmpty(tiersBaseCalcul.getDateDeces())) {
+                    idTiersBC = chaquePrestation.getRente().getNcpl2();
+                } else {
+                    idTiersBC = chaquePrestation.getBeneficiaire();
+                }
+            } catch (Exception e) {
+                LOG.error("Une erreur s'est produite lors de la récupération du tiers : {} ", chaquePrestation.getRente().getNcpl2(), e);
+                idTiersBC = chaquePrestation.getBeneficiaire();
+            }
+
+        } else {
+            idTiersBC = chaquePrestation.getBeneficiaire();
+        }
+        return idTiersBC;
+    }
+
+    private static Comparator<FCalcul.Evenement.BasesCalcul.Decision.Prestation> comparerRentes() {
+        return (prest1, prest2) -> {
+            if (StringUtils.endsWith(prest1.getRente().getGenre().toString(), "3")) {
+                return -1;
+            } else if (StringUtils.endsWith(prest2.getRente().getGenre().toString(), "3")) {
+                return 1;
+            } else {
+                return 0;
+            }
+        };
     }
 
     /**
@@ -516,15 +767,18 @@ public class REAcorMapper {
      * @param session
      * @param baseCalcul
      * @param premierePrestation
+     * @param evenement
+     * @param fCalcul
+     * @param beneficiaire
      * @return
      */
-    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul.Evenement evenement, FCalcul fCalcul) {
+    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul.Evenement evenement, FCalcul fCalcul, String beneficiaire) {
 
         REBasesCalcul bc = new REBasesCalculDixiemeRevision();
         bc.setSession(session);
 
 //        String nssTiersBaseCalcul = REACORAbstractFlatFileParser.getField(line, fields, "NSS");
-        String nssTiersBaseCalcul = premierePrestation.getBeneficiaire();
+        String nssTiersBaseCalcul = beneficiaire;
 
         try {
             PRTiersWrapper tiersBaseCalcul = PRTiersHelper.getTiers(session,
@@ -574,8 +828,6 @@ public class REAcorMapper {
         }
         //        bc.setAnneeDeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU")); $b10
         bc.setAnneeDeNiveau(PRConverterUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY)));
-        //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
-        bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
         bc.setCodeOfficeAi("000");
 
         boolean genreAI = false;
@@ -600,7 +852,17 @@ public class REAcorMapper {
         //        bc.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE")); $b11
         bc.setEchelleRente(Objects.toString(baseCalcul.getEchelle(), StringUtils.EMPTY));
         //        bc.setRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "RAM")); $b5
+
+        // Donnée RAM
+        //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
+        bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
         bc.setRevenuAnnuelMoyen(Objects.toString(baseCalcul.getRam(), StringUtils.EMPTY));
+        if (Objects.nonNull(premierePrestation.getRente()) && !premierePrestation.getRente().getEtat().isEmpty()) {
+            Rente.Etat dernierEtat = premierePrestation.getRente().getEtat().get(premierePrestation.getRente().getEtat().size() - 1);
+            bc.setAnneeTraitement(Objects.toString(dernierEtat.getAn(), StringUtils.EMPTY));
+            bc.setRevenuAnnuelMoyen(Objects.toString(dernierEtat.getRam(), StringUtils.EMPTY));
+        }
+
         //        bc.setSupplementCarriere(REACORAbstractFlatFileParser.getField(line, fields, "POURCENT_SUPP_CARRIERE")); $b43
         bc.setSupplementCarriere(Objects.toString(baseCalcul.getSupCar(), StringUtils.EMPTY));
         // Récupération des durées de cotisation
@@ -628,11 +890,11 @@ public class REAcorMapper {
                         bc.setPeriodeJeunesse(periodeJeunesse.toString());
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
                         if (!StringUtils.equals("0000", periodeJeunesse.toString())) {
-                        fCalcul.getAnalysePeriodes().stream().filter(analysePeriodes -> nssTiersBaseCalcul.equals(analysePeriodes.getBeneficiaire()))
-                                .findFirst()
-                                .ifPresent(analysePeriodes -> {
-                                    bc.setRevenuJeunesse(Objects.toString(analysePeriodes.getRevJTot(), StringUtils.EMPTY));
-                                });
+                            fCalcul.getAnalysePeriodes().stream().filter(analysePeriodes -> nssTiersBaseCalcul.equals(analysePeriodes.getBeneficiaire()))
+                                    .findFirst()
+                                    .ifPresent(analysePeriodes -> {
+                                        bc.setRevenuJeunesse(Objects.toString(analysePeriodes.getRevJTot(), StringUtils.EMPTY));
+                                    });
                         }
                         break;
                     case 6:
@@ -1088,6 +1350,13 @@ public class REAcorMapper {
     }
 
 
+    @Data
+    @AllArgsConstructor
+    private static final class KeyIdTiersAndYear {
+        String idTiers;
+        Integer year;
+    }
+
     /******************************************* Partie MAJ FCalcul historique **************************************************/
 
     /**
@@ -1299,7 +1568,7 @@ public class REAcorMapper {
                         }
                     }
                     if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul);
+                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, eachEvenement, fCalcul, premierePrestation.getBeneficiaire());
 
                         if (fcParBaseCalculVO != null) {
                             retValue.add(fcParBaseCalculVO);
@@ -1332,5 +1601,7 @@ public class REAcorMapper {
 
         return retValue;
     }
+
+
 }
 
