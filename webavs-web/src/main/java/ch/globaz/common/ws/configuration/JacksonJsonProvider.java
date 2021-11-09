@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class JacksonJsonProvider {
 
@@ -24,6 +25,7 @@ public class JacksonJsonProvider {
         MAPPER.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        MAPPER.setTimeZone(TimeZone.getDefault());
         MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
