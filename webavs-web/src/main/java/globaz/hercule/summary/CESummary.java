@@ -80,8 +80,12 @@ public class CESummary implements ITISummarizable {
                             attributionPtsViewBean.setSession(userSession);
                             attributionPtsViewBean.setNumAffilie(ce.getNumAffilie());
                             attributionPtsViewBean.setIdAffilie(ce.getAffiliationId());
-                            attributionPtsViewBean.setId(idAttributionPtsActif);
+                            attributionPtsViewBean.setIdControle(ce.getIdControleEmployeur());
+                            attributionPtsViewBean.setIdAttributionPts(idAttributionPtsActif);
                             attributionPtsViewBean.retrieve();
+
+                            // corrige la perte de l'idControle sur le retrieve car l'idControle est utilisé par le _getAffilieForAttribution()
+                            attributionPtsViewBean.setIdControle(ce.getIdControleEmployeur());
 
                             // initialisation additionel avant récupération des masses
                             attributionPtsViewBean._getAffilieForAttribution();
