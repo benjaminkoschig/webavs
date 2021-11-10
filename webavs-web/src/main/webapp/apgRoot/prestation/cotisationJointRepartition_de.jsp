@@ -85,7 +85,7 @@ bButtonUpdate= bButtonDelete;
 			  var taux = parseFloat(deformatNumber(document.getElementById('taux').value));
 			  var montantOld = parseFloat(deformatNumber(document.getElementById('montant').value));
 			  var montantBrut = parseFloat(deformatNumber(document.getElementById('montantBrut').value));
-			  var montantNew = Math.round(((taux / 100) * montantBrut)*100)/100;
+			  var montantNew = Math.round(((taux / 100) * montantBrut)*20)/20;
 			  var isNegativ = parseFloat(montantOld) < 0;
 			  document.getElementById('montant').value = (isNegativ ? -montantNew : montantNew).toFixed(2);
 		  <% } %>
