@@ -36,7 +36,7 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
         }
 
         // La demande du droit ne doit pas avoir de date de fin
-        if (isDemandeGetDatedeFin(droit) && !isDateValable(droit.getDemande().getSimpleDemande().getDateFin())) {
+        if (isDemandeGetDatedeFin(droit) && isDateValable(droit.getDemande().getSimpleDemande().getDateFin())) {
             JadeThread.logError(DroitChecker.class.getName(),"pegasus.droit.corriger.demandeNonReouverte.integrity");
         }
 
