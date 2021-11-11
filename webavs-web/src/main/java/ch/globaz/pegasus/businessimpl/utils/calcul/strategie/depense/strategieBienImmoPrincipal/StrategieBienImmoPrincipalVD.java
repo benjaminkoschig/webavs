@@ -90,14 +90,25 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
                 // taux frais entretien en fonction de l'age du batiment
                 float tauxFraisEntretien = getTauxFraisEntretienPrincipale(false, isConstructionPlus20Ans, context);
                 float montantFraisEntretien = 0f;
+                float plafondLoyerEncaisse = 0f;
+                boolean plafondFound = true;
+                float montantValeur = checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantValeurLocative())
+                        + checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantLoyersEncaisses())
+                        + checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantSousLocation());
 
-                // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
-                if (!isImmeubleCommerciale) {
-                    float montantValeur = checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurLocative())
-                            + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses())
-                            + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantSousLocation());
-                    montantFraisEntretien = arronditValeur(montantValeur * tauxFraisEntretien * fraction);
+                try {
+                    plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
+                } catch (CalculBusinessException e) {
+                    // la variable n'existe pas pour la période, on ne traite donc pas les plafonds des loyers encaissés
+                    plafondFound = false;
                 }
+                // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
+                // Ou Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
+                    if (!isImmeubleCommerciale && (!plafondFound || (montantValeur <= plafondLoyerEncaisse ))) {
+                        montantFraisEntretien = arronditValeur(montantValeur * tauxFraisEntretien * fraction);
+                    }
+
 
                 // ajout des frais d'entretien
                 this.getOrCreateChild(resultatExistant,

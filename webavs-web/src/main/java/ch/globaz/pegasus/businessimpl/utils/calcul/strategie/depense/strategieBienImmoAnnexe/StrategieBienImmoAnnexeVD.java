@@ -4,6 +4,7 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoAnnexe;
 
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
@@ -49,12 +50,22 @@ public class StrategieBienImmoAnnexeVD extends StrategieCalculDepense {
             // taux frais entretien en fonction de l'age du batiment
             float tauxFraisEntretien = getTauxFraisEntretienAnnexe(false, isConstructionPlus20Ans, context);
             float montantFraisEntretien = 0f;
+            float plafondLoyerEncaisse = 0f;
+            boolean plafondFound = true;
+            float montantValeur = checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurLocative())
+                    + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses())
+                    + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantSousLocation());
 
+            try {
+                plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(CalculContext.Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
+            } catch (CalculBusinessException e) {
+                // la variable n'existe pas pour la période, on ne traite donc pas les plafonds des loyers encaissés
+                plafondFound = false;
+            }
             // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
-            if (!isImmeubleCommerciale) {
-                float montantValeur = checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurLocative())
-                        + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses())
-                        + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantSousLocation());
+            // Ou Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
+            if (!isImmeubleCommerciale && (!plafondFound || (montantValeur <= plafondLoyerEncaisse ))) {
                 montantFraisEntretien = arronditValeur(montantValeur * tauxFraisEntretien * fraction);
             }
 
