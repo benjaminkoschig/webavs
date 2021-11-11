@@ -50,11 +50,19 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
            if(periode.getRequerant() != null && periode.getRequerant().hasDom2R()){
                mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_REQUERANT,periode.getRequerant().getIdCompteAnnexe());
                PRTiersWrapper tiersW = null;
+               OrdreVersement ordreVersementTemp = null;
+               String idTiersConjoint = null;
                try {
-                   if(!JadeStringUtil.isBlankOrZero(periode.getRequerant().getBeneficiaire().getIdTiersConjoint()) && !mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)){
-                       tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),periode.getRequerant().getBeneficiaire().getIdTiersConjoint());
+                   if(periode.getRequerant().getBeneficiaire() != null){
+                       idTiersConjoint = periode.getRequerant().getBeneficiaire().getIdTiersConjoint();
+                   }else{
+                       idTiersConjoint = periode.getRequerant().getRestitution().getIdTiersConjoint();
+                   }
+                   if(!JadeStringUtil.isBlankOrZero(idTiersConjoint)
+                           && !mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)){
+                       tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),idTiersConjoint);
                        String idCompteAnnexeConjoint = CABusinessServiceLocator.getCompteAnnexeService()
-                               .getCompteAnnexe(null, periode.getRequerant().getBeneficiaire().getIdTiersConjoint(), IntRole.ROLE_RENTIER, tiersW.getNSS(), false).getIdCompteAnnexe();
+                               .getCompteAnnexe(null, idTiersConjoint, IntRole.ROLE_RENTIER, tiersW.getNSS(), false).getIdCompteAnnexe();
                        mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
                    }
                } catch (Exception e) {
