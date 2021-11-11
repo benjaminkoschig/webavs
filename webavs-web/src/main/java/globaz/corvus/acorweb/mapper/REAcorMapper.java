@@ -62,6 +62,7 @@ public class REAcorMapper {
 
     public static final int MONTHS_IN_YEAR = 12;
     private static final int CODE_SPECIAL_AJOURNEMENT = 8;
+    public static final String RENTE_SURVIVANT_PARENT = "3";
 
     public static ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
         ReturnedValue returnedValue = new ReturnedValue();
@@ -203,12 +204,11 @@ public class REAcorMapper {
 
                         for (FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation : prestationsGroupe1et3) {
                             String idTiersBC;
-                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), "3")) {
+                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), RENTE_SURVIVANT_PARENT)) {
                                 idTiersBC = chaquePrestation.getBeneficiaire();
                                 bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
                                 bcByIdTiers.put(idTiersBC, bc);
                             } else {
-
                                 idTiersBC = getIdTiersBC(session, chaquePrestation);
 
                                 if (!bcByIdTiers.containsKey(idTiersBC)) {
@@ -244,62 +244,11 @@ public class REAcorMapper {
                             }
 
                             // importer les rentes accordées
-                            ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, chaquePrestation, eachBaseCalcul, fCalcul);
-                            // si il y a une relation au requerant => la rente
-                            // accordee est pour un des membres de la famille
-                            isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
-
-                            ra.setIdBaseCalcul(bc.getIdBasesCalcul());
-
-                            // BZ 4427
-                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
-                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
-                            ids.add(idRA);
-
-                            // Traitement des prestations dues...
-                            Rente rente = chaquePrestation.getRente();
-                            if (Objects.nonNull(rente)) {
-                                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
-                                returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
-                                Rente.Versement versement = rente.getVersement();
-                                // Si versement est non null, on est sur un $t (total)
-                                if (Objects.nonNull(versement)) {
-                                    REPrestationDue pd = new REPrestationDue();
-                                    pd.setSession(session);
-                                    // si versement non null, on est sur $t
-                                    pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
-                                    String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
-
-                                    String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
-                                    JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
-                                    JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
-
-                                    JACalendar cal = new JACalendarGregorian();
-                                    if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
-
-                                        throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
-                                    }
-                                    pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
-                                    pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                    if (nonAjournement) {
-                                        pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
-                                    }
-                                    pd.setCsTypePaiement(null);
-                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                    pd.add(transaction);
-                                }
-
-                                for (Rente.Etat eachEtat : rente.getEtat()) {
-                                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
-
-                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                    pd.add(transaction);
-                                }
-                            }
+                            isAnnoncePayForDemandeRente = importationRentesAccordeesEtPrestationsSurvivants(session, transaction, demandeSource, fCalcul, returnedValue, bc, ids, isAnnoncePayForDemandeRente, eachBaseCalcul, chaquePrestation, idTiersBC);
                         }
 
 
-                        Map<KeyIdTiersAndYear, REBasesCalcul> bcByIdTiersAndYear = new HashMap<>();
+                        Map<KeyIdTiersAndFinDroit, REBasesCalcul> bcByIdTiersAndYear = new HashMap<>();
                         List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestationsGroupe2 = eachBaseCalcul.getDecision().stream()
                                 .filter(decision -> Objects.equals(2, decision.getGroupe()))
                                 .flatMap(decision -> decision.getPrestation().stream())
@@ -310,15 +259,15 @@ public class REAcorMapper {
 
                         for (FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation : prestationsGroupe2) {
                             String idTiersBC;
-                            Integer anneeTraitement = chaquePrestation.getRente().getFinDroit();
-                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), "3")) {
+                            Integer finDroitRente = chaquePrestation.getRente().getFinDroit();
+                            if (StringUtils.endsWith(chaquePrestation.getRente().getGenre().toString(), RENTE_SURVIVANT_PARENT)) {
                                 idTiersBC = chaquePrestation.getBeneficiaire();
-                                KeyIdTiersAndYear key = new KeyIdTiersAndYear(idTiersBC, anneeTraitement);
+                                KeyIdTiersAndFinDroit key = new KeyIdTiersAndFinDroit(idTiersBC, finDroitRente);
                                 bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
                                 bcByIdTiersAndYear.put(key, bc);
                             } else {
                                 idTiersBC = getIdTiersBC(session, chaquePrestation);
-                                KeyIdTiersAndYear key = new KeyIdTiersAndYear(idTiersBC, anneeTraitement);
+                                KeyIdTiersAndFinDroit key = new KeyIdTiersAndFinDroit(idTiersBC, finDroitRente);
                                 if (!bcByIdTiersAndYear.containsKey(key)) {
                                     bc = importBaseCalcul(session, eachBaseCalcul, chaquePrestation, eachEvenement, fCalcul, idTiersBC);
                                     bcByIdTiersAndYear.put(key, bc);
@@ -351,60 +300,8 @@ public class REAcorMapper {
                             if (noCasATraiter == REImportationCalculAcor.CAS_RECALCUL_DEMANDE_VALIDEE) {
                                 isDemandeCloneCreated = true;
                             }
+                            isAnnoncePayForDemandeRente = importationRentesAccordeesEtPrestationsSurvivants(session, transaction, demandeSource, fCalcul, returnedValue, bc, ids, isAnnoncePayForDemandeRente, eachBaseCalcul, chaquePrestation, idTiersBC);
 
-                            // importer les rentes accordées
-                            ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, chaquePrestation, eachBaseCalcul, fCalcul);
-                            // si il y a une relation au requerant => la rente
-                            // accordee est pour un des membres de la famille
-                            isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
-
-                            ra.setIdBaseCalcul(bc.getIdBasesCalcul());
-
-                            // BZ 4427
-                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
-                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
-                            ids.add(idRA);
-
-                            // Traitement des prestations dues...
-                            Rente rente = chaquePrestation.getRente();
-                            if (Objects.nonNull(rente)) {
-                                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
-                                returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
-                                Rente.Versement versement = rente.getVersement();
-                                // Si versement est non null, on est sur un $t (total)
-                                if (Objects.nonNull(versement)) {
-                                    REPrestationDue pd = new REPrestationDue();
-                                    pd.setSession(session);
-                                    // si versement non null, on est sur $t
-                                    pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
-                                    String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
-
-                                    String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
-                                    JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
-                                    JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
-
-                                    JACalendar cal = new JACalendarGregorian();
-                                    if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
-
-                                        throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
-                                    }
-                                    pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
-                                    pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                    if (nonAjournement) {
-                                        pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
-                                    }
-                                    pd.setCsTypePaiement(null);
-                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                    pd.add(transaction);
-                                }
-
-                                for (Rente.Etat eachEtat : rente.getEtat()) {
-                                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
-
-                                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                    pd.add(transaction);
-                                }
-                            }
                         }
 
                     } else {
@@ -452,87 +349,7 @@ public class REAcorMapper {
                             boolean isAjournement = false;
                             for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                                 for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
-                                    if (Objects.nonNull(eachPrestation.getRente())) {
-                                        // importer les rentes accordées
-                                        ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
-                                        // si il y a une relation au requerant => la rente
-                                        // accordee est pour un des membres de la famille
-                                        isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
-
-                                        ra.setIdBaseCalcul(bc.getIdBasesCalcul());
-
-                                        // BZ 4427
-                                        boolean isCreerRA = true;
-                                        if (isAjournement) {
-                                            ra.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
-
-                                            // si les 3 champs sont vide, on remonte
-                                            if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
-                                                    && JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
-                                                    && JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
-
-                                                isCreerRA = true;
-
-                                            } else // si un des 3 champs vide, on créé pas la RA
-                                                if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
-                                                        || JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
-                                                        || JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
-                                                    isCreerRA = false;
-
-                                                    REBasesCalcul bcToDel = new REBasesCalcul();
-                                                    bcToDel.setSession(session);
-                                                    bcToDel.setIdBasesCalcul(ra.getIdBaseCalcul());
-                                                    bcToDel.retrieve();
-                                                    bcToDel.delete();
-                                                }
-                                        }
-                                        if (isCreerRA) {
-                                            Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
-                                                    transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
-                                            ids.add(idRA);
-                                        }
-
-                                        // Traitement des prestations dues...
-                                        Rente rente = eachPrestation.getRente();
-                                        if (Objects.nonNull(rente)) {
-                                            boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
-                                            returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
-                                            Rente.Versement versement = rente.getVersement();
-                                            // Si versement est non null, on est sur un $t (total)
-                                            if (Objects.nonNull(versement)) {
-                                                REPrestationDue pd = new REPrestationDue();
-                                                pd.setSession(session);
-                                                // si versement non null, on est sur $t
-                                                pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
-                                                String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
-
-                                                String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
-                                                JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
-                                                JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
-
-                                                JACalendar cal = new JACalendarGregorian();
-                                                if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
-
-                                                    throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
-                                                }
-                                                pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
-                                                pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                                                if (nonAjournement) {
-                                                    pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
-                                                }
-                                                pd.setCsTypePaiement(null);
-                                                pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                                pd.add(transaction);
-                                            }
-
-                                            for (Rente.Etat eachEtat : rente.getEtat()) {
-                                                REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
-
-                                                pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                                                pd.add(transaction);
-                                            }
-                                        }
-                                    }
+                                    isAnnoncePayForDemandeRente = importationRentesAccordeesEtPrestations(session, transaction, demandeSource, fCalcul, returnedValue, bc, ids, isAnnoncePayForDemandeRente, eachBaseCalcul, isAjournement, eachPrestation);
                                 }
                             }
                         }
@@ -728,6 +545,147 @@ public class REAcorMapper {
         return returnedValue;
     }
 
+    private static boolean importationRentesAccordeesEtPrestationsSurvivants(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, ReturnedValue returnedValue, REBasesCalcul bc, List<Long> ids, boolean isAnnoncePayForDemandeRente, FCalcul.Evenement.BasesCalcul eachBaseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation, String idTiersBC) throws Exception {
+        RERenteAccordee ra;// importer les rentes accordées
+        ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, chaquePrestation, eachBaseCalcul, fCalcul, idTiersBC);
+        // si il y a une relation au requerant => la rente
+        // accordee est pour un des membres de la famille
+        isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
+
+        ra.setIdBaseCalcul(bc.getIdBasesCalcul());
+
+        // BZ 4427
+        Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
+                transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
+        ids.add(idRA);
+
+        // Traitement des prestations dues...
+        Rente rente = chaquePrestation.getRente();
+        boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+        returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
+        Rente.Versement versement = rente.getVersement();
+        // Si versement est non null, on est sur un $t (total)
+        if (Objects.nonNull(versement)) {
+            REPrestationDue pd = new REPrestationDue();
+            pd.setSession(session);
+            // si versement non null, on est sur $t
+            pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
+            String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
+
+            String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+            JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
+            JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
+
+            JACalendar cal = new JACalendarGregorian();
+            if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
+
+                throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
+            }
+            pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
+            pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+            if (nonAjournement) {
+                pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+            }
+            pd.setCsTypePaiement(null);
+            pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+            pd.add(transaction);
+        }
+
+        for (Rente.Etat eachEtat : rente.getEtat()) {
+            REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+
+            pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+            pd.add(transaction);
+        }
+        return isAnnoncePayForDemandeRente;
+    }
+
+    private static boolean importationRentesAccordeesEtPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, ReturnedValue returnedValue, REBasesCalcul bc, List<Long> ids, boolean isAnnoncePayForDemandeRente, FCalcul.Evenement.BasesCalcul eachBaseCalcul, boolean isAjournement, FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation) throws Exception {
+        RERenteAccordee ra;
+        if (Objects.nonNull(eachPrestation.getRente())) {
+            // importer les rentes accordées
+            ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul, eachBaseCalcul.getGenerateur());
+            // si il y a une relation au requerant => la rente
+            // accordee est pour un des membres de la famille
+            isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
+
+            ra.setIdBaseCalcul(bc.getIdBasesCalcul());
+
+            // BZ 4427
+            boolean isCreerRA = true;
+            if (isAjournement) {
+                ra.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
+
+                // si les 3 champs sont vide, on remonte
+                if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
+                        && JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
+                        && JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
+
+                    isCreerRA = true;
+
+                } else // si un des 3 champs vide, on créé pas la RA
+                    if (JadeStringUtil.isBlankOrZero(ra.getDureeAjournement())
+                            || JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())
+                            || JadeStringUtil.isBlankOrZero(ra.getDateRevocationAjournement())) {
+                        isCreerRA = false;
+
+                        REBasesCalcul bcToDel = new REBasesCalcul();
+                        bcToDel.setSession(session);
+                        bcToDel.setIdBasesCalcul(ra.getIdBaseCalcul());
+                        bcToDel.retrieve();
+                        bcToDel.delete();
+                    }
+            }
+            if (isCreerRA) {
+                Long idRA = Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session,
+                        transaction, ra, IREValidationLevel.VALIDATION_LEVEL_NONE));
+                ids.add(idRA);
+            }
+
+            // Traitement des prestations dues...
+            Rente rente = eachPrestation.getRente();
+            if (Objects.nonNull(rente)) {
+                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+                returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
+                Rente.Versement versement = rente.getVersement();
+                // Si versement est non null, on est sur un $t (total)
+                if (Objects.nonNull(versement)) {
+                    REPrestationDue pd = new REPrestationDue();
+                    pd.setSession(session);
+                    // si versement non null, on est sur $t
+                    pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
+                    String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
+
+                    String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+                    JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
+                    JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
+
+                    JACalendar cal = new JACalendarGregorian();
+                    if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
+
+                        throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
+                    }
+                    pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
+                    pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+                    if (nonAjournement) {
+                        pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
+                    }
+                    pd.setCsTypePaiement(null);
+                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                    pd.add(transaction);
+                }
+
+                for (Rente.Etat eachEtat : rente.getEtat()) {
+                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+
+                    pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
+                    pd.add(transaction);
+                }
+            }
+        }
+        return isAnnoncePayForDemandeRente;
+    }
+
     private static String getIdTiersBC(BSession session, FCalcul.Evenement.BasesCalcul.Decision.Prestation chaquePrestation) {
         String idTiersBC;
         if (Objects.nonNull(chaquePrestation.getRente().getNcpl2())) {
@@ -751,9 +709,9 @@ public class REAcorMapper {
 
     private static Comparator<FCalcul.Evenement.BasesCalcul.Decision.Prestation> comparerRentes() {
         return (prest1, prest2) -> {
-            if (StringUtils.endsWith(prest1.getRente().getGenre().toString(), "3")) {
+            if (StringUtils.endsWith(prest1.getRente().getGenre().toString(), RENTE_SURVIVANT_PARENT)) {
                 return -1;
-            } else if (StringUtils.endsWith(prest2.getRente().getGenre().toString(), "3")) {
+            } else if (StringUtils.endsWith(prest2.getRente().getGenre().toString(), RENTE_SURVIVANT_PARENT)) {
                 return 1;
             } else {
                 return 0;
@@ -1078,7 +1036,7 @@ public class REAcorMapper {
      * @return
      */
     private static RERenteAccordee importRenteAccordee(final BSession session, final BTransaction transaction,
-                                                       final REDemandeRente demande, FCalcul.Evenement.BasesCalcul.Decision.Prestation prestation, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul fCalcul) throws Exception {
+                                                       final REDemandeRente demande, FCalcul.Evenement.BasesCalcul.Decision.Prestation prestation, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul fCalcul, String idTiersBC) throws Exception {
 
         RERenteAccordee ra = new RERenteAccordee();
         ra.setSession(session);
@@ -1140,8 +1098,7 @@ public class REAcorMapper {
         ISFMembreFamilleRequerant[] mf = sf.getMembresFamilleRequerant(demande.loadDemandePrestation(transaction).getIdTiers());
 
 //        String nssTiersBaseCalcul = REACORAbstractFlatFileParser.getField(line, fields, "NSS_BASE_CALCUL"); $b2
-        // TODO : dans le cadre d'une rente survivant, le NSS base calcul est différent de la balise générateur de la base de calcul
-        PRTiersWrapper tiersBaseCalcul = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(baseCalcul.getGenerateur()));
+        PRTiersWrapper tiersBaseCalcul = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(idTiersBC));
         if (tiersBaseCalcul != null) {
             ra.setIdTiersBaseCalcul(tiersBaseCalcul.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
         }
@@ -1352,9 +1309,9 @@ public class REAcorMapper {
 
     @Data
     @AllArgsConstructor
-    private static final class KeyIdTiersAndYear {
+    private static final class KeyIdTiersAndFinDroit {
         String idTiers;
-        Integer year;
+        Integer dateFinDroit;
     }
 
     /******************************************* Partie MAJ FCalcul historique **************************************************/
@@ -1578,7 +1535,7 @@ public class REAcorMapper {
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                                 if (Objects.nonNull(eachPrestation.getRente())) {
-                                    ra = REAcorMapper.importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
+                                    ra = REAcorMapper.importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul, eachBaseCalcul.getGenerateur());
 
                                     elmFCVO = fcParBaseCalculVO.new ElementVO();
 
