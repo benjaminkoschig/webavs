@@ -100,6 +100,9 @@ public class ReferenceQR extends AbstractReference {
     // Boolean qui permet d'activer un QR Neutre
     private boolean qrNeutre = false;
 
+    // Boolean qui permet de gérer un bulletin neutre : sans montant.
+    private boolean isBulletinNeutre = false;
+
     private Map<String, String> parameters = new HashMap<>();
 
     // Pour le moment le QR Code est défini en String. Sera modifié par la suite
@@ -172,7 +175,7 @@ public class ReferenceQR extends AbstractReference {
         parameters.put(COParameter.P_MONNAIE, monnaie);
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
-        if (!qrNeutre) {
+        if (!qrNeutre && !isBulletinNeutre) {
             if (new Montant(montant).isNegative()) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
@@ -256,7 +259,10 @@ public class ReferenceQR extends AbstractReference {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
         } else {
-            if (new Montant(montant).isNegative()) {
+            // Dans le cadre d'un bulletin neutre, on ne renseigne pas de montant.
+            if (isBulletinNeutre) {
+                builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            } else if (new Montant(montant).isNegative()) {
                 builder.append("0.00").append(CHAR_FIN_LIGNE);
             } else {
                 builder.append(montant).append(CHAR_FIN_LIGNE);
@@ -930,6 +936,11 @@ public class ReferenceQR extends AbstractReference {
 
     public void setCrefPays(String crefPays) {
         this.crefPays = crefPays;
+    }
+
+
+    public void setBulletinNeutre(boolean bulletinNeutre) {
+        isBulletinNeutre = bulletinNeutre;
     }
 
     public String getDefaultModelPath() {
