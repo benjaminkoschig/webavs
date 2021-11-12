@@ -121,8 +121,6 @@ public class REBasesCalcul extends BEntity {
                     && bc.getCsEtat().equals(bcParametres.getCsEtat())
                     && bc.getDegreInvalidite().equals(
                             String.valueOf(Integer.parseInt(bcParametres.getDegreInvalidite())))
-                    && bc.getQuotiteRente().equals(
-                            String.valueOf(Double.parseDouble(bcParametres.getQuotiteRente())))
                     && bc.getDroitApplique().equals(bcParametres.getDroitApplique())
                     && bc.getDureeRevenuAnnuelMoyen().equals(bcParametres.getDureeRevenuAnnuelMoyen())
                     && bc.getEchelleRente().equals(bcParametres.getEchelleRente())
