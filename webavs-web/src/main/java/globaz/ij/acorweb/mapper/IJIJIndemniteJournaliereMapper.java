@@ -27,20 +27,20 @@ public class IJIJIndemniteJournaliereMapper {
                 } else {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
                 }
-                indemniteJournaliere.setMontantSupplementaireReadaptation(Strings.toStringOrNullCurrencyFormat(ij.getDeduction()));
-                indemniteJournaliere.setMontantGarantiAANonReduit(Strings.toStringOrNullCurrencyFormat(basesCalcul.getGarantieAANonReduite()));
-                indemniteJournaliere.setIndemniteAvantReduction(Strings.toStringOrNullCurrencyFormat(basesCalcul.getMontantBase()));
-                indemniteJournaliere.setDeductionRenteAI(Strings.toStringOrNullCurrencyFormat(basesCalcul.getReductionAI()));
+                indemniteJournaliere.setMontantSupplementaireReadaptation(Strings.toStringOrNullDoubleFormat(ij.getDeduction()));
+                indemniteJournaliere.setMontantGarantiAANonReduit(Strings.toStringOrNullDoubleFormat(basesCalcul.getGarantieAANonReduite()));
+                indemniteJournaliere.setIndemniteAvantReduction(Strings.toStringOrNullDoubleFormat(basesCalcul.getMontantBase()));
+                indemniteJournaliere.setDeductionRenteAI(Strings.toStringOrNullDoubleFormat(basesCalcul.getReductionAI()));
 
-                indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(Strings.toStringOrNullCurrencyFormat(basesCalcul.getReductionRevenu()));
-                indemniteJournaliere.setMontantJournalierIndemnite(Strings.toStringOrNullCurrencyFormat(ij.getMontantIndemnite()));
-                indemniteJournaliere.setMontantGarantiAAReduit(Strings.toStringOrNullCurrencyFormat(basesCalcul.getMontantGarantiAA()));
+                indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(Strings.toStringOrNullDoubleFormat(basesCalcul.getReductionRevenu()));
+                indemniteJournaliere.setMontantJournalierIndemnite(Strings.toStringOrNullDoubleFormat(ij.getMontantIndemnite()));
+                indemniteJournaliere.setMontantGarantiAAReduit(Strings.toStringOrNullDoubleFormat(basesCalcul.getMontantGarantiAA()));
                 indemniteJournaliere.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
                 entityService.add(indemniteJournaliere);
             }
         // Sinon on créé des indemnités interne et externe à 0.-
         } else {
-            creerIJIndemniteJournaliere(ijijCalculee.getIdIJCalculee(), Strings.toStringOrNullCurrencyFormat(basesCalcul.getReductionAI()), entityService);
+            creerIJIndemniteJournaliere(ijijCalculee.getIdIJCalculee(), Strings.toStringOrNullDoubleFormat(basesCalcul.getReductionAI()), entityService);
         }
     }
 

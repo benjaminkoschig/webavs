@@ -2,7 +2,9 @@ package ch.globaz.common.util;
 
 import globaz.framework.util.FWCurrency;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  * Utilitaire pour les méthodes liés aux string
@@ -16,11 +18,12 @@ public class Strings {
         return String.valueOf(toReturn);
     }
 
-    public static String toStringOrNullCurrencyFormat(Double toReturn){
+    public static String toStringOrNullDoubleFormat(Double toReturn){
         if(toReturn == null){
             return null;
         }
-        FWCurrency currency = new FWCurrency(toReturn);
-        return currency.toStringFormat();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(toReturn);
     }
 }

@@ -59,18 +59,18 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
         if(basesCalcul.getRevenuDeterminant() != null) {
-            ijijCalculee.setRevenuDeterminant(Strings.toStringOrNullCurrencyFormat(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
+            ijijCalculee.setRevenuDeterminant(Strings.toStringOrNullDoubleFormat(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
             ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getDate())));
         }
 
-        ijijCalculee.setMontantBase(Strings.toStringOrNullCurrencyFormat(basesCalcul.getMontantBase()));
+        ijijCalculee.setMontantBase(Strings.toStringOrNullDoubleFormat(basesCalcul.getMontantBase()));
         if(basesCalcul.getRevenuReadaptation() != null) {
-            ijijCalculee.setRevenuJournalierReadaptation(Strings.toStringOrNullCurrencyFormat(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
-            ijijCalculee.setDemiIJACBrut(Strings.toStringOrNullCurrencyFormat(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
+            ijijCalculee.setRevenuJournalierReadaptation(Strings.toStringOrNullDoubleFormat(basesCalcul.getRevenuReadaptation().getRevenuJournalier()));
+            ijijCalculee.setDemiIJACBrut(Strings.toStringOrNullDoubleFormat(basesCalcul.getRevenuReadaptation().getACDemiBrut()));
         }
         ijijCalculee.setCsStatutProfessionnel(PRACORConst.caStatutProfessionnelToCS(entityService.getSession(), Strings.toStringOrNull(basesCalcul.getStatut())));
 
-        ijijCalculee.setDifferenceRevenu(Strings.toStringOrNullCurrencyFormat(basesCalcul.getDifferenceRevenu()));
+        ijijCalculee.setDifferenceRevenu(Strings.toStringOrNullDoubleFormat(basesCalcul.getDifferenceRevenu()));
         ijijCalculee.setIdPrononce(prononce.getIdPrononce());
         ijijCalculee.setNoRevision(Strings.toStringOrNull(basesCalcul.getRevision()));
         entityService.add(ijijCalculee);
@@ -86,7 +86,7 @@ public class IJIJCalculeeMapper {
 
     private IJIJCalculee createAndMapGrandeIJ(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
-        grandeIJ.setMontantIndemniteEnfant(Strings.toStringOrNullCurrencyFormat(basesCalcul.getMontantEnfants()));
+        grandeIJ.setMontantIndemniteEnfant(Strings.toStringOrNullDoubleFormat(basesCalcul.getMontantEnfants()));
         grandeIJ.setNbEnfants(Strings.toStringOrNull(basesCalcul.getNEnfants()));
         grandeIJ.setCsTypeIJ(IIJPrononce.CS_GRANDE_IJ);
         return grandeIJ;
