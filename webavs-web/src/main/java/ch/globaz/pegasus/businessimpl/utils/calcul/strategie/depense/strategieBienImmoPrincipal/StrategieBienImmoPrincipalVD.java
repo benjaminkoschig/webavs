@@ -96,6 +96,8 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
                         + checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantLoyersEncaisses())
                         + checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantSousLocation());
 
+                float montantLoyerEncaisse = checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantLoyersEncaisses());
+
                 try {
                     plafondLoyerEncaisse = Float.parseFloat(((ControlleurVariablesMetier) context
                             .get(Attribut.PLAFOND_LOYERS_ENCAISSES)).getValeurCourante());
@@ -105,7 +107,7 @@ public class StrategieBienImmoPrincipalVD extends StrategieCalculDepense {
                 }
                 // Si l'immeuble est utilisé à des fins commerciales, frais entretiens à 0
                 // Ou Si le montant des loyers encaissés est supérieur au plafond, on ne prend pas en compte les frais d'entretien
-                    if (!isImmeubleCommerciale && (!plafondFound || (montantValeur <= plafondLoyerEncaisse ))) {
+                    if (!isImmeubleCommerciale && (!plafondFound || (montantLoyerEncaisse <= plafondLoyerEncaisse ))) {
                         montantFraisEntretien = arronditValeur(montantValeur * tauxFraisEntretien * fraction);
                     }
 
