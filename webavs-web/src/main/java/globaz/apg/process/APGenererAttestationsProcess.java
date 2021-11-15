@@ -12,6 +12,7 @@ import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.itext.APAttestations;
+import globaz.apg.properties.APProperties;
 import globaz.apg.utils.APGUtils;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -575,7 +576,7 @@ public class APGenererAttestationsProcess extends BProcess {
 
                 APDroitLAPG droit = APGUtils.loadDroit(getSession(), getTransaction(), prest.getIdDroit(), rechercheTypeDroit(prest));
 
-                if (droit.getIsSoumisImpotSource()) {
+                if (droit.getIsSoumisImpotSource() || isPrestationLapat(prest)) {
 
                     // cherche le canton impôt source de l'attestation d'imposition
                     String canton = searchCantonImpotSourceCascade(droit, prest);
@@ -669,7 +670,7 @@ public class APGenererAttestationsProcess extends BProcess {
         } else if (isPrestationLapai(prest)) {
             domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_PROCHE_AIDANT;
         } else if (isPrestationPandemie(prest)) {
-            domaine = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+            domaine = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
         }
         return domaine;
     }
