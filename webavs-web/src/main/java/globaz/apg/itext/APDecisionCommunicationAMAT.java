@@ -720,7 +720,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         // ajoute le texte impot source si décision standard et le droit est soumis à l'impôt source
-        if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD && droit.getIsSoumisImpotSource()) {
+        if ((state_dec == APDecisionCommunicationAMAT.STATE_LAMAT || state_dec == APDecisionCommunicationAMAT.STATE_STANDARD)
+                && droit.getIsSoumisImpotSource()) {
             ajouteTexteImpotSource(document, buffer);
             this.setCreateDocumentCopieFisc(true);
         }
