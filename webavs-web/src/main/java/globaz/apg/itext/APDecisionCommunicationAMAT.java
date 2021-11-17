@@ -166,7 +166,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             if (!hasNext) {
                 while (idRepartition < repartitions.size()) {
                     repartition = (APRepartitionPaiements) repartitions.get(idRepartition++);
-
                     if (JadeStringUtil.isIntegerEmpty(repartition.getIdParent())
                             && repartition.isBeneficiaireEmployeur()) {
                         hasNext = true;
@@ -244,12 +243,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private String docinfo_allocataire_tiers_id = "";
     private ICTDocument documentAssures;
     private boolean documentCopy = false;
+    private boolean documentCopyFisc = false;
     private ICTDocument documentEmployeurs;
     private APDroitMaternite droit;
     private Boolean employeursMultiples;
     private JADate firstBirth = new JADate();
     private ICTDocument helper = null;
     private String idDroit;
+    private boolean cotisationsImpotSource = false;
+    private List<String> idBenefImpotSource = new ArrayList<>();
 
     String revenuMoyenDeterminant;
     double revenuMoyenDeterminantMAX;
@@ -323,7 +325,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 buildDecision(documentAssures);
                 // pour supprimer la copie faite a l'assure
-                if (isDocumentCopy()) {
+                if (isDocumentCopy() || hasNotImpotSourceCopieFiscAssure()) {
                     clearDocumentList = true;
                 }
 
@@ -331,6 +333,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 if (repartitionsEmployeur.hasNext()) {
                     repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
+                    cotisationsImpotSource = false;
                     state = APDecisionCommunicationAMAT.STATE_EMPLOYEURS;
                 } else {
                     state = APDecisionCommunicationAMAT.STATE_FIN;
@@ -340,17 +343,23 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 if (isIndependant) {
                     // pas de copie pour les independants
-                    if (!isDocumentCopy()) {
+                    if (!isDocumentCopy()
+                            && hasImpotSourceSiCopieFiscEmployeur()) {
                         buildDecision(documentAssures);
                     } else {
                         clearDocumentList = true;
                     }
                 } else {
-                    buildDecision(documentEmployeurs);
+                    if(hasImpotSourceSiCopieFiscEmployeur()) {
+                        buildDecision(documentEmployeurs);
+                    } else {
+                        clearDocumentList = true;
+                    }
                 }
 
                 if (repartitionsEmployeur.hasNext()) {
                     repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
+                    cotisationsImpotSource = false;
                 } else {
                     state = APDecisionCommunicationAMAT.STATE_FIN;
                 }
@@ -360,6 +369,14 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APDecisionCommunicationAMAT");
             abort();
         }
+    }
+
+    private boolean hasImpotSourceSiCopieFiscEmployeur() {
+        return !isDocumentCopyFisc() || idBenefImpotSource.contains(repartition.getIdRepartitionBeneficiairePaiement());
+    }
+
+    private boolean hasNotImpotSourceCopieFiscAssure() {
+        return isDocumentCopyFisc() && !idBenefImpotSource.contains(demande.getIdTiers());
     }
 
     /**
@@ -398,6 +415,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             final APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
             repartitionPaiementsManager.setSession(getSession());
 
+            cotisationsImpotSource = false;
+
             for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
                 final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
@@ -408,11 +427,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
                     final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager.get(idRP);
 
+                    if(hasCotisationImpotSource(rp.getIdRepartitionBeneficiairePaiement())) {
+                        if (!rp.isBeneficiaireEmployeur()) {
+                            idBenefImpotSource.add(rp.getIdTiers());
+                        } else {
+                            idBenefImpotSource.add(rp.getIdRepartitionBeneficiairePaiement());
+                        }
+                    }
+
                     if (rp.isBeneficiaireEmployeur()) {
                         // si pas d'idAffilie --> Assuré
                         nbRepEmployeur++;
                     } else {
-                        nbRepAssure++;
+
                     }
                 }
             }
@@ -427,6 +454,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     .logMessage("catalogue de texte introuvable", FWMessage.ERREUR, "APDecisionCommunicationAMAT");
             abort();
         }
+    }
+
+    private boolean hasCotisationImpotSource(String idRepartitionBenef)  {
+        APCotisationManager cotMan = new APCotisationManager();
+        cotMan.setForIdRepartitionBeneficiairePaiement(idRepartitionBenef);
+        cotMan.setForType(APCotisation.TYPE_IMPOT);
+        cotMan.setSession(getSession());
+        try {
+            cotMan.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Erreur lors de la recherche des cotisations de la repartition pour à l'impôt source : " + e.toString(), FWMessage.AVERTISSEMENT, "APDecisionCommunicationAMAT");
+        }
+        return !cotMan.isEmpty();
     }
 
     @Override
@@ -549,8 +589,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         final Boolean paramCopie = new Boolean(getSession().getApplication().getProperty(
                 APDecisionCommunicationAMAT.DOC_DEC_AMAT_COPIE_ASS));
 
-        if ((isDocumentCopy() && paramCopie.booleanValue())
-                || ((isDocumentCopy() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))) {
+        if ((isUneCopie() && paramCopie.booleanValue())
+                || ((isUneCopie() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))) {
             parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
         }
 
@@ -721,7 +761,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         // ajoute le texte impot source si décision standard et le droit est soumis à l'impôt source
         if ((state_dec == APDecisionCommunicationAMAT.STATE_LAMAT || state_dec == APDecisionCommunicationAMAT.STATE_STANDARD)
-                && droit.getIsSoumisImpotSource()) {
+                && (droit.getIsSoumisImpotSource() && cotisationsImpotSource)) {
             ajouteTexteImpotSource(document, buffer);
             this.setCreateDocumentCopieFisc(true);
         }
@@ -794,7 +834,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         // si le document est une copie au fisc
-        if (isCreateDocumentCopieFisc() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
+        if (isCreateDocumentCopieFisc()
+                && cotisationsImpotSource
+                && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT || state_dec == APDecisionCommunicationAMAT.STATE_STANDARD)) {
 
             // cherche le canton impôt source de l'attestation d'imposition
             String canton = searchCantonImpotSourceCascade(droit, demande.getIdTiers());
@@ -1653,6 +1695,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         // parametres du template
         final String idTiers = tiers().getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+        cotisationsImpotSource = idBenefImpotSource.contains(idTiers);
         String adresse = "";
 
         try {
@@ -1693,6 +1736,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             throws FWIException {
         String adresse = "";
         String numAffilie = "";
+
+        cotisationsImpotSource = idBenefImpotSource.contains(repartition.getIdRepartitionBeneficiairePaiement());
 
         try {
 
@@ -2727,7 +2772,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 docInfo.setDocumentProperty("allocataire.tiers.id", getIdTiersAssure());
             }
 
-            if (!isDocumentCopy() && getIsSendToGed().booleanValue()) {
+            if (!isUneCopie() && getIsSendToGed().booleanValue()) {
                 docInfo.setArchiveDocument(true);
 
                 // création / mise à jour du dossier GroupDoc
@@ -2844,6 +2889,14 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
      */
     public boolean isDocumentCopy() {
         return documentCopy;
+    }
+
+    public boolean isDocumentCopyFisc() {
+        return documentCopyFisc;
+    }
+
+    public boolean isUneCopie(){
+        return documentCopy || documentCopyFisc;
     }
 
     private boolean isEmployeursMultiples() throws FWIException {
@@ -3113,7 +3166,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
      * @param newDocumentCopy
      */
     public void setDocumentCopy(final boolean newDocumentCopy) {
-        documentCopy = newDocumentCopy;
+        this.documentCopy = newDocumentCopy;
+    }
+
+    /**
+     * Modification de l'attribut afin de déterminé s'il s'agit d'un document de copie au fisc
+     *
+     * @param documentCopyFisc
+     */
+    public void setDocumentCopyFisc(final boolean documentCopyFisc) {
+        this.documentCopyFisc = documentCopyFisc;
     }
 
     /**

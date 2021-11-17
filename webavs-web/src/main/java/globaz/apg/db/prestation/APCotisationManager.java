@@ -27,6 +27,7 @@ public class APCotisationManager extends PRAbstractManager {
     private static final long serialVersionUID = 1L;
     private String forIdCotisation = "";
     private String forIdRepartitionBeneficiairePaiement = "";
+    private String forType = "";
     private String fromIdCotisation = "";
 
     private String notForIdCotisation = "";
@@ -90,6 +91,16 @@ public class APCotisationManager extends PRAbstractManager {
             whereClause.append(APCotisation.FIELDNAME_ID_COTISATION);
             whereClause.append("<>");
             whereClause.append(notForIdCotisation);
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(forType)) {
+            if (whereClause.length() > 0) {
+                whereClause.append(" AND ");
+            }
+
+            whereClause.append(APCotisation.FIELDNAME_TYPE);
+            whereClause.append("=");
+            whereClause.append(this._dbWriteString(statement.getTransaction(), forType));
         }
 
         return whereClause.toString();
@@ -175,5 +186,13 @@ public class APCotisationManager extends PRAbstractManager {
 
     public void setToIdCotisation(String toIdCotisation) {
         this.toIdCotisation = toIdCotisation;
+    }
+
+    public void setForType(String forType) {
+        this.forType = forType;
+    }
+
+    public String getForType() {
+        return forType;
     }
 }

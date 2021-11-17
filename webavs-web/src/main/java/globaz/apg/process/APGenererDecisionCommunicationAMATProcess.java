@@ -116,8 +116,8 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
                 createLettreEntete(idTiersAdmFiscale, true);
             }
 
-            // Création de la lettre de copie à l'assuré
-            createDecisionCopy();
+            // Création de la lettre de copie au fisc
+            createDecisionCopyFisc();
         }
 
         // Fusionne les documents ci-dessus
@@ -197,6 +197,28 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
      * @throws Exception
      */
     private void createDecisionCopy() throws FWIException, Exception {
+        APDecisionCommunicationAMAT decisionCopy = createDecisionCopyCommun();
+        decisionCopy.setDocumentCopy(true);
+        decisionCopy.executeProcess();
+    }
+
+    /**
+     * @return
+     * @throws FWIException
+     * @throws Exception
+     */
+    private void createDecisionCopyFisc() throws FWIException, Exception {
+        APDecisionCommunicationAMAT decisionCopy = createDecisionCopyCommun();
+        decisionCopy.setDocumentCopyFisc(true);
+        decisionCopy.executeProcess();
+    }
+
+    /**
+     * @return
+     * @throws FWIException
+     * @throws Exception
+     */
+    private APDecisionCommunicationAMAT createDecisionCopyCommun() throws FWIException, Exception {
         APDecisionCommunicationAMAT decisionCopy = new APDecisionCommunicationAMAT();
         decisionCopy.setSession(getSession());
         decisionCopy.setEMailAddress(getEMailAddress());
@@ -207,9 +229,9 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
         // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
         decisionCopy.setIsMatciab2Decision(getIsMatciab2Process());
         decisionCopy.setParent(this);
-        decisionCopy.setDocumentCopy(true);
-        decisionCopy.executeProcess();
+        return decisionCopy;
     }
+
 
     /**
      * @return
