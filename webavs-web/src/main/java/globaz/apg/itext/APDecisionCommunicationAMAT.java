@@ -438,8 +438,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     if (rp.isBeneficiaireEmployeur()) {
                         // si pas d'idAffilie --> Assuré
                         nbRepEmployeur++;
-                    } else {
-
                     }
                 }
             }
@@ -590,7 +588,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 APDecisionCommunicationAMAT.DOC_DEC_AMAT_COPIE_ASS));
 
         if ((isUneCopie() && paramCopie.booleanValue())
-                || ((isUneCopie() && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))) {
+                || ((isUneCopie() && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT || state_dec == APDecisionCommunicationAMAT.STATE_STANDARD)))) {
             parametres.put("P_COPIE", getTextOrEmpty(document, 1, 4));
         }
 
