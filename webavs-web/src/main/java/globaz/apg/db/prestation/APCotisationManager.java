@@ -93,7 +93,7 @@ public class APCotisationManager extends PRAbstractManager {
             whereClause.append(notForIdCotisation);
         }
 
-        if (!JadeStringUtil.isIntegerEmpty(forType)) {
+        if (!JadeStringUtil.isEmpty(forType)) {
             if (whereClause.length() > 0) {
                 whereClause.append(" AND ");
             }
