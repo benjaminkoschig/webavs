@@ -1108,6 +1108,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             prestationCalculee.setDateFin(new JADate(prestationCourant.getPrestation().getDateFin()));
             prestationCalculee.setNombreJoursSoldes(prestationCourant.getPrestation().getNombreJoursSoldes());
             prestationCalculee.setRevenuDeterminantMoyen(new FWCurrency(prestationCourant.getPrestation().getRevenuMoyenDeterminant()));
+            prestationCalculee.setRevenuDeterminantMoyenSansArrondi(new FWCurrency(prestationCourant.getPrestation().getRevenuMoyenDeterminantSansArrondi()));
             prestationCalculee.setMontantJournalier(new FWCurrency(prestationCourant.getPrestation().getMontantJournalier()));
             prestationCalculee.setFraisGarde(new FWCurrency(prestationCourant.getPrestation().getFraisGarde()));
             prestationCalculee.setCsGenrePrestation(prestationCourant.getPrestation().getGenre());

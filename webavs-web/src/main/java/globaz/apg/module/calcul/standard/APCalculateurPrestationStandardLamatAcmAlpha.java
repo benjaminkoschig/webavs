@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import ch.globaz.common.properties.CommonPropertiesUtils;
@@ -226,6 +225,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         prestCalculee.setTypePrestation(IAPPrestation.CS_TYPE_NORMAL);
         prestCalculee.setRevenuDeterminantMoyen(new FWCurrency(
                 prestationWrapper.getPrestationBase().revenuDeterminantMoyen.getBigDecimalValue().toString(), 3));
+        prestCalculee.setRevenuDeterminantMoyenSansArrondi(new FWCurrency(
+                prestationWrapper.getPrestationBase().revenuDeterminantMoyen.getBigDecimalValue().toString(), 6));
 
         // Lors de la restitution de prestation maternité calculée normalement
         // lors de la creation, mais rétroactivement
@@ -942,6 +943,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             entity.setNombreJoursSoldes(prestationACreer.getNombreJoursSoldes());
             entity.setRevenuMoyenDeterminant(
                     prestationACreer.getRevenuDeterminantMoyen().getBigDecimalValue().toString());
+            entity.setRevenuMoyenDeterminantSansArrondi(
+                    prestationACreer.getRevenuDeterminantMoyenSansArrondi().getBigDecimalValue().toString());
             entity.setType(prestationACreer.getTypePrestation());
             entity.setDroitAcquis(prestationACreer.getDroitAcquis().toString());
 
@@ -1016,6 +1019,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             prestation.setNombreJoursSoldes(nombreJoursSoldes);
             prestation.setNoRevision(noRevision);
             prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
+            prestation.setRevenuMoyenDeterminantSansArrondi(revenuMoyenDeterminant.getBigDecimalValue().toString());
             prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
             prestation.setGenre(genrePrestation);
 
@@ -1136,6 +1140,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     prestation.setNombreJoursSoldes(nombreJoursSoldes);
                     prestation.setNoRevision(noRevision);
                     prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
+                    prestation.setRevenuMoyenDeterminantSansArrondi(revenuMoyenDeterminant.getBigDecimalValue().toString());
                     prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
                     prestation.setGenre(genrePrestation);
 

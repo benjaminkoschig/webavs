@@ -180,7 +180,7 @@ public class APDonneeRegroupementDecompte {
         isIndependant = repartitionJointPrestation.getSituatuionPro() != null
                 ? repartitionJointPrestation.getSituatuionPro().getIsIndependant()
                 : false;
-        revenuAnnuel = situationProfessionnelle == null ? new BigDecimal (repartitionJointPrestation.getRevenuMoyenDeterminant()) : APSituationProfessionnelleManager.getRevenuJournalier(situationProfessionnelle);
+        revenuAnnuel = situationProfessionnelle == null ? new BigDecimal (repartitionJointPrestation.getRevenuMoyenDeterminantSansArrondi()) : APSituationProfessionnelleManager.getRevenuJournalier(situationProfessionnelle);
         revenuAnnuel = revenuAnnuel.multiply(new BigDecimal(360));
 
         isPaiementEmployeur = determinerSiPaiementAEmployeur(repartitionJointPrestation, situationProfessionnelle);

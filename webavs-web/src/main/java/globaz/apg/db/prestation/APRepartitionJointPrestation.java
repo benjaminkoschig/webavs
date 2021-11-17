@@ -16,8 +16,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Comparator;
 
@@ -101,6 +99,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
     private String remarque = "";
     private String contenuAnnonce = "";
     private String revenuMoyenDeterminant = "";
+    private String revenuMoyenDeterminantSansArrondi = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -154,6 +153,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         typePrestationPrestation = statement.dbReadNumeric(APPrestation.FIELDNAME_TYPE);
         contenuAnnonce = statement.dbReadNumeric(APPrestation.FIELDNAME_CONTENUANNONCE);
         revenuMoyenDeterminant = statement.dbReadNumeric(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT);
+        revenuMoyenDeterminantSansArrondi = statement.dbReadNumeric(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT_SANS_ARRONDI);
     }
 
     /**
@@ -482,7 +482,15 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         return revenuMoyenDeterminant;
     }
 
+    public String getRevenuMoyenDeterminantSansArrondi() {
+        return revenuMoyenDeterminantSansArrondi;
+    }
+
     public void setRevenuMoyenDeterminant(String revenuMoyenDeterminant) {
         this.revenuMoyenDeterminant = revenuMoyenDeterminant;
+    }
+
+    public void setRevenuMoyenDeterminantSansArrondi(String revenuMoyenDeterminantSansArrondi) {
+        this.revenuMoyenDeterminantSansArrondi = revenuMoyenDeterminantSansArrondi;
     }
 }

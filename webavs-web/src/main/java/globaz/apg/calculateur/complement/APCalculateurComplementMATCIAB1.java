@@ -399,6 +399,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             BigDecimal sommeRepartitionsMATCIAB1 = sommeRepartitions.getBigDecimalValue().divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
             BigDecimal sommeRevenuMoyenDeterminantMATCIAB1 = sommeRevenuMoyenDeterminant.getBigDecimalValue().subtract(sommeRepartitionsMATCIAB1);
             prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminantMATCIAB1.toString());
+            prestationStandard.getPrestation().setRevenuMoyenDeterminantSansArrondi(sommeRevenuMoyenDeterminantMATCIAB1.toString());
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
 
             for (APCotisation cotisation : donneesPersistancePourCalcul.getListCotisation()) {

@@ -32,6 +32,7 @@ public class APPrestationCalculee {
     private String nombreJoursSoldes = null;
     private APResultatCalcul resultatCalcul = null;
     private FWCurrency revenuDeterminantMoyen = null;
+    private FWCurrency revenuDeterminantMoyenSansArrondi = null;
     private String typePrestation = null;
     private String csGenrePrestation = null;
     private String idPrestationApg = null;
@@ -159,6 +160,16 @@ public class APPrestationCalculee {
         return revenuDeterminantMoyen;
     }
 
+     /**
+     * getter pour l'attribut revenu determinant moyen sans arrondi
+     *
+     * @return la valeur courante de l'attribut revenu determinant moyen sans arrondi
+     */
+
+    public FWCurrency getRevenuDeterminantMoyenSansArrondi() {
+        return revenuDeterminantMoyenSansArrondi;
+    }
+
     /**
      * getter pour l'attribut type prestation
      *
@@ -279,11 +290,21 @@ public class APPrestationCalculee {
     /**
      * setter pour l'attribut revenu determinant moyen
      *
-     * @param currency
+     * @param revenuDeterminantMoyen
      *                     une nouvelle valeur pour cet attribut
      */
-    public void setRevenuDeterminantMoyen(FWCurrency currency) {
-        revenuDeterminantMoyen = currency;
+    public void setRevenuDeterminantMoyen(FWCurrency revenuDeterminantMoyen) {
+        this.revenuDeterminantMoyen = revenuDeterminantMoyen;
+    }
+
+    /**
+     * setter pour l'attribut revenu determinant moyen sans arrondi
+     *
+     * @param revenuDeterminantMoyenSansArrondi
+     *                     une nouvelle valeur pour cet attribut
+     */
+    public void setRevenuDeterminantMoyenSansArrondi(FWCurrency revenuDeterminantMoyenSansArrondi) {
+        this.revenuDeterminantMoyenSansArrondi = revenuDeterminantMoyenSansArrondi;
     }
 
     /**

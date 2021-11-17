@@ -8,7 +8,6 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.enums.APTypeDePrestation;
-import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.pojo.wrapper.APPrestationWrapper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BConstants;
@@ -18,7 +17,6 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
-import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.tools.PRCalcul;
@@ -68,6 +66,7 @@ public class APPrestation extends BEntity implements IAPPrestation {
     public static final String FIELDNAME_NOREVISION = "VHTREV";
     public static final String FIELDNAME_REMARQUE = "VHLREM";
     public static final String FIELDNAME_REVENUMOYENDETERMINANT = "VHMRMD";
+    public static final String FIELDNAME_REVENUMOYENDETERMINANT_SANS_ARRONDI = "VHMRMF";
     public static final String FIELDNAME_TYPE = "VHTTYP";
     public static final String TABLE_NAME = "APPRESP";
 
@@ -99,6 +98,7 @@ public class APPrestation extends BEntity implements IAPPrestation {
     private String noRevision = "";
     private String remarque = "";
     private String revenuMoyenDeterminant = "";
+    private String revenuMoyenDeterminantSansArrondi = "";
     protected String type = "";
 
     public APPrestation() {
@@ -578,6 +578,7 @@ public class APPrestation extends BEntity implements IAPPrestation {
         dateCalcul = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATECALCUL);
         dateControle = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATECONTROLE);
         revenuMoyenDeterminant = statement.dbReadNumeric(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT);
+        revenuMoyenDeterminantSansArrondi = statement.dbReadNumeric(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT_SANS_ARRONDI);
         fraisGarde = statement.dbReadNumeric(APPrestation.FIELDNAME_FRAISGARDE);
         noRevision = statement.dbReadNumeric(APPrestation.FIELDNAME_NOREVISION);
         remarque = statement.dbReadString(APPrestation.FIELDNAME_REMARQUE);
@@ -645,6 +646,8 @@ public class APPrestation extends BEntity implements IAPPrestation {
                 this._dbWriteDateAMJ(statement.getTransaction(), dateControle, "dateControle"));
         statement.writeField(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT,
                 this._dbWriteNumeric(statement.getTransaction(), revenuMoyenDeterminant, "revenuMoyenDeterminant"));
+        statement.writeField(APPrestation.FIELDNAME_REVENUMOYENDETERMINANT_SANS_ARRONDI,
+                this._dbWriteNumeric(statement.getTransaction(), revenuMoyenDeterminantSansArrondi, "revenuMoyenDeterminantSansArrondi"));
         statement.writeField(APPrestation.FIELDNAME_FRAISGARDE,
                 this._dbWriteNumeric(statement.getTransaction(), fraisGarde, "fraisGarde"));
         statement.writeField(APPrestation.FIELDNAME_NOREVISION,
@@ -884,6 +887,15 @@ public class APPrestation extends BEntity implements IAPPrestation {
      */
     public String getRevenuMoyenDeterminant() {
         return revenuMoyenDeterminant;
+    }
+
+    /**
+     * getter pour l'attribut revenu moyen determinant sans arrondi
+     *
+     * @return la valeur courante de l'attribut revenu moyen determinant sans arrondi
+     */
+    public String getRevenuMoyenDeterminantSansArrondi() {
+        return revenuMoyenDeterminantSansArrondi;
     }
 
     /**
@@ -1192,6 +1204,16 @@ public class APPrestation extends BEntity implements IAPPrestation {
      */
     public void setRevenuMoyenDeterminant(String revenuMoyenDeterminant) {
         this.revenuMoyenDeterminant = revenuMoyenDeterminant;
+    }
+
+    /**
+     * setter pour l'attribut revenu moyen determinant sans arrondi
+     *
+     * @param revenuMoyenDeterminantSansArrondi
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setRevenuMoyenDeterminantSansArrondi(String revenuMoyenDeterminantSansArrondi) {
+        this.revenuMoyenDeterminantSansArrondi = revenuMoyenDeterminantSansArrondi;
     }
 
     /**

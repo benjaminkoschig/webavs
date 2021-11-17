@@ -126,6 +126,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             // assigne le noRevision en CS_REVISION_MATERNITE_2005
             prestationACreer.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
             prestationACreer.setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminantMATCIAB2Arrondi.toString());
+            prestationACreer.setRevenuMoyenDeterminantSansArrondi(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue().toString());
             // assigne la nouvelle prestation en IPRDemande.CS_TYPE_MATERNITE
             prestationACreer.setType(IPRDemande.CS_TYPE_MATERNITE);
             // ESVE TODO pour activer breakrule sur MATCIAB2

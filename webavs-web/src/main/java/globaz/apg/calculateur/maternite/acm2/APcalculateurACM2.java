@@ -120,6 +120,7 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur<APPrestationC
             prestationACreer.setNombreJoursSoldes(String.valueOf(nombreDeJours));
             prestationACreer.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
             prestationACreer.setRevenuMoyenDeterminant(revenuMoyenDeterminantACM2.toString());
+            prestationACreer.setRevenuMoyenDeterminantSansArrondi(revenuMoyenDeterminantACM2.toString());
             prestationACreer.setType(IAPPrestation.CS_TYPE_NORMAL);
 
             prestationCalculeeAPersister.setPrestation(prestationACreer);
