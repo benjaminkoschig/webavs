@@ -894,8 +894,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // on récupère et on complète le texte avec les paramètres
         String textImpotSource = getTextOrEmpty(document, 4, 105);
         if (StringUtils.isNotBlank(textImpotSource)) {
-            buffer.setLength(0);
-            buffer.append("\n\n");
+            if (buffer.length() > 0) {
+                buffer.append("\n\n");
+            }
             buffer.append(PRStringUtils.replaceString(textImpotSource, "{tauxImposition}", JANumberFormatter.format(taux, 0.01, 2, JANumberFormatter.NEAR)));
         }
     }
