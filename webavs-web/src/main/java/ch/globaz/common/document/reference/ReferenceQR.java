@@ -190,7 +190,7 @@ public class ReferenceQR extends AbstractReference {
         if (!COMBINE.equals(creAdressTyp)) {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + ESPACE + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + ESPACE + creLieu).trim());
         } else {
-            parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
+            parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creNom + creRueOuLigneAdresse1 + RETOUR_LIGNE + creNumMaisonOuLigneAdresse2).trim());
         }
         if (!COMBINE.equals(debfAdressTyp)) {
             parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
@@ -224,11 +224,9 @@ public class ReferenceQR extends AbstractReference {
         builder.append(getCompteWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(creNom.isEmpty() ? creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ") : creNom).append(CHAR_FIN_LIGNE);
-
-        // replace des CHAR_FIN_LIGNE compris dans le string.
-        builder.append(creNom.isEmpty() ? "" : creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
-        builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
+        builder.append(creNom.replace(CHAR_FIN_LIGNE, ESPACE)).append(CHAR_FIN_LIGNE);
+        builder.append(creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE,ESPACE)).append(CHAR_FIN_LIGNE);
+        builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, ESPACE)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
         builder.append(Objects.isNull(getCrePays()) ? CODE_PAYS_DEFAUT : getCrePaysVar()).append(CHAR_FIN_LIGNE);
@@ -381,7 +379,7 @@ public class ReferenceQR extends AbstractReference {
             setReference(REFERENCE_NON_FACTURABLE);
         }
 
-        if (Objects.nonNull(enteteFacture) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(enteteFacture.getIdTypeFacture()) && (bvr != null)) {
+        if (qrNeutre && (bvr != null)) {
             setReference(bvr.get_ligneReference());
         }
     }
@@ -434,16 +432,18 @@ public class ReferenceQR extends AbstractReference {
 
         this.creAdressTyp = COMBINE;
 
-        StringBuilder creRueOuLigneAdresse1SB = new StringBuilder(creRueOuLigneAdresse1);
+        StringBuilder nomCreancierComplet = new StringBuilder();
 
         for (int i = 0; i < adresseSplit.length; i++) {
             if (i == (adresseSplit.length - 1)) {
-                this.creNumMaisonOuLigneAdresse2 = adresseSplit[i];
+                this.setCreNumMaisonOuLigneAdresse2(adresseSplit[i]);
+            } else if (i == (adresseSplit.length - 2)) {
+                this.setCreRueOuLigneAdresse1(adresseSplit[i]);
             } else {
-                creRueOuLigneAdresse1SB.append(adresseSplit[i] + "\r\n");
+                nomCreancierComplet.append(adresseSplit[i] + "\r\n");
             }
         }
-        creRueOuLigneAdresse1 = creRueOuLigneAdresse1SB.toString();
+        this.setCreNom(nomCreancierComplet.toString());
     }
 
     public String getAdresseCopy() {

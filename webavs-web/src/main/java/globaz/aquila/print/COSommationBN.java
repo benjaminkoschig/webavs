@@ -140,9 +140,11 @@ public class COSommationBN extends CODocumentManager {
             // -- QR
             qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
+
+            qrFacture.setQrNeutre(true);
+
             // Initialisation des variables du document
             initVariableQR(null);
-            qrFacture.setQrNeutre(true);
             // Génération du document QR
             qrFacture.initQR(this);
         } else {
