@@ -1114,6 +1114,7 @@ public class IJAttestations extends FWIDocumentManager {
                             if (aiPrec.isCopyFisc()) { ai.setIsCopyFisc(aiPrec.isCopyFisc()); }
                             if (aiPrec.isHasCopyFisc()) { ai.setIsHasCopyFisc(aiPrec.isHasCopyFisc()); }
                             if (aiPrec.isAddLettreEntete()) { ai.setIsAddLettreEntete(aiPrec.isAddLettreEntete()); }
+                            if (!JadeStringUtil.isEmpty(aiPrec.getCanton())) { ai.setCanton(aiPrec.getCanton()); }
 
                             // suppression de aiPrec dans la liste
                             listObjects.remove(aiPrec);

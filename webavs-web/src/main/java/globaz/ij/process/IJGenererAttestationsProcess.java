@@ -436,15 +436,15 @@ public class IJGenererAttestationsProcess extends BProcess {
 
             // on prends le canton de l'attestation la plus récente ou la première de la liste
             AttestationsInfos newestAttestationInfos = attestationInfos.stream()
-                    .filter(ai -> JadeStringUtil.isEmpty(ai.dateFin))
-                    .filter(ai -> JadeStringUtil.isBlankOrZero(ai.getCanton()))
+                    .filter(ai -> !JadeStringUtil.isEmpty(ai.dateFin))
+                    .filter(ai -> !JadeStringUtil.isBlankOrZero(ai.getCanton()))
                     .max(Comparator.comparing(ai -> Dates.toDate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(ai.dateFin))))
                     .orElse(attestationInfos.get(0));
 
             String canton = newestAttestationInfos.getCanton();
 
             long cantonDifferentCount = attestationInfos.stream()
-                    .filter(ai -> JadeStringUtil.isBlankOrZero(ai.getCanton()))
+                    .filter(ai -> !JadeStringUtil.isBlankOrZero(ai.getCanton()))
                     .filter(ai -> !ai.getCanton().equals(canton))
                     .count();
 

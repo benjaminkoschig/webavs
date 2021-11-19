@@ -337,7 +337,11 @@ public class APAttestations extends FWIDocumentManager {
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
                         APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue());
-            }else{
+            } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+                adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
+                        APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
+            } else{
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "", APApplication.CS_DOMAINE_ADRESSE_APG);
             }
@@ -1207,6 +1211,7 @@ public class APAttestations extends FWIDocumentManager {
                             if (aiPrec.isCopyFisc()) { ai.setIsCopyFisc(aiPrec.isCopyFisc()); }
                             if (aiPrec.isHasCopyFisc()) { ai.setIsHasCopyFisc(aiPrec.isHasCopyFisc()); }
                             if (aiPrec.isAddLettreEntete()) { ai.setIsAddLettreEntete(aiPrec.isAddLettreEntete()); }
+                            if (!JadeStringUtil.isEmpty(aiPrec.getCanton())) { ai.setCanton(aiPrec.getCanton()); }
 
                             // suppression de aiPrec dans la liste
                             listObjects.remove(aiPrec);
@@ -1266,6 +1271,8 @@ public class APAttestations extends FWIDocumentManager {
             domaine = PRLettreEnTete.DOMAINE_PAI;
         } else if(isAttestationAPG) {
             domaine = PRLettreEnTete.DOMAINE_APG;
+        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+            domaine = PRLettreEnTete.DOMAINE_PAN;
         }
         return domaine;
     }

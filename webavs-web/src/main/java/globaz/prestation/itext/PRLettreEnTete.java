@@ -1,5 +1,6 @@
 package globaz.prestation.itext;
 
+import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -60,6 +61,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
     public static final String DOMAINE_MAT = "MAT";
     public static final String DOMAINE_PAT = "PAT";
     public static final String DOMAINE_PAI = "PAI";
+    public static final String DOMAINE_PAN = "PAN";
 
     public static final String FICHIER_MODELE_ENTETE_APG = "AP_LETTRE_ENTETE";
     public static final String FICHIER_MODELE_ENTETE_CORVUS = "RE_LETTRE_ENTETE";
@@ -86,7 +88,8 @@ public class PRLettreEnTete extends FWIDocumentManager {
         if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
                 || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)
                 || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)
-                || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)) {
+                || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)
+                || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAN)) {
             getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_APG);
         } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
             getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_IJ);
@@ -171,6 +174,10 @@ public class PRLettreEnTete extends FWIDocumentManager {
 
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519018");
+
+            } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAN)) {
+                adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
+                        tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
 
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
                 BISession remoteSession = PRSession.connectSession(getSession(), "IJ");
@@ -358,7 +365,8 @@ public class PRLettreEnTete extends FWIDocumentManager {
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
                     || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)
                     || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)
-                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)) {
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAN)) {
                 try {
                     // le modele
                     String extensionModelCaisse = getSession().getApplication()
@@ -447,7 +455,10 @@ public class PRLettreEnTete extends FWIDocumentManager {
             documentHelper = PRBabelHelper.getDocumentHelper(getISession());
 
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
-                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)) {
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAI)
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAN)) {
                 documentHelper.setCsDomaine("52018001");
                 documentHelper.setCsTypeDocument("52019008");
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
