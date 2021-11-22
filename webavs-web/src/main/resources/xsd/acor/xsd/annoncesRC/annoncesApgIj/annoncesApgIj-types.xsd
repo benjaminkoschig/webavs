@@ -80,23 +80,23 @@
 			<xs:element name="Eingliederungsart" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="de">1 = Untersuchung bzw. Abklärung
-2 = Wartezeit vor Massnahme (Art. 18 IVV)
+2 = Wartezeit vor Umschulung (Art. 18 IVV)
 3 = Warten vor Arbeitsantritt (Art. 19 IVV)
 4 = Taggeld während Massnahme nach Art. 14a, 15, 17, 18a IVG
 5 = ebA nach BBG mit Lehrvertrag
-6 = ebA mit Lehrvertrag
-7 = Tertiäre Ausbildung
-8 = Vorbereitung auf eine Hilfstätigkeit nach Art. 16 Abs. 3 IVG oder gezielte Vorbereitung nach Art. 5 Abs. 2 IVV
+6 = Medizinische Eingliederung
+7 = Höhere Berufsbildung oder Besuch Hochschule (Tertiäre Ausbildung)
+8 = Vorbereitung auf eine Hilfstätigkeit oder auf eine Tätigkeit in einer geschützten Werkstätte nach Art. 16 Abs. 3 IVG oder gezielte Vorbereitung nach Art. 5 Abs. 2 IVV
 9 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 12 IVG
 10 = Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 14a IVG</xs:documentation>
 					<xs:documentation xml:lang="fr">1 = Examen ou instruction
-2 = Délai d’attente avant les mesures (art. 18 RAI)
-3 = Délai d’attente avant le début du travail (art. 19 RAI)
+2 = Délai d’attente avant reclassement (art. 18 RAI)
+3 = Délai d’attente pendant la recherche d’emploi (art. 19 RAI)
 4 = Indemnité journalière pendant les mesures prévues aux art. 14a, 15, 17, 18a LAI
 5 = FPI selon LFPr avec contrat d’apprentissage
-6 = FPI avec contrat d’apprentissage
-7 = Formation tertiaire
-8 = Préparation à un travail auxiliaire selon art. 16 al. 3 LAI ou mesures préparatoires ciblées selon art. 5 al. 2 RAI
+6 = Mesure médicale de réadaptation
+7 = Formation professionnelle supérieure et haute école (Formation tertiaire)
+8 = Formation préparatoire à une activité auxiliaire ou un atelier protégé selon art. 16 al. 3 LAI ou préparation ciblée selon art. 5 al. 2 RAI
 9 = Indemnité journalière selon l’art. 22 al. 2 let. b et selon l’art. 12 LAI
 10 = Indemnité journalière selon l'art. 22 al. 2 let. b et selon l'art. 14a LAI</xs:documentation>
 				</xs:annotation>

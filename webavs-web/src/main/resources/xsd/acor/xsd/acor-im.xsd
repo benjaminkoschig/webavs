@@ -100,6 +100,14 @@
                                     </xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>id de l'assure
+							VersicherterId
+						</xs:documentation>
+						<xs:appinfo>
+							<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AssureIMId",description = "Id pour l'assure dans la feuille de calcul IM")</annox:annotate>
+						</xs:appinfo>
+					</xs:annotation>
 					<xs:simpleContent>
 						<xs:extension base="xs:string">
 							<xs:attribute name="type">

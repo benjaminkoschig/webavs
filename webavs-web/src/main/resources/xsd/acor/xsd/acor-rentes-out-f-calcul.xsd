@@ -188,6 +188,185 @@
 			<xs:element name="niveau_complx" type="xs:integer"/>
 		</xs:sequence>
 	</xs:complexType>
+
+		<xs:complexType name="Splitting">
+			<xs:annotation>
+				<xs:documentation>partage des revenus
+					Einkommensteilung
+				</xs:documentation>
+				<xs:appinfo>
+					<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="SplittingEvenement",description = "Informations de splitting pour cet événement")</annox:annotate>
+				</xs:appinfo>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="id" type="id_acor" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>identificateur du partage des revenus</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="assure1" type="id_acor"/>
+				<xs:element name="assure2" type="id_acor"/>
+				<xs:element name="an_ev1" type="AAAA" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>année de l'événement assuré de assure1</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="an_ev2" type="AAAA" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>année de l'événement assuré de assure2</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="type" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>utilisé seulement dans les cas s->s2 avec passé AI
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="avs"/>
+							<xs:enumeration value="ai"/>
+							<xs:enumeration value="ai_1ere"/>
+							<xs:enumeration value="ai_2eme"/>
+							<xs:enumeration value="ai_avs"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="an_split" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="an" type="AAAA"/>
+							<xs:element name="rev_brut1" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ram_ai1" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="frac_ai1" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:float">
+										<xs:pattern value="[0-1]+\.[0257][05]?"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_net1" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_brut2" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ram_ai2" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="frac_ai2" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:float">
+										<xs:pattern value="[0-1]+\.[0257][05]?"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_net2" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="tot">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="rev_brut_tot1">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_net_tot1">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_brut_tot2">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="rev_net_tot2">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="autres_rev" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="stand1">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="stand2">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="jeun1">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="jeun2">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+
+
 	<xs:complexType name="BaseEchelle">
 		<xs:sequence>
 			<xs:element name="an_niveau" type="AAAA">
@@ -1643,12 +1822,15 @@
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="id">
-								<xs:annotation>
-									<xs:documentation>id de l'assure
-                                        VersicherterId
-                                    </xs:documentation>
-								</xs:annotation>
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>id de l'assure
+											VersicherterId
+										</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AssureRenteId",description = "Id pour l'assure dans la feuille de calcul rente")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:simpleContent>
 										<xs:extension base="id_acor">
 											<xs:attribute name="type">
@@ -4562,181 +4744,7 @@ s=survivant</xs:documentation>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="splitting" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>partage des revenus
-                            Einkommensteilung
-                        </xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="id" type="id_acor" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>identificateur du partage des revenus</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="assure1" type="id_acor"/>
-										<xs:element name="assure2" type="id_acor"/>
-										<xs:element name="an_ev1" type="AAAA" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>année de l'événement assuré de assure1</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="an_ev2" type="AAAA" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>année de l'événement assuré de assure2</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="type" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>utilisé seulement dans les cas s->s2 avec passé AI
-                                    </xs:documentation>
-											</xs:annotation>
-											<xs:simpleType>
-												<xs:restriction base="xs:string">
-													<xs:enumeration value="avs"/>
-													<xs:enumeration value="ai"/>
-													<xs:enumeration value="ai_1ere"/>
-													<xs:enumeration value="ai_2eme"/>
-													<xs:enumeration value="ai_avs"/>
-												</xs:restriction>
-											</xs:simpleType>
-										</xs:element>
-										<xs:element name="an_split" minOccurs="0" maxOccurs="unbounded">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="an" type="AAAA"/>
-													<xs:element name="rev_brut1" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="ram_ai1" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="frac_ai1" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:float">
-																<xs:pattern value="[0-1]+\.[0257][05]?"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_net1" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_brut2" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="ram_ai2" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="frac_ai2" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:float">
-																<xs:pattern value="[0-1]+\.[0257][05]?"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_net2" minOccurs="0">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="tot">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="rev_brut_tot1">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_net_tot1">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_brut_tot2">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="rev_net_tot2">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="autres_rev" minOccurs="0">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="stand1">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="stand2">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="jeun1">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-													<xs:element name="jeun2">
-														<xs:simpleType>
-															<xs:restriction base="xs:int">
-																<xs:minInclusive value="0"/>
-															</xs:restriction>
-														</xs:simpleType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
+							<xs:element name="splitting" type="Splitting" minOccurs="0" maxOccurs="unbounded"/>
 							<xs:element name="comparaison_couple" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>comparaison globale des bases AI et AVS

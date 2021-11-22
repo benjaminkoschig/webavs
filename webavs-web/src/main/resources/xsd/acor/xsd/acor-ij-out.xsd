@@ -413,6 +413,16 @@ Ende des Anspruchs</xs:documentation>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:element>
+					<xs:element name="periode_fpi" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="debut" type="AAAAMMJJ"/>
+								<xs:element name="fin" type="AAAAMMJJ"/>
+								<xs:element name="nb_jours_non_indemnises" type="xs:int"/>
+								<xs:element name="montant" type="xs:double"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -902,7 +912,7 @@ ajournee</xs:documentation>
 											<xs:annotation>
 												<xs:documentation>Bases de calcul de l'IJ</xs:documentation>
 												<xs:appinfo>
-													<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="BasesCalculIJ",description = "Bases de calcul de l'IJ")</annox:annotate>
+													<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="BasesCalculIJOut",description = "Bases de calcul de l'IJ")</annox:annotate>
 												</xs:appinfo>
 											</xs:annotation>
 											<xs:sequence>

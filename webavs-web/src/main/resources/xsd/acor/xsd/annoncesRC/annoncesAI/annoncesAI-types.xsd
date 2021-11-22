@@ -343,8 +343,16 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 						<xs:element name="Ablehnungscode">
 							<xs:simpleType>
 								<xs:restriction base="xs:unsignedByte">
-									<xs:minInclusive value="80"/>
-									<xs:maxInclusive value="86"/>
+									<xs:enumeration value="18"/>
+									<xs:enumeration value="25"/>
+									<xs:enumeration value="30"/>
+									<xs:enumeration value="80"/>
+									<xs:enumeration value="81"/>
+									<xs:enumeration value="82"/>
+									<xs:enumeration value="83"/>
+									<xs:enumeration value="84"/>
+									<xs:enumeration value="85"/>
+									<xs:enumeration value="86"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -1103,7 +1111,13 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 		<xs:complexContent>
 			<xs:extension base="IVBeschlussMeldung_Subtype">
 				<xs:sequence>
-					<xs:element name="IVGrad" type="Short3stellig_Type"/>
+					<xs:element name="IVGrad">
+						<xs:simpleType>
+							<xs:restriction base="Short3stellig_Type">
+								<xs:maxInclusive value="100"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
 					<xs:element name="Invaliditaetsbemessung" type="UnsignedByte1stellig_Type"/>
 					<xs:element name="Beitragsart" type="Short2stellig_Type"/>
 					<xs:element name="Valideneinkommen" type="BetragFR6MitNull_Type"/>
@@ -1125,15 +1139,21 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 			<xs:extension base="IVBeschlussMeldung_Subtype">
 				<xs:sequence>
 					<xs:element name="Revisionsart" type="UnsignedByte1stellig_Type"/>
-					<xs:element name="Revisionscode" type="UnsignedByte1stellig_Type"/>
-					<xs:element name="IVGrad" type="Short3stellig_Type"/>
+					<xs:element name="Revisionscode" type="UnsignedByte2stellig_Type"/>
+					<xs:element name="IVGrad">
+						<xs:simpleType>
+							<xs:restriction base="Short3stellig_Type">
+								<xs:maxInclusive value="100"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
 					<xs:element name="Invaliditaetsbemessung" type="UnsignedByte1stellig_Type"/>
 					<xs:element name="Beitragsart" type="Short2stellig_Type"/>
 					<xs:element name="Valideneinkommen" type="BetragFR6MitNull_Type"/>
 					<xs:element name="BisherigerIVGrad">
 						<xs:simpleType>
 							<xs:restriction base="Short3stellig_Type">
-								<xs:maxInclusive value="999"/>
+								<xs:maxInclusive value="100"/>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:element>
@@ -1146,7 +1166,7 @@ FALSE,0 = décision non liée à une réadaptation</xs:documentation>
 			<xs:extension base="IVBeschlussMeldung_Subtype">
 				<xs:sequence>
 					<xs:element name="Revisionsart" type="UnsignedByte1stellig_Type"/>
-					<xs:element name="Revisionscode" type="UnsignedByte1stellig_Type"/>
+					<xs:element name="Revisionscode" type="UnsignedByte2stellig_Type"/>
 					<xs:element name="HEGrad" type="UnsignedByte1stellig_Type"/>
 					<xs:element name="BisherigerHEGrad" type="UnsignedByte1stellig_Type"/>
 				</xs:sequence>
