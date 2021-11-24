@@ -619,7 +619,7 @@ public class APGenererAttestationsProcess extends BProcess {
             if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
                 // recherche du canton dans l'adresse de domicile
-                canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+                canton = PRTiersHelper.getTiersCantonDomaine(getSession(), idTiers, APGUtils.resolveCSDomaineParGenreService(droit.getGenreService()));
 
                 // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à l'étranger alors on vas rechercher l'adresse de l'employeur
                 if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
@@ -654,7 +654,7 @@ public class APGenererAttestationsProcess extends BProcess {
         } else if (isPrestationLapai(prest)) {
             typeDroit = IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT;
         } else if (isPrestationPandemie(prest)) {
-            typeDroit = "ANY";
+            typeDroit = IAPDroitLAPG.CS_ANY_PAN;
         }
         return typeDroit;
     }

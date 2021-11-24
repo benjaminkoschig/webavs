@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import globaz.apg.properties.APProperties;
 import globaz.corvus.properties.REProperties;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
@@ -441,6 +442,25 @@ public class PRTiersHelper {
 
         String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
 
+        return cantonDomicile;
+    }
+
+    public static String getTiersCantonDomaine(BSession session, String idTiers, String domaine) throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, idTiers);
+
+        TIAdresseDataManager mgr = new TITiersAdresseManager();
+        mgr.setSession(session);
+        mgr.setForIdTiers(idTiers);
+        mgr.setForDateEntreDebutEtFin(JACalendar.todayJJsMMsAAAA());
+        mgr.find(BManager.SIZE_NOLIMIT);
+
+        // On recherche la bonne adresse parmis toutes celles possibles (Cascade d'adresse).
+        Collection<BIEntity> col = TIAdresseResolver.resolveForOneTiers(mgr, PRTiersHelper.CS_ADRESSE_COURRIER, domaine, tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+
+        String cantonDomicile = "";
+        if (col.size() == 1) {
+            cantonDomicile = ((TIAbstractAdresseData) col.iterator().next()).getIdCanton();
+        }
         return cantonDomicile;
     }
 

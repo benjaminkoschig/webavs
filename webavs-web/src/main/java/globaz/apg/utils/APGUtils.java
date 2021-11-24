@@ -78,7 +78,7 @@ public class APGUtils {
             droit = new APDroitPaternite();
         } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
             droit = new APDroitProcheAidant();
-        } else if (APGUtils.isTypeAllocationPandemie(genreService)) {
+        } else if (APGUtils.isTypeAllocationPandemie(genreService) || IAPDroitLAPG.CS_ANY_PAN.equals(genreService)) {
             droit = new APDroitPandemie();
         } else {
             droit = new APDroitAPG();
@@ -237,5 +237,23 @@ public class APGUtils {
 
     public static boolean isProcheAidant(HttpSession session) {
         return globaz.prestation.api.IPRDemande.CS_TYPE_PROCHE_AIDANT == (String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION);
+    }
+
+
+    public static String resolveCSDomaineParGenreService(String genreService) {
+        return getCSDomaineFromTypeDemande(resolveTypeDemandeParGenreService(genreService));
+    }
+
+    public static String resolveTypeDemandeParGenreService(String genreService) {
+        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+            return IPRDemande.CS_TYPE_MATERNITE;
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
+            return IPRDemande.CS_TYPE_PATERNITE;
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
+            return IPRDemande.CS_TYPE_PROCHE_AIDANT;
+        } else if (APGUtils.isTypeAllocationPandemie(genreService) || IAPDroitLAPG.CS_ANY_PAN.equals(genreService)) {
+            return IPRDemande.CS_TYPE_PANDEMIE;
+        }
+        return IPRDemande.CS_TYPE_APG;
     }
 }

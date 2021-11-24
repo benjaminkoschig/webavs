@@ -134,7 +134,8 @@ public interface IAPDroitLAPG {
     String CS_DECES_DEMI_JOUR_CIAB = "52001057";
 
     /** Genres service en ce qui concerne la pandémie */
-   String CS_GARDE_PARENTALE = "52001040";
+    String CS_ANY_PAN = "ANYPAN";
+    String CS_GARDE_PARENTALE = "52001040";
    String CS_QUARANTAINE = "52001041";
    String CS_INDEPENDANT_PANDEMIE = "52001042";
    String CS_INDEPENDANT_PERTE_GAINS = "52001043";
