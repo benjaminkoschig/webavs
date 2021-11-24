@@ -309,10 +309,12 @@ public class REAcorMapper {
                         FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation = null;
                         // On récupère la première prestation "valide" de la base de calcul pour récupérer le type du droit et le bénéficiaire.
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
-                            for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
-                                if (Objects.nonNull(eachPrestation.getRente())) {
-                                    premierePrestation = eachPrestation;
-                                    break;
+                            if (Objects.isNull(premierePrestation)) {
+                                for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
+                                    if (Objects.nonNull(eachPrestation.getRente())) {
+                                        premierePrestation = eachPrestation;
+                                        break;
+                                    }
                                 }
                             }
                         }
