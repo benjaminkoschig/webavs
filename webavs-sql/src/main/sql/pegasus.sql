@@ -780,6 +780,6 @@ WHERE PCOSID = 64039021
   AND PLAIDE = 'F';
 
 UPDATE SCHEMA.FWCOUP
-SET PCOLUT = '[de]Dette(s) hypothécaire(s) {libelle}'
+SET PCOLUT = 'Hypothekarschuld {libelle}'
 WHERE PCOSID = 64039021
   AND PLAIDE = 'D';
