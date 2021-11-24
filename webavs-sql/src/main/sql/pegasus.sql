@@ -771,3 +771,15 @@ VALUES (237653, 'D', '          ', '[de]PC AI Restitution en home Hors Canton DG
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (237653, 'F', '          ', 'PC AI Restitution en home Hors Canton DGEJ-FA',
         VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+
+
+-- Mise à jour code sys pour dettes plafonnées - S170908_002
+UPDATE SCHEMA.FWCOUP
+SET PCOLUT = 'Dette(s) hypothécaire(s) {libelle}'
+WHERE PCOSID = 64039021
+  AND PLAIDE = 'F';
+
+UPDATE SCHEMA.FWCOUP
+SET PCOLUT = '[de]Dette(s) hypothécaire(s) {libelle}'
+WHERE PCOSID = 64039021
+  AND PLAIDE = 'D';
