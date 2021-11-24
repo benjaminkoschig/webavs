@@ -125,7 +125,20 @@ public class APPrestationExtensionSplitter {
         copyPrestationBase.setDateDebut(dateDebut);
         copyPrestationBase.setDateFin(dateFin);
         copyPrestationBase.setNombreJoursSoldes(nombreJoursSoldes);
+        copyPrestationBase.setVersementAssure(recalculVersementAssure(prestationWrapper, nombreJoursSoldes));
         return copyPrestationBase;
+    }
+
+    private static FWCurrency recalculVersementAssure(APPrestationWrapper prestationWrapper, int nombreJoursSoldes) {
+        FWCurrency versementAssureOriginal = prestationWrapper.getPrestationBase().getVersementAssure();
+        int nombreJoursSoldesOriginal = prestationWrapper.getPrestationBase().getNombreJoursSoldes();
+        if (versementAssureOriginal != null && nombreJoursSoldesOriginal != nombreJoursSoldes) {
+            return new FWCurrency(String.valueOf(versementAssureOriginal.getBigDecimalValue()
+                    .divide(BigDecimal.valueOf(nombreJoursSoldesOriginal), 10, BigDecimal.ROUND_DOWN)
+                    .multiply(BigDecimal.valueOf(nombreJoursSoldes))));
+        } else {
+            return versementAssureOriginal;
+        }
     }
 
     private static APResultatCalculSituationProfessionnel calculerMontantSituationProffessionnelleEtLeSet(final APResultatCalculSituationProfessionnel resultatCalculSituationProfessionnel,

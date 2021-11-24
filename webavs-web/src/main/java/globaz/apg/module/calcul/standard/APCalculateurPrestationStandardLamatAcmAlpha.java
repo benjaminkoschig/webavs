@@ -2627,7 +2627,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         this.restituerPrestations(session, transaction, droit);
 
-        if(droit instanceof APDroitMaternite && basesCalcul!=null) {
+        // Seul les cas Acor ont une basesCalcul à cet endroit
+        if(droit instanceof APDroitMaternite && basesCalcul != null) {
             prestationsCourantes = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalcul, (SortedSet<APPrestationWrapper>)prestationsCourantes);
         }
 
