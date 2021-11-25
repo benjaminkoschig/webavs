@@ -321,11 +321,7 @@ public class APAttestations extends FWIDocumentManager {
 
             tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
 
-            // si il n'y a que des prestations MAT on prend l'adresse du domaine
-            // MAT
-            // dans tous les autresa cas (mixtes ou APG), on prend l'adresse du
-            // domaine APG
-            if (isAttestationMat && !isAttestationAPG) {
+            if (IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
                         IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
