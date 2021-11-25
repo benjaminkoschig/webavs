@@ -128,6 +128,8 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
         periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         //Par défaut false
         periode.setMesureNouvelle(false);
+        // Valeur par défaut pour conserver comportement ISO acorV3
+        periode.setNbMoisRecouvrement(3);
         return periode;
     }
 
