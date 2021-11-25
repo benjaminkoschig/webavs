@@ -36,6 +36,7 @@ public class DonneeInterneHomeVersement {
     private String montantDepenses = "";
     private String montantDejaVerser = "";
     private String montantDette = "";
+    private String montantAVerser = "";
     List<Periode> periodeListCreanceAccorde = new ArrayList<>();
 
 
@@ -196,4 +197,11 @@ public class DonneeInterneHomeVersement {
     }
 
 
+    public String getMontantAVerser() {
+        return montantAVerser;
+    }
+
+    public void setMontantAVerser(String montantAVerser) {
+        this.montantAVerser = montantAVerser;
+    }
 }
