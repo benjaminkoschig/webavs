@@ -15,6 +15,7 @@ import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.apg.properties.APProperties;
 import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
+import globaz.apg.utils.APGUtils;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -863,8 +864,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 // si canton vide dans le droit ou si la valeur est set à ETRANGER
                 if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
-                    // recherche du canton dans l'adresse de domicile
-                    canton = PRTiersHelper.getTiersCanton(getSession(), idTiers);
+                    // recherche du canton avec la cascade d'adresse par domaine
+                    canton = PRTiersHelper.getTiersCantonDomaine(getSession(), idTiers, APGUtils.resolveCSDomaineParGenreService(droit.getGenreService()));
 
                     // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à ETRANGER alors on vas rechercher l'adresse de l'employeur
                     if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {

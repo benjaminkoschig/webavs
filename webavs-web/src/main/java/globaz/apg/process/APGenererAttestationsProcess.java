@@ -618,7 +618,7 @@ public class APGenererAttestationsProcess extends BProcess {
             // si canton vide dans le droit ou si la valeur est set à ETRANGER
             if (JadeStringUtil.isBlankOrZero(canton) || PRACORConst.CODE_CANTON_ETRANGER.equals(canton)) {
 
-                // recherche du canton dans l'adresse de domicile
+                // recherche du canton avec la cascade d'adresse par domaine
                 canton = PRTiersHelper.getTiersCantonDomaine(getSession(), idTiers, APGUtils.resolveCSDomaineParGenreService(droit.getGenreService()));
 
                 // si canton vide il n'y a pas d'adresse de domicile ou si l'adresse de domicile est à l'étranger alors on vas rechercher l'adresse de l'employeur
