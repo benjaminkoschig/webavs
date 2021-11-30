@@ -3,13 +3,8 @@
  */
 package globaz.corvus.process;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import javax.xml.bind.JAXBException;
-import org.xml.sax.SAXException;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.rc.MonatsRekapitulationRentenType;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.rc.MonatsRekapitulationRentenType;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -32,6 +27,12 @@ import globaz.globall.util.JADate;
 import globaz.jade.common.JadeException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.tools.PRDateFormater;
+import org.xml.sax.SAXException;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 
 /**
  *
@@ -171,9 +172,11 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
             MonatsRekapitulationRentenType annonceXml = REAnnonceARC8DXmlService.getInstance().getAnnonceXml(recap,
                     noCaisse + noAgence);
             REEnvoyerRecapARC8DXMLService.getInstance().validateUnitMessage(annonceXml);
-            poolMeldungLot
-                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .add(annonceXml);
+
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            poolMeldungLot
+//                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .add(annonceXml);
         } catch (ValidationException e) {
             e.getMessageErreurDeValidation().add(0, recap.getId() + " - " + recap.getIdRecapMensuelle() + " : ");
             throw e;
@@ -187,11 +190,12 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
 
     private void envoieRecap(PoolMeldungZurZAS.Lot lotAnnonces)
             throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
-        if (lotAnnonces
-                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                .isEmpty()) {
-            throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
-        }
+        // TODO : gérer les annonces de 9e et 10e révisions
+//        if (lotAnnonces
+//                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                .isEmpty()) {
+//            throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+//        }
 
         String fileName = REEnvoyerRecapARC8DXMLService.getInstance().genereFichier(lotAnnonces);
         JadeFsFacade.copyFile(fileName,

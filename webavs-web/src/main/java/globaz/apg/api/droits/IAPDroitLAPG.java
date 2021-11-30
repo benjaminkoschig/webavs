@@ -9,7 +9,7 @@ public interface IAPDroitLAPG {
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
-    String[] DROITS_MODIFIABLES = {IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE, IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR,IAPDroitLAPG.CS_ETAT_DROIT_VALIDE, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE};
+    String[] DROITS_MODIFIABLES = {IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE, IAPDroitLAPG.CS_ETAT_DROIT_ERREUR,IAPDroitLAPG.CS_ETAT_DROIT_VALIDE, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE};
     // Code système des états des droits APG
 
     /** DOCUMENT ME! */
@@ -43,7 +43,6 @@ public interface IAPDroitLAPG {
    String CS_ETAT_DROIT_ERREUR = "52003006";
    String CS_ETAT_DROIT_VALIDE = "52003007";
    String CS_ETAT_DROIT_ATTENTE_REPONSE = "52003008";
-   String CS_ETAT_DROIT_ENREGISTRE = "52003009";
 
     /** DOCUMENT ME! */
     String CS_FORMATION_DE_BASE = "52001007";

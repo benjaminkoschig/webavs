@@ -94,7 +94,7 @@ public class IJIJCalculeeMapper {
 
     private IJIJCalculee createAndMapFpi(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJPetiteIJCalculee fpi = new IJPetiteIJCalculee();
-        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode(IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI, basesCalcul.getFormation().toString()).getIdCodeSysteme());
+//        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode(IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI, basesCalcul.getFormation().toString(), entityService.getSession()).getIdCodeSysteme());
         fpi.setCsTypeIJ(IIJPrononce.CS_FPI);
         return fpi;
     }

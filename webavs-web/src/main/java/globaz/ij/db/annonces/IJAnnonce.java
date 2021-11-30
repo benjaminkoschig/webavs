@@ -617,6 +617,14 @@ public class IJAnnonce extends BEntity implements PRHierarchique {
         return noCaisse;
     }
 
+    /**
+     * retour le Numéro caisse + numéro agence
+     * @return
+     */
+    public Integer getNoCaisseAndNoAgence() {
+        return Integer.valueOf(noCaisse + noAgence);
+    }
+
     public String getNoDecisionAiCommunication() {
         return noDecisionAiCommunication;
     }

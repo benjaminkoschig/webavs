@@ -24,7 +24,7 @@ import ch.globaz.common.domaine.Date;
 
 /**
  * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Si le champ « serviceType » = 40
- * et/ou 41 et le champ « numberOfDays » est > 300 jours -> erreur </br><strong>Champs concerné(s) :</strong></br>
+ * et/ou 41 et le champ « numberOfDays » est > 350 jours concecutifs -> erreur </br><strong>Champs concerné(s) :</strong></br>
  * 
  * @author lga
  */
@@ -180,7 +180,7 @@ public class Rule510 extends Rule {
 
         for (APDroitAvecParent droit : droits) {
             prestationManager.setForIdDroit(droit.getIdDroit());
-            prestationManager.find();
+            prestationManager.find(BManager.SIZE_NOLIMIT);
 
             for (Object p : prestationManager.getContainer()) {
                 APPrestation prestation = (APPrestation) p;

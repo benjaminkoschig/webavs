@@ -1,14 +1,14 @@
-<wsdl:definitions name="SeodorWebserviceDefinition10"
-                  targetNamespace="http://www.zas.admin.ch/seodor/ws/service-periods/1"
-                  xmlns="http://www.zas.admin.ch/seodor/ws/service-periods/1"
+<wsdl:definitions name="SeodorWebserviceDefinition-2-0"
+                  targetNamespace="http://www.zas.admin.ch/seodor/ws/service-periods/2"
+                  xmlns="http://www.zas.admin.ch/seodor/ws/service-periods/2"
                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                  xmlns:eavh-iv-2017="http://www.zas.admin.ch/xmlns/seodor-ws/1" >
+                  xmlns:eavh-iv-2017="http://www.zas.admin.ch/xmlns/seodor-ws/2" >
 
   <wsdl:types>
-    <xs:schema targetNamespace="http://www.zas.admin.ch/seodor/ws/service-periods/1" elementFormDefault="qualified">
-      <xs:import namespace="http://www.zas.admin.ch/xmlns/seodor-ws/1" schemaLocation="../../xsd/seodor/seodor-ws-1-0.xsd"/>
+    <xs:schema targetNamespace="http://www.zas.admin.ch/sedor/ws/service-periods/2" elementFormDefault="qualified">
+      <xs:import namespace="http://www.zas.admin.ch/xmlns/seodor-ws/2" schemaLocation="../../xsd/seodor/seodor-ws-2-0.xsd"/>
     </xs:schema>
   </wsdl:types>
 
@@ -18,15 +18,25 @@
   <wsdl:message name="getServicePeriodsResponseMessage">
     <wsdl:part name="getServicePeriodsResponse" element="eavh-iv-2017:getServicePeriodsResponse"/>
   </wsdl:message>
+  <wsdl:message name="getServicePeriodsWithHistoryRequestMessage">
+    <wsdl:part name="getServicePeriodsWithHistoryRequest" element="eavh-iv-2017:getServicePeriodsWithHistoryRequest"/>
+  </wsdl:message>
+  <wsdl:message name="getServicePeriodsWithHistoryResponseMessage">
+    <wsdl:part name="getServicePeriodsWithHistoryResponse" element="eavh-iv-2017:getServicePeriodsWithHistoryResponse"/>
+  </wsdl:message>
 
-  <wsdl:portType name="ServicePeriodsPort10">
+  <wsdl:portType name="ServicePeriodsPort-2-0">
     <wsdl:operation name="getServicePeriods">
       <wsdl:input message="getServicePeriodsRequestMessage"/>
       <wsdl:output message="getServicePeriodsResponseMessage"/>
     </wsdl:operation>
+    <wsdl:operation name="getServicePeriodsWithHistory">
+      <wsdl:input message="getServicePeriodsWithHistoryRequestMessage"/>
+      <wsdl:output message="getServicePeriodsWithHistoryResponseMessage"/>
+    </wsdl:operation>
   </wsdl:portType>
 
-  <wsdl:binding name="ServicePeriodsBinding10" type="ServicePeriodsPort10">
+  <wsdl:binding name="ServicePeriodsBinding-2-0" type="ServicePeriodsPort-2-0">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
     <wsdl:operation name="getServicePeriods">
       <soap:operation soapAction=""/>
@@ -37,11 +47,20 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getServicePeriodsWithHistory">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
 
-  <wsdl:service name="ServicePeriodsService10">
-    <wsdl:port name="ServicePeriodsPort10" binding="ServicePeriodsBinding10">
-      <soap:address location="https://ws.seodor-a.zas.admin.ch/services/seodor/ws/service-periods/1"/>
+  <wsdl:service name="ServicePeriodsService-2-0">
+    <wsdl:port name="ServicePeriodsPort-2-0" binding="ServicePeriodsBinding-2-0">
+      <soap:address location="https://ws.seodor-a.zas.admin.ch/services/seodor/ws/service-periods/2"/>
 <!--      <soap:address location="http://localhost:8088/mockServicePeriodsBinding-1-0"/>-->
     </wsdl:port>
   </wsdl:service>

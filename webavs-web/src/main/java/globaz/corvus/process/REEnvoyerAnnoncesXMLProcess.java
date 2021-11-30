@@ -3,18 +3,20 @@
  */
 package globaz.corvus.process;
 
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
+import ch.globaz.common.exceptions.ValidationException;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
+import ch.horizon.jaspe.util.JACalendar;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.annonce.service.REAnnonceXmlService;
 import globaz.corvus.annonce.service.REAnnonces10eXmlService;
 import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.corvus.api.annonces.IREAnnonces;
-import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
-import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1AManager;
-import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
-import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
-import globaz.corvus.db.annonces.REAnnoncesDiminution10Eme;
-import globaz.corvus.db.annonces.REAnnoncesDiminution9Eme;
+import globaz.corvus.db.annonces.*;
 import globaz.corvus.properties.REProperties;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -26,6 +28,18 @@ import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
@@ -35,28 +49,6 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.rc.PoolFussType;
-import ch.admin.zas.rc.PoolKopfType;
-import ch.globaz.common.exceptions.ValidationException;
-import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.PropertiesException;
-import ch.horizon.jaspe.util.JACalendar;
 
 /**
  * @author jmc
@@ -64,7 +56,7 @@ import ch.horizon.jaspe.util.JACalendar;
  */
 public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
-    private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
+    private static final String XSD_FOLDER = "/xsd/acor/xsd/annoncesRC/";
     private static final String XSD_NAME = "MeldungZurZas.xsd";
 
     private static final Logger LOG = LoggerFactory.getLogger(REEnvoyerAnnoncesXMLProcess.class);
@@ -258,11 +250,13 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
             mgr.cursorClose(statement);
 
-            if (lotAnnonces
-                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .isEmpty()) {
-                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
-            }
+
+            // TODO : gérer les annonces 9e et 10e révisions
+//            if (lotAnnonces.getRRMeldung10()
+//                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .isEmpty()) {
+//                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+//            }
 
             String fileName = genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
@@ -294,9 +288,9 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     private PoolMeldungZurZAS.Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
             throws PropertiesException, ParseException, DatatypeConfigurationException {
-        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-        ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
-        ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
+        acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory factoryType = new acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory();
+        PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
         if (poolKopfTest) {
             poolKopf.setTest("TEST");
@@ -393,7 +387,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * {@link #preparerDiminution9Eme(REAnnoncesDiminution9Eme) preparerDiminution9Eme}) <br/>
      * en étant indépendant de l'application
      * 
-     * @return le numéro de l'agence en format {@link java.lang.String String}
+     * @return le numéro de l'agence en format {@link String String}
      * @throws Exception
      */
     String getNumeroAgenceFromApplication() throws Exception {
@@ -411,7 +405,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * {@link #preparerDiminution9Eme(REAnnoncesDiminution9Eme) preparerDiminution9Eme}) <br/>
      * en étant indépendant de l'application
      * 
-     * @return le numéro de la caisse en format {@link java.lang.String String}
+     * @return le numéro de la caisse en format {@link String String}
      * @throws Exception
      */
     String getNumeroCaisseFromApplication() throws Exception {
@@ -494,9 +488,10 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
         validateUnitMessage(annonceXml);
 
-        poolMeldungLot
-                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                .add(annonceXml);
+        // TODO : gérer les annonces 9e et 10e révisions
+//        poolMeldungLot
+//                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                .add(annonceXml);
 
     }
 
@@ -598,7 +593,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws Exception {
         String fileName;
-        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
         pool.getLot().add(lotAnnonce);
         lotAnnonce.getPoolFuss().setEintragungengesamtzahl(size);
@@ -661,11 +656,13 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         PoolMeldungZurZAS pool;
         final List<String> validationErrors = new LinkedList<String>();
         try {
-            ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+            acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
             pool = factoryPool.createPoolMeldungZurZAS();
             PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
-            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .add(element);
+
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .add(element);
             pool.getLot().add(lot);
             initMarshaller(pool);
 

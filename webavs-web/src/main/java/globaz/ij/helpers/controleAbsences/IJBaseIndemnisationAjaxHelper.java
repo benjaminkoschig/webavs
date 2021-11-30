@@ -95,19 +95,21 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
                     baseIndemnisation.setMotifInterruption("");
                 } else {
                     if (IJAbsence.CS_ABSENCE_ACCIDENT_SANS_RAPPORT_REA.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MAL_ACC_SANS_RAP_READAPT);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_ACCIDENT);
                     } else if (IJAbsence.CS_ABSENCE_MALADIE_SANS_RAPPORT_REA.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MAL_ACC_SANS_RAP_READAPT);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MALADIE);
                     } else if (IJAbsence.CS_ABSENCE_ACCIDENT_AVEC_RAPPORT_REA.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MAL_ACC_EN_RAP_READAPT);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_ACCIDENT);
                     } else if (IJAbsence.CS_ABSENCE_MALADIE_AVEC_RAPPORT_REA.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MAL_ACC_EN_RAP_READAPT);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MALADIE);
                     } else if (IJAbsence.CS_ABSENCE_GROSSESSE.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_GROSSESSE);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MATERNITE);
                     } else if (IJAbsence.CS_ABSENCE_ACCOUCHEMENT.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_ACCOUCHEMENT);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MATERNITE);
                     } else if (IJAbsence.CS_ABSENCE_AUTRE_MOTIF.equals(absence.getCodeAbsence())) {
                         baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_AUTRES_MOTIFS);
+                    } else if (IJAbsence.CS_ABSENCE_PROCHE_AIDANT.equals(absence.getCodeAbsence())) {
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_PROCHE_AIDANT);
                     } else if (IJAbsence.CS_ABSENCE_INJUSTIFIE.equals(absence.getCodeAbsence())) {
                         baseIndemnisation.setMotifInterruption("");
                     }

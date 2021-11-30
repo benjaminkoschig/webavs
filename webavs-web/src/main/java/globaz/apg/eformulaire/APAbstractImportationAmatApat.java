@@ -512,7 +512,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if (personneEtendueSearch.getNbOfResultMatchingQuery() == 1 && adresseCourrier.getFields() == null) {
                 PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) personneEtendueSearch.getSearchResults()[0];
                 adresseDomicile = createAdresseCourrier(personneEtendueComplexModel, adresseAssure, domaine, npa);
-                if (adresseDomicile != null && !adresseDomicile.isNew()) {
+                if (adresseDomicile != null && !adresseDomicile.isNew() &&
+                        ((BENEFICIAIRE_MERE.equals(adressePaiement.getBeneficiaryType()) && IPRDemande.CS_TYPE_MATERNITE.equals(typeDemande)) ||
+                                (BENEFICIAIRE_PERE.equals(adressePaiement.getBeneficiaryType()) && IPRDemande.CS_TYPE_PATERNITE.equals(typeDemande)))) {
                     createAdressePaiement(adresseDomicile, tiers.getIdTiers(), adressePaiement, domaine);
                 }
             }

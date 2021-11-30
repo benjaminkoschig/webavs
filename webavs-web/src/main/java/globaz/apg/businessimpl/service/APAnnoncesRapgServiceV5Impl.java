@@ -8,6 +8,7 @@ import ch.ech.xmlns.ech_0090._1.EnvelopeType;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APAnnoncesException;
 import globaz.apg.exceptions.APPlausibilitesException;
 import globaz.apg.pojo.APChampsAnnonce;
@@ -95,7 +96,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             message.setInsurantMaritalStatus(new BigInteger(champsAnnonce.getInsurantMaritalStatus()));
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getNumberOfChildren())
-                && !"90".equals(champsAnnonce.getServiceType())) {
+                && APGenreServiceAPG.maternitePaterniteProcheAidant().stream().noneMatch(s -> s.getCodePourAnnonce().equals(champsAnnonce.getServiceType()))) {
             message.setNumberOfChildren(Short.valueOf(champsAnnonce.getNumberOfChildren()));
         }
         if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCanton())) {

@@ -10,6 +10,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APTypeProtectionCivile;
+import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.exceptions.APWebserviceException;
 import globaz.apg.interfaces.APDroitAvecParent;
@@ -496,6 +497,17 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     public String getDetailMessageErreur() {
         return null;
+    }
+
+    /**
+     * Controle si plusieurs employeurs pour proche aidant
+     * @param champsAnnonce
+     * @return vrai si proche aidant et paiement méthode < 3
+     */
+    protected boolean isProcheAidantPayementMethodePrisEnCompte(APChampsAnnonce champsAnnonce) {
+        return APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(champsAnnonce.getServiceType())
+                && (JadeStringUtil.isEmpty(champsAnnonce.getPaymentMethod())
+                || Integer.valueOf(champsAnnonce.getPaymentMethod()) < APTypeVersement.VERSEMENT_EMPLOYEUR_ET_ASSURE.getCodeTypeVersement());
     }
 
 }

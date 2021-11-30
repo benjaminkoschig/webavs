@@ -93,25 +93,21 @@ public class APGenererLotProcess extends BProcess {
             APPrestationTypeDemandeManager prestationManager = new APPrestationTypeDemandeManager();
             prestationManager.setSession(getSession());
             prestationManager.setForTypeDemande(typePrestation);
-
+            // Seul les prestations des droits à l'état validé peuvent être mise en lot.
+            prestationManager.setForEtatDroit(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+            // Pour les modules autres qu'APG les prestations mise en lot doivent avoir l'état validé.
+            prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             if (typePrestation.equals(IPRDemande.CS_TYPE_APG)) {
+                // Seules les prestations contrôlées peuvent être mise en lot pour les droits APG
+                // Pour les autres modules le contrôle des prestations n'est pas disponible.
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
-            } else if (typePrestation.equals(IPRDemande.CS_TYPE_MATERNITE)) {
-                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                prestationManager.setToDateFin(getPrestationDateFin());
-            } else if (typePrestation.equals(IPRDemande.CS_TYPE_PATERNITE)) {
-                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                prestationManager.setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
-                prestationManager.setToDateFin(getPrestationDateFin());
-            } else if (typePrestation.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT)) {
-                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                prestationManager.setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
-                prestationManager.setToDateFin(getPrestationDateFin());
-            } else if (typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
-                prestationManager.setSession(getSession());
-                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                prestationManager.setForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
-                prestationManager.setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
+            } else if (typePrestation.equals(IPRDemande.CS_TYPE_MATERNITE) ||
+                       typePrestation.equals(IPRDemande.CS_TYPE_PATERNITE) ||
+                       typePrestation.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT) ||
+                       typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
+                // Pour les APG spécifique (Maternité, Paternité...) les prestations sont prises en compte si leur date de fin
+                // est au moins la date de spécifié dans le champs "Jusqu'à date" de la page de génération de lot
+                // La page du module APG ne contient pas ce champs.
                 prestationManager.setToDateFin(getPrestationDateFin());
             } else {
                 throw new Exception("Type de prestation introuvable");

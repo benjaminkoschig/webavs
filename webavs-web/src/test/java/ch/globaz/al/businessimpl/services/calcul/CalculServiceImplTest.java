@@ -119,6 +119,7 @@ public class CalculServiceImplTest extends ALTestCaseJU4 {
             Assert.assertEquals(ALCSCantons.ZG, s.getCantonForTarif(ALCSTarif.CATEGORIE_ZG));
             Assert.assertEquals(ALCSCantons.ZH, s.getCantonForTarif(ALCSTarif.CATEGORIE_ZH));
             Assert.assertEquals(ALCSCantons.VD, s.getCantonForTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS));
+            Assert.assertEquals(ALCSCantons.VD, s.getCantonForTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022));
 
             try {
                 s.getCantonForTarif(ALCSTarif.CATEGORIE_CATMP);

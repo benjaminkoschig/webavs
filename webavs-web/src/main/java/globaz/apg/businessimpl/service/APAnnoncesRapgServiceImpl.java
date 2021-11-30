@@ -6,6 +6,7 @@ package globaz.apg.businessimpl.service;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APAnnoncesException;
 import globaz.apg.exceptions.APPlausibilitesException;
 import globaz.apg.pojo.APChampsAnnonce;
@@ -65,7 +66,7 @@ public class APAnnoncesRapgServiceImpl implements APAnnoncesRapgService {
             message.setInsurantMaritalStatus(new BigInteger(champsAnnonce.getInsurantMaritalStatus()));
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getNumberOfChildren())
-                && !"90".equals(champsAnnonce.getServiceType())) {
+                && APGenreServiceAPG.maternitePaterniteProcheAidant().stream().noneMatch(s -> s.getCodePourAnnonce().equals(champsAnnonce.getServiceType()))) {
             message.setNumberOfChildren(new BigInteger(champsAnnonce.getNumberOfChildren()));
         }
         if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCanton())) {

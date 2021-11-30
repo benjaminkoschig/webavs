@@ -3,30 +3,17 @@
  */
 package globaz.corvus.process;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import javax.xml.bind.JAXBException;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.pool.PoolMeldungZurZAS.Lot;
-import ch.admin.zas.rc.VAIKMeldungKassenWechselType;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS.Lot;
+import acor.ch.admin.zas.rc.annonces.rente.rc.VAIKMeldungKassenWechselType;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.annonce.service.REAnnonceARC3DXmlService;
 import globaz.corvus.annonce.service.REGenererARC3XMLTransfertCIService;
-import globaz.corvus.api.basescalcul.IREPrestationAccordee;
-import globaz.corvus.api.basescalcul.IRERenteAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamille;
 import globaz.corvus.properties.REProperties;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -35,6 +22,17 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.JadeException;
 import globaz.prestation.db.infos.PRInfoCompl;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author mpe
@@ -188,11 +186,12 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
     private boolean envoiARC3(Lot lotAnnonces)
             throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
         try {
-            if (lotAnnonces
-                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .isEmpty()) {
-                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
-            }
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            if (lotAnnonces
+//                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .isEmpty()) {
+//                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+//            }
             String fileName = REGenererARC3XMLTransfertCIService.getInstance().genereFichier(lotAnnonces);
             chemin = REGenererARC3XMLTransfertCIService.getInstance().envoiFichier(fileName);
         } catch (Exception e) {
@@ -253,7 +252,7 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
     /**
      * Aiguille la préparation de l'annonce passée en paramètre sur la bonne méthode <br/>
      *
-     * @param listeNss
+     * @param listNss
      * @param newNumCaisseAgence
      *
      * @throws ValidationException si une erreur de validation unitaire d'une annonce survient
@@ -275,9 +274,10 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
                     VAIKMeldungKassenWechselType annonceXml = REAnnonceARC3DXmlService.getInstance().getAnnonceXml(
                             newNumCaisseAgence, NSUtil.unFormatAVS(nss), formatNumCaisseAgence(noCaisse, noAgence), new Long(idBase + counter));
                     REGenererARC3XMLTransfertCIService.getInstance().validateUnitMessage(annonceXml);
-                    poolMeldungLot
-                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                            .add(annonceXml);
+                    // TODO : gérer les annonces de 9e et 10e révisions
+//                    poolMeldungLot
+//                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                            .add(annonceXml);
                 }
                 setProgressCounter(counter++);
             } catch (ValidationException e) {

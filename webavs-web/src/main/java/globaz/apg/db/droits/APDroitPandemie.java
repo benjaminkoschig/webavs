@@ -168,10 +168,11 @@ public class APDroitPandemie extends APDroitLAPG implements IPRCloneable {
         // on ne veut pas faire de propagation GED
         clone.wantCallExternalServices(isCallExternalServices());
 
-        if (IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS == actionType){
+        // Etat par défaut : attente.
+        // En cas de restitution l'état est mis directement à l'état validé
+        if (IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_RESTI_FILS == actionType){
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
         } else {
-        // Etat par défaut : attente.
         clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
         }
 

@@ -1,18 +1,19 @@
 package globaz.corvus.annonce.service;
 
+import acor.ch.admin.zas.rc.annonces.rente.rc.ListeFolgerecordNrType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.VAIKMeldungKassenWechselType;
+import ch.horizon.jaspe.util.JACalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import ch.admin.zas.rc.ListeFolgerecordNrType;
-import ch.admin.zas.rc.VAIKMeldungKassenWechselType;
-import ch.horizon.jaspe.util.JACalendar;
 
 public class REAnnonceARC3DXmlService {
 
@@ -33,7 +34,7 @@ public class REAnnonceARC3DXmlService {
         ListeFolgerecordNrType listeFolgerecordNr = new ListeFolgerecordNrType();
         listeFolgerecordNr.getFolgerecordNr().addAll(LIST_CODE_ENREGISTREMENT);
         meldung.setListeFolgerecordNr(listeFolgerecordNr);
-        meldung.setKasseZweigstelle(oldNoCaisseAgence);
+        meldung.setKasseZweigstelle(Integer.valueOf(oldNoCaisseAgence));
         meldung.setKasseneigenerHinweis(REF_CAISSE + nss);
         meldung.setMeldungsnummer(increment);
         meldung.setMZRSchluesselzahl(MOTIF_ARC);
@@ -48,7 +49,7 @@ public class REAnnonceARC3DXmlService {
         meldung.setAuftragsdatum(dealCloseDate);
 
         meldung.setVersichertennummer(nss);
-        meldung.setKasseZweigstelleNeu(newNoCaisseAgence);
+        meldung.setKasseZweigstelleNeu(Integer.valueOf(newNoCaisseAgence));
         return meldung;
     }
 

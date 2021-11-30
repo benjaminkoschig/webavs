@@ -365,6 +365,12 @@ public interface ALCSTarif {
     public static final String CATEGORIE_VD_DROIT_ACQUIS = "61190097";
 
     /**
+     * CS : catégorie de tarif du canton VD droit acquis en 2022
+     */
+    public static final String CATEGORIE_VD_DROIT_ACQUIS_2022 = "61190099";
+
+
+    /**
      * CS : catégorie de tarif du canton "Valais"
      */
     public static final String CATEGORIE_VS = "61190024";

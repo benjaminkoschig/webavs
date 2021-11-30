@@ -74,7 +74,7 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
         return fromClauseBuffer.toString();
     }
 
-    private String forEtatDroitDifferentDe = "";
+    private String forEtatDroit = "";
     private String forEtatPrestation = "";
     private List<String> notForGenre = new ArrayList<>();
 
@@ -84,7 +84,6 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
     private String fromClause = null;
 
     /**
-     * @see globaz.globall.db.BEntity#_getFrom(globaz.globall.db.BStatement)
      */
     @Override
     protected String _getFrom(BStatement statement) {
@@ -114,13 +113,13 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
                     + _dbWriteNumeric(statement.getTransaction(), getForEtatPrestation());
         }
 
-        if (!JadeStringUtil.isIntegerEmpty(getForEtatDroitDifferentDe())) {
+        if (!JadeStringUtil.isIntegerEmpty(getForEtatDroit())) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += _getCollection() + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "<>"
-                    + _dbWriteNumeric(statement.getTransaction(), getForEtatDroitDifferentDe());
+            sqlWhere += _getCollection() + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "="
+                    + _dbWriteNumeric(statement.getTransaction(), getForEtatDroit());
         }
 
         if(notForGenre.size() > 0) {
@@ -151,12 +150,12 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
     }
 
     /**
-     * getter pour l'attribut for etat droit different de
+     * getter pour l'attribut for etat droit
      * 
-     * @return la valeur courante de l'attribut for etat droit different de
+     * @return la valeur courante de l'attribut for etat droit
      */
-    public String getForEtatDroitDifferentDe() {
-        return forEtatDroitDifferentDe;
+    public String getForEtatDroit() {
+        return forEtatDroit;
     }
 
     /**
@@ -174,8 +173,8 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
-    public void setForEtatDroitDifferentDe(String string) {
-        forEtatDroitDifferentDe = string;
+    public void setForEtatDroit(String string) {
+        forEtatDroit = string;
     }
 
     /**

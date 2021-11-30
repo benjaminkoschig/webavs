@@ -255,7 +255,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     // return breakRules;
     // }
 
-    public String getActionFinalser() {
+    public String getActionFinaliser() {
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(getGenreService())) {
             return "apg.droits.droitMatP.finaliserCreationDroit";
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {

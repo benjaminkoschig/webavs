@@ -1,34 +1,8 @@
 package globaz.corvus.annonce.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.rc.PoolFussType;
-import ch.admin.zas.rc.PoolKopfType;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.corvus.properties.REProperties;
@@ -40,6 +14,29 @@ import globaz.jade.common.JadeException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author ebko
@@ -50,7 +47,7 @@ public class REGenererARC3XMLTransfertCIService {
 
     private static final Logger LOG = LoggerFactory.getLogger(REGenererARC3XMLTransfertCIService.class);
 
-    private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
+    private static final String XSD_FOLDER = "/xsd/acor/xsd/annoncesRC/";
     private static final String XSD_NAME = "MeldungZurZas.xsd";
 
     private static REGenererARC3XMLTransfertCIService instance = new REGenererARC3XMLTransfertCIService();
@@ -103,9 +100,9 @@ public class REGenererARC3XMLTransfertCIService {
      */
     public PoolMeldungZurZAS.Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
             throws ParseException, DatatypeConfigurationException {
-        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-        ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
-        ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
+        acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory factoryType = new acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
         if (poolKopfTest) {
             poolKopf.setTest("TEST");
@@ -145,11 +142,12 @@ public class REGenererARC3XMLTransfertCIService {
         PoolMeldungZurZAS pool;
         final List<String> validationErrors = new LinkedList<>();
         try {
-            ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+            acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
             pool = factoryPool.createPoolMeldungZurZAS();
             PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
-            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .add(element);
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .add(element);
             pool.getLot().add(lot);
             initMarshaller(pool);
 
@@ -193,12 +191,13 @@ public class REGenererARC3XMLTransfertCIService {
     public String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce)
             throws JadeException, IOException, PropertiesException, SAXException, JAXBException {
         String fileName;
-        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
         pool.getLot().add(lotAnnonce);
-        lotAnnonce.getPoolFuss().setEintragungengesamtzahl(lotAnnonce
-                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                .size());
+        // TODO : gérer les annonces de 9e et 10e révisions
+//        lotAnnonce.getPoolFuss().setEintragungengesamtzahl(lotAnnonce
+//                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                .size());
         initMarshaller(pool);
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 

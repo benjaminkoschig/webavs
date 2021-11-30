@@ -1,10 +1,7 @@
 package ch.globaz.common.util;
 
-import globaz.framework.util.FWCurrency;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 /**
  * Utilitaire pour les méthodes liés aux string

@@ -9,6 +9,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APGenreServiceAPG;
+import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
@@ -63,7 +64,10 @@ public class Rule418 extends Rule {
         setRuleData(champsAnnonce.getStartOfPeriod(), champsAnnonce.getEndOfPeriod(), champsAnnonce.getIdDroit(), champsAnnonce.getNumberOfDays());
         APPeriodeAPG periodeAPGCalculed = createPeriodeAPGCalculed(startOfPeriod, endOfPeriod, idDroit);
         String nss = champsAnnonce.getInsurant();
-        if(!(serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) || APGenreServiceAPG.isValidGenreServicePandemie(serviceType))) {
+        if((!(serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())
+                || APGenreServiceAPG.isValidGenreServicePandemie(serviceType)))
+                // ne prendre que les types proches aidant avec paiement méthode < 3
+                && (!APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(champsAnnonce.getServiceType()) || isProcheAidantPayementMethodePrisEnCompte(champsAnnonce))) {
 
             // Ne pas traiter les droits en état refusé ou transféré
             List<String> etatIndesirable = new ArrayList<>();
@@ -232,10 +236,6 @@ public class Rule418 extends Rule {
         apDroitLAPGJointTiersManager.setForEtatDroitNotIn(etatIndesirable);
         apDroitLAPGJointTiersManager.setForDroitContenuDansDateDebut(periodeAPGCalculed.getDateDebutPeriode());
         apDroitLAPGJointTiersManager.setForDroitContenuDansDateFin(periodeAPGCalculed.getDateFinPeriode());
-//        if(!StringUtils.EMPTY.equals(idDroit)) {
-//            apDroitLAPGJointTiersManager.setForIdDroitNotIn(Collections.singletonList(idDroit));
-//
-//        }
         apDroitLAPGJointTiersManager.setForCsTypeDemandeIn(Collections.singletonList(typeDroit));
         Exceptions.checkedToUnChecked(() -> apDroitLAPGJointTiersManager.find(BManager.SIZE_NOLIMIT));
         List<APDroitAvecParent> droitsTries = null;

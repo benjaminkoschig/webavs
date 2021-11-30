@@ -38,7 +38,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
 
         try{
             newDroit.setIdDemande(demande.getIdDemande());
-            newDroit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE);
+            newDroit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
             newDroit.setGenreService(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
             newDroit.setReference(content.getReferenceData());
             newDroit.setIdCaisse(CaisseInfoPropertiesWrapper.noCaisseNoAgence());

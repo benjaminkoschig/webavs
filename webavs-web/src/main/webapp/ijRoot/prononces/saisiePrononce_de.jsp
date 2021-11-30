@@ -112,14 +112,14 @@
 	function checkWarn() {
 		$("#dialog_warn").dialog({
 			resizable: false,
-			height: 500,
-			width: 500,
+			height: 220,
+			width: 400,
+			closeOnEscape: true,
 			modal: true,
 			buttons: [{
 					id: "correct",
 					text: "<ct:FWLabel key='JSP_CORRIGER'/>",
 					click: function () {
-						$('#afficheWarning').prop( "checked", true);
 						$(this).dialog("close");
 					}
 			}, {
@@ -134,11 +134,12 @@
 				}
 			}],
 			open : function() {
-				$(".ui-dialog-titlebar-close",".ui-dialog-titlebar").hide();
-				$("#Ok").focus();
 				<% if(!viewBean.getWarningMessage().isEmpty()) { %>
 					$('#dialog_warn').append('<%=viewBean.getWarningMessage()%>');
 				<% } %>
+			},
+			close: function(){
+				$('#afficheWarning').prop( "checked", true);
 			}
 		});
 	}
@@ -181,11 +182,14 @@
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
-							<TD colspan="2">	<ct:select name="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
+							<TD colspan="4">
+								<ct:select name="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
 										<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>">
 										</ct:optionsCodesSystems>
 									</ct:select>
 							</TD>
+						</TR>
+						<TR>
 							<TD><ct:FWLabel key="JSP_TYPE_HEBERGEMENT"/></TD>
 							<TD colspan="2">	<ct:select name="csTypeHebergement" defaultValue="<%=viewBean.getCsTypeHebergement()%>">
 										<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_TYPE_HEBERGEMENT%>">
@@ -251,9 +255,8 @@
 							<TD><INPUT type="text" name="codesCasSpecial" value="<%=viewBean.getCodesCasSpecial()%>" onblur="checkCodesCasSpecial(this, this.value)"></TD>
 							<TD><ct:FWLabel key="JSP_ETAT"/></TD>
 							<TD><INPUT type="text" name="anneeRenteEnCours" value="<%=viewBean.getAnneeRenteEnCours()%>" maxlength="4" class="numeroCourt"></TD>
-<%--							Pour 1.27.1--%>
-<%--							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>--%>
-<%--							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":""%>></TD>--%>
+							<TD><ct:FWLabel key="JSP_MESURE_READAPTATION_8A"/>
+							<TD><INPUT type="checkbox" name="mesureReadaptation8a" <%=viewBean.getMesureReadaptation8a().booleanValue()?"CHECKED":""%>></TD>
 						</TR>
 
 				<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean){

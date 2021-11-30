@@ -660,7 +660,10 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
                     detailPrestationModel = (DetailPrestationModel) detailPrestationSearchModel.getSearchResults()[0];
                 }
 
+                // TODO - JJO - 11.11.2021 : ajouter ligne droit acquit vaud 2022
                 if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS,
+                        detailPrestationModel.getCategorieTarif(), false) ||
+                        JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022,
                         detailPrestationModel.getCategorieTarif(), false)) {
                     // traitement pour le montant avec ajout de l'asterisque
                     ligne.addData("col_montant",

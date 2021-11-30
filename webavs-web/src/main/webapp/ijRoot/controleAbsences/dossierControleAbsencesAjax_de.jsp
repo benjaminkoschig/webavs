@@ -8,6 +8,7 @@
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1"%>
 
 <%@ page import="globaz.framework.servlets.FWServlet"%>
+<%@ page import="globaz.ij.api.basseindemnisation.IIJBaseIndemnisation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -23,7 +24,7 @@ var langue = "<%=languePage%>";
 <%
 	idEcran="PIJ0023";
 	IJDossierControleAbsencesAjaxViewBean viewBean = (IJDossierControleAbsencesAjaxViewBean) request.getAttribute(FWServlet.VIEWBEAN);
-	
+	String csTypeIJ = request.getParameter("csTypeIJ");
 
 %>
 <%@include file="/theme/detail_ajax/javascripts.jspf"%>
@@ -391,7 +392,7 @@ var langue = "<%=languePage%>";
 											</div>
 											<div class="span3">											
 												<ct:FWCodeSelectTag	name="baseIndemnisation.motifInterruption" 
-																	codeType="IJMOTIFINT" 
+																	   codeType="<%=IIJBaseIndemnisation.CS_GROUPE_MOTIF_INTERRUPTION%>"
 																	defaut="" 
 																	wantBlank="true" />
 											</div>

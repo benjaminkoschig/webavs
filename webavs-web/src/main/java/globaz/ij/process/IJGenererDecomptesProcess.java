@@ -3,6 +3,8 @@
  */
 package globaz.ij.process;
 
+import globaz.babel.api.doc.ICTScalableDocumentCopie;
+import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BProcess;
@@ -19,9 +21,15 @@ import globaz.ij.db.prestations.IJPrestation;
 import globaz.ij.db.prestations.IJPrestationManager;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.itext.IJDecomptes;
+import globaz.ij.itext.IJDecomptesEntete;
 import globaz.ij.regles.IJBaseIndemnisationRegles;
 import globaz.ij.regles.IJPrestationRegles;
 import globaz.ij.regles.IJPrononceRegles;
+import globaz.prestation.api.IPRDemande;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.itext.PRLettreEnTete;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <H1>Process effectuant la logique de génération de communications.</H1>
@@ -336,8 +344,10 @@ public class IJGenererDecomptesProcess extends BProcess {
         return isSendToGed;
     }
 
-    private void imprimerCommunication() throws Exception {
-        IJDecomptes decomptes = new IJDecomptes(getSession());
+    private void imprimerCommunication(Boolean isCopie) throws Exception {
+
+        IJDecomptesEntete decomptes = new IJDecomptesEntete(getSession());
+        decomptes.setIsCopie(isCopie);
         decomptes.setIdLot(idLot);
         decomptes.setEMailAddress(getEMailAddress());
 
@@ -347,6 +357,11 @@ public class IJGenererDecomptesProcess extends BProcess {
         // decomptes.setDate(new
         // SimpleDateFormat("dd.MM.yyyy").parse(dateSurDocument));
         decomptes.start();
+    }
+
+    private void imprimerCommunication() throws Exception {
+        imprimerCommunication(false);
+        imprimerCommunication(true);
     }
 
     /**

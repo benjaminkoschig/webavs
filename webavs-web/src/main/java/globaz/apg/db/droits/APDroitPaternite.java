@@ -391,6 +391,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
         // Etat par défaut : attente
+        // En cas de restitution l'état est mis directement à l'état validé
         if(actionType == ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS){
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
         }else{

@@ -15,13 +15,14 @@ public interface IPRCloneable {
 
     /** DOCUMENT ME! */
     int ACTION_CREER_NOUVEAU_DROIT_APG_FILS = 1002;
+    int ACTION_CREER_NOUVEAU_DROIT_APG_RESTI_FILS = 1004;
     int ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS = 1005;
 
-    int ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS = 1003;
+    int ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_RESTI_FILS = 1003;
 
     /** DOCUMENT ME! */
     int ACTION_CREER_NOUVEAU_DROIT_APG_PARENT = 1001;
-    int ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT = 1006;
+    int ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT_RESTI = 1006;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------

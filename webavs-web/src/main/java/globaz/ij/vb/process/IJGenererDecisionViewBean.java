@@ -349,8 +349,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
                 ICTTexte texte = (ICTTexte) iterator.next();
 
                 if(POSITION_AGE_COTISATION.equals(texte.getPosition())) {
-//                    pour : 1.27.1
-//                    textAgeCotisation(texte, buffer);
+                    textAgeCotisation(texte, buffer);
                 } else {
                     buffer.append(texte.getDescriptionBrut());
                 }

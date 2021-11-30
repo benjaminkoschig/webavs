@@ -44,11 +44,15 @@ public class TarifsCantonalTest {
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_VD));
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(
                     ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS));
+            Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(
+                    ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022));
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_VS));
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_ZG));
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_VS));
             Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(
                     ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS));
+            Assert.assertTrue(ALServiceLocator.getTarifBusinessService().isTarifCantonal(
+                    ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022));
             Assert.assertFalse(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_ALKO));
             Assert.assertFalse(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_CATMP));
             Assert.assertFalse(ALServiceLocator.getTarifBusinessService().isTarifCantonal(ALCSTarif.CATEGORIE_FED));

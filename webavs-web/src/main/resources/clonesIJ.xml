@@ -136,6 +136,66 @@
 			manager="na" forIdParent="na" />
 	</clone>
 
+	<!--
+		Correction d'une petite FPI:
+
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJFPI-correction"
+		   class="globaz.ij.db.prononces.IJFpi">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+					 relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+					 forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+					 relationType="1_TO_N" idParent="idPrononce"
+					 manager="globaz.ij.db.prononces.IJMesureManager"
+					 forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+						 relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+						 forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+					 relationType="1_TO_1" idParent="idDernierRevenuOuManqueAGagner"
+					 manager="na" forIdParent="na" />
+	</clone>
+
+
+
+	<!--
+		Copie d'une petite FPI:
+
+		identique à une correction
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJFPI-copie"
+		   class="globaz.ij.db.prononces.IJFpi">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+					 relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+					 forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+					 relationType="1_TO_N" idParent="idPrononce"
+					 manager="globaz.ij.db.prononces.IJMesureManager"
+					 forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+						 relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+						 forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+					 relationType="1_TO_1" idParent="idDernierRevenuOuManqueAGagner"
+					 manager="na" forIdParent="na" />
+	</clone>
 
 	<!-- 
 		Correction d'une base d'indemnisation:

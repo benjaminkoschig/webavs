@@ -175,7 +175,12 @@ public class APDroitAPG extends APDroitLAPG implements IPRCloneable {
         clone.wantCallExternalServices(isCallExternalServices());
 
         // Etat par défaut : attente.
+        // En cas de restitution l'état est mis directement à l'état validé
+        if(actionType == ACTION_CREER_NOUVEAU_DROIT_APG_RESTI_FILS){
+            clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+        }else{
         clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
+        }
 
         return clone;
     }

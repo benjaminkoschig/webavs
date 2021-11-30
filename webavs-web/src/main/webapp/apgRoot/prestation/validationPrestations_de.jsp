@@ -40,7 +40,7 @@
 	
 <script type="text/javascript">
 	
-	var actionFinaliser = "${viewBean.actionFinalser}";
+	var actionFinaliser = "${viewBean.actionFinaliser}";
 	var actionCorriger = "${viewBean.actionCorriger}";
 	
 	function init(){

@@ -1,21 +1,22 @@
 package globaz.corvus.annonce.service;
 
+import acor.ch.admin.zas.rc.annonces.rente.rc.MonatsRekapitulationRentenType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory;
+import globaz.corvus.db.recap.access.RERecapElement;
+import globaz.corvus.vb.recap.REDetailRecapMensuelleViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import ch.admin.zas.rc.MonatsRekapitulationRentenType;
-import ch.admin.zas.rc.ObjectFactory;
-import globaz.corvus.db.recap.access.RERecapElement;
-import globaz.corvus.vb.recap.REDetailRecapMensuelleViewBean;
-import globaz.jade.client.util.JadeStringUtil;
 
 public class REAnnonceARC8DXmlService {
 
@@ -31,7 +32,7 @@ public class REAnnonceARC8DXmlService {
             throws DatatypeConfigurationException, ParseException {
 
         MonatsRekapitulationRentenType type = new MonatsRekapitulationRentenType();
-        type.setKasseZweigstelle(noCaisseAgence);
+        type.setKasseZweigstelle(Integer.valueOf(noCaisseAgence));
         type.setRechnungsperiode(Integer.valueOf(recap.getDateRapport().substring(0, 2)));
         type.setRechnungsjahr(retourneXMLGregorianCalendar(recap.getDateRapport().substring(3, 7)));
 

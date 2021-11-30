@@ -3,6 +3,7 @@
  */
 package globaz.apg.db.prestation;
 
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
@@ -26,6 +27,8 @@ public class APPrestationsControleesManager extends PRAbstractManager {
     private String fields = null;
 
     private String forEtat = "";
+
+    private String forEtatDroit = "";
 
     private String fromClause = null;
 
@@ -76,6 +79,15 @@ public class APPrestationsControleesManager extends PRAbstractManager {
                     + _dbWriteNumeric(statement.getTransaction(), forEtat);
         }
 
+        if(!JadeStringUtil.isEmpty(forEtatDroit)){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forEtatDroit);
+        }
+
         return sqlWhere; // + " GROUP BY " +
         // APRepartitionPaiements.FIELDNAME_IDPRESTATIONAPG;
     }
@@ -100,6 +112,11 @@ public class APPrestationsControleesManager extends PRAbstractManager {
         return forEtat;
     }
 
+    public String getForEtatDroit() {
+        return forEtatDroit;
+    }
+
+
     /**
      * (non-Javadoc)
      * 
@@ -120,5 +137,9 @@ public class APPrestationsControleesManager extends PRAbstractManager {
      */
     public void setForEtat(String string) {
         forEtat = string;
+    }
+
+    public void setForEtatDroit(String string) {
+        forEtatDroit = string;
     }
 }

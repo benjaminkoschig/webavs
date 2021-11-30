@@ -1,5 +1,6 @@
 package globaz.corvus.annonce.service;
 
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
@@ -7,33 +8,13 @@ import globaz.corvus.db.annonces.REAnnoncesDiminution10Eme;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.admin.zas.rc.AbgangsmeldungType;
-import ch.admin.zas.rc.AenderungsmeldungAO10Type;
-import ch.admin.zas.rc.AenderungsmeldungHE10Type;
-import ch.admin.zas.rc.AenderungsmeldungO10Type;
-import ch.admin.zas.rc.DJE10BeschreibungType;
-import ch.admin.zas.rc.DJE10BeschreibungWeakType;
-import ch.admin.zas.rc.Gutschriften10Type;
-import ch.admin.zas.rc.IVDaten10Type;
-import ch.admin.zas.rc.IVDaten10WeakType;
-import ch.admin.zas.rc.IVDatenHEType;
-import ch.admin.zas.rc.IVDatenHEWeakType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslWeakType;
-import ch.admin.zas.rc.RRMeldung10Type;
-import ch.admin.zas.rc.RentenvorbezugType;
-import ch.admin.zas.rc.RentenvorbezugWeakType;
-import ch.admin.zas.rc.SkalaBerechnungType;
-import ch.admin.zas.rc.SkalaBerechnungWeakType;
-import ch.admin.zas.rc.ZuwachsmeldungAO10Type;
-import ch.admin.zas.rc.ZuwachsmeldungHE10Type;
-import ch.admin.zas.rc.ZuwachsmeldungO10Type;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
 
@@ -199,7 +180,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
     protected RRMeldung10Type genererAbgangsAusserordentliche(REAnnoncesDiminution10Eme enr01) throws Exception {
         RRMeldung10Type.AusserordentlicheRente renteExtraordinaire = factoryType
                 .createRRMeldung10TypeAusserordentlicheRente();
-        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+        AbgangsmeldungMitVNr1ErgaenzendType diminution = createDiminutionMitVNr1Ergaenzend(enr01);
         RRMeldung10Type meldung10Type = factoryType.createRRMeldung10Type();
         renteExtraordinaire.setAbgangsmeldung(diminution);
         meldung10Type.setAusserordentlicheRente(renteExtraordinaire);
@@ -208,7 +189,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
     protected RRMeldung10Type genererAbgangsOrdentliche(REAnnoncesDiminution10Eme enr01) throws Exception {
         RRMeldung10Type.OrdentlicheRente renteOrdinaire = factoryType.createRRMeldung10TypeOrdentlicheRente();
-        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+        AbgangsmeldungMitVNr1ErgaenzendType diminution = createDiminutionMitVNr1Ergaenzend(enr01);
         RRMeldung10Type meldung10Type = factoryType.createRRMeldung10Type();
         renteOrdinaire.setAbgangsmeldung(diminution);
         meldung10Type.setOrdentlicheRente(renteOrdinaire);
@@ -219,7 +200,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AbgangsmeldungType diminution = factoryType.createAbgangsmeldungType();
         diminution.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        diminution.setKasseZweigstelle(retourneCaisseAgence());
+        diminution.setKasseZweigstelle(retourneCaisseAgenceEntier());
         diminution.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             diminution.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -230,7 +211,30 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         diminution.setLeistungsberechtigtePerson(person);
         AbgangsmeldungType.Leistungsbeschreibung description = factoryType
                 .createAbgangsmeldungTypeLeistungsbeschreibung();
-        description.getLeistungsart().add(enr01.getGenrePrestation());
+        description.setLeistungsart(Integer.valueOf(enr01.getGenrePrestation()));
+        description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
+        description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
+        description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
+        diminution.setLeistungsbeschreibung(description);
+        return diminution;
+    }
+
+    protected AbgangsmeldungMitVNr1ErgaenzendType createDiminutionMitVNr1Ergaenzend(REAnnoncesDiminution10Eme enr01) throws Exception {
+        AbgangsmeldungMitVNr1ErgaenzendType diminution = factoryType.createAbgangsmeldungMitVNr1ErgaenzendType();
+        diminution.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
+
+        diminution.setKasseZweigstelle(retourneCaisseAgenceEntier());
+        diminution.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
+        if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
+            diminution.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
+        }
+        AbgangsmeldungMitVNr1ErgaenzendType.LeistungsberechtigtePerson person = factoryType
+                .createAbgangsmeldungMitVNr1ErgaenzendTypeLeistungsberechtigtePerson();
+        person.setVersichertennummer(enr01.getNoAssAyantDroit());
+        diminution.setLeistungsberechtigtePerson(person);
+        AbgangsmeldungMitVNr1ErgaenzendType.Leistungsbeschreibung description = factoryType
+                .createAbgangsmeldungMitVNr1ErgaenzendTypeLeistungsbeschreibung();
+        description.setLeistungsart(Integer.valueOf(enr01.getGenrePrestation()));
         description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
@@ -253,7 +257,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AenderungsmeldungHE10Type modification = factoryType.createAenderungsmeldungHE10Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -310,7 +314,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         ZuwachsmeldungHE10Type augmentation = factoryType.createZuwachsmeldungHE10Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -366,7 +370,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AenderungsmeldungAO10Type modification = factoryType.createAenderungsmeldungAO10Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -432,7 +436,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         ZuwachsmeldungAO10Type augmentation = factoryType.createZuwachsmeldungAO10Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -493,7 +497,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AenderungsmeldungO10Type modification = factoryType.createAenderungsmeldungO10Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -585,7 +589,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         ZuwachsmeldungO10Type augmentation = factoryType.createZuwachsmeldungO10Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());

@@ -531,7 +531,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
         // Etat par défaut : attente
-        if (actionType == ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT) {
+        // En cas de restitution l'état est mis directement à l'état validé
+        if (actionType == ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT_RESTI) {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
         } else {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);

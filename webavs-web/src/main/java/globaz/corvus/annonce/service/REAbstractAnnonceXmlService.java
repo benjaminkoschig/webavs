@@ -1,10 +1,17 @@
 package globaz.corvus.annonce.service;
 
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import ch.admin.ofit.anakin.donnee.AnnonceErreur;
+import ch.globaz.common.properties.CommonProperties;
 import globaz.corvus.anakin.REAnakinParser;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel2A;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,22 +19,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import ch.admin.ofit.anakin.donnee.AnnonceErreur;
-import ch.admin.zas.rc.FamilienAngehoerigeType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslWeakType;
-import ch.admin.zas.rc.RentenaufschubType;
-import ch.admin.zas.rc.RentenaufschubWeakType;
-import ch.admin.zas.rc.SkalaBerechnungType;
-import ch.admin.zas.rc.SkalaBerechnungWeakType;
-import ch.globaz.common.properties.CommonProperties;
 
 public abstract class REAbstractAnnonceXmlService {
 
-    protected ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
+    protected acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory factoryType = new acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory();
 
     /**
      * Valide une annonce d'augmentation avec ANAKIN <br/>
@@ -92,7 +87,7 @@ public abstract class REAbstractAnnonceXmlService {
             membresDeLaFamille.getVNr2Ergaenzend().add(
                     testSiNullouZero(new BigDecimal(enr01.getSecondNoAssComplementaire()).toString()));
         }
-        personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
+        personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()));
         personne.setFamilienAngehoerige(membresDeLaFamille);
         personne.setZivilstand(new Integer(enr01.getEtatCivil()).shortValue());
         return personne;
@@ -129,7 +124,7 @@ public abstract class REAbstractAnnonceXmlService {
                     testSiNullouZero(new BigDecimal(enr01.getSecondNoAssComplementaire()).toString()));
         }
         if (!JadeStringUtil.isBlank(enr01.getCantonEtatDomicile())) {
-            personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()).toString());
+            personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()));
         }
         personne.setFamilienAngehoerige(membresDeLaFamille);
         if (!JadeStringUtil.isBlank(enr01.getEtatCivil())) {
@@ -180,6 +175,10 @@ public abstract class REAbstractAnnonceXmlService {
 
     protected String retourneCaisseAgence() throws Exception {
         return CommonProperties.KEY_NO_CAISSE.getValue() + CommonProperties.NUMERO_AGENCE.getValue();
+    }
+
+    protected Integer retourneCaisseAgenceEntier() throws Exception {
+        return Integer.valueOf(retourneCaisseAgence());
     }
 
     protected Long retourneNoDAnnonceSur6Position(String noAnnonce) {

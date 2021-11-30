@@ -155,12 +155,6 @@ public class APPrestationAction extends PRDefaultAction {
             APProcheAidantServiceHelper procheAidantServiceHelper = new APProcheAidantServiceHelper(droitProcheAidant.getSession());
             procheAidantServiceHelper.changementDateDebutDroitsPourLesDroitsQuiOnUneDateDebutPasEnAdequation(droitProcheAidant);
         }
-        if(droit.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE)){
-            if(destination.contains(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT)){
-                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
-                droit.update();
-            }
-        }
         return destination;
     }
 

@@ -27,6 +27,7 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
     private static final long serialVersionUID = 1L;
     private String forIdDroitParent = "";
     private String idDroitAExclure;
+    private String forCareLeaveEventId;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -56,6 +57,15 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
                     + _dbWriteNumeric(statement.getTransaction(), idDroitAExclure);
         }
 
+        if (!JadeStringUtil.isIntegerEmpty(forCareLeaveEventId)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APDroitProcheAidant.FIELDNAME_CARE_LEAVE_EVENT_ID + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forCareLeaveEventId);
+        }
+
         return sqlWhere;
     }
 
@@ -64,7 +74,7 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
      */
     @Override
     protected BEntity _newEntity() throws Exception {
-        return new APDroitMaternite();
+        return new APDroitProcheAidant();
     }
 
     /**
@@ -85,7 +95,7 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
      */
     @Override
     public String getOrderByDefaut() {
-        return APDroitMaternite.FIELDNAME_IDDROIT_MAT + " DESC";
+        return APDroitProcheAidant.FIELDNAME_IDDROIT_PAI + " DESC";
     }
 
     /**
@@ -105,6 +115,10 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
      */
     public void setIdDroitAExclure(String idDroitAExclure) {
         this.idDroitAExclure = idDroitAExclure;
+    }
+
+    public void setForCareLeaveEventId(String careLeaveEventId){
+        this.forCareLeaveEventId = careLeaveEventId;
     }
 
 }

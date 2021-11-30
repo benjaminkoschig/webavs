@@ -9,14 +9,15 @@ public class IJAbsence extends JadeComplexModel {
      * 
      */
     private static final long serialVersionUID = 1L;
-    public static final String CS_ABSENCE_ACCIDENT_AVEC_RAPPORT_REA = "52433003";
     public static final String CS_ABSENCE_ACCIDENT_SANS_RAPPORT_REA = "52433001";
+    public static final String CS_ABSENCE_ACCIDENT_AVEC_RAPPORT_REA = "52433003";
+    public static final String CS_ABSENCE_MALADIE_SANS_RAPPORT_REA = "52433002";
+    public static final String CS_ABSENCE_MALADIE_AVEC_RAPPORT_REA = "52433004";
+    public static final String CS_ABSENCE_GROSSESSE = "52433005";
     public static final String CS_ABSENCE_ACCOUCHEMENT = "52433006";
     public static final String CS_ABSENCE_AUTRE_MOTIF = "52433007";
-    public static final String CS_ABSENCE_GROSSESSE = "52433005";
     public static final String CS_ABSENCE_INJUSTIFIE = "52433008";
-    public static final String CS_ABSENCE_MALADIE_AVEC_RAPPORT_REA = "52433004";
-    public static final String CS_ABSENCE_MALADIE_SANS_RAPPORT_REA = "52433002";
+    public static final String CS_ABSENCE_PROCHE_AIDANT = "52433009";
 
     private IJSimpleAbsence absence;
     private IJSimpleDossierControleAbsences dossier;

@@ -105,6 +105,7 @@ public class CalculServiceImpl extends CalculAbstractService implements CalculSe
         tarifs.put(ALCSTarif.CATEGORIE_UR, ALCSCantons.UR);
         tarifs.put(ALCSTarif.CATEGORIE_VD, ALCSCantons.VD);
         tarifs.put(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS, ALCSCantons.VD);
+        tarifs.put(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022, ALCSCantons.VD);
         tarifs.put(ALCSTarif.CATEGORIE_VS, ALCSCantons.VS);
         tarifs.put(ALCSTarif.CATEGORIE_ZG, ALCSCantons.ZG);
         tarifs.put(ALCSTarif.CATEGORIE_ZH, ALCSCantons.ZH);

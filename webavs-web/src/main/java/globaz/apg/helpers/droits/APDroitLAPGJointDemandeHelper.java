@@ -586,7 +586,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT,
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT);
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT_RESTI);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
@@ -600,7 +600,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         CLONE_COPIER_CORRIGER_DROIT_PANDEMIE,
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS);
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_RESTI_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
@@ -627,7 +627,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_CORRIGER_DROIT_APG),
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_RESTI_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
 
@@ -642,7 +642,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_COPIER_DROIT_MATERNITE),
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_RESTI_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             }

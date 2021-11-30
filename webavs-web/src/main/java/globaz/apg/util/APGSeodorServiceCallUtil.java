@@ -1,7 +1,7 @@
 package globaz.apg.util;
 
-import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
-import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
+import ch.admin.zas.seodor.ws.service_periods._2.ServicePeriodsPort20;
+import ch.admin.zas.seodor.ws.service_periods._2.ServicePeriodsService20;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -66,7 +66,7 @@ public class APGSeodorServiceCallUtil {
                 URL wsdlLocation = classloader.getResource(CommonProperties.SEODOR_SEODOR_WSDL_PATH.getValue());
 
                 // Création du ServicePort
-                ServicePeriodsPort10 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
+                ServicePeriodsPort20 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
 
                 // Condition pour générer la config SSL et le Binding
                 if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
@@ -149,10 +149,10 @@ public class APGSeodorServiceCallUtil {
      * @param webServiceName
      * @return
      */
-        private static ServicePeriodsPort10 createServicePeriodsPort(URL wsdlLocation, String webServiceNameSpace, String webServiceName) {
-            ServicePeriodsService10 servicePeriodsService10 = new ServicePeriodsService10(wsdlLocation,
+        private static ServicePeriodsPort20 createServicePeriodsPort(URL wsdlLocation, String webServiceNameSpace, String webServiceName) {
+            ServicePeriodsService20 servicePeriodsService10 = new ServicePeriodsService20(wsdlLocation,
                     new QName(webServiceNameSpace, webServiceName));
-            return servicePeriodsService10.getPort(ServicePeriodsPort10.class);
+            return servicePeriodsService10.getPort(ServicePeriodsPort20.class);
         }
 
     /**
@@ -162,7 +162,7 @@ public class APGSeodorServiceCallUtil {
      * @param keyStorePass certificat password
      * @param keyStoreType keyStoreType key types
      */
-    private static void configureSSLOnTheClient(final ServicePeriodsPort10 proxy, final String keyStorePath, final String keyStorePass, String keyStoreType) throws Exception {
+    private static void configureSSLOnTheClient(final ServicePeriodsPort20 proxy, final String keyStorePath, final String keyStorePass, String keyStoreType) throws Exception {
 
         SSLContext sc = null;
         KeyStore ks = null;

@@ -107,7 +107,7 @@ public class IJAbsenceServiceImpl implements IJAbsenceService {
                         nombreDeJoursNonPayes = nombreDeJoursPeriode - Integer.valueOf(absence.getJoursSaisis());
                     }
 
-                    else if (codeAbsence.equals("52433007") || codeAbsence.equals("52433008")) {
+                    else if (codeAbsence.equals(IJAbsence.CS_ABSENCE_AUTRE_MOTIF) || codeAbsence.equals(IJAbsence.CS_ABSENCE_INJUSTIFIE) || codeAbsence.equals(IJAbsence.CS_ABSENCE_PROCHE_AIDANT)) {
                         nombreDeJoursNonPayes = nombreDeJoursPeriode;
                     }
 
@@ -376,7 +376,7 @@ public class IJAbsenceServiceImpl implements IJAbsenceService {
     }
 
     private boolean isAbsenceTypeAccident(String codeAbsence) {
-        return ("52433001".equals(codeAbsence) || "52433003".equals(codeAbsence));
+        return (IJAbsence.CS_ABSENCE_ACCIDENT_SANS_RAPPORT_REA.equals(codeAbsence) || IJAbsence.CS_ABSENCE_ACCIDENT_AVEC_RAPPORT_REA.equals(codeAbsence));
     }
 
     @Override

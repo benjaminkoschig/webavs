@@ -3,30 +3,16 @@
  */
 package globaz.ij.process;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.rc.IVTaggelderMeldungType;
-import ch.admin.zas.rc.PoolFussType;
-import ch.admin.zas.rc.PoolKopfType;
+import acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory;
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAUtil;
 import globaz.ij.api.annonces.IIJAnnonce;
@@ -40,6 +26,18 @@ import globaz.jade.common.JadeException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.File;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 /**
  * @author ebko
@@ -206,11 +204,12 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
             }
             LOG.debug(String.valueOf(nbAnnoncesLot));
 
-            if (lotAnnonces
-                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                    .isEmpty()) {
-                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
-            }
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            if (lotAnnonces
+//                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//                    .isEmpty()) {
+//                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+//            }
 
             String fileName = IJAnnoncesXMLValidatorService.getInstance().genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
@@ -247,9 +246,9 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     private PoolMeldungZurZAS.Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
             throws PropertiesException, ParseException, DatatypeConfigurationException {
-        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-        ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
-        ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
+        ObjectFactory factoryPool = new ObjectFactory();
+        acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory factoryType = new acor.ch.admin.zas.rc.annonces.rente.rc.ObjectFactory();
+        PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
         if (poolKopfTest) {
             poolKopf.setTest("TEST");
@@ -362,9 +361,10 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
         try {
             IVTaggelderMeldungType annonceXml = ijService.getAnnonceXml(annonce);
             IJAnnoncesXMLValidatorService.getInstance().validateUnitMessage(annonceXml);
-            poolMeldungLot
-            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-            .add(annonceXml);
+            // TODO : gérer les annonces de 9e et 10e révisions
+//            poolMeldungLot
+//            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+//            .add(annonceXml);
         } catch (ValidationException e) {
             e.getMessageErreurDeValidation().add(0, annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : ");
             throw e;

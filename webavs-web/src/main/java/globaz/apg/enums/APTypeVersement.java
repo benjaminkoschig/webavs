@@ -4,7 +4,8 @@ public enum APTypeVersement {
 
     VERSEMENT_ASSURE(1),
     VERSEMENT_EMPLOYEUR(2),
-    VERSEMENT_EMPLOYEUR_ET_ASSURE(3);
+    VERSEMENT_EMPLOYEUR_ET_ASSURE(3),
+    VERSEMENT_PLUSIEURS_EMPLOYEURS(4);
 
     private int codeTypeVersement;
 

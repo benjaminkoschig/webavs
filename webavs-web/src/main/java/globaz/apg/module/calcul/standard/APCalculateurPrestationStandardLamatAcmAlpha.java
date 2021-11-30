@@ -2479,7 +2479,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             LocalDate dateDebutPrestation = parseStringToDateTime(periode.getDateDebut().toString(), formatter);
             LocalDate dateFinPrestation = parseStringToDateTime(periode.getDateFin().toString(), formatter);
 
-            return (dateDeFinACMLamatDate != null && dateDeFinACMLamatDate.isAfter(dateDebutPrestation) && (dateDeFinACMLamatDate.isBefore(dateFinPrestation) || dateDeFinACMLamatDate.equals(dateFinPrestation)));
+            return (dateDeFinACMLamatDate != null
+                    && (dateDeFinACMLamatDate.isAfter(dateDebutPrestation)
+                    && ((dateDeFinACMLamatDate.isBefore(dateFinPrestation) || dateDeFinACMLamatDate.equals(dateFinPrestation))))
+                    // vérification pour 1 seul jour
+                    || (dateDeFinACMLamatDate.equals(dateDebutPrestation) && dateDeFinACMLamatDate.equals(dateFinPrestation)));
         }
     }
 

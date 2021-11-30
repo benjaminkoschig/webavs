@@ -8,7 +8,6 @@ package globaz.apg.vb.droits;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.db.droits.APEnfantPat;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -52,6 +51,7 @@ public class APEnfantPatViewBean extends APEnfantPat implements FWViewBeanInterf
     @Setter
     private boolean copyDroit=false;
 
+    public static final String ID_CANTON_ETRANGER = "505027";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------

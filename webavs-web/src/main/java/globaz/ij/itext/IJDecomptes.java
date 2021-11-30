@@ -1,5 +1,6 @@
 package globaz.ij.itext;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
@@ -16,11 +17,7 @@ import globaz.framework.printing.itext.types.FWITemplateType;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
@@ -30,19 +27,8 @@ import globaz.ij.api.codesystem.IIJCatalogueTexte;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.lots.IJFactureACompenser;
 import globaz.ij.db.lots.IJFactureACompenserManager;
-import globaz.ij.db.prestations.IJCotisation;
-import globaz.ij.db.prestations.IJCotisationManager;
-import globaz.ij.db.prestations.IJPrestation;
-import globaz.ij.db.prestations.IJRepartitionJointPrestation;
-import globaz.ij.db.prestations.IJRepartitionJointPrestationManager;
-import globaz.ij.db.prestations.IJRepartitionPaiements;
-import globaz.ij.db.prestations.IJRepartitionPaiementsManager;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJPrononceJointDemande;
-import globaz.ij.db.prononces.IJPrononceJointDemandeManager;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prestations.*;
+import globaz.ij.db.prononces.*;
 import globaz.ij.pojo.AdressePaiementDecompteIJPojo;
 import globaz.ij.properties.IJProperties;
 import globaz.jade.client.util.JadeStringUtil;
@@ -58,6 +44,7 @@ import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater04;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
@@ -69,24 +56,15 @@ import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.CommonProperties;
 import java.io.File;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import ch.globaz.common.properties.PropertiesException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author VRE
@@ -113,11 +91,13 @@ public class IJDecomptes extends FWIDocumentManager {
         private final String idTiers;
         private Map<String, List<IJRepartitionJointPrestation>> repartitionsEnfants;
         private final Set<IJRepartitionJointPrestation> repartitionsPeres = new HashSet<IJRepartitionJointPrestation>();
+        private final PRDemande demande;
 
-        public Decompte(IJRepartitionJointPrestation repartition) throws Exception {
+        public Decompte(PRDemande demande, IJRepartitionJointPrestation repartition) throws Exception {
             idTiers = repartition.getIdTiers();
             idAffilie = repartition.getIdAffilie();
             employeur = repartition.isBeneficiaireEmployeur();
+            this.demande = demande;
 
             if (employeur) {
                 // Dans les cas ou les bénéficiaires des paiements de type employeurs ne sont pas les mêmes que ceux
@@ -201,6 +181,10 @@ public class IJDecomptes extends FWIDocumentManager {
         public boolean isEmployeur() {
             return employeur;
         }
+
+        public PRDemande getDemande() {
+            return demande;
+        }
     }
 
     private static final String FICHIER_MODELE = "IJ_DECOMPTE";
@@ -219,13 +203,13 @@ public class IJDecomptes extends FWIDocumentManager {
     private static final int STATE_NORMAL = 1;
     private static final int STATE_VENTILATION = 4;
 
-    private ICaisseReportHelper caisseHelper;
-    private String codeIsoLangue = "fr";
+    protected ICaisseReportHelper caisseHelper;
+    protected String codeIsoLangue = "fr";
     private JADate date;
-    private Decompte decompteCourant;
+    protected Decompte decompteCourant;
     private Collection<Decompte> decomptesCollection;
-    private ICTDocument document;
-    private ICTDocument documentHelper;
+    protected ICTDocument document;
+    protected ICTDocument documentHelper;
     private Map<String, ICTDocument> documents = new HashMap<String, ICTDocument>();
     private boolean grandTotalEgalZero = false;
     private boolean hasNext = false;
@@ -236,6 +220,10 @@ public class IJDecomptes extends FWIDocumentManager {
     private String noAffilie = "";
     private boolean restitution;
     private int state = IJDecomptes.STATE_DEBUT;
+    protected Boolean isCopie;
+    protected boolean isEntete = false;
+
+
 
     public IJDecomptes() throws FWIException {
         super();
@@ -293,6 +281,9 @@ public class IJDecomptes extends FWIDocumentManager {
                     // on défini les propriétés du DocInfo pour envoyer le mail
                     setSendCompletionMail(false);
                     JadePublishDocumentInfo docInfo = createDocumentInfo();
+                    if(getIsCopie()){
+                        docInfo.setDocumentType("COPIE_"+docInfo.getDocumentType());
+                    }
                     docInfo.setPublishDocument(true);
                     docInfo.setArchiveDocument(false);
                     docInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, getEMailAddress());
@@ -419,7 +410,7 @@ public class IJDecomptes extends FWIDocumentManager {
             if (!isCaisse(IJApplication.NO_CAISSE_CVCI)) {
                 // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
                 docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                        buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
+                        buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
 
                 IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
                         AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
@@ -440,7 +431,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
             // On ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
             docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                    buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
+                    buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
 
             // La gestion du NSS est différente selon la caisse, pour la mise en GED.
             // Création d'une propriété pour les caisses qui veulent le NSS vide lors de la mise en GED
@@ -609,6 +600,11 @@ public class IJDecomptes extends FWIDocumentManager {
                     crBean.setConfidentiel(true);
                 }
 
+                if (caisseHelper == null) {
+                    caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(getDocumentInfo(),
+                            getSession().getApplication(), codeIsoLangue);
+                }
+
                 caisseHelper.addHeaderParameters(getImporter(), crBean);
             } catch (Exception e) {
                 throw new FWIException("Impossible de renseigner l'en-tete", e);
@@ -617,6 +613,11 @@ public class IJDecomptes extends FWIDocumentManager {
             // ajout du nom du département si nécessaire
             if (decompteCourant.getDepartement() != null) {
                 parametres.put("P_HEADER_DEPARTEMENT", decompteCourant.getDepartement().getDepartement());
+            }
+
+            // S'il s'agit d'une copie
+            if(getIsCopie()){
+                parametres.put("P_COPIE",  document.getTextes(1).getTexte(2).getDescription());
             }
 
             // le titre
@@ -760,6 +761,23 @@ public class IJDecomptes extends FWIDocumentManager {
             } catch (Exception e) {
                 throw new FWIException("Impossible de charger le pied de page", e);
             }
+
+            if (!decompteCourant.getDemande().getIdTiers().equals(decompteCourant.getIdTiers())) {
+
+                parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
+
+                TITiers tiTierCopie = new TITiers();
+                tiTierCopie.setSession(getSession());
+                tiTierCopie.setIdTiers(decompteCourant.getDemande().getIdTiers());
+                tiTierCopie.retrieve();
+
+                String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
+                        IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
+                        new PRTiersAdresseCopyFormater04());
+
+                copie += "\n";
+                parametres.put("P_COPIE_A2", copie);
+            }
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, IJDecomptes.class.getSimpleName());
             abort();
@@ -770,6 +788,8 @@ public class IJDecomptes extends FWIDocumentManager {
     public void beforeExecuteReport() throws FWIException {
         // Effacer les pdf à la fin
         setDeleteOnExit(true);
+
+        isEntete = isCopie;
 
         // le modèle
         try {
@@ -802,10 +822,12 @@ public class IJDecomptes extends FWIDocumentManager {
         return true && super.beforePrintDocument();
     }
 
-    private String buildOrderPrintingByKey(String idAffilie, String idTiers) throws Exception {
+    private String buildOrderPrintingByKey(String idAffilie, String idTiers, boolean isEntete) throws Exception {
 
-        String noAffilieFormatte = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
-        String noAvsFormatte = PRBlankBNumberFormater.getEmptyNssFormatte(getSession().getApplication());
+        String noAffilieFormatteBlank = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
+        String noAffilieFormatte = noAffilieFormatteBlank;
+        String noAvsFormatteBlank = PRBlankBNumberFormater.getEmptyNssFormatte(getSession().getApplication());
+        String noAvsFormatte = noAvsFormatteBlank;
 
         if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
             IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getTransaction(),
@@ -816,6 +838,17 @@ public class IJDecomptes extends FWIDocumentManager {
         }
 
         if (!JadeStringUtil.isIntegerEmpty(idTiers)) {
+            noAvsFormatte = resolveNssFromIdTier(idTiers, noAvsFormatte);
+        }
+
+        if(isCopie && !JadeStringUtil.isIntegerEmpty(decompteCourant.getDemande().getIdTiers())) {
+            noAvsFormatte = resolveNssFromIdTier(decompteCourant.getDemande().getIdTiers(), noAvsFormatte);
+        }
+
+        return noAffilieFormatte + "_" + noAvsFormatte + "_" + (isEntete ? "1":"0");
+    }
+
+    private String resolveNssFromIdTier(String idTiers, String noAvsFormatte) throws Exception {
             PRTiersWrapper tierWrapper = PRTiersHelper.getTiersParId(getSession(), idTiers);
 
             if (tierWrapper == null) {
@@ -824,11 +857,10 @@ public class IJDecomptes extends FWIDocumentManager {
 
             if ((tierWrapper != null)
                     && !JadeStringUtil.isEmpty(tierWrapper.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL))) {
-                noAvsFormatte = tierWrapper.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-            }
+            return tierWrapper.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         }
 
-        return noAffilieFormatte + "_" + noAvsFormatte;
+        return noAvsFormatte;
     }
 
     /**
@@ -1072,6 +1104,26 @@ public class IJDecomptes extends FWIDocumentManager {
 
     @Override
     public void createDataSource() throws Exception {
+
+        try {
+            String extensionModelCaisse = getSession().getApplication().getProperty("extensionModelCaisse");
+            if ((null != extensionModelCaisse) && "true".equals(extensionModelCaisse)) {
+                setTemplateFile(IJDecomptes.FICHIER_MODELE + extensionModelCaisse);
+                FWIImportManager im = getImporter();
+                File sourceFile = new File(im.getImportPath() + im.getDocumentTemplate()
+                        + FWITemplateType.TEMPLATE_JASPER.toString());
+                if (sourceFile != null && sourceFile.exists()) {
+                    // NOTHING TO DO
+                } else {
+                    setTemplateFile(IJDecomptes.FICHIER_MODELE);
+                }
+            } else {
+                setTemplateFile(IJDecomptes.FICHIER_MODELE);
+            }
+        } catch (Exception e) {
+            setTemplateFile(IJDecomptes.FICHIER_MODELE);
+        }
+
         List<Map<String, String>> lignes = new ArrayList<Map<String, String>>();
         FWCurrency total = new FWCurrency(0);
         FWCurrency grandTotal = new FWCurrency(0);
@@ -1860,11 +1912,15 @@ public class IJDecomptes extends FWIDocumentManager {
             repartitionsMgr.find(BManager.SIZE_NOLIMIT);
 
             // classer les repartitions par bénéficiaire
-            Map<String, Decompte> repartitions = new HashMap<String, IJDecomptes.Decompte>();
+            Map<String, Decompte> repartitions = new HashMap<String, Decompte>();
 
             for (int idRepartition = 0; idRepartition < repartitionsMgr.size(); ++idRepartition) {
                 IJRepartitionJointPrestation repartition = (IJRepartitionJointPrestation) repartitionsMgr
                         .get(idRepartition);
+
+                IJPrononce prononce = IJPrononce.loadPrononce(getSession(), getTransaction(), repartition.getIdPrononce(),
+                        repartition.getCsTypeIJ());
+                PRDemande demande = prononce.loadDemande(getTransaction());
 
                 /*
                  * Afin d'éviter d'éditer un décompte pour une répartition à 0.- avec une prestation qui n'est pas à 0.
@@ -1879,7 +1935,7 @@ public class IJDecomptes extends FWIDocumentManager {
                     }
                 }
 
-                Decompte decompte = getDecompte(repartitions, repartition);
+                Decompte decompte = getDecompte(demande, repartitions, repartition);
 
                 // ajouter la repartition courante.
                 decompte.addRepartitionPere(repartition);
@@ -1905,6 +1961,7 @@ public class IJDecomptes extends FWIDocumentManager {
             }
 
             decomptesCollection = repartitions.values();
+            limiteDecompteCopie();
         } catch (Exception e) {
             throw new FWIException("impossible de créer les décomptes", e);
         }
@@ -1934,11 +1991,15 @@ public class IJDecomptes extends FWIDocumentManager {
             repartitionsMgr.find(BManager.SIZE_NOLIMIT);
 
             // classer les montants ventilés par bénéficiaire des ventilations
-            Map<String, Decompte> repartitions = new HashMap<String, IJDecomptes.Decompte>();
+            Map<String, Decompte> repartitions = new HashMap<String, Decompte>();
 
             for (int idRepartition = 0; idRepartition < repartitionsMgr.size(); ++idRepartition) {
                 IJRepartitionJointPrestation repartition = (IJRepartitionJointPrestation) repartitionsMgr
                         .get(idRepartition);
+
+                IJPrononce prononce = IJPrononce.loadPrononce(getSession(), getTransaction(), repartition.getIdPrononce(),
+                        repartition.getCsTypeIJ());
+                PRDemande demande = prononce.loadDemande(getTransaction());
 
                 // ajouter les ventilations de montant
                 ventilations.setForIdParent(repartition.getIdRepartitionPaiement());
@@ -1947,14 +2008,24 @@ public class IJDecomptes extends FWIDocumentManager {
                 for (int idVentilation = 0; idVentilation < ventilations.size(); ++idVentilation) {
                     IJRepartitionJointPrestation ventilation = (IJRepartitionJointPrestation) ventilations
                             .get(idVentilation);
-                    Decompte decompte = getDecompte(repartitions, ventilation);
+                    Decompte decompte = getDecompte(demande, repartitions, ventilation);
                     decompte.addRepartitionPere((IJRepartitionJointPrestation) ventilations.get(idVentilation));
                 }
             }
 
             decomptesCollection = repartitions.values();
+
+            limiteDecompteCopie();
         } catch (Exception e) {
             throw new FWIException("impossible de créer les décomptes", e);
+        }
+    }
+
+    public void limiteDecompteCopie() {
+        if(isCopie) {
+            decomptesCollection = decomptesCollection.stream()
+                    .filter(d -> !d.getDemande().getIdTiers().equals(d.getIdTiers()))
+                    .collect(Collectors.toList());
         }
     }
 
@@ -1970,17 +2041,17 @@ public class IJDecomptes extends FWIDocumentManager {
      * @param repartition
      *            la repartition dont on veut trouver le décompte
      */
-    private Decompte getDecompte(Map<String, Decompte> decomptes, IJRepartitionJointPrestation repartition)
+    private Decompte getDecompte(PRDemande demande, Map<String, Decompte> decomptes, IJRepartitionJointPrestation repartition)
             throws Exception {
         // identifiant du bénéficiaire
-        String cle = repartition.getIdTiers() + "_" + repartition.getIdAffilie() + "_"
+        String cle = demande.getIdTiers() + "_" +repartition.getIdTiers() + "_" + repartition.getIdAffilie() + "_"
                 + !JadeStringUtil.isIntegerEmpty(repartition.getIdSituationProfessionnelle());
 
         // retourne décompte
         Decompte retValue = decomptes.get(cle);
 
         if (retValue == null) {
-            retValue = new Decompte(repartition);
+            retValue = new Decompte(demande, repartition);
             decomptes.put(cle, retValue);
         }
 
@@ -2021,7 +2092,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 iterateurDecomptes = decomptesCollection.iterator();
             }
 
-            if (iterateurDecomptes.hasNext()) {
+            if (iterateurDecomptes.hasNext() || (isCopie && !isEntete)) {
                 // il y a encore des bénéficiaires de paiement
                 hasNext = true;
             } else {
@@ -2041,7 +2112,9 @@ public class IJDecomptes extends FWIDocumentManager {
             if (hasNext) {
 
                 // on charge le document courant
+                if(!isCopie || isEntete) {
                 decompteCourant = iterateurDecomptes.next();
+            }
             }
 
             return hasNext;
@@ -2135,7 +2208,7 @@ public class IJDecomptes extends FWIDocumentManager {
                         // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
                         // toujours selon le décompte courant (Assuré)
                         docInfoUnitaire.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                                buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
+                                buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
 
                         docInfoUnitaire.setPublishDocument(false);
                         super.registerAttachedDocument(docInfoUnitaire, getExporter().getExportNewFilePath());
@@ -2180,7 +2253,7 @@ public class IJDecomptes extends FWIDocumentManager {
                             docInfoUnitaire.setDocumentProperty(
                                     IJDecomptes.ORDER_PRINTING_BY,
                                     buildOrderPrintingByKey(decompteCourant.getIdAffilie(),
-                                            decompteCourant.getIdTiers()));
+                                            decompteCourant.getIdTiers(), isEntete));
 
                             // on ajoute le document à la liste des documents attachés
                             docInfoUnitaire.setPublishDocument(false);
@@ -2210,5 +2283,17 @@ public class IJDecomptes extends FWIDocumentManager {
 
     public void setIsSendToGED(Boolean boolean1) {
         isSendToGED = boolean1;
+    }
+
+    public PRDemande getDemandeDecompteCourant(){
+        return decompteCourant.getDemande();
+    }
+
+    public final boolean getIsCopie(){
+        return isCopie;
+    }
+
+    public final void setIsCopie(final boolean copie){
+        isCopie = copie;
     }
 }

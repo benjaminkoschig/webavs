@@ -140,7 +140,7 @@ public class APControlerPrestationsProcess extends BProcess {
             APDroitAPGJointLAPGJointPrestationManager mgr = new APDroitAPGJointLAPGJointPrestationManager();
             mgr.setSession(session);
             mgr.setForEtatPrestation(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-            mgr.setForEtatDroitDifferentDe(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+            mgr.setForEtatDroit(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
             ArrayList<String> notForGenre = new ArrayList<>();
             notForGenre.add(APTypeDePrestation.PANDEMIE.getCodesystemString());
             notForGenre.add(APTypeDePrestation.PROCHE_AIDANT.getCodesystemString());
@@ -446,6 +446,7 @@ public class APControlerPrestationsProcess extends BProcess {
                 liste.setOrderBy(APPrestationsControlees.FIELDNAME_NOM + ", "
                         + APPrestationsControlees.FIELDNAME_PRENOM);
                 liste.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
+                liste.setForEtatDroit(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
 
                 liste.setParent(this);
                 liste.executeProcess();

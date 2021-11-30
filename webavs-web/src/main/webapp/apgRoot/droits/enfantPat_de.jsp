@@ -6,6 +6,7 @@
 <%@ page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page import="globaz.pyxis.db.adressecourrier.TIPays" %>
+<%@ page import="globaz.apg.vb.droits.APEnfantPatViewBean" %>
 <script type="text/javascript"
 			src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
@@ -215,10 +216,15 @@ if(viewBean.getTypeDemande().isProcheAidant()){
 						</TR>
 						<tr id="blocCanton" style="display:none">
 							<TD><LABEL for="canton"><ct:FWLabel key="JSP_MEMBRE_FAMILLE_CANTON"/>&nbsp;</LABEL></TD>
-							<td><ct:FWCodeSelectTag name="cantonAffiche"
+							<td><%
+									java.util.HashSet etranger = new java.util.HashSet();
+									etranger.add(APEnfantPatViewBean.ID_CANTON_ETRANGER);
+								%>
+								<ct:FWCodeSelectTag name="cantonAffiche"
 									wantBlank="<%=false%>"
 									codeType="PYCANTON"
-									defaut="<%=viewBean.getCanton()%>"/></td>
+									defaut="<%=viewBean.getCanton()%>"
+									except="<%=etranger%>"/></td>
 							<TD><INPUT type="hidden" name="canton" id="canton" value="<%=viewBean.getCanton()%>"></TD>
 							<td></td>
 						</tr>

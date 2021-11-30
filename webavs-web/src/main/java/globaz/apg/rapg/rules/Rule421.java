@@ -3,8 +3,10 @@ package globaz.apg.rapg.rules;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APGenreServiceAPG;
+import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * Si pour une prise en charge, dont le champ «serviceType» = 92,
@@ -22,7 +24,7 @@ public class Rule421 extends Rule {
 
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
-        if(champsAnnonce.getServiceType().equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
+        if(isProcheAidantPayementMethodePrisEnCompte(champsAnnonce)) {
             APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
             apDroitProcheAidant.setIdDroit(champsAnnonce.getIdDroit());
             apDroitProcheAidant.setSession(this.getSession());

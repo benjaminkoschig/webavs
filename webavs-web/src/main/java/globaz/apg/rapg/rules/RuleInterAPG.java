@@ -11,6 +11,8 @@ import globaz.jade.context.JadeThread;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.Setter;
+import lombok.Getter;
 
 /**
  * Rule de base des Rule inter-APG permettant de vérifier que certains genre de service, couplés à certains type de
@@ -42,7 +44,7 @@ public class RuleInterAPG extends Rule {
     }
 
     @Override
-    public final boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
+    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         try {
             if (isBonGenreService(champsAnnonce.getServiceType())) {
 
@@ -128,5 +130,13 @@ public class RuleInterAPG extends Rule {
             }
         }
         return false;
+    }
+
+    protected void addGenresServicesVoulus(APGenreServiceAPG genre){
+        genresServicesVoulus.add(genre);
+    }
+
+    protected void setNombreJoursSoldesMax(int nbJourMax){
+        nombreJoursSoldesMax = nbJourMax;
     }
 }

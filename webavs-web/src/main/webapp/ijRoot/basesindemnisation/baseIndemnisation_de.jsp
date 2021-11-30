@@ -51,6 +51,7 @@
 <%@page import="globaz.ij.application.IJApplication"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.ij.db.prononces.IJPrononce" %>
+<%@ page import="globaz.ij.api.basseindemnisation.IIJBaseIndemnisation" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" />
 <ct:menuChange displayId="options" menuId="ij-basesindemnisations"
 	showTab="options">
@@ -626,7 +627,7 @@
 			defaultValue="<%=
 			viewBean.getCsMotifInterruption()
 			%>">
-			<ct:optionsCodesSystems csFamille="IJMOTIFINT" />
+			<ct:optionsCodesSystems csFamille="<%=IIJBaseIndemnisation.CS_GROUPE_MOTIF_INTERRUPTION%>" />
 		</ct:select></TD>
 </TR>
 

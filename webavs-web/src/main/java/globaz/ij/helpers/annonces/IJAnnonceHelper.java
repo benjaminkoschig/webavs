@@ -1,6 +1,6 @@
 package globaz.ij.helpers.annonces;
 
-import ch.admin.zas.rc.IVTaggelderMeldungType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType;
 import ch.globaz.common.exceptions.ValidationException;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;

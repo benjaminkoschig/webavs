@@ -3,6 +3,7 @@
  */
 package globaz.cygnus.topaz.decision;
 
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.doc.ICTScalableDocumentProperties;
 import globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins;
@@ -830,8 +831,8 @@ public class RFGenererDecisionServiceOO {
                 }
 
                 documentContainer.addDocument(dataBordereau, docInfoBordereau);
-                documentContainer.addDocument(dataBordereau, docInfoBordereau);
-
+                // suppression du deuxième bordereau
+//                documentContainer.addDocument(dataBordereau, docInfoBordereau);
             } else {
                 // Création de 2 bordereaux pour chaque assuré concerné
                 while (elementListeDemande.hasNext()) {
@@ -848,7 +849,8 @@ public class RFGenererDecisionServiceOO {
                     String idTiersConcerne = elementListeDemande.next().toString();
                     DocumentData dataBordereau = ajoutAnnexeBordereau(decisionDocument, idTiersConcerne);
                     documentContainer.addDocument(dataBordereau, docInfoBordereau);
-                    documentContainer.addDocument(dataBordereau, docInfoBordereau);
+                    // suppression du deuxième bordereau
+//                        documentContainer.addDocument(dataBordereau, docInfoBordereau);
                 }
             }
         }

@@ -694,25 +694,26 @@ public class APGenerateurAnnonceRAPG {
         APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
         repartitionPaiementsManager.setSession(session);
         repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
-        repartitionPaiementsManager.find();
+        repartitionPaiementsManager.find(BManager.SIZE_NOLIMIT);
 
         if (repartitionPaiementsManager.getSize() == 0) {
             throw new Exception("Aucune répartition pour cette prestation : idPRst = " + prestation.getIdPrestationApg()
                     + " idDroit= " + prestation.getIdDroit());
         }
-        APRepartitionPaiements repartitionPaiements = null;
         boolean hasVersementEmployeur = false;
+        boolean hasVersementPlusieursEmployeurs = false;
         boolean hasVersementAssure = false;
 
-        for (int i = 0; i < repartitionPaiementsManager.size(); i++) {
-            repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsManager.getEntity(i);
-            hasVersementEmployeur |= repartitionPaiements.getTypePaiement()
-                    .equals(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
-            hasVersementAssure |= repartitionPaiements.getTypePaiement()
-                    .equals(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
+        for(APRepartitionPaiements repartitionPaiements: repartitionPaiementsManager.<APRepartitionPaiements>getContainerAsList()) {
+            hasVersementPlusieursEmployeurs |= hasVersementEmployeur
+                    && IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR.equals(repartitionPaiements.getTypePaiement());
+            hasVersementEmployeur |= IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR.equals(repartitionPaiements.getTypePaiement());
+            hasVersementAssure |= IAPRepartitionPaiements.CS_PAIEMENT_DIRECT.equals(repartitionPaiements.getTypePaiement());
         }
 
-        if (hasVersementAssure) {
+        if(hasVersementPlusieursEmployeurs) {
+            modePaiement = APTypeVersement.VERSEMENT_PLUSIEURS_EMPLOYEURS.getCodeTypeVersementAsString();
+        } else if (hasVersementAssure) {
             if (hasVersementEmployeur) {
                 modePaiement = APTypeVersement.VERSEMENT_EMPLOYEUR_ET_ASSURE.getCodeTypeVersementAsString();
             } else {

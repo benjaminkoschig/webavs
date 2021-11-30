@@ -36,6 +36,7 @@ public class APListePrestationsAPGControlees extends FWIAbstractManagerDocumentL
     private static final long serialVersionUID = 1L;
     private String derniereIdPrestation = null;
     private String forEtat = "";
+    private String forEtatDroit = "";
 
     private String orderBy = "";
 
@@ -81,6 +82,7 @@ public class APListePrestationsAPGControlees extends FWIAbstractManagerDocumentL
         APPrestationsControleesManager manager = (APPrestationsControleesManager) _getManager();
         manager.setSession(getSession());
         manager.setForEtat(getForEtat());
+        manager.setForEtatDroit(getForEtatDroit());
         manager.setOrderBy(getOrderBy());
 
         try {
@@ -265,6 +267,10 @@ public class APListePrestationsAPGControlees extends FWIAbstractManagerDocumentL
         return forEtat;
     }
 
+    public String getForEtatDroit() {
+        return forEtatDroit;
+    }
+
     /**
      * Méthode qui retourne le libellé court du sexe par rapport au csSexe qui est passé en paramètre
      * 
@@ -343,6 +349,10 @@ public class APListePrestationsAPGControlees extends FWIAbstractManagerDocumentL
      */
     public void setForEtat(String string) {
         forEtat = string;
+    }
+
+    public void setForEtatDroit(String string) {
+        forEtatDroit = string;
     }
 
     /**

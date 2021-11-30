@@ -58,6 +58,21 @@ public class RubriqueComptableCCJUAgriculteurTest extends RubriqueComptableCCJUS
 
     @Ignore
     @Test
+    public void testDossierADIAgriculteurIndirectAffilieJUTarifVDAcquis2022() {
+        RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
+        RubriqueComptableServiceImplTest.dossierTest.setStatut(ALCSDossier.STATUT_IS);
+        RubriqueComptableServiceImplTest.enteteTest.setStatut(ALCSPrestation.STATUT_ADI);
+        RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_INDIRECT);
+        RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
+        RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022);
+        // on déclenche le test effectif
+        String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
+        Assert.assertEquals(ALConstRubriques.RUBRIQUE_CAISSE_AGRICULTEUR, rubriqueRecherchee);
+
+    }
+
+    @Ignore
+    @Test
     public void testDossierADIAgriculteurRestitutionAffilieJUTarifJU() {
         RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
         RubriqueComptableServiceImplTest.dossierTest.setStatut(ALCSDossier.STATUT_IS);
@@ -95,6 +110,22 @@ public class RubriqueComptableCCJUAgriculteurTest extends RubriqueComptableCCJUS
         RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_RESTITUTION);
         RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
         RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS);
+        // on déclenche le test effectif
+        String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
+        Assert.assertEquals(ALConstRubriques.RUBRIQUE_STANDARD_RESTITUTION, rubriqueRecherchee);
+
+    }
+
+    @Ignore
+    @Test
+    public void testDossierADIAgriculteurRestitutionAffilieJUTarifVDAcquis2022() {
+
+        RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
+        RubriqueComptableServiceImplTest.dossierTest.setStatut(ALCSDossier.STATUT_IS);
+        RubriqueComptableServiceImplTest.enteteTest.setStatut(ALCSPrestation.STATUT_ADI);
+        RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_RESTITUTION);
+        RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
+        RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022);
         // on déclenche le test effectif
         String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
         Assert.assertEquals(ALConstRubriques.RUBRIQUE_STANDARD_RESTITUTION, rubriqueRecherchee);
@@ -146,6 +177,21 @@ public class RubriqueComptableCCJUAgriculteurTest extends RubriqueComptableCCJUS
 
     @Ignore
     @Test
+    public void testDossierNormalAgriculteurIndirectAffilieJUTarifVDAcquis2022() {
+
+        RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
+        RubriqueComptableServiceImplTest.dossierTest.setStatut(ALCSDossier.STATUT_N);
+        RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_INDIRECT);
+        RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
+        RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022);
+        // on déclenche le test effectif
+        String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
+        Assert.assertEquals(ALConstRubriques.RUBRIQUE_CAISSE_AGRICULTEUR, rubriqueRecherchee);
+
+    }
+
+    @Ignore
+    @Test
     public void testDossierNormalAgriculteurRestitutionAffilieJUTarifJU() {
         // on modifie ces objets selon le test voulu : Dossier salarié, N, affilié: JU, tarif: JU
         RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
@@ -181,6 +227,21 @@ public class RubriqueComptableCCJUAgriculteurTest extends RubriqueComptableCCJUS
         RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_RESTITUTION);
         RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
         RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS);
+        // on déclenche le test effectif
+        String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
+        Assert.assertEquals(ALConstRubriques.RUBRIQUE_STANDARD_RESTITUTION, rubriqueRecherchee);
+
+    }
+
+    @Ignore
+    @Test
+    public void testDossierNormalAgriculteurRestitutionAffilieJUTarifVDAcquis2022() {
+        // on modifie ces objets selon le test voulu : Dossier salarié, N, affilié: JU, tarif: JU
+        RubriqueComptableServiceImplTest.dossierTest.setActiviteAllocataire(ALCSDossier.ACTIVITE_AGRICULTEUR);
+        RubriqueComptableServiceImplTest.dossierTest.setStatut(ALCSDossier.STATUT_N);
+        RubriqueComptableServiceImplTest.enteteTest.setBonification(ALCSPrestation.BONI_RESTITUTION);
+        RubriqueComptableServiceImplTest.enteteTest.setCantonAffilie(ALCSCantons.JU);
+        RubriqueComptableServiceImplTest.detailTest.setCategorieTarif(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022);
         // on déclenche le test effectif
         String rubriqueRecherchee = getRubriqueKeyRecherchee(RubriqueComptableCCJUServiceImplTest.serviceCCJU);
         Assert.assertEquals(ALConstRubriques.RUBRIQUE_STANDARD_RESTITUTION, rubriqueRecherchee);

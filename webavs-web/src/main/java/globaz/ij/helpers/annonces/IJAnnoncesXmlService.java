@@ -11,10 +11,10 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.admin.zas.rc.IVTaggelderMeldungType;
-import ch.admin.zas.rc.IVTaggelderMeldungType.ErsteTaggeldPeriode;
-import ch.admin.zas.rc.IVTaggelderMeldungType.NrVerfuegung;
-import ch.admin.zas.rc.IVTaggelderMeldungType.TaggeldPeriode;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType.ErsteTaggeldPeriode;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType.NrVerfuegung;
+import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType.TaggeldPeriode;
 import globaz.ij.db.annonces.IJAnnonce;
 import globaz.ij.db.annonces.IJPeriodeAnnonce;
 import globaz.jade.client.util.JadeStringUtil;
@@ -51,7 +51,7 @@ public class IJAnnoncesXmlService {
 
             // Cas spécial pour les annonces de type 3 et 4
 
-            annonceXml.setKasseZweigstelle(annonce.getNoCaisse() + annonce.getNoAgence());
+            annonceXml.setKasseZweigstelle(annonce.getNoCaisseAndNoAgence());
             annonceXml.setBuchungsmonatJahr(retourneXMLGregorianCalendarFromMonth(annonce.getMoisAnneeComptable()));
             annonceXml.setMeldungsInhalt(annonce.getCodeGenreCarte());
             if (!JadeStringUtil.isEmpty(annonce.getPetiteIJ()) && !isCasSpecial) {
@@ -83,7 +83,7 @@ public class IJAnnoncesXmlService {
             if (!JadeStringUtil.isEmpty(annonce.getIjReduite()) && !isCasSpecial) {
                 annonceXml.setGekuerztesTaggeld(convertIntToBoolean(annonce.getIjReduite()));
             }
-            annonceXml.setBesitzstand4IVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
+            annonceXml.setBesitzstandWEIVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
             annonceXml.setNrVerfuegung(resolveNumeroDecision(annonce.getNoDecisionAiCommunication()));
 
             // Si aucun jour attesté pour 1ère période, on rempli avec les
@@ -117,7 +117,7 @@ public class IJAnnoncesXmlService {
     private IVTaggelderMeldungType genereAnnoncePetiteGrandeIJ(IJAnnonce annonce)
             throws DatatypeConfigurationException, ParseException {
         IVTaggelderMeldungType annonceXml = new IVTaggelderMeldungType();
-        annonceXml.setKasseZweigstelle(annonce.getNoCaisse() + annonce.getNoAgence());
+        annonceXml.setKasseZweigstelle(annonce.getNoCaisseAndNoAgence());
         annonceXml.setBuchungsmonatJahr(retourneXMLGregorianCalendarFromMonth(annonce.getMoisAnneeComptable()));
         annonceXml.setMeldungsInhalt(annonce.getCodeGenreCarte());
         annonceXml.setTaggeldart(annonce.getPetiteIJ());
@@ -125,7 +125,7 @@ public class IJAnnoncesXmlService {
         if(!JadeStringUtil.isEmpty(annonce.getNoAssureConjoint())) {
             annonceXml.setVNrEhepartner(JadeStringUtil.removeChar(annonce.getNoAssureConjoint(), '.'));
         }
-        annonceXml.setBesitzstand4IVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
+        annonceXml.setBesitzstandWEIVRevision(convertIntToBoolean(annonce.getDroitAcquis4emeRevision()));
         annonceXml.setNrVerfuegung(resolveNumeroDecision(annonce.getNoDecisionAiCommunication()));
 
         if (!"3".equals(annonce.getCodeGenreCarte()) && !"4".equals(annonce.getCodeGenreCarte())) {
@@ -176,7 +176,7 @@ public class IJAnnoncesXmlService {
     private IVTaggelderMeldungType genereAnnonceAITouAllocAssitance(IJAnnonce annonce, boolean isAIT)
             throws DatatypeConfigurationException, ParseException {
         IVTaggelderMeldungType annonceXml = new IVTaggelderMeldungType();
-        annonceXml.setKasseZweigstelle(annonce.getNoCaisse() + annonce.getNoAgence());
+        annonceXml.setKasseZweigstelle(annonce.getNoCaisseAndNoAgence());
         annonceXml.setBuchungsmonatJahr(retourneXMLGregorianCalendarFromMonth(annonce.getMoisAnneeComptable()));
         annonceXml.setMeldungsInhalt(annonce.getCodeGenreCarte());
         annonceXml.setTaggeldart(annonce.getPetiteIJ());
@@ -210,7 +210,6 @@ public class IJAnnoncesXmlService {
         // set a 0
         periode1Xml.setVorzeichenCode(false);
         periode1Xml.setAnspruchKindergeld(false);
-        periode1Xml.setBesitzstand5IVRevision(false);
         periode1Xml.setTagesansatz(new BigDecimal("0.00"));
         periode1Xml.setIVTaggeldTotal(new BigDecimal("0.00"));
 
@@ -235,9 +234,7 @@ public class IJAnnoncesXmlService {
         periode2Xml.setPeriodeBeginn(retourneXMLGregorianCalendar(annonce.getPeriodeAnnonce1().getPeriodeDe()));
         periode2Xml.setPeriodeEnde(retourneXMLGregorianCalendar(annonce.getPeriodeAnnonce1().getPeriodeA()));
 
-        if(isAIT) {
-            periode2Xml.setBetragEinarbeitungszuschuss(new BigDecimal(annonce.getPeriodeAnnonce1().getMontantAit()));
-        } else {
+        if(!isAIT) {
             periode2Xml.setBetragEntschaedigungBetreuungskosten(new BigDecimal(annonce.getPeriodeAnnonce1().getMontantAllocAssistance()));
         }
 
@@ -253,7 +250,6 @@ public class IJAnnoncesXmlService {
 
         // set a 0
         periode2Xml.setAnspruchKindergeld(false);
-        periode2Xml.setBesitzstand5IVRevision(false);
 
         annonceXml.setErsteTaggeldPeriode(periode1Xml);
         annonceXml.getTaggeldPeriode().add(periode2Xml);
@@ -264,9 +260,9 @@ public class IJAnnoncesXmlService {
     private NrVerfuegung resolveNumeroDecision(String numero) {
         NrVerfuegung num = new NrVerfuegung();
         String intNum = numero.replaceFirst("^0*", "");
-        num.setZustaendigeIVStelle(Integer.valueOf(intNum.substring(0, 3)));
-        num.setElfstelligeNrVerfuegung(Long.valueOf(intNum.substring(3, 14)));
-        num.setVersichertennummer(intNum.substring(14));
+        num.setZustaendigeIVStelle(Integer.parseInt(intNum.substring(0, 3)));
+        num.setElfstelligeNrVerfuegung(Long.parseLong(intNum.substring(3, 14)));
+        num.setVersichertennummer(Long.parseLong(intNum.substring(14)));
         return num;
     }
 
@@ -294,7 +290,6 @@ public class IJAnnoncesXmlService {
         periodeXml.setPeriodeBeginn(retourneXMLGregorianCalendar(periode.getPeriodeDe()));
         periodeXml.setPeriodeEnde(retourneXMLGregorianCalendar(periode.getPeriodeA()));
         periodeXml.setAnspruchKindergeld(convertIntToBoolean(periode.getDroitPrestationPourEnfant()));
-        periodeXml.setBesitzstand5IVRevision(convertIntToBoolean(periode.getGarantieDroitAcquis5emeRevision()));
         return periodeXml;
     }
 
@@ -321,7 +316,6 @@ public class IJAnnoncesXmlService {
         periodeXml.setPeriodeBeginn(retourneXMLGregorianCalendar(periode.getPeriodeDe()));
         periodeXml.setPeriodeEnde(retourneXMLGregorianCalendar(periode.getPeriodeA()));
         periodeXml.setAnspruchKindergeld(convertIntToBoolean(periode.getDroitPrestationPourEnfant()));
-        periodeXml.setBesitzstand5IVRevision(convertIntToBoolean(periode.getGarantieDroitAcquis5emeRevision()));
 
         return periodeXml;
     }

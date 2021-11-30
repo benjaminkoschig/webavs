@@ -84,6 +84,7 @@ public class TestTarifsUtils {
             TestTarifsUtils.categories.put("UR", ALCSTarif.CATEGORIE_UR);
             TestTarifsUtils.categories.put("VD", ALCSTarif.CATEGORIE_VD);
             TestTarifsUtils.categories.put("VD_DROIT_ACQUIS", ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS);
+            TestTarifsUtils.categories.put("VD_DROIT_ACQUIS_2022", ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022);
             TestTarifsUtils.categories.put("VS", ALCSTarif.CATEGORIE_VS);
             TestTarifsUtils.categories.put("ZG", ALCSTarif.CATEGORIE_ZG);
             TestTarifsUtils.categories.put("ZH", ALCSTarif.CATEGORIE_ZH);

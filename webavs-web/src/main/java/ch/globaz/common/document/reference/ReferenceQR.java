@@ -304,25 +304,24 @@ public class ReferenceQR extends AbstractReference {
      * @param idCompteAnnexe
      */
     public void genererReferenceQR(String idRole, String idExterneRole, Boolean isPlanPaiement, String idTypeSection, String idExterne, String idCompteAnnexe, String solde) throws CATechnicalException {
-
+        String refQR;
         try {
-            this.reference = genererNumReference(idRole, idExterneRole, isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
+            refQR = genererNumReference(idRole, idExterneRole, isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
         } catch (Exception e) {
             throw new CATechnicalException("Erreur à la génération de la référence QR :", e);
-        }
-
-
-        if (StringUtils.isEmpty(reference)) {
-            this.typeReference = SANS_REF;
-        } else {
-            this.typeReference = QR_IBAN;
         }
 
         if (JadeStringUtil.isDecimalEmpty(montant)) {
             montant = solde;
         }
 
-        genererReference(reference, montant);
+        genererReference(refQR, montant);
+
+        if (StringUtils.isEmpty(reference)) {
+            this.typeReference = SANS_REF;
+        } else {
+            this.typeReference = QR_IBAN;
+        }
 
     }
 
@@ -335,7 +334,7 @@ public class ReferenceQR extends AbstractReference {
      */
 
     public void genererReference(String reference, String montant) throws CATechnicalException {
-        if (new FWCurrency(montant).isPositive()) {
+        if (new FWCurrency(montant).isPositive() || qrNeutre) {
             try {
                 JABVR bvr = new JABVR(montant, reference, getNoAdherent());
                 setReference(bvr.get_ligneReference());
@@ -352,35 +351,35 @@ public class ReferenceQR extends AbstractReference {
      * @param enteteFacture l'entête facture
      */
     public void genererReferenceQRFact(FAEnteteFacture enteteFacture, boolean isFactureAvecMontantMinime, boolean isFactureMontantReport) throws Exception {
-        this.reference = genererNumReference(enteteFacture.getIdRole(), enteteFacture.getIdExterneRole(), false,
+        String refQR = genererNumReference(enteteFacture.getIdRole(), enteteFacture.getIdExterneRole(), false,
                 JadeStringUtil.rightJustifyInteger(enteteFacture.getIdTypeFacture(), 2), enteteFacture.getIdExterneFacture(), null);
-        if (StringUtils.isEmpty(reference)) {
-            this.typeReference = SANS_REF;
-        } else {
-            this.typeReference = QR_IBAN;
-        }
 
         JABVR bvr = null;
 
         if ((new FWCurrency(enteteFacture.getTotalFacture()).isPositive()
                 && !enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT))
                 || (Objects.nonNull(enteteFacture) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(enteteFacture.getIdTypeFacture()))) {
-            bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), reference, getNoAdherent());
+            bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), refQR, getNoAdherent());
         }
 
         if (!(new FWCurrency(enteteFacture.getTotalFacture()).isZero() || isFactureAvecMontantMinime || isFactureMontantReport)
                 && (bvr != null)) {
             if (!enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
                 setReference(bvr.get_ligneReference());
+                this.typeReference = QR_IBAN;
             } else {
                 setReference(REFERENCE_NON_FACTURABLE);
+                this.typeReference = SANS_REF;
             }
         } else {
             setReference(REFERENCE_NON_FACTURABLE);
+            this.typeReference = SANS_REF;
+
         }
 
         if (qrNeutre && (bvr != null)) {
             setReference(bvr.get_ligneReference());
+            this.typeReference = QR_IBAN;
         }
     }
 

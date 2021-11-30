@@ -1359,17 +1359,14 @@ public class APPrestationHelper extends PRAbstractHelper {
             viewBean.setGenreService(droit.getGenreService());
             viewBean.setDetailRequerant(getDetailRequerant(session, demande.getIdTiers()));
 
-            if(StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE,demande.getTypeDemande()) ||
-                    StringUtils.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT,demande.getTypeDemande()) ||
-                    StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE,demande.getTypeDemande())) {
+
                 if (viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()) {
                     droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
-                    droit.update();
                 }else{
                     droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-                    droit.update();
-                }
             }
+                    droit.update();
+
 
             if (!hasErrors(session, transaction)) {
                 transaction.commit();

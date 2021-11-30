@@ -1,5 +1,6 @@
 package globaz.corvus.annonce.service;
 
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
@@ -7,33 +8,14 @@ import globaz.corvus.db.annonces.REAnnoncesDiminution9Eme;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ch.admin.zas.rc.AbgangsmeldungType;
-import ch.admin.zas.rc.AenderungsmeldungAO9Type;
-import ch.admin.zas.rc.AenderungsmeldungHE9Type;
-import ch.admin.zas.rc.AenderungsmeldungO9Type;
-import ch.admin.zas.rc.DJE9BeschreibungType;
-import ch.admin.zas.rc.DJE9BeschreibungWeakType;
-import ch.admin.zas.rc.Gutschriften9Type;
-import ch.admin.zas.rc.Gutschriften9WeakType;
-import ch.admin.zas.rc.IVDaten9Type;
-import ch.admin.zas.rc.IVDaten9WeakType;
-import ch.admin.zas.rc.IVDatenHE9Type;
-import ch.admin.zas.rc.IVDatenHE9WeakType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
-import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslWeakType;
-import ch.admin.zas.rc.RRMeldung9Type;
-import ch.admin.zas.rc.SkalaBerechnungType;
-import ch.admin.zas.rc.SkalaBerechnungWeakType;
-import ch.admin.zas.rc.ZuwachsmeldungAO9Type;
-import ch.admin.zas.rc.ZuwachsmeldungHE9Type;
-import ch.admin.zas.rc.ZuwachsmeldungO9Type;
 
 /**
  * @author jmc
@@ -167,7 +149,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         AenderungsmeldungHE9Type modification = factoryType.createAenderungsmeldungHE9Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -218,7 +200,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         ZuwachsmeldungHE9Type augmentation = factoryType.createZuwachsmeldungHE9Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -267,7 +249,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         ZuwachsmeldungO9Type augmentation = factoryType.createZuwachsmeldungO9Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -342,7 +324,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         AenderungsmeldungO9Type modification = factoryType.createAenderungsmeldungO9Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -376,7 +358,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
 
         // Echelle de la base de calcul
-        ch.admin.zas.rc.SkalaBerechnungWeakType echelleCalcul = rempliSkalaBerechnungWeakTyp(enr02);
+        acor.ch.admin.zas.rc.annonces.rente.rc.SkalaBerechnungWeakType echelleCalcul = rempliSkalaBerechnungWeakTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
         Gutschriften9WeakType bte = rempliBonnificationsWeak9e(enr02);
@@ -422,7 +404,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         AenderungsmeldungAO9Type modification = factoryType.createAenderungsmeldungAO9Type();
         modification.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        modification.setKasseZweigstelle(retourneCaisseAgence());
+        modification.setKasseZweigstelle(retourneCaisseAgenceEntier());
         modification.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         modification.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
         // Remplir la personne
@@ -491,7 +473,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         ZuwachsmeldungAO9Type augmentation = factoryType.createZuwachsmeldungAO9Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        augmentation.setKasseZweigstelle(retourneCaisseAgence());
+        augmentation.setKasseZweigstelle(retourneCaisseAgenceEntier());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
             augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -596,7 +578,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         AbgangsmeldungType diminution = factoryType.createAbgangsmeldungType();
         diminution.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
-        diminution.setKasseZweigstelle(retourneCaisseAgence());
+        diminution.setKasseZweigstelle(retourneCaisseAgenceEntier());
         diminution.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         diminution.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
         AbgangsmeldungType.LeistungsberechtigtePerson person = factoryType
@@ -605,7 +587,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         diminution.setLeistungsberechtigtePerson(person);
         AbgangsmeldungType.Leistungsbeschreibung description = factoryType
                 .createAbgangsmeldungTypeLeistungsbeschreibung();
-        description.getLeistungsart().add(enr01.getGenrePrestation());
+        description.setLeistungsart(Integer.valueOf(enr01.getGenrePrestation()));
         if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }

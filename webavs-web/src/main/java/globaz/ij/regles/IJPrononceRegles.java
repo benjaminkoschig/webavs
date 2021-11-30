@@ -107,6 +107,11 @@ public final class IJPrononceRegles {
     private static String CLONE_IJ_AIT_COR;
     private static String CLONE_PETITEIJ_COPIE;
     private static String CLONE_PETITEIJ_COR;
+    private static String CLONE_FPI_COPIE;
+    private static String CLONE_FPI_COR;
+
+    private static final String CLONE_COPIER_DROIT_FPI = "IJFPI-copie";
+    private static final String CLONE_CORRIGER_DROIT_FPI = "IJFPI-correction";
 
     private static int AGE_CHANGEMENT_FPI = 25;
 
@@ -232,6 +237,11 @@ public final class IJPrononceRegles {
             }
 
             return IJPrononceRegles.CLONE_IJ_AIT_COPIE;
+        } else if (IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ())) {
+            if (IJPrononceRegles.CLONE_FPI_COPIE == null) {
+                IJPrononceRegles.CLONE_FPI_COPIE = CLONE_COPIER_DROIT_FPI;
+            }
+            return IJPrononceRegles.CLONE_FPI_COPIE;
         } else {
             if (IJPrononceRegles.CLONE_IJ_AA_COPIE == null) {
                 IJPrononceRegles.CLONE_IJ_AA_COPIE = session.getApplication().getProperty(
@@ -264,6 +274,12 @@ public final class IJPrononceRegles {
             }
 
             return IJPrononceRegles.CLONE_IJ_AIT_COR;
+        } else if (IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ())) {
+            if (IJPrononceRegles.CLONE_FPI_COR == null) {
+                IJPrononceRegles.CLONE_FPI_COR = CLONE_CORRIGER_DROIT_FPI;
+            }
+
+            return IJPrononceRegles.CLONE_FPI_COR;
         } else {
             if (IJPrononceRegles.CLONE_IJ_AA_COR == null) {
                 IJPrononceRegles.CLONE_IJ_AA_COR = session.getApplication().getProperty(

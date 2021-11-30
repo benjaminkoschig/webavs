@@ -140,7 +140,7 @@ public class PRACORConst {
     // le type d'ij
     public static final String CA_TYPE_IJ_GRANDE = "1";
     public static final String CA_TYPE_IJ_PETITE = "2";
-    public static final String CA_TYPE_FPI = "3";
+    public static final String CA_TYPE_FPI = "5";
 
     public static final String CA_TYPE_MESURE_EXTERNE = "2";
     // le type de mesure
@@ -419,7 +419,7 @@ public class PRACORConst {
      */
     public static final String caGenreReadaptationToCS(BSession session, String caGenreReadaptation) {
         // le code est le code utilisateur
-        return session.getSystemCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION, caGenreReadaptation);
+       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION,caGenreReadaptation).getIdCodeSysteme();
     }
 
     /**

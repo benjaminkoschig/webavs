@@ -122,4 +122,8 @@ public enum APGenreServiceAPG {
     public String getCodeSysteme() {
         return codeSysteme;
     }
+
+    public static List<APGenreServiceAPG> maternitePaterniteProcheAidant() {
+        return Arrays.asList(APGenreServiceAPG.Maternite, APGenreServiceAPG.Paternite, APGenreServiceAPG.ProcheAidant);
+    }
 }
