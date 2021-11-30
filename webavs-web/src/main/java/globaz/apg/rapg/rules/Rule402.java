@@ -12,9 +12,9 @@ import java.util.Arrays;
 /**
  * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Période de contrôle : une année
  * civile1 (Si startOfPrediod < 01.01.2021, Si le champ « serviceType » = 20, le champ « referenceNumber » = cas 3 (cours de répétition) et le champ «
- * numberOfDays » > 7 jours) ou (Si startOfPrediod > 31.12.2020, Si le champ « serviceType » = 20, le champ « referenceNumber » = cas 3 (cours de répétition) et le champ «
+ * numberOfDays » > 7 jours) ou (Si startOfPrediod > 31.12.2020, Si le champ « serviceType » = 20 ou 22, le champ « referenceNumber » = cas 3 (cours de répétition) et le champ «
  *  * numberOfDays » > 21 jours)  -> erreur </br><strong>Champs concerné(s) :</strong></br>
- * 
+ *
  * @author lga
  */
 public class Rule402 extends RuleInterAPG {
@@ -29,7 +29,7 @@ public class Rule402 extends RuleInterAPG {
         try {
             if(Dates.toDate(champsAnnonce.getStartOfPeriod()).isAfter(LocalDate.of(2020, 12,31))){
                 setNombreJoursSoldesMax(21);
-                addGenresServicesVoulus(APGenreServiceAPG.ProtectionCivileCadreSpecialiste);
+                setGenresServicesAdditionnels(Arrays.asList(APGenreServiceAPG.ProtectionCivileCadreSpecialiste));
             }
             return super.check(champsAnnonce);
         }
