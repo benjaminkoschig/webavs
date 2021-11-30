@@ -23,6 +23,7 @@ import lombok.Getter;
 public class RuleInterAPG extends Rule {
 
     private List<APGenreServiceAPG> genresServicesVoulus;
+    private List<APGenreServiceAPG> genresServiceAdditionnels;
     private int nombreAnneeCouvert;
     private int nombreJoursSoldesMax;
     private List<APTypeProtectionCivile> typesProtectionCivile;
@@ -69,6 +70,9 @@ public class RuleInterAPG extends Rule {
 
                     List<String> csGenreService = new ArrayList<String>();
                     for (APGenreServiceAPG unGenre : genresServicesVoulus) {
+                        csGenreService.add(unGenre.getCodeSysteme());
+                    }
+                    for (APGenreServiceAPG unGenre : genresServiceAdditionnels) {
                         csGenreService.add(unGenre.getCodeSysteme());
                     }
                     APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
@@ -132,8 +136,12 @@ public class RuleInterAPG extends Rule {
         return false;
     }
 
-    protected void addGenresServicesVoulus(APGenreServiceAPG genre){
-        genresServicesVoulus.add(genre);
+    protected void setGenresServicesAdditionnels(List<APGenreServiceAPG> genres){
+        genresServiceAdditionnels = new ArrayList<>();
+        for (APGenreServiceAPG genre:
+             genres) {
+            genresServiceAdditionnels.add(genre);
+        }
     }
 
     protected void setNombreJoursSoldesMax(int nbJourMax){
