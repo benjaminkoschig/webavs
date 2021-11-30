@@ -1,53 +1,59 @@
+-- ACOR FPI
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (51400035, 'IJGENRREA2', 0, 1, 3, 0, 'Mode_calcul_fpi', 0, 2, 2, 2, 2, 0, 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435001, 'IJGENRREA2', 1, 1, 0, 0, 'Examen_instruction', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435002, 'IJGENRREA2', 2, 1, 0, 0, 'Delai_attente_avant_reclassement', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435003, 'IJGENRREA2', 3, 1, 0, 0, 'Delai_attente_recherche_emploi', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435004, 'IJGENRREA2', 4, 1, 0, 0, 'IJ_art_14a_15_17_18a', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435005, 'IJGENRREA2', 5, 1, 0, 0, 'FPI', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435006, 'IJGENRREA2', 6, 1, 0, 0, 'Mesure_medicale', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435007, 'IJGENRREA2', 7, 1, 0, 0, 'Formation_professionnelle', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435008, 'IJGENRREA2', 8, 1, 0, 0, 'Formation_preparatoire', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435009, 'IJGENRREA2', 9, 1, 0, 0, 'IJ_art_22_12', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52435010, 'IJGENRREA2', 10, 1, 0, 0, 'IJ_art_22_14a', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (51400035, 'F', '', 'Mode_calcul', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435001, 'D', '1', 'Untersuchung bzw. Abklärung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435001, 'F', '1', 'Examen ou instruction', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435002, 'D', '2', 'Wartezeit vor Umschulung (Art. 18 IVV)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435002, 'F', '2', 'Délai d''attente avant reclassement (Art. 18 IVV)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435003, 'D', '3', 'Warten vor Arbeitsantritt (Art. 19 IVV)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435003, 'F', '3', 'Délai d''attente pendant la recherche d’emploi (Art. 19 IVV)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435004, 'D', '4', 'Taggeld während Massnahme nach Art. 14a, 15, 17, 18a IVG', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435004, 'F', '4', 'Indemnité journalière pendant les mesures prévues aux art. 14a, 15, 17, 18a LAI', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435005, 'D', '5', 'EbA nach BBG mit Lehrvertrag', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435005, 'F', '5', 'FPI selon LFPr avec contrat d''apprentissage', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435006, 'D', '6', 'Medizinische Eingliederung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435006, 'F', '6', 'Mesure médicale de réadaptation', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435007, 'D', '7', 'Höhere Berufsbildung oder Besuch Hochschule (Tertiäre Ausbildung)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435007, 'F', '7', 'Formation professionnelle supérieure et Haute école (Formation tertiaire)', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435008, 'D', '8', 'Vorbereitung auf eine Hilfstätigkeit oder auf eine Tätigkeit in einer geschützen Werkstätte nach Art. 16 Abs. 3 IVG oder gezielte Vorbereitung nach Art. 5 Abs. 2 IVV', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435008, 'F', '8', 'Formation préparatoire à une activité auxiliaire ou un atelier protégé selon art. 16, al. 3, LAI ou préparation ciblée selon art. 5, al. 2 IRAI', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435009, 'D', '9', 'Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 12 IVG', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435009, 'F', '9', 'Indemnité journalière selon art. 22 al. 2 let. b selon art. 12 LAI', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435010, 'D', '10', 'Taggeld gemäss Art. 22 Abs. 2 Bst. b nach Art. 14a IVG', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52435010, 'F', '10', 'Indemnité journalière selon art. 22 al. 2 let. b selon art. 14a LAI', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (51400036, 'IJMOTIFIN2', 0, 1, 3, 0, 'Motifs_interruption', 0, 2, 2, 2, 2, 0, 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52436001, 'IJMOTIFIN2', 1, 1, 0, 0, 'Maladie', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52436002, 'IJMOTIFIN2', 2, 1, 0, 0, 'Accident', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52436003, 'IJMOTIFIN2', 3, 1, 0, 0, 'Maternite', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52436004, 'IJMOTIFIN2', 4, 1, 0, 0, 'Proche_aidant', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52436005, 'IJMOTIFIN2', 5, 1, 0, 0, 'Autres', 2, 1, 2, 2, 2, 2, 51400035, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (51400036, 'D', '', 'Grund der Unterbrechung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (51400036, 'F', '', 'Motifs de l’interruption', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436001, 'D', '1', 'Krankheit', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436001, 'F', '1', 'Maladie', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436002, 'D', '2', 'Unfall', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436002, 'F', '2', 'Accident', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'D', '3', 'Mutterschaft', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'F', '3', 'Maternité', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436004, 'D', '4', 'Betreuungsurlaub', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436004, 'F', '4', 'Congé proche aidant', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436005, 'D', '5', 'Andere Gründe', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436005, 'F', '5', 'Autres motifs', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52433009, 'IJCODEABSE', 9, 1, 0, 0, 'Proche_aidant', 2, 1, 2, 2, 2, 2, 51400033, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52433009, 'D', '9', '9 Betreuungsurlaub', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52433009, 'F', '9', '9 Congé proche aidant', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 -- ACOR
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('ij.acor.utiliser.version.web','false',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.acor.adresse.web','',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.acor.navigateur','',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-DELETE FROM SCHEMA.JADEPROP where PROPNAME = 'corvus.acor.adresse.web';
-DELETE FROM SCHEMA.JADEPROP where PROPNAME = 'corvus.acor.navigateur';
-
--- FPI
-create table SCHEMA.IJFPI
-(
-    ID_PRONONCE_FPI DECIMAL(15) not null
-        constraint PK_FPI
-            primary key,
-    SITUATION_ASSURE DECIMAL(8),
-    ID_DERNIER_REVENU DECIMAL(15),
---     XGBCAV CHARACTER(1),
---     XGBCAC CHARACTER(1),
-    PSPY   CHARACTER(24)
-);
-
-alter table SCHEMA.IJPRONAI
-    add XBBM8A CHAR(1);
-REORG TABLE SCHEMA.IJPRONAI;
-
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
-    VALUES (52402005, 'IJTYPE', 5, 1, 0, 0, 'FPI', 2, 1, 2, 2, 2, 2, 51400002, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52402005, 'F', '5', 'FPI', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52402005, 'D', '5', 'BGB', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (51400034, 'IJMODECFPI', 0, 1, 3, 0, 'Mode_calcul_fpi', 0, 2, 2, 2, 2, 0, 0, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434001, 'IJMODECFPI', 1, 1, 0, 0, 'FPI_avec_contrat_apprentissage', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434002, 'IJMODECFPI', 2, 1, 0, 0, 'FPI_sans_contrat_apprentissage', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434003, 'IJMODECFPI', 3, 1, 0, 0, 'FPI_sans_stage', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434004, 'IJMODECFPI', 4, 1, 0, 0, 'FPI_avec_stage', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434005, 'IJMODECFPI', 5, 1, 0, 0, 'Autre_formation', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434006, 'IJMODECFPI', 7, 1, 0, 0, 'Cas_special_1', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52434007, 'IJMODECFPI', 8, 1, 0, 0, 'Cas_special_2', 2, 1, 2, 2, 2, 2, 51400034, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (51400034, 'F', '', 'Mode_calcul', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434001, 'D', '1', 'BGB mit Lehrvertrag (EBA oder EFZ)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434001, 'F', '1', 'FPI avec contrat d''apprentissage (AFC ou CFC)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434002, 'D', '2', 'BGB ohne Lehrvertrag (Hilfstätigkeit/geschützte Werkstätte)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434002, 'F', '2', 'FPI sans contrat d''apprentissage (activité auxiliaire/atelier protégé)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434003, 'D', '3', 'BGB ohne bezahltes Praktikum', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434003, 'F', '3', 'FPI sans stage rémunéré', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434004, 'D', '4', 'BGB mit bezahltem Praktikum', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434004, 'F', '4', 'FPI avec stage rémunéré', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434005, 'D', '5', 'Andere Ausbildung (IV-Ausbildung, PRAINSOS, gezielte Vorbereitung auf eine BGB)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434005, 'F', '5', 'Autre formation (formation AI, PRAINSOS, préparation ciblée en vue d''une FPI)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434006, 'D', '6', 'Sonderfall 1: Gemäss Art. 22 Abs. 2 Bst. b (Versicherte mit Anspruch auf medizinische Massnahmen zur Eingliederung im Sinne von Art. 12 IVG)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434006, 'F', '6', 'Cas spécial 1 : selon l''art. 22 al. 2 let. b (assurés au bénéfice de mesures médicales de réadaptation au sens de l''art. 12 LAI)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434007, 'D', '7', 'Sonderfall 2: Gemäss Art. 22 Abs. 2 Bst. b (Versicherte mit Anspruch auf Integrationsmassnahmen im Sinne von Art. 14a IVG)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52434007, 'F', '7', 'Cas spécial 2 : selon l''art. 22 al. 2 let. b (assurés au bénéfice de mesures de réinsertion au sens de l''art. 14a LAI)', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.acor.token.duration','1',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
