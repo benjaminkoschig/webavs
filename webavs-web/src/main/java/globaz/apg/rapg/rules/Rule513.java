@@ -16,27 +16,29 @@ import java.util.ArrayList;
 
 public class Rule513 extends Rule {
 
-    private final String methodPaiement = "2";
+    private final String METHOD_PAIEMENT = "4";
+    private final int MAX_NUMBER_DAYS = 196;
 
-    public Rule513(String errorCode, boolean breakable) {
-        super(errorCode, breakable);
+    public Rule513(String errorCode) {
+        super(errorCode, true);
     }
 
     @Override
-    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException, APWebserviceException, PropertiesException {
+    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
 
-        if(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(champsAnnonce.getServiceType()) && methodPaiement.equals(champsAnnonce.getPaymentMethod())){
-            APDroitProcheAidantManager droitPaiManager = new APDroitProcheAidantManager();
-            droitPaiManager.setSession(getSession());
-            droitPaiManager.setForCareLeaveEventId(champsAnnonce.getCareLeaveEventID());
+        if(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(champsAnnonce.getServiceType()) && METHOD_PAIEMENT.equals(champsAnnonce.getPaymentMethod())){
             try{
-                droitPaiManager.find(BManager.SIZE_NOLIMIT);
-                int totalJoursCareLeaveEventId = 0;
-                for (APDroitProcheAidant droitPai:
-                     droitPaiManager.<APDroitProcheAidant>getContainerAsList()) {
-                    totalJoursCareLeaveEventId += Integer.parseInt(droitPai.getNbrJourSoldes());
+                APDroitProcheAidantManager droitManager = new APDroitProcheAidantManager();
+                droitManager.setForIdDroit(champsAnnonce.getIdDroit());
+                droitManager.setSession(getSession());
+                droitManager.find(BManager.SIZE_NOLIMIT);
+                APDroitProcheAidant droit = droitManager.<APDroitProcheAidant>getContainerAsList().get(0);
+                if(droit != null){
+                    int totalJoursIndemnise = droit.calculerNbjourTotalDuDroit();
+                    totalJoursIndemnise += droit.calculerNbjourTotalIndemnise();
+                    return totalJoursIndemnise < MAX_NUMBER_DAYS;
                 }
-                return totalJoursCareLeaveEventId > 196;
+                return true;
             } catch (Exception e){
                 throwRuleExecutionException(e);
                 return false;

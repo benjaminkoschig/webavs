@@ -28,6 +28,7 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
     private String forIdDroitParent = "";
     private String idDroitAExclure;
     private String forCareLeaveEventId;
+    private String forIdDroit = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -38,6 +39,15 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
     @Override
     protected String _getWhere(BStatement statement) {
         String sqlWhere = "";
+
+        if(!JadeStringUtil.isIntegerEmpty(forIdDroit)){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APDroitLAPG.FIELDNAME_IDDROIT_LAPG + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forIdDroit);
+        }
 
         if (!JadeStringUtil.isIntegerEmpty(forIdDroitParent)) {
             if (sqlWhere.length() != 0) {
@@ -57,13 +67,13 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
                     + _dbWriteNumeric(statement.getTransaction(), idDroitAExclure);
         }
 
-        if (!JadeStringUtil.isIntegerEmpty(forCareLeaveEventId)) {
+        if (!JadeStringUtil.isEmpty(forCareLeaveEventId)) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += APDroitProcheAidant.FIELDNAME_CARE_LEAVE_EVENT_ID + "="
-                    + _dbWriteNumeric(statement.getTransaction(), forCareLeaveEventId);
+            sqlWhere += APDroitProcheAidant.FIELDNAME_CARE_LEAVE_EVENT_ID + " like "
+                    + _dbWriteString(statement.getTransaction(), forCareLeaveEventId);
         }
 
         return sqlWhere;
@@ -121,4 +131,7 @@ public class APDroitProcheAidantManager extends PRAbstractManager {
         this.forCareLeaveEventId = careLeaveEventId;
     }
 
+    public void setForIdDroit(String idDroit){
+        this.forIdDroit = idDroit;
+    }
 }

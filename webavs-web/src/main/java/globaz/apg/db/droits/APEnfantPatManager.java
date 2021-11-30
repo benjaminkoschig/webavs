@@ -30,6 +30,7 @@ public class APEnfantPatManager extends APSituationFamilialePatManager {
     private static final long serialVersionUID = 1L;
     private String forIdSituationFamiliale = "";
     private String forIdDroitPaternite = "";
+    private String forNssEnfant = "";
     /**
      * Crée une nouvelle instance de la classe APEnfantMatManager.
      */
@@ -68,7 +69,14 @@ public class APEnfantPatManager extends APSituationFamilialePatManager {
                     + _dbWriteNumeric(statement.getTransaction(), forIdDroitPaternite);
         }
 
+        if(!JadeStringUtil.isEmpty(getForNssEnfant())){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
 
+            sqlWhere += APEnfantPat.FIELDNAME_NO_AVS + "="
+                    + _dbWriteString(statement.getTransaction(), forNssEnfant);
+        }
         return sqlWhere;
     }
     public String getForIdSituationFamiliale() {
@@ -87,5 +95,13 @@ public class APEnfantPatManager extends APSituationFamilialePatManager {
     @Override
     public void setForIdDroitPaternite(String forIdDroitPaternite) {
         this.forIdDroitPaternite = forIdDroitPaternite;
+    }
+
+    public void setForNssEnfant(String nss){
+        forNssEnfant = nss;
+    }
+
+    public String getForNssEnfant(){
+        return forNssEnfant;
     }
 }
