@@ -142,7 +142,7 @@ public class REAnakinParser {
             System.out.println("EchelleRente = " + result.getEchelleRente());
             System.out.println("EtatCivil = " + result.getEtatCivil());
             System.out.println("FinDroit = " + result.getFinDroit());
-            System.out.println("FractionRente = " + result.getFractionRente());
+            //System.out.println("FractionRente = " + result.getFractionRente());
             System.out.println("Genre = " + result.getGenre());
             System.out.println("GenreDroitAPI = " + result.getGenreDroitAPI());
             System.out.println("GenrePrestation = " + result.getGenrePrestation());
