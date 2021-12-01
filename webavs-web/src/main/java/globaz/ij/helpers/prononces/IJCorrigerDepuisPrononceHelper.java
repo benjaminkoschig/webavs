@@ -1,5 +1,6 @@
 package globaz.ij.helpers.prononces;
 
+import ch.globaz.ij.business.services.exception.IJPrononceServiceException;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
@@ -11,19 +12,11 @@ import globaz.globall.util.JAException;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisationManager;
-import globaz.ij.db.prestations.IJGrandeIJCalculee;
-import globaz.ij.db.prestations.IJGrandeIJCalculeeManager;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
-import globaz.ij.db.prestations.IJPetiteIJCalculee;
-import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
+import globaz.ij.db.prestations.*;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.ij.vb.prononces.IJCorrigerDepuisPrononceViewBean;
 import globaz.prestation.helpers.PRAbstractHelper;
-import ch.globaz.ij.business.services.exception.IJPrononceServiceException;
 
 /**
  * 
@@ -42,7 +35,7 @@ public class IJCorrigerDepuisPrononceHelper extends PRAbstractHelper {
     }
 
     @Override
-    protected void _update(FWViewBeanInterface viewBean, FWAction action, globaz.globall.api.BISession session)
+    protected void _update(FWViewBeanInterface viewBean, FWAction action, BISession session)
             throws Exception, IJPrononceServiceException {
 
         BTransaction transaction = null;
@@ -185,6 +178,31 @@ public class IJCorrigerDepuisPrononceHelper extends PRAbstractHelper {
         }
     }
 
+    private void copieFpi(BTransaction transaction, BSession myBSession, IJPrononce prononce1, IJPrononce prononce2)
+            throws Exception {
+        String oldIdIJCalculee;
+        String newIdIJCalculee;
+        {
+            IJFpiCalculeeManager ijFpiCalculeeManager = new IJFpiCalculeeManager();
+            ijFpiCalculeeManager.setSession(myBSession);
+            ijFpiCalculeeManager.setForIdPrononce(prononce1.getIdPrononce());
+            ijFpiCalculeeManager.find(BManager.SIZE_NOLIMIT);
+
+            for(IJFpiCalculee fpiCalculee : ijFpiCalculeeManager.<IJFpiCalculee>getContainerAsList()) {
+                oldIdIJCalculee = fpiCalculee.getIdIJCalculee();
+
+                fpiCalculee.setId(null);
+                fpiCalculee.setIdPrononce(prononce2.getIdPrononce());
+                fpiCalculee.setIdIJCalculee(null);
+                fpiCalculee.add(transaction);
+
+                newIdIJCalculee = fpiCalculee.getIdIJCalculee();
+                copieIJIndemniteJournaliere(myBSession, oldIdIJCalculee, newIdIJCalculee, transaction);
+            }
+        }
+    }
+
+
     /**
      * 
      * @param transaction
@@ -231,6 +249,8 @@ public class IJCorrigerDepuisPrononceHelper extends PRAbstractHelper {
                 copieGrandeIJ(transaction, myBSession, prononce1, prononce2);
             } else if (typeIJ.equals(IIJPrononce.CS_PETITE_IJ)) {
                 copiePetiteIJ(transaction, myBSession, prononce1, prononce2);
+            } else if (typeIJ.equals(IIJPrononce.CS_FPI)) {
+                copieFpi(transaction, myBSession, prononce1, prononce2);
             } else {
                 copieAllocFraisGardeOuAIT(transaction, myBSession, prononce1, prononce2);
             }
@@ -252,8 +272,8 @@ public class IJCorrigerDepuisPrononceHelper extends PRAbstractHelper {
     }
 
     /**
-     * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
+     * @see globaz.framework.controller.FWHelper#execute(FWViewBeanInterface,
+     *      FWAction, BISession)
      */
     @Override
     protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {

@@ -2,19 +2,11 @@ package globaz.ij.db.prononces;
 
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BConstants;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import globaz.globall.db.*;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisationManager;
-import globaz.ij.db.prestations.IJGrandeIJCalculeeManager;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
+import globaz.ij.db.prestations.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.clone.factory.IPRCloneable;
 import globaz.prestation.db.demandes.PRDemande;
@@ -331,7 +323,7 @@ public class IJPrononce extends BEntity implements IPRCloneable {
      *            DOCUMENT ME!
      * @throws Exception
      *             DOCUMENT ME!
-     * @see globaz.globall.db.BEntity#_afterDelete(globaz.globall.db.BTransaction)
+     * @see BEntity#_afterDelete(BTransaction)
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
@@ -652,6 +644,8 @@ public class IJPrononce extends BEntity implements IPRCloneable {
             mgr = new IJGrandeIJCalculeeManager();
         } else if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)) {
             mgr = new IJPetiteIJCalculeeManager();
+        } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            mgr = new IJFpiCalculeeManager();
         } else {
             mgr = new IJIJCalculeeManager();
         }
@@ -1128,7 +1122,7 @@ public class IJPrononce extends BEntity implements IPRCloneable {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      * @throws Exception
      *             DOCUMENT ME!
@@ -1146,6 +1140,18 @@ public class IJPrononce extends BEntity implements IPRCloneable {
         }
 
         return revenuReadaptation;
+    }
+
+    public IJFpiJointRevenu loadRevenuFpi(BITransaction transaction) throws Exception {
+        IJFpiJointRevenu ijFpiJointRevenu = new IJFpiJointRevenu();
+        ijFpiJointRevenu.setSession(getSession());
+        ijFpiJointRevenu.setIdPrononce(idPrononce);
+        if (transaction == null) {
+            ijFpiJointRevenu.retrieve();
+        } else {
+            ijFpiJointRevenu.retrieve(transaction);
+        }
+        return ijFpiJointRevenu;
     }
 
     /**

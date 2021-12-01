@@ -8,11 +8,12 @@ import globaz.globall.http.JSPUtils;
 import globaz.ij.vb.controleAbsences.IJBaseIndemnisationAjaxViewBean;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.servlet.PRHybridAction;
-import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class IJBaseIndemnisationAjaxAction extends PRHybridAction {
 
@@ -90,6 +91,7 @@ public class IJBaseIndemnisationAjaxAction extends PRHybridAction {
         String joursExternes = request.getParameter("baseIndemnisation.joursExternes");
         String joursInternes = request.getParameter("baseIndemnisation.joursInternes");
         String joursInterruption = request.getParameter("baseIndemnisation.joursInterruption");
+        String joursNonCouverts = request.getParameter("baseIndemnisation.joursNonCouverts");
         String motifInterruption = request.getParameter("baseIndemnisation.motifInterruption");
 
         vb.getCurrentEntity().setDateDeDebut(dateDeDebut);
@@ -97,6 +99,7 @@ public class IJBaseIndemnisationAjaxAction extends PRHybridAction {
         vb.getCurrentEntity().setJoursExternes(joursExternes);
         vb.getCurrentEntity().setJoursInternes(joursInternes);
         vb.getCurrentEntity().setJoursInterruption(joursInterruption);
+        vb.getCurrentEntity().setJoursNonCouverts(joursNonCouverts);
         vb.getCurrentEntity().setMotifInterruption(motifInterruption);
         return super.beforeModifier(session, request, response, viewBean);
     }

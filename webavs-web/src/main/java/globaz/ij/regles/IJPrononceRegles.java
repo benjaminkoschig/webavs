@@ -10,26 +10,15 @@ import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisationManager;
-import globaz.ij.db.prestations.IJGrandeIJCalculeeManager;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
-import globaz.ij.db.prestations.IJPrestation;
-import globaz.ij.db.prestations.IJPrestationManager;
-import globaz.ij.db.prononces.IJFpi;
-import globaz.ij.db.prononces.IJGrandeIJ;
-import globaz.ij.db.prononces.IJPetiteIJ;
+import globaz.ij.db.prestations.*;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.utils.IJUtils;
 import globaz.ij.vb.prononces.IJAbstractPrononceProxyViewBean;
 import globaz.ij.vb.prononces.IJFpiViewBean;
-import globaz.ij.vb.prononces.IJNSSDTO;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.clone.factory.PRCloneFactory;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRSessionDataContainerHelper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -87,7 +76,7 @@ import java.util.List;
  * 
  * <dt>Supprimer un prononcé PRO (permis si PRO.csEtat == CS_ATTENTE OU PRO.csEtat == CS_VALIDE)</dt>
  * <dd>Pour toutes les prestations PRE de toutes les bases du prononcé,
- * {@link globaz.ij.regles.IJPrestationRegles#annulerMiseEnLot(BSession, BITransaction, IJPrestation) annuler la mise en
+ * {@link IJPrestationRegles#annulerMiseEnLot(BSession, BITransaction, IJPrestation) annuler la mise en
  * lot}</dd>
  * </dl>
  * 
@@ -545,6 +534,8 @@ public final class IJPrononceRegles {
             ijs = new IJGrandeIJCalculeeManager();
         } else if (IIJPrononce.CS_PETITE_IJ.equals(prononceOrigine.getCsTypeIJ())) {
             ijs = new IJPetiteIJCalculeeManager();
+        } else if (IIJPrononce.CS_FPI.equals(prononceOrigine.getCsTypeIJ())) {
+            ijs = new IJFpiCalculeeManager();
         } else {
             ijs = new IJIJCalculeeManager();
         }

@@ -1,10 +1,18 @@
 package ch.globaz.ij.businessimpl.services;
 
+import ch.globaz.ij.business.models.IJAbsence;
+import ch.globaz.ij.business.models.IJAbsenceSearchModel;
+import ch.globaz.ij.business.models.IJSimpleBaseIndemnisation;
+import ch.globaz.ij.business.models.IJSimpleBaseIndemnisationSearchModel;
+import ch.globaz.ij.business.services.IJAbsenceService;
+import ch.globaz.ij.business.services.IJBaseIndemnisationService;
+import ch.globaz.ij.business.services.IJServiceLocator;
+import ch.globaz.ij.businessimpl.services.Exception.ServiceBusinessException;
+import ch.globaz.ij.businessimpl.services.Exception.ServiceTechnicalException;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
-import globaz.ij.api.prestations.IIJIJCalculee;
 import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
@@ -19,17 +27,9 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.util.Date;
 import java.util.Iterator;
-import ch.globaz.ij.business.models.IJAbsence;
-import ch.globaz.ij.business.models.IJAbsenceSearchModel;
-import ch.globaz.ij.business.models.IJSimpleBaseIndemnisation;
-import ch.globaz.ij.business.models.IJSimpleBaseIndemnisationSearchModel;
-import ch.globaz.ij.business.services.IJAbsenceService;
-import ch.globaz.ij.business.services.IJBaseIndemnisationService;
-import ch.globaz.ij.business.services.IJServiceLocator;
-import ch.globaz.ij.businessimpl.services.Exception.ServiceBusinessException;
-import ch.globaz.ij.businessimpl.services.Exception.ServiceTechnicalException;
 
 public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationService {
 
@@ -72,6 +72,7 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
                 baseIndemnisation.setNombreJoursExterne(entity.getJoursExternes());
                 baseIndemnisation.setNombreJoursInterne(entity.getJoursInternes());
                 baseIndemnisation.setNombreJoursInterruption(entity.getJoursInterruption());
+                baseIndemnisation.setNombreJoursNonCouverts(entity.getJoursNonCouverts());
                 baseIndemnisation.setCsMotifInterruption(entity.getMotifInterruption());
                 baseIndemnisation.setIdPrononce(entity.getIdPrononce());
                 baseIndemnisation.setCsCantonImpotSource(entity.getCsCantonImposition());
@@ -338,6 +339,7 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
             baseIndemnisation.setNombreJoursExterne(entity.getJoursExternes());
             baseIndemnisation.setNombreJoursInterne(entity.getJoursInternes());
             baseIndemnisation.setNombreJoursInterruption(entity.getJoursInterruption());
+            baseIndemnisation.setNombreJoursNonCouverts(entity.getJoursNonCouverts());
             baseIndemnisation.setCsMotifInterruption(entity.getMotifInterruption());
             baseIndemnisation.setCsCantonImpotSource(entity.getCsCantonImposition());
             baseIndemnisation.setTauxImpotSource(entity.getTauxImposition());
@@ -387,6 +389,7 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
         entity.setJoursExternes(baseIndemnisation.getNombreJoursExterne());
         entity.setJoursInternes(baseIndemnisation.getNombreJoursInterne());
         entity.setJoursInterruption(baseIndemnisation.getNombreJoursInterruption());
+        entity.setJoursNonCouverts(baseIndemnisation.getNombreJoursNonCouverts());
         entity.setMotifInterruption(baseIndemnisation.getCsMotifInterruption());
         return entity;
     }

@@ -1,11 +1,7 @@
 package globaz.ij.db.prestations;
 
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BConstants;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import globaz.globall.db.*;
 import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prononces.IJPrononce;
@@ -143,6 +139,8 @@ public class IJIJCalculee extends BEntity {
             retValue = new IJGrandeIJCalculee();
         } else if (IIJPrononce.CS_PETITE_IJ.equals(csTypeIJ)) {
             retValue = new IJPetiteIJCalculee();
+        } else if (IIJPrononce.CS_FPI.equals(csTypeIJ)) {
+            retValue = new IJFpiCalculee();
         } else {
             retValue = new IJIJCalculee();
         }
@@ -197,7 +195,7 @@ public class IJIJCalculee extends BEntity {
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_afterDelete(globaz.globall.db.BTransaction)
+     * @see BEntity#_afterDelete(BTransaction)
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {

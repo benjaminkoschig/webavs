@@ -1,19 +1,14 @@
 package globaz.ij.helpers.acor;
 
-import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
-import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.ij.acor.IJACORBatchFilePrinter;
-import globaz.ij.acor.adapter.IJAttestationsJoursAdapter;
 import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
 import globaz.ij.api.basseindemnisation.IIJFormulaireIndemnisation;
 import globaz.ij.api.prestations.IIJPrestation;
@@ -22,32 +17,19 @@ import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.basesindemnisation.IJFormulaireIndemnisation;
 import globaz.ij.db.basesindemnisation.IJFormulaireIndemnisationManager;
-import globaz.ij.db.prestations.IJGrandeIJCalculeeManager;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
-import globaz.ij.db.prestations.IJPetiteIJCalculeeManager;
-import globaz.ij.db.prestations.IJPrestation;
-import globaz.ij.db.prononces.IJFpi;
-import globaz.ij.db.prononces.IJPrononce;
+import globaz.ij.db.prestations.*;
 import globaz.ij.module.IJRepartitionPaiementBuilder;
 import globaz.ij.regles.IJBaseIndemnisationRegles;
 import globaz.ij.vb.acor.IJCalculACORDecompteViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
-import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorFileContent;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRCalcul;
-import globaz.prestation.tools.PRDateFormater;
+
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <H1>Description</H1>
@@ -76,7 +58,7 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
      * 
      * @return
      */
-    private static final String multiply(String op1, String op2) {
+    public static final String multiply(String op1, String op2) {
 
         if (JadeStringUtil.isEmpty(op1)) {
             op1 = "0.0";
@@ -119,8 +101,10 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
 
         if (IIJPrononce.CS_GRANDE_IJ.equals(baseIndemnisation.getCsTypeIJ())) {
             calculeeManager = new IJGrandeIJCalculeeManager();
-        } else {
+        } else if (IIJPrononce.CS_PETITE_IJ.equals(baseIndemnisation.getCsTypeIJ())) {
             calculeeManager = new IJPetiteIJCalculeeManager();
+        } else {
+            calculeeManager = new IJFpiCalculeeManager();
         }
 
         calculeeManager.setForIdPrononce(baseIndemnisation.getIdPrononce());
@@ -398,7 +382,7 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
             // importer les decomptes
             LinkedList decomptes = new LinkedList();
 
-            decomptes.addAll(calculPrestationsSansAcor(session, (BTransaction) transaction, caViewBean.loadPrononce(),
+            decomptes.addAll(of(base.getCsTypeIJ()).calculPrestationsSansAcor(session, (BTransaction) transaction, caViewBean.loadPrononce(),
                     base, caViewBean.loadIJCalculee()));
 
             // repartir les paiements de la prestation
@@ -712,94 +696,6 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
         return viewBean;
     }
 
-    private List calculPrestationsSansAcor(BSession session, BTransaction transaction, IJPrononce prononce,
-            IJBaseIndemnisation baseIndemnisation, IJIJCalculee ijCalculee) throws Exception {
-
-        List retValue = new ArrayList();
-
-        String indemniteExt = "0.0";
-        String indemniteInt = "0.0";
-        String montantBrutExt = "0.0";
-        String montantBrutInt = "0.0";
-
-        // creation de la prestation, d'apres le schema, il y a au maximum UN
-        // element paiement
-        IJPrestation prestation = new IJPrestation();
-
-        JADate dateDebutPrestation = new JADate(baseIndemnisation.getDateDebutPeriode());
-        JADate dateFinPrestation = new JADate(baseIndemnisation.getDateFinPeriode());
-
-        JADate dateDebutIJCalculee = new JADate(ijCalculee.getDateDebutDroit());
-        JADate dateFinIJCalculee = null;
-
-        if (!JadeStringUtil.isBlankOrZero(ijCalculee.getDateFinDroit())) {
-            dateFinIJCalculee = new JADate(ijCalculee.getDateFinDroit());
-        }
-
-        JACalendar cal = new JACalendarGregorian();
-
-        // On prend la plus grande date de début entre la base d'indemnisation
-        // et de l'ijCalculee
-        if (cal.compare(dateDebutPrestation, dateDebutIJCalculee) == JACalendar.COMPARE_FIRSTLOWER) {
-            dateDebutPrestation = dateDebutIJCalculee;
-        }
-
-        // On prend la plus petite date de fin entre la base d'indemnisation et
-        // de l'ijCalculee
-        if (dateFinIJCalculee == null) {
-            ;
-        } else if (cal.compare(dateFinPrestation, dateFinIJCalculee) == JACalendar.COMPARE_FIRSTUPPER) {
-            dateFinPrestation = dateFinIJCalculee;
-        }
-
-        prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutPrestation.toStrAMJ()));
-        prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinPrestation.toStrAMJ()));
-        prestation.setIdIJCalculee(ijCalculee.getIdIJCalculee());
-        prestation.setIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
-
-        IJIndemniteJournaliereManager mgr = new IJIndemniteJournaliereManager();
-        mgr.setSession(session);
-        mgr.setForIdIJCalculee(ijCalculee.getIdIJCalculee());
-        mgr.find(transaction);
-        for (int i = 0; i < mgr.size(); i++) {
-            IJIndemniteJournaliere elm = (IJIndemniteJournaliere) mgr.getEntity(i);
-            if (IIJMesure.CS_INTERNE.equals(elm.getCsTypeIndemnisation())) {
-                indemniteInt = elm.getMontantJournalierIndemnite();
-            } else {
-                indemniteExt = elm.getMontantJournalierIndemnite();
-            }
-        }
-
-        if ((indemniteExt == null) && (indemniteInt == null)) {
-            throw new PRACORException(session.getLabel("AUCUNE_IJ_CALCULEE"));
-        }
-
-        IJAttestationsJoursAdapter attestationsJours = new IJAttestationsJoursAdapter(baseIndemnisation, ijCalculee);
-
-        prestation.setMontantBrutExterne(IJCalculACORDecompteHelper.multiply(indemniteExt,
-                attestationsJours.getNbJoursExternes()));
-        prestation.setMontantBrutInterne(IJCalculACORDecompteHelper.multiply(indemniteInt,
-                attestationsJours.getNbJoursInternes()));
-        prestation.setNombreJoursExt(attestationsJours.getNbJoursExternes());
-        prestation.setNombreJoursInt(attestationsJours.getNbJoursInternes());
-        prestation.setDateDecompte(JACalendar.todayJJsMMsAAAA());
-        FWCurrency mbr = new FWCurrency(prestation.getMontantBrutInterne());
-        mbr.add(prestation.getMontantBrutExterne());
-        prestation.setMontantBrut(mbr.toString());
-
-        // on recopie les montants journalier
-        prestation.setMontantJournalierExterne(indemniteExt);
-        prestation.setMontantJournalierInterne(indemniteInt);
-
-        // sauver la sous prestation dans la base
-        prestation.setSession(session);
-        prestation.add(transaction);
-
-        retValue.add(prestation);
-        return retValue;
-
-    }
-
     /**
      * 
      * Mise à jour de l'état des formulaires d'indemnisations liées à cette base. Passage de l'état de envoyé à reçu.
@@ -866,4 +762,7 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
         return deleguerExecute(viewBean, action, session);
     }
 
+    public static IIJCalculStandard of(String typePrononce) {
+        return IIJPrononce.CS_FPI.equals(typePrononce) ? new IJCalculFpiStandard() : new IJCalculIJStandard();
+    }
 }

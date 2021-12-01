@@ -6,9 +6,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.ij.api.prestations.IIJIJCalculee;
-import globaz.ij.db.prestations.IJGrandeIJCalculee;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJPetiteIJCalculee;
+import globaz.ij.db.prestations.*;
 import globaz.ij.vb.prestations.IJIJCalculeeJointGrandePetiteViewBean;
 import globaz.prestation.helpers.PRAbstractHelper;
 
@@ -46,31 +44,15 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
                     gijCalculee.retrieve(transaction);
 
                     // mise a jours
-                    gijCalculee.setCsGenreReadaptation(ijcViewBean.getCsGenreReadaptation());
-                    gijCalculee.setCsStatutProfessionnel(ijcViewBean.getCsStatutProfessionnel());
-                    gijCalculee.setCsTypeBase(ijcViewBean.getCsTypeBase());
-                    gijCalculee.setDateDebutDroit(ijcViewBean.getDateDebutDroit());
-                    gijCalculee.setDateFinDroit(ijcViewBean.getDateFinDroit());
-                    gijCalculee.setDateRevenu(ijcViewBean.getDateRevenu());
-                    gijCalculee.setDemiIJACBrut(ijcViewBean.getDemiIJACBrut());
-                    gijCalculee.setDifferenceRevenu(ijcViewBean.getDifferenceRevenu());
-                    gijCalculee.setMontantBase(ijcViewBean.getMontantBase());
                     gijCalculee.setMontantIndemniteAssistance(ijcViewBean.getMontantIndemniteAssistance());
                     gijCalculee.setMontantIndemniteEnfant(ijcViewBean.getMontantIndemniteEnfant());
                     gijCalculee.setMontantIndemniteExploitation(ijcViewBean.getMontantIndemniteExploitation());
-                    gijCalculee.setMontantBase(ijcViewBean.getMontantBase());
                     gijCalculee.setNbEnfants(ijcViewBean.getNbEnfants());
-                    gijCalculee.setNoAVS(ijcViewBean.getNoAVS());
-                    gijCalculee.setNoRevision(ijcViewBean.getNoRevision());
-                    gijCalculee.setOfficeAI(ijcViewBean.getOfficeAI());
-                    gijCalculee.setPourcentDegreIncapaciteTravail(ijcViewBean.getPourcentDegreIncapaciteTravail());
-                    gijCalculee.setRevenuDeterminant(ijcViewBean.getRevenuDeterminant());
-                    gijCalculee.setRevenuJournalierReadaptation(ijcViewBean.getRevenuJournalierReadaptation());
-                    gijCalculee.setSupplementPersonneSeule(ijcViewBean.getSupplementPersonneSeule());
+                    majIjCalculeCommun(ijcViewBean, gijCalculee);
 
                     gijCalculee.update(transaction);
 
-                } else {
+                } else if (IIJIJCalculee.CS_TYPE_PETITE_IJ.equals(ijcViewBean.getCsTypeIJ())) {
 
                     IJPetiteIJCalculee pijCalculee = new IJPetiteIJCalculee();
                     pijCalculee.setSession((BSession) session);
@@ -78,26 +60,21 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
                     pijCalculee.retrieve(transaction);
 
                     // mise a jours
-                    pijCalculee.setCsGenreReadaptation(ijcViewBean.getCsGenreReadaptation());
-                    pijCalculee.setCsStatutProfessionnel(ijcViewBean.getCsStatutProfessionnel());
-                    pijCalculee.setCsTypeBase(ijcViewBean.getCsTypeBase());
                     pijCalculee.setCsModeCalcul(ijcViewBean.getCsModeCalcul());
-                    pijCalculee.setDateDebutDroit(ijcViewBean.getDateDebutDroit());
-                    pijCalculee.setDateFinDroit(ijcViewBean.getDateFinDroit());
-                    pijCalculee.setDateRevenu(ijcViewBean.getDateRevenu());
-                    pijCalculee.setDemiIJACBrut(ijcViewBean.getDemiIJACBrut());
-                    pijCalculee.setDifferenceRevenu(ijcViewBean.getDifferenceRevenu());
-                    pijCalculee.setMontantBase(ijcViewBean.getMontantBase());
-                    pijCalculee.setMontantBase(ijcViewBean.getMontantBase());
-                    pijCalculee.setNoAVS(ijcViewBean.getNoAVS());
-                    pijCalculee.setNoRevision(ijcViewBean.getNoRevision());
-                    pijCalculee.setOfficeAI(ijcViewBean.getOfficeAI());
-                    pijCalculee.setPourcentDegreIncapaciteTravail(ijcViewBean.getPourcentDegreIncapaciteTravail());
-                    pijCalculee.setRevenuDeterminant(ijcViewBean.getRevenuDeterminant());
-                    pijCalculee.setRevenuJournalierReadaptation(ijcViewBean.getRevenuJournalierReadaptation());
-                    pijCalculee.setSupplementPersonneSeule(ijcViewBean.getSupplementPersonneSeule());
+                    majIjCalculeCommun(ijcViewBean, pijCalculee);
 
                     pijCalculee.update(transaction);
+                } else {
+                    IJFpiCalculee fpiCalculee = new IJFpiCalculee();
+                    fpiCalculee.setSession((BSession) session);
+                    fpiCalculee.setIdIJCalculee(ijcViewBean.getIdIJCalculee());
+                    fpiCalculee.retrieve(transaction);
+
+                    // mise a jours
+                    fpiCalculee.setCsModeCalcul(ijcViewBean.getCsModeCalcul());
+                    majIjCalculeCommun(ijcViewBean, fpiCalculee);
+
+                    fpiCalculee.update(transaction);
                 }
 
                 IJIndemniteJournaliere ijInt = ijcViewBean.getIndemniteJournaliereInterne();
@@ -130,6 +107,25 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
             }
         }
 
+    }
+
+    private void majIjCalculeCommun(IJIJCalculeeJointGrandePetiteViewBean ijcViewBean, IJIJCalculee ijCalculee) {
+        ijCalculee.setCsGenreReadaptation(ijcViewBean.getCsGenreReadaptation());
+        ijCalculee.setCsStatutProfessionnel(ijcViewBean.getCsStatutProfessionnel());
+        ijCalculee.setCsTypeBase(ijcViewBean.getCsTypeBase());
+        ijCalculee.setDateDebutDroit(ijcViewBean.getDateDebutDroit());
+        ijCalculee.setDateFinDroit(ijcViewBean.getDateFinDroit());
+        ijCalculee.setDateRevenu(ijcViewBean.getDateRevenu());
+        ijCalculee.setDemiIJACBrut(ijcViewBean.getDemiIJACBrut());
+        ijCalculee.setDifferenceRevenu(ijcViewBean.getDifferenceRevenu());
+        ijCalculee.setMontantBase(ijcViewBean.getMontantBase());
+        ijCalculee.setNoAVS(ijcViewBean.getNoAVS());
+        ijCalculee.setNoRevision(ijcViewBean.getNoRevision());
+        ijCalculee.setOfficeAI(ijcViewBean.getOfficeAI());
+        ijCalculee.setPourcentDegreIncapaciteTravail(ijcViewBean.getPourcentDegreIncapaciteTravail());
+        ijCalculee.setRevenuDeterminant(ijcViewBean.getRevenuDeterminant());
+        ijCalculee.setRevenuJournalierReadaptation(ijcViewBean.getRevenuJournalierReadaptation());
+        ijCalculee.setSupplementPersonneSeule(ijcViewBean.getSupplementPersonneSeule());
     }
 
 }

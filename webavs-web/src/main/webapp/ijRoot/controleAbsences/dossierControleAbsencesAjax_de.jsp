@@ -328,9 +328,48 @@ var langue = "<%=languePage%>";
 								</div>
 								<div class="areaDetail detailZoneDialog" id="zoneDetailPrononce">
 								</div>
-								
+
 								<div class="row-fluid">
 									<div class="areaBasesIndemnisation span9" id="zoneAjaxDetailBaseIndeminsation"  title="<ct:FWLabel key="JSP_CONTROLE_ABSENCES_BASES_INDEMNISATION_TITRE" />">
+										<%if (globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(csTypeIJ)){%>
+										<div class="row-fluid">
+											<div class="span2 textAlignRight">
+												<ct:FWLabel key="JSP_CONTROLE_ABSENCES_DATE_DEBUT" />&nbsp;:
+											</div>
+											<div class="span3">
+												<input	type="text"
+														  class="noFocus"
+														  id="baseIndemnisation.dateDeDebut"
+														  name="dateDeDebut"
+														  data-g-calendar=" " />
+											</div>
+											<div class="span2 textAlignRight">
+												<ct:FWLabel key="JSP_CONTROLE_ABSENCES_DATE_FIN" />&nbsp;:
+											</div>
+											<div class="span3">
+												<input	type="text"
+														  class="noFocus"
+														  id="baseIndemnisation.dateDeFin"
+														  name="dateDeFin"
+														  data-g-calendar=" " />
+											</div>
+										</div>
+
+										<div class="row-fluid">
+											<div class="span2 textAlignRight">
+												<ct:FWLabel key="JSP_CONTROLE_ABSENCE_PERIODE_JOURS_NON_COUVERTS" />&nbsp;:
+											</div>
+											<div class="span3">
+												<input	type="text"
+														  class="noFocus"
+														  id="baseIndemnisation.joursNonCouverts"
+														  name="joursExternes"
+														  data-g-integer="sizeMax:6,autoFit:true" />
+											</div>
+
+										<%} else {%>
+
+
 										<div class="row-fluid">
 											<div class="span2 textAlignRight">
 												<ct:FWLabel key="JSP_CONTROLE_ABSENCES_DATE_DEBUT" />&nbsp;:
@@ -376,6 +415,7 @@ var langue = "<%=languePage%>";
 														/>
 											</div>
 										</div>
+
 										
 										<div class="row-fluid">
 											<div class="span2 textAlignRight">
@@ -387,17 +427,18 @@ var langue = "<%=languePage%>";
 														name="baseIndemnisation.joursInterruption" 
 														data-g-integer="sizeMax:6,autoFit:true" />
 											</div>
+										<% }%>
 											<div class="span2 textAlignRight">
 												<ct:FWLabel key="JSP_CONTROLE_ABSENCE_PERIODE_MOTIF" />&nbsp;:
 											</div>
-											<div class="span3">											
-												<ct:FWCodeSelectTag	name="baseIndemnisation.motifInterruption" 
+											<div class="span3">
+													<ct:FWCodeSelectTag	name="baseIndemnisation.motifInterruption"
 																	   codeType="<%=IIJBaseIndemnisation.CS_GROUPE_MOTIF_INTERRUPTION%>"
-																	defaut="" 
-																	wantBlank="true" />
+																	   defaut=""
+																	   wantBlank="true" />
 											</div>
 										</div>
-										
+
 										
 										<%if(viewBean.getIsImposeALaSource()){ %>
 										

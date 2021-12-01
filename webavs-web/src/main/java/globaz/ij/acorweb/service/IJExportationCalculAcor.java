@@ -27,17 +27,11 @@ import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.domaine.membrefamille.SFMembresFamilleRequerant;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.ij.acorweb.mapper.IJCalculDecompteIJMapper;
+import globaz.ij.api.prononces.IIJSituationProfessionnelle;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJFpi;
-import globaz.ij.db.prononces.IJGrandeIJ;
-import globaz.ij.db.prononces.IJPetiteIJ;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJRevenu;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prononces.*;
 import globaz.ij.module.IJSalaireFilter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -246,9 +240,11 @@ class IJExportationCalculAcor {
             mapRevenuMensuelDurantRea(basesCalculCouranteIJ, ijRevenu);
         } else if (prononce.isFpi()) {
             IJFpi ijFpi = loadFpi(prononce.getIdPrononce());
-            basesCalculCouranteIJ.setFormationFPI(Integer.parseInt(session.getCode(ijFpi.getCsSituationAssure())));
-            IJRevenu ijRevenu = loadRevenuReadaptation(ijFpi);
-            mapRevenuMensuelDurantRea(basesCalculCouranteIJ, ijRevenu);
+//            basesCalculCouranteIJ.setFormationFPI(Integer.parseInt(session.getCode(ijFpi.getCsSituationAssure())));
+
+            IJFpiJointRevenu ijRevenu = loadRevenu(ijFpi);
+            mapRevenuMensuelFpi(basesCalculCouranteIJ, ijRevenu);
+
         }
         Integer statutProf = loadCodeOrNull(session, prononce.getCsStatutProfessionnel());
         if (statutProf != null) {
@@ -308,9 +304,9 @@ class IJExportationCalculAcor {
         }
     }
 
-    private IJRevenu loadRevenuReadaptation(final IJFpi ijFpi) {
+    private IJFpiJointRevenu loadRevenu(final IJFpi ijFpi) {
         try {
-            return ijFpi.loadRevenuReadaptation(null);
+            return ijFpi.loadRevenuFpi(null);
         } catch (Exception e) {
             throw new CommonTechnicalException("Impossible to load the revenu with this id: " + ijFpi.getId());
         }
@@ -334,8 +330,22 @@ class IJExportationCalculAcor {
             return basesCalculRevenus;
         } catch (Exception e) {
             throw new CommonTechnicalException("Impossible to map the BasesCalculRevenusIJ with this situationProfessionnelle:"
-                                                       + situationProfessionnelle.getIdSituationProfessionnelle(), e);
+                    + situationProfessionnelle.getIdSituationProfessionnelle(), e);
+        }
+    }
 
+    private void mapRevenuMensuelFpi(BasesCalculCouranteIJ basesCalculCouranteIJ, IJFpiJointRevenu ijRevenu) {
+        if (ijRevenu != null) {
+            String revenu = ijRevenu.getRevenu();
+            BasesCalculRevenusIJ basesCalculRevenusIJ = new BasesCalculRevenusIJ();
+            basesCalculRevenusIJ.setId(ijRevenu.getId());
+            basesCalculRevenusIJ.setRevenu(Double.parseDouble(ijRevenu.getRevenu()));
+            basesCalculRevenusIJ.setAnnee(Dates.toXMLGregorianCalendar("01.01." + ijRevenu.getAnnee()));
+            basesCalculRevenusIJ.setType(Integer.parseInt(PRACORConst.csPeriodiciteSalaireIJToAcor(session, ijRevenu.getCsPeriodiciteRevenu())));
+            if (IIJSituationProfessionnelle.CS_HEBDOMADAIRE.equals(ijRevenu.getCsPeriodiciteRevenu())) {
+                basesCalculRevenusIJ.setHeuresHebdo(Integer.parseInt(ijRevenu.getNbHeuresSemaine()));
+            }
+            basesCalculCouranteIJ.getRevenus().add(basesCalculRevenusIJ);
         }
     }
 

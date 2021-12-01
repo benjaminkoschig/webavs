@@ -77,7 +77,7 @@ if (iterH.isPositionPlusPetite()) { %>
 	String link = "";
 	String link2 = "";
 	if(IJPrononce.isCommonTypeIJ(csTypeIJ)){
-		link = "ij?userAction=ij.controleAbsences.dossierControleAbsencesAjax.afficher&idBaseIndemnisation=" + line.getIdBaseIndemisation() + "&idTiers=" + line.getIdTiers() + "&idPrononce=" + line.getIdPrononce();
+		link = "ij?userAction=ij.controleAbsences.dossierControleAbsencesAjax.afficher&idBaseIndemnisation=" + line.getIdBaseIndemisation() + "&idTiers=" + line.getIdTiers() + "&idPrononce=" + line.getIdPrononce() + "&csTypeIJ=" +csTypeIJ;;
 		link2 = targetLocation + "='" + link+"'";
 	}
 	else {

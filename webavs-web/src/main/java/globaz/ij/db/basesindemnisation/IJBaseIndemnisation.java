@@ -82,6 +82,8 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
     /** DOCUMENT ME! */
     public static final String FIELDNAME_NOMBREJOURSINTERRUPTION = "XKNJOI";
 
+    public static final String FIELDNAME_NOMBRE_JOURS_NON_COUVERTS = "XKNJNC";
+
     /** DOCUMENT ME! */
     public static final String FIELDNAME_REMARQUE = "XKLREM";
 
@@ -117,6 +119,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
     private String nombreJoursInterne = "";
 
     private String nombreJoursInterruption = "";
+    private String nombreJoursNonCouverts = "";
     private transient IJPrononce prononce;
     private String remarque = "";
 
@@ -166,7 +169,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_afterDelete(globaz.globall.db.BTransaction)
+     * @see BEntity#_afterDelete(BTransaction)
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
@@ -233,7 +236,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * 
      * @return DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_getTableName()
+     * @see BEntity#_getTableName()
      */
     @Override
     protected String _getTableName() {
@@ -249,7 +252,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_readProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_readProperties(BStatement)
      */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
@@ -261,6 +264,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
         nombreJoursExterne = statement.dbReadNumeric(IJBaseIndemnisation.FIELDNAME_NOMBREJOURSEXTERNE);
         attestationJours = statement.dbReadString(IJBaseIndemnisation.FIELDNAME_ATTESTATIONJOURS);
         nombreJoursInterruption = statement.dbReadNumeric(IJBaseIndemnisation.FIELDNAME_NOMBREJOURSINTERRUPTION);
+        nombreJoursNonCouverts = statement.dbReadNumeric(IJBaseIndemnisation.FIELDNAME_NOMBRE_JOURS_NON_COUVERTS);
         csMotifInterruption = statement.dbReadNumeric(IJBaseIndemnisation.FIELDNAME_MOTIFINTERRUPTION);
         remarque = statement.dbReadString(IJBaseIndemnisation.FIELDNAME_REMARQUE);
         csEtat = statement.dbReadNumeric(IJBaseIndemnisation.FIELDNAME_ETAT);
@@ -282,7 +286,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_validate(globaz.globall.db.BStatement)
+     * @see BEntity#_validate(BStatement)
      */
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -398,7 +402,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_writePrimaryKey(globaz.globall.db.BStatement)
+     * @see BEntity#_writePrimaryKey(BStatement)
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
@@ -415,7 +419,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @throws Exception
      *             DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_writeProperties(BStatement)
      */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
@@ -437,6 +441,8 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
                 this._dbWriteString(transaction, attestationJours, "attestationJours"));
         statement.writeField(IJBaseIndemnisation.FIELDNAME_NOMBREJOURSINTERRUPTION,
                 this._dbWriteNumeric(transaction, nombreJoursInterruption, "nombreJoursInterruption"));
+        statement.writeField(IJBaseIndemnisation.FIELDNAME_NOMBRE_JOURS_NON_COUVERTS,
+                this._dbWriteNumeric(transaction, nombreJoursNonCouverts, "nombreJoursNonCouverts"));
         statement.writeField(IJBaseIndemnisation.FIELDNAME_MOTIFINTERRUPTION,
                 this._dbWriteNumeric(transaction, csMotifInterruption, "csMotifInterruption"));
         statement.writeField(IJBaseIndemnisation.FIELDNAME_REMARQUE,
@@ -486,6 +492,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
         clone.setNombreJoursCouverts(getNombreJoursCouverts());
         clone.setNombreJoursExterne(getNombreJoursExterne());
         clone.setNombreJoursInterne(getNombreJoursInterne());
+        clone.setNombreJoursNonCouverts(getNombreJoursNonCouverts());
         clone.setNombreJoursInterruption(getNombreJoursInterruption());
         clone.setRemarque(getRemarque());
         clone.setTauxImpotSource(getTauxImpotSource());
@@ -771,6 +778,19 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
             return "";
         } else {
             return nombreJoursInterruption;
+        }
+    }
+
+    /**
+     * getter pour l'attribut nombre jours non couverts.
+     *
+     * @return la valeur courante de l'attribut nombre non couverts
+     */
+    public String getNombreJoursNonCouverts() {
+        if (JadeStringUtil.isIntegerEmpty(nombreJoursNonCouverts)) {
+            return "";
+        } else {
+            return nombreJoursNonCouverts;
         }
     }
 
@@ -1082,6 +1102,16 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      */
     public void setNombreJoursInterruption(String string) {
         nombreJoursInterruption = string;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours non couverts.
+     *
+     * @param string
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursNonCouverts(String string) {
+        nombreJoursNonCouverts = string;
     }
 
     /**

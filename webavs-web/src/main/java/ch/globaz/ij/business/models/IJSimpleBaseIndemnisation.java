@@ -1,6 +1,8 @@
 package ch.globaz.ij.business.models;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
+import lombok.Getter;
+import lombok.Setter;
 
 public class IJSimpleBaseIndemnisation extends JadeSimpleModel {
 
@@ -54,6 +56,13 @@ public class IJSimpleBaseIndemnisation extends JadeSimpleModel {
     private String joursInterruption;
 
     /**
+     * Nombres de jours d'Interruption Associé au champ : XKNJOI
+     */
+    @Getter
+    @Setter
+    private String joursNonCouverts;
+
+    /**
      * Motif d'Interruption Associé au champ : XKTMOI
      */
     private String motifInterruption;
@@ -69,6 +78,7 @@ public class IJSimpleBaseIndemnisation extends JadeSimpleModel {
         joursExternes = "";
         joursInternes = "";
         joursInterruption = "";
+        joursNonCouverts = "";
         motifInterruption = "";
         idPrononce = "";
         csCantonImposition = "";

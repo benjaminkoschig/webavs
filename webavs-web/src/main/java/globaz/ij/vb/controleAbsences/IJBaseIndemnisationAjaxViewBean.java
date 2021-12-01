@@ -1,13 +1,13 @@
 package globaz.ij.vb.controleAbsences;
 
-import globaz.framework.bean.JadeAbstractAjaxCrudDetailViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.service.provider.application.JadeCrudService;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.ij.business.models.IJSimpleBaseIndemnisation;
 import ch.globaz.ij.business.models.IJSimpleBaseIndemnisationSearchModel;
 import ch.globaz.ij.business.services.IJBaseIndemnisationService;
 import ch.globaz.ij.business.services.IJServiceLocator;
+import globaz.framework.bean.JadeAbstractAjaxCrudDetailViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.service.provider.application.JadeCrudService;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class IJBaseIndemnisationAjaxViewBean extends
         JadeAbstractAjaxCrudDetailViewBean<IJSimpleBaseIndemnisation, IJSimpleBaseIndemnisationSearchModel> {
@@ -39,7 +39,7 @@ public class IJBaseIndemnisationAjaxViewBean extends
 
     /**
      * @return
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#getCantonImposition()
+     * @see IJSimpleBaseIndemnisation#getCantonImposition()
      */
     public String getCsCantonImposition() {
         return baseIndemnisation.getCsCantonImposition();
@@ -86,9 +86,13 @@ public class IJBaseIndemnisationAjaxViewBean extends
         return baseIndemnisation.getMotifInterruption();
     }
 
+    public String getJoursNonCouvert() {
+        return baseIndemnisation.getJoursNonCouverts();
+    }
+
     /**
      * @return
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#getRemarque()
+     * @see IJSimpleBaseIndemnisation#getRemarque()
      */
     public String getRemarque() {
         return baseIndemnisation.getRemarque();
@@ -102,7 +106,7 @@ public class IJBaseIndemnisationAjaxViewBean extends
 
     /**
      * @return
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#getTauxImposition()
+     * @see IJSimpleBaseIndemnisation#getTauxImposition()
      */
     public String getTauxImposition() {
         return baseIndemnisation.getTauxImposition();
@@ -140,7 +144,7 @@ public class IJBaseIndemnisationAjaxViewBean extends
 
     /**
      * @param cantonImposition
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#setCantonImposition(java.lang.String)
+     * @see IJSimpleBaseIndemnisation#setCantonImposition(String)
      */
     public void setCantonImposition(String cantonImposition) {
         baseIndemnisation.setCsCantonImposition(cantonImposition);
@@ -183,13 +187,17 @@ public class IJBaseIndemnisationAjaxViewBean extends
         baseIndemnisation.setJoursInterruption(joursInterruption);
     }
 
+    public void setJoursNonCouverts(String joursNonCouverts) {
+        baseIndemnisation.setJoursNonCouverts(joursNonCouverts);
+    }
+
     public void setMotifInterruption(String motifInterruption) {
         baseIndemnisation.setMotifInterruption(motifInterruption);
     }
 
     /**
      * @param remarque
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#setRemarque(java.lang.String)
+     * @see IJSimpleBaseIndemnisation#setRemarque(String)
      */
     public void setRemarque(String remarque) {
         baseIndemnisation.setRemarque(remarque);
@@ -197,7 +205,7 @@ public class IJBaseIndemnisationAjaxViewBean extends
 
     /**
      * @param tauxImposition
-     * @see ch.globaz.ij.business.models.IJSimpleBaseIndemnisation#setTauxImposition(java.lang.String)
+     * @see IJSimpleBaseIndemnisation#setTauxImposition(String)
      */
     public void setTauxImposition(String tauxImposition) {
         baseIndemnisation.setTauxImposition(tauxImposition);
