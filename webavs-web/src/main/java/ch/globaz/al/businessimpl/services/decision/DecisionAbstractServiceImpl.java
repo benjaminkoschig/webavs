@@ -367,8 +367,10 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
         } else if (ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS.equals(dossierComplexModel.getDossierModel().getTarifForce()) ||
                    ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022.equals(dossierComplexModel.getDossierModel().getTarifForce())) {
             // INFOROMD0028 - AF - Modifications montants AF VD (CBU)
+            // S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
             loi = JadeCodesSystemsUtil.getCodeLibelle(dossierComplexModel.getDossierModel().getTarifForce());
             // FIN INFOROMD0028
+            // FIN S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
         } else if (!"0".equals(dossierComplexModel.getDossierModel().getTarifForce())) {
             loi = JadeCodesSystemsUtil.getCode(dossierComplexModel.getDossierModel().getTarifForce());
         } else {
@@ -1260,18 +1262,19 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
             documentData.addData("texte_para_trav_agri",
                     this.getText("al.decision.standard.travailleurAgri.verseAlloc", langueDocument));
         }
-        // TODO - JJO - 12.11.2021 : Ajouter Ligne droit acquis vaud 2022
         // INFOROMD0028 - AF - Modifications montants AF VD (CBU)
         if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS, dossierComplexModel.getDossierModel()
                 .getTarifForce(), false)) {
             documentData.addData("texte_paragraphe_droitAcquis",
                     this.getText("al.decision.standard.paragraphe.droitAcquis", langueDocument));
+        // S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
         } else if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022, dossierComplexModel.getDossierModel()
                 .getTarifForce(), false)) {
             documentData.addData("texte_paragraphe_droitAcquis",
                     this.getText("al.decision.standard.paragraphe.droitAcquis2022", langueDocument));
         }
         // FIN INFOROMD0028
+        // FIN S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
 
         documentData.addData("texte_paragraphe_1", this.getText("al.decision.standard.paragraphe1", langueDocument)
                 + " " + this.getText("al.decision.standard.paragraphe2", langueDocument));

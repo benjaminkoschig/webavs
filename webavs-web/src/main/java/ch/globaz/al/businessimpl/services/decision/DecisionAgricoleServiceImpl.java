@@ -405,18 +405,19 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
     protected void loadTextesDecision(DocumentData documentData, DossierComplexModel dossierComplexModel,
             String commentaire, String langueDocument) throws JadeApplicationException, JadePersistenceException {
 
-        // TODO - JJO - 12.11.2021 : Ajouter Ligne droit acquis vaud 2022
         // INFOROMD0028 - AF - Modifications montants AF VD (CBU)
         if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS,
                 dossierComplexModel.getDossierModel().getTarifForce(), false)) {
             documentData.addData("texte_paragraphe_droitAcquis",
                     this.getText("al.decision.standard.paragraphe.droitAcquis", langueDocument));
+        // S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
         }else if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022,
                 dossierComplexModel.getDossierModel().getTarifForce(), false)) {
             documentData.addData("texte_paragraphe_droitAcquis",
                     this.getText("al.decision.standard.paragraphe.droitAcquis2022", langueDocument));
         }
         // FIN INFOROMD0028
+        // FIN S211020_004 - AF - Modifications montants AF VD 2022 (JJO)
 
         if (ALCSDossier.ETAT_RADIE.equals(dossierComplexModel.getDossierModel().getEtatDossier())) {
             if (!JadeStringUtil.isBlank(commentaire)) {
