@@ -452,7 +452,7 @@ class ConvertAllDonneeFinanciere {
             list.add(primeAssuranceMaladie);
 
         } else if (dft.isSubsideAssuranceMaladie()) {
-            Montant montant = toMontant(dr.getSubsideAssuranceMaladie());
+            Montant montant = toMontant(dr.getSubsideAssuranceMaladie()).addMensuelPeriodicity();
 
             SubsideAssuranceMaladie subsideAssuranceMaladie = new SubsideAssuranceMaladie(montant, df);
             list.add(subsideAssuranceMaladie);

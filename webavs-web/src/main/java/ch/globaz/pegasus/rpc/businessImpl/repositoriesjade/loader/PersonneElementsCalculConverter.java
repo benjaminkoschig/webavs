@@ -218,7 +218,7 @@ public class PersonneElementsCalculConverter {
                 .add(df.getDessaisissementsRevenu().sumRevenuAnnuel())
                 .add(df.getBiensImmobiliersServantHbitationPrincipale().sumSousLocationPartPorietaire())
                 // .add(df.getComptesBancairePostal().sumRevenuAnnuel())
-                .add(entretienViager).add(df.getAllocationsFamilliale().sumRevenuAnnuelBrut()).add(resolveSubsideRetro(df)));
+                .add(entretienViager).add(df.getAllocationsFamilliale().sumRevenuAnnuelBrut()).add(resolveSubsideRetro(df).annualise()));
 
         perElCal.setLegalAddress(legalAddress);
         perElCal.setLivingAddress(livingAddress);
@@ -457,7 +457,7 @@ public class PersonneElementsCalculConverter {
     }
 
     private Montant resolveSubsideRetro(DonneesFinancieresContainer df) {
-        Montant subsideAssuranceMaladieMontant = Montant.ZERO_ANNUEL;
+        Montant subsideAssuranceMaladieMontant = Montant.ZERO;
 
         for (ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie subsideAssuranceMaladie : df.getSubsideAssuranceMaladie().getList()) {
             subsideAssuranceMaladieMontant = subsideAssuranceMaladieMontant.add(subsideAssuranceMaladie.getMontant());
