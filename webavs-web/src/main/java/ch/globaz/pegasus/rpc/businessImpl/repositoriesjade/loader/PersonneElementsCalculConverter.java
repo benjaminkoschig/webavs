@@ -463,7 +463,7 @@ public class PersonneElementsCalculConverter {
             subsideAssuranceMaladieMontant = subsideAssuranceMaladieMontant.add(subsideAssuranceMaladie.getMontant());
         }
 
-        return  subsideAssuranceMaladieMontant;
+        return  subsideAssuranceMaladieMontant.addMensuelPeriodicity();
     }
 
     /**
