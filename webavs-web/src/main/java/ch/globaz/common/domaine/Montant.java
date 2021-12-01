@@ -162,7 +162,7 @@ public class Montant implements Serializable {
         } else if (isAnnuel()) {
             return new Montant(currency, typePeriode);
         } else {
-            throw new IllegalStateException("Imposible d'anulaiser le montant. Le type de période est non définit");
+            throw new IllegalStateException("Imposible d'anualiser le montant. Le type de période est non définit");
         }
     }
 
