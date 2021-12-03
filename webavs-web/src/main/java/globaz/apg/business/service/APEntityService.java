@@ -22,6 +22,9 @@ public interface APEntityService extends JadeApplicationService {
     APDroitAPG creerDroitAPGComplet(BSession session, BTransaction transaction, APDroitAPGPViewBean viewBean)
             throws IllegalArgumentException;
 
+    APDroitMaternite creerDroitMatComplet(BSession session, BTransaction transaction, APDroitMatPViewBean viewBean)
+            throws IllegalArgumentException;
+
     APDroitPaternite creerDroitPatComplet(BSession session, BTransaction transaction, APDroitPatPViewBean viewBean)
             throws IllegalArgumentException;
 
@@ -160,6 +163,9 @@ public interface APEntityService extends JadeApplicationService {
             String idDroit) throws Exception;
 
     APDroitAPG miseAjourDroit(BSession session, BTransaction transaction, APDroitAPGPViewBean viewBean)
+            throws Exception;
+
+    APDroitMaternite miseAjourDroitMat(BSession session, BTransaction transaction, APDroitMatPViewBean viewBean)
             throws Exception;
 
     APDroitPaternite miseAjourDroitPat(BSession session, BTransaction transaction, APDroitPatPViewBean viewBean)

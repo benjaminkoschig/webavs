@@ -2,6 +2,7 @@ package globaz.apg.vb.droits;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPaternite;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
@@ -91,6 +92,14 @@ public class APDroitMatPViewBean extends APAbstractDroitProxyViewBean {
      */
     public void setDroitAcquis(String droitAcquis) {
         getDroit().setDroitAcquis(droitAcquis);
+    }
+
+    public int getNombreRetourLigneRemarque(){
+        return 3;
+    }
+
+    public void setDroit(APDroitMaternite droit) {
+        super.setDroit(droit);
     }
 
 }

@@ -8,7 +8,9 @@ package globaz.apg.helpers.droits;
 
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.droits.APDroitMatPViewBean;
@@ -27,21 +29,95 @@ import globaz.globall.db.BTransaction;
 public class APDroitMatPHelper extends APAbstractDroitPHelper {
 
     @Override
-    protected void _add(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
-        super._add(viewBean, action, session);
+    protected void _add(FWViewBeanInterface vb, FWAction action, BISession iSession) throws Exception {
+        //super._add(vb, action, iSession);
+        APDroitMatPViewBean viewBean = null;
+        if (!(vb instanceof APDroitMatPViewBean)) {
+            throw new APWrongViewBeanTypeException("Wrong viewBean type for action APDroitMatPViewBean._add ["
+                    + vb.getClass().getName() + "]. it must be from type APDroitAPGPViewBean");
+        }
+        viewBean = (APDroitMatPViewBean) vb;
+        BSession session = (BSession) iSession;
+        BTransaction transaction = null;
 
-        APDroitMatPViewBean droitVB = (APDroitMatPViewBean) viewBean;
+        // Création du tiers si besoin
+        super._add(viewBean, action, session);
+        if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            throw new Exception(viewBean.getMessage());
+        }
+        try {
+            transaction = (BTransaction) session.newTransaction();
+            if (!transaction.isOpened()) {
+                transaction.openTransaction();
+            }
+            APDroitMaternite droit = ApgServiceLocator.getEntityService()
+                    .creerDroitMatComplet(session, transaction, viewBean);
+            if (!hasErrors(session, transaction)) {
+                viewBean.setDroit(droit);
+                creerSituationProf(droit.getIdDroit(), viewBean.getIdAssure(), session);
+            }
+
+
+            if (!hasErrors(session, transaction)) {
+                transaction.commit();
+            }
+        } catch (Exception exception) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            String message = "Exception lors de la création du droit  :" + exception.toString();
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(message);
+            throw new Exception(message);
+        } finally {
+            if (transaction != null) {
+                transaction.closeTransaction();
+            }
+        }
         // Traitement des breakRules
-        traiterBreakRules(droitVB.getRulesToBreak(), droitVB.getIdDroit(), (BSession) session);
+        traiterBreakRules(viewBean.getRulesToBreak(), viewBean.getIdDroit(), (BSession) session);
     }
 
     @Override
-    protected void _update(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
-        super._update(viewBean, action, session);
+    protected void _update(FWViewBeanInterface vb, FWAction action, BISession iSession) throws Exception {
+        //super._update(vb, action, iSession);
 
-        APDroitMatPViewBean droitVB = (APDroitMatPViewBean) viewBean;
+        APDroitMatPViewBean viewBean = null;
+        if (!(vb instanceof APDroitMatPViewBean)) {
+            throw new APWrongViewBeanTypeException("Wrong viewBean type for action APDroitAPGPHelper._delete ["
+                    + vb.getClass().getName() + "]. it must be from type APDroitAPGPViewBean");
+        }
+        viewBean = (APDroitMatPViewBean) vb;
+        BSession session = (BSession) iSession;
+        BTransaction transaction = null;
+        try {
+            transaction = (BTransaction) session.newTransaction();
+            if (!transaction.isOpened()) {
+                transaction.openTransaction();
+            }
+
+            APDroitMaternite droit = ApgServiceLocator.getEntityService().miseAjourDroitMat(session, transaction, viewBean);
+            viewBean.setDroit(droit);
+
+            if (!hasErrors(session, transaction)) {
+                transaction.commit();
+            }
+        } catch (Exception exception) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            String message = "Une exception est survenue lors de la création du droit : " + exception.toString();
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(message);
+            transaction.addErrors(message);
+            throw new Exception(message);
+        } finally {
+            if (transaction != null) {
+                transaction.closeTransaction();
+            }
+        }
         // Traitement des breakRules
-        traiterBreakRules(droitVB.getRulesToBreak(), droitVB.getIdDroit(), (BSession) session);
+        traiterBreakRules(viewBean.getRulesToBreak(), viewBean.getIdDroit(), session);
     }
 
     @Override
@@ -89,7 +165,7 @@ public class APDroitMatPHelper extends APAbstractDroitPHelper {
                     viewBean.getIdDroit());
             APDroitAPGPViewBean actionAfficherViewBean = new APDroitAPGPViewBean();
             droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-                droit.update();
+            droit.update();
             actionAfficherViewBean.setDroit(droit);
 
             if (!hasErrors(session, transaction)) {

@@ -79,23 +79,23 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         PRDemande demande = droitVB.loadDemande();
 
         // A faire uniquement dans les cas maternité- ce job est fait ailleurs pour les droit APG et Paternité
-        if (this instanceof APDroitMatPHelper) {
-            if (!FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
-                droitVB.getDroit().add();
+//        if (this instanceof APDroitMatPHelper) {
+//            if (!FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
+//                droitVB.getDroit().add();
+//
+//                if (((BSession) session).hasErrors() || FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
+//                    /*
+//                     * pour les cas ou l'ajout dans la table parente a reussi mais le validate de l'ajout dans la table
+//                     * enfant a lance une erreur, on efface l'id du droit qui a ete genere lors de l'ajout dans la table
+//                     * parente
+//                     */
+//                    droitVB.setIdDroit(PRDemande.ID_TIERS_DEMANDE_BIDON);
+//
+//                }
+//            }
 
-                if (((BSession) session).hasErrors() || FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
-                    /*
-                     * pour les cas ou l'ajout dans la table parente a reussi mais le validate de l'ajout dans la table
-                     * enfant a lance une erreur, on efface l'id du droit qui a ete genere lors de l'ajout dans la table
-                     * parente
-                     */
-                    droitVB.setIdDroit(PRDemande.ID_TIERS_DEMANDE_BIDON);
-
-                }
-            }
-
-            creerSituationProf(droitVB.getIdDroit(), demande.getIdTiers(), (BSession) session);
-        }
+//            creerSituationProf(droitVB.getIdDroit(), demande.getIdTiers(), (BSession) session);
+//        }
     }
 
     /**
@@ -156,6 +156,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         }
 
         if (!FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
+            droitVB.getDroit().setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
             droitVB.getDroit().update();
         }
 

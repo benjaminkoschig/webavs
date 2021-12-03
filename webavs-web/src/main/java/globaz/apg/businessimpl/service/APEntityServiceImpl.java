@@ -558,6 +558,55 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * globaz.globall.db.BTransaction, globaz.apg.vb.droits.APDroitAPGPViewBean)
      */
     @Override
+    public APDroitMaternite creerDroitMatComplet(final BSession session, final BTransaction transaction,
+                                           final APDroitMatPViewBean viewBean) throws IllegalArgumentException {
+        try {
+            validateSessionAndTransactionNotNull(session, transaction);
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Unable to create the new APDroitAPG for reason : " + e.toString());
+        }
+        // On va d'abord s'assurer que le droit n'existe pas
+        if (!JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+            throw new IllegalArgumentException("Unable to create a new APDroitAPG because it is already exist with id ["
+                    + viewBean.getDroit().getIdDroit() + "]");
+        }
+
+        // Validation des infos du viewBean
+        validationViewBeanMat(session, transaction, viewBean);
+
+        PRDemande demande = null;
+        APDroitMaternite droit = null;
+
+        try {
+            // Recherche du tiers en fonction du NSS
+            final String nss = viewBean.getNss();
+            final PRTiersWrapper tierWrapper = PRTiersHelper.getTiers(session, nss);
+
+            if ((tierWrapper == null) || (tierWrapper.getIdTiers() == null)) {
+                throw new Exception("Unable to find the idTiers for the NSS [" + nss + "]");
+            }
+
+            demande = getOrCreateDemandeDuTiersMat(session, transaction, tierWrapper.getIdTiers());
+            droit = creationDuDroitMaternite(viewBean, session, transaction, demande);
+
+            // Mise à jour de certaines entitées
+            droit.update(transaction);
+
+        } catch (final Exception exception) {
+            transaction.setRollbackOnly();
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(exception.toString());
+        }
+        return droit;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see globaz.apg.utils.APEntityService#creerDroitComplet(globaz.globall.db.BSession,
+     * globaz.globall.db.BTransaction, globaz.apg.vb.droits.APDroitAPGPViewBean)
+     */
+    @Override
     public APDroitPaternite creerDroitPatComplet(final BSession session, final BTransaction transaction,
                                                  final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
         try {
@@ -668,6 +717,11 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     private APDroitAPG creationDuDroitAPG(final APDroitAPGPViewBean viewBean, final BSession session,
                                           final BTransaction transaction, final PRDemande demande) throws Exception {
         return editionDroit(session, transaction, viewBean, demande, APModeEditionDroit.CREATION);
+    }
+
+    private APDroitMaternite creationDuDroitMaternite(final APDroitMatPViewBean viewBean, final BSession session,
+                                          final BTransaction transaction, final PRDemande demande) throws Exception {
+        return editionDroitMat(session, transaction, viewBean, demande, APModeEditionDroit.CREATION);
     }
 
     private APDroitPaternite creationDuDroitPaternite(final APDroitPatPViewBean viewBean, final BSession session,
@@ -1103,6 +1157,76 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         remplacerPeriodesDroitAPG(session, transaction, droitAPG.getIdDroit(), viewBean.getPeriodes());
         return droitAPG;
+    }
+
+    private APDroitMaternite editionDroitMat(final BSession session, final BTransaction transaction,
+                                    final APDroitMatPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
+            throws Exception {
+
+        if (modeEdition == null) {
+            throw new Exception("Any edition mode was specified for the APDroitAPG edition");
+        }
+        final APDroitMaternite droitMat = new APDroitMaternite();
+        droitMat.setSession(session);
+
+        if (modeEdition.equals(APModeEditionDroit.EDITION)) {
+            // On va d'abord s'assurer qu'on a bien un id droit
+            if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+                throw new Exception(
+                        "Unable to update the APDroitAPG with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
+            }
+            // Ensuite on s'assure que le droit existe
+            droitMat.setIdDroit(viewBean.getIdDroit());
+            droitMat.retrieve(transaction);
+            if (droitMat.isNew()) {
+                throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
+                        + "] because it doesn't already exist");
+            }
+            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitMat.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitMat.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_VALIDE.equals(droitMat.getEtat()))) {
+                throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
+                        + "] because it is not 'En attente/En erreur'");
+            }
+        }
+
+        // Création de l'idCaisse
+        String idCaisse = null;
+        try {
+            final String noCaisse = CommonProperties.KEY_NO_CAISSE.getValue();
+            final String noAgence = CommonProperties.NUMERO_AGENCE.getValue();
+            idCaisse = noCaisse + noAgence;
+        } catch (final PropertiesException exception) {
+            throw new Exception("A fatal exception was thrown when accessing to the CommonProperties", exception);
+        }
+
+        // MAJ des champs du droit
+        droitMat.setIdDemande(demande.getIdDemande());
+        droitMat.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
+        droitMat.setDateDebutDroit(viewBean.getDateDebutDroit());
+        droitMat.setDateFinDroit(viewBean.getDateFinDroit());
+        droitMat.setDateReception(viewBean.getDateReception());
+        droitMat.setDateDepot(viewBean.getDateDepot());
+        droitMat.setDateRepriseActiv(viewBean.getDateRepriseActiv());
+        droitMat.setDroitAcquis(viewBean.getDroitAcquis());
+         droitMat.setGenreService(viewBean.getGenreService());
+        droitMat.setIdGestionnaire(viewBean.getIdGestionnaire());
+        droitMat.setTauxImpotSource(viewBean.getTauxImpotSource());
+        droitMat.setIsSoumisImpotSource(viewBean.getIsSoumisCotisation());
+        droitMat.setJoursSupplementaires(viewBean.getJoursSupplementaires());
+        droitMat.setNpa(viewBean.getNpa());
+        droitMat.setPays(viewBean.getPays());
+        droitMat.setRemarque(viewBean.getRemarque());
+        droitMat.setCsProvenanceDroitAcquis(viewBean.getCsProvenanceDroitAcquis());
+        droitMat.setIdCaisse(idCaisse);
+        droitMat.setReference(viewBean.getReference());
+        droitMat.setCsCantonDomicile(viewBean.getCsCantonDomicile());
+
+        if (modeEdition.equals(APModeEditionDroit.CREATION)) {
+            droitMat.add(transaction);
+        } else {
+            droitMat.update(transaction);
+        }
+
+        return droitMat;
     }
 
     private APDroitPaternite editionDroitPat(final BSession session, final BTransaction transaction,
@@ -1672,6 +1796,40 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @return Une PRDemande liée au tiers dans le domain des APG
      * @throws Exception Si l'idTiers est null ou vide ou en cas d'erreur de persistance
      */
+    public PRDemande getOrCreateDemandeDuTiersMat(final BSession session, final BTransaction transaction,
+                                               final String idTiers) throws Exception {
+        validateSessionAndTransactionNotNull(session, transaction);
+        if (JadeStringUtil.isBlankOrZero(idTiers)) {
+            throw new Exception("Unable to retrieve the PRDemande with an empty idTiers [" + idTiers + "]");
+        }
+        final PRDemande demande = new PRDemande();
+        demande.setSession(session);
+        demande.setTypeDemande(IPRDemande.CS_TYPE_MATERNITE);
+        demande.setIdTiers(idTiers);
+        demande.retrieve(transaction);
+        if (demande.isNew()) {
+            demande.add(transaction);
+        }
+        return demande;
+    }
+
+    /**
+     * La PRDemande est gérée de la façon suivante :</br>
+     * - Une seule PRDemande existe pour un tiers dans un domaine
+     * particulier(rente, apg, ij, etc)</br>
+     * - Si une demande existe dans le domain des APG pour l'idTiers fournis en
+     * paramètre, elle sera retournée</br>
+     * - Si aucune demande existe dans le domain des APG pour l'idTiers, elle sera
+     * créée et retournée</br>
+     * <strong>INFO : L'état de la demande (ouverte, clôturée) n'est pas pris en compte. Toute
+     * les demande sont en état 'ouverte'</strong>
+     *
+     * @param session     LA session courante
+     * @param transaction La transaction courante
+     * @param idTiers     L'idTiers du tiers en question
+     * @return Une PRDemande liée au tiers dans le domain des APG
+     * @throws Exception Si l'idTiers est null ou vide ou en cas d'erreur de persistance
+     */
     public PRDemande getOrCreateDemandeDuTiersPat(final BSession session, final BTransaction transaction,
                                                   final String idTiers) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
@@ -1885,6 +2043,51 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         return editionDroit(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
+    }
+
+    /**
+     * (non-Javadoc)
+     */
+    @Override
+    public APDroitMaternite miseAjourDroitMat(final BSession session, final BTransaction transaction,
+                                     final APDroitMatPViewBean viewBean) throws Exception {
+        validateSessionAndTransactionNotNull(session, transaction);
+        // On va d'abord s'assurer qu'on a bien un id droit
+        if (viewBean.getDroit() == null) {
+            throw new Exception(
+                    "The viewBean from type APDroitAPGPViewBean has a null APDroitLAPG. Can not found the idDroit ");
+        }
+        if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+            throw new Exception(
+                    "Unable to update the APDroitAPG with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
+        }
+        // Validation des infos du viewBean
+        validationViewBeanMat(session, transaction, viewBean);
+
+        final APDroitMaternite droit = getDroitMaternite(session, transaction, viewBean.getDroit().getIdDroit());
+
+        droit.setSession(session);
+        droit.retrieve(transaction);
+        if (droit.isNew()) {
+            throw new Exception("Unable to retrieve the APDroitAPG with id [" + viewBean.getDroit().getIdDroit() + "]");
+        }
+        if (!droit.isModifiable()) {
+            throw new Exception(
+                    "Unable to edit the APDroitAPG with id [" + droit.getIdDroit() + "] becuse it is not editable");
+        }
+
+        // Suppression des prestations
+        supprimerLesPrestationsDuDroit(session, transaction, droit.getIdDroit());
+
+        final PRDemande demande = new PRDemande();
+        demande.setSession(session);
+        demande.setIdDemande(droit.getIdDemande());
+        demande.retrieve(transaction);
+        if (demande.isNew()) {
+            throw new Exception("Unable to retrieve the PRDemande with id [" + droit.getIdDemande() + "]");
+        }
+
+        return editionDroitMat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
     }
 
     /**
@@ -2686,6 +2889,77 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 message.append("</br>");
             }
             throw new IllegalArgumentException(message.toString());
+        }
+    }
+
+    private void validationViewBeanMat(final BSession session, final BTransaction transaction,
+                                    final APDroitMatPViewBean viewBean) throws IllegalArgumentException {
+        final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
+        // NSS
+        if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
+            errors.add(APValidationDroitError.NSS_INVALID);
+        }
+        // Date de dépôt
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateDepot())) {
+            errors.add(APValidationDroitError.DATE_DEPOT_VIDE);
+        }
+        // Date de réception
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateReception())) {
+            errors.add(APValidationDroitError.DATE_RECEPTION_VIDE);
+        }
+
+        // Genre service
+        final String genreDeService = viewBean.getGenreService();
+        boolean isServiceTypeValid = true;
+        if ((genreDeService == null) || !APGenreServiceAPG.isValidGenreService(genreDeService)) {
+            errors.add(APValidationDroitError.GENRE_SERVICE_INVALID);
+            isServiceTypeValid = false;
+        }
+
+        // Test de la longueur de la remarque
+        if (isRemarqueTropLongue(viewBean.getRemarque(), viewBean.getNombreRetourLigneRemarque())) {
+            errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
+        }
+
+        // Pays
+        final String pays = viewBean.getPays();
+        if (JadeStringUtil.isBlankOrZero(pays)) {
+            errors.add(APValidationDroitError.PAYS_INVALID);
+        }
+
+        // NPA : si le pays est Suisse, le NPA doit être renseigné
+        String npa = null;
+        if (IConstantes.ID_PAYS_SUISSE.equals(viewBean.getPays())) {
+            npa = viewBean.getNpa();
+            if ((npa == null) || (npa.length() < 4)) {
+                errors.add(APValidationDroitError.NPA_VIDE);
+            }
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(npa)) {
+            // le pays doit être la suisse
+            if (!IConstantes.ID_PAYS_SUISSE.equals(pays)) {
+                errors.add(APValidationDroitError.PAYS_DOIT_ETRE_SUISSE);
+            } else {
+                // recherche du canton
+                try {
+                    final String canton = PRTiersHelper.getCanton(session, npa);
+                    if (canton == null) {
+                        errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                    }
+                } catch (final Exception e) {
+                    errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                }
+            }
+        }
+
+        // Droit acquis
+        if (!JadeStringUtil.isEmpty(viewBean.getDroitAcquis())) {
+            if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "5")) {
+                if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "0")) {
+                    errors.add(APValidationDroitError.DROITS_ACQUIS_PAS_ARRONDI);
+                }
+            }
         }
     }
 
