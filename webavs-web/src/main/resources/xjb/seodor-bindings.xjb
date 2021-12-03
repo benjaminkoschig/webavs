@@ -1,7 +1,7 @@
 <jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <jaxb:bindings schemaLocation="../xsd/seodor/seodor-ws-2-0.xsd"
+    <jaxb:bindings schemaLocation="../xsd/seodor/seodor-ws-1-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
             <jaxb:package name="seodor.ws"/>
@@ -49,7 +49,7 @@
 <!--            <jaxb:package name="seodor.ch.ech.xmlns.ech_0090._1"/>-->
 <!--        </jaxb:schemaBindings>-->
 <!--    </jaxb:bindings>-->
-    <jaxb:bindings schemaLocation="../xsd/seodor/eavh-iv-2014-000101-1-1.xsd"
+    <jaxb:bindings schemaLocation="../xsd/seodor/eavh-iv-2014-000101-1-0.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
             <jaxb:package name="seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1"/>
