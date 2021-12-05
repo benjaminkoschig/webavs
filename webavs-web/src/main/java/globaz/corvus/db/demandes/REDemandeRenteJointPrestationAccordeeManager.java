@@ -2,10 +2,13 @@ package globaz.corvus.db.demandes;
 
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.exceptions.REBusinessException;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.webavs.common.BIGenericManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,16 @@ public class REDemandeRenteJointPrestationAccordeeManager extends REDemandeRente
 
     public REDemandeRenteJointPrestationAccordeeManager() {
     }
+
+    @Override
+    protected void _beforeFind(BTransaction transaction) throws Exception {
+        super._beforeFind(transaction);
+
+        if (_getWhere(new BStatement(transaction)).isEmpty()) {
+            throw new REBusinessException("Les critères de recherche sont incomplets.");
+        }
+    }
+
 
     /**
      * {@inheritDoc} <br/>
