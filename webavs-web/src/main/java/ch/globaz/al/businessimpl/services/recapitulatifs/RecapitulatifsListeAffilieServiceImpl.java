@@ -693,16 +693,10 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
 
         }
         document.add(table);
-
-        if (droitsVaudAcquisExist) {
+        String droit_acquis_texte = "al.recapitulatif.infos.recap.droit_acquis_vaud";
+        if (droitsVaudAcquisExist || droitsVaudAcquis2022Exist) {
             document.addData("recapitulatifEntreprise_texte_droit_acquis_vaud",
-                    this.getText("al.recapitulatif.infos.recap.droit_acquis_vaud", langueDocument));
+                    this.getText(droitsVaudAcquis2022Exist ? droit_acquis_texte + "_2022" : droit_acquis_texte, langueDocument));
         }
-        if (droitsVaudAcquis2022Exist) {
-            document.addData("recapitulatifEntreprise_texte_droit_acquis_vaud_2022",
-                    this.getText("al.recapitulatif.infos.recap.droit_acquis_vaud_2022", langueDocument));
-        }
-
     }
-
 }
