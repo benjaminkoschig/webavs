@@ -41,7 +41,6 @@ import java.util.GregorianCalendar;
 
 /**
  * @author ebko
- * 
  */
 public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
@@ -55,7 +54,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
     // -------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -78,9 +77,8 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe IJEnvoyerAnnoncesProcess.
-     * 
-     * @param parent
-     *            DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
      */
     public IJEnvoyerAnnoncesXMLProcess(BProcess parent) {
         super(parent);
@@ -88,9 +86,8 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe IJEnvoyerAnnoncesProcess.
-     * 
-     * @param session
-     *            DOCUMENT ME!
+     *
+     * @param session DOCUMENT ME!
      */
     public IJEnvoyerAnnoncesXMLProcess(BSession session) {
         super(session);
@@ -105,7 +102,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -141,7 +138,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
                 mgr.setForMoisAnneeComptable(forMoisAnneeComptable);
 
                 statement = mgr.cursorOpen(transaction);
-                
+
                 nbAnnoncesLot += mgr.getCount();
 
                 while ((annonce = (IJAnnonce) (mgr.cursorReadNext(statement))) != null) {
@@ -150,7 +147,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
                     annonce.update(transaction);
                     prepareEnvoieAnnonce(annonce, lotAnnonces);
                 }
-                
+
                 mgr.cursorClose(statement);
             }
 
@@ -204,12 +201,15 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
             }
             LOG.debug(String.valueOf(nbAnnoncesLot));
 
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            if (lotAnnonces
 //                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .isEmpty()) {
 //                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
 //            }
+            if (lotAnnonces.getIVTaggelderMeldung().isEmpty()) {
+                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+            }
 
             String fileName = IJAnnoncesXMLValidatorService.getInstance().genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
@@ -236,8 +236,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
     }
 
     /**
-     * 
-     * @param poolKopfTest if you need to set TEST flag into header
+     * @param poolKopfTest   if you need to set TEST flag into header
      * @param poolKopfSender
      * @return
      * @throws PropertiesException
@@ -274,8 +273,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
     }
 
     /**
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _validate() throws Exception {
@@ -295,11 +293,11 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
             abort();
         }
     }
-    
+
 
     /**
      * getter pour l'attribut EMail object
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
      */
     @Override
@@ -315,7 +313,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * getter pour l'attribut for date envoi
-     * 
+     *
      * @return la valeur courante de l'attribut for date envoi
      */
     public String getForDateEnvoi() {
@@ -324,7 +322,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * getter pour l'attribut for mois annee comptable
-     * 
+     *
      * @return la valeur courante de l'attribut for mois annee comptable
      */
     public String getForMoisAnneeComptable() {
@@ -333,7 +331,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -344,34 +342,33 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
     /**
      * Aiguille la préparation de l'annonce passée en paramètre sur la bonne méthode <br/>
      * selon si c'est une annonce sous la 9ème ou 10ème révision, et si c'est une augmentation ou une diminution
-     * 
-     * @param annonce
-     *            l'annonce à préparer
+     *
+     * @param annonce l'annonce à préparer
      * @throws ValidationException si une erreur de validation unitaire d'une annonce survient
-     * @throws Exception
-     *             si une erreur dans la validation par ANAKIN surivent, une exception est lancée
+     * @throws Exception           si une erreur dans la validation par ANAKIN surivent, une exception est lancée
      */
     void prepareEnvoieAnnonce(IJAnnonce annonce, PoolMeldungZurZAS.Lot poolMeldungLot)
             throws ValidationException, Exception {
-        
+
         annonce.loadPeriodesAnnonces(getTransaction());
 
-        IJAnnoncesXmlService ijService =  IJAnnoncesXmlService.getInstance();
-        
+        IJAnnoncesXmlService ijService = IJAnnoncesXmlService.getInstance();
+
         try {
             IVTaggelderMeldungType annonceXml = ijService.getAnnonceXml(annonce);
             IJAnnoncesXMLValidatorService.getInstance().validateUnitMessage(annonceXml);
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            poolMeldungLot
 //            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //            .add(annonceXml);
+            poolMeldungLot.getIVTaggelderMeldung().add(annonceXml);
         } catch (ValidationException e) {
             e.getMessageErreurDeValidation().add(0, annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : ");
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new JadeException(annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : " + e.getMessage());
-        }      
-    } 
+        }
+    }
 
     protected void logInMemoryLog(String message, String labelSource) {
         getMemoryLog().logMessage(message, FWMessage.ERREUR, getSession().getLabel(labelSource));
@@ -379,9 +376,8 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * setter pour l'attribut for date envoi
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setForDateEnvoi(String string) {
         forDateEnvoi = string;
@@ -389,9 +385,8 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * setter pour l'attribut for mois annee comptable
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setForMoisAnneeComptable(String string) {
         forMoisAnneeComptable = string;
@@ -399,24 +394,24 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * Méthode qui envoie le fichier à la centrale
-     * 
+     *
      * @param fichier à envoyer à la centrale
-     * @throws PropertiesException 
-     * @throws JadeClassCastException 
-     * @throws ClassCastException 
-     * @throws  
-     * @throws JadeServiceActivatorException 
-     * @throws JadeServiceLocatorException 
+     * @throws PropertiesException
+     * @throws JadeClassCastException
+     * @throws ClassCastException
+     * @throws
+     * @throws JadeServiceActivatorException
+     * @throws JadeServiceLocatorException
      * @throws Exception
      */
-    private void envoiFichier(String fichier) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException, PropertiesException  {
+    private void envoiFichier(String fichier) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException, PropertiesException {
 
         JadeFsFacade.copyFile(fichier, IJProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fichier).getName());
     }
 
     /**
      * Nous donne si c'est le mode test
-     * 
+     *
      * @return le mode test
      */
     public boolean isModeTest() {
@@ -425,7 +420,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
 
     /**
      * set le mode de test
-     * 
+     *
      * @param modeTest
      */
     public void setModeTest(boolean modeTest) {

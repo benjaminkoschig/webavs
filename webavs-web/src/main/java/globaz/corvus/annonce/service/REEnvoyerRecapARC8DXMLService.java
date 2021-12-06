@@ -1,8 +1,7 @@
 package globaz.corvus.annonce.service;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
-import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.corvus.properties.REProperties;
@@ -136,16 +135,18 @@ public class REEnvoyerRecapARC8DXMLService {
      * @throws SAXException
      * @throws JAXBException
      */
-    public void validateUnitMessage(Object element) throws ValidationException, SAXException, JAXBException {
+    public void validateUnitMessage(MonatsRekapitulationRentenType element) throws ValidationException, SAXException, JAXBException {
         PoolMeldungZurZAS pool;
         final List<String> validationErrors = new LinkedList<>();
         try {
             acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
             pool = factoryPool.createPoolMeldungZurZAS();
             PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .add(element);
+            lot.getMonatsRekapitulationRenten().add(element);
+
             pool.getLot().add(lot);
             initMarshaller(pool);
 
@@ -192,10 +193,12 @@ public class REEnvoyerRecapARC8DXMLService {
         acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory factoryPool = new acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
         pool.getLot().add(lotAnnonce);
-        // TODO : gérer les annonces de 9e et 10e révisions
+        // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //        lotAnnonce.getPoolFuss().setEintragungengesamtzahl(lotAnnonce
 //                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                .size());
+        lotAnnonce.getPoolFuss().setEintragungengesamtzahl(lotAnnonce.getMonatsRekapitulationRenten().size());
+
         initMarshaller(pool);
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 

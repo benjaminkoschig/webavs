@@ -6,6 +6,8 @@ package globaz.corvus.process;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
 import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RRMeldung10Type;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RRMeldung9Type;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -251,12 +253,15 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             mgr.cursorClose(statement);
 
 
-            // TODO : gérer les annonces 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            if (lotAnnonces.getRRMeldung10()
 //                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .isEmpty()) {
 //                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
 //            }
+            if (lotAnnonces.getRRMeldung9().isEmpty() && lotAnnonces.getRRMeldung10().isEmpty()) {
+                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+            }
 
             String fileName = genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
@@ -488,10 +493,16 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
         validateUnitMessage(annonceXml);
 
-        // TODO : gérer les annonces 9e et 10e révisions
+        // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //        poolMeldungLot
 //                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                .add(annonceXml);
+        if (annonceXml instanceof RRMeldung10Type) {
+            poolMeldungLot.getRRMeldung10().add((RRMeldung10Type) annonceXml);
+        } else if (annonceXml instanceof RRMeldung9Type) {
+            poolMeldungLot.getRRMeldung9().add((RRMeldung9Type) annonceXml);
+        }
+
 
     }
 
@@ -660,9 +671,15 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             pool = factoryPool.createPoolMeldungZurZAS();
             PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
 
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .add(element);
+            if (element instanceof RRMeldung10Type) {
+                lot.getRRMeldung10().add((RRMeldung10Type) element);
+            } else if (element instanceof RRMeldung9Type) {
+                lot.getRRMeldung9().add((RRMeldung9Type) element);
+            }
+
             pool.getLot().add(lot);
             initMarshaller(pool);
 

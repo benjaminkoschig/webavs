@@ -173,10 +173,11 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
                     noCaisse + noAgence);
             REEnvoyerRecapARC8DXMLService.getInstance().validateUnitMessage(annonceXml);
 
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            poolMeldungLot
 //                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .add(annonceXml);
+            poolMeldungLot.getMonatsRekapitulationRenten().add(annonceXml);
         } catch (ValidationException e) {
             e.getMessageErreurDeValidation().add(0, recap.getId() + " - " + recap.getIdRecapMensuelle() + " : ");
             throw e;
@@ -190,12 +191,15 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
 
     private void envoieRecap(PoolMeldungZurZAS.Lot lotAnnonces)
             throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
-        // TODO : gérer les annonces de 9e et 10e révisions
+        // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //        if (lotAnnonces
 //                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                .isEmpty()) {
 //            throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
 //        }
+        if (lotAnnonces.getMonatsRekapitulationRenten().isEmpty()) {
+            throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+        }
 
         String fileName = REEnvoyerRecapARC8DXMLService.getInstance().genereFichier(lotAnnonces);
         JadeFsFacade.copyFile(fileName,

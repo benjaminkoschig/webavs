@@ -2,9 +2,7 @@ package globaz.ij.helpers.annonces;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.ObjectFactory;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
-import acor.ch.admin.zas.rc.annonces.rente.rc.IVTaggelderMeldungType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.PoolFussType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.PoolKopfType;
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.util.JACalendar;
@@ -37,25 +35,24 @@ import java.util.List;
 
 /**
  * @author ebko
- * 
  */
 
 public class IJAnnoncesXMLValidatorService {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(IJAnnoncesXMLValidatorService.class);
-    
+
     private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
     private static final String XSD_NAME = "MeldungZurZas.xsd";
-    
+
     private static IJAnnoncesXMLValidatorService instance = new IJAnnoncesXMLValidatorService();
 
     public static IJAnnoncesXMLValidatorService getInstance() {
 
         return instance;
     }
-    
+
     private transient Marshaller marshaller;
-    
+
     private Marshaller initMarshaller(Object element) throws SAXException, JAXBException {
         if (marshaller == null) {
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -71,25 +68,24 @@ public class IJAnnoncesXMLValidatorService {
         }
         return marshaller;
     }
-    
+
     /**
      * Méthode qui retourne un nom de fichier basé sur le timestamp
-     * 
+     *
      * @return
-     * @throws PropertiesException 
+     * @throws PropertiesException
      * @throws Exception
      */
-    private String getFileNameTimeStamp() throws PropertiesException  {
+    private String getFileNameTimeStamp() throws PropertiesException {
         String fileName = "M_" + IJProperties.RACINE_NOM_FICHIER_OUTPUT_ZAS.getValue();
         fileName = JadeFilenameUtil.addFilenameSuffixDateTimeDecimals(fileName);
         fileName = StringUtils.left(fileName, fileName.length() - 7) + "_" + StringUtils.right(fileName, 7);
         fileName = fileName + ".xml";
         return fileName;
     }
-    
+
     /**
-     * 
-     * @param poolKopfTest if you need to set TEST flag into header
+     * @param poolKopfTest   if you need to set TEST flag into header
      * @param poolKopfSender
      * @return
      * @throws PropertiesException
@@ -124,12 +120,12 @@ public class IJAnnoncesXMLValidatorService {
 
         return lot;
     }
-    
+
     /**
      * CAUTION, only element choice of a PoolMeldungZurZAS.Lot
-     * 
+     * <p>
      * possible object are element of Lot {@link PoolMeldungZurZAS.Lot }
-     * 
+     *
      * @param element : must be an element to put on a PoolMeldungZurZAS.Lot
      * @throws ValidationException
      * @throws SAXException
@@ -137,14 +133,16 @@ public class IJAnnoncesXMLValidatorService {
      */
     public void validateUnitMessage(IVTaggelderMeldungType element) throws ValidationException, SAXException, JAXBException {
         PoolMeldungZurZAS pool;
-        final List<String> validationErrors = new LinkedList<String>();
+        final List<String> validationErrors = new LinkedList<>();
         try {
             ObjectFactory factoryPool = new ObjectFactory();
             pool = factoryPool.createPoolMeldungZurZAS();
             PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
-            // TODO : gérer les annonces de 9e et 10e révisions
+            // TODO : gérer les annonces de 9e et 10e révisions --> à valider
 //            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
 //                    .add(element);
+            lot.getIVTaggelderMeldung().add(element);
+
             pool.getLot().add(lot);
             initMarshaller(pool);
 
@@ -160,7 +158,7 @@ public class IJAnnoncesXMLValidatorService {
             });
 
             marshaller.marshal(pool, new ByteArrayOutputStream());
-            
+
         } catch (JAXBException exception) {
             LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
             throw exception;
@@ -173,19 +171,19 @@ public class IJAnnoncesXMLValidatorService {
         }
 
     }
-    
+
     /**
      * Méthode qui génère le fichier en fonction d'un lot d'annonces en input
-     * 
+     *
      * @return l'uri du fichier généré
-     * @throws JAXBException 
-     * @throws SAXException 
-     * @throws PropertiesException 
-     * @throws IOException 
-     * @throws JadeException 
+     * @throws JAXBException
+     * @throws SAXException
+     * @throws PropertiesException
+     * @throws IOException
+     * @throws JadeException
      * @throws Exception
      */
-    public String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws SAXException, JAXBException, PropertiesException, IOException, JadeException  {
+    public String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws SAXException, JAXBException, PropertiesException, IOException, JadeException {
         String fileName;
         ObjectFactory factoryPool = new ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
