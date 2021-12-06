@@ -135,7 +135,7 @@ public class IJSaisiePrononceHelper extends PRAbstractHelper {
                 String cleSaisie = viewBean.getNoDecisionAI().substring(10);
 
                 if (!cleCrée.equals(cleSaisie)) {
-                    transaction.addErrors(viewBean.getSession().getLabel("NO_DECISION_ERR"));
+                    transaction.addErrors(viewBean.getSession().getLabel("NO_DECISION_KEY_ERR") + cleCrée);
                 }
 
             } else {

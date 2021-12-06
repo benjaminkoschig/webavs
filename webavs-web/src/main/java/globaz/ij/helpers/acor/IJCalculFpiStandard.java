@@ -7,6 +7,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.ij.acor.adapter.IJAttestationsJoursAdapter;
 import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prononces.IIJMesure;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Calculateur des prestations de type FPI
+ *
  * @author ebko
  */
 
@@ -30,29 +33,49 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
     public List calculPrestationsSansAcor(BSession session, BTransaction transaction, IJPrononce prononce,
                                           IJBaseIndemnisation baseIndemnisation, IJIJCalculee ijCalculee) throws Exception {
 
-        IJFpiCalculee fpiCalculee = (IJFpiCalculee) ijCalculee;
-        String jnc = baseIndemnisation.getNombreJoursCouverts();
-        String rjm = fpiCalculee.getMontantBase();
-        String rjme = fpiCalculee.getMontantEnfants();
-        String sal = fpiCalculee.getSalaireMensuel();
+        IJPrestation prestation = new IJPrestation();
+        prestation.setIdIJCalculee(ijCalculee.getIdIJCalculee());
+        prestation.setIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
 
-        int jourNonCompris =  calculerJoursNonCompris(jnc, baseIndemnisation);
+        calculDatesPrestation(baseIndemnisation, ijCalculee, prestation);
+        calculMontantsPrestation(baseIndemnisation, (IJFpiCalculee) ijCalculee, prestation);
 
+//        IJIndemniteJournaliereManager mgr = new IJIndemniteJournaliereManager();
+//        mgr.setSession(session);
+//        mgr.setForIdIJCalculee(ijCalculee.getIdIJCalculee());
+//        mgr.find(transaction);
+//        for (int i = 0; i < mgr.size(); i++) {
+//            IJIndemniteJournaliere elm = (IJIndemniteJournaliere) mgr.getEntity(i);
+//                indemniteExt = elm.getMontantJournalierIndemnite();
+//        }
+//
+//        if ((indemniteExt == null)) {
+//            throw new PRACORException(session.getLabel("AUCUNE_IJ_CALCULEE"));
+//        }
 
+//        IJAttestationsJoursAdapter attestationsJours = new IJAttestationsJoursAdapter(baseIndemnisation, ijCalculee);
 
+//        prestation.setMontantBrutExterne(IJCalculACORDecompteHelper.multiply(indemniteExt,
+//                attestationsJours.getNbJoursExternes()));
+//                attestationsJours.getNbJoursInternes()));
+//        prestation.setNombreJoursExt(attestationsJours.getNbJoursExternes());
 
+//        FWCurrency mbr = new FWCurrency(prestation.getMontantBrutInterne());
+//        mbr.add(prestation.getMontantBrutExterne());
+//        prestation.setMontantBrut(mbr.toString());
+        // on recopie les montants journalier
+        // sauver la sous prestation dans la base
+
+        prestation.setSession(session);
+        prestation.add(transaction);
 
         List retValue = new ArrayList();
+        retValue.add(prestation);
+        return retValue;
 
-        String indemniteExt = "0.0";
-        String indemniteInt = "0.0";
-        String montantBrutExt = "0.0";
-        String montantBrutInt = "0.0";
+    }
 
-        // creation de la prestation, d'apres le schema, il y a au maximum UN
-        // element paiement
-        IJPrestation prestation = new IJPrestation();
-
+    private static void calculDatesPrestation(IJBaseIndemnisation baseIndemnisation, IJIJCalculee ijCalculee, IJPrestation prestation) throws JAException {
         JADate dateDebutPrestation = new JADate(baseIndemnisation.getDateDebutPeriode());
         JADate dateFinPrestation = new JADate(baseIndemnisation.getDateFinPeriode());
 
@@ -73,64 +96,48 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
 
         // On prend la plus petite date de fin entre la base d'indemnisation et
         // de l'ijCalculee
-        if (dateFinIJCalculee == null) {
-            ;
-        } else if (cal.compare(dateFinPrestation, dateFinIJCalculee) == JACalendar.COMPARE_FIRSTUPPER) {
+        if (dateFinIJCalculee != null && cal.compare(dateFinPrestation, dateFinIJCalculee) == JACalendar.COMPARE_FIRSTUPPER) {
             dateFinPrestation = dateFinIJCalculee;
         }
 
         prestation.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutPrestation.toStrAMJ()));
         prestation.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinPrestation.toStrAMJ()));
-        prestation.setIdIJCalculee(ijCalculee.getIdIJCalculee());
-        prestation.setIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
-
-        IJIndemniteJournaliereManager mgr = new IJIndemniteJournaliereManager();
-        mgr.setSession(session);
-        mgr.setForIdIJCalculee(ijCalculee.getIdIJCalculee());
-        mgr.find(transaction);
-        for (int i = 0; i < mgr.size(); i++) {
-            IJIndemniteJournaliere elm = (IJIndemniteJournaliere) mgr.getEntity(i);
-            if (IIJMesure.CS_INTERNE.equals(elm.getCsTypeIndemnisation())) {
-                indemniteInt = elm.getMontantJournalierIndemnite();
-            } else {
-                indemniteExt = elm.getMontantJournalierIndemnite();
-            }
-        }
-
-        if ((indemniteExt == null) && (indemniteInt == null)) {
-            throw new PRACORException(session.getLabel("AUCUNE_IJ_CALCULEE"));
-        }
-
-        IJAttestationsJoursAdapter attestationsJours = new IJAttestationsJoursAdapter(baseIndemnisation, ijCalculee);
-
-        prestation.setMontantBrutExterne(IJCalculACORDecompteHelper.multiply(indemniteExt,
-                attestationsJours.getNbJoursExternes()));
-        prestation.setMontantBrutInterne(IJCalculACORDecompteHelper.multiply(indemniteInt,
-                attestationsJours.getNbJoursInternes()));
-        prestation.setNombreJoursExt(attestationsJours.getNbJoursExternes());
-        prestation.setNombreJoursInt(attestationsJours.getNbJoursInternes());
         prestation.setDateDecompte(JACalendar.todayJJsMMsAAAA());
-        FWCurrency mbr = new FWCurrency(prestation.getMontantBrutInterne());
-        mbr.add(prestation.getMontantBrutExterne());
-        prestation.setMontantBrut(mbr.toString());
-
-        // on recopie les montants journalier
-        prestation.setMontantJournalierExterne(indemniteExt);
-        prestation.setMontantJournalierInterne(indemniteInt);
-
-        // sauver la sous prestation dans la base
-        prestation.setSession(session);
-        prestation.add(transaction);
-
-        retValue.add(prestation);
-        return retValue;
-
     }
 
-    private int calculerJoursNonCompris(String JoursNonComprisSaisie, IJBaseIndemnisation baseIndemnisation) {
+    protected static void calculMontantsPrestation(IJBaseIndemnisation baseIndemnisation, IJFpiCalculee fpiCalculee, IJPrestation prestation) {
+        Integer jourMaxFpi = Integer.valueOf(IIJPrestation.JOUR_FPI);
+        String jnc = baseIndemnisation.getNombreJoursNonCouverts();
+        Double rjm = Double.valueOf(fpiCalculee.getMontantBase());
+        Double rjme = Double.valueOf(fpiCalculee.getMontantEnfants());
+        Double sal = Double.valueOf(fpiCalculee.getSalaireMensuel());
+        FWCurrency salpre = new FWCurrency(rjm * jourMaxFpi);
+        salpre.add(sal.doubleValue());
+
+        int jnct = calculerJoursNonCompris(jnc, baseIndemnisation);
+
+        // total non couvert
+        Double tnc = rjm * jnct;
+        // Montant de la prestation pour la période
+        Double mpr = sal.doubleValue() - tnc;
+        // jours à payer
+        Integer prj = jourMaxFpi - jnct;
+        // Total non couvert
+        Double tnce = rjme * prj;
+        // montant journalier
+        FWCurrency prmj = new FWCurrency(rjm + rjme);
+        // montant brut
+        FWCurrency prmb = new FWCurrency(mpr + tnce);
+
+        prestation.setNombreJoursExt(prj.toString());
+        prestation.setMontantBrut(prmb.toString());
+        prestation.setMontantJournalierExterne(prmj.toString());
+    }
+
+    private static int calculerJoursNonCompris(String JoursNonComprisSaisie, IJBaseIndemnisation baseIndemnisation) {
 
         int jourNonCompris = 0;
-        if(JadeStringUtil.isBlankOrZero(JoursNonComprisSaisie)) {
+        if(!JadeStringUtil.isBlankOrZero(JoursNonComprisSaisie)) {
             jourNonCompris +=  Integer.valueOf(JoursNonComprisSaisie);
         }
         int jourFPI = Integer.valueOf(IIJPrestation.JOUR_FPI);

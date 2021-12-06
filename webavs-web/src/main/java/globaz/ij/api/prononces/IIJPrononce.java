@@ -38,6 +38,7 @@ public interface IIJPrononce {
     public static final String CS_GROUPE_ETAT_PRONONCE = "IJETATPRO";
     //
     public static final String CS_GROUPE_GENRE_READAPTATION = "IJGENRREA2";
+    public static final String CS_GROUPE_GENRE_READAPTATION_AI = "IJGENRREAI";
     //
     public static final String CS_GROUPE_MOTIF_IJ = "IJMOTIF";
     //

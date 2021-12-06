@@ -5,20 +5,29 @@ package globaz.ij.vb.prononces;
 
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
+import globaz.globall.parameters.FWParametersSystemCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJRevenu;
 import globaz.ij.db.prononces.IJSituationFamiliale;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.translation.CACodeSystem;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -47,6 +56,7 @@ public abstract class IJAbstractPrononceProxyViewBean implements FWViewBeanInter
     private IJPrononce prononce;
     private String warningMessage = "";
     private Boolean afficheWarning = true;
+    private String codeGenrePrestation = "";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -1100,5 +1110,38 @@ public abstract class IJAbstractPrononceProxyViewBean implements FWViewBeanInter
 
     public void setMesureReadaptation8a(boolean mesureReadaptation8a) {
         prononce.setMesureReadaptation8a(mesureReadaptation8a);
+    }
+
+    public String getCodeGenrePrestation() {
+        return codeGenrePrestation;
+    }
+
+    public void setCodeGenrePrestation(String codeGenrePrestation) {
+        this.codeGenrePrestation = codeGenrePrestation;
+    }
+
+    private boolean isAncienCode(String code) {
+        return JadeStringUtil.isEmpty(code) || Integer.valueOf(code) < 10;
+    }
+
+    public List<String> getExcludeCode() throws Exception {
+        List<String> list = new ArrayList<>();
+        FWParametersSystemCodeManager codes = FWTranslation.getSystemCodeList(IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI, getSession());
+        if(IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ()) || IIJPrononce.CS_GRANDE_IJ.equals(prononce.getCsTypeIJ())) {
+            for (int i = 0; i < codes.size(); i++) {
+                FWParametersSystemCode code = (FWParametersSystemCode) codes.getEntity(i);
+                if(isAncienCode(code.getCurrentCodeUtilisateur().getCodeUtilisateur())) {
+                    list.add(code.getIdCode());
+                }
+            }
+        } else {
+            for (int i = 0; i < codes.size(); i++) {
+                FWParametersSystemCode code = (FWParametersSystemCode) codes.getEntity(i);
+                if(!isAncienCode(code.getCurrentCodeUtilisateur().getCodeUtilisateur())) {
+                    list.add(code.getIdCode());
+                }
+            }
+        }
+        return list;
     }
 }

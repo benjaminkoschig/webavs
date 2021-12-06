@@ -215,8 +215,7 @@ public class IJFpiCalculee extends IJIJCalculee {
 
     @Override
     public String getMontantBase() {
-        return "16.7";
-//        return montantBase;
+        return montantBase;
     }
 
     @Override
@@ -225,8 +224,7 @@ public class IJFpiCalculee extends IJIJCalculee {
     }
 
     public String getMontantEnfants() {
-//        return montantEnfants;
-        return "9.2";
+        return montantEnfants;
     }
 
     public void setMontantEnfants(String montantEnfants) {
@@ -234,8 +232,7 @@ public class IJFpiCalculee extends IJIJCalculee {
     }
 
     public String getSalaireMensuel() {
-//        return salaireMensuel;
-        return "500";
+        return salaireMensuel;
     }
 
 

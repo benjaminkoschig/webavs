@@ -946,6 +946,22 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
     }
 
     /**
+     * si le nombre de jours non couverts est renseigne, retourne cette valeur, sinon compte le nombre de jours non couverts dans
+     * le calendrier et retourne cette valeur.
+     *
+     * @return la valeur courante de l'attribut nombre jours non couverts
+     */
+    public String nombreJoursNonCouverts() {
+        if (JadeStringUtil.isIntegerEmpty(nombreJoursNonCouverts)) {
+            return String.valueOf(JadeStringUtil.occurrencesOf(attestationJours,
+                    IIJBaseIndemnisation.IJ_CALENDAR_INTERNE));
+        } else {
+            return nombreJoursNonCouverts;
+        }
+    }
+
+
+    /**
      * setter pour l'attribut attestation jours.
      * 
      * @param string

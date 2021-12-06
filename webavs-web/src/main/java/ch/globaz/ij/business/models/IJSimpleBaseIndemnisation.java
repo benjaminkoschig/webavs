@@ -58,8 +58,6 @@ public class IJSimpleBaseIndemnisation extends JadeSimpleModel {
     /**
      * Nombres de jours d'Interruption Associé au champ : XKNJOI
      */
-    @Getter
-    @Setter
     private String joursNonCouverts;
 
     /**
@@ -245,5 +243,13 @@ public class IJSimpleBaseIndemnisation extends JadeSimpleModel {
 
     public void setTauxImposition(String tauxImposition) {
         this.tauxImposition = tauxImposition;
+    }
+
+    public String getJoursNonCouverts() {
+        return joursNonCouverts;
+    }
+
+    public void setJoursNonCouverts(String joursNonCouverts) {
+        this.joursNonCouverts = joursNonCouverts;
     }
 }

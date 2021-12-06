@@ -143,6 +143,31 @@
 			}
 		});
 	}
+
+	var options;
+	$(function() {
+		$('#codeGenrePrestation').bind('change keyup', function() {
+					filterOptions($('#codeGenrePrestation')[0].value);});
+		options = $("#csGenre option").remove();
+		filterOptions(localStorage.type||"All");
+		$("#csGenre").val("<%=viewBean.getCsGenre()%>");
+	})
+
+	function filterOptions(value) {
+		//localStorage.value = value
+		if (value === "All") {
+			$("#csGenre").html(options)
+		} else {
+			$("#csGenre").empty()
+			options.filter(function(){
+				return $(this).attr('label').indexOf(value) == 0;
+			}).appendTo($("#csGenre"))
+			if($("#csGenre").is(':empty')) {
+				filterOptions("All");
+			}
+		}
+	}
+
 </SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -181,13 +206,30 @@
 							<TD colspan="2"><ct:FWCalendarTag name="dateFinPrononce" value="<%=viewBean.getDateFinPrononce()%>"/></TD>
 						</TR>
 						<TR>
+							<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean || viewBean instanceof globaz.ij.vb.prononces.IJFpiViewBean){%>
+							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
+							<TD colspan="4" >
+								<INPUT type="text" id="codeGenrePrestation" name="codeGenrePrestation" value="<%=viewBean.getCodeGenrePrestation()%>" maxlength="3" class="numeroCourt" >&nbsp;
+								<ct:select name="csGenre" id="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
+									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI%>">
+										<ct:forEach items="<%=viewBean.getExcludeCode()%>" var="code">
+											<ct:excludeCode id="code"/>
+										</ct:forEach>
+									</ct:optionsCodesSystems>
+								</ct:select>
+							</TD>
+							<%} else {%>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
 							<TD colspan="4">
-								<ct:select name="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
-										<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>">
-										</ct:optionsCodesSystems>
-									</ct:select>
+								<ct:select name="csGenre" id="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
+									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI%>">
+										<ct:forEach items="<%=viewBean.getExcludeCode()%>" var="code">
+											<ct:excludeCode id="code"/>
+										</ct:forEach>
+									</ct:optionsCodesSystems>
+								</ct:select>
 							</TD>
+							<%}%>
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_TYPE_HEBERGEMENT"/></TD>

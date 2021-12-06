@@ -335,7 +335,7 @@ class IJExportationCalculAcor {
     }
 
     private void mapRevenuMensuelFpi(BasesCalculCouranteIJ basesCalculCouranteIJ, IJFpiJointRevenu ijRevenu) {
-        if (ijRevenu != null) {
+        if (ijRevenu != null && !JadeStringUtil.isBlankOrZero(ijRevenu.getRevenu())) {
             String revenu = ijRevenu.getRevenu();
             BasesCalculRevenusIJ basesCalculRevenusIJ = new BasesCalculRevenusIJ();
             basesCalculRevenusIJ.setId(ijRevenu.getId());

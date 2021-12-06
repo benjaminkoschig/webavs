@@ -363,7 +363,7 @@ var langue = "<%=languePage%>";
 												<input	type="text"
 														  class="noFocus"
 														  id="baseIndemnisation.joursNonCouverts"
-														  name="joursExternes"
+														  name="joursNonCouverts"
 														  data-g-integer="sizeMax:6,autoFit:true" />
 											</div>
 

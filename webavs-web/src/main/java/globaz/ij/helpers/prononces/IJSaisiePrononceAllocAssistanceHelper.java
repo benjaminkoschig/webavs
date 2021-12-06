@@ -183,7 +183,7 @@ public class IJSaisiePrononceAllocAssistanceHelper extends PRAbstractHelper {
                 String cleSaisie = viewBean.getNoDecisionAI().substring(10);
 
                 if (!cleCrée.equals(cleSaisie)) {
-                    transaction.addErrors("Numéro de décision AI incorrect ! Format : AAAANNNNNNC");
+                    transaction.addErrors("Numéro de décision AI incorrect ! la clé doit être : "+cleCrée);
                 }
             } else {
                 transaction.addErrors("Numéro de décision AI incorrect ! Format : AAAANNNNNNC");
