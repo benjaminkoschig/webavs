@@ -104,7 +104,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
             initVariableQR(decompte);
             // Génération du document QR
             qrFacture.setSubReportQR("QR_FACTURE_TEMPLATE_BMS.jasper");
-            qrFacture.initQR(this);
+            qrFacture.initQR(this, qrFactures);
         } else {
 
             fillBVR(decompte.getMontantContributionTotal());

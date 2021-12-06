@@ -207,7 +207,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
             // Initialisation des variables du document
             initVariableQR(getCurrentElement());
             // Génération du document QR
-            qrFacture.initQR(this);
+            qrFacture.initQR(this, qrFactures);
         } else {
             fillBVR();
         }

@@ -14,6 +14,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JABVR;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
 import globaz.jade.i18n.JadeI18n;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
@@ -23,9 +24,7 @@ import globaz.pyxis.db.tiers.TITiers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 public class ReferenceQR extends AbstractReference {
@@ -96,6 +95,7 @@ public class ReferenceQR extends AbstractReference {
     private String infoFacture = StringUtils.EMPTY;
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
+    private String UID = StringUtils.EMPTY;
 
     // Boolean qui permet d'activer un QR Neutre
     private boolean qrNeutre = false;
@@ -112,10 +112,13 @@ public class ReferenceQR extends AbstractReference {
         super();
     }
 
-    public FWIDocumentManager initQR(FWIDocumentManager document) {
+    public FWIDocumentManager initQR(FWIDocumentManager document, List<ReferenceQR> qrFactures) {
 
         // Initialisation des entêtes de la QR-Facture
         initEnteteQR(document);
+
+        // Initialiation d'un UID pour la referenceQR pour le nom de l'image QR
+        initUID(document.getDocumentInfo().getDocumentUID());
 
         // Initialisation des params de la QR-Facture
         initParamQR();
@@ -124,7 +127,18 @@ public class ReferenceQR extends AbstractReference {
             document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
         }
 
+        // Ajoute la référenceQR dans la liste des QR générées
+        qrFactures.add(this);
+
         return document;
+    }
+
+    /**
+     * Méthode qui génère un uid pour la referenceQR
+     *
+     */
+    public void initUID(String documentUID) {
+        this.setUID(documentUID + "_" + new Date().getTime());
     }
 
     /**
@@ -162,7 +176,7 @@ public class ReferenceQR extends AbstractReference {
      * Méthode qui charge les paramètres variables de la QR-Facture
      */
     public void initParamQR() {
-        parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
+        parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(this, generationPayLoad()));
         // Activation ou non des traitillés et ciseaux sur Qr Facture
         if (addTraitille()) {
             parameters.put(COParameter.P_CISEAU_VERTICAL_PATH, getDefaultModelPath() + "/ciseau_vertical.jpg");
@@ -928,5 +942,21 @@ public class ReferenceQR extends AbstractReference {
         } catch (Exception e) {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
+    }
+
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
+    public String getRootApplicationPath() {
+        return JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + getSession().getApplicationId().toLowerCase() + "Root/", "\\", "/");
+    }
+
+    public String getWorkApplicationPath() {
+        return getRootApplicationPath() + "work/";
     }
 }

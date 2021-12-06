@@ -159,7 +159,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                 initVariableQR(_getLangue(), new FWCurrency(echeance.getMontant()), getPlanRecouvrement().getCompteAnnexe().getIdTiers());
 
                 // Génération du document QR
-                qrFacture.initQR(this);
+                qrFacture.initQR(this, qrFactures);
             } else {
                 fillBVR();
             }

@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @author user To change this generated comment edit the template variable "typecomment":
@@ -60,6 +57,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     protected FAImpFactDataSource currentDataSource = null;
     protected FANewImpFactDataSource newCurrentDataSource = null;
     protected ReferenceQR qrFacture = null;
+    protected List<ReferenceQR> qrFactures = new ArrayList<>();
     protected FWCurrency tmpCurrency = null;
     protected boolean reporterMontant = false;
     protected boolean factureMontantReport = false;
@@ -109,7 +107,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     public void afterExecuteReport() {
         super.afterExecuteReport();
         try {
-            GenerationQRCode.deleteQRCodeImage();
+            GenerationQRCode.deleteQRCodeImages(qrFactures);
         } catch (IOException e) {
             getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
         }

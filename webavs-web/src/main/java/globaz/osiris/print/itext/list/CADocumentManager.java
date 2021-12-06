@@ -206,6 +206,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     // Ajout pour QR Facture
     protected ReferenceQR qrFacture = null;
+    protected List<ReferenceQR> qrFactures = new ArrayList<>();
     protected CAImpressionBulletinsSoldes_DS sectionCourante;
     protected CACompteAnnexe compteAnnexe;
     protected CASection section = null;
@@ -281,7 +282,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public void afterExecuteReport() {
         super.afterExecuteReport();
         try {
-            GenerationQRCode.deleteQRCodeImage();
+            GenerationQRCode.deleteQRCodeImages(qrFactures);
         } catch (IOException e) {
             getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
         }
@@ -984,6 +985,24 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      */
     public void setQrFacture(ReferenceQR qrFacture) {
         this.qrFacture = qrFacture;
+    }
+
+    /**
+     * Getter QrFactures
+     *
+     * @return
+     */
+    public List<ReferenceQR> getQrFactures() {
+        return qrFactures;
+    }
+
+    /**
+     * Setter qrFactures
+     *
+     * @param qrFactures
+     */
+    public void setQrFactures(List<ReferenceQR> qrFactures) {
+        this.qrFactures = qrFactures;
     }
 
     /**

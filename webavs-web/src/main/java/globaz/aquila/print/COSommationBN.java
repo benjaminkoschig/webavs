@@ -146,7 +146,7 @@ public class COSommationBN extends CODocumentManager {
             // Initialisation des variables du document
             initVariableQR(null);
             // Génération du document QR
-            qrFacture.initQR(this);
+            qrFacture.initQR(this, qrFactures);
         } else {
             // BVR
             initBVR();

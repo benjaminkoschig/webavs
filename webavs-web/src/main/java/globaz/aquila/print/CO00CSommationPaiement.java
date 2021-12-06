@@ -238,7 +238,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             initVariableQR(montantTotal);
 
             // Génération du document QR
-            qrFacture.initQR(this);
+            qrFacture.initQR(this, qrFactures);
         } else {
             // -- BVR
             initBVR(montantTotal);

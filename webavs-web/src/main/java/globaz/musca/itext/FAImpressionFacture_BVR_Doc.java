@@ -752,7 +752,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             initVariableQR(currentDataSource.getEnteteFacture().getISOLangueTiers());
 
             // Génération du document QR
-            qrFacture.initQR(this);
+            qrFacture.initQR(this, qrFactures);
 
             referenceParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), qrFacture.getReference());
         } else {

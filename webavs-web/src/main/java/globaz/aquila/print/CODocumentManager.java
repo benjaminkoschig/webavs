@@ -86,6 +86,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      */
     private static final long serialVersionUID = 1L;
     public ReferenceQR qrFacture = null;
+    public List<ReferenceQR> qrFactures = new ArrayList<>();
 
     /**
      * <H1>Description</H1>
@@ -837,7 +838,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public void afterExecuteReport() {
         super.afterExecuteReport();
         try {
-            GenerationQRCode.deleteQRCodeImage();
+            GenerationQRCode.deleteQRCodeImages(qrFactures);
         } catch (IOException e) {
             this.log("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage());
         }

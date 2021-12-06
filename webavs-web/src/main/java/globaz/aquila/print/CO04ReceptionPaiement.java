@@ -212,7 +212,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                 // Initialisation des variables du document
                 initVariableQR(bvr);
                 // Génération du document QR
-                qrFacture.initQR(this);
+                qrFacture.initQR(this, qrFactures);
             } else {
                 initBVR(bvr);
             }

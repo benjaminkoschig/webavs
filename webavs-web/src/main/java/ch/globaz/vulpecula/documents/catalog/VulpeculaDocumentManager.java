@@ -76,7 +76,7 @@ public abstract class VulpeculaDocumentManager<T extends Serializable> extends D
     public void afterExecuteReport() {
         super.afterExecuteReport();
         try {
-            GenerationQRCode.deleteQRCodeImage();
+            GenerationQRCode.deleteQRCodeImages(qrFactures);
         } catch (IOException e) {
             getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
         }

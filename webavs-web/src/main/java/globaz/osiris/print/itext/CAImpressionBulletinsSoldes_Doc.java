@@ -563,7 +563,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     initVariableQR(compteAnnexe.getTiers().getLangueISO(), new FWCurrency(_getMontantApresCompensation()), sectionCourante.getSection().getCompteAnnexe().getIdTiers());
 
                     // Génération du document QR
-                    qrFacture.initQR(this);
+                    qrFacture.initQR(this, qrFactures);
                     if (isMuscaSource) {
                         referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
                     }

@@ -248,7 +248,7 @@ public class CFPremierRappel_Doc extends FWIScriptDocument {
                 // Initialisation des variables du document
                 rappel.initVariableQR(rappel.getTiers().getLangueISO(), new FWCurrency(rappel.getMontant()), rappel.getTiers().getIdTiers());
                 // Génération du document QR
-                rappel.getQrFacture().initQR(this);
+                rappel.getQrFacture().initQR(this, rappel.getQrFactures());
             } else {
                 initBVR();
             }

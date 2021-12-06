@@ -1,5 +1,6 @@
 package ch.globaz.common.util;
 
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -21,12 +22,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumMap;
+import java.util.List;
 
 public class GenerationQRCode {
 
     private static final String OVERLAY_IMAGE = "images/CH-Kreuz_7mm.png";
 
-    private static final String TARGET_FINAL_NAME = "work/qrCode.png";
+    private static final String TARGET_FINAL_NAME = "qrCode";
+    private static final String TARGET_FINAL_EXTENSION = ".png";
 
     private static final int SWISS_CROSS_EDGE_SIDE_PX = 166;
 
@@ -45,7 +48,7 @@ public class GenerationQRCode {
      * @param payload : le contenu du QR Code.
      * @return le chemin vers l'image du QR code créé.
      */
-    public static String generateSwissQrCode(String payload) {
+    public static String generateSwissQrCode(ReferenceQR referenceQR, String payload) {
 
         // generate the qr code from the payload.
         BufferedImage qrCodeImage = generateQrCodeImage(payload);
@@ -53,8 +56,8 @@ public class GenerationQRCode {
         try {
             // overlay the qr code with a Swiss Cross
             BufferedImage combinedQrCodeImage = overlayWithSwissCross(qrCodeImage);
-
-            qrCodePath = JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + TARGET_FINAL_NAME, '\\', '/');
+            String filePath = referenceQR.getWorkApplicationPath() + TARGET_FINAL_NAME + "_" + referenceQR.getUID() + TARGET_FINAL_EXTENSION;
+            qrCodePath = JadeStringUtil.change(filePath, '\\', '/');
 
             // Save as new file to the target location
             ImageIO.write(combinedQrCodeImage, "PNG", new File(qrCodePath));
@@ -112,11 +115,15 @@ public class GenerationQRCode {
     }
 
     /**
-     * Méthode permettant de supprimer l'image temporaire du QR Code créée.
+     * Méthode permettant de supprimer les images temporaires de QR Code créées.
      */
-    public static void deleteQRCodeImage() throws IOException {
-        String pathString = JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + TARGET_FINAL_NAME, '\\', '/');
-        Path qrCodePath = FileSystems.getDefault().getPath(pathString);
-        Files.deleteIfExists(qrCodePath);
+    public static void deleteQRCodeImages(List<ReferenceQR> qrFactures) throws IOException {
+        for(ReferenceQR referenceQR : qrFactures) {
+            String filePath = referenceQR.getWorkApplicationPath() + TARGET_FINAL_NAME + "_" + referenceQR.getUID() + TARGET_FINAL_EXTENSION;
+            String pathString = JadeStringUtil.change(filePath, '\\', '/');
+            Path qrCodePath = FileSystems.getDefault().getPath(pathString);
+            Files.deleteIfExists(qrCodePath);
+        }
+        qrFactures.clear();
     }
 }

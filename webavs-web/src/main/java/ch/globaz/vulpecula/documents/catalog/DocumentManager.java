@@ -81,6 +81,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
 
     // Ajout pour QR Facture
     protected ReferenceQR qrFacture = null;
+    protected List<ReferenceQR> qrFactures = new ArrayList<>();
     protected TypeSection typeSection = TypeSection.BULLETIN_NEUTRE;
 
     private T element;
