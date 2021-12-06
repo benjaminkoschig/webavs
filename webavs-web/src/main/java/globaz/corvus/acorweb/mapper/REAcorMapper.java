@@ -62,6 +62,7 @@ public class REAcorMapper {
 
     public static final int MONTHS_IN_YEAR = 12;
     private static final int CODE_SPECIAL_AJOURNEMENT = 8;
+    private static final int CODE_SPECIAL_INCARCERATION = 7;
     public static final String RENTE_SURVIVANT_PARENT = "3";
 
     public static ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
@@ -563,7 +564,8 @@ public class REAcorMapper {
 
         // Traitement des prestations dues...
         Rente rente = chaquePrestation.getRente();
-        boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+        // Dans le cas d'un ajournement ou d'une incarcération, le montant de la prestation doit être à zéro
+        boolean renseignerMontantPrestation = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT && value != CODE_SPECIAL_INCARCERATION);
         returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
         Rente.Versement versement = rente.getVersement();
         // Si versement est non null, on est sur un $t (total)
@@ -585,7 +587,7 @@ public class REAcorMapper {
             }
             pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
             pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-            if (nonAjournement) {
+            if (renseignerMontantPrestation) {
                 pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
             }
             pd.setCsTypePaiement(null);
@@ -594,7 +596,7 @@ public class REAcorMapper {
         }
 
         for (Rente.Etat eachEtat : rente.getEtat()) {
-            REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+            REPrestationDue pd = importPrestationsDues(session, eachEtat, renseignerMontantPrestation);
 
             pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
             pd.add(transaction);
@@ -647,7 +649,8 @@ public class REAcorMapper {
             // Traitement des prestations dues...
             Rente rente = eachPrestation.getRente();
             if (Objects.nonNull(rente)) {
-                boolean nonAjournement = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT);
+                // Dans le cas d'un ajournement ou d'une incarcération, le montant de la prestation doit être à zéro
+                boolean renseignerMontantPrestation = rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT && value != CODE_SPECIAL_INCARCERATION);
                 returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
                 Rente.Versement versement = rente.getVersement();
                 // Si versement est non null, on est sur un $t (total)
@@ -669,7 +672,7 @@ public class REAcorMapper {
                     }
                     pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
                     pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
-                    if (nonAjournement) {
+                    if (renseignerMontantPrestation) {
                         pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
                     }
                     pd.setCsTypePaiement(null);
@@ -678,7 +681,7 @@ public class REAcorMapper {
                 }
 
                 for (Rente.Etat eachEtat : rente.getEtat()) {
-                    REPrestationDue pd = importPrestationsDues(session, eachEtat, nonAjournement);
+                    REPrestationDue pd = importPrestationsDues(session, eachEtat, renseignerMontantPrestation);
 
                     pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
                     pd.add(transaction);
@@ -753,10 +756,15 @@ public class REAcorMapper {
 //        bc.setDroitApplique(REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE"));  $b37
         bc.setDroitApplique(IREDemandeRente.REVISION_10EME_REVISION);
 
-//        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU")));
         bc.setIsPartageRevenuActuel(!evenement.getSplitting().isEmpty());
 
+        boolean horsAI = false;
+
         if (Objects.nonNull(baseCalcul.getBaseRam())) {
+
+            // On check si la ram hors AI est meilleure.
+            horsAI = baseCalcul.getBaseRam().isHorsAi();
+
             if (Objects.nonNull(baseCalcul.getBaseRam().getBass())) {
                 //        bc.setAnneeBonifTacheAssistance(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
                 bc.setAnneeBonifTacheAssistance(Objects.toString(baseCalcul.getBaseRam().getBass().getAnDecimal(), StringUtils.EMPTY));
@@ -775,15 +783,27 @@ public class REAcorMapper {
                 //        bc.setRevenuSplitte(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_SPLITTE"))); $b38
                 bc.setRevenuSplitte(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
 
-                //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
-                if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr().getFacRev())) {
+
+                if (horsAI && Objects.nonNull(baseCalcul.getBaseRam().getRevLucr().getFacRevHai())) {
+                    bc.setFacteurRevalorisation(String.format("%.03f", baseCalcul.getBaseRam().getRevLucr().getFacRevHai()));
+                } else if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr().getFacRev())) {
+                    //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
                     bc.setFacteurRevalorisation(String.format("%.03f", baseCalcul.getBaseRam().getRevLucr().getFacRev()));
                 } else {
                     bc.setFacteurRevalorisation(StringUtils.EMPTY);
                 }
 
-                //        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
-                bc.setDureeRevenuAnnuelMoyen(PRConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
+                if (horsAI) {
+                    bc.setDureeRevenuAnnuelMoyen(PRConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDureeHai()));
+                    bc.setSupplementCarriere(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getSupCarrHai(), StringUtils.EMPTY));
+                } else {
+                    //        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
+                    bc.setDureeRevenuAnnuelMoyen(PRConverterUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
+                    //        bc.setSupplementCarriere(REACORAbstractFlatFileParser.getField(line, fields, "POURCENT_SUPP_CARRIERE")); $b43
+                    bc.setSupplementCarriere(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getSupCarr(), StringUtils.EMPTY));
+                }
+
+
             }
         }
         //        bc.setAnneeDeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU")); $b10
@@ -816,15 +836,18 @@ public class REAcorMapper {
         // Donnée RAM
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
-        bc.setRevenuAnnuelMoyen(Objects.toString(baseCalcul.getRam(), StringUtils.EMPTY));
+
+        if (horsAI) {
+            bc.setRevenuAnnuelMoyen(Objects.toString(baseCalcul.getRamHai(), StringUtils.EMPTY));
+        } else {
+            bc.setRevenuAnnuelMoyen(Objects.toString(baseCalcul.getRam(), StringUtils.EMPTY));
+        }
         if (Objects.nonNull(premierePrestation.getRente()) && !premierePrestation.getRente().getEtat().isEmpty()) {
             Rente.Etat dernierEtat = premierePrestation.getRente().getEtat().get(premierePrestation.getRente().getEtat().size() - 1);
             bc.setAnneeTraitement(Objects.toString(dernierEtat.getAn(), StringUtils.EMPTY));
             bc.setRevenuAnnuelMoyen(Objects.toString(dernierEtat.getRam(), StringUtils.EMPTY));
         }
 
-        //        bc.setSupplementCarriere(REACORAbstractFlatFileParser.getField(line, fields, "POURCENT_SUPP_CARRIERE")); $b43
-        bc.setSupplementCarriere(Objects.toString(baseCalcul.getSupCar(), StringUtils.EMPTY));
         // Récupération des durées de cotisation
         if (Objects.nonNull(baseCalcul.getBaseEchelle())) {
             //        bc.setAnneeCotiClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COTI_CLASSE_AGE")); $b9
@@ -1132,8 +1155,7 @@ public class REAcorMapper {
 //        String d = REACORAbstractFlatFileParser.getField(line, fields, "FIN_DROIT_ECHEANCE"); $r28
         String d = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getFinPrevue(), StringUtils.EMPTY));
 
-        // On rajoute 1 mois à la date d'echeance par rapport à celle
-        // remontée de ACOR
+        // On rajoute 1 mois à la date d'echeance par rapport à celle remontée de ACOR
         if (!JadeStringUtil.isBlankOrZero(d)) {
             ra.setDateFinDroitPrevueEcheance(d);
             ra.setDateEcheance(d);
@@ -1165,7 +1187,7 @@ public class REAcorMapper {
         }
 
 //        ra.setMontantPrestation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_PRESTATION")); $r12
-        if (rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT)) {
+        if (rente.getCodeCasSpecial().stream().allMatch(value -> value != CODE_SPECIAL_AJOURNEMENT && value != CODE_SPECIAL_INCARCERATION)) {
             ra.setMontantPrestation(Objects.toString(dernierEtat.getMontant(), StringUtils.EMPTY));
         }
 
@@ -1265,7 +1287,7 @@ public class REAcorMapper {
      */
     private static REPrestationDue importPrestationsDues(final BSession session,
                                                          final Rente.Etat etat,
-                                                         final boolean isNonAjournement) {
+                                                         final boolean renseignerMontantPrestation) {
         REPrestationDue pd = new REPrestationDue();
         pd.setSession(session);
         pd.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
@@ -1278,7 +1300,7 @@ public class REAcorMapper {
         pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getDebut(), StringUtils.EMPTY)));
         pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(etat.getFin(), StringUtils.EMPTY)));
         //        pd.setMontant(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT")); $p6
-        if (isNonAjournement) {
+        if (renseignerMontantPrestation) {
             pd.setMontant(Objects.toString(etat.getMontant(), StringUtils.EMPTY));
         }
         //        pd.setRam(REACORAbstractFlatFileParser.getField(line, fields, "RAM")); $p7
@@ -1349,13 +1371,21 @@ public class REAcorMapper {
                     String an2 = null;
                     String an4 = null;
                     FCalcul.Evenement.BasesCalcul.BaseRam.Bte bte = null;
+                    boolean horsAI = false;
                     if (Objects.nonNull(eachBaseCalcul.getBaseRam())) {
                         bte = eachBaseCalcul.getBaseRam().getBte();
+                        horsAI = eachBaseCalcul.getBaseRam().isHorsAi();
                     }
                     if (Objects.nonNull(bte)) {
-                        an1 = Objects.toString(bte.getAn1(), StringUtils.EMPTY);
-                        an2 = Objects.toString(bte.getAn2(), StringUtils.EMPTY);
-                        an4 = Objects.toString(bte.getAn4(), StringUtils.EMPTY);
+                        if (horsAI) {
+                            an1 = Objects.toString(bte.getAn1Hai(), StringUtils.EMPTY);
+                            an2 = Objects.toString(bte.getAn2Hai(), StringUtils.EMPTY);
+                            an4 = Objects.toString(bte.getAn4Hai(), StringUtils.EMPTY);
+                        } else {
+                            an1 = Objects.toString(bte.getAn1(), StringUtils.EMPTY);
+                            an2 = Objects.toString(bte.getAn2(), StringUtils.EMPTY);
+                            an4 = Objects.toString(bte.getAn4(), StringUtils.EMPTY);
+                        }
                     }
                     String tauxReductionAnticipation = null;
                     if (Objects.nonNull(eachBaseCalcul.getAnticipation()) && !eachBaseCalcul.getAnticipation().getTranche().isEmpty())

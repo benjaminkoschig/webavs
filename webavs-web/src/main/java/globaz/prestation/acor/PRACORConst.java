@@ -104,6 +104,7 @@ public class PRACORConst {
     public static final String CA_PERIODE_EXEMPTION_COTISATION = "ex";
     public static final String CA_PERIODE_GARDE_ETC_BTE = "be";
     public static final String CA_PERIODE_NATIONALITE_SUISSE = "na";
+    public static final String CA_PERIODE_INCARCERATION = "in";
 
     public static final String CA_PERIODE_REFUS_AF = "fa";
     public static final String CA_PERIODE_TRAVAIL_EN_SUISSE = "tr";

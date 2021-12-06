@@ -117,11 +117,11 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         ISFPeriode[] periodes = recupererPeriodesMembre(membre);
         for (ISFPeriode isfPeriode : periodes) {
             // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
-            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
+            if (isPeriodeBTE(isfPeriode)) {
                 enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
+            } else if (isPeriodeEnfant(isfPeriode)) {
                 enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
-            } else if (isWrongRefus(isfPeriode)) {
+            } else if (isPeriodeRefusAF(isfPeriode)) {
                 PeriodeEnfantType periode = createPeriodeEnfant(enfant, isfPeriode);
                 enfant.getPeriode().add(periode);
             } else if (getEnumPeriodeEnfantType(isfPeriode) != null) {
@@ -129,6 +129,18 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
                 enfant.getPeriode().add(periodeEnfantType);
             }
         }
+    }
+
+    private boolean isPeriodeBTE(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_GARDE_ETC_BTE, isfPeriode.getType());
+    }
+
+    private boolean isPeriodeEnfant(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_ENFANT_RECUEILLI_GRATUITEMENT, isfPeriode.getType());
+    }
+
+    private boolean isPeriodeRefusAF(final ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_REFUS_AF, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_REFUS_AF, isfPeriode.getType());
     }
 
     private PeriodeEnfantType createPeriodeEnfant(final EnfantType enfant, final ISFPeriode isfPeriode) {
@@ -191,11 +203,6 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         return ch.globaz.hera.business.constantes.ISFPeriode.CS_TYPE_PERIODE_REFUS_AF.equals(isfPeriode.getType());
     }
 
-
-    private boolean isWrongRefus(final ISFPeriode isfPeriode) {
-        return isfPeriode.getType().equals(PRACORConst.CA_PERIODE_REFUS_AF);
-    }
-
     private PeriodeEnfantType createPeriodeEnfantType(ISFPeriode isfPeriode) {
         PeriodeEnfantType periode = new PeriodeEnfantType();
         periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
@@ -207,10 +214,13 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
     private PeriodeEnfantTypeEnum getEnumPeriodeEnfantType(ISFPeriode isfPeriode) {
         switch (isfPeriode.getType()) {
             case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
+            case PRACORConst.CA_PERIODE_DOMICILE_EN_SUISSE:
                 return PeriodeEnfantTypeEnum.DOMICILE;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
+            case PRACORConst.CA_PERIODE_NATIONALITE_SUISSE:
                 return PeriodeEnfantTypeEnum.NATIONALITE;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
+            case PRACORConst.CA_PERIODE_ETUDE:
                 return PeriodeEnfantTypeEnum.ETUDE;
             default:
                 return null;

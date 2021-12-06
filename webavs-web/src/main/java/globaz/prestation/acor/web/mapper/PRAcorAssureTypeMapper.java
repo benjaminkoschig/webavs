@@ -85,16 +85,29 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
         }
 
         for (ISFPeriode isfPeriode : periodes) {
-            if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_IJ, isfPeriode.getType())) {
+            if (isPeriodeIJ(isfPeriode)) {
                 assure.getPeriodeIJ().add(createPeriodeIJ(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType())) {
+            } else if (isPeriodeTravaille(isfPeriode)) {
                 assure.getPeriodeTravail().add(createPeriodeTravailType(isfPeriode));
-            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType())) {
+            } else if (isPeriodeAssuranceEtrangere(isfPeriode)) {
                 assure.getPeriodeEtrangere().add(createPeriodeEtrangerType(isfPeriode));
             } else if (getEnumPeriodeType(isfPeriode) != null) {
                 assure.getPeriode().add(createPeriodeType(isfPeriode));
             }
         }
+    }
+
+
+    private boolean isPeriodeIJ(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_IJ, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_AU_BENEFICE_IJ, isfPeriode.getType());
+    }
+
+    private boolean isPeriodeTravaille(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType()) || StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType());
+    }
+
+    private boolean isPeriodeAssuranceEtrangere(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType()) || StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType());
     }
 
     private PeriodeTravailType createPeriodeTravailType(ISFPeriode isfPeriode) {
@@ -136,16 +149,22 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
     private PeriodeTypeEnum getEnumPeriodeType(ISFPeriode isfPeriode) {
         switch (isfPeriode.getType()) {
             case ISFSituationFamiliale.CS_TYPE_PERIODE_DOMICILE:
+            case PRACORConst.CA_PERIODE_DOMICILE_EN_SUISSE:
                 return PeriodeTypeEnum.DOMICILE;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_NATIONALITE:
+            case PRACORConst.CA_PERIODE_NATIONALITE_SUISSE:
                 return PeriodeTypeEnum.NATIONALITE;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_INCARCERATION:
+            case PRACORConst.CA_PERIODE_INCARCERATION:
                 return PeriodeTypeEnum.INCARCERATION;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE:
+            case PRACORConst.CA_PERIODE_ETUDE:
                 return PeriodeTypeEnum.ETUDE;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_AFFILIATION:
+            case PRACORConst.CA_PERIODE_AFFILIATION_ASSURANCE_FACULTATIVE:
                 return PeriodeTypeEnum.AFAC;
             case ISFSituationFamiliale.CS_TYPE_PERIODE_COTISATION:
+            case PRACORConst.CA_PERIODE_EXEMPTION_COTISATION:
                 return PeriodeTypeEnum.EXEMPTION;
             default:
                 return null;
