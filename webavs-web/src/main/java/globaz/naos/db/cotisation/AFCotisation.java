@@ -993,7 +993,7 @@ public class AFCotisation extends BEntity {
 
                                 _addError(
                                         transaction,
-                                        FWMessageFormat.format(getSession().getLabel("1200 "), getDateDebut(),
+                                        FWMessageFormat.format(getSession().getLabel("1200"), getDateDebut(),
                                                 getDateFin(), cotisation.getDateDebut())
                                                 + " pour l'assurance "
                                                 + cotisation.getAssurance().getAssuranceLibelle());
