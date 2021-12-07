@@ -763,7 +763,9 @@ public class REAcorMapper {
         if (Objects.nonNull(baseCalcul.getBaseRam())) {
 
             // On check si la ram hors AI est meilleure.
-            horsAI = baseCalcul.getBaseRam().isHorsAi();
+            if (Objects.nonNull(baseCalcul.getBaseRam().isHorsAi())) {
+                horsAI = baseCalcul.getBaseRam().isHorsAi();
+            }
 
             if (Objects.nonNull(baseCalcul.getBaseRam().getBass())) {
                 //        bc.setAnneeBonifTacheAssistance(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
@@ -1374,7 +1376,9 @@ public class REAcorMapper {
                     boolean horsAI = false;
                     if (Objects.nonNull(eachBaseCalcul.getBaseRam())) {
                         bte = eachBaseCalcul.getBaseRam().getBte();
-                        horsAI = eachBaseCalcul.getBaseRam().isHorsAi();
+                        if (Objects.nonNull(eachBaseCalcul.getBaseRam().isHorsAi())) {
+                            horsAI = eachBaseCalcul.getBaseRam().isHorsAi();
+                        }
                     }
                     if (Objects.nonNull(bte)) {
                         if (horsAI) {
