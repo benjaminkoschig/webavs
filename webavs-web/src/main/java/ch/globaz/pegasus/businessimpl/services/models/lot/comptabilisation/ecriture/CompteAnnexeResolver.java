@@ -1,5 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import ch.globaz.osiris.business.service.CABusinessServiceLocator;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.external.models.osiris.CompteAnnexe;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.HashMap;
@@ -7,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
+import globaz.jade.common.Jade;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.osiris.db.comptes.CACompteAnnexeManager;
+import globaz.osiris.external.IntRole;
 
 /**
  * 
@@ -77,6 +85,14 @@ public class CompteAnnexeResolver {
 
         if (CompteAnnexeResolver.instance.byIdCompteAnnexe.containsKey(idCompteAnnexe)) {
             return CompteAnnexeResolver.instance.byIdCompteAnnexe.get(idCompteAnnexe);
+        }
+        try {
+            CompteAnnexeSimpleModel compteAnnexeSimpleModel = CABusinessServiceLocator.getCompteAnnexeService().read(idCompteAnnexe);
+            if(compteAnnexeSimpleModel != null && !JadeStringUtil.isBlankOrZero(compteAnnexeSimpleModel.getIdTiers())){
+                return compteAnnexeSimpleModel;
+            }
+        } catch (Exception e) {
+            throw new ComptabiliserLotException("resolveByIdCompteAnnexe : "+ e.getMessage());
         }
         throw new ComptabiliserLotException("Any comptesAnnexe founded for this idCompteAnnexe :" + idCompteAnnexe);
     }
