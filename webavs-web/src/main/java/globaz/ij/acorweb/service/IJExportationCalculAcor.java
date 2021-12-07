@@ -336,7 +336,6 @@ class IJExportationCalculAcor {
 
     private void mapRevenuMensuelFpi(BasesCalculCouranteIJ basesCalculCouranteIJ, IJFpiJointRevenu ijRevenu) {
         if (ijRevenu != null && !JadeStringUtil.isBlankOrZero(ijRevenu.getRevenu())) {
-            String revenu = ijRevenu.getRevenu();
             BasesCalculRevenusIJ basesCalculRevenusIJ = new BasesCalculRevenusIJ();
             basesCalculRevenusIJ.setId(ijRevenu.getId());
             basesCalculRevenusIJ.setRevenu(Double.parseDouble(ijRevenu.getRevenu()));
@@ -348,7 +347,6 @@ class IJExportationCalculAcor {
             basesCalculCouranteIJ.getRevenus().add(basesCalculRevenusIJ);
         }
     }
-
 
     private DemandeType toDemande(PRTiersWrapper tiersRequerant, IJPrononce prononce, BSession session) {
         PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(session, tiersRequerant);

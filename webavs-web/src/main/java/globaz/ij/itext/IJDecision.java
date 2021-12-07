@@ -1,5 +1,6 @@
 package globaz.ij.itext;
 
+import ch.globaz.common.util.Dates;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -168,7 +169,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     /**
      * Donne le montant journalier arrondi au franc supp. correspondant a la situation professionnelle
      *
-     * @param repartition
+     * @param sitPro
      * @return
      */
     static public FWCurrency getSalaireAnnuelVerse(IJSituationProfessionnelle sitPro) {
@@ -780,11 +781,14 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             parametres.put("PARAM_ZONE_3", buffer.toString());
 
             // Remplissage de la remarque (PARAM_ZONE_4)
-
             buffer.setLength(0);
 
             buffer.append(document.getTextes(5).getTexte(1).getDescription());
-
+            // Ajout remarque pour personne salariée de moins de 18 l'année du prononcé pour FPI.
+            // (art. 3 al. S LAVS), personne ne payant pas de cotisation.
+            if(prononce.isFpi() && Dates.isAnneeMajeur(prononce.getDatePrononce(), tiers.getDateNaissance())) {
+                buffer.append(document.getTextes(5).getTexte(2).getDescription());
+            }
             buffer.append(CTHtmlConverter.htmlToIText(documentProperties.getParameter("remarque"), getSession()
                     .getApplication().getProperty(CommonProperties.KEY_NO_CAISSE)));
 
@@ -1119,10 +1123,25 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 // Insertion du motif
                 buffer.setLength(0);
+                String code = "";
+                // Pour les FPI, le motif est basé sur situation assurée du prononce
+                if(prononce.isFpi()){
+                    IJFpi fpi = new IJFpi();
+                    fpi.setSession(getSession());
+                    fpi.setIdPrononce(prononce.getIdPrononce());
+                    fpi.retrieve();
+                    code = getLibelleDepuisCodeSystem(fpi.getCsSituationAssure());
+                }else{
+                    // Pour les autres types d'IJ, le motif est basé sur le genre de réadaptation du prononce
+                    code = getLibelleDepuisCodeSystem(prononce.getCsGenre());
+                }
                 buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                        "{valeurMotif}", getLibelleGenreReadaptation(prononce.getCsGenre())));
+                        "{valeurMotif}", code));
+
 
                 headerChamps.put("PARAM_TITRE_MOTIF", buffer.toString());
+
+
 
                 // Recherche de l'indemnite journalière pour l'IJ courante
                 IJIndemniteJournaliereManager ijIndemniteJournaliereManager = new IJIndemniteJournaliereManager();
@@ -1201,6 +1220,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 boolean isMaxPetiteIJ = false;
                 BigDecimal montantTotalPlafonne = new BigDecimal(0);
 
+                // TODO - JJO - 01.12.2021 : Adaptation texte base de calcul pour FPI. Chap 3.14 Spec
                 // Déclaration d'un buffer Base de calcul, dédié à la bande
                 // Group2footer du rapport
                 StringBuffer bufferBaseCalcul = new StringBuffer();
@@ -1209,25 +1229,33 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 // Recherche de la grande ou petite IJCalculee pour l'IJCalculee
                 // courante
-                IJIJCalculee ijGrandePetiteIjCalculee = null;
+                IJIJCalculee ijGrandePetiteFpiIjCalculee = null;
 
-                if (ijijCalculee.getCsTypeIJ().equals(IIJIJCalculee.CS_TYPE_GRANDE_IJ)) {
-                    ijGrandePetiteIjCalculee = new IJGrandeIJCalculee();
-                    ijGrandePetiteIjCalculee.setSession(getSession());
-                    ijGrandePetiteIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
-                    ijGrandePetiteIjCalculee.retrieve();
-                } else {
-                    if (ijijCalculee.getCsTypeIJ().equals(IIJIJCalculee.CS_TYPE_PETITE_IJ)) {
-                        ijGrandePetiteIjCalculee = new IJPetiteIJCalculee();
-                        ijGrandePetiteIjCalculee.setSession(getSession());
-                        ijGrandePetiteIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
-                        ijGrandePetiteIjCalculee.retrieve();
-                    }
+                if (ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_GRANDE_IJ)) {
+                    ijGrandePetiteFpiIjCalculee = new IJGrandeIJCalculee();
+                    ijGrandePetiteFpiIjCalculee.setSession(getSession());
+                    ijGrandePetiteFpiIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
+                    ijGrandePetiteFpiIjCalculee.retrieve();
+                } else if (ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_PETITE_IJ)) {
+                        ijGrandePetiteFpiIjCalculee = new IJPetiteIJCalculee();
+                        ijGrandePetiteFpiIjCalculee.setSession(getSession());
+                        ijGrandePetiteFpiIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
+                        ijGrandePetiteFpiIjCalculee.retrieve();
+                } else if (ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_FPI)){
+                    ijGrandePetiteFpiIjCalculee = new IJFpiCalculee();
+                    ijGrandePetiteFpiIjCalculee.setSession(getSession());
+                    ijGrandePetiteFpiIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
+                    ijGrandePetiteFpiIjCalculee.retrieve();
+                }else{
+                    ijGrandePetiteFpiIjCalculee = new IJIJCalculee();
+                    ijGrandePetiteFpiIjCalculee.setSession(getSession());
+                    ijGrandePetiteFpiIjCalculee.setIdIJCalculee(ijijCalculee.getIdIJCalculee());
+                    ijGrandePetiteFpiIjCalculee.retrieve();
                 }
 
                 // Recherche si prestations enfant
-                if ((ijGrandePetiteIjCalculee != null) && (ijGrandePetiteIjCalculee instanceof IJGrandeIJCalculee)) {
-                    if (!JadeStringUtil.isBlankOrZero(((IJGrandeIJCalculee) ijGrandePetiteIjCalculee)
+                if ((ijGrandePetiteFpiIjCalculee != null) && ((ijGrandePetiteFpiIjCalculee instanceof IJGrandeIJCalculee) || ijGrandePetiteFpiIjCalculee instanceof IJFpiCalculee)) {
+                    if (!JadeStringUtil.isBlankOrZero(((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee)
                             .getMontantIndemniteEnfant())) {
                         isPrestationEnfant = true;
                     }
@@ -1674,7 +1702,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                         if (!ijPetiteIjJointRevenu.isNew()
                                 && IIJPetiteIJCalculee.CS_NOUVELLE_FORME_APRES_INTERRUPTION
-                                .equals(((IJPetiteIJCalculee) ijGrandePetiteIjCalculee).getCsModeCalcul())
+                                .equals(((IJPetiteIJCalculee) ijGrandePetiteFpiIjCalculee).getCsModeCalcul())
                                 && !JadeStringUtil.isBlankOrZero(ijPetiteIjJointRevenu.getRevenu())) {
 
                             bufferBaseCalcul.append(document.getTextes(3).getTexte(21).getDescription());
@@ -1697,7 +1725,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                     // Contrôle si la prestation pour n enfants est plafonnée
                     if (new BigDecimal(ijijCalculee.getMontantBase())
-                            .add(new BigDecimal(((IJGrandeIJCalculee) ijGrandePetiteIjCalculee)
+                            .add(new BigDecimal(((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee)
                                     .getMontantIndemniteEnfant())).compareTo(
                                     new BigDecimal(ijijCalculee.getRevenuDeterminant())) >= 0) {
                         cdtMontantIndemniteEnfant = document.getTextes(2).getTexte(20).getDescription();
@@ -1707,13 +1735,13 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     }
 
                     cdtMontantIndemniteEnfant = PRStringUtils.replaceString(cdtMontantIndemniteEnfant,
-                            IJDecision.CDT_NBENFANT, ((IJGrandeIJCalculee) ijGrandePetiteIjCalculee).getNbEnfants());
+                            IJDecision.CDT_NBENFANT, ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getNbEnfants());
                     buffer.setLength(0);
                     buffer.append(cdtMontantIndemniteEnfant);
                     champs.put("PARAM_MONT_LIBELLE", buffer.toString());
 
                     buffer.setLength(0);
-                    buffer.append(((IJGrandeIJCalculee) ijGrandePetiteIjCalculee).getMontantIndemniteEnfant());
+                    buffer.append(((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant());
 
                     if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
                         champs.put("PARAM_MONT_RED", afficheMntJour(buffer, false));
@@ -1739,7 +1767,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             cdtPrestationEnfant = document.getTextes(3).getTexte(15).getDescription();
                             cdtPrestationEnfant = PRStringUtils.replaceString(cdtPrestationEnfant,
                                     IJDecision.CDT_NBENFANT,
-                                    ((IJGrandeIJCalculee) ijGrandePetiteIjCalculee).getNbEnfants());
+                                    ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getNbEnfants());
 
                             String revenuDeterminantMin = "";
                             if (is2007) {
@@ -1769,7 +1797,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     }
 
                     montantTotalPlafonne = montantTotalPlafonne.add(new BigDecimal(
-                            ((IJGrandeIJCalculee) ijGrandePetiteIjCalculee).getMontantIndemniteEnfant()));
+                            ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant()));
 
                 }
 
@@ -2713,11 +2741,10 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         return iteratorDestinataireCopieEnTete;
     }
 
-    public String getLibelleGenreReadaptation(String csGenreReadaptation) throws Exception {
-
+    public String getLibelleDepuisCodeSystem(String code) throws Exception{
         JadeCodeSystemeService cs = JadeBusinessServiceLocator.getCodeSystemeService();
 
-        JadeCodeSysteme codeSysteme = cs.getCodeSysteme(csGenreReadaptation);
+        JadeCodeSysteme codeSysteme = cs.getCodeSysteme(code);
 
         String myCs = codeSysteme.getTraduction(Langues.getLangueDepuisCodeIso(TITiers.toLangueIso(tiers.getLangue())));
 

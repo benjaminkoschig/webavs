@@ -52,6 +52,7 @@
 	<parameter name="PARAM_FIELD_REMARQUE_VAL" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_DETAIL_NBR_JOUR_INTERNE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_DETAIL_NBR_JOUR_EXTERNE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_FIELD_DETAIL_IJ_SAL_AP" isForPrompting="true" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -61,7 +62,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="159"  isSplitAllowed="false" >
+			<band height="183"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
@@ -147,7 +148,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
-						y="135"
+						y="158"
 						width="386"
 						height="12"
 						forecolor="#000000"
@@ -167,7 +168,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="382"
-						y="123"
+						y="146"
 						width="56"
 						height="12"
 						forecolor="#000000"
@@ -188,7 +189,7 @@
 					<reportElement
 						mode="Opaque"
 						x="382"
-						y="122"
+						y="145"
 						width="126"
 						height="0"
 						forecolor="#000000"
@@ -289,7 +290,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="186"
-						y="48"
+						y="47"
 						width="247"
 						height="12"
 						forecolor="#000000"
@@ -413,7 +414,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="444"
-						y="123"
+						y="146"
 						width="20"
 						height="12"
 						forecolor="#000000"
@@ -435,7 +436,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="465"
-						y="123"
+						y="146"
 						width="42"
 						height="12"
 						forecolor="#000000"
@@ -703,7 +704,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
-						y="147"
+						y="170"
 						width="329"
 						height="12"
 						forecolor="#000000"
@@ -759,6 +760,26 @@
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_DETAIL_NBR_JOUR_EXTERNE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="186"
+						y="121"
+						width="213"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-67"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_DETAIL_IJ_SAL_AP}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

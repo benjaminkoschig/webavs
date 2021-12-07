@@ -227,8 +227,8 @@ INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSL
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52433009, 'D', '9', '9 Betreuungsurlaub', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52433009, 'F', '9', '9 Congé proche aidant', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
-
-
 -- ACOR
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.acor.token.duration','1',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
+-- AJOUT TABLE IJ FPI CALCULEE
+CREATE TABLE IJ_FPI_CALCULEE (ID_FPI_CALCULEE decimal(8), MODE_CALCUL decimal(8), SALAIRE_MENSUEL decimal(15,2), MONTANT_ENFANTS decimal(15, 2), CSPY character(24), PSPY character(24));

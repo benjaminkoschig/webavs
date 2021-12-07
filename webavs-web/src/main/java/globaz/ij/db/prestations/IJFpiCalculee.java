@@ -15,13 +15,11 @@ public class IJFpiCalculee extends IJIJCalculee {
      */
     private static final long serialVersionUID = 1L;
 
-//    public static final String FIELDNAME_CS_MODE_CALCUL = "MODE_CALCUL";
-//    public static final String FIELDNAME_ID_FPI_CALCULEE = "ID_FPI_CALCULEE";
-//    public static final String TABLE_NAME = "IJ_FPI_CALCULEE";
-
-    public static final String FIELDNAME_CS_MODE_CALCUL = "XTTMCA";
-    public static final String FIELDNAME_ID_FPI_CALCULEE = "XTIIJC";
-    public static final String TABLE_NAME = "IJPIJCAL";
+    public static final String FIELDNAME_CS_MODE_CALCUL = "MODE_CALCUL";
+    public static final String FIELDNAME_ID_FPI_CALCULEE = "ID_FPI_CALCULEE";
+    public static final String FIELDNAME_SALAIRE_MENSUEL = "SALAIRE_MENSUEL";
+    public static final String FIELDNAME_MONTANT_ENFANTS = "MONTANT_ENFANTS";
+    public static final String TABLE_NAME = "IJ_FPI_CALCULEE";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -56,10 +54,8 @@ public class IJFpiCalculee extends IJIJCalculee {
     // --------------------------------------------------------------------------------------------------------
 
     private String csModeCalcul = "";
-    private String montantBase = "";
     private String montantEnfants = "";
     private String salaireMensuel = "";
-//    private String salaireMensuelGratificationPrestationEnfants = "";
 
     /**
      * @param transaction
@@ -108,6 +104,8 @@ public class IJFpiCalculee extends IJIJCalculee {
     protected void _readProperties(BStatement statement) throws Exception {
         super._readProperties(statement);
         csModeCalcul = statement.dbReadNumeric(FIELDNAME_CS_MODE_CALCUL);
+        montantEnfants = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_MONTANT_ENFANTS, 2);
+        salaireMensuel = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_SALAIRE_MENSUEL, 2);
     }
 
     /**
@@ -153,6 +151,10 @@ public class IJFpiCalculee extends IJIJCalculee {
 
         statement.writeField(FIELDNAME_CS_MODE_CALCUL,
                 _dbWriteNumeric(statement.getTransaction(), csModeCalcul, "csModeCalcul"));
+        statement.writeField(FIELDNAME_MONTANT_ENFANTS,
+                _dbWriteNumeric(statement.getTransaction(), montantEnfants, "montantEnfants"));
+        statement.writeField(FIELDNAME_SALAIRE_MENSUEL,
+                _dbWriteNumeric(statement.getTransaction(), salaireMensuel, "salaireMensuel"));
     }
 
     /**
@@ -211,16 +213,6 @@ public class IJFpiCalculee extends IJIJCalculee {
      */
     public void setCsModeCalcul(String csModeCalcul) {
         this.csModeCalcul = csModeCalcul;
-    }
-
-    @Override
-    public String getMontantBase() {
-        return montantBase;
-    }
-
-    @Override
-    public void setMontantBase(String montantBase) {
-        this.montantBase = montantBase;
     }
 
     public String getMontantEnfants() {

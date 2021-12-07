@@ -93,6 +93,9 @@ public class IJIJCalculeeMapper {
     private IJIJCalculee createAndMapFpi(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJFpiCalculee fpi = new IJFpiCalculee();
 //        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode(IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI, basesCalcul.getFormation().toString(), entityService.getSession()).getIdCodeSysteme());
+        fpi.setMontantBase(Strings.toStringOrNull(basesCalcul.getMontantBase()));
+        fpi.setMontantEnfants(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
+        fpi.setSalaireMensuel(Strings.toStringOrNull(basesCalcul.getMontantMensuel()));
         fpi.setCsTypeIJ(IIJPrononce.CS_FPI);
         return fpi;
     }

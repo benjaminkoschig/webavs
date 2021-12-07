@@ -1,6 +1,7 @@
 package globaz.ij.itext;
 
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.util.Dates;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
@@ -24,6 +25,8 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.ij.api.codesystem.IIJCatalogueTexte;
+import globaz.ij.api.prestations.IIJIJCalculee;
+import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.lots.IJFactureACompenser;
 import globaz.ij.db.lots.IJFactureACompenserManager;
@@ -746,6 +749,9 @@ public class IJDecomptes extends FWIDocumentManager {
             }
 
             parametres.put("PARAM_PIED", buffer.toString());
+
+            // TODO - JJO - 01.12.2022 : Adaptation texte salaire des apprentis pour FPI. Chap 3.15 Spec
+            // Ajout texte sur le nombre d’indemnités prise en compte dans la prestation pour les prononcé FPI
 
             // ajouter les signatures
             buffer.setLength(0);
@@ -1479,13 +1485,34 @@ public class IJDecomptes extends FWIDocumentManager {
                     }
                 }
 
+                // TODO - JJO - 06.12.2021 : Ajout texte apprenti pour fpi avec fraction d'ij seleon chap 3.19 spec S210819_012
+                // Texte apprenti pour fpi.
+                if(prononce.isFpi()){
+                    try {
+                        Integer nbJourTotal = Integer.parseInt(IIJPrestation.JOUR_FPI);
+                        Integer nbJourSuivi = Integer.parseInt(repartition.getNombreJourExternePrestation());
+                        Integer nbJourNonSuivi = nbJourTotal - nbJourSuivi;
+
+                        if (nbJourSuivi >= nbJourTotal) {
+                            champs.put("FIELD_DETAIL_IJ_SAL_AP", document.getTextes(3).getTexte(50).getDescription());
+                        } else {
+                            champs.put("FIELD_DETAIL_IJ_SAL_AP", PRStringUtils.replaceString(document
+                                    .getTextes(3).getTexte(55).getDescription(), "{nombreJourIndemnise}", nbJourNonSuivi + "/" + nbJourTotal));
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        getMemoryLog().logMessage("IJDecompte createDataSource():" + e.getMessage(), FWMessage.ERREUR,
+                                "IJDecomptes");
+                    }
+                }
+
                 // --------------------------------------------------------------------------------------------------------
                 // le total
                 // -----------------------------------------------------------------------------------------------
                 champs.put("FIELD_TOTAL_REPARTITION", document.getTextes(3).getTexte(7).getDescription());
-
                 champs.put("FIELD_MONTANT_REPARTITION", PRStringUtils.replaceString(document.getTextes(3).getTexte(18)
                         .getDescription(), "{montantTotal}", JANumberFormatter.formatNoRound(total.toString())));
+
 
                 // --------------------------------------------------------------------------------------------------------
                 // les remarques
