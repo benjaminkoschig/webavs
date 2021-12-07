@@ -27,13 +27,15 @@ public enum APStep1Rules {
     R_401,
     R_402,
     R_403,
-    //R_404,
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
+    // R_404,
     R_406,
     R_407,
     R_408,
     R_409,
     R_410,
     R_411,
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
     //R_412,
     R_413,
     R_414,
@@ -43,6 +45,7 @@ public enum APStep1Rules {
     R_501,
     R_502,
     R_503,
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
     //R_504,
     R_505,
     R_507,

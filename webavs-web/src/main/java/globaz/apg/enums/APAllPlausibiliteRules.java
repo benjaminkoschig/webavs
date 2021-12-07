@@ -60,6 +60,7 @@ public enum APAllPlausibiliteRules {
     R_401(false, 401),
     R_402(false, 402),
     R_403(false, 403),
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
     //R_404(false, 404),
     R_405(false, 405),
     R_406(false, 406),
@@ -68,6 +69,7 @@ public enum APAllPlausibiliteRules {
     R_409(false, 409),
     R_410(false, 410),
     R_411(false, 411),
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
     //R_412(false, 412),
     R_413(false, 413),
     R_414(false, 414),
@@ -83,6 +85,7 @@ public enum APAllPlausibiliteRules {
     R_501(true, 501),
     R_502(true, 502),
     R_503(true, 503),
+    // Règle plus utilisée (on garde la classe Rule404 au cas où elle serait utilisée à nouveau)
     //R_504(true, 504),
     R_505(true, 505),
     R_507(true, 507),
