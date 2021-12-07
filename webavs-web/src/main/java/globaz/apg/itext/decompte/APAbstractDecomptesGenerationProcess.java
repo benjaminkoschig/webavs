@@ -465,6 +465,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     @Override
     public void beforeBuildReport() {
 
+        revenuAnnuelDeterminant = "";
+
         try {
             Map<String, String> parametres = getImporter().getParametre();
 
