@@ -192,7 +192,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
         csvContent.append(this.getText("al.recapitulatif.entete.montant", langueDocument)).append(";");
         csvContent.append(this.getText("al.recapitulatif.csv.entete.complement", langueDocument)).append(";");
         csvContent.append(" \n");
-
+        boolean droitsVaudAcquisExist = false;
+        boolean droitsVaudAcquis2022Exist = false;
         Iterator iter = listTempRecap.iterator();
         while (iter.hasNext()) {
 
@@ -247,8 +248,33 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
 
             // nombre d'enfants
             csvContent.append(lignesRecap.getNbrEnfant()).append(";");
+
+            // INFOROMD0028 : Si il y a un tarif forcé "Vaud droit acquis" on ajout une '*'
+            DetailPrestationSearchModel detailPrestationSearchModel = new DetailPrestationSearchModel();
+            detailPrestationSearchModel.setForIdEntetePrestation(lignesRecap.getIdEntete());
+            detailPrestationSearchModel = ALImplServiceLocator.getDetailPrestationModelService()
+                    .search(detailPrestationSearchModel);
+            DetailPrestationModel detailPrestationModel = new DetailPrestationModel();
+
+            if (detailPrestationSearchModel.getSize() > 0) {
+                detailPrestationModel = (DetailPrestationModel) detailPrestationSearchModel.getSearchResults()[0];
+            }
             // montant
-            csvContent.append(lignesRecap.getMontant()).append(";");
+            if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS,
+                    detailPrestationModel.getCategorieTarif(), false)) {
+                csvContent.append("* " + lignesRecap.getMontant()).append(";");
+                droitsVaudAcquisExist = true;
+
+            } else if(JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS_2022,
+                    detailPrestationModel.getCategorieTarif(), false)){
+                csvContent.append("* " + lignesRecap.getMontant()).append(";");
+                droitsVaudAcquis2022Exist = true;
+
+            }else{
+
+                csvContent.append(lignesRecap.getMontant()).append(";");
+            }
+
             // complément
             csvContent.append(getStatutDossier(lignesRecap.getStatutDossier(), true, langueDocument)).append(";");
 
@@ -258,6 +284,11 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
 
             // retourne une liste comportant les lignes d'une récapitulatifs
 
+        }
+        String droit_acquis_texte = "al.recapitulatif.infos.recap.droit_acquis_vaud";
+        String droit_acquis_2022_texte = "al.recapitulatif.infos.recap.droit_acquis_vaud_2022";
+        if (droitsVaudAcquisExist || droitsVaudAcquis2022Exist) {
+            csvContent.append(this.getText(droitsVaudAcquis2022Exist ? droit_acquis_2022_texte : droit_acquis_texte, langueDocument) + "\n");
         }
         return csvContent;
     }
@@ -694,9 +725,10 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
         }
         document.add(table);
         String droit_acquis_texte = "al.recapitulatif.infos.recap.droit_acquis_vaud";
+        String droit_acquis_2022_texte = "al.recapitulatif.infos.recap.droit_acquis_vaud_2022";
         if (droitsVaudAcquisExist || droitsVaudAcquis2022Exist) {
             document.addData("recapitulatifEntreprise_texte_droit_acquis_vaud",
-                    this.getText(droitsVaudAcquis2022Exist ? droit_acquis_texte + "_2022" : droit_acquis_texte, langueDocument));
+                    this.getText(droitsVaudAcquis2022Exist ? droit_acquis_2022_texte : droit_acquis_texte, langueDocument));
         }
     }
 }
