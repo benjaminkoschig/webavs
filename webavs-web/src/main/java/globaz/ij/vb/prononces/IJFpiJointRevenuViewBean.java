@@ -4,6 +4,7 @@
 package globaz.ij.vb.prononces;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.ij.api.prononces.IIJMotifFpi;
 import globaz.ij.db.prononces.IJFpiJointRevenu;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -62,6 +63,10 @@ public class IJFpiJointRevenuViewBean extends IJFpiJointRevenu implements FWView
             return "";
         }
 
+    }
+
+    public String getMotifLabel(IIJMotifFpi motif) {
+        return motif.getLabel(getSession());
     }
 
     /**

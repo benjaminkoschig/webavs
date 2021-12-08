@@ -1,4 +1,6 @@
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.ij.api.prononces.IIJMotifFpi" %>
+<%@ page import="globaz.ij.api.prononces.IIJSituationProfessionnelle" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 
@@ -17,31 +19,30 @@ bButtonDelete = false;
 
 <script>
 
-  function add() {
-  	//pas de add ici
-  }
-  function upd() {
-  	document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
-  	document.forms[0].elements('modifie').value="true";
-  }
+	function add() {
+	}
 
-  function validate() {
-    state = true;
-    document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
-  
-    return state;
-  }
+	function upd() {
+		document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
+		document.forms[0].elements('modifie').value="true";
+	}
 
-  function cancel() {
-  }
+	function validate() {
+		state = true;
+		document.forms[0].elements('userAction').value="ij.prononces.fpiJointRevenu.modifier";
 
-  function del() {
-  }
-  
-  	function init(){
-  	
-  	}
-  	
+		return state;
+	}
+
+	function cancel() {
+	}
+
+	function del() {
+	}
+
+	function init(){
+	}
+
   	function arret() {
 		document.forms[0].elements('userAction').value = "ij.prononces.fpiJointRevenu.arreterEtape5";
   		document.forms[0].submit();
@@ -68,9 +69,10 @@ bButtonDelete = false;
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
-							<TD><ct:select name="csSituationAssure" wantBlank="true" defaultValue="<%=viewBean.getCsSituationAssure()%>">
-									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prestations.IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI%>">
-									</ct:optionsCodesSystems>
+							<TD><ct:select name="csSituationAssure" wantBlank="false" defaultValue="<%=viewBean.getCsSituationAssure()%>">
+								<%for (IIJMotifFpi motif : IIJMotifFpi.values()) {%>
+									<ct:option value="<%=motif.getCode()%>" label="<%=viewBean.getMotifLabel(motif)%>" />
+								<%} %>
 								</ct:select></TD>
 						</TR>
 						<TR>
@@ -84,7 +86,12 @@ bButtonDelete = false;
 							<TD><INPUT type="text" name="revenu" value="<%=viewBean.getRevenu()%>"></TD>
 							<TD><ct:FWLabel key="JSP_PERIODICITE"/></TD>
 							<TD><ct:select name="csPeriodiciteRevenu" defaultValue="<%=viewBean.getCsPeriodiciteRevenu()%>">
-									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE%>">										
+									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE%>">
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_HORAIRE %>"/>
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_JOURNALIER %>"/>
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_HORAIRE %>"/>
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_HEBDOMADAIRE %>"/>
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_4_SEMAINES %>"/>
 									</ct:optionsCodesSystems>
 								</ct:select></TD>
 							<TD><ct:FWLabel key="JSP_HEURES_SEMAINE"/></TD>
@@ -93,6 +100,10 @@ bButtonDelete = false;
 						<TR>
 							<TD><ct:FWLabel key="JSP_ANNEE_NIVEAU"/></TD>
 							<TD><INPUT type="text" name="annee" value="<%=viewBean.getAnnee()%>"></TD>
+						</TR>
+						<TR>
+							<TD><ct:FWLabel key="JSP_DEBUT_FORMATION"/></TD>
+							<TD><INPUT type="text" name="dateFormation" value="<%=viewBean.getDateFormation()%>"></TD>
 						</TR>
 						
 
