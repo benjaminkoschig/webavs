@@ -41,6 +41,7 @@ public enum APStep1Rules {
     R_414,
     R_416,
     R_417,
+    r_424,
     R_500,
     R_501,
     R_502,

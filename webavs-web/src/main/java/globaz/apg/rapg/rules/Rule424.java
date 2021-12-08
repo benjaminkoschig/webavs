@@ -36,40 +36,7 @@ public class Rule424 extends Rule{
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException, APWebserviceException, PropertiesException {
         if(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(champsAnnonce.getServiceType())){
-//            APEnfantPanManager enfantPanManager = new APEnfantPanManager();
-//            enfantPanManager.setSession(getSession());
             try{
-//                enfantPanManager.find(BManager.SIZE_NOLIMIT);
-//
-//                ArrayList<String> idDroit = new ArrayList<>();
-//                for(APEnfantPan enfantPan : enfantPanManager.<APEnfantPan>getContainerAsList()){
-//                    if(champsAnnonce.getChildInsurantVn().equals(enfantPan.getNoAVS())){
-//                        idDroit.add(enfantPan.getIdDroit());
-//                    }
-//                }
-//
-//                APPrestationManager prestationManager = new APPrestationManager();
-//                prestationManager.setSession(getSession());
-//                prestationManager.setForIdDroitIn(idDroit);
-//                prestationManager.find(BManager.SIZE_NOLIMIT);
-//
-//                BigDecimal totalApg = new BigDecimal(champsAnnonce.getTotalAPG());
-//
-//                for (APPrestation prestation : prestationManager.<APPrestation>getContainerAsList()) {
-//                    if(isLastVersionDroit(prestation.getIdDroit())){
-//                        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
-//                        apDroitProcheAidant.setIdDroit(prestation.getIdDroit());
-//                        apDroitProcheAidant.setSession(this.getSession());
-//                        apDroitProcheAidant.retrieve();
-//
-//                        if(champsAnnonce.getCareLeaveEventID().equals(CaisseInfoPropertiesWrapper.noCaisseNoAgence() +
-//                                apDroitProcheAidant.getCareLeaveEventID())
-//                                && APGenreServiceAPG.ProcheAidant.getCodeSysteme().equals(
-//                                apDroitProcheAidant.getGenreService())){
-//                            totalApg = totalApg.add(new BigDecimal(prestation.getMontantBrut()));
-//                        }
-//                    }
-//                }
                 BigDecimal totalApg = new BigDecimal(champsAnnonce.getTotalAPG());
                 for (APPrestation prestation:
                         APDroitProcheAidantUtils.getPrestationForCareLeaveEventIdEtNssEnfant(champsAnnonce.getCareLeaveEventID(),
@@ -87,31 +54,5 @@ public class Rule424 extends Rule{
         } else{
             return true;
         }
-    }
-
-    private boolean isLastVersionDroit(String idDroit) throws Exception {
-        APDroitProcheAidant d = new APDroitProcheAidant();
-        d.setIdDroit(idDroit);
-        d.setSession(this.getSession());
-        d.retrieve();
-        if(JadeStringUtil.isBlankOrZero(d.getIdDroitParent())){
-            return true;
-        }
-        return idDroit.equals(getLastVersionDroit(d.getIdDroitParent()));
-    }
-
-    private String getLastVersionDroit(String idDroitParent) throws Exception{
-        APDroitProcheAidantManager m = new APDroitProcheAidantManager();
-        m.setForIdDroitParent(idDroitParent);
-        m.setSession(this.getSession());
-        m.find(BManager.SIZE_NOLIMIT);
-
-        String latestDroitId = "00";
-        for(APDroitProcheAidant d : m.<APDroitProcheAidant>getContainerAsList()){
-            if(Integer.parseInt(d.getIdDroit()) > Integer.parseInt(latestDroitId)){
-                latestDroitId = d.getIdDroit();
-            }
-        }
-        return latestDroitId;
     }
 }
