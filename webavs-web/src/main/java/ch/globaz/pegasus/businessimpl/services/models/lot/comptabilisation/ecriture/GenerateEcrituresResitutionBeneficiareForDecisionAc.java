@@ -63,7 +63,9 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
                        tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),idTiersConjoint);
                        String idCompteAnnexeConjoint = CABusinessServiceLocator.getCompteAnnexeService()
                                .getCompteAnnexe(null, idTiersConjoint, IntRole.ROLE_RENTIER, tiersW.getNSS(), false).getIdCompteAnnexe();
-                       mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
+                       if(!JadeStringUtil.isBlankOrZero(idCompteAnnexeConjoint)){
+                           mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
+                       }
                    }
                } catch (Exception e) {
                    JadeThread.logError(GenerateEcrituresResitutionBeneficiareForDecisionAc.class.getName(),"Error when search NSS for conjoint : "+ e.getMessage());
