@@ -1098,19 +1098,19 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     String finThirdLamatComplementaire = JadeDateUtil.addDays(debutThirdLamatComplementaire, joursThirdPeriodLamatComplementaire - 1);
 
                     // la première période splitté sur laquel on devra procéder à une déduction
-                    if (joursFirstPeriodLamatComplementaire != 0) {
+                    if (joursFirstPeriodLamatComplementaire > 0) {
                         creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
                                 revenuMoyenDeterminant, genrePrestation, debutFirstLamatComplementaire, finFirstLamatComplementaire,
                                 Long.toString(joursFirstPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
                     }
                     // la deuxième période splitté sur laquel on ne devra pas procéder à une déduction
-                    if (joursSecondPeriodLamatComplementaire != 0) {
+                    if (joursSecondPeriodLamatComplementaire > 0) {
                         creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
                                 revenuMoyenDeterminant, genrePrestation, debutSecondLamatComplementaire, finSecondLamatComplementaire,
                                 Long.toString(joursSecondPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
                     }
                     // la troisième période splitté sur laquel on devra procéder à une déduction
-                    if (joursThirdPeriodLamatComplementaire != 0) {
+                    if (joursThirdPeriodLamatComplementaire > 0) {
                         creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
                                 revenuMoyenDeterminant, genrePrestation, debutThirdLamatComplementaire, finThirdLamatComplementaire,
                                 Long.toString(joursThirdPeriodLamatComplementaire), noRevision, isAllocationMax, false, null);
