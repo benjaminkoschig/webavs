@@ -62,7 +62,7 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
                            && !mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)){
                        tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),idTiersConjoint);
                        String idCompteAnnexeConjoint = CABusinessServiceLocator.getCompteAnnexeService()
-                               .getCompteAnnexe(null, idTiersConjoint, IntRole.ROLE_RENTIER, tiersW.getNSS(), false).getIdCompteAnnexe();
+                               .getCompteAnnexe(null, idTiersConjoint, IntRole.ROLE_RENTIER, tiersW.getNSS(), true).getIdCompteAnnexe();
                        if(!JadeStringUtil.isBlankOrZero(idCompteAnnexeConjoint)){
                            mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
                        }
