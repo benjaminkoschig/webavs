@@ -41,7 +41,7 @@ public class REDemandeRenteJointPrestationAccordeeManager extends REDemandeRente
         super._beforeFind(transaction);
 
         if (_getWhere(new BStatement(transaction)).isEmpty()) {
-            throw new REBusinessException("Les critères de recherche sont incomplets.");
+            throw new REBusinessException(transaction.getSession().getLabel("ERROR_CRITERE_RECHERCHE_INSUFFISANT"));
         }
     }
 
