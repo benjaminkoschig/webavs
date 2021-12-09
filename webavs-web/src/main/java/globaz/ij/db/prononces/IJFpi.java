@@ -19,20 +19,17 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
     public static final String FIELDNAME_CS_SITUATION_ASSURE = "SITUATION_ASSURE";
 
     public static final String FIELDNAME_ID_DERNIER_REVENU_OU_MANQUE_A_GAGNER = "ID_DERNIER_REVENU";
-//    public static final String FIELDNAME_SOUMIS_COTISATION_AC = "XGBCAC";
-//    public static final String FIELDNAME_SOUMIS_COTISATION_AVS_AI_APG = "XGBCAV";
+    public static final String FIELDNAME_DATE_FORMATION = "DATE_FORMATION";
+
     public static final String TABLE_NAME_FPI = "IJFPI";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * DOCUMENT ME!
-     * 
+     *
      * @param schema
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
+     *
      */
     public static final String createFromClause(String schema) {
         StringBuffer fromClause = new StringBuffer();
@@ -55,8 +52,7 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
     private String csSituationAssure = "";
     private transient IJRevenu revenu;
     private String idDernierRevenuOuManqueAGagner = "";
-//    private Boolean soumisCotisationAC = Boolean.FALSE;
-//    private Boolean soumisCotisationAVSAIAPG = Boolean.FALSE;
+    private String dateFormation = "";
 
     /**
      * (non-Javadoc)
@@ -64,10 +60,8 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
      * @see globaz.globall.db.BEntity#_beforeAdd(BTransaction)
      * 
      * @param transaction
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -76,12 +70,9 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
     }
 
     /**
-     * DOCUMENT ME!
-     * 
+     *
      * @param statement
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
+     *
      */
     @Override
     protected String _getFrom(BStatement statement) {
@@ -101,7 +92,6 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
     /**
      *
      * @param statement
-     *            DOCUMENT ME!
      * @throws Exception
      */
     @Override
@@ -110,16 +100,13 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
         idPrononce = statement.dbReadNumeric(FIELDNAME_ID_PRONONCE_FPI);
         csSituationAssure = statement.dbReadNumeric(FIELDNAME_CS_SITUATION_ASSURE);
         idDernierRevenuOuManqueAGagner = statement.dbReadNumeric(FIELDNAME_ID_DERNIER_REVENU_OU_MANQUE_A_GAGNER);
-        //        soumisCotisationAVSAIAPG = statement.dbReadBoolean(FIELDNAME_SOUMIS_COTISATION_AVS_AI_APG);
-//        soumisCotisationAC = statement.dbReadBoolean(FIELDNAME_SOUMIS_COTISATION_AC);
+        dateFormation = statement.dbReadDateAMJ(FIELDNAME_DATE_FORMATION);
     }
 
     /**
      * @param statement
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -128,10 +115,8 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
 
     /**
      * @param statement
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
@@ -141,10 +126,8 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
 
     /**
      * @param statement
-     *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
@@ -161,26 +144,14 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
                 FIELDNAME_ID_DERNIER_REVENU_OU_MANQUE_A_GAGNER,
                 _dbWriteNumeric(statement.getTransaction(), idDernierRevenuOuManqueAGagner,
                         "idDernierRevenuOuManqueAGagner"));
-//        statement.writeField(
-//                FIELDNAME_SOUMIS_COTISATION_AC,
-//                _dbWriteBoolean(statement.getTransaction(), soumisCotisationAC, BConstants.DB_TYPE_BOOLEAN_CHAR,
-//                        "soumisCotisationAC"));
-//        statement.writeField(
-//                FIELDNAME_SOUMIS_COTISATION_AVS_AI_APG,
-//                _dbWriteBoolean(statement.getTransaction(), soumisCotisationAVSAIAPG, BConstants.DB_TYPE_BOOLEAN_CHAR,
-//                        "soumisCotisationAVSAIAPG"));
+        statement.writeField(FIELDNAME_DATE_FORMATION, _dbWriteDateAMJ(statement.getTransaction(), dateFormation, "dateFormation"));
     }
 
     /**
-     * DOCUMENT ME!
-     * 
+     *
      * @param action
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     public IPRCloneable duplicate(int action) throws Exception {
@@ -190,9 +161,7 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
 
         clone.setCsSituationAssure(getCsSituationAssure());
         clone.setIdDernierRevenuOuManqueAGagner(getIdDernierRevenuOuManqueAGagner());
-//        clone.setSoumisCotisationAC(getSoumisCotisationAC());
-//        clone.setSoumisCotisationAVSAIAPG(getSoumisCotisationAVSAIAPG());
-
+        clone.setDateFormation(getDateFormation());
         return clone;
     }
 
@@ -214,23 +183,6 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
         return idDernierRevenuOuManqueAGagner;
     }
 
-//    /**
-//     * getter pour l'attribut soumis cotisation AC
-//     *
-//     * @return la valeur courante de l'attribut soumis cotisation AC
-//     */
-//    public Boolean getSoumisCotisationAC() {
-//        return soumisCotisationAC;
-//    }
-//
-//    /**
-//     * getter pour l'attribut soumis cotisation AVSAIAPG
-//     *
-//     * @return la valeur courante de l'attribut soumis cotisation AVSAIAPG
-//     */
-//    public Boolean getSoumisCotisationAVSAIAPG() {
-//        return soumisCotisationAVSAIAPG;
-//    }
 
     /**
      * DOCUMENT ME!
@@ -281,23 +233,11 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
         idDernierRevenuOuManqueAGagner = dernierRevenuOuManqueAGagner;
     }
 
-//    /**
-//     * setter pour l'attribut soumis cotisation AC
-//     *
-//     * @param soumisCotisationAC
-//     *            une nouvelle valeur pour cet attribut
-//     */
-//    public void setSoumisCotisationAC(Boolean soumisCotisationAC) {
-//        this.soumisCotisationAC = soumisCotisationAC;
-//    }
-//
-//    /**
-//     * setter pour l'attribut soumis cotisation AVSAIAPG
-//     *
-//     * @param soumisCotisationAVSAIAPG
-//     *            une nouvelle valeur pour cet attribut
-//     */
-//    public void setSoumisCotisationAVSAIAPG(Boolean soumisCotisationAVSAIAPG) {
-//        this.soumisCotisationAVSAIAPG = soumisCotisationAVSAIAPG;
-//    }
+    public String getDateFormation() {
+        return dateFormation;
+    }
+
+    public void setDateFormation(String dateFormation) {
+        this.dateFormation = dateFormation;
+    }
 }

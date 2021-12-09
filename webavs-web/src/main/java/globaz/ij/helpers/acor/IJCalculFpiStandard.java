@@ -40,32 +40,6 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         calculDatesPrestation(baseIndemnisation, ijCalculee, prestation);
         calculMontantsPrestation(baseIndemnisation, (IJFpiCalculee) ijCalculee, prestation);
 
-//        IJIndemniteJournaliereManager mgr = new IJIndemniteJournaliereManager();
-//        mgr.setSession(session);
-//        mgr.setForIdIJCalculee(ijCalculee.getIdIJCalculee());
-//        mgr.find(transaction);
-//        for (int i = 0; i < mgr.size(); i++) {
-//            IJIndemniteJournaliere elm = (IJIndemniteJournaliere) mgr.getEntity(i);
-//                indemniteExt = elm.getMontantJournalierIndemnite();
-//        }
-//
-//        if ((indemniteExt == null)) {
-//            throw new PRACORException(session.getLabel("AUCUNE_IJ_CALCULEE"));
-//        }
-
-//        IJAttestationsJoursAdapter attestationsJours = new IJAttestationsJoursAdapter(baseIndemnisation, ijCalculee);
-
-//        prestation.setMontantBrutExterne(IJCalculACORDecompteHelper.multiply(indemniteExt,
-//                attestationsJours.getNbJoursExternes()));
-//                attestationsJours.getNbJoursInternes()));
-//        prestation.setNombreJoursExt(attestationsJours.getNbJoursExternes());
-
-//        FWCurrency mbr = new FWCurrency(prestation.getMontantBrutInterne());
-//        mbr.add(prestation.getMontantBrutExterne());
-//        prestation.setMontantBrut(mbr.toString());
-        // on recopie les montants journalier
-        // sauver la sous prestation dans la base
-
         prestation.setSession(session);
         prestation.add(transaction);
 
@@ -157,15 +131,11 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
             // considérer qu'un mois contient toujours 30 jours
             jourNonCompris += jourFPI - fin.getDayOfMonth();
 
-//            if(jourFPI > finMois.getDayOfMonth()) {
-//                // Le mois de février a moins de 30 jours donc prendre 30 jours
-//                jourNonCompris += jourFPI - fin.getDayOfMonth();
-//            } else if(jourFPI < finMois.getDayOfMonth()) {
-//                // mois à 31 jours
-//
-//            } else {
-//                jourNonCompris += finMois.getDayOfMonth() - fin.getDayOfMonth();
-//            }
+        } else if(jourFPI > finMois.getDayOfMonth()
+                && !(fin.getDayOfMonth() == finMois.getDayOfMonth()
+                && debut.getDayOfMonth() == 1)) {
+            // ajouter des jours non compris pour le mois de février si pas un mois complet
+            jourNonCompris += jourFPI - finMois.getDayOfMonth();
         }
 
         if(jourNonCompris > jourFPI) {

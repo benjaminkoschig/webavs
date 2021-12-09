@@ -16,4 +16,5 @@ public interface IIJSituationProfessionnelle {
     public static final String CS_HORAIRE = "52406001";
     public static final String CS_JOURNALIER = "52406002";
     public static final String CS_MENSUEL = "52406005";
+    public static final String CS_MENSUEL_13 = "52406007";
 }

@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.ij.api.prononces.IIJSituationProfessionnelle" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -93,7 +94,8 @@ bButtonDelete = false;
 							<TD><INPUT type="text" name="revenu" value="<%=viewBean.getRevenu()%>"></TD>
 							<TD><ct:FWLabel key="JSP_PERIODICITE"/></TD>
 							<TD><ct:select name="csPeriodiciteRevenu" defaultValue="<%=viewBean.getCsPeriodiciteRevenu()%>">
-									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE%>">										
+									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE%>">
+										<ct:excludeCode code="<%=IIJSituationProfessionnelle.CS_MENSUEL_13 %>"/>
 									</ct:optionsCodesSystems>
 								</ct:select></TD>
 							<TD><ct:FWLabel key="JSP_HEURES_SEMAINE"/></TD>

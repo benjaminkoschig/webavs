@@ -1,9 +1,11 @@
 package globaz.ij.acorweb.mapper;
 
 import acor.ij.xsd.ij.out.FCalcul;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Strings;
 import globaz.ij.api.prestations.IIJPetiteIJCalculee;
+import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prestations.IJFpiCalculee;
 import globaz.ij.db.prestations.IJGrandeIJCalculee;
@@ -92,7 +94,7 @@ public class IJIJCalculeeMapper {
 
     private IJIJCalculee createAndMapFpi(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJFpiCalculee fpi = new IJFpiCalculee();
-//        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode(IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI, basesCalcul.getFormation().toString(), entityService.getSession()).getIdCodeSysteme());
+        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode("IJGENRREA2", String.valueOf(basesCalcul.getGenreReadaptation()), entityService.getSession()).getIdCodeSysteme());
         fpi.setMontantBase(Strings.toStringOrNull(basesCalcul.getMontantBase()));
         fpi.setMontantEnfants(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
         fpi.setSalaireMensuel(Strings.toStringOrNull(basesCalcul.getMontantMensuel()));

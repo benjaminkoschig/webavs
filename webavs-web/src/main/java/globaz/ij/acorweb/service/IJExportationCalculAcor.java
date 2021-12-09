@@ -240,10 +240,9 @@ class IJExportationCalculAcor {
             mapRevenuMensuelDurantRea(basesCalculCouranteIJ, ijRevenu);
         } else if (prononce.isFpi()) {
             IJFpi ijFpi = loadFpi(prononce.getIdPrononce());
-//            basesCalculCouranteIJ.setFormationFPI(Integer.parseInt(session.getCode(ijFpi.getCsSituationAssure())));
-
             IJFpiJointRevenu ijRevenu = loadRevenu(ijFpi);
             mapRevenuMensuelFpi(basesCalculCouranteIJ, ijRevenu);
+            basesCalculCouranteIJ.setDebutFormation(Dates.toXMLGregorianCalendar(ijFpi.getDateFormation()));
 
         }
         Integer statutProf = loadCodeOrNull(session, prononce.getCsStatutProfessionnel());
