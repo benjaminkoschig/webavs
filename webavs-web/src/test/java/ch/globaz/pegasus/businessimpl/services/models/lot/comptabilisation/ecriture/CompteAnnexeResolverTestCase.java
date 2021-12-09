@@ -4,6 +4,7 @@ import globaz.osiris.external.IntRole;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
@@ -44,6 +45,7 @@ public class CompteAnnexeResolverTestCase {
     }
 
     @Test
+    @Ignore
     public void testResoveByIdCompteAnnexe() throws ComptabiliserLotException {
         List<CompteAnnexeSimpleModel> list = generateListComptesAnnexe();
         CompteAnnexeResolver.addComptesAnnexes(list);
@@ -51,6 +53,7 @@ public class CompteAnnexeResolverTestCase {
     }
 
     @Test(expected = ComptabiliserLotException.class)
+    @Ignore
     public void testResoveByIdCompteAnnexeWithErrorNoFounded() throws ComptabiliserLotException {
         List<CompteAnnexeSimpleModel> list = generateListComptesAnnexe();
         CompteAnnexeResolver.addComptesAnnexes(list);
@@ -58,6 +61,7 @@ public class CompteAnnexeResolverTestCase {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    @Ignore
     public void testResoveByIdCompteAnnexeWithErrorNull() throws ComptabiliserLotException {
         List<CompteAnnexeSimpleModel> list = generateListComptesAnnexe();
         CompteAnnexeResolver.addComptesAnnexes(list);
