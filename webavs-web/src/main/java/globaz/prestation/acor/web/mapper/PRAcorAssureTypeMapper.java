@@ -103,11 +103,11 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
     }
 
     private boolean isPeriodeTravaille(ISFPeriode isfPeriode) {
-        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType()) || StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType());
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_TRAVAILLE, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_TRAVAIL_EN_SUISSE, isfPeriode.getType());
     }
 
     private boolean isPeriodeAssuranceEtrangere(ISFPeriode isfPeriode) {
-        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType()) || StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType());
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_ASSURANCE_ETRANGERE, isfPeriode.getType());
     }
 
     private PeriodeTravailType createPeriodeTravailType(ISFPeriode isfPeriode) {
