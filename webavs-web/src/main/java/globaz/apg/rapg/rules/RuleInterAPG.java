@@ -72,8 +72,10 @@ public class RuleInterAPG extends Rule {
                     for (APGenreServiceAPG unGenre : genresServicesVoulus) {
                         csGenreService.add(unGenre.getCodeSysteme());
                     }
-                    for (APGenreServiceAPG unGenre : genresServiceAdditionnels) {
-                        csGenreService.add(unGenre.getCodeSysteme());
+                    if(genresServiceAdditionnels != null) {
+                        for (APGenreServiceAPG unGenre : genresServiceAdditionnels) {
+                            csGenreService.add(unGenre.getCodeSysteme());
+                        }
                     }
                     APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
                     manager.setLikeNumeroAvs(champsAnnonce.getInsurant());
