@@ -39,7 +39,6 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
         LOG.info("RemoteUser : {}", request.getRemoteUser());
         LOG.info("Method : {}", request.getMethod());
         LOG.info("LocalAddr : {}", request.getLocalAddr());
-        LOG.info("RequestedSessionId : {}", request.getRequestedSessionId());
         LOG.info("ServerName : {}", request.getServerName());
         LOG.info("LocalAddr : {}", request.getLocalAddr());
         LOG.info("RemoteAddr : {}", request.getRemoteAddr());
@@ -48,7 +47,7 @@ public class WSExceptionMapper implements ExceptionMapper<Exception> {
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
         responseBuilder.type(MediaType.APPLICATION_JSON_TYPE);
 
-        Optional<ExceptionHandler> exceptionHandler = resolveExceptionHandler(WSConfiguration.INSTANCE);
+        Optional<ExceptionHandler> exceptionHandler = resolveExceptionHandler(WSConfiguration.getInstance());
 
         if (exceptionHandler.isPresent()) {
             return exceptionHandler.get().generateResponse(e, responseBuilder, request);

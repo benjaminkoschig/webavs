@@ -1,6 +1,5 @@
 package ch.globaz.common.ws.configuration;
 
-import lombok.Data;
 import lombok.Value;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +17,6 @@ public class RequestInfo {
     private final String remoteUser;
     private final String method;
     private final String localAddr;
-    private final String requestedSessionId;
     private final String serverName;
     private final String remoteAddr;
     private final String scheme;
@@ -32,7 +30,6 @@ public class RequestInfo {
         this.remoteUser = request.getRemoteUser();
         this.method = request.getMethod();
         this.localAddr = request.getLocalAddr();
-        this.requestedSessionId = request.getRequestedSessionId();
         this.serverName = request.getServerName();
         this.remoteAddr = request.getRemoteAddr();
         this.scheme = request.getScheme();

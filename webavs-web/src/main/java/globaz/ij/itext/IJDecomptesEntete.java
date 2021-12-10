@@ -169,7 +169,6 @@ public class IJDecomptesEntete extends IJDecomptes {
                 docInfo.setDocumentProperty("annee", JADate.getYear(JACalendar.todayJJsMMsAAAA().toString()).toString());
 
             } catch (JAException e) {
-                e.printStackTrace();
                 getMemoryLog().logMessage("IJDecompte afterBuildReport():" + e.getMessage(), FWMessage.ERREUR,
                         "IJDecomptes");
             }
@@ -190,7 +189,6 @@ public class IJDecomptesEntete extends IJDecomptes {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
                 getMemoryLog().logMessage("IJDecompte afterBuildReport():" + e.getMessage(), FWMessage.ERREUR,
                         "IJDecomptes");
             }

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @ApplicationPath("/api")
 public class WSConfiguration extends Application {
-    public static WSConfiguration INSTANCE;
+    private static WSConfiguration INSTANCE;
 
     private final Set<Class<?>> classes;
     @Getter
@@ -217,4 +217,9 @@ public class WSConfiguration extends Application {
             out.flush();
         });
     }
+
+    public static WSConfiguration getInstance() {
+        return INSTANCE;
+    }
+
 }
