@@ -85,8 +85,6 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         Double rjm = Double.valueOf(fpiCalculee.getMontantBase());
         Double rjme = Double.valueOf(fpiCalculee.getMontantEnfants());
         Double sal = Double.valueOf(fpiCalculee.getSalaireMensuel());
-        FWCurrency salpre = new FWCurrency(rjm * jourMaxFpi);
-        salpre.add(sal.doubleValue());
 
         int jnct = calculerJoursNonCompris(jnc, baseIndemnisation);
 
