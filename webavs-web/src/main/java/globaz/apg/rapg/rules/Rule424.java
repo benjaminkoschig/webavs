@@ -42,7 +42,9 @@ public class Rule424 extends Rule{
                         APDroitProcheAidantUtils.getPrestationForCareLeaveEventIdEtNssEnfant(champsAnnonce.getCareLeaveEventID(),
                                 champsAnnonce.getChildInsurantVn(),
                                 getSession())) {
-                    totalApg = totalApg.add(new BigDecimal(prestation.getMontantBrut()));
+                    if(!prestation.getIdDroit().equals(champsAnnonce.getIdDroit())) {
+                        totalApg = totalApg.add(new BigDecimal(prestation.getMontantBrut()));
+                    }
                 }
                 return totalApg.compareTo(MAX_INDEMN_JOURNALIERE.multiply(new BigDecimal(MAX_DAYS))) < 1;
 
