@@ -332,6 +332,7 @@ public class ReferenceQR extends AbstractReference {
         genererReference(refQR, montant);
 
         if (StringUtils.isEmpty(reference)) {
+            setReference(REFERENCE_NON_FACTURABLE);
             this.typeReference = SANS_REF;
         } else {
             this.typeReference = QR_IBAN;
