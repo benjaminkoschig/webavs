@@ -1,5 +1,6 @@
 package globaz.apg.rapg.rules;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPGJointTiers;
 import globaz.apg.db.droits.APDroitAPGJointTiersManager;
@@ -8,6 +9,8 @@ import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.jade.client.util.JadeStringUtil;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class Rule504 extends Rule {
 
     private static final int NB_JOUR_MAX = 124;
+    private static LocalDate dateFinRule = Dates.toDate("31.12.2021");
 
     /**
      * @param errorCode
@@ -37,13 +41,15 @@ public class Rule504 extends Rule {
          * conscience et pour prévenir les cas particuliers, on effectue une requête pour remonter tous les droits du
          * tiers avec genre de service 11
          */
+
         String serviceType = champsAnnonce.getServiceType();
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
             validNotEmpty(serviceType, "serviceType");
         }
 
-        if (APGenreServiceAPG.MilitaireEcoleDeRecrue.getCodePourAnnonce().equals(serviceType)) {
+        if (APGenreServiceAPG.MilitaireEcoleDeRecrue.getCodePourAnnonce().equals(serviceType)
+            && !Dates.toDate(champsAnnonce.getStartOfPeriod()).isAfter(dateFinRule)) {
             String nss = champsAnnonce.getInsurant();
             validNotEmpty(nss, "NSS");
 
