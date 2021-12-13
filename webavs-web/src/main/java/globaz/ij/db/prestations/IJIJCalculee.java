@@ -109,6 +109,9 @@ public class IJIJCalculee extends BEntity {
      */
     public static final String FIELDNAME_SUPPLEMENT_PERSONNE_SEULE = "XNMSPS";
 
+    public static final String FIELDNAME_GENRE_READAPTATION_ANNONCE = "XNGREA";
+
+
     /**
      */
     public static final String TABLE_NAME_IJ_CALCULEE = "IJCALCUL";
@@ -180,6 +183,7 @@ public class IJIJCalculee extends BEntity {
     private transient IJPrononce prononce;
     private String revenuDeterminant = "";
     private String revenuJournalierReadaptation = "";
+    private String genreReadaptationAnnonce = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -280,6 +284,7 @@ public class IJIJCalculee extends BEntity {
         differenceRevenu = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_DIFFERENCE_REVENU);
         noRevision = statement.dbReadString(IJIJCalculee.FIELDNAME_NO_REVISION);
         isDroitPrestationPourEnfant = statement.dbReadBoolean(IJIJCalculee.FIELDNAME_DROIT_PRESTATION_ENFANT);
+        genreReadaptationAnnonce = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
     }
 
     /**
@@ -359,6 +364,8 @@ public class IJIJCalculee extends BEntity {
 
         statement.writeField(IJIJCalculee.FIELDNAME_NO_REVISION,
                 this._dbWriteString(statement.getTransaction(), noRevision, "noRevision"));
+        statement.writeField(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE,
+                this._dbWriteNumeric(statement.getTransaction(), genreReadaptationAnnonce, "genreReadaptationAnnonce"));
 
         if (isDroitPrestationPourEnfant != null) {
             statement.writeField(IJIJCalculee.FIELDNAME_DROIT_PRESTATION_ENFANT, this._dbWriteBoolean(
@@ -933,5 +940,13 @@ public class IJIJCalculee extends BEntity {
      */
     public void setSupplementPersonneSeule(String supplementPersonneSeule) {
         this.supplementPersonneSeule = supplementPersonneSeule;
+    }
+
+    public String getGenreReadaptationAnnonce() {
+        return genreReadaptationAnnonce;
+    }
+
+    public void setGenreReadaptationAnnonce(String genreReadaptationAnnonce) {
+        this.genreReadaptationAnnonce = genreReadaptationAnnonce;
     }
 }

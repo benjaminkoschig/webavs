@@ -7,6 +7,11 @@ alter table SCHEMA.IJFPI
     add DATE_FORMATION DECIMAL(8);
 REORG TABLE SCHEMA.IJFPI;
 
+-- ajout genre réadaption pour l'annonce renvoyé par ACOR
+alter table SCHEMA.IJCALCUL
+    add XNGREA DECIMAL(8);
+REORG TABLE SCHEMA.IJCALCUL;
+
 -- Ajout mensuel 13
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52406007, 'IJPERSALAI', 7, 1, 0, 0, 'Mensuel_13', 2, 1, 2, 2, 2, 2, 51400006, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52406007, 'D', '7', 'Monatslohn 13', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');

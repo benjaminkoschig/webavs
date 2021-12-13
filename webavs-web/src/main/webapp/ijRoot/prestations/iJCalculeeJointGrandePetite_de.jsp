@@ -117,7 +117,7 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						<TR>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
 							<TD>
-								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="csGenreReadaptation" defaut="<%=viewBean.getCsGenreReadaptation()%>"/>	
+								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI%>" name="csGenreReadaptation" defaut="<%=viewBean.getCsGenreReadaptation()%>"/>
 							</TD>
 							<TD><ct:FWLabel key="JSP_DATE_PRONONCE"/></TD>
 							<TD><INPUT type="text" name="datePrononce" value="<%=viewBean.getDatePrononce()%>"></TD>

@@ -141,6 +141,7 @@ public class PRACORConst {
     // le type d'ij
     public static final String CA_TYPE_IJ_GRANDE = "1";
     public static final String CA_TYPE_IJ_PETITE = "2";
+    public static final String CA_TYPE_IJ_AVEC_REVENU = "4";
     public static final String CA_TYPE_FPI = "5";
 
     public static final String CA_TYPE_MESURE_EXTERNE = "2";
@@ -409,7 +410,7 @@ public class PRACORConst {
     }
 
     /**
-     * Transforme un code acor de genre de readaptation en code systeme du groupe IJ_GENRE_READAPTATION.
+     * Transforme un code acor de genre de readaptation en code systeme du groupe CS_GROUPE_GENRE_READAPTATION_AI.
      * 
      * @param session
      *            DOCUMENT ME!
@@ -420,7 +421,7 @@ public class PRACORConst {
      */
     public static final String caGenreReadaptationToCS(BSession session, String caGenreReadaptation) {
         // le code est le code utilisateur
-       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION,caGenreReadaptation).getIdCodeSysteme();
+       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI,caGenreReadaptation).getIdCodeSysteme();
     }
 
     /**

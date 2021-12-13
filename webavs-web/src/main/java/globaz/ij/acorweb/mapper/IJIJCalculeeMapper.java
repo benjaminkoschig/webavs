@@ -30,7 +30,8 @@ public class IJIJCalculeeMapper {
     public IJIJCalculee map(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJIJCalculee ijijCalculee;
 
-        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
+        if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))
+            || PRACORConst.CA_TYPE_IJ_AVEC_REVENU.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapGrandeIJ(basesCalcul);
         }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))) {
             ijijCalculee = createAndMapPetiteIJ(basesCalcul, prononce);
@@ -54,7 +55,8 @@ public class IJIJCalculeeMapper {
 
         ijijCalculee.setNoAVS(nss);
         ijijCalculee.setOfficeAI(String.valueOf(basesCalcul.getOfficeAi()));
-        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(entityService.getSession(), Strings.toStringOrNull(basesCalcul.getGenreReadaptation())));
+        ijijCalculee.setCsGenreReadaptation(PRACORConst.caGenreReadaptationToCS(entityService.getSession(), Strings.toStringOrNull(basesCalcul.getGenreReadaptationPrononce())));
+        ijijCalculee.setGenreReadaptationAnnonce(Strings.toStringOrNull(basesCalcul.getGenreReadaptation()));
         ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDatePrononce())));
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
@@ -94,7 +96,7 @@ public class IJIJCalculeeMapper {
 
     private IJIJCalculee createAndMapFpi(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
         IJFpiCalculee fpi = new IJFpiCalculee();
-        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode("IJGENRREA2", String.valueOf(basesCalcul.getGenreReadaptation()), entityService.getSession()).getIdCodeSysteme());
+//        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode("IJGENRREA2", String.valueOf(basesCalcul.getGenreReadaptation()), entityService.getSession()).getIdCodeSysteme());
         fpi.setMontantBase(Strings.toStringOrNull(basesCalcul.getMontantBase()));
         fpi.setMontantEnfants(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
         fpi.setSalaireMensuel(Strings.toStringOrNull(basesCalcul.getMontantMensuel()));

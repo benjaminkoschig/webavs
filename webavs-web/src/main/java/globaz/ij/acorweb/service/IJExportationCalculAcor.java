@@ -12,10 +12,15 @@ import acor.xsd.in.ij.BasesCalculCouranteIJ;
 import acor.xsd.in.ij.BasesCalculIJ;
 import acor.xsd.in.ij.BasesCalculRevenusIJ;
 import acor.xsd.in.ij.IndemniteJournaliereIJ;
+import ch.globaz.common.codesystem.CodeSystem;
+import ch.globaz.common.codesystem.CodeSystemUtils;
+import ch.globaz.common.domaine.CodeSystemEnumUtils;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
+import ch.globaz.envoi.business.models.parametrageEnvoi.CodeSystemSearch;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
+import ch.globaz.vulpecula.business.models.codesystem.CodeSystemComplexModel;
 import globaz.externe.IPRConstantesExternes;
 import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
@@ -214,10 +219,16 @@ class IJExportationCalculAcor {
         }
 
         basesCalculCouranteIJ.setId(prononce.getId());
-        basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(prononce.isGrandeIJ() ?
-                                                                         PRACORConst.CA_TYPE_IJ_GRANDE : prononce.isPetiteIJ() ?
-                PRACORConst.CA_TYPE_IJ_PETITE :
-                PRACORConst.CA_TYPE_FPI));
+        if(prononce.isNouvelleGrandeIJ()) {
+            basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(PRACORConst.CA_TYPE_IJ_AVEC_REVENU));
+        } else if(prononce.isGrandeIJ()) {
+            basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(PRACORConst.CA_TYPE_IJ_GRANDE));
+        } else if(prononce.isFpi()) {
+            basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(PRACORConst.CA_TYPE_FPI));
+        } else {
+            basesCalculCouranteIJ.setGenreIndemnite(Integer.parseInt(PRACORConst.CA_TYPE_IJ_PETITE));
+        }
+
         basesCalculCouranteIJ.setOfficeAI(prononce.getOfficeAI());
 
         basesCalculCouranteIJ.setDatePrononce(Dates.toXMLGregorianCalendar(prononce.getDatePrononce()));

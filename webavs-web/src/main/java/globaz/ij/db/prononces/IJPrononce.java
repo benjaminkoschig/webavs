@@ -1021,6 +1021,15 @@ public class IJPrononce extends BEntity implements IPRCloneable {
     }
 
     /**
+     * retourne vrai si cette ij est une Grande IJ avec les nouveaux genre de réadaptation
+     * @return la valeur courante de l'attribut grande
+     */
+    public boolean isNouvelleGrandeIJ() {
+        return isGrandeIJ() && (JadeStringUtil.isBlankOrZero(csGenre) || Integer.valueOf(csGenre) > 10);
+    }
+
+
+    /**
      * DOCUMENT ME!
      * 
      * @return DOCUMENT ME!

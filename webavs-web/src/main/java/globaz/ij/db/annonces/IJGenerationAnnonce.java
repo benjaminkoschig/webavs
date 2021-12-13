@@ -114,6 +114,8 @@ public class IJGenerationAnnonce extends BEntity {
         truc.append(IJIJCalculee.FIELDNAME_NO_REVISION);
         truc.append(", ");
         truc.append(IJIJCalculee.FIELDNAME_DROIT_PRESTATION_ENFANT);
+        truc.append(", ");
+        truc.append(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
 
         return truc.toString();
     }
@@ -275,6 +277,7 @@ public class IJGenerationAnnonce extends BEntity {
     private String tauxJournalierExterne = "";
 
     private String tauxJournalierInterne = "";
+    private String genreReadaptationAnnonce = "";
 
     /**
      * (non-Javadoc)
@@ -546,6 +549,7 @@ public class IJGenerationAnnonce extends BEntity {
         noDecisionAiCommunication = statement.dbReadNumeric(IJPrononce.FIELDNAME_NO_DECISION_AI);
         noRevision = statement.dbReadString(IJIJCalculee.FIELDNAME_NO_REVISION);
         isDroitPrestationPourEnfant = statement.dbReadBoolean(IJIJCalculee.FIELDNAME_DROIT_PRESTATION_ENFANT);
+        genreReadaptationAnnonce = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
     }
 
     /**
@@ -933,5 +937,9 @@ public class IJGenerationAnnonce extends BEntity {
 
     public void setNoRevision(String noRevision) {
         this.noRevision = noRevision;
+    }
+
+    public String getGenreReadaptationAnnonce() {
+        return genreReadaptationAnnonce;
     }
 }

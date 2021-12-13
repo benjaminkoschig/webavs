@@ -205,8 +205,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                             getSession().getApplication()));
                     annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
                     annonceACreer.setCodeGenreCarte(getSession().getCode(generationAnnonce.getCsTypePrestation()));
-                    annonceACreer.setCodeGenreReadaptation(getSession().getCode(
-                            generationAnnonce.getCsGenreReadaptation()));
+                    annonceACreer.setCodeGenreReadaptation(getSession().getCode(generationAnnonce.getCsGenreReadaptation()));
 
                     // le genre d'indemnite journaliere
                     annonceACreer.setPetiteIJ("4");
@@ -281,8 +280,9 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setRevenuJournalierDeterminant(generationAnnonce
                                                                          .getRevenuMoyenDeterminantNonPlafonne());
                     annonceACreer.setOfficeAI(generationAnnonce.getOfficeAI());
-                    annonceACreer.setCodeGenreReadaptation(getSession().getCode(
-                            generationAnnonce.getCsGenreReadaptation()));
+                    annonceACreer.setCodeGenreReadaptation(!JadeStringUtil.isBlankOrZero(generationAnnonce.getGenreReadaptationAnnonce()) ?
+                            generationAnnonce.getGenreReadaptationAnnonce() :
+                            getSession().getCode(generationAnnonce.getCsGenreReadaptation()));
                     annonceACreer
                             .setGarantieAA(JadeStringUtil.isDecimalEmpty(generationAnnonce.getMontantGarantieAA()) ? "0"
                                                    : "1");

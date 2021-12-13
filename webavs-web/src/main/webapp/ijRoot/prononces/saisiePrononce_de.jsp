@@ -206,7 +206,7 @@
 							<TD colspan="2"><ct:FWCalendarTag name="dateFinPrononce" value="<%=viewBean.getDateFinPrononce()%>"/></TD>
 						</TR>
 						<TR>
-							<%if (viewBean instanceof globaz.ij.vb.prononces.IJGrandeIJPViewBean || viewBean instanceof globaz.ij.vb.prononces.IJFpiViewBean){%>
+							<%if (viewBean.getPrononce().isNouvelleGrandeIJ() || viewBean.getPrononce().isFpi()){%>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
 							<TD colspan="4" >
 								<INPUT type="text" id="codeGenrePrestation" name="codeGenrePrestation" value="<%=viewBean.getCodeGenrePrestation()%>" maxlength="3" class="numeroCourt" >&nbsp;
@@ -221,7 +221,7 @@
 							<%} else {%>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION"/></TD>
 							<TD colspan="4">
-								<ct:select name="csGenre" id="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
+								<ct:select wantBlank="true" name="csGenre" id="csGenre" defaultValue="<%=viewBean.getCsGenre()%>">
 									<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI%>">
 										<ct:forEach items="<%=viewBean.getExcludeCode()%>" var="code">
 											<ct:excludeCode id="code"/>

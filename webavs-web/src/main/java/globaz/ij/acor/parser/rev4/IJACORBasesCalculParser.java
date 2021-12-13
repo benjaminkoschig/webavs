@@ -88,7 +88,8 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
         // recuperation du type d'ij
         node = getNode(nodes, "genre", true);
 
-        if (PRACORConst.CA_TYPE_IJ_GRANDE.equals(getNodeValue(node))) {
+        if (PRACORConst.CA_TYPE_IJ_GRANDE.equals(getNodeValue(node))
+            || PRACORConst.CA_TYPE_IJ_AVEC_REVENU.equals(getNodeValue(node))) {
             IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
 
             // champs specifiques a la grande ij

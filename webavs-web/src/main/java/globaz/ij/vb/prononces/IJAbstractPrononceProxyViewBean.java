@@ -1127,7 +1127,7 @@ public abstract class IJAbstractPrononceProxyViewBean implements FWViewBeanInter
     public List<String> getExcludeCode() throws Exception {
         List<String> list = new ArrayList<>();
         FWParametersSystemCodeManager codes = FWTranslation.getSystemCodeList(IIJPrononce.CS_GROUPE_GENRE_READAPTATION_AI, getSession());
-        if(IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ()) || IIJPrononce.CS_GRANDE_IJ.equals(prononce.getCsTypeIJ())) {
+        if(prononce.isNouvelleGrandeIJ() || prononce.isFpi()) {
             for (int i = 0; i < codes.size(); i++) {
                 FWParametersSystemCode code = (FWParametersSystemCode) codes.getEntity(i);
                 if(isAncienCode(code.getCurrentCodeUtilisateur().getCodeUtilisateur())) {
