@@ -3,9 +3,12 @@ package globaz.ij.db.prononces;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.ij.api.prononces.IIJMotifFpi;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.clone.factory.IPRCloneable;
+
+import java.util.Optional;
 
 /**
  * <H1>Description</H1>

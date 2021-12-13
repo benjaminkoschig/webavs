@@ -750,9 +750,6 @@ public class IJDecomptes extends FWIDocumentManager {
 
             parametres.put("PARAM_PIED", buffer.toString());
 
-            // TODO - JJO - 01.12.2022 : Adaptation texte salaire des apprentis pour FPI. Chap 3.15 Spec
-            // Ajout texte sur le nombre d’indemnités prise en compte dans la prestation pour les prononcé FPI
-
             // ajouter les signatures
             buffer.setLength(0);
 
@@ -1485,7 +1482,6 @@ public class IJDecomptes extends FWIDocumentManager {
                     }
                 }
 
-                // TODO - JJO - 06.12.2021 : Ajout texte apprenti pour fpi avec fraction d'ij seleon chap 3.19 spec S210819_012
                 // Texte apprenti pour fpi.
                 if(prononce.isFpi()){
                     try {
@@ -1494,10 +1490,10 @@ public class IJDecomptes extends FWIDocumentManager {
                         Integer nbJourNonSuivi = nbJourTotal - nbJourSuivi;
 
                         if (nbJourSuivi >= nbJourTotal) {
-                            champs.put("FIELD_DETAIL_IJ_SAL_AP", document.getTextes(3).getTexte(50).getDescription());
+                            champs.put("FIELD_DETAIL_IJ_SAL_AP", document.getTextes(3).getTexte(60).getDescription());
                         } else {
                             champs.put("FIELD_DETAIL_IJ_SAL_AP", PRStringUtils.replaceString(document
-                                    .getTextes(3).getTexte(55).getDescription(), "{nombreJourIndemnise}", nbJourNonSuivi + "/" + nbJourTotal));
+                                    .getTextes(3).getTexte(61).getDescription(), "{nombreJourIndemnise}", nbJourNonSuivi + "/" + nbJourTotal));
                         }
                     }catch(Exception e){
                         e.printStackTrace();

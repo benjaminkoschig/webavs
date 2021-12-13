@@ -18,7 +18,7 @@ public enum IIJMotifFpi {
     private String code;
     private String label;
 
-    static Optional<IIJMotifFpi> findByCode(String code) {
+    public static Optional<IIJMotifFpi> findByCode(String code) {
         return (code == null) ? Optional.empty() : Arrays.stream(IIJMotifFpi.values()).filter(motif -> code.equals(motif.code)).findFirst();
     }
 
