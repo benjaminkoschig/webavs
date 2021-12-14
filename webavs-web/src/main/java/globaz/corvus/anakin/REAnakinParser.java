@@ -93,7 +93,7 @@ public class REAnakinParser {
 
         REArcConverter converter = new REArcConverter();
         AnnonceAbstraite aa = converter.convertToAnakinArc(session, arc01, arc02, anakinFormatedMoisRapport);
-        AnnonceAbstraite result = REAnakinParser.routeur.router(aa, "00" + aa.getDateEtatRegistre());
+        AnnonceAbstraite result = REAnakinParser.routeur.router(aa, "01" + aa.getDateEtatRegistre());
         System.out.println("- date état du registre : " + aa.getDateEtatRegistre());
 
         System.out.println("Liste des erreurs suite au contrôle de plausibilité de l'annonce : ");
