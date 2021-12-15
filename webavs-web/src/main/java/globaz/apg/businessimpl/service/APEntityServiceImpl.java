@@ -2910,10 +2910,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         // Genre service
         final String genreDeService = viewBean.getGenreService();
-        boolean isServiceTypeValid = true;
         if ((genreDeService == null) || !APGenreServiceAPG.isValidGenreService(genreDeService)) {
             errors.add(APValidationDroitError.GENRE_SERVICE_INVALID);
-            isServiceTypeValid = false;
         }
 
         // Test de la longueur de la remarque

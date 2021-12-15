@@ -30,7 +30,6 @@ public class APDroitMatPHelper extends APAbstractDroitPHelper {
 
     @Override
     protected void _add(FWViewBeanInterface vb, FWAction action, BISession iSession) throws Exception {
-        //super._add(vb, action, iSession);
         APDroitMatPViewBean viewBean = null;
         if (!(vb instanceof APDroitMatPViewBean)) {
             throw new APWrongViewBeanTypeException("Wrong viewBean type for action APDroitMatPViewBean._add ["
