@@ -1662,6 +1662,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             indemnite = PRStringUtils.replaceString(indemnite, PARAM_SAL, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getSalaireMensuel());
                             indemnite = PRStringUtils.replaceString(indemnite, PARAM_RJM, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantBase());
                         }
+                        indemnite += "\n\n";
                         bufferBaseCalcul.append(indemnite);
 
                     }else{
@@ -1808,6 +1809,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             if(ijGrandePetiteFpiIjCalculee instanceof IJFpiCalculee) {
                                 cdtPrestationEnfant = document.getTextes(3).getTexte(42).getDescription();
                                 cdtPrestationEnfant = PRStringUtils.replaceString(cdtPrestationEnfant, PARAM_RJME, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants());
+                                cdtPrestationEnfant += "\n\n";
                             }
                         }else {
                             if (isIndemniteMinimumGarantit) {
@@ -2641,7 +2643,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     // Base de calcul pour décision assuré de plus de 25 ans
                     if(tiers != null && Dates.isDansOuApresAnnee(fpiPrononce.getDateDebutPrononce(), tiers.getDateNaissance(), 25)){
                         // Ajout paragraphe loi pour 25 ans et plus
-                        bufferBaseCalcul.append(document.getTextes(3).getTexte(46).getDescription());
+                        bufferBaseCalcul.append(document.getTextes(3).getTexte(46).getDescription() + "\n\n");
                         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
                         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
                         // Ajout paragraphe prestations mensuelle
@@ -2669,6 +2671,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 // puis on ajoute à la phrase sur l'ajout de la prestation mensuelle plafonnée
                                 bufferBaseCalcul.append(salaireContrat);
                                 ajoutBaseCalculTextePrestationMensuelle(bufferBaseCalcul, salpre);
+                                bufferBaseCalcul.append("\n\n");
                                 // Base de calcul pour décision LFPr sans contrat d'apprentissage
                             } else if (motifFpi.get() == IIJMotifFpi.FPI_SANS_CONTRAT_APPRENTISSAGE) {
                                 LocalDate dateFormation = Dates.toDate(fpiPrononce.getDateFormation());
@@ -2680,6 +2683,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 if (Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
                                     renteVieillesse = document.getTextes(3).getTexte(44).getDescription();
                                 }
+                                renteVieillesse += "\n";
                                 bufferBaseCalcul.append(renteVieillesse);
                                 // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
                                 ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
@@ -2696,10 +2700,11 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 bufferBaseCalcul.append(salaire);
                                 // puis on ajoute à la phrase sur l'ajout de la prestation mensuelle plafonnée
                                 ajoutBaseCalculTextePrestationMensuelle(bufferBaseCalcul, salpre);
+                                bufferBaseCalcul.append("\n\n");
                             } else {
                                 // Traitement formation supérieure
                                 // Ajout paragraphe loi salaire médian
-                                bufferBaseCalcul.append(document.getTextes(3).getTexte(45).getDescription());
+                                bufferBaseCalcul.append(document.getTextes(3).getTexte(45).getDescription() + "\n\n");
                                 // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
                                 ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
                                 // Ajout paragraphe salaire médian et prestation mensuelle
@@ -2710,6 +2715,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 bufferBaseCalcul.append(salaire);
                                 // puis on ajoute à la phrase sur l'ajout de la prestation mensuelle plafonnée
                                 ajoutBaseCalculTextePrestationMensuelle(bufferBaseCalcul, salpre);
+                                bufferBaseCalcul.append("\n\n");
                             }
                         }
                     }
@@ -2748,7 +2754,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     }
 
     private void ajoutNbJourindemniteDeductionNonCouvert(StringBuffer bufferBaseCalcul) {
-        bufferBaseCalcul.append(document.getTextes(3).getTexte(47).getDescription());
+        bufferBaseCalcul.append(document.getTextes(3).getTexte(47).getDescription() + "\n\n");
     }
 
     private void ajoutBaseCalculTextePrestationMensuelle(StringBuffer bufferBaseCalcul, FWCurrency salpre) {
