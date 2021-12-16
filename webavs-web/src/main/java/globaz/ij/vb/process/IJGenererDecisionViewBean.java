@@ -369,6 +369,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         prononce.retrieve();
 
         if(!Dates.isAnneeMajeur(prononce.getDateDebutPrononce(), prononce.getDateNaissanceTiers())) {
+            buffer.append("\n\n");
             buffer.append(texte.getDescriptionBrut());
         }
     }
