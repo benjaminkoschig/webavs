@@ -1292,7 +1292,8 @@ public class IJDecomptes extends FWIDocumentManager {
                     }
 
                     if (!JadeStringUtil.isBlankOrZero(repartition.getNombreJourExternePrestation())
-                            && isDetailJournalierToPrint) {
+                            && isDetailJournalierToPrint
+                            && !prononce.isFpi()) {
 
                         String montantJournalierExterne = new FWCurrency(
                                 repartition.getMontantJournalierExternePrestation()).toStringFormat();
