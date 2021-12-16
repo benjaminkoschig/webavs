@@ -38,7 +38,7 @@ public class Rule513 extends Rule {
                                                                                           getSession())) {
                     nbJours += Integer.parseInt(prestation.getNombreJoursSoldes()) * 2;
                 }
-                return nbJours < MAX_NUMBER_DAYS;
+                return nbJours <= MAX_NUMBER_DAYS;
             } catch (Exception e){
                 throwRuleExecutionException(e);
                 return false;
