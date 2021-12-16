@@ -48,6 +48,9 @@ import org.slf4j.LoggerFactory;
 
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -372,16 +375,55 @@ public class RpcDataLoader {
                     break;
                 }
             }
-            if (isOctroi) {
-                if (decisionRefus.getDecisionHeader().getSimpleDecisionHeader().getCreationSpy()
-                                                .compareTo(decisionMois.getSimpleDecisionHeader().getCreationSpy()) > 0){
-                    listDecisionsMois.remove(nss);
-                } else {
-                    listDecisionRefus.remove(nss);
+            try {
+                if (isOctroi) {
+                    if (isSamePeriode(decisionMois, decisionRefus)) {
+                        if (decisionRefus.getDecisionHeader().getSimpleDecisionHeader().getCreationSpy()
+                                .compareTo(decisionMois.getSimpleDecisionHeader().getCreationSpy()) > 0){
+                            listDecisionsMois.remove(nss);
+                        } else {
+                            listDecisionRefus.remove(nss);
+                        }
+                    } else {
+                        if(isOctroiLastPeriode(decisionMois, decisionRefus)) {
+                            // Si la periode la plus récente est l'octroi, on supprime le refus
+                            listDecisionRefus.remove(nss);
+                        } else {
+                            // Si la periode la plus récente est le refus, on supprime l'octroi
+                            listDecisionsMois.remove(nss);
+                        }
+                    }
                 }
+            } catch (DateTimeParseException e) {
+                LOG.error("Erreur lors du parsing de la date de fin de la décision pour le NSS : {1}", decisionMois.getNssTiersBeneficiaire());
+                LOG.error("Le process : keepLastOctroiOrRefusDecisionMois() sera ignoré, et le process continuera avec la possibilité d'avoir 2 annonces pour ce NSS");
             }
         }
+    }
 
+    private static boolean isOctroiLastPeriode(RPCDecionsPriseDansLeMois decisionMois, DecisionRefus decisionRefus) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        if (decisionMois.getDateFinDemande().isEmpty() && decisionMois.getSimplePCAccordee().getDateFin().isEmpty()) {
+            return true;
+        }
+        LocalDate dateFinDroitRefus = LocalDate.parse("01."+ decisionRefus.getDemande().getSimpleDemande().getDateFin(), formatter);
+        LocalDate dateFinDroitOctroiPCA = LocalDate.parse("01."+ decisionMois.getSimplePCAccordee().getDateFin(), formatter);
+        if (decisionMois.getDateFinDemande().isEmpty()) {
+            return dateFinDroitOctroiPCA.isAfter(dateFinDroitRefus);
+        } else {
+            LocalDate dateFinDroitOctroi = LocalDate.parse("01."+ decisionMois.getDateFinDemande(), formatter);
+            return dateFinDroitOctroi.isAfter(dateFinDroitRefus);
+        }
+    }
+
+    private static boolean isSamePeriode(RPCDecionsPriseDansLeMois decisionMois, DecisionRefus decisionRefus) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateDebutDroitRefus = LocalDate.parse("01."+decisionRefus.getDemande().getSimpleDemande().getDateDebut(), formatter);
+        LocalDate dateFinDroitRefus = LocalDate.parse("01."+decisionRefus.getDemande().getSimpleDemande().getDateFin(), formatter);
+        LocalDate dateDebutDroitOctroi = LocalDate.parse("01."+decisionMois.getDateDebutDemande(), formatter);
+        LocalDate dateFinDroitOctroi = LocalDate.parse("01."+decisionMois.getDateFinDemande(), formatter);
+
+        return dateDebutDroitRefus.equals(dateDebutDroitOctroi) && dateFinDroitRefus.equals(dateFinDroitOctroi);
     }
 
     private static void keepLastDecisionRefus(List<DecisionRefus> decisionsRefus) {
