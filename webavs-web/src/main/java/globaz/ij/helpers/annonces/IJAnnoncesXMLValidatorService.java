@@ -41,7 +41,7 @@ public class IJAnnoncesXMLValidatorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IJAnnoncesXMLValidatorService.class);
 
-    private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
+    private static final String XSD_FOLDER = "/xsd/acor/xsd/annoncesRC/";
     private static final String XSD_NAME = "MeldungZurZas.xsd";
 
     private static IJAnnoncesXMLValidatorService instance = new IJAnnoncesXMLValidatorService();
