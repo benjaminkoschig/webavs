@@ -331,13 +331,11 @@ public abstract class APBasesCalculBuilder {
                 if (finMaterniteLamat != null && calendar.after(finMaterniteLamat)) {
                     commands.add(new NouvelleBaseCommand(finMaterniteLamat.getTime(), false, isExtension));
                     calendar.setTime(finMaterniteLamat.getTime());
-                } else {
-                    calendar.setTime(finMaternite.getTime());
+                    finMaterniteLamat = null;
+                    finMaternite = null;
                 }
 
                 calendar.add(Calendar.DATE, 1);
-                finMaternite = null;
-                finMaterniteLamat = null;
 
             } else if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
                 // si ce n'est pas un paiement rétroactif ou si on est en fin
