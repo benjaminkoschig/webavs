@@ -751,8 +751,8 @@ public final class IJPrononceRegles {
         if(viewBean.getAfficheWarning() && viewBean instanceof IJFpiViewBean) {
             LocalDate dateNaissance = Dates.toDate(((IJFpiViewBean)viewBean).getDateNaissance());
             LocalDate dateChangement = dateNaissance.plusYears(AGE_CHANGEMENT_FPI);
-            // prendre le 1er jours du mois suivant
-            dateChangement = dateChangement.plusMonths(1).withDayOfMonth(1);
+            // prendre le jour suivant
+            dateChangement = dateChangement.plusDays(1);
             LocalDate dateDebut = Dates.toDate(viewBean.getPrononce().getDateDebutPrononce());
             LocalDate dateFin = Dates.toDate(viewBean.getPrononce().getDateFinPrononce());
             if(dateDebut != null && dateFin != null && (dateDebut.isBefore(dateChangement) && dateFin.isAfter(dateChangement))) {
