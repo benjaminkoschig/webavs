@@ -769,7 +769,7 @@ public class REAcorMapper {
 
             if (Objects.nonNull(baseCalcul.getBaseRam().getBass())) {
                 //        bc.setAnneeBonifTacheAssistance(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
-                bc.setAnneeBonifTacheAssistance(Objects.toString(baseCalcul.getBaseRam().getBass().getAnDecimal(), StringUtils.EMPTY));
+                bc.setAnneeBonifTacheAssistance(PRConverterUtils.formatFloatToStringWithTwoDecimal(baseCalcul.getBaseRam().getBass().getAnDecimal()));
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getBte())) {
                 //      bc.setAnneeBonifTacheEduc(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_EDUC"));
