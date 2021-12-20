@@ -67,7 +67,12 @@
 				<search-field name="forExcludeCsEtatDecisionValide" operation="NOT_EQUALS" field-ref="decisionHeader.simpleDecisionHeader.csEtatDecision"/>
 			</search-group>
 		</search-definition>
-		
+
+		<search-definition name="forSpecificVersionDroit">
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="versionDroit.simpleVersionDroit.idVersionDroit"/>
+			</search-group>
+		</search-definition>
 		
 		<search-definition name="forMiseEnGedAfterCompta">
 			<search-group operator="AND"> 
