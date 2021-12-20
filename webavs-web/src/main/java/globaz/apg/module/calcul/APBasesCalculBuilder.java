@@ -333,6 +333,8 @@ public abstract class APBasesCalculBuilder {
                     calendar.setTime(finMaterniteLamat.getTime());
                     finMaterniteLamat = null;
                     finMaternite = null;
+                } else if (finMaterniteLamat == null) {
+                    finMaternite = null;
                 }
 
                 calendar.add(Calendar.DATE, 1);
