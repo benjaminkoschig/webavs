@@ -102,8 +102,8 @@ bButtonDelete = false;
 							<TD><INPUT type="text" name="annee" value="<%=viewBean.getAnnee()%>"></TD>
 						</TR>
 						<TR>
-							<TD><ct:FWLabel key="JSP_DEBUT_FORMATION"/></TD>
-							<TD><INPUT type="text" name="dateFormation" value="<%=viewBean.getDateFormation()%>"></TD>
+							<TD><LABEL for="dateFormation"><ct:FWLabel key="JSP_DEBUT_FORMATION"/></LABEL></TD>
+							<TD ><ct:FWCalendarTag name="dateFormation" value="<%=viewBean.getDateFormation()%>"/></TD>
 						</TR>
 						
 

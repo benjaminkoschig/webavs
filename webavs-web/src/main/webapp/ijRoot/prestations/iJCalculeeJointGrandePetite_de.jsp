@@ -22,6 +22,12 @@
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
+<style>
+	select {
+	  width: 168px;
+	}
+</style>
+
 <SCRIPT language="javascript"> 
 var servlet = "<%=(servletContext + mainServletPath)%>";
 
