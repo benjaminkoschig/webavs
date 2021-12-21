@@ -20,6 +20,7 @@ import globaz.ij.db.annonces.IJGenerationAnnonceManager;
 import globaz.ij.db.annonces.IJPeriodeAnnonce;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.ij.db.prestations.IJPrestation;
+import globaz.ij.helpers.annonces.IJAnnoncesXmlService;
 import globaz.ij.utils.IJUtils;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -149,7 +150,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setCodeGenreCarte(getSession().getCode(generationAnnonce.getCsTypePrestation()));
 
                     // le genre d'indemnite journaliere
-                    annonceACreer.setPetiteIJ("3");
+                    annonceACreer.setPetiteIJ(IJAnnoncesXmlService.ALLOC_INI_TRAVAIL);
 
                     annonceACreer.setNoAssure(JAStringFormatter.deformatAvs(generationAnnonce.getNoAVSPrononce()));
 
@@ -208,7 +209,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setCodeGenreReadaptation(getSession().getCode(generationAnnonce.getCsGenreReadaptation()));
 
                     // le genre d'indemnite journaliere
-                    annonceACreer.setPetiteIJ("4");
+                    annonceACreer.setPetiteIJ(IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE);
 
                     annonceACreer.setNoAssure(JAStringFormatter.deformatAvs(generationAnnonce.getNoAVSPrononce()));
                     annonceACreer.setCodeEtatCivil(PRACORConst.csEtatCivilHeraForIJToAcor(getSession(),
@@ -270,7 +271,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
                     annonceACreer.setCodeGenreCarte(getSession().getCode(generationAnnonce.getCsTypePrestation()));
 
-                    annonceACreer.setPetiteIJ(generationAnnonce.getCsTypeIJ().equals(IIJPrononce.CS_GRANDE_IJ) ? "1" : "2");
+                    annonceACreer.setPetiteIJ(generationAnnonce.getCsTypeIJ().equals(IIJPrononce.CS_GRANDE_IJ) ? IJAnnoncesXmlService.GRANDE_IJ : IJAnnoncesXmlService.PETITE_IJ);
                     annonceACreer.setNoAssure(JAStringFormatter.deformatAvs(generationAnnonce.getNoAVSPrononce()));
                     annonceACreer.setNoAssureConjoint(JAStringFormatter.deformatAvs(generationAnnonce
                                                                                             .getNoAssureConjoint()));

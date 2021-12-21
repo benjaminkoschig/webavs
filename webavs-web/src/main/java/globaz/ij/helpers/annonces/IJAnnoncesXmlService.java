@@ -27,10 +27,11 @@ public class IJAnnoncesXmlService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IJAnnoncesXmlService.class);
 
-    private static final String GRANDE_IJ = "1";
-    private static final String PETITE_IJ = "2";
-    private static final String ALLOC_INI_TRAVAIL = "3";
-    private static final String ALLOC_FRAIS_ASSISTANCE = "4";
+    public static final String GRANDE_IJ = "1";
+    public static final String PETITE_IJ = "2";
+    public static final String ALLOC_INI_TRAVAIL = "DEPRECATED";
+    public static final String ALLOC_FRAIS_ASSISTANCE = "3";
+    public static final String ALLOC_FRAIS_ASSISTANCE_AVANT_2022 = "4";
 
     private static IJAnnoncesXmlService instance = new IJAnnoncesXmlService();
 

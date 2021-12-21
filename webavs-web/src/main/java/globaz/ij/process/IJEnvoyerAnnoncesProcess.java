@@ -19,6 +19,7 @@ import globaz.ij.api.annonces.IIJAnnonce;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.annonces.IJAnnonce;
 import globaz.ij.db.annonces.IJAnnonceManager;
+import globaz.ij.helpers.annonces.IJAnnoncesXmlService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRSession;
 import java.text.MessageFormat;
@@ -622,7 +623,7 @@ public class IJEnvoyerAnnoncesProcess extends BProcess {
             // ////////////////////////////////////////////////////////////////////////
             // pour les petites et les grandes IJ
             // ////////////////////////////////////////////////////////////////////////
-            if ("1".equals(annonce.getPetiteIJ()) || "2".equals(annonce.getPetiteIJ())) {
+            if (IJAnnoncesXmlService.GRANDE_IJ.equals(annonce.getPetiteIJ()) || IJAnnoncesXmlService.PETITE_IJ.equals(annonce.getPetiteIJ())) {
 
                 attributs.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce.getCodeApplication());
                 attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce.getCodeEnregistrement());
@@ -686,7 +687,7 @@ public class IJEnvoyerAnnoncesProcess extends BProcess {
                             formatXPosAppendWithZero(6, true, annonce.getRevenuJournalierDeterminant()));
 
                     // Si petite IJ
-                    if ("2".equals(annonce.getPetiteIJ())) {
+                    if (IJAnnoncesXmlService.PETITE_IJ.equals(annonce.getPetiteIJ())) {
                         attributs.put(IHEAnnoncesViewBean.CS_REVENU_JOURN_DET_NON_PLAFONNE_FFFFCC,
                                 formatXPosAppendWithZero(6, true, null));
                     } else {
@@ -872,7 +873,7 @@ public class IJEnvoyerAnnoncesProcess extends BProcess {
             // ////////////////////////////////////////////////////////////////////////
             // pour les annonces AIT
             // ////////////////////////////////////////////////////////////////////////
-            else if ("3".equals(annonce.getPetiteIJ())) {
+            else if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(annonce.getPetiteIJ())) {
 
                 attributs.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce.getCodeApplication());
                 attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce.getCodeEnregistrement());

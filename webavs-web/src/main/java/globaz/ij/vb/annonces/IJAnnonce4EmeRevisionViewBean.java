@@ -8,6 +8,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.ij.helpers.annonces.IJAnnoncesXmlService;
 import globaz.jade.client.util.JadeStringUtil;
 
 /**
@@ -222,12 +223,12 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
      */
     public String getTotalIJSignePeriode1() {
 
-        if ("3".equals(getPetiteIJ())) {
+        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(getPetiteIJ())) {
             // AIT
             return (getPeriodeAnnonce1().getCodeValeurTotalIJ().equals("1") ? "-" : "")
                     + getPeriodeAnnonce1().getMontantAit();
 
-        } else if ("4".equals(getPetiteIJ())) {
+        } else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(getPetiteIJ())) {
             // AA
             return (getPeriodeAnnonce1().getCodeValeurTotalIJ().equals("1") ? "-" : "")
                     + getPeriodeAnnonce1().getMontantAllocAssistance();
@@ -244,12 +245,12 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
      * @return la valeur courante de l'attribut total IJSigne periode2
      */
     public String getTotalIJSignePeriode2() {
-        if ("3".equals(getPetiteIJ())) {
+        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(getPetiteIJ())) {
             // AIT
             return (getPeriodeAnnonce2().getCodeValeurTotalIJ().equals("1") ? "-" : "")
                     + getPeriodeAnnonce2().getMontantAit();
 
-        } else if ("4".equals(getPetiteIJ())) {
+        } else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(getPetiteIJ())) {
             // AA
             return (getPeriodeAnnonce2().getCodeValeurTotalIJ().equals("1") ? "-" : "")
                     + getPeriodeAnnonce2().getMontantAllocAssistance();
@@ -403,7 +404,7 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
     public void setTotalIJSignePeriode1(String totalIJSigne) {
         FWCurrency currencyTotalIJSigne = new FWCurrency(totalIJSigne);
 
-        if ("3".equals(getPetiteIJ())) {
+        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(getPetiteIJ())) {
             // AIT
             if ("".equals(totalIJSigne)) {
                 getPeriodeAnnonce1().setMontantAit("");
@@ -416,7 +417,7 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
                 currencyTotalIJSigne.negate();
                 getPeriodeAnnonce1().setMontantAit(currencyTotalIJSigne.toString());
             }
-        } else if ("4".equals(getPetiteIJ())) {
+        } else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(getPetiteIJ())) {
             // AA
             if ("".equals(totalIJSigne)) {
                 getPeriodeAnnonce1().setMontantAllocAssistance("");
@@ -454,7 +455,7 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
     public void setTotalIJSignePeriode2(String totalIJSigne) {
         FWCurrency currencyTotalIJSigne = new FWCurrency(totalIJSigne);
 
-        if ("3".equals(getPetiteIJ())) {
+        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(getPetiteIJ())) {
             // AIT
             if ("".equals(totalIJSigne)) {
                 getPeriodeAnnonce2().setMontantAit("");
@@ -467,7 +468,7 @@ public class IJAnnonce4EmeRevisionViewBean extends IJAnnonceViewBean implements 
                 currencyTotalIJSigne.negate();
                 getPeriodeAnnonce2().setMontantAit(currencyTotalIJSigne.toString());
             }
-        } else if ("4".equals(getPetiteIJ())) {
+        } else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(getPetiteIJ())) {
             // AA
             if ("".equals(totalIJSigne)) {
                 getPeriodeAnnonce2().setMontantAllocAssistance("");

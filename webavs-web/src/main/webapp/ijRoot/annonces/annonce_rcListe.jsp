@@ -1,4 +1,4 @@
-<%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
+<%@ page import="globaz.ij.helpers.annonces.IJAnnoncesXmlService" %><%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
@@ -56,12 +56,12 @@
 		String ijPeriode1 = (line.getPeriodeAnnonce1().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce1().getTotalIJ();
 		String ijPeriode2 = (line.getPeriodeAnnonce2().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce2().getTotalIJ();
 		
-		if("3".equals(line.getPetiteIJ())){
+		if(IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(line.getPetiteIJ())){
 			ijPeriode1 = (line.getPeriodeAnnonce1().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce1().getMontantAit();
 			ijPeriode2 = (line.getPeriodeAnnonce2().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce2().getMontantAit();
 		}
 		
-		if("4".equals(line.getPetiteIJ())){
+		if(IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(line.getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(line.getPetiteIJ())){
 			ijPeriode1 = (line.getPeriodeAnnonce1().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce1().getMontantAllocAssistance();
 			ijPeriode2 = (line.getPeriodeAnnonce2().getCodeValeurTotalIJ().equals("1") ? "-" : "") + line.getPeriodeAnnonce2().getMontantAllocAssistance();
 		}

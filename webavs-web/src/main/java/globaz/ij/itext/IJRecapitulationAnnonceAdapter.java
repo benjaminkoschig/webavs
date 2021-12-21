@@ -11,6 +11,7 @@ import globaz.ij.db.annonces.IJAnnonce;
 import globaz.ij.db.annonces.IJAnnonceManager;
 import globaz.ij.db.annonces.IJPeriodeAnnonce;
 import globaz.ij.db.annonces.IJPeriodeAnnonceManager;
+import globaz.ij.helpers.annonces.IJAnnoncesXmlService;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -426,11 +427,11 @@ public class IJRecapitulationAnnonceAdapter {
                         ligne.addNbJoursQuestionnaires(Integer.parseInt(periode.getNombreJours()));
 
                         // AIT
-                        if ("3".equals(annonce.getPetiteIJ())) {
+                        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantQuestionnaires(Double.parseDouble(periode.getMontantAit()));
                         }
                         // AA
-                        else if ("4".equals(annonce.getPetiteIJ())) {
+                        else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(annonce.getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantQuestionnaires(Double.parseDouble(periode.getMontantAllocAssistance()));
                         }
                         // Grande IJ, Petite IJ
@@ -450,11 +451,11 @@ public class IJRecapitulationAnnonceAdapter {
                         ligne.addNbJoursRetroActifs(Integer.parseInt(periode.getNombreJours()));
 
                         // AIT
-                        if ("3".equals(annonce.getPetiteIJ())) {
+                        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantPaiementsRetroActifs(Double.parseDouble(periode.getMontantAit()));
                         }
                         // AA
-                        else if ("4".equals(annonce.getPetiteIJ())) {
+                        else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(annonce.getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantPaiementsRetroActifs(Double.parseDouble(periode.getMontantAllocAssistance()));
                         }
                         // Grande IJ, Petite IJ
@@ -474,11 +475,11 @@ public class IJRecapitulationAnnonceAdapter {
                         ligne.addNbJoursRestitutions(Integer.parseInt(periode.getNombreJours()));
 
                         // AIT
-                        if ("3".equals(annonce.getPetiteIJ())) {
+                        if (IJAnnoncesXmlService.ALLOC_INI_TRAVAIL.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantRestitutions(Double.parseDouble(periode.getMontantAit()));
                         }
                         // AA
-                        else if ("4".equals(annonce.getPetiteIJ())) {
+                        else if (IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE.equals(annonce.getPetiteIJ()) || IJAnnoncesXmlService.ALLOC_FRAIS_ASSISTANCE_AVANT_2022.equals(annonce.getPetiteIJ())) {
                             ligne.addMontantRestitutions(Double.parseDouble(periode.getMontantAllocAssistance()));
                         }
                         // Grande IJ, Petite IJ
