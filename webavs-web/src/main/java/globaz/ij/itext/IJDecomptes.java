@@ -5,6 +5,9 @@ import ch.globaz.common.util.Dates;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
+import globaz.babel.api.doc.ICTScalableDocument;
+import globaz.babel.api.doc.ICTScalableDocumentCopie;
+import globaz.babel.utils.CTTiersUtils;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
@@ -85,7 +88,7 @@ public class IJDecomptes extends FWIDocumentManager {
      * Une instance de cette classe est créée pour chaque bénéficiaire de paiement. Elle est ensuite renseignée au moyen
      * de toutes les prestations et factures a compenser qui existent pour ce bénéficiaire.
      */
-    private static class Decompte {
+    protected static class Decompte {
 
         private PRDepartement departement;
         private boolean employeur;
@@ -780,10 +783,55 @@ public class IJDecomptes extends FWIDocumentManager {
 
                 copie += "\n";
                 parametres.put("P_COPIE_A2", copie);
+            } else {
+                findCopieEmployeur(parametres);
             }
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, IJDecomptes.class.getSimpleName());
             abort();
+        }
+    }
+
+    protected List<String> findEmployeur() throws Exception {
+
+        List<String> listIdPronce = decompteCourant.getRepartitionsPeres().stream()
+                .map(IJRepartitionJointPrestation::getIdPrononce)
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (String idPrononce : listIdPronce) {
+
+            IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
+            agentMgr.setSession((BSession) getSession());
+            agentMgr.setForIdPrononce(idPrononce);
+
+            agentMgr.find(BManager.SIZE_NOLIMIT);
+
+            return agentMgr.<IJMesureJointAgentExecution>getContainerAsList()
+                    .stream()
+                    .map(IJMesureJointAgentExecution::getIdTiers)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    private void findCopieEmployeur(Map<String, String> parametres) throws Exception {
+        for(String idTiers: findEmployeur()) {
+
+            parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
+
+            TITiers tiTierCopie = new TITiers();
+            tiTierCopie.setSession(getSession());
+            tiTierCopie.setIdTiers(idTiers);
+            tiTierCopie.retrieve();
+
+            String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
+                    IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
+                    new PRTiersAdresseCopyFormater04());
+
+            copie += "\n";
+            parametres.put("P_COPIE_A2", copie);
         }
     }
 
@@ -1985,7 +2033,6 @@ public class IJDecomptes extends FWIDocumentManager {
             }
 
             decomptesCollection = repartitions.values();
-            limiteDecompteCopie();
         } catch (Exception e) {
             throw new FWIException("impossible de créer les décomptes", e);
         }
@@ -2039,17 +2086,8 @@ public class IJDecomptes extends FWIDocumentManager {
 
             decomptesCollection = repartitions.values();
 
-            limiteDecompteCopie();
         } catch (Exception e) {
             throw new FWIException("impossible de créer les décomptes", e);
-        }
-    }
-
-    public void limiteDecompteCopie() {
-        if(isCopie) {
-            decomptesCollection = decomptesCollection.stream()
-                    .filter(d -> !d.getDemande().getIdTiers().equals(d.getIdTiers()))
-                    .collect(Collectors.toList());
         }
     }
 

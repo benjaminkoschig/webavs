@@ -78,7 +78,17 @@ public class IJDecomptesEntete extends IJDecomptes {
             try {
 
                 try {
-                    tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), getDemandeDecompteCourant().getIdTiers());
+                    if(decompteCourant.isEmployeur()) {
+                        tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), getDemandeDecompteCourant().getIdTiers());
+                    } else {
+                        List<String> idEmployeur = findEmployeur();
+                        if(idEmployeur.isEmpty()) {
+                            return;
+                        }
+                        tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), idEmployeur.get(0));
+                    }
+
+
 
                     // le modele
                     String extensionModelCaisse = getSession().getApplication()
