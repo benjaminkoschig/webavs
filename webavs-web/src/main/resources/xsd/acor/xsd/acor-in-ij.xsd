@@ -9,7 +9,7 @@
            targetNamespace="http://www.zas.admin.ch/xmlns/in-ij/0"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified"
-           version="1.2"
+           version="2.0"
            jaxb:version="2.1"
            jaxb:extensionBindingPrefixes="annox">
     <xs:import namespace="http://www.zas.admin.ch/xmlns/acor-common/0" schemaLocation="./acor-common.xsd"/>
@@ -245,26 +245,6 @@
                                 6=formation initiale changée et prolongée
                                 7=activité aux. ou atelier protégé
                                 8=étudiant avec act. lucrative
-                            </xs:documentation>
-                        </xs:annotation>
-                        <xs:simpleType>
-                            <xs:restriction base="xs:int">
-                                <xs:minInclusive value="2"/>
-                                <xs:maxInclusive value="8"/>
-                            </xs:restriction>
-                        </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="formationFPI" minOccurs="0">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Champ pertinentn uniquement pour une indemnite FPI (voir genreIndemnite)
-                                1 = FPI avec contrat d'apprentissage (AFP ou CFC) (code 5)
-                                2 = FPI sans contrant d'apprentissage (activité auxiliaires/atelier protégé) (code 6)
-                                3 = Formation professionnelle initiale sans stage rémunéré (code 7)
-                                4 = Formation professionnelle initiale avec stage rémunéré (code 8)
-                                5 = Autre formation (formation AI, PRA INSOS, préparation ciblée en vue d'une FPI) (code 9)
-                                6 = Cas spécial 1: selon l'art. 22 al. 2 let. b (assurés au bénéfice de mesures médicales de réadaptation au sens de l'art. 12 LAI) (code 10)
-                                7 = Cas spécial 2: selon l'art. 22 alt. 2 let. b (assurés au bénéfice de mesures de réinsertion au sens de l'art. 14a LAI) (code 11)
                             </xs:documentation>
                         </xs:annotation>
                         <xs:simpleType>

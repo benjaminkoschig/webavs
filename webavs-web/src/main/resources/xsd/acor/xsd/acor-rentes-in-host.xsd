@@ -11,7 +11,7 @@
 		targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
 		elementFormDefault="qualified"
 		attributeFormDefault="unqualified"
-		version="5.5"
+		version="6.0"
 		jaxb:version="2.1"
 		jaxb:extensionBindingPrefixes="annox">
 	<xs:import namespace="http://www.zas.admin.ch/xmlns/acor-common/0" schemaLocation="acor-common.xsd"/>
@@ -791,6 +791,7 @@
 					<xs:element name="debutInvalidite" type="xs:date"/>
 					<xs:element name="finInvalidite" type="xs:date" minOccurs="0"/>
 					<xs:element name="codeMutation" type="xs:integer" minOccurs="0"/>
+					<xs:element name="preDCAI" type="xs:boolean" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
