@@ -339,6 +339,25 @@ public class SFApercuEnfant extends SFMembreFamille {
         return false;
     }
 
+    public String getDateNaissancePere() {
+        SFMembreFamille pere = getPere();
+        if (pere == null) {
+            return null;
+        } else {
+            return pere.getDateNaissance();
+        }
+    }
+
+    public String getDateNaissanceMere() {
+        SFMembreFamille mere = getMere();
+        if (mere == null) {
+            return null;
+        } else {
+            return mere.getDateNaissance();
+        }
+    }
+
+
     /**
      * /**
      * 

@@ -26,16 +26,15 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public class PRAcorMapper {
     protected static final String YYYY_MM_DD_FORMAT = "yyyy-MM-dd";
 
+    @Getter
     private final Map<String, String> idNoAVSBidons = new HashMap<>();
+    @Getter
     private final Map<String, String> idNSSBidons = new HashMap<>();
 
     @Getter
@@ -50,12 +49,32 @@ public class PRAcorMapper {
     public PRAcorMapper(String typeAdressePourRequerant,
                         PRTiersWrapper tiersRequerant,
                         String domaineAdresse,
+                        BSession session)
+    {
+
+        this(typeAdressePourRequerant, tiersRequerant, domaineAdresse, new HashMap<>(), new HashMap<>(), session);
+    }
+
+    public PRAcorMapper(String typeAdressePourRequerant,
+                        PRTiersWrapper tiersRequerant,
+                        String domaineAdresse,
+                        Map<String, String> idNSSBidons,
+                        Map<String, String> idNoAVSBidons,
                         BSession session) {
 
         this.typeAdressePourRequerant = typeAdressePourRequerant;
         this.tiersRequerant = tiersRequerant;
         this.domaineAdresse = domaineAdresse;
+        CopyHashMap(idNSSBidons, this.idNSSBidons);
+        CopyHashMap(idNoAVSBidons, this.idNoAVSBidons);
         this.session = session;
+    }
+
+    private void CopyHashMap(Map<String, String> toCopy, Map<String, String> toGet) {
+        Set<Map.Entry<String, String>> entries = toCopy.entrySet();
+        for (Map.Entry<String, String> mapEntry : entries) {
+            toGet.put(mapEntry.getKey(), mapEntry.getValue());
+        }
     }
 
     public Integer getDomicile(String csCantonDomicile, String codePays, PRTiersWrapper tiersRequerant) {
@@ -96,13 +115,12 @@ public class PRAcorMapper {
     public long getNssMembre(ISFMembreFamilleRequerant membre) {
         String nss = membre.getNss();
         if (JadeStringUtil.isBlank(membre.getNss()) || JadeStringUtil.isIntegerEmpty(membre.getNss())) {
-            nss = nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), !membre
-                    .getRelationAuRequerant().equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT));
+            nss = nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), membre.getDateNaissance());
         }
         return PRConverterUtils.formatNssToLong(nss);
     }
 
-    public String nssBidon(String nss, String csSexe, String nomPrenom, boolean conjoint) {
+    public String nssBidon(String nss, String csSexe, String nomPrenom, String dateNaissance) {
 
         if (!JadeStringUtil.isEmpty(nss)) {
             return nss;
@@ -113,19 +131,19 @@ public class PRAcorMapper {
 
             // NNSS
             if (nssRequerant.length() > 11) {
-                return nssBidon(nss, nomPrenom, conjoint);
+                return nssBidon(nss, nomPrenom, dateNaissance);
             }
             // NAVS
             else {
-                return noAVSBidon(nss, csSexe, nomPrenom, conjoint);
+                return noAVSBidon(nss, csSexe, nomPrenom, dateNaissance);
             }
 
         } catch (Exception e) {
-            return nssBidon(nss, nomPrenom, conjoint);
+            return nssBidon(nss, nomPrenom, dateNaissance);
         }
     }
 
-    private String noAVSBidon(String noAVS, String csSexe, String nomPrenom, boolean conjoint) {
+    private String noAVSBidon(String noAVS, String csSexe, String nomPrenom, String dateNaissance) {
 
         if (!JadeStringUtil.isEmpty(noAVS)) {
             return noAVS;
@@ -152,7 +170,7 @@ public class PRAcorMapper {
          * l'enfant et qui est le conjoint. Pour regler ce probleme, on differencie les no AVS bidon en se basant sur le
          * type de relation et le nomPrenom
          */
-        String idNoAVSBidon = conjoint + "_" + nomPrenom;
+        String idNoAVSBidon = nomPrenom + "_" + dateNaissance;
         String noUnique = idNoAVSBidons.get(idNoAVSBidon);
 
         if (noUnique == null) {
@@ -164,13 +182,13 @@ public class PRAcorMapper {
     }
 
 
-    private String nssBidon(String nss, String nomPrenom, boolean conjoint) {
+    private String nssBidon(String nss, String nomPrenom, String dateNaissance) {
 
         if (!JadeStringUtil.isEmpty(nss)) {
             return nss;
         }
 
-        String idNssBidon = conjoint + "_" + nomPrenom;
+        String idNssBidon = nomPrenom + "_" + dateNaissance;
 
         // Prendre un nss de la liste des 25 et voir s'il existe déjà dans la map (itérer),
         // s'il existe, prendre un autre et retest, s'il existe pas, le retourner et l'insérer.
@@ -199,7 +217,7 @@ public class PRAcorMapper {
 
             if (!isEqual) {
                 isOK = true;
-                idNoAVSBidons.put(idNssBidon, nss13);
+                //idNoAVSBidons.put(idNssBidon, nss13);
             } else {
                 increment++;
                 isEqual = false;
@@ -325,5 +343,19 @@ public class PRAcorMapper {
             return null;
         }
         return Integer.parseInt(session.getCode(csGenre));
+    }
+
+    public void setNssBidons(List<ISFMembreFamilleRequerant> membresCatAssures, List<ISFMembreFamilleRequerant> membresCatEnfants, List<ISFMembreFamilleRequerant> conjoints){
+        checkNssBidon(membresCatAssures);
+        checkNssBidon(membresCatEnfants);
+        checkNssBidon(conjoints);
+    }
+
+    private void checkNssBidon(List<ISFMembreFamilleRequerant> membresCatAssures) {
+        for (ISFMembreFamilleRequerant requerant: membresCatAssures) {
+            if(requerant.getNss().isEmpty()){
+                nssBidon(requerant.getNss(), requerant.getCsSexe(), requerant.getNom() + requerant.getPrenom(), requerant.getDateNaissance());
+            }
+        }
     }
 }

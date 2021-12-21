@@ -109,6 +109,8 @@ class IJExportationCalculAcor {
             ISFMembreFamilleRequerant requerant = membresFamilleRequerant.filtreByIdTiers(tiersRequerant.getIdTiers());
 
             PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE, tiersRequerant, IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, session);
+            prAcorMapper.setNssBidons(membres, enfants, conjoints);
+
             PRAcorAssureTypeMapper assureTypeAcorMapper = new PRAcorAssureTypeMapper(
                     membresFamilleRequerant.filtreTousSaufEnfants(),
                     situationFamiliale,

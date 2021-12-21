@@ -25,6 +25,9 @@ public class SFEnfantWrapper implements ISFEnfant {
     private String nss = "";
     private String prenomMere = "";
     private String prenomPere = "";
+    private String dateNaissance = "";
+    private String dateNaissanceMere = "";
+    private String dateNaissancePere = "";
 
     /**
      * @return
@@ -89,6 +92,27 @@ public class SFEnfantWrapper implements ISFEnfant {
     public String getPrenomPere() {
         return prenomPere;
     }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getDateNaissance(){return dateNaissance;}
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getDateNaissancePere(){return dateNaissancePere;}
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getDateNaissanceMere(){return dateNaissanceMere;}
 
     /**
      * @return
@@ -161,4 +185,7 @@ public class SFEnfantWrapper implements ISFEnfant {
         isRecueilli = b;
     }
 
+    public void setDateNaissance(String date){dateNaissance = date;}
+    public void setDateNaissanceMere(String date){dateNaissanceMere = date;}
+    public void setDateNaissancePere(String date){dateNaissancePere = date;}
 }

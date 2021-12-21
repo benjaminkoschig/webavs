@@ -33,7 +33,7 @@ public class PRAcorAssureTypeMapper extends PRAcorMapper {
     public PRAcorAssureTypeMapper(final List<ISFMembreFamilleRequerant> membresFamille,
                                   final ISFSituationFamiliale situationFamiliale,
                                   final PRAcorMapper prAcorMapper) {
-        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
+        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), prAcorMapper.getIdNSSBidons(), prAcorMapper.getIdNoAVSBidons(), prAcorMapper.getSession());
         this.membresFamille = membresFamille;
         this.situationFamiliale = situationFamiliale;
     }

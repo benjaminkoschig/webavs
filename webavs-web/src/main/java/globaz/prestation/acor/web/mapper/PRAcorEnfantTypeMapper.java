@@ -38,7 +38,7 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
     public PRAcorEnfantTypeMapper(final ISFSituationFamiliale situationFamiliale,
                                   final List<ISFMembreFamilleRequerant> enfantsFamilles,
                                   final PRAcorMapper prAcorMapper) {
-        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), prAcorMapper.getSession());
+        super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), prAcorMapper.getIdNSSBidons(), prAcorMapper.getIdNoAVSBidons(), prAcorMapper.getSession());
         this.situationFamiliale = situationFamiliale;
         this.enfantsFamilles = enfantsFamilles;
     }
@@ -86,13 +86,13 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         enfant.setRefugie(false);
         enfant.setSexe(PRACORConst.csSexeEnfantToAcor2020(membre.getCsSexe()));
 
-        String noAvsPere = nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(), true);
+        String noAvsPere = nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(), detail.getDateNaissancePere());
         if (!JadeStringUtil.isBlankOrZero(noAvsPere)) {
             enfant.setNavsPere(PRConverterUtils.formatNssToLong(noAvsPere));
         } else {
             enfant.setPereInconnu(true);
         }
-        String noAvsMere = nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), true);
+        String noAvsMere = nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), detail.getDateNaissanceMere());
         if (!JadeStringUtil.isBlankOrZero(noAvsMere)) {
             enfant.setNavsMere(PRConverterUtils.formatNssToLong(noAvsMere));
         } else {

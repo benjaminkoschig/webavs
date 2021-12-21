@@ -146,9 +146,9 @@ public class REExportationCalculAcor {
             List<ISFMembreFamilleRequerant> conjoints = new ArrayList<>();
             conjoints.addAll(filterListMembresExConjointConjoint(membresFamille));
             conjoints.addAll(filterListMembresConjoints(membresFamille));
+            prAcorMapper.setNssBidons(membresCatAssures, membresCatEnfants, conjoints);
 
             PRAcorFamilleTypeMapper familleTypeMapper = new PRAcorFamilleTypeMapper(this.membreRequerant, situationFamiliale, conjoints, this.prAcorMapper);
-
             inHost.getAssure().addAll(createListAssures(membresCatAssures, situationFamiliale));
             inHost.getFamille().addAll(familleTypeMapper.map());
 

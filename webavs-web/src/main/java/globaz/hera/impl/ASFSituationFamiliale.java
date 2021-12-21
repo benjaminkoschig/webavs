@@ -1219,6 +1219,9 @@ public abstract class ASFSituationFamiliale extends BEntity {
         enfantW.setPrenomMere(enfant.getPrenomMere());
         enfantW.setPrenomPere(enfant.getPrenomPere());
         enfantW.setRecueilli(enfant.isRecueilli());
+        enfantW.setDateNaissance(enfant.getDateNaissance());
+        enfantW.setDateNaissancePere(enfant.getDateNaissancePere());
+        enfantW.setDateNaissanceMere(enfant.getDateNaissanceMere());
 
         return enfantW;
     }

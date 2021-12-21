@@ -79,4 +79,25 @@ public interface ISFEnfant {
      * @return la valeur courante de l'attribut recueilli
      */
     public boolean isRecueilli();
+
+    /**
+     * getter pour l'attribut date de naissance de l'enfant
+     *
+      * @return la valeur courante de l'attribut date de naissance
+     */
+    public String getDateNaissance();
+
+    /**
+     * getter pour l'attribut date de naissance du pere
+     *
+     * @return la valeur courante de l'attribut date de naissance pere
+     */
+    public String getDateNaissancePere();
+
+    /**
+     * getter pour l'attribut date de naissance de la mere
+     *
+     * @return la valeur courante de l'attribut date de naissance mere
+     */
+    public String getDateNaissanceMere();
 }
