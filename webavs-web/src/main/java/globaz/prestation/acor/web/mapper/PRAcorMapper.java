@@ -115,12 +115,21 @@ public class PRAcorMapper {
     public long getNssMembre(ISFMembreFamilleRequerant membre) {
         String nss = membre.getNss();
         if (JadeStringUtil.isBlank(membre.getNss()) || JadeStringUtil.isIntegerEmpty(membre.getNss())) {
-            nss = nssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), membre.getDateNaissance());
+            nss = getNssBidon(membre.getNss(), membre.getCsSexe(), membre.getNom() + membre.getPrenom(), membre.getDateNaissance());
         }
         return PRConverterUtils.formatNssToLong(nss);
     }
 
-    public String nssBidon(String nss, String csSexe, String nomPrenom, String dateNaissance) {
+    public String getNssBidon(String nss, String csSexe, String nomPrenom, String dateNaissance){
+        String idNoBidon = nomPrenom + "_" + dateNaissance;
+        String noUnique = nss.length() > 11 ? idNSSBidons.get(idNoBidon) : idNoAVSBidons.get(idNoBidon);
+        if(noUnique == null){
+            return setNssBidon(nss, csSexe, nomPrenom, dateNaissance);
+        }
+        return noUnique;
+    }
+
+    private String setNssBidon(String nss, String csSexe, String nomPrenom, String dateNaissance) {
 
         if (!JadeStringUtil.isEmpty(nss)) {
             return nss;
@@ -346,15 +355,15 @@ public class PRAcorMapper {
     }
 
     public void setNssBidons(List<ISFMembreFamilleRequerant> membresCatAssures, List<ISFMembreFamilleRequerant> membresCatEnfants, List<ISFMembreFamilleRequerant> conjoints){
-        checkNssBidon(membresCatAssures);
-        checkNssBidon(membresCatEnfants);
-        checkNssBidon(conjoints);
+        addNssBidon(membresCatAssures);
+        addNssBidon(membresCatEnfants);
+        addNssBidon(conjoints);
     }
 
-    private void checkNssBidon(List<ISFMembreFamilleRequerant> membresCatAssures) {
+    private void addNssBidon(List<ISFMembreFamilleRequerant> membresCatAssures) {
         for (ISFMembreFamilleRequerant requerant: membresCatAssures) {
             if(requerant.getNss().isEmpty()){
-                nssBidon(requerant.getNss(), requerant.getCsSexe(), requerant.getNom() + requerant.getPrenom(), requerant.getDateNaissance());
+                setNssBidon(requerant.getNss(), requerant.getCsSexe(), requerant.getNom() + requerant.getPrenom(), requerant.getDateNaissance());
             }
         }
     }
