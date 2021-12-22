@@ -904,7 +904,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))
                 )) {
                 if(JadeStringUtil.isEmpty(revenuAnnuelDeterminant)) {
-                    calculRevenuAnnuel();
+                    calculRevenuAnnuelDeterminant();
                 }
                 String texte = document.getTextes(5).getTexte(10).getDescription();
                 texte = PRStringUtils.replaceString(texte,"{revenuAnnuelDeterminant}", revenuAnnuelDeterminant);
@@ -1005,18 +1005,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
     }
 
-    private void calculRevenuAnnuel() throws Exception {
+    private void calculRevenuAnnuelDeterminant() throws Exception {
         APReferenceDataAPG ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), new JADate(impotDateDebut),
                 new JADate(impotDateFin), new JADate(impotDateFin));
-        final double montantJournalierMax = ref.getGE().intValue();
-        final double montantAnnuelMax = montantJournalierMax * 360;
-        boolean isMontantMax = false;
 
-        if (montantAnnuelMax <= decompteCourant.getRevenuAnnuel().doubleValue()) {
-            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
-        } else {
-            revenuAnnuelDeterminant = JANumberFormatter.format(decompteCourant.getRevenuAnnuel());
-        }
+        revenuAnnuelDeterminant = JANumberFormatter.format(decompteCourant.getRevenuAnnuel());
     }
 
     private String getAdresseFiscFormatteLine(String langue, String idCanton) {
@@ -1384,15 +1377,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
 
+        revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
+
         if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(10).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
-            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
             isMontantMax = true;
         } else {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(11).getDescription(), "{montantAnnuel}",
                     JANumberFormatter.format(revenuAnnuel));
-            revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
         }
 
         if (isMontantMax) {
@@ -1556,18 +1549,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             arguments[6] = derniereRepartition.getMontantJournalierRepartition();
         }
 
+        revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
+
         if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(5).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
-            revenuAnnuelDeterminant = JANumberFormatter.format(montantAnnuelMax);
-
             // arguments[10] =
             // "supérieur à CHF "+JANumberFormatter.format(montantAnnuelMax);
             isMontantMax = true;
         } else {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
                     JANumberFormatter.format(revenuAnnuel));
-            revenuAnnuelDeterminant = JANumberFormatter.format(revenuAnnuel);
         }
 
         if (isMontantMax) {
