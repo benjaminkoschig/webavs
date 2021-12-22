@@ -1239,9 +1239,17 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 // Déclaration d'un buffer Base de calcul, dédié à la bande
                 // Group2footer du rapport
                 StringBuffer bufferBaseCalcul = new StringBuffer();
-                // Insertion du titre
-                bufferBaseCalcul.append(document.getTextes(3).getTexte(1).getDescription());
+                StringBuffer bufferBaseCalculTitre = new StringBuffer();
+                StringBuffer bufferBaseCalculPrestEnfTexte = new StringBuffer();
+                StringBuffer bufferBaseCalculPrestEnfJour = new StringBuffer();
+                StringBuffer bufferBaseCalculIndTexte = new StringBuffer();
+                StringBuffer bufferBaseCalculIndMois = new StringBuffer();
+                StringBuffer bufferBaseCalculIndJour = new StringBuffer();
+                StringBuffer bufferBaseCalculGratTexte = new StringBuffer();
 
+
+                // Insertion du titre
+                bufferBaseCalculTitre.append(document.getTextes(3).getTexte(1).getDescription());
                 // Recherche de la grande ou petite IJCalculee pour l'IJCalculee
                 // courante
                 IJIJCalculee ijGrandePetiteFpiIjCalculee = null;
@@ -1652,19 +1660,20 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         champs.put("PARAM_MONT_JOUR_2", afficheMntJour(buffer, false));
                         champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
 
-                        String indemnite = document.getTextes(3).getTexte(41).getDescription();
+                        String indemniteTexte = document.getTextes(3).getTexte(41).getDescription();
                         Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
                         if(motifFpi.isPresent() && motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE) {
-                            indemnite = document.getTextes(3).getTexte(40).getDescription();
+                            indemniteTexte = document.getTextes(3).getTexte(40).getDescription();
+                            bufferBaseCalculGratTexte.append(document.getTextes(3).getTexte(55).getDescription());
                         }
+                        bufferBaseCalculIndTexte.append(indemniteTexte);
                         if(ijGrandePetiteFpiIjCalculee instanceof IJFpiCalculee) {
-                            indemnite = PRStringUtils.replaceString(indemnite, PARAM_DEVISE, DEVISE_CHF);
-                            indemnite = PRStringUtils.replaceString(indemnite, PARAM_SAL, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getSalaireMensuel());
-                            indemnite = PRStringUtils.replaceString(indemnite, PARAM_RJM, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantBase());
-                        }
-                        indemnite += "\n\n";
-                        bufferBaseCalcul.append(indemnite);
+                            String indemniteMois = PRStringUtils.replaceString(document.getTextes(3).getTexte(56).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+                            bufferBaseCalculIndMois.append(PRStringUtils.replaceString(indemniteMois, PARAM_SAL, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getSalaireMensuel()));
+                            String indemniteJour = PRStringUtils.replaceString(document.getTextes(3).getTexte(57).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+                            bufferBaseCalculIndJour.append(PRStringUtils.replaceString(indemniteJour, PARAM_RJM, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantBase()));
 
+                        }
                     }else{
 
                         // Finalement on traite le cas pour la petite IJ
@@ -1807,9 +1816,11 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         String cdtPrestationEnfant = "";
                         if (ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_FPI)){
                             if(ijGrandePetiteFpiIjCalculee instanceof IJFpiCalculee) {
-                                cdtPrestationEnfant = document.getTextes(3).getTexte(42).getDescription();
-                                cdtPrestationEnfant = PRStringUtils.replaceString(cdtPrestationEnfant, PARAM_RJME, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants());
-                                cdtPrestationEnfant += "\n\n";
+                                // Ajout texte pour champs titre prestation enfant
+                                bufferBaseCalculPrestEnfTexte.append(document.getTextes(3).getTexte(42).getDescription());
+                                String prestationEnfant = PRStringUtils.replaceString(document.getTextes(3).getTexte(58).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+                                prestationEnfant = PRStringUtils.replaceString(prestationEnfant, PARAM_RJME, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants());
+                                bufferBaseCalculPrestEnfJour.append(prestationEnfant);
                             }
                         }else {
                             if (isIndemniteMinimumGarantit) {
@@ -1842,8 +1853,9 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                     cdtPrestationEnfant = document.getTextes(3).getTexte(16).getDescription();
                                 }
                             }
+                            bufferBaseCalcul.append(cdtPrestationEnfant);
                         }
-                        bufferBaseCalcul.append(cdtPrestationEnfant);
+
                     }
 
                     montantTotalPlafonne = montantTotalPlafonne.add(new BigDecimal(
@@ -2630,6 +2642,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 lignesAajouter.add(champs);
 
+
                 // Base de calcul pour FPI
                 if(ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_FPI)){
                     IJFpiCalculee fpiCalculee = ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee);
@@ -2655,6 +2668,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         // puis on ajoute à la phrase sur l'ajout de la prestation mensuelle plafonnée
                         bufferBaseCalcul.append(salaire);
                         ajoutBaseCalculTextePrestationMensuelle(bufferBaseCalcul, salpre);
+                        bufferBaseCalcul.append("\n\n");
                     }else {
                         Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
                         if(motifFpi.isPresent()) {
@@ -2680,7 +2694,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 // 1ere annee contrat, phrase 1/4 de rente
                                 String renteVieillesse = document.getTextes(3).getTexte(43).getDescription();
                                 // 2eme annee contrat, prhase 1/3 de rente
-                                if (Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
+                                if (dateFormation != null && dateDebutPrononce != null && Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
                                     renteVieillesse = document.getTextes(3).getTexte(44).getDescription();
                                 }
                                 renteVieillesse += "\n";
@@ -2690,7 +2704,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 // Ajout paragraphe prestations mensuelle
                                 // Phrase pourcentage de rente, 1ère annéee 1/4 de rente
                                 int idPosition = 49;
-                                if (Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
+                                if (dateFormation != null && dateDebutPrononce != null && Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
                                     // Phrase pourcentage de rente, 2ème annéee 1/3 de rente
                                     idPosition = 50;
                                 }
@@ -2726,7 +2740,12 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 // calcul
                 for (int j = 0; j < lignesAajouter.size(); j++) {
                     HashMap champsTmp = (HashMap) lignesAajouter.get(j);
-                    champsTmp.put("PARAM_BASECALCUL", bufferBaseCalcul.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BASECALCUL_TITRE", bufferBaseCalculTitre.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BC_IND_TEXTE", bufferBaseCalculIndTexte.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BC_IND_MOIS", bufferBaseCalculIndMois.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BC_IND_JOUR", bufferBaseCalculIndJour.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BC_IND_GRAT_TEXTE", bufferBaseCalculIndJour.toString());
+                    putParamBaseCalcul(champsTmp, "PARAM_BASECALCUL_CORPS", bufferBaseCalcul.toString());
                 }
 
                 // Finalement on ajoute les lignes dans le rapport
@@ -2744,6 +2763,12 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         // On envoie toutes les lignes pour la création du détail
         this.setDataSource(lignes);
 
+    }
+
+    private void putParamBaseCalcul(HashMap champsTmp, String param, String texte){
+        if(!texte.isEmpty()){
+            champsTmp.put(param, texte);
+        }
     }
 
     private String ajoutTextePrestationEnfantSiNecessaire(boolean isPrestationEnfant, String salaire) {
