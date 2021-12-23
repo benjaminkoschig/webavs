@@ -24,6 +24,10 @@ public class IJIJIndemniteJournaliereMapper {
                 IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
                 if (PRACORConst.CA_TYPE_MESURE_INTERNE.equals(Strings.toStringOrNull(ij.getCategorie()))) {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
+                    if(PRACORConst.CA_TYPE_FPI.equals(Strings.toStringOrNull(basesCalcul.getGenre()))) {
+                        creerIJZero(ijijCalculee.getIdIJCalculee(), Strings.toStringOrNullDoubleFormat(basesCalcul.getReductionAI()), entityService, IIJMesure.CS_INTERNE);
+                        continue;
+                    }
                 } else {
                     indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
                 }
@@ -47,21 +51,20 @@ public class IJIJIndemniteJournaliereMapper {
     private void creerIJIndemniteJournaliere(String idIJCalculee, String reductionAi, EntityService entityService) {
         try {
             // 1ère IJ de type interne
-            IJIndemniteJournaliere indemniteJournaliere = creerIndemniteJournaliereSansType();
-            indemniteJournaliere.setIdIJCalculee(idIJCalculee);
-            indemniteJournaliere.setDeductionRenteAI(reductionAi);
-            indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
-            entityService.add(indemniteJournaliere);
-
+            creerIJZero(idIJCalculee, reductionAi, entityService, IIJMesure.CS_INTERNE);
             // 2ème IJ de type externe
-            indemniteJournaliere = creerIndemniteJournaliereSansType();
-            indemniteJournaliere.setIdIJCalculee(idIJCalculee);
-            indemniteJournaliere.setDeductionRenteAI(reductionAi);
-            indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
-            entityService.add(indemniteJournaliere);
+            creerIJZero(idIJCalculee, reductionAi, entityService, IIJMesure.CS_EXTERNE);
         }catch(Exception e){
             throw new CommonTechnicalException(e);
         }
+    }
+
+    private void creerIJZero(String idIJCalculee, String reductionAi, EntityService entityService, String ijMesure) {
+        IJIndemniteJournaliere indemniteJournaliere = creerIndemniteJournaliereSansType();
+        indemniteJournaliere.setIdIJCalculee(idIJCalculee);
+        indemniteJournaliere.setDeductionRenteAI(reductionAi);
+        indemniteJournaliere.setCsTypeIndemnisation(ijMesure);
+        entityService.add(indemniteJournaliere);
     }
 
     /**

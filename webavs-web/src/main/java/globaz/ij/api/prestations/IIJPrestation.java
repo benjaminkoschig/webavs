@@ -26,7 +26,6 @@ public interface IIJPrestation {
     public static final String CS_RESTITUTION = "52419002";
 
     public static final String CS_VALIDE = "52409002";
-    public static final String CS_GROUPE_MODE_CALCUL_FPI = "IJGENRREA2";
     public static final String JOUR_FPI = "30";
 
 }

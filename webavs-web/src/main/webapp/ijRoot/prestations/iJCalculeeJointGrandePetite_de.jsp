@@ -19,6 +19,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.ij.db.prononces.IJPrononce" %>
+<%@ page import="globaz.ij.api.prononces.IIJPrononce" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -198,6 +199,17 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 							<TD><ct:FWLabel key="JSP_MONTANT_INDEMNITE_ASSISTANCE"/></TD>
 							<TD><INPUT type="text" name="montantIndemniteAssistance" value="<%=viewBean.getMontantIndemniteAssistance()%>"></TD>
 						</TR>
+						<%if (!JadeStringUtil.isBlankOrZero(viewBean.getGenreReadaptationAnnonce())) {%>
+						<TR>
+							<TD colspan="6">&nbsp;</TD>
+						</TR>
+						<TR>
+							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION_ANNONCE"/></TD>
+							<TD colspan="2">
+								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="genreReadaptationAnnonce" defaut="<%=viewBean.getGenreReadaptationAnnonce()%>"/>
+							</TD>
+						</TR>
+						<%}%>
 						<%} else if (globaz.ij.api.prononces.IIJPrononce.CS_PETITE_IJ.equals(viewBean.getCsTypeIJ())) {%>
 						<TR>
 							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
@@ -207,9 +219,9 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						</TR>
 						<%} else if (globaz.ij.api.prononces.IIJPrononce.CS_FPI.equals(viewBean.getCsTypeIJ())) {%>
 						<TR>
-							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
+							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION_ANNONCE"/></TD>
 							<TD colspan="2">
-								<ct:FWCodeSelectTag codeType="<%=globaz.ij.api.prestations.IIJPrestation.CS_GROUPE_MODE_CALCUL_FPI%>" name="csModeCalcul" defaut="<%=viewBean.getCsModeCalcul()%>"/>
+								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="genreReadaptationAnnonce" defaut="<%=viewBean.getGenreReadaptationAnnonce()%>"/>
 							</TD>
 						</TR>
 						<%}else{%>

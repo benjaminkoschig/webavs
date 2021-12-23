@@ -68,7 +68,7 @@ bButtonDelete = false;
 							<TD colspan="6"><B><ct:FWLabel key="JSP_SITUATION_ASSURE"/></B></TD>
 						</TR>
 						<TR>
-							<TD><ct:FWLabel key="JSP_MODE_CALCUL"/></TD>
+							<TD><ct:FWLabel key="JSP_MOTIF_DECISION"/></TD>
 							<TD><ct:select name="csSituationAssure" wantBlank="false" defaultValue="<%=viewBean.getCsSituationAssure()%>">
 								<%for (IIJMotifFpi motif : IIJMotifFpi.values()) {%>
 									<ct:option value="<%=motif.getCode()%>" label="<%=viewBean.getMotifLabel(motif)%>" />

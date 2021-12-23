@@ -76,6 +76,8 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
     private String montantIndemniteEnfant = "";
 
     private String montantIndemniteExploitation = "";
+    private String genreReadaptation = "";
+
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -122,6 +124,7 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         montantIndemniteExploitation = statement.dbReadNumeric(
                 IJGrandeIJCalculee.FIELDNAME_MONTANT_INDEMNITE_EXPLOITATION, 2);
         csModeCalcul = statement.dbReadNumeric(IJPetiteIJCalculee.FIELDNAME_CS_MODE_CALCUL);
+        genreReadaptation = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
     }
 
     /**
@@ -229,4 +232,11 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         nbEnfants = string;
     }
 
+    public String getGenreReadaptation() {
+        return genreReadaptation;
+    }
+
+    public void setGenreReadaptation(String genreReadaptation) {
+        this.genreReadaptation = genreReadaptation;
+    }
 }
