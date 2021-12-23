@@ -5,6 +5,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.ij.api.basseindemnisation.IIJBaseIndemnisation;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.jade.client.util.JadeStringUtil;
@@ -32,6 +33,7 @@ public class IJAttestationsJoursAdapter {
     private String nbJoursExternes = "0";
     private String nbJoursInternes = "0";
     private String nbJoursInterruption = "0";
+    private String nbJoursNonCouvert = "0";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -138,6 +140,9 @@ public class IJAttestationsJoursAdapter {
                     setNbJoursExternes(base.getNombreJoursExterne());
                     setNbJoursInternes(base.getNombreJoursInterne());
                 }
+            }
+            if(IIJPrononce.CS_FPI.equals(ij.getCsTypeIJ()) && !JadeStringUtil.isBlankOrZero(base.getNombreJoursNonCouverts())) {
+                setNbJoursNonCouvert(base.getNombreJoursNonCouverts());
             }
         } catch (Exception e) {
             throw new PRACORException("impossible de découper le calendrier", e);
@@ -282,4 +287,11 @@ public class IJAttestationsJoursAdapter {
         this.nbJoursInterruption = nbJoursInterruption;
     }
 
+    public String getNbJoursNonCouvert() {
+        return nbJoursNonCouvert;
+    }
+
+    public void setNbJoursNonCouvert(String nbJoursNonCouvert) {
+        this.nbJoursNonCouvert = nbJoursNonCouvert;
+    }
 }

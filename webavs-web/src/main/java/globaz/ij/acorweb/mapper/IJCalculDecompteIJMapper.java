@@ -69,6 +69,9 @@ public class IJCalculDecompteIJMapper {
                 }
                 if (!JadeStringUtil.isBlankOrZero(attestationsJours.getNbJoursExternes())) {
                     nbrJoursExterne = Integer.parseInt(attestationsJours.getNbJoursExternes());
+                    if(!JadeStringUtil.isBlankOrZero(attestationsJours.getNbJoursNonCouvert())) {
+                        nbrJoursExterne -= Integer.parseInt(attestationsJours.getNbJoursNonCouvert());
+                    }
                 }
                 StringBuilder detailJour = new StringBuilder();
 
@@ -78,6 +81,7 @@ public class IJCalculDecompteIJMapper {
                 for (int i = 0; i < nbrJoursExterne; i++) {
                     detailJour.append("2");
                 }
+
                 long diff = nbrJoursDansPeriode - nbrJoursExterne - nbrJoursInterne;
 
                 for (int i = 0; i < diff; i++) {
