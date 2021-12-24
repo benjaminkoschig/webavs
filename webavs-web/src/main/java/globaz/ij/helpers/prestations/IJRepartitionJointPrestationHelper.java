@@ -1,5 +1,6 @@
 package globaz.ij.helpers.prestations;
 
+import ch.globaz.common.util.Dates;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -202,9 +203,13 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
                         }
                     }
 
-                    double somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsAssure(
-                            (BSession) session, transaction, prononce, bi, repartition, prst.getMontantBrut(),
-                            montantJrnExt);
+                    double somme = 0D;
+
+                    if(Dates.isAnneeMajeur(prst.getDateDebut(), prononce.getDateNaissanceTiers())) {
+                        somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsAssure(
+                                (BSession) session, transaction, prononce, bi, repartition, prst.getMontantBrut(),
+                                montantJrnExt);
+                    }
                     repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
                             .getMontantBrut()) + somme));
                     repartition.update(transaction);
@@ -267,8 +272,13 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
                 bi.setIdBaseIndemisation(vb.getIdBaseIndemnisation());
                 bi.retrieve(transaction);
 
-                double somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsEmployeur((BSession) session,
-                        transaction, prononce, bi, rp);
+
+                double somme = 0D;
+
+                if(Dates.isAnneeMajeur(prst.getDateDebut(), prononce.getDateNaissanceTiers())) {
+                    somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsEmployeur((BSession) session,
+                            transaction, prononce, bi, rp);
+                }
 
                 rp.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(rp.getMontantBrut()) + somme));
 
@@ -443,8 +453,13 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
                     }
                 }
 
-                double somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsAssure((BSession) session,
-                        transaction, prononce, bi, repartition, prst.getMontantBrut(), montantJrnExt);
+                double somme = 0D;
+
+                if(Dates.isAnneeMajeur(prst.getDateDebut(), prononce.getDateNaissanceTiers())) {
+                    somme = IJRepartitionPaiementBuilder.getInstance().buildCotisationsAssure((BSession) session,
+                            transaction, prononce, bi, repartition, prst.getMontantBrut(), montantJrnExt);
+                }
+
                 repartition.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(repartition
                         .getMontantBrut()) + somme));
                 repartition.update(transaction);
