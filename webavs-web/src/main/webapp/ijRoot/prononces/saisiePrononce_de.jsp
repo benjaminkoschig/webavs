@@ -231,18 +231,18 @@
 							</TD>
 							<%}%>
 						</TR>
+						<%if (viewBean.getPrononce().isFpi()){%>
+							<INPUT type="hidden" name="csTypeHebergement" value="<%=globaz.ij.api.prononces.IIJPrononce.CS_EXTERNE%>"/>
+						<%} else {%>
 						<TR>
 							<TD><ct:FWLabel key="JSP_TYPE_HEBERGEMENT"/></TD>
 							<TD colspan="2">	<ct:select name="csTypeHebergement" defaultValue="<%=viewBean.getCsTypeHebergement()%>">
 										<ct:optionsCodesSystems csFamille="<%=globaz.ij.api.prononces.IIJPrononce.CS_GROUPE_TYPE_HEBERGEMENT%>">
-											<%if (viewBean.getPrononce().isFpi()){%>
-												<ct:excludeCode code="<%=globaz.ij.api.prononces.IIJPrononce.CS_INTERNE_EXTERNE%>"/>
-												<ct:excludeCode code="<%=globaz.ij.api.prononces.IIJPrononce.CS_INTERNE%>"/>
-											<%}%>
 										</ct:optionsCodesSystems>
 									</ct:select>
 							</TD>
 						</TR>
+						<%}%>
 						<TR>
 							<TD><ct:FWLabel key="JSP_NO_DECISION_AI_COMMUNICATION"/></TD>
 							<TD colspan="5"><INPUT type="text" name="noDecisionAI" value="<%=viewBean.getNoDecisionAI()%>" class="libelleLong">&nbsp;Format : AAAANNNNNNC</TD>
