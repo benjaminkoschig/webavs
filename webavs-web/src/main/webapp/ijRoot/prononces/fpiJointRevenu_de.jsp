@@ -47,6 +47,24 @@ bButtonDelete = false;
 		document.forms[0].elements('userAction').value = "ij.prononces.fpiJointRevenu.arreterEtape5";
   		document.forms[0].submit();
  	}
+
+	function afficheSalaireFormation(){
+		var codeMotif = $("#csSituationAssure").val();
+		if(codeMotif == <%=IIJMotifFpi.FPI_SANS_CONTRAT_APPRENTISSAGE.getCode()%>) {
+			$(".ligneFormation TD").css("visibility", "");
+		} else {
+			$(".ligneFormation TD").css("visibility", "hidden");
+		}
+		if(codeMotif == <%=IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE.getCode()%>) {
+			$(".ligneSalaire TD").css("visibility", "");
+		} else {
+			$(".ligneSalaire TD").css("visibility", "hidden");
+		}
+	}
+
+	$(function() {
+		afficheSalaireFormation();
+	})
 	
 </script>
 <%-- /tpl:put --%>
@@ -69,19 +87,23 @@ bButtonDelete = false;
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_MOTIF_DECISION"/></TD>
-							<TD><ct:select name="csSituationAssure" wantBlank="false" defaultValue="<%=viewBean.getCsSituationAssure()%>">
+							<TD colspan="5"><ct:select name="csSituationAssure" id="csSituationAssure" wantBlank="false" defaultValue="<%=viewBean.getCsSituationAssure()%>" onchange="afficheSalaireFormation();">
 								<%for (IIJMotifFpi motif : IIJMotifFpi.values()) {%>
 									<ct:option value="<%=motif.getCode()%>" label="<%=viewBean.getMotifLabel(motif)%>" />
 								<%} %>
 								</ct:select></TD>
 						</TR>
 						<TR>
-							<TD>&nbsp;</TD>
+							<TD colspan="6">&nbsp;</TD>
 						</TR>
-						<TR>
+						<TR class="ligneFormation">
+							<TD><LABEL for="dateFormation"><ct:FWLabel key="JSP_DEBUT_FORMATION"/></LABEL></TD>
+							<TD colspan="5"><ct:FWCalendarTag name="dateFormation" value="<%=viewBean.getDateFormation()%>"/></TD>
+						</TR>
+						<TR class="ligneSalaire">
 							<TD colspan="6"><B><ct:FWLabel key="JSP_SALAIRE_SELON_CONTRAT_APPRANTISSAGE"/></B></TD>
 						</TR>
-						<TR>
+						<TR class="ligneSalaire">
 							<TD><ct:FWLabel key="JSP_MONTANT"/></TD>
 							<TD><INPUT type="text" name="revenu" value="<%=viewBean.getRevenu()%>"></TD>
 							<TD><ct:FWLabel key="JSP_PERIODICITE"/></TD>
@@ -97,15 +119,10 @@ bButtonDelete = false;
 							<TD><ct:FWLabel key="JSP_HEURES_SEMAINE"/></TD>
 							<TD><INPUT type="text" name="nbHeuresSemaine" value="<%=viewBean.getNbHeuresSemaine()%>"></TD>
 						</TR>
-						<TR>
+						<TR class="ligneSalaire">
 							<TD><ct:FWLabel key="JSP_ANNEE_NIVEAU"/></TD>
-							<TD><INPUT type="text" name="annee" value="<%=viewBean.getAnnee()%>"></TD>
+							<TD colspan="5"><INPUT type="text" name="annee" value="<%=viewBean.getAnnee()%>"></TD>
 						</TR>
-						<TR>
-							<TD><LABEL for="dateFormation"><ct:FWLabel key="JSP_DEBUT_FORMATION"/></LABEL></TD>
-							<TD ><ct:FWCalendarTag name="dateFormation" value="<%=viewBean.getDateFormation()%>"/></TD>
-						</TR>
-						
 
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 
