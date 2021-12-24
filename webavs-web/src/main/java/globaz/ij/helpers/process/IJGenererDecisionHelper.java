@@ -382,9 +382,8 @@ public class IJGenererDecisionHelper extends FWHelper {
                     }
 
                     addCopieFisc(session, vb, factory);
-                    if(IJDecision.BENEFICIAIRE_ASSURE.equals(vb.getBeneficiaire())) {
-                        addCopieEmployeurs(session, vb, factory);
-                    }
+                    addCopieEmployeurs(session, vb, factory);
+
                 }
             }
 
@@ -439,10 +438,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                 }
 
                 addCopieFisc(session, vb, factory);
-
-                if(IJDecision.BENEFICIAIRE_ASSURE.equals(vb.getBeneficiaire())) {
-                    addCopieEmployeurs(session, vb, factory);
-                }
+                addCopieEmployeurs(session, vb, factory);
             }
         } catch (Exception e) {
             e.printStackTrace();
