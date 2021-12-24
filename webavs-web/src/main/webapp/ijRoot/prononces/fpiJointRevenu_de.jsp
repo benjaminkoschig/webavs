@@ -79,7 +79,7 @@ bButtonDelete = false;
 							<TD>&nbsp;</TD>
 						</TR>
 						<TR>
-							<TD colspan="6"><B><ct:FWLabel key="JSP_DERNIER_REVENU_DURANT_BLABLABLA_MANQUE_A_GAGNER"/></B></TD>
+							<TD colspan="6"><B><ct:FWLabel key="JSP_SALAIRE_SELON_CONTRAT_APPRANTISSAGE"/></B></TD>
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_MONTANT"/></TD>
