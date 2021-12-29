@@ -12,6 +12,52 @@ alter table SCHEMA.IJCALCUL
     add XNGREA DECIMAL(8);
 REORG TABLE SCHEMA.IJCALCUL;
 
+-- Examen ou instruction
+update schema.IJCALCUL as cal0 set cal0.xngrea = 1
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410001);
+-- Délai d'attente
+update schema.IJCALCUL as cal0 set cal0.xngrea = 2
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410002);
+-- Mesure médicale
+update schema.IJCALCUL as cal0 set cal0.xngrea = 6
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410003);
+-- Formation scolaire spéciale
+update schema.IJCALCUL as cal0 set cal0.xngrea = 4
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410004);
+-- Formation professionnelle initiale
+update schema.IJCALCUL as cal0 set cal0.xngrea = 5
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410005);
+-- Reclassement professionnel
+update schema.IJCALCUL as cal0 set cal0.xngrea = 4
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410006);
+-- Attente emploi après reclassement professionnel
+update schema.IJCALCUL as cal0 set cal0.xngrea = 3
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410007);
+-- Mise au courant
+update schema.IJCALCUL as cal0 set cal0.xngrea = 8
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410008);
+-- Mesure de réinsertion
+update schema.IJCALCUL as cal0 set cal0.xngrea = 4
+where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
+                                             inner join schema.IJCALCUL as cal1 on xbipai = cal1.xnipai
+                      where xbttij in (52402001,52402002) and (xbdfdr = 0 or xbdfdr > 20211231) and cal1.xngrea is null and xbtgen = 52410009);
+
 -- Ajout mensuel 13
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (52406007, 'IJPERSALAI', 7, 1, 0, 0, 'Mensuel_13', 2, 1, 2, 2, 2, 2, 51400006, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52406007, 'D', '7', 'Monatslohn 13', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
