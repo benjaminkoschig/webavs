@@ -2414,62 +2414,16 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 }
 
-                // Retrieve du taux de cotisations
-                if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
+                // Cotisations seulement pour tiers de plus de 18 ans l'année de fin du prononce.
+                if(Dates.isAnneeMajeur(prononce.getDateFinPrononce(), tiers.getDateNaissance())) {
 
-                    buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(14).getDescription(),
-                            IJDecision.CDT_TAUXCOTI, String.valueOf(taux_coti_externe)));
-                    buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(), IJDecision.CDT_TYPECOTI,
-                            libelle_type_coti_externe));
-                    if (documentProperties.getParameter("beneficiaire").equals("assure")) {
-                        buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                IJDecision.CDT_SIGNECOTI, "./."));
-                    } else {
-                        buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                IJDecision.CDT_SIGNECOTI, "+"));
-                    }
-
-                    champs.put("PARAM_MONT_LIBELLE", buffer.toString());
-
-                    buffer.setLength(0);
-                    buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_externe).toStringFormat());
-
-                    champs.put("PARAM_MONT_JOUR", afficheMntJour(buffer, false));
-                    champs.put("PARAM_DEVISE_JOUR", bufferDevise.toString());
-
-                    buffer.setLength(0);
-                    buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_interne).toStringFormat());
-
-                    champs.put("PARAM_MONT_RED", afficheMntJour(buffer, false));
-                    champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
-
-                } else {
-
-                    if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE)) {
-
-                        buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(14).getDescription(),
-                                IJDecision.CDT_TAUXCOTI, String.valueOf(taux_coti_interne)));
-                        buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                IJDecision.CDT_TYPECOTI, libelle_type_coti_interne));
-                        if (documentProperties.getParameter("beneficiaire").equals("assure")) {
-                            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                    IJDecision.CDT_SIGNECOTI, "./."));
-                        } else {
-                            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                    IJDecision.CDT_SIGNECOTI, "+"));
-                        }
-
-                        champs.put("PARAM_MONT_LIBELLE", buffer.toString());
-
-                        buffer.setLength(0);
-
-                        buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_interne).toStringFormat());
-                    } else {
+                    // Retrieve du taux de cotisations
+                    if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
 
                         buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(14).getDescription(),
                                 IJDecision.CDT_TAUXCOTI, String.valueOf(taux_coti_externe)));
-                        buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
-                                IJDecision.CDT_TYPECOTI, libelle_type_coti_externe));
+                        buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(), IJDecision.CDT_TYPECOTI,
+                                libelle_type_coti_externe));
                         if (documentProperties.getParameter("beneficiaire").equals("assure")) {
                             buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
                                     IJDecision.CDT_SIGNECOTI, "./."));
@@ -2481,13 +2435,63 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         champs.put("PARAM_MONT_LIBELLE", buffer.toString());
 
                         buffer.setLength(0);
-
                         buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_externe).toStringFormat());
+
+                        champs.put("PARAM_MONT_JOUR", afficheMntJour(buffer, false));
+                        champs.put("PARAM_DEVISE_JOUR", bufferDevise.toString());
+
+                        buffer.setLength(0);
+                        buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_interne).toStringFormat());
+
+                        champs.put("PARAM_MONT_RED", afficheMntJour(buffer, false));
+                        champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
+
+                    } else {
+
+                        if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE)) {
+
+                            buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(14).getDescription(),
+                                    IJDecision.CDT_TAUXCOTI, String.valueOf(taux_coti_interne)));
+                            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                    IJDecision.CDT_TYPECOTI, libelle_type_coti_interne));
+                            if (documentProperties.getParameter("beneficiaire").equals("assure")) {
+                                buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                        IJDecision.CDT_SIGNECOTI, "./."));
+                            } else {
+                                buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                        IJDecision.CDT_SIGNECOTI, "+"));
+                            }
+
+                            champs.put("PARAM_MONT_LIBELLE", buffer.toString());
+
+                            buffer.setLength(0);
+
+                            buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_interne).toStringFormat());
+                        } else {
+
+                            buffer.append(PRStringUtils.replaceString(document.getTextes(2).getTexte(14).getDescription(),
+                                    IJDecision.CDT_TAUXCOTI, String.valueOf(taux_coti_externe)));
+                            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                    IJDecision.CDT_TYPECOTI, libelle_type_coti_externe));
+                            if (documentProperties.getParameter("beneficiaire").equals("assure")) {
+                                buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                        IJDecision.CDT_SIGNECOTI, "./."));
+                            } else {
+                                buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(),
+                                        IJDecision.CDT_SIGNECOTI, "+"));
+                            }
+
+                            champs.put("PARAM_MONT_LIBELLE", buffer.toString());
+
+                            buffer.setLength(0);
+
+                            buffer.append(new FWCurrency(cotisation_AVS_AI_APG_AC_externe).toStringFormat());
+                        }
+
+                        champs.put("PARAM_MONT_JOUR_2", afficheMntJour(buffer, false));
+                        champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
+
                     }
-
-                    champs.put("PARAM_MONT_JOUR_2", afficheMntJour(buffer, false));
-                    champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
-
                 }
 
                 lignesAajouter.add(champs);
