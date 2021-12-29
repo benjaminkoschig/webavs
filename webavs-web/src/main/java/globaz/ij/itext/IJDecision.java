@@ -2687,9 +2687,9 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         IJFpiCalculee fpiCalculee = ijGrandePetiteFpiIjCalculee;
         Integer jourMaxFpi = Integer.valueOf(IIJPrestation.JOUR_FPI);
         Double rjme = !fpiCalculee.getMontantEnfants().isEmpty() ? Double.valueOf(fpiCalculee.getMontantEnfants()) : 0;
-        String sal = fpiCalculee.getSalaireMensuel();
+        FWCurrency sal = new FWCurrency(fpiCalculee.getSalaireMensuel());
         FWCurrency salpre = new FWCurrency(rjme * jourMaxFpi);
-        salpre.add(!sal.isEmpty() ? Double.valueOf(sal) : 0);
+        salpre.add(sal.doubleValue());
 
         if(isPrestationEnfant){
             bufferBaseCalcul.append("\n\n");
@@ -2712,14 +2712,14 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         }
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, String sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
         // Ajout paragraphe prestations mensuelle
         setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, isPrestationEnfant ? 52 : 53);
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, IJFpi fpiPrononce, FWCurrency salpre, String sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, IJFpi fpiPrononce, FWCurrency salpre, FWCurrency sal) {
         LocalDate dateFormation = Dates.toDate(fpiPrononce.getDateFormation());
         LocalDate dateDebutPrononce = Dates.toDate(fpiPrononce.getDateDebutPrononce());
         // Phrase pourcentage de rente, 1ère annéee 1/4 de rente
@@ -2738,7 +2738,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, positionFin);
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25ansFormationSup(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, String sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25ansFormationSup(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
         // Traitement formation supérieure
         // Ajout paragraphe loi salaire médian
         bufferBaseCalcul.append(document.getTextes(3).getTexte(49).getDescription());
@@ -2749,7 +2749,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, isPrestationEnfant ? 58 : 59);
     }
 
-    private void setBufferBaseCalculCorpsFpiPlus25ans(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, String sal) {
+    private void setBufferBaseCalculCorpsFpiPlus25ans(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
         // Ajout paragraphe loi pour 25 ans et plus
         bufferBaseCalcul.append(document.getTextes(3).getTexte(50).getDescription());
         bufferBaseCalcul.append("\n\n");
@@ -2764,9 +2764,9 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         bufferBaseCalcul.append("\n\n");
     }
 
-    private void setBufferBaseCalculCorpsFpiFinTexte(StringBuffer bufferBaseCalcul, FWCurrency salpre, String sal, int position) {
+    private void setBufferBaseCalculCorpsFpiFinTexte(StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal, int position) {
         String texteFin = PRStringUtils.replaceString(document.getTextes(3).getTexte(position).getDescription(), PARAM_DEVISE, DEVISE_CHF);
-        texteFin = PRStringUtils.replaceString(texteFin, PARAM_SAL, sal);
+        texteFin = PRStringUtils.replaceString(texteFin, PARAM_SAL, sal.toStringFormat());
         texteFin = PRStringUtils.replaceString(texteFin, PARAM_SALPRE, salpre.toStringFormat());
         bufferBaseCalcul.append(texteFin);
         bufferBaseCalcul.append("\n\n");
