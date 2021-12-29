@@ -416,7 +416,7 @@ public class IJDecomptes extends FWIDocumentManager {
             if (!isCaisse(IJApplication.NO_CAISSE_CVCI)) {
                 // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
                 docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                        buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
+                        buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
 
                 IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
                         AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
@@ -437,7 +437,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
             // On ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
             docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                    buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
+                    buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
 
             // La gestion du NSS est différente selon la caisse, pour la mise en GED.
             // Création d'une propriété pour les caisses qui veulent le NSS vide lors de la mise en GED
@@ -873,7 +873,7 @@ public class IJDecomptes extends FWIDocumentManager {
         return true && super.beforePrintDocument();
     }
 
-    private String buildOrderPrintingByKey(String idAffilie, String idTiers, boolean isEntete) throws Exception {
+    private String buildOrderPrintingByKey(String idAffilie, String idTiers) throws Exception {
 
         String noAffilieFormatteBlank = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
         String noAffilieFormatte = noAffilieFormatteBlank;
@@ -896,7 +896,7 @@ public class IJDecomptes extends FWIDocumentManager {
             noAvsFormatte = resolveNssFromIdTier(decompteCourant.getDemande().getIdTiers(), noAvsFormatte);
         }
 
-        return noAffilieFormatte + "_" + noAvsFormatte + "_" + (isEntete ? "1":"0");
+        return noAffilieFormatte + "_" + noAvsFormatte;
     }
 
     private String resolveNssFromIdTier(String idTiers, String noAvsFormatte) throws Exception {
@@ -2270,7 +2270,7 @@ public class IJDecomptes extends FWIDocumentManager {
                         // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
                         // toujours selon le décompte courant (Assuré)
                         docInfoUnitaire.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
-                                buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers(), isEntete));
+                                buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
 
                         docInfoUnitaire.setPublishDocument(false);
                         super.registerAttachedDocument(docInfoUnitaire, getExporter().getExportNewFilePath());
@@ -2315,7 +2315,7 @@ public class IJDecomptes extends FWIDocumentManager {
                             docInfoUnitaire.setDocumentProperty(
                                     IJDecomptes.ORDER_PRINTING_BY,
                                     buildOrderPrintingByKey(decompteCourant.getIdAffilie(),
-                                            decompteCourant.getIdTiers(), isEntete));
+                                            decompteCourant.getIdTiers()));
 
                             // on ajoute le document à la liste des documents attachés
                             docInfoUnitaire.setPublishDocument(false);
