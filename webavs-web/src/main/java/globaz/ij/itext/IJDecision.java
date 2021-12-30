@@ -2364,58 +2364,58 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 String libelle_type_coti_interne = "";
                 String libelle_type_coti_externe = "";
 
-                if (documentProperties.getParameter("beneficiaire").equals("assure")) {
-                    cotisation_AVS_AI_APG_AC_interne = ijDecisionCotisationBuilder.buildCotisationsAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
-
-                    taux_coti_interne = ijDecisionCotisationBuilder.buildCotisationsTauxAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
-
-                    libelle_type_coti_interne = ijDecisionCotisationBuilder.buildCotisationsLibelleAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(),
-                            babelContainer, ct);
-
-                } else {
-                    cotisation_AVS_AI_APG_AC_interne = ijDecisionCotisationBuilder.buildCotisationsEmployeur(
-                            getSession(), getTransaction(), prononce,
-                            ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
-
-                    taux_coti_interne = ijDecisionCotisationBuilder.buildCotisationsTauxEmployeur(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
-
-                    libelle_type_coti_interne = ijDecisionCotisationBuilder.buildCotisationsLibelleEmployeur(
-                            getSession(), getTransaction(), prononce,
-                            ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(), babelContainer, ct);
-
-                }
-
-                if (documentProperties.getParameter("beneficiaire").equals("assure")) {
-                    cotisation_AVS_AI_APG_AC_externe = ijDecisionCotisationBuilder.buildCotisationsAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
-
-                    taux_coti_externe = ijDecisionCotisationBuilder.buildCotisationsTauxAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
-
-                    libelle_type_coti_externe = ijDecisionCotisationBuilder.buildCotisationsLibelleAssure(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(),
-                            babelContainer, ct);
-
-                } else {
-                    cotisation_AVS_AI_APG_AC_externe = ijDecisionCotisationBuilder.buildCotisationsEmployeur(
-                            getSession(), getTransaction(), prononce,
-                            ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
-
-                    taux_coti_externe = ijDecisionCotisationBuilder.buildCotisationsTauxEmployeur(getSession(),
-                            getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
-
-                    libelle_type_coti_externe = ijDecisionCotisationBuilder.buildCotisationsLibelleEmployeur(
-                            getSession(), getTransaction(), prononce,
-                            ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(), babelContainer, ct);
-
-                }
-
-                // Cotisations seulement pour tiers de plus de 18 ans l'année de fin du prononce.
+                 // Cotisations seulement pour tiers de plus de 18 ans l'année de fin du prononce.
                 if(Dates.isAnneeMajeur(prononce.getDateFinPrononce(), tiers.getDateNaissance())) {
+
+                    if (documentProperties.getParameter("beneficiaire").equals("assure")) {
+                        cotisation_AVS_AI_APG_AC_interne = ijDecisionCotisationBuilder.buildCotisationsAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
+
+                        taux_coti_interne = ijDecisionCotisationBuilder.buildCotisationsTauxAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
+
+                        libelle_type_coti_interne = ijDecisionCotisationBuilder.buildCotisationsLibelleAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(),
+                                babelContainer, ct);
+
+                    } else {
+                        cotisation_AVS_AI_APG_AC_interne = ijDecisionCotisationBuilder.buildCotisationsEmployeur(
+                                getSession(), getTransaction(), prononce,
+                                ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
+
+                        taux_coti_interne = ijDecisionCotisationBuilder.buildCotisationsTauxEmployeur(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite());
+
+                        libelle_type_coti_interne = ijDecisionCotisationBuilder.buildCotisationsLibelleEmployeur(
+                                getSession(), getTransaction(), prononce,
+                                ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(), babelContainer, ct);
+
+                    }
+
+                    if (documentProperties.getParameter("beneficiaire").equals("assure")) {
+                        cotisation_AVS_AI_APG_AC_externe = ijDecisionCotisationBuilder.buildCotisationsAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
+
+                        taux_coti_externe = ijDecisionCotisationBuilder.buildCotisationsTauxAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
+
+                        libelle_type_coti_externe = ijDecisionCotisationBuilder.buildCotisationsLibelleAssure(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(),
+                                babelContainer, ct);
+
+                    } else {
+                        cotisation_AVS_AI_APG_AC_externe = ijDecisionCotisationBuilder.buildCotisationsEmployeur(
+                                getSession(), getTransaction(), prononce,
+                                ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
+
+                        taux_coti_externe = ijDecisionCotisationBuilder.buildCotisationsTauxEmployeur(getSession(),
+                                getTransaction(), prononce, ijIndemniteJournaliereExterne.getMontantJournalierIndemnite());
+
+                        libelle_type_coti_externe = ijDecisionCotisationBuilder.buildCotisationsLibelleEmployeur(
+                                getSession(), getTransaction(), prononce,
+                                ijIndemniteJournaliereInterne.getMontantJournalierIndemnite(), babelContainer, ct);
+
+                    }
 
                     // Retrieve du taux de cotisations
                     if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
@@ -2492,6 +2492,9 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
 
                     }
+
+                } else { // On s'assure que la demande et le tiers est tout de même initialisé pour les tiers moins de 18 ans
+                    prononce.loadDemande(getTransaction()).loadTiers();
                 }
 
                 lignesAajouter.add(champs);
