@@ -3,7 +3,13 @@
  */
 package globaz.ij.db.prestations;
 
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import globaz.globall.db.BStatement;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.prestation.acor.PRACORConst;
 
 /**
  * <H1>Description</H1>
@@ -76,7 +82,7 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
     private String montantIndemniteEnfant = "";
 
     private String montantIndemniteExploitation = "";
-    private String genreReadaptation = "";
+    private String genreReadaptationAnnonce = "";
 
 
     // ~ Methods
@@ -124,7 +130,7 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         montantIndemniteExploitation = statement.dbReadNumeric(
                 IJGrandeIJCalculee.FIELDNAME_MONTANT_INDEMNITE_EXPLOITATION, 2);
         csModeCalcul = statement.dbReadNumeric(IJPetiteIJCalculee.FIELDNAME_CS_MODE_CALCUL);
-        genreReadaptation = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
+        genreReadaptationAnnonce = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
     }
 
     /**
@@ -232,11 +238,28 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         nbEnfants = string;
     }
 
-    public String getGenreReadaptation() {
-        return genreReadaptation;
+    public String getGenreReadaptationAnnonce() {
+        if (!JadeStringUtil.isBlank(genreReadaptationAnnonce)) {
+            try {
+                return PRACORConst.caGenreReadaptationAnnonceToCS(getSession(), genreReadaptationAnnonce);
+            } catch (Exception e) {
+                JadeLogger.error(this, "Impossible de transformer le code utilisateur du genre de réadaptation annonce en un code système : " + e);
+            }
+        }
+        return genreReadaptationAnnonce;
     }
 
-    public void setGenreReadaptation(String genreReadaptation) {
-        this.genreReadaptation = genreReadaptation;
+    public void setGenreReadaptationAnnonce(String genreReadaptationAnnonce) {
+        if (!JadeStringUtil.isBlank(genreReadaptationAnnonce)) {
+            try {
+                JadeCodeSysteme codeSysteme = JadeBusinessServiceLocator.getCodeSystemeService().getCodeSysteme(genreReadaptationAnnonce);
+                if (codeSysteme != null) {
+                    genreReadaptationAnnonce = codeSysteme.getCodeUtilisateur(Langues.getLangueDepuisCodeIso(getSession().getIdLangueISO()));
+                }
+            } catch (Exception e) {
+                JadeLogger.error(this, "Impossible de transformer le code système en code utilisateur du genre de réadaptation annonce : " + e);
+            }
+        }
+        this.genreReadaptationAnnonce = genreReadaptationAnnonce;
     }
 }

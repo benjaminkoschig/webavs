@@ -425,6 +425,21 @@ public class PRACORConst {
     }
 
     /**
+     * Transforme un code acor de genre de readaptation annonce en code systeme du groupe CS_GROUPE_GENRE_READAPTATION.
+     *
+     * @param session
+     *            DOCUMENT ME!
+     * @param caGenreReadaptationAnnonce
+     *            DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
+    public static final String caGenreReadaptationAnnonceToCS(BSession session, String caGenreReadaptationAnnonce) {
+        // le code est le code utilisateur
+       return CodeSystemUtils.searchCodeByUserCode(IIJPrononce.CS_GROUPE_GENRE_READAPTATION, caGenreReadaptationAnnonce, session).getIdCodeSysteme();
+    }
+
+    /**
      * Transforme un code acor (resultat calcul comparatif) en code systeme du groupe RERESCOMP.
      * 
      * @param session
