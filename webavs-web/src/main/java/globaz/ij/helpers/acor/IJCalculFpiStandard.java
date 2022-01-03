@@ -38,7 +38,11 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         prestation.setIdBaseIndemnisation(baseIndemnisation.getIdBaseIndemisation());
 
         calculDatesPrestation(baseIndemnisation, ijCalculee, prestation);
-        calculMontantsPrestation(baseIndemnisation, (IJFpiCalculee) ijCalculee, prestation);
+        try {
+            calculMontantsPrestation(baseIndemnisation, (IJFpiCalculee) ijCalculee, prestation);
+        } catch (IJCalculException exception) {
+            throw new IJCalculException(session.getLabel(exception.getKeyMsg()));
+        }
 
         prestation.setSession(session);
         prestation.add(transaction);
@@ -79,7 +83,7 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         prestation.setDateDecompte(JACalendar.todayJJsMMsAAAA());
     }
 
-    protected static void calculMontantsPrestation(IJBaseIndemnisation baseIndemnisation, IJFpiCalculee fpiCalculee, IJPrestation prestation) {
+    protected static void calculMontantsPrestation(IJBaseIndemnisation baseIndemnisation, IJFpiCalculee fpiCalculee, IJPrestation prestation) throws IJCalculException{
         Integer jourMaxFpi = Integer.valueOf(IIJPrestation.JOUR_FPI);
         String jnc = baseIndemnisation.getNombreJoursNonCouverts();
         Double rjm = Double.valueOf(fpiCalculee.getMontantBase());
@@ -100,6 +104,10 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         FWCurrency prmj = new FWCurrency(rjm + rjme);
         // montant brut
         FWCurrency prmb = new FWCurrency(mpr + tnce);
+
+        if(prmb.isZero() || prmb.isNegative() || prj <= 0) {
+            throw new IJCalculException("Aucune prestation ne peut être calculée pour cette période", "CALCUL_IJ_AUCUNE_PRESTATION");
+        }
 
         prestation.setNombreJoursExt(prj.toString());
         prestation.setMontantBrut(prmb.toString());

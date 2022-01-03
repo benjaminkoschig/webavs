@@ -61,6 +61,83 @@ public class IJCalculFpiStandardTest {
         Assert.assertEquals("154.40", calcul("05.02.2021","14.02.2021","4","16.70","9.2","500"));
     }
 
+    // Test FPV
+    @Test
+    public void testCalcul10aMontantsPrestationOk() {
+        Assert.assertEquals("266.20", calcul("15.07.2022","31.07.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul10bMontantsPrestationOk() {
+        Assert.assertEquals("249.50", calcul("01.08.2022","15.08.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul10cMontantsPrestationOk() {
+        Assert.assertEquals("1194.50", calcul("16.08.2022","31.08.2022","0","79.70","0","2390"));
+    }
+
+
+    @Test
+    public void testCalcul11aMontantsPrestationOk() {
+        Assert.assertEquals("15.70", calcul("15.08.2022","15.08.2022","0","16.70","0","500"));
+    }
+
+
+    @Test
+    public void testCalcul12aMontantsPrestationOk() {
+        Assert.assertEquals("266.20", calcul("15.07.2022","31.07.2022","0","16.70","0","500"));
+    }
+//
+    @Test
+    public void testCalcul12bMontantsPrestationOk() {
+        Assert.assertEquals("15.70", calcul("01.08.2022","01.08.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul12cMontantsPrestationOk() {
+        Assert.assertEquals("2310.30", calcul("02.08.2022","31.08.2022","0","79.70","0","2390"));
+    }
+
+
+
+    @Test
+    public void testCalcul13MontantsPrestationOk() {
+        Assert.assertEquals("1274.20", calcul("15.08.2022","31.08.2022","0","79.70","0","2390"));
+    }
+
+
+
+    @Test
+    public void testCalcul14aMontantsPrestationOk() {
+        Assert.assertEquals("266.20", calcul("15.07.2022","31.07.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul14bMontantsPrestationOk() {
+        Assert.assertEquals("500.00", calcul("01.08.2022","31.08.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul14cMontantsPrestationOk() {
+        Assert.assertEquals("2390.00", calcul("01.09.2022","30.09.2022","0","79.70","0","2390"));
+    }
+
+
+
+
+    @Test
+    public void testCalcul15aMontantsPrestationOk() {
+        Assert.assertEquals("266.20", calcul("15.08.2022","31.08.2022","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul15bMontantsPrestationOk() {
+        Assert.assertEquals("2390.00", calcul("01.09.2022","30.09.2022","0","79.70","0","2390"));
+    }
+
+
+
     class TestCalcul {
         IJBaseIndemnisation baseIndemnisation;
         IJFpiCalculee ijFpiCalculee;
@@ -78,10 +155,14 @@ public class IJCalculFpiStandardTest {
         }
     }
 
-    private String calcul(String dateDebut, String dateFin, String joursNonCouvert, String montantBase, String montantEnfant, String salaireMensuel){
+    private String calcul(String dateDebut, String dateFin, String joursNonCouvert, String montantBase, String montantEnfant, String salaireMensuel) {
         TestCalcul testCaalcul = new TestCalcul(dateDebut, dateFin, joursNonCouvert, montantBase, montantEnfant, salaireMensuel);
         IJPrestation prestation = new IJPrestation();
-        IJCalculFpiStandard.calculMontantsPrestation(testCaalcul.baseIndemnisation, testCaalcul.ijFpiCalculee, prestation);
+        try {
+            IJCalculFpiStandard.calculMontantsPrestation(testCaalcul.baseIndemnisation, testCaalcul.ijFpiCalculee, prestation);
+        } catch (IJCalculException e) {
+            e.printStackTrace();
+        }
         return prestation.getMontantBrut();
     }
 
