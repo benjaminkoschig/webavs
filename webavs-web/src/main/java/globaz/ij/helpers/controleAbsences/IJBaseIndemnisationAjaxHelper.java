@@ -1,5 +1,6 @@
 package globaz.ij.helpers.controleAbsences;
 
+import ch.globaz.common.util.Dates;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
@@ -258,6 +259,9 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
                 throw new Exception(
                         "La date de fin de la base d'indémnisation ne se situe pas dans la période du prononcé");
             }
+        }
+        if(!vb.getJoursNonCouvert().isEmpty() && Dates.daysBetween(vb.getDateDeDebut(), vb.getDateDeFin()) < Integer.parseInt(vb.getJoursNonCouvert())){
+            throw new Exception("Nombre de jours non indemnisés plus grand que la base d’indemnisation.");
         }
     }
 }

@@ -169,7 +169,6 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     private static final String SUFIX_HEADER_DECISION = ".jasper";
     public static final String BENEFICIAIRE_EMPLOYEUR = "employeur";
     public static final String BENEFICIAIRE_ASSURE = "assure";
-    public static final String DEVISE_CHF = "CHF";
     public static final String PARAM_DEVISE = "{devise}";
     public static final String PARAM_SAL = "{SAL}";
     public static final String PARAM_SALPRE = "{SALPRE}";
@@ -1659,7 +1658,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         champs.put("PARAM_MONT_JOUR_2", afficheMntJour(buffer, false));
                         champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
 
-                        setBuffersBaseCaculIndemniteFpi(bufferBaseCalculIndTexte, bufferBaseCalculIndMois, bufferBaseCalculIndJour, bufferBaseCalculGratTexte, (IJFpiCalculee) ijGrandePetiteFpiIjCalculee, fpiPrononce);
+                        setBuffersBaseCaculIndemniteFpi(bufferBaseCalculIndTexte, bufferBaseCalculIndMois, bufferBaseCalculIndJour, bufferBaseCalculGratTexte, bufferDevise, (IJFpiCalculee) ijGrandePetiteFpiIjCalculee, fpiPrononce);
 
                     }else{
 
@@ -1803,7 +1802,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         String cdtPrestationEnfant = "";
                         if (ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_FPI)){
                             if(isPrestationEnfant) {
-                                setBuffersBaseCalculPrestEnfant(bufferBaseCalculPrestEnfTexte, bufferBaseCalculPrestEnfJour, ijGrandePetiteFpiIjCalculee);
+                                setBuffersBaseCalculPrestEnfant(bufferBaseCalculPrestEnfTexte, bufferBaseCalculPrestEnfJour, bufferDevise, ijGrandePetiteFpiIjCalculee);
                             }
                         }else {
                             if (isIndemniteMinimumGarantit) {
@@ -2635,7 +2634,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 // Base de calcul pour FPI
                 if(ijijCalculee.getCsTypeIJ().equals(IIJPrononce.CS_FPI)){
-                    setBufferBaseCaclculCorpsFpi(isPrestationEnfant, bufferBaseCalcul, (IJFpiCalculee) ijGrandePetiteFpiIjCalculee, fpiPrononce);
+                    setBufferBaseCaclculCorpsFpi(isPrestationEnfant, bufferBaseCalcul, bufferDevise, (IJFpiCalculee) ijGrandePetiteFpiIjCalculee, fpiPrononce);
 
                 }
 
@@ -2686,7 +2685,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
     }
 
-    private void setBufferBaseCaclculCorpsFpi(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, IJFpiCalculee ijGrandePetiteFpiIjCalculee, IJFpi fpiPrononce) {
+    private void setBufferBaseCaclculCorpsFpi(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, IJFpiCalculee ijGrandePetiteFpiIjCalculee, IJFpi fpiPrononce) {
         IJFpiCalculee fpiCalculee = ijGrandePetiteFpiIjCalculee;
         Integer jourMaxFpi = Integer.valueOf(IIJPrestation.JOUR_FPI);
         Double rjme = !fpiCalculee.getMontantEnfants().isEmpty() ? Double.valueOf(fpiCalculee.getMontantEnfants()) : 0;
@@ -2699,30 +2698,30 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         }
         // Base de calcul pour décision assuré de plus de 25 ans
         if(tiers != null && Dates.isDansOuApresAnnee(fpiPrononce.getDateDebutPrononce(), tiers.getDateNaissance(), 25)){
-            setBufferBaseCalculCorpsFpiPlus25ans(isPrestationEnfant, bufferBaseCalcul, salpre, sal);
+            setBufferBaseCalculCorpsFpiPlus25ans(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
         }else {
             Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
             if(motifFpi.isPresent()) {
                 // Base de calcul pour décision LFPr avec contrat d'apprentissage
                 if (motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE) {
-                    setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(isPrestationEnfant, bufferBaseCalcul, salpre, sal);
+                    setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
                 } else if (motifFpi.get() == IIJMotifFpi.FPI_SANS_CONTRAT_APPRENTISSAGE) {
-                    setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(isPrestationEnfant, bufferBaseCalcul, fpiPrononce, salpre, sal);
+                    setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(isPrestationEnfant, bufferBaseCalcul, bufferDevise, fpiPrononce, salpre, sal);
                 } else {
-                    setBufferBaseCalculCorpsFpiMoins25ansFormationSup(isPrestationEnfant, bufferBaseCalcul, salpre, sal);
+                    setBufferBaseCalculCorpsFpiMoins25ansFormationSup(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
                 }
             }
         }
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, FWCurrency salpre, FWCurrency sal) {
         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
         // Ajout paragraphe prestations mensuelle
-        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, isPrestationEnfant ? 52 : 53);
+        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, bufferDevise, salpre, sal, isPrestationEnfant ? 52 : 53);
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, IJFpi fpiPrononce, FWCurrency salpre, FWCurrency sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25ansSansContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, IJFpi fpiPrononce, FWCurrency salpre, FWCurrency sal) {
         LocalDate dateFormation = Dates.toDate(fpiPrononce.getDateFormation());
         LocalDate dateDebutPrononce = Dates.toDate(fpiPrononce.getDateDebutPrononce());
         // Phrase pourcentage de rente, 1ère annéee 1/4 de rente
@@ -2738,10 +2737,10 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         bufferBaseCalcul.append("\n\n");
         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
-        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, positionFin);
+        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, bufferDevise, salpre, sal, positionFin);
     }
 
-    private void setBufferBaseCalculCorpsFpiMoins25ansFormationSup(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
+    private void setBufferBaseCalculCorpsFpiMoins25ansFormationSup(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, FWCurrency salpre, FWCurrency sal) {
         // Traitement formation supérieure
         // Ajout paragraphe loi salaire médian
         bufferBaseCalcul.append(document.getTextes(3).getTexte(49).getDescription());
@@ -2749,17 +2748,17 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
         // Ajout paragraphe salaire médian et prestation mensuelle
-        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, isPrestationEnfant ? 58 : 59);
+        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, bufferDevise, salpre, sal, isPrestationEnfant ? 58 : 59);
     }
 
-    private void setBufferBaseCalculCorpsFpiPlus25ans(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal) {
+    private void setBufferBaseCalculCorpsFpiPlus25ans(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, FWCurrency salpre, FWCurrency sal) {
         // Ajout paragraphe loi pour 25 ans et plus
         bufferBaseCalcul.append(document.getTextes(3).getTexte(50).getDescription());
         bufferBaseCalcul.append("\n\n");
         // Ajout paragraphe nombre de jour d'indemnite et déduction jour non couverts.
         ajoutNbJourindemniteDeductionNonCouvert(bufferBaseCalcul);
         // Ajout paragraphe prestations mensuelle
-        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, salpre, sal, isPrestationEnfant ? 60 : 61);
+        setBufferBaseCalculCorpsFpiFinTexte(bufferBaseCalcul, bufferDevise, salpre, sal, isPrestationEnfant ? 60 : 61);
     }
 
     private void ajoutNbJourindemniteDeductionNonCouvert(StringBuffer bufferBaseCalcul) {
@@ -2767,28 +2766,38 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         bufferBaseCalcul.append("\n\n");
     }
 
-    private void setBufferBaseCalculCorpsFpiFinTexte(StringBuffer bufferBaseCalcul, FWCurrency salpre, FWCurrency sal, int position) {
-        String texteFin = PRStringUtils.replaceString(document.getTextes(3).getTexte(position).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+    private void setBufferBaseCalculCorpsFpiFinTexte(StringBuffer bufferBaseCalcul, StringBuffer bufferDevise,
+                                                     FWCurrency salpre, FWCurrency sal, int position) {
+        String texteFin = PRStringUtils.replaceString(document.getTextes(3).getTexte(position).getDescription(), PARAM_DEVISE, bufferDevise.toString());
         texteFin = PRStringUtils.replaceString(texteFin, PARAM_SAL, sal.toStringFormat());
         texteFin = PRStringUtils.replaceString(texteFin, PARAM_SALPRE, salpre.toStringFormat());
         bufferBaseCalcul.append(texteFin);
         bufferBaseCalcul.append("\n\n");
     }
 
-    private void setBuffersBaseCalculPrestEnfant(StringBuffer bufferBaseCalculPrestEnfTexte, StringBuffer bufferBaseCalculPrestEnfJour, IJIJCalculee ijGrandePetiteFpiIjCalculee) {
+    private void setBuffersBaseCalculPrestEnfant(StringBuffer bufferBaseCalculPrestEnfTexte,
+                                                 StringBuffer bufferBaseCalculPrestEnfJour,
+                                                 StringBuffer bufferDevise,
+                                                 IJIJCalculee ijGrandePetiteFpiIjCalculee) {
         if(ijGrandePetiteFpiIjCalculee instanceof IJFpiCalculee) {
             // Ajout texte pour champs titre prestation enfant
             bufferBaseCalculPrestEnfTexte.append(document.getTextes(3).getTexte(45).getDescription());
-            String prestationEnfant = PRStringUtils.replaceString(document.getTextes(3).getTexte(46).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+            String prestationEnfant = PRStringUtils.replaceString(document.getTextes(3).getTexte(46).getDescription(), PARAM_DEVISE, bufferDevise.toString());
             prestationEnfant = PRStringUtils.replaceString(prestationEnfant, PARAM_RJME, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants());
             bufferBaseCalculPrestEnfJour.append(prestationEnfant);
         }
     }
 
-    private void setBuffersBaseCaculIndemniteFpi(StringBuffer bufferBaseCalculIndTexte, StringBuffer bufferBaseCalculIndMois, StringBuffer bufferBaseCalculIndJour, StringBuffer bufferBaseCalculGratTexte, IJFpiCalculee ijGrandePetiteFpiIjCalculee, IJFpi fpiPrononce) {
-        String indemniteMois = PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+    private void setBuffersBaseCaculIndemniteFpi(StringBuffer bufferBaseCalculIndTexte,
+                                                 StringBuffer bufferBaseCalculIndMois,
+                                                 StringBuffer bufferBaseCalculIndJour,
+                                                 StringBuffer bufferBaseCalculGratTexte,
+                                                 StringBuffer bufferDevise,
+                                                 IJFpiCalculee ijGrandePetiteFpiIjCalculee,
+                                                 IJFpi fpiPrononce) {
+        String indemniteMois = PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(), PARAM_DEVISE, bufferDevise.toString());
         bufferBaseCalculIndMois.append(PRStringUtils.replaceString(indemniteMois, PARAM_SAL, ijGrandePetiteFpiIjCalculee.getSalaireMensuel()));
-        String indemniteJour = PRStringUtils.replaceString(document.getTextes(3).getTexte(44).getDescription(), PARAM_DEVISE, DEVISE_CHF);
+        String indemniteJour = PRStringUtils.replaceString(document.getTextes(3).getTexte(44).getDescription(), PARAM_DEVISE, bufferDevise.toString());
         bufferBaseCalculIndJour.append(PRStringUtils.replaceString(indemniteJour, PARAM_RJM, ijGrandePetiteFpiIjCalculee.getMontantBase()));
         Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
         String indemniteTexte = document.getTextes(3).getTexte(42).getDescription();
