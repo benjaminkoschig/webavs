@@ -1761,26 +1761,30 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     champs.putAll(headerChamps);
 
                     String cdtMontantIndemniteEnfant = "";
-
                     // Contrôle si la prestation pour n enfants est plafonnée
-                    if (new BigDecimal(ijijCalculee.getMontantBase())
-                            .add(new BigDecimal(((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee)
-                                    .getMontantIndemniteEnfant())).compareTo(
-                                    new BigDecimal(ijijCalculee.getRevenuDeterminant())) >= 0) {
+                    if (isPrestationEnfantPlafonnee(ijijCalculee, ijGrandePetiteFpiIjCalculee)) {
                         cdtMontantIndemniteEnfant = document.getTextes(2).getTexte(20).getDescription();
                         isPrestationEnfantPlafonnee = true;
                     } else {
                         cdtMontantIndemniteEnfant = document.getTextes(2).getTexte(11).getDescription();
                     }
-
+                    String nbEnfant = "";
+                    String montantEnfant = "";
+                    if (IIJPrononce.CS_FPI.equals(ijijCalculee.getCsTypeIJ())){
+                        nbEnfant = ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getNbEnfants();
+                        montantEnfant = ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants();
+                    } else {
+                        nbEnfant = ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getNbEnfants();
+                        montantEnfant = ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant();
+                    }
                     cdtMontantIndemniteEnfant = PRStringUtils.replaceString(cdtMontantIndemniteEnfant,
-                            IJDecision.CDT_NBENFANT, ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getNbEnfants());
+                            IJDecision.CDT_NBENFANT, nbEnfant);
                     buffer.setLength(0);
                     buffer.append(cdtMontantIndemniteEnfant);
                     champs.put("PARAM_MONT_LIBELLE", buffer.toString());
 
                     buffer.setLength(0);
-                    buffer.append(((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant());
+                    buffer.append(montantEnfant);
 
                     if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
                         champs.put("PARAM_MONT_RED", afficheMntJour(buffer, false));
@@ -1840,9 +1844,13 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                     }
 
-                    montantTotalPlafonne = montantTotalPlafonne.add(new BigDecimal(
-                            ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant()));
-
+                    if (IIJPrononce.CS_FPI.equals(ijijCalculee.getCsTypeIJ())) {
+                        montantTotalPlafonne = montantTotalPlafonne.add(new BigDecimal(
+                                ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants()));
+                    }else{
+                        montantTotalPlafonne = montantTotalPlafonne.add(new BigDecimal(
+                                ((IJGrandeIJCalculee) ijGrandePetiteFpiIjCalculee).getMontantIndemniteEnfant()));
+                    }
                 }
                 // Indemnité totale plafonnée
                 if ((ijIndemniteJournaliereInterne != null)
@@ -1896,9 +1904,9 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                 .getMontantGarantiAAReduit();
                     }
                 } else {
-                    if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getMontantGarantiAANonReduit())
-                            || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                            .getMontantGarantiAANonReduit())) {
+                    if (ijIndemniteJournaliereInterne != null &&
+                            (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getMontantGarantiAANonReduit())
+                            || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getMontantGarantiAANonReduit()))) {
 
                         ijIndemniteJournaliereExterneMontantGarantiAA = ijIndemniteJournaliereExterne
                                 .getMontantGarantiAANonReduit();
@@ -1957,19 +1965,16 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 }
 
                 // Déductions
-                if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
-                        .getMontantReductionSiRevenuAvantReadaptation())
-                        || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                        .getMontantReductionSiRevenuAvantReadaptation())
-                        || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())
-                        || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI())
-                        || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
-                        .getMontantSupplementaireReadaptation())) {
+                if ((ijIndemniteJournaliereInterne != null &&  !(JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getMontantReductionSiRevenuAvantReadaptation())))
+                        || (ijIndemniteJournaliereExterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getMontantReductionSiRevenuAvantReadaptation()))
+                        || (ijIndemniteJournaliereInterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI()))
+                        || (ijIndemniteJournaliereExterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI()))
+                        || (ijIndemniteJournaliereInterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getMontantSupplementaireReadaptation()))) {
 
                     boolean isLibelleAffiche = false;
 
                     // Rente AI durant réadaptation
-                    if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())
+                    if ((ijIndemniteJournaliereInterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI()))
                             || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI())) {
 
                         hasRenteAIDurantReadaptation = true;
@@ -1998,7 +2003,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                         if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)) {
 
-                            if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())) {
+                            if (ijIndemniteJournaliereInterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())) {
 
                                 buffer.setLength(0);
                                 buffer.append(ijIndemniteJournaliereInterne.getDeductionRenteAI());
@@ -2019,7 +2024,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             buffer.setLength(0);
 
                             if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE)) {
-                                if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())) {
+                                if (ijIndemniteJournaliereInterne != null && !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())) {
                                     buffer.append(ijIndemniteJournaliereInterne.getDeductionRenteAI());
                                     champs.put("PARAM_MONT_JOUR_2", afficheMntJour(buffer, false));
                                     champs.put("PARAM_DEVISE_RED", bufferDevise.toString());
@@ -2685,6 +2690,20 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
     }
 
+    private boolean isPrestationEnfantPlafonnee(IJIJCalculee ijijCalculee, IJIJCalculee ijGrandePetiteFpiIjCalculee) {
+        if(IIJPrononce.CS_FPI.equals(ijijCalculee.getCsTypeIJ())){
+            return new BigDecimal(ijijCalculee.getMontantBase())
+                    .add(new BigDecimal(((IJFpiCalculee) ijGrandePetiteFpiIjCalculee)
+                            .getMontantEnfants())).compareTo(
+                            new BigDecimal(ijijCalculee.getRevenuDeterminant())) >= 0;
+        }
+
+        return new BigDecimal(ijijCalculee.getMontantBase())
+                .add(new BigDecimal(((IJGrandeIJCalculee)ijGrandePetiteFpiIjCalculee)
+                        .getMontantIndemniteEnfant())).compareTo(
+                        new BigDecimal(ijijCalculee.getRevenuDeterminant())) >= 0;
+    }
+
     private void setBufferBaseCaclculCorpsFpi(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, IJFpiCalculee ijGrandePetiteFpiIjCalculee, IJFpi fpiPrononce) {
         IJFpiCalculee fpiCalculee = ijGrandePetiteFpiIjCalculee;
         Integer jourMaxFpi = Integer.valueOf(IIJPrestation.JOUR_FPI);
@@ -2783,7 +2802,8 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             // Ajout texte pour champs titre prestation enfant
             bufferBaseCalculPrestEnfTexte.append(document.getTextes(3).getTexte(45).getDescription());
             String prestationEnfant = PRStringUtils.replaceString(document.getTextes(3).getTexte(46).getDescription(), PARAM_DEVISE, bufferDevise.toString());
-            prestationEnfant = PRStringUtils.replaceString(prestationEnfant, PARAM_RJME, ((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants());
+            FWCurrency montantEnfant = new FWCurrency(((IJFpiCalculee) ijGrandePetiteFpiIjCalculee).getMontantEnfants(), 2);
+            prestationEnfant = PRStringUtils.replaceString(prestationEnfant, PARAM_RJME, montantEnfant.toStringFormat());
             bufferBaseCalculPrestEnfJour.append(prestationEnfant);
         }
     }
@@ -2795,10 +2815,12 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                                  StringBuffer bufferDevise,
                                                  IJFpiCalculee ijGrandePetiteFpiIjCalculee,
                                                  IJFpi fpiPrononce) {
+        FWCurrency salMens = new FWCurrency(ijGrandePetiteFpiIjCalculee.getSalaireMensuel(), 2);
         String indemniteMois = PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(), PARAM_DEVISE, bufferDevise.toString());
-        bufferBaseCalculIndMois.append(PRStringUtils.replaceString(indemniteMois, PARAM_SAL, ijGrandePetiteFpiIjCalculee.getSalaireMensuel()));
+        bufferBaseCalculIndMois.append(PRStringUtils.replaceString(indemniteMois, PARAM_SAL, salMens.toStringFormat()));
         String indemniteJour = PRStringUtils.replaceString(document.getTextes(3).getTexte(44).getDescription(), PARAM_DEVISE, bufferDevise.toString());
-        bufferBaseCalculIndJour.append(PRStringUtils.replaceString(indemniteJour, PARAM_RJM, ijGrandePetiteFpiIjCalculee.getMontantBase()));
+        FWCurrency salJour = new FWCurrency(ijGrandePetiteFpiIjCalculee.getMontantBase(), 2);
+        bufferBaseCalculIndJour.append(PRStringUtils.replaceString(indemniteJour, PARAM_RJM, salJour.toStringFormat()));
         Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
         String indemniteTexte = document.getTextes(3).getTexte(42).getDescription();
         if (motifFpi.isPresent() && motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE) {

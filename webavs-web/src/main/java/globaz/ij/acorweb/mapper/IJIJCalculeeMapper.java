@@ -98,6 +98,7 @@ public class IJIJCalculeeMapper {
         IJFpiCalculee fpi = new IJFpiCalculee();
 //        fpi.setCsModeCalcul(CodeSystemUtils.searchCodeByUserCode("IJGENRREA2", String.valueOf(basesCalcul.getGenreReadaptation()), entityService.getSession()).getIdCodeSysteme());
         fpi.setMontantBase(Strings.toStringOrNull(basesCalcul.getMontantBase()));
+        fpi.setNbEnfants(Strings.toStringOrNull(basesCalcul.getNEnfants()));
         fpi.setMontantEnfants(Strings.toStringOrNull(basesCalcul.getMontantEnfants()));
         fpi.setSalaireMensuel(Strings.toStringOrNull(basesCalcul.getMontantMensuel()));
         fpi.setCsTypeIJ(IIJPrononce.CS_FPI);

@@ -19,6 +19,7 @@ public class IJFpiCalculee extends IJIJCalculee {
     public static final String FIELDNAME_ID_FPI_CALCULEE = "ID_FPI_CALCULEE";
     public static final String FIELDNAME_SALAIRE_MENSUEL = "SALAIRE_MENSUEL";
     public static final String FIELDNAME_MONTANT_ENFANTS = "MONTANT_ENFANTS";
+    public static final String FIELDNAME_NB_ENFANTS = "NB_ENFANTS";
     public static final String TABLE_NAME = "IJ_FPI_CALCULEE";
 
     // ~ Instance fields
@@ -56,6 +57,7 @@ public class IJFpiCalculee extends IJIJCalculee {
     private String csModeCalcul = "";
     private String montantEnfants = "";
     private String salaireMensuel = "";
+    private String nbEnfants = "";
 
     /**
      * @param transaction
@@ -105,6 +107,7 @@ public class IJFpiCalculee extends IJIJCalculee {
         super._readProperties(statement);
         csModeCalcul = statement.dbReadNumeric(FIELDNAME_CS_MODE_CALCUL);
         montantEnfants = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_MONTANT_ENFANTS, 2);
+        nbEnfants = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_NB_ENFANTS);
         salaireMensuel = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_SALAIRE_MENSUEL, 2);
     }
 
@@ -155,6 +158,8 @@ public class IJFpiCalculee extends IJIJCalculee {
                 _dbWriteNumeric(statement.getTransaction(), montantEnfants, "montantEnfants"));
         statement.writeField(FIELDNAME_SALAIRE_MENSUEL,
                 _dbWriteNumeric(statement.getTransaction(), salaireMensuel, "salaireMensuel"));
+        statement.writeField(FIELDNAME_NB_ENFANTS,
+                _dbWriteNumeric(statement.getTransaction(), nbEnfants, "nbEnfants"));
     }
 
     /**
@@ -230,5 +235,13 @@ public class IJFpiCalculee extends IJIJCalculee {
 
     public void setSalaireMensuel(String salaireMensuel) {
         this.salaireMensuel = salaireMensuel;
+    }
+
+    public String getNbEnfants() {
+        return nbEnfants;
+    }
+
+    public void setNbEnfants(String nbEnfants) {
+        this.nbEnfants = nbEnfants;
     }
 }
