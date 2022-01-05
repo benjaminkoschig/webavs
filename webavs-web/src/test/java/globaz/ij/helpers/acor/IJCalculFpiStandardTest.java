@@ -33,7 +33,12 @@ public class IJCalculFpiStandardTest {
 
     @Test
     public void testCalcul3MontantsPrestationOk() {
-        Assert.assertEquals("15.70", calcul("28.02.2021","28.02.2021","0","16.70","0","500"));
+        Assert.assertEquals("49.10", calcul("28.02.2021","28.02.2021","0","16.70","0","500"));
+    }
+
+    @Test
+    public void testCalcul3bMontantsPrestationOk() {
+        Assert.assertEquals("549.20", calcul("10.02.2021","28.02.2021","0","26.20","0","785"));
     }
 
     @Test

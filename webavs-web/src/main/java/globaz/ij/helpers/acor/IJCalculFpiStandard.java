@@ -138,8 +138,7 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
             jourNonCompris += jourFPI - fin.getDayOfMonth();
 
         } else if(jourFPI > finMois.getDayOfMonth()
-                && !(fin.getDayOfMonth() == finMois.getDayOfMonth()
-                && debut.getDayOfMonth() == 1)) {
+                && fin.getDayOfMonth() != finMois.getDayOfMonth()) {
             // ajouter des jours non compris pour le mois de février si pas un mois complet
             jourNonCompris += jourFPI - finMois.getDayOfMonth();
         }
