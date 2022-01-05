@@ -2748,7 +2748,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         int positionFin = isPrestationEnfant ? 54 : 55;
         int positionFractionRente = 47;
         // 2eme annee contrat, prhase 1/3 de rente
-        if (dateFormation != null && dateDebutPrononce != null && Dates.daysBetween(dateDebutPrononce, dateFormation) > 365) {
+        if (dateFormation != null && dateDebutPrononce != null && Dates.daysBetween(dateFormation, dateDebutPrononce) > 365) {
             positionFin = isPrestationEnfant ? 56 : 57;
             positionFractionRente = 48;
         }
