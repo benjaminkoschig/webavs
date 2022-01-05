@@ -126,7 +126,7 @@ class IJExportationCalculAcor {
             inHost.getAssure().addAll(toAssures(assureTypeAcorMapper, prononce, ijCalculDecompteIJMapper, session));
 
             inHost.setDemande(toDemande(tiersRequerant, prononce, session));
-            inHost.setVersionSchema("5.0");
+            inHost.setVersionSchema("6.0");
 
             return inHost;
         } catch (Exception e) {
