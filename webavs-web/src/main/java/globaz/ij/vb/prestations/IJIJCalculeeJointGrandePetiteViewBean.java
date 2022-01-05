@@ -5,24 +5,24 @@ package globaz.ij.vb.prestations;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.db.BTransaction;
 import globaz.ij.api.prononces.IIJPrononce;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeJointGrandePetite;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
+import globaz.ij.db.prestations.*;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGrandePetite implements FWViewBeanInterface {
@@ -31,12 +31,13 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private List idsIJCalculees = new ArrayList();
     private IJIndemniteJournaliere indemniteJournaliereAit = null;
     private IJIndemniteJournaliere indemniteJournaliereExterne = null;
+    private String csGenreReadaptationAnnonces = null;
 
     private IJIndemniteJournaliere indemniteJournaliereInterne = null;
 
@@ -45,14 +46,8 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _afterRetrieve(BTransaction transaction) throws Exception {
@@ -103,6 +98,18 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
             ijCalculee = (IJIJCalculee) IJCalculeeManager.getEntity(i);
             idsIJCalculees.add(ijCalculee.getIdIJCalculee());
         }
+
+        if (!JadeStringUtil.isBlankOrZero(getGenreReadaptationAnnonce())) {
+            try {
+                BSessionUtil.initContext(getSession(), this);
+                csGenreReadaptationAnnonces = PRACORConst.caGenreReadaptationAnnonceToCS(getSession(), getGenreReadaptationAnnonce());
+            } catch (Exception e) {
+                JadeLogger.error(this, "Impossible de transformer le code utilisateur du genre de réadaptation annonce en un code système : " + e);
+            } finally {
+                BSessionUtil.stopUsingContext(this);
+            }
+        }
+
     }
 
     public String getCsTypeIJLibelle() {
@@ -111,7 +118,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * Méthode qui retourne le détail du requérant formaté pour les détails
-     * 
+     *
      * @return le détail du requérant formaté
      * @throws Exception
      */
@@ -146,7 +153,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut id IJCalculee precedente
-     * 
+     *
      * @return la valeur courante de l'attribut id IJCalculee precedente
      */
     public String getIdIJCalculeePrecedente() {
@@ -162,7 +169,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut id IJCalculee suivante
-     * 
+     *
      * @return la valeur courante de l'attribut id IJCalculee suivante
      */
     public String getIdIJCalculeeSuivante() {
@@ -177,7 +184,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut indemnite journaliere Ait
-     * 
+     *
      * @return la valeur courante de l'attribut indemnite journaliere Ait. Jamais null après un retrieve.
      */
     public IJIndemniteJournaliere getIndemniteJournaliereAit() {
@@ -186,7 +193,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut indemnite journaliere externe
-     * 
+     *
      * @return la valeur courante de l'attribut indemnite journaliere externe. Jamais null après un retrieve.
      */
     public IJIndemniteJournaliere getIndemniteJournaliereExterne() {
@@ -195,7 +202,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut indemnite journaliere interne
-     * 
+     *
      * @return la valeur courante de l'attribut indemnite journaliere interne. Jamais null après un retrieve.
      */
     public IJIndemniteJournaliere getIndemniteJournaliereInterne() {
@@ -204,7 +211,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut montant supplementaire readaptation interne
-     * 
+     *
      * @return la valeur courante de l'attribut montant supplementaire readaptation interne
      */
     public String getMontantSupplementaireReadaptationInterne() {
@@ -221,7 +228,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut no AVS
-     * 
+     *
      * @return la valeur courante de l'attribut no AVS
      */
     public String getNoAVSRequerant() {
@@ -234,7 +241,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut prenom nom
-     * 
+     *
      * @return la valeur courante de l'attribut prenom nom
      */
     public String getPrenomNom() {
@@ -254,7 +261,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut date prononce
-     * 
+     *
      * @return la valeur courante de l'attribut date prononce
      */
     public String getVraieDatePrononce() {
@@ -274,9 +281,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * @return DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public boolean hasIJExterne() throws Exception {
         return loadIndemnitesJournalieresExternes() != null;
@@ -284,9 +289,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * @return DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public boolean hasIJInterne() throws Exception {
         return loadIndemnitesJournalieresInternes() != null;
@@ -294,10 +297,9 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#hasSpy()
-     * 
+     *
      * @return DOCUMENT ME!
+     * @see globaz.globall.db.BEntity#hasSpy()
      */
     @Override
     public boolean hasSpy() {
@@ -306,7 +308,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut dernier element
-     * 
+     *
      * @return la valeur courante de l'attribut dernier element
      */
     public boolean isDernierElement() {
@@ -315,7 +317,7 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * Vrais si l'on peut modifier les IJ calculees
-     * 
+     *
      * @return
      */
     public boolean isModifierPermis() {
@@ -324,11 +326,18 @@ public class IJIJCalculeeJointGrandePetiteViewBean extends IJIJCalculeeJointGran
 
     /**
      * getter pour l'attribut premier element
-     * 
+     *
      * @return la valeur courante de l'attribut premier element
      */
     public boolean isPremierElement() {
         return idsIJCalculees.lastIndexOf(getIdIJCalculee()) == 0;
     }
 
+    public String getCsGenreReadaptationAnnonces() {
+        return csGenreReadaptationAnnonces;
+    }
+
+    public void setCsGenreReadaptationAnnonces(String csGenreReadaptationAnnonces) {
+        this.csGenreReadaptationAnnonces = csGenreReadaptationAnnonces;
+    }
 }

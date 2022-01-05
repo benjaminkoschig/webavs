@@ -206,7 +206,7 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						<TR>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION_ANNONCE"/></TD>
 							<TD colspan="2">
-								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="genreReadaptationAnnonce" defaut="<%=viewBean.getGenreReadaptationAnnonce()%>"/>
+								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="csGenreReadaptationAnnonces" defaut="<%=viewBean.getCsGenreReadaptationAnnonces()%>"/>
 							</TD>
 						</TR>
 						<%}%>
@@ -221,7 +221,7 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 						<TR>
 							<TD><ct:FWLabel key="JSP_GENRE_READAPTATION_ANNONCE"/></TD>
 							<TD colspan="2">
-								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="genreReadaptationAnnonce" defaut="<%=viewBean.getGenreReadaptationAnnonce()%>"/>
+								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="csGenreReadaptationAnnonces" defaut="<%=viewBean.getCsGenreReadaptationAnnonces()%>"/>
 							</TD>
 						</TR>
 						<%}else{%>

@@ -3,13 +3,7 @@
  */
 package globaz.ij.db.prestations;
 
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import globaz.globall.db.BStatement;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
-import globaz.prestation.acor.PRACORConst;
 
 /**
  * <H1>Description</H1>
@@ -238,28 +232,4 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         nbEnfants = string;
     }
 
-    public String getGenreReadaptationAnnonce() {
-        if (!JadeStringUtil.isBlank(genreReadaptationAnnonce)) {
-            try {
-                return PRACORConst.caGenreReadaptationAnnonceToCS(getSession(), genreReadaptationAnnonce);
-            } catch (Exception e) {
-                JadeLogger.error(this, "Impossible de transformer le code utilisateur du genre de réadaptation annonce en un code système : " + e);
-            }
-        }
-        return genreReadaptationAnnonce;
-    }
-
-    public void setGenreReadaptationAnnonce(String genreReadaptationAnnonce) {
-        if (!JadeStringUtil.isBlank(genreReadaptationAnnonce)) {
-            try {
-                JadeCodeSysteme codeSysteme = JadeBusinessServiceLocator.getCodeSystemeService().getCodeSysteme(genreReadaptationAnnonce);
-                if (codeSysteme != null) {
-                    genreReadaptationAnnonce = codeSysteme.getCodeUtilisateur(Langues.getLangueDepuisCodeIso(getSession().getIdLangueISO()));
-                }
-            } catch (Exception e) {
-                JadeLogger.error(this, "Impossible de transformer le code système en code utilisateur du genre de réadaptation annonce : " + e);
-            }
-        }
-        this.genreReadaptationAnnonce = genreReadaptationAnnonce;
-    }
 }

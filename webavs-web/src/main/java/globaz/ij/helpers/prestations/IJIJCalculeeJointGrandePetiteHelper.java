@@ -1,18 +1,24 @@
 package globaz.ij.helpers.prestations;
 
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.ij.api.prestations.IIJIJCalculee;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.prestations.*;
 import globaz.ij.vb.prestations.IJIJCalculeeJointGrandePetiteViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.helpers.PRAbstractHelper;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author bsc
  */
 public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
@@ -27,7 +33,8 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
 
         // pas de mise a jours pour les AIT
         if (IIJIJCalculee.CS_TYPE_GRANDE_IJ.equals(ijcViewBean.getCsTypeIJ())
-                || IIJIJCalculee.CS_TYPE_PETITE_IJ.equals(ijcViewBean.getCsTypeIJ())) {
+                || IIJIJCalculee.CS_TYPE_PETITE_IJ.equals(ijcViewBean.getCsTypeIJ())
+                || IIJPrononce.CS_FPI.equals(ijcViewBean.getCsTypeIJ())) {
 
             BTransaction transaction = null;
 
@@ -48,7 +55,7 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
                     gijCalculee.setMontantIndemniteEnfant(ijcViewBean.getMontantIndemniteEnfant());
                     gijCalculee.setMontantIndemniteExploitation(ijcViewBean.getMontantIndemniteExploitation());
                     gijCalculee.setNbEnfants(ijcViewBean.getNbEnfants());
-                    majIjCalculeCommun(ijcViewBean, gijCalculee);
+                    majIjCalculeCommun(ijcViewBean, gijCalculee, session);
 
                     gijCalculee.update(transaction);
 
@@ -61,7 +68,7 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
 
                     // mise a jours
                     pijCalculee.setCsModeCalcul(ijcViewBean.getCsModeCalcul());
-                    majIjCalculeCommun(ijcViewBean, pijCalculee);
+                    majIjCalculeCommun(ijcViewBean, pijCalculee, session);
 
                     pijCalculee.update(transaction);
                 } else {
@@ -72,7 +79,7 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
 
                     // mise a jours
                     fpiCalculee.setCsModeCalcul(ijcViewBean.getCsModeCalcul());
-                    majIjCalculeCommun(ijcViewBean, fpiCalculee);
+                    majIjCalculeCommun(ijcViewBean, fpiCalculee, session);
 
                     fpiCalculee.update(transaction);
                 }
@@ -86,7 +93,6 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
                 if (!ijExt.isNew()) {
                     ijExt.update(transaction);
                 }
-
             } catch (Exception e) {
                 if (transaction != null) {
                     transaction.setRollbackOnly();
@@ -109,7 +115,8 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
 
     }
 
-    private void majIjCalculeCommun(IJIJCalculeeJointGrandePetiteViewBean ijcViewBean, IJIJCalculee ijCalculee) {
+
+    private void majIjCalculeCommun(IJIJCalculeeJointGrandePetiteViewBean ijcViewBean, IJIJCalculee ijCalculee, BISession session) {
         ijCalculee.setCsGenreReadaptation(ijcViewBean.getCsGenreReadaptation());
         ijCalculee.setCsStatutProfessionnel(ijcViewBean.getCsStatutProfessionnel());
         ijCalculee.setCsTypeBase(ijcViewBean.getCsTypeBase());
@@ -126,6 +133,16 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
         ijCalculee.setRevenuDeterminant(ijcViewBean.getRevenuDeterminant());
         ijCalculee.setRevenuJournalierReadaptation(ijcViewBean.getRevenuJournalierReadaptation());
         ijCalculee.setSupplementPersonneSeule(ijcViewBean.getSupplementPersonneSeule());
+        if (!JadeStringUtil.isBlankOrZero((ijcViewBean.getGenreReadaptationAnnonce()))) {
+            try {
+                JadeCodeSysteme codeSysteme = JadeBusinessServiceLocator.getCodeSystemeService().getCodeSysteme(ijcViewBean.getCsGenreReadaptationAnnonces());
+                if (codeSysteme != null) {
+                    ijCalculee.setGenreReadaptationAnnonce(codeSysteme.getCodeUtilisateur(Langues.getLangueDepuisCodeIso(((BSession) session).getIdLangueISO())));
+                }
+            } catch (Exception e) {
+                JadeLogger.error(this, "Impossible de transformer le code système en code utilisateur du genre de réadaptation annonce : " + e);
+            }
+        }
     }
 
 }
