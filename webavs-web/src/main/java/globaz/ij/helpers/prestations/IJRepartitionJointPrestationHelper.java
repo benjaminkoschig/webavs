@@ -1,6 +1,9 @@
 package globaz.ij.helpers.prestations;
 
 import ch.globaz.common.util.Dates;
+import globaz.babel.api.doc.ICTScalableDocument;
+import globaz.babel.api.doc.ICTScalableDocumentCopie;
+import globaz.babel.utils.CTTiersUtils;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -17,6 +20,7 @@ import globaz.ij.api.lots.IIJLot;
 import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.api.prestations.IIJRepartitionPaiements;
 import globaz.ij.api.prononces.IIJMesure;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
 import globaz.ij.db.lots.IJCompensation;
 import globaz.ij.db.lots.IJCompensationManager;
@@ -32,10 +36,7 @@ import globaz.ij.db.prestations.IJRepartitionJointPrestation;
 import globaz.ij.db.prestations.IJRepartitionJointPrestationManager;
 import globaz.ij.db.prestations.IJRepartitionPaiements;
 import globaz.ij.db.prestations.IJRepartitionPaiementsManager;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prononces.*;
 import globaz.ij.module.IJRepartitionPaiementBuilder;
 import globaz.ij.vb.prestations.IJRepartitionJointPrestationViewBean;
 import globaz.jade.client.util.JadeStringUtil;
@@ -51,6 +52,7 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Vector;
 
 /**
  * <H1>Description</H1>
@@ -283,25 +285,41 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
                 rp.setMontantNet(JANumberFormatter.formatNoQuote(JadeStringUtil.toDouble(rp.getMontantBrut()) + somme));
 
                 // On va essayser de lier le nouveau bénéficiaire avec un des
-                // employeurs de la situation professionnel
+                // employeurs de la situation professionnel ou agent execution pour FPI
                 // s'il à été saisi.
 
                 // Est utilisé pour la génération du décompe.
                 // Si le lien n'est pas réalisé, il ne sera pas possible de
                 // récupérer le département de l'employeur.
+                if(IIJPrononce.CS_FPI.equals(prononce.getCsTypeIJ())) {
+                    IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
+                    agentMgr.setSession((BSession) session);
+                    agentMgr.setForIdPrononce(bi.getIdPrononce());
+                    agentMgr.find(BManager.SIZE_NOLIMIT);
+                    for(IJMesureJointAgentExecution agent: agentMgr.<IJMesureJointAgentExecution>getContainerAsList()) {
+                        Vector<String[]> aff = PRAffiliationHelper.getAffiliationsTiers((BSession) session, agent.getIdTiers());
+                        if (aff != null && aff.size() > 0
+                            && agent.getIdTiers() != null && agent.getIdTiers().equals(rp.getIdTiers())) {
+                            rp.setIdSituationProfessionnelle(agent.getIdTiers());
+                            rp.setIdAffilie(aff.get(0)[0]);
+                            rp.setIdAffilieAdrPmt(aff.get(0)[0]);
+                            break;
+                        }
+                    }
+                } else {
+                    IJSituationProfessionnelleManager spMgr = new IJSituationProfessionnelleManager();
+                    spMgr.setSession((BSession) session);
+                    spMgr.setForIdPrononce(bi.getIdPrononce());
+                    spMgr.find(transaction);
+                    for (Iterator iter = spMgr.iterator(); iter.hasNext(); ) {
+                        IJSituationProfessionnelle sp = (IJSituationProfessionnelle) iter.next();
+                        IJEmployeur emp = sp.loadEmployeur();
 
-                IJSituationProfessionnelleManager spMgr = new IJSituationProfessionnelleManager();
-                spMgr.setSession((BSession) session);
-                spMgr.setForIdPrononce(bi.getIdPrononce());
-                spMgr.find(transaction);
-                for (Iterator iter = spMgr.iterator(); iter.hasNext();) {
-                    IJSituationProfessionnelle sp = (IJSituationProfessionnelle) iter.next();
-                    IJEmployeur emp = sp.loadEmployeur();
-
-                    if (emp != null && emp.getIdAffilie() != null && emp.getIdAffilie().equals(rp.getIdAffilie())
-                            && emp.getIdTiers() != null && emp.getIdTiers().equals(rp.getIdTiers())) {
-                        rp.setIdSituationProfessionnelle(sp.getIdSituationProfessionnelle());
-                        break;
+                        if (emp != null && emp.getIdAffilie() != null && emp.getIdAffilie().equals(rp.getIdAffilie())
+                                && emp.getIdTiers() != null && emp.getIdTiers().equals(rp.getIdTiers())) {
+                            rp.setIdSituationProfessionnelle(sp.getIdSituationProfessionnelle());
+                            break;
+                        }
                     }
                 }
                 rp.update(transaction);
