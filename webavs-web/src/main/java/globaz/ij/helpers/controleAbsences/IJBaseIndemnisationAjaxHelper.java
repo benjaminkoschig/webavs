@@ -25,6 +25,8 @@ import ch.globaz.ij.business.services.IJAbsenceService;
 import ch.globaz.ij.business.services.IJBaseIndemnisationService;
 import ch.globaz.ij.business.services.IJServiceLocator;
 
+import java.time.LocalDate;
+
 public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
 
     /**
@@ -260,8 +262,16 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
                         "La date de fin de la base d'indémnisation ne se situe pas dans la période du prononcé");
             }
         }
-        if(!vb.getJoursNonCouvert().isEmpty() && Dates.daysBetween(vb.getDateDeDebut(), vb.getDateDeFin()) < Integer.parseInt(vb.getJoursNonCouvert())){
-            throw new Exception("Nombre de jours non indemnisés plus grand que la base d’indemnisation.");
+        if(prononce.isFpi()) {
+            if(!vb.getJoursNonCouvert().isEmpty() && Dates.daysBetween(vb.getDateDeDebut(), vb.getDateDeFin()) < Integer.parseInt(vb.getJoursNonCouvert())){
+                throw new Exception("Nombre de jours non indemnisés plus grand que la base d’indemnisation.");
+            }
+            LocalDate dateDebut = Dates.toDate(vb.getDateDeDebut()).withDayOfMonth(1);
+            LocalDate dateFin = Dates.toDate(vb.getDateDeFin()).withDayOfMonth(1);
+            if (!dateDebut.isEqual(dateFin)) {
+                throw new Exception(session.getLabel("CONTROL_FPI_MOIS"));
+            }
         }
     }
 }
+
