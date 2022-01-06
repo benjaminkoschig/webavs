@@ -12,6 +12,10 @@ alter table SCHEMA.IJCALCUL
     add XNGREA DECIMAL(8);
 REORG TABLE SCHEMA.IJCALCUL;
 
+-- Modification de la taille de la colonne XXAGRE dans la table IJANNONC
+ALTER TABLE SCHEMA.IJANNONC ALTER COLUMN XXAGRE SET DATA TYPE VARCHAR(2);
+reorg table SCHEMA.IJANNONC;
+
 -- Examen ou instruction
 update schema.IJCALCUL as cal0 set cal0.xngrea = 1
 where cal0.xniijc in (SELECT xniijc FROM schema.ijpronai
