@@ -110,6 +110,7 @@ public class IJCalculFpiStandard implements IIJCalculStandard {
         }
 
         prestation.setNombreJoursExt(prj.toString());
+        prestation.setMontantBrutExterne(prmb.toString());
         prestation.setMontantBrut(prmb.toString());
         prestation.setMontantJournalierExterne(prmj.toString());
     }
