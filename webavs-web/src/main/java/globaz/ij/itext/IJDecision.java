@@ -2715,12 +2715,23 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         if(isPrestationEnfant){
             bufferBaseCalcul.append("\n\n");
         }
+
+        Boolean isPlus25Ans = false;
+        if (tiers != null ) {
+            LocalDate dateDebutPrononce = Dates.toDate(fpiPrononce.getDateDebutPrononce());
+            LocalDate dateNaissance = Dates.toDate(tiers.getDateNaissance());
+            LocalDate date25ans = dateNaissance.plusYears(25);
+            if(dateDebutPrononce.isAfter(date25ans)) {
+                isPlus25Ans = true;
+            }
+        }
+
         // Base de calcul pour décision assuré de plus de 25 ans
-        if(tiers != null && Dates.isDansOuApresAnnee(fpiPrononce.getDateDebutPrononce(), tiers.getDateNaissance(), 25)){
+        if (isPlus25Ans) {
             setBufferBaseCalculCorpsFpiPlus25ans(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
-        }else {
+        } else {
             Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
-            if(motifFpi.isPresent()) {
+            if (motifFpi.isPresent()) {
                 // Base de calcul pour décision LFPr avec contrat d'apprentissage
                 if (motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE) {
                     setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
