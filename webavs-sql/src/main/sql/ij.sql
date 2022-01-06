@@ -108,8 +108,8 @@ INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (5243600
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436001, 'F', '1', 'Maladie', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436002, 'D', '2', 'Unfall', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436002, 'F', '2', 'Accident', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'D', '3', 'Mutterschaft', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'F', '3', 'Maternité', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'D', '3', 'Mutterschaft/Vaterschaft', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436003, 'F', '3', 'Maternité/Paternité', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436004, 'D', '4', 'Betreuungsurlaub', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436004, 'F', '4', 'Congé proche aidant', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52436005, 'D', '5', 'Andere Gründe', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
