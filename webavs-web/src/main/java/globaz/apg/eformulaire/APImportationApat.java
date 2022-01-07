@@ -42,8 +42,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             newDroit.setGenreService(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
             newDroit.setReference(content.getReferenceData());
             newDroit.setIdCaisse(CaisseInfoPropertiesWrapper.noCaisseNoAgence());
-            newDroit.setNpa(npaFormat);
-            newDroit.setPays(getIdPays(content.getInsuredAddress().getCountryIso2Code()));
+            setPaysEtNpa(content, newDroit, npaFormat);
             java.util.Date dateDernierNee = getDateNaissanceDernierNee(content);
             if(dateDernierNee != null) {
                 newDroit.setDateDebutDroit(JadeDateUtil.getGlobazFormattedDate(dateDernierNee));

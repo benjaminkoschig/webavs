@@ -733,4 +733,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         }
         return id;
     }
+
+    protected void setPaysEtNpa(Content content, APDroitLAPG droit, String npaFormat) throws JadePersistenceException {
+        String codePays =  getIdPays(content.getInsuredAddress().getCountryIso2Code());
+        droit.setPays(codePays);
+        if(IConstantes.ID_PAYS_SUISSE.equals(codePays)) {
+            droit.setNpa(npaFormat);
+        }
+    }
 }

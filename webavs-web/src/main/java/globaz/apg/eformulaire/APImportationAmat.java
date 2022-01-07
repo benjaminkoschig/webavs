@@ -15,6 +15,7 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.pyxis.constantes.IConstantes;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,8 +35,8 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             newDroit.setGenreService(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE);
             newDroit.setReference(content.getReferenceData());
             newDroit.setIdCaisse(CaisseInfoPropertiesWrapper.noCaisseNoAgence());
-            newDroit.setNpa(npaFormat);
-            newDroit.setPays(getIdPays(content.getInsuredAddress().getCountryIso2Code()));
+
+
             java.util.Date dateDernierNee = getDateNaissanceDernierNee(content);
             if(dateDernierNee != null) {
                 newDroit.setDateDebutDroit(JadeDateUtil.getGlobazFormattedDate(dateDernierNee));
@@ -45,7 +46,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             newDroit.setDateDepot(date.getSwissValue());
             newDroit.setDateReception(date.getSwissValue());
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
-
+            setPaysEtNpa(content, newDroit, npaFormat);
             newDroit.setSession(bSession);
             newDroit.add(transaction);
 
