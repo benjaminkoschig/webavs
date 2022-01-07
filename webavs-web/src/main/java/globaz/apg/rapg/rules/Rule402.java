@@ -37,4 +37,16 @@ public class Rule402 extends RuleInterAPG {
             throw new APRuleExecutionException(exception);
         }
     }
+
+    @Override
+    public String getDetailMessageErreur() {
+        String errorMessage = "";
+        if("21".equals(getNombreJoursSoldesMax())){
+            errorMessage = getSession().getLabel("APG_RULE_402_21");
+        }else{
+            errorMessage = getSession().getLabel("APG_RULE_402_7");
+        }
+        return errorMessage;
+
+    }
 }

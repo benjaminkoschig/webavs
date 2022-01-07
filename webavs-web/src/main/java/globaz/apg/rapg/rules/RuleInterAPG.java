@@ -149,4 +149,8 @@ public class RuleInterAPG extends Rule {
     protected void setNombreJoursSoldesMax(int nbJourMax){
         nombreJoursSoldesMax = nbJourMax;
     }
+
+    protected int getNombreJoursSoldesMax(){
+        return nombreJoursSoldesMax;
+    }
 }
