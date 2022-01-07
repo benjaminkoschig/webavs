@@ -224,6 +224,17 @@ var servlet = "<%=(servletContext + mainServletPath)%>";
 								<ct:FWCodeSelectTag codeType="<%=IIJPrononce.CS_GROUPE_GENRE_READAPTATION%>" name="csGenreReadaptationAnnonces" defaut="<%=viewBean.getCsGenreReadaptationAnnonces()%>"/>
 							</TD>
 						</TR>
+						<TR>
+							<TD colspan="6">&nbsp;</TD>
+						</TR>
+						<TR>
+							<TD><ct:FWLabel key="JSP_MONTANT_ENFANT"/></TD>
+							<TD><INPUT type="text" name="montantEnfant" value="<%=viewBean.getMontantEnfant()%>"></TD>
+							<TD><ct:FWLabel key="JSP_NB_ENFANTS"/></TD>
+							<TD><INPUT type="text" name="nbEnfants" value="<%=viewBean.getNbEnfants()%>"></TD>
+							<TD><ct:FWLabel key="JSP_SALAIRE_MENSUEL"/></TD>
+							<TD><INPUT type="text" name="salaireMensuel" value="<%=viewBean.getSalaireMensuel()%>"></TD>
+						</TR>
 						<%}else{%>
 						<TR>
 							<TD colspan="6">&nbsp;</TD>

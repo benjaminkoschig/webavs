@@ -78,6 +78,9 @@ public class IJIJCalculeeJointGrandePetiteHelper extends PRAbstractHelper {
                     fpiCalculee.retrieve(transaction);
 
                     // mise a jours
+                    fpiCalculee.setMontantEnfants(ijcViewBean.getMontantEnfant());
+                    fpiCalculee.setNbEnfants(ijcViewBean.getNbEnfants());
+                    fpiCalculee.setSalaireMensuel(ijcViewBean.getSalaireMensuel());
                     fpiCalculee.setCsModeCalcul(ijcViewBean.getCsModeCalcul());
                     majIjCalculeCommun(ijcViewBean, fpiCalculee, session);
 

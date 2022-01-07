@@ -3,6 +3,7 @@
  */
 package globaz.ij.db.prestations;
 
+import ch.globaz.eavs.utils.StringUtils;
 import globaz.globall.db.BStatement;
 
 /**
@@ -66,6 +67,21 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         fromClauseBuffer.append(point);
         fromClauseBuffer.append(IJGrandeIJCalculee.FIELDNAME_ID_GRANDE_IJ_CALCULEE);
 
+        // jointure entre table des fpiIJcalculees et table des IJCalculees
+        fromClauseBuffer.append(leftJoin);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(IJFpiCalculee.TABLE_NAME);
+        fromClauseBuffer.append(on);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(IJIJCalculee.TABLE_NAME_IJ_CALCULEE);
+        fromClauseBuffer.append(point);
+        fromClauseBuffer.append(IJIJCalculee.FIELDNAME_ID_IJ_CALCULEE);
+        fromClauseBuffer.append(egal);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(IJFpiCalculee.TABLE_NAME);
+        fromClauseBuffer.append(point);
+        fromClauseBuffer.append(IJFpiCalculee.FIELDNAME_ID_FPI_CALCULEE);
+
         return fromClauseBuffer.toString();
     }
 
@@ -77,6 +93,9 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
 
     private String montantIndemniteExploitation = "";
     private String genreReadaptationAnnonce = "";
+
+    private String montantEnfant = "";
+    private String salaireMensuel = "";
 
 
     // ~ Methods
@@ -118,13 +137,19 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
     protected void _readProperties(BStatement statement) throws Exception {
         super._readProperties(statement);
         montantIndemniteEnfant = statement.dbReadNumeric(IJGrandeIJCalculee.FIELDNAME_MONTANT_INDEMNITE_ENFANTS, 2);
-        nbEnfants = statement.dbReadNumeric(IJGrandeIJCalculee.FIELDNAME_NB_ENFANTS);
+        String nbEnfantsGrandIJ = statement.dbReadNumeric(IJGrandeIJCalculee.FIELDNAME_NB_ENFANTS);
         montantIndemniteAssistance = statement.dbReadNumeric(IJGrandeIJCalculee.FIELDNAME_MONTANT_INDEMNITE_ASSISTANCE,
                 2);
         montantIndemniteExploitation = statement.dbReadNumeric(
                 IJGrandeIJCalculee.FIELDNAME_MONTANT_INDEMNITE_EXPLOITATION, 2);
         csModeCalcul = statement.dbReadNumeric(IJPetiteIJCalculee.FIELDNAME_CS_MODE_CALCUL);
         genreReadaptationAnnonce = statement.dbReadNumeric(IJIJCalculee.FIELDNAME_GENRE_READAPTATION_ANNONCE);
+        montantEnfant = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_MONTANT_ENFANTS,
+                2);
+        salaireMensuel = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_SALAIRE_MENSUEL,
+                2);
+        String nbEnfantsFpi = statement.dbReadNumeric(IJFpiCalculee.FIELDNAME_NB_ENFANTS);
+        nbEnfants = StringUtils.isBlank(nbEnfantsGrandIJ) ? nbEnfantsFpi : nbEnfantsGrandIJ;
     }
 
     /**
@@ -232,4 +257,20 @@ public class IJIJCalculeeJointGrandePetite extends IJIJCalculee {
         nbEnfants = string;
     }
 
+
+    public String getMontantEnfant() {
+        return montantEnfant;
+    }
+
+    public void setMontantEnfant(String montantEnfant) {
+        this.montantEnfant = montantEnfant;
+    }
+
+    public String getSalaireMensuel() {
+        return salaireMensuel;
+    }
+
+    public void setSalaireMensuel(String salaireMensuel) {
+        this.salaireMensuel = salaireMensuel;
+    }
 }
