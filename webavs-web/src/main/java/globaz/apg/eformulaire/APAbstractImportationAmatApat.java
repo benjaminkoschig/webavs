@@ -20,6 +20,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -532,6 +533,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             adresseComplexModel.setTiers(personneEtendueComplexModel);
             adresseComplexModel.getAvoirAdresse().setDateDebutRelation(Date.now().getSwissValue());
             adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+            adresseComplexModel.getPays().setIdPays(adresseAssure.getCountryIso2Code());
             adresseComplexModel.getLocalite().setNumPostal(npa);
             adresseComplexModel.getAdresse().setRue(adresseAssure.getStreetWithNr());
 
@@ -545,8 +547,16 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             adresseComplexModel.getAdresse().setLigneAdresse4("");
             AdresseComplexModel adresse = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
                     CS_TYPE_COURRIER, false);
-            fileStatus.addInformation("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
-            return adresse;
+            if(!isJadeThreadError()) {
+                fileStatus.addInformation("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
+                return adresse;
+            }else{
+                fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
+                LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans la création des périodes
+                JadeLogs.logAndClear("createAdresseCourrier", LOG);
+                return null;
+            }
         } catch (Exception e) {
             fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
             LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
@@ -740,5 +750,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         if(IConstantes.ID_PAYS_SUISSE.equals(codePays)) {
             droit.setNpa(npaFormat);
         }
+    }
+
+    protected boolean isJadeThreadError(){
+        if(JadeThread.logMessages() != null) {
+            return JadeThread.logMessages().length > 0;
+        }
+        return false;
     }
 }
