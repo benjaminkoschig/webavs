@@ -94,7 +94,7 @@ public class IJRequerantHelper extends PRAbstractHelper {
             }
 
             if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
-                prononceViewBean = new IJFpiViewBean();
+//                prononceViewBean = new IJFpiViewBean();
                 ((IJFpiViewBean)prononceViewBean).setDateNaissance(((IJRequerantViewBean)viewBean).getDateNaissance());
             }
 
