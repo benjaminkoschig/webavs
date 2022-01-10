@@ -93,11 +93,6 @@ public class IJRequerantHelper extends PRAbstractHelper {
                 prononceViewBean.getPrononce().setTauxImpositionSource("0");
             }
 
-            if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
-//                prononceViewBean = new IJFpiViewBean();
-                ((IJFpiViewBean)prononceViewBean).setDateNaissance(((IJRequerantViewBean)viewBean).getDateNaissance());
-            }
-
             prononceViewBean.add(((BSession) session).getCurrentThreadTransaction());
 
             droitVB.setIdPrononce(prononceViewBean.getIdPrononce());
@@ -167,11 +162,6 @@ public class IJRequerantHelper extends PRAbstractHelper {
                     } else {
                         prononceViewBean.getPrononce().setCsCantonImpositionSource("");
                         prononceViewBean.getPrononce().setTauxImpositionSource("0");
-                    }
-                    prononceViewBean.update(transaction);
-                    if (droitVB.getCsTypeIJ().equals(IIJPrononce.CS_FPI)) {
-                        prononceViewBean = new IJFpiViewBean();
-                        ((IJFpiViewBean)prononceViewBean).setDateNaissance(((IJRequerantViewBean)viewBean).getDateNaissance());
                     }
                 }
             } catch (Exception e) {

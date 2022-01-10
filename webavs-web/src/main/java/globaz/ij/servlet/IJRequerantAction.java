@@ -35,6 +35,7 @@ public class IJRequerantAction extends PRDefaultAction {
     protected String _getDestAjouterSucces(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         IJRequerantViewBean requerantViewBean = (IJRequerantViewBean) viewBean;
+        pushDto(requerantViewBean, session);
         String csTypeIJ = request.getParameter("csTypeIJ");
         try {
             String idTiers = requerantViewBean.loadDemande(null).loadTiers()
@@ -69,6 +70,7 @@ public class IJRequerantAction extends PRDefaultAction {
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         IJRequerantViewBean requerantViewBean = (IJRequerantViewBean) viewBean;
+        pushDto(requerantViewBean, session);
         String csTypeIJ = request.getParameter("csTypeIJ");
         try {
             String idTiers = requerantViewBean.loadDemande(null).loadTiers()
@@ -112,11 +114,7 @@ public class IJRequerantAction extends PRDefaultAction {
 
         super.actionAfficher(session, request, response, mainDispatcher);
         FWViewBeanInterface viewBean = this.loadViewBean(session);
-
-        IJNSSDTO dto = new IJNSSDTO();
-        dto.setNSS(((IJRequerantViewBean) viewBean).getNss());
-        dto.setDateNaissance(((IJRequerantViewBean) viewBean).getDateNaissance());
-        PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_NSS_DTO, dto);
+        pushDto((IJRequerantViewBean) viewBean, session);
 
     }
 
@@ -185,5 +183,17 @@ public class IJRequerantAction extends PRDefaultAction {
         }
 
         return requerantViewBean;
+    }
+
+    /**
+     * Mets en mémoire le Nss + date de naissance pour la recherche et écran suivant
+     * @param viewBean
+     * @param session
+     */
+    private void pushDto(IJRequerantViewBean viewBean, HttpSession session) {
+        IJNSSDTO dto = new IJNSSDTO();
+        dto.setNSS(viewBean.getNss());
+        dto.setDateNaissance(viewBean.getDateNaissance());
+        PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_NSS_DTO, dto);
     }
 }
