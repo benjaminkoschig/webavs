@@ -362,7 +362,10 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         LocalDate dateFinDemande = LocalDate.parse("01."+dateFin, formatter);
         dateFinDemande = dateFinDemande.withDayOfMonth(dateFinDemande.lengthOfMonth());
         LocalDate now = LocalDate.now();
-        return now.isBefore(dateFinDemande);
+        if (now.getYear() == dateFinDemande.getYear()) {
+            return dateFinDemande.getMonthValue() == 12 ? true: false;
+        }
+        return false;
     }
 
     private boolean isComptabilise(SimpleDemande demande) throws DroitException, PrestationException, LotException,

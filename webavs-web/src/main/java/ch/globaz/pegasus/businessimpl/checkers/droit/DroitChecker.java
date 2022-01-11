@@ -64,7 +64,10 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
         LocalDate dateFinDroit = LocalDate.parse("01."+dateFin, formatter);
         dateFinDroit = dateFinDroit.withDayOfMonth(dateFinDroit.lengthOfMonth());
         LocalDate today = LocalDate.now();
-        return dateFinDroit.isAfter(today);
+        if (today.getYear() == dateFinDroit.getYear()) {
+            return dateFinDroit.getMonthValue() == 12 ? true: false;
+        }
+        return false;
     }
 
     private static boolean isDemandeGetDatedeFin(Droit droit) {
