@@ -75,18 +75,12 @@ import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
+
 import ch.globaz.corvus.domaine.constantes.TypeRenteVerseeATort;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
@@ -95,7 +89,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Création de la décision de rentes avec la solution Topaz
- * 
+ *
  * @author HPE
  */
 public class REDecisionOO extends REAbstractJobOO {
@@ -107,7 +101,7 @@ public class REDecisionOO extends REAbstractJobOO {
     private static final String INV_EXT = "INV-EXT";
     private static final String INV_ORD = "INV-ORD";
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String CDT_MONTANTARETENIR = "{montant}";
@@ -294,7 +288,7 @@ public class REDecisionOO extends REAbstractJobOO {
         /*
          * Si AI --> En-tête AI Si API / AI --> En-tête AI Si API / AVS --> En-tête Caisse Si AVS --> En-tête Caisse Si
          * Survivant --> En-tête Caisse
-         * 
+         *
          * + Si en-tête office AI copie automatique à la caisse + Si API / AVS copie automatique à l'office AI
          */
 
@@ -531,7 +525,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
             if (!isRetro
                     && demandeApi.getCsGenrePrononceAI().equals(
-                            IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                    IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
                 isAvecMotivation = true;
             }
         }
@@ -545,7 +539,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
             if (!isRetro
                     && demandeAI.getCsGenrePrononceAI().equals(
-                            IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                    IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
 
                 // Si le requérant de la demande n'est pas égal au requérant de la base calcul, isAvecMotivation = false
                 if (isIdTiersBCEqualsIdTiersReqDemande) {
@@ -703,9 +697,9 @@ public class REDecisionOO extends REAbstractJobOO {
 
     /**
      * Retourne le document type number en fonction du type de décision.
-     * 
-     * @see IPRConstantesExternes.DECISION_RENTES_......._TYPE_NUMBER
+     *
      * @return le document type number
+     * @see IPRConstantesExternes.DECISION_RENTES_......._TYPE_NUMBER
      */
     public String getDocumentTypeNumber() {
         return documentTypeNumber;
@@ -746,7 +740,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
     /**
      * Methode de tri des bénéficiaires pour les lister par "genre" + "dateNaissance" dans le document
-     * 
+     *
      * @param benefs
      */
     private REBeneficiaireInfoVO[] ordrerParGenreEtDateNaissance(final REBeneficiaireInfoVO[] benefs) {
@@ -1740,7 +1734,7 @@ public class REDecisionOO extends REAbstractJobOO {
                                                             .get(ov.getDescriptionSaisieManuelleRenteVerseeATort());
                                                 }
                                                 montantPourLesRentesVerseesATortDeTypeSaisieManuelle.put(ov
-                                                        .getDescriptionSaisieManuelleRenteVerseeATort(),
+                                                                .getDescriptionSaisieManuelleRenteVerseeATort(),
                                                         montantPourCeTypeDeRenteVerseeATort.add(ov
                                                                 .getMontantCompenseOrdreVersement()));
                                             } else {
@@ -2215,7 +2209,7 @@ public class REDecisionOO extends REAbstractJobOO {
             // Recherche de l'adresse de paiement
             try {
                 TIAdressePaiementData adressePmt = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                        .getCurrentThreadTransaction(), idTiersAdressePmt,
+                                .getCurrentThreadTransaction(), idTiersAdressePmt,
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", "");
 
                 TIAdressePaiementDataSource source = new TIAdressePaiementDataSource();
@@ -3032,13 +3026,8 @@ public class REDecisionOO extends REAbstractJobOO {
 
                                 // Retrouver le type de rente accordée grâce au code système (avec genre prestation +
                                 // fraction (10.1))
-                                String pourRechercheCodeSysteme = benefs[inc].getGenrePrestation();
+                                String pourRechercheCodeSysteme = getTypeOfRA(benefs[inc]);
 
-                                if (JadeStringUtil.isEmpty(benefs[inc].getFraction())) {
-                                    pourRechercheCodeSysteme += ".0";
-                                } else {
-                                    pourRechercheCodeSysteme += "." + benefs[inc].getFraction();
-                                }
 
                                 // Retrouver le sexe du bénéficiaire
                                 Long idTiers = benefs[inc].getIdTiersBeneficiaire();
@@ -3077,8 +3066,13 @@ public class REDecisionOO extends REAbstractJobOO {
                                     }
 
                                     userCode.retrieve();
-
-                                    line1.addData("genreRente", userCode.getLibelle());
+                                    if (Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme)) {
+                                        DecimalFormat df = new DecimalFormat(" # %");
+                                        String quotite = df.format(Double.valueOf(benefs[inc].getQuotite()));
+                                        line1.addData("genreRente", userCode.getLibelle() + quotite);
+                                    } else {
+                                        line1.addData("genreRente", userCode.getLibelle());
+                                    }
                                 }
 
                                 line1.addData("montantLigne", JANumberFormatter.format(benefs[inc].getMontant()));
@@ -3122,6 +3116,27 @@ public class REDecisionOO extends REAbstractJobOO {
 
             }
         }
+    }
+
+    private String getTypeOfRA(REBeneficiaireInfoVO benef) {
+        String pourRechercheCodeSysteme = benef.getGenrePrestation();
+
+        if (!JadeStringUtil.isEmpty(benef.getFraction())) {
+            pourRechercheCodeSysteme += "." + benef.getFraction();
+        } else if (!JadeStringUtil.isEmpty(benef.getQuotite())) {
+            if (Objects.equals(REGenresPrestations.GENRE_50, benef.getGenrePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, benef.getGenrePrestation())) {
+                if (Float.valueOf(benef.getQuotite()) >= 0.70) {
+                    pourRechercheCodeSysteme += ".1";
+                } else {
+                    pourRechercheCodeSysteme += ".0";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".1";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
     }
 
     private void remplirSalutationsSignature() throws Exception {

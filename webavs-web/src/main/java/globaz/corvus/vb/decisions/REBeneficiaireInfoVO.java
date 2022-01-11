@@ -18,6 +18,7 @@ public class REBeneficiaireInfoVO implements Comparable<REBeneficiaireInfoVO>, S
     private String dateNaissanceBeneficiaire;
     private String descriptionBeneficiare = "";
     private String fraction = "";
+    private String quotite = "";
     private String genrePrestation = "";
     private Long idPrestationDue = null;
     private Long idRenteAccordee = null;
@@ -121,4 +122,14 @@ public class REBeneficiaireInfoVO implements Comparable<REBeneficiaireInfoVO>, S
     public void setMontant(String montant) {
         this.montant = montant;
     }
+
+
+    public String getQuotite() {
+        return quotite;
+    }
+
+    public void setQuotite(String quotite) {
+        this.quotite = quotite;
+    }
+
 }

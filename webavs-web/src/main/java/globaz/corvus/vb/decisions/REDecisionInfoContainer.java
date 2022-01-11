@@ -698,6 +698,7 @@ public class REDecisionInfoContainer implements Serializable {
                     ra.retrieve();
 
                     vo.setFraction(ra.getFractionRente());
+                    vo.setQuotite(ra.getQuotiteRente());
                     vo.setGenrePrestation(ra.getCodePrestation());
                     vo.setIdPrestationDue(Long.parseLong(pd.getIdPrestationDue()));
                     vo.setIdTiersBeneficiaire(Long.parseLong(ra.getIdTiersBeneficiaire()));

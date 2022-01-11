@@ -225,6 +225,7 @@ public class REDecisionsContainer implements Serializable {
                     .getIdPrestationAccordee()), elem.getDebutPaiement(), elem.getFinPaiement());
 
             vo.setFraction(elem.getFractionRente());
+            vo.setQuotite(elem.getQuotiteRente());
             vo.setGenrePrestation(elem.getCodePrestation());
             vo.setIdTiersBeneficiaire(Long.parseLong(elem.getIdTiersBeneficiaire()));
 
@@ -419,6 +420,7 @@ public class REDecisionsContainer implements Serializable {
                         .getIdPrestationAccordee()), elm.getDebutPaiement(), elm.getFinPaiement());
 
                 vo.setFraction(elm.getFractionRente());
+                vo.setQuotite(elm.getQuotiteRente());
                 vo.setGenrePrestation(elm.getCodePrestation());
 
                 vo.setIdTiersBeneficiaire(Long.parseLong(elm.getIdTiersBeneficiaire()));
