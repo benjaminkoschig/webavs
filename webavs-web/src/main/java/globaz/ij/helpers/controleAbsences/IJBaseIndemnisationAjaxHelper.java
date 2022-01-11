@@ -135,6 +135,7 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
             throw new Exception(BSessionUtil.getSessionFromThreadContext().getLabel(
                     "ERROR_BASE_INDEMNISATION_JOURS_EXTERNES_INFERIEUR_ZERO"));
         }
+        baseIndemnisation.setJoursNonCouverts(String.valueOf(totalJoursNonPayeSaisit));
 
         baseIndemnisation.setJoursExternes(String.valueOf(totalJoursExternes));
         return baseIndemnisation;
@@ -190,8 +191,18 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
         String value = vb.getCalculerBaseIndemnisation();
         if (Boolean.valueOf(value)) {
             IJBaseIndemnisationAjaxHelper.calculerValeurs(vb.getCurrentEntity());
+        } else if(vb.getPrononce().isFpi()) {
+            calculJourExterne(vb.getCurrentEntity());
         }
+
         super._update(viewBean, action, session);
+    }
+
+    private static void calculJourExterne(IJSimpleBaseIndemnisation baseIndemnisation) {
+        int nbJoursPeriode = PRDateUtils.getNbDayBetween(baseIndemnisation.getDateDeDebut(),
+                baseIndemnisation.getDateDeFin()) + 1;
+        int totalJoursExternes = nbJoursPeriode - Integer.valueOf(baseIndemnisation.getJoursNonCouverts());
+        baseIndemnisation.setJoursExternes(String.valueOf(totalJoursExternes));
     }
 
     public FWViewBeanInterface creerCorrection(FWViewBeanInterface viewBean, FWAction action, BSession session)
@@ -230,6 +241,8 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
         if (!JadeDateUtil.isGlobazDate(prononce.getDateDebutPrononce())) {
             throw new Exception("La date de début du prononcé est vide");
         }
+
+        vb.setPrononce(prononce);
 
         // Contrôle que la période de la base d'indemnisation soit dans la période du prononce.
         // La date de fin du prononce peut-être vide !!

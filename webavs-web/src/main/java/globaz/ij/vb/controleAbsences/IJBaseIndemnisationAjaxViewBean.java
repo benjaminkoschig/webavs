@@ -5,6 +5,7 @@ import ch.globaz.ij.business.models.IJSimpleBaseIndemnisationSearchModel;
 import ch.globaz.ij.business.services.IJBaseIndemnisationService;
 import ch.globaz.ij.business.services.IJServiceLocator;
 import globaz.framework.bean.JadeAbstractAjaxCrudDetailViewBean;
+import globaz.ij.db.prononces.IJPrononce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.service.provider.application.JadeCrudService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -18,6 +19,7 @@ public class IJBaseIndemnisationAjaxViewBean extends
     private static final long serialVersionUID = 1L;
     private IJSimpleBaseIndemnisation baseIndemnisation;
     private String calculerBaseIndemnisation;
+    private IJPrononce prononce;
 
     public IJBaseIndemnisationAjaxViewBean() {
         super();
@@ -211,4 +213,11 @@ public class IJBaseIndemnisationAjaxViewBean extends
         baseIndemnisation.setTauxImposition(tauxImposition);
     }
 
+    public IJPrononce getPrononce() {
+        return prononce;
+    }
+
+    public void setPrononce(IJPrononce prononce) {
+        this.prononce = prononce;
+    }
 }
