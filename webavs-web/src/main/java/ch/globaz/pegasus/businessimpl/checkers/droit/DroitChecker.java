@@ -1,14 +1,29 @@
 package ch.globaz.pegasus.businessimpl.checkers.droit;
 
+import ch.globaz.pegasus.business.constantes.IPCActions;
+import ch.globaz.pegasus.business.constantes.IPCDecision;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.models.decision.DecisionRefusSearch;
+import ch.globaz.pegasus.business.models.decision.ListDecisions;
+import ch.globaz.pegasus.business.models.decision.ListDecisionsSearch;
+import ch.globaz.pegasus.business.models.decision.ListDecisionsValidees;
+import ch.globaz.pegasus.business.models.droit.VersionDroit;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.perseus.businessimpl.services.models.decision.SimpleDecisionServiceImpl;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
@@ -18,6 +33,7 @@ import ch.globaz.pegasus.business.models.droit.DroitSearch;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import globaz.pegasus.vb.decision.IPCDecisionViewBean;
 
 public abstract class DroitChecker extends PegasusAbstractChecker {
     /**
@@ -27,8 +43,8 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
      * @throws DroitException
      * @throws JadeApplicationServiceNotAvailableException
      */
-    public static void checkForCorriger(Droit droit) throws DroitException, JadePersistenceException,
-            JadeNoBusinessLogSessionError, JadeApplicationServiceNotAvailableException {
+    public static void checkForCorriger(Droit droit) throws DroitException,
+            JadeNoBusinessLogSessionError, JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
         // Pour pouvoir etre corrige un droit doit etre dans l'etat OCTROYE
         if (!IPCDroits.CS_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
@@ -36,7 +52,8 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
         }
 
         // La demande du droit ne doit pas avoir de date de fin
-        if (isDemandeGetDatedeFin(droit) && isDateValable(droit.getDemande().getSimpleDemande().getDateFin())) {
+        // La demande doit être à l'état Refus sans calcul
+        if (isDemandeGetDatedeFin(droit) && decisionRefusApresCalcul(droit) && isDateValable(droit.getDemande().getSimpleDemande().getDateFin())) {
             JadeThread.logError(DroitChecker.class.getName(),"pegasus.droit.corriger.demandeNonReouverte.integrity");
         }
 
@@ -51,6 +68,18 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             JadeThread.logError(droit.getClass().getName(), "pegasus.droit.corriger.droitNonValideExistant.integrity");
         }
 
+    }
+
+    private static boolean decisionRefusApresCalcul(Droit droit) {
+        try {
+            ListDecisionsSearch listDecisionsSearch = new ListDecisionsSearch();
+            listDecisionsSearch.setForDemande(droit.getDemande().getId());
+            listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
+            return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+        } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException | DecisionException e) {
+            JadeThread.logWarn(droit.getClass().getName(),"Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
+        }
+        return false;
     }
 
     /**

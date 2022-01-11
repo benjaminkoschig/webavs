@@ -3,6 +3,9 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.demande;
 
+import ch.globaz.pegasus.business.constantes.IPCDecision;
+import ch.globaz.pegasus.business.models.decision.ListDecisions;
+import ch.globaz.pegasus.business.models.decision.ListDecisionsSearch;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -342,11 +345,23 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
         if ((nb > 0) && isLastDemande(demande)
                 && !IPCDemandes.CS_REOUVERT.equals(demande.getSimpleDemande().getCsEtatDemande())
-                && !(isComptabilise(demande.getSimpleDemande())) && isDateFinDemandeFutur(demande.getSimpleDemande().getDateFin())) {
+                && !(isComptabilise(demande.getSimpleDemande())) && isDateFinDemandeFutur(demande.getSimpleDemande().getDateFin()) && decisionRefusApresCalcul(demande)) {
             return true;
         }
         return false;
 
+    }
+
+    private static boolean decisionRefusApresCalcul(Demande demande) {
+        try {
+            ListDecisionsSearch listDecisionsSearch = new ListDecisionsSearch();
+            listDecisionsSearch.setForDemande(demande.getId());
+            listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
+            return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+        } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException | DecisionException e) {
+            JadeThread.logWarn(demande.getClass().getName(),"Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
+        }
+        return false;
     }
 
     /**
