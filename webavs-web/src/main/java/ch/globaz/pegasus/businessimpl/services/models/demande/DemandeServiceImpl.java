@@ -357,7 +357,9 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
             ListDecisionsSearch listDecisionsSearch = new ListDecisionsSearch();
             listDecisionsSearch.setForDemande(demande.getId());
             listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
-            return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+            if (listDecisionsSearch.getSearchResults().length > 0) {
+                return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+            }
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException | DecisionException e) {
             JadeThread.logWarn(demande.getClass().getName(),"Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
         }

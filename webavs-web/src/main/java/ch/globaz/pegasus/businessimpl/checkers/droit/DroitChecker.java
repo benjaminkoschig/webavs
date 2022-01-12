@@ -75,7 +75,9 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             ListDecisionsSearch listDecisionsSearch = new ListDecisionsSearch();
             listDecisionsSearch.setForDemande(droit.getDemande().getId());
             listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
-            return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+            if (listDecisionsSearch.getSearchResults().length > 0) {
+                return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+            }
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException | DecisionException e) {
             JadeThread.logWarn(droit.getClass().getName(),"Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
         }
