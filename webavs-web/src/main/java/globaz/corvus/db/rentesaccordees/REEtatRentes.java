@@ -30,6 +30,7 @@ public class REEtatRentes extends BEntity {
 
     private String codePrestation = "";
     private String fractionRente = "";
+    private String quotiteRente = "";
     private String montantPrestation = "";
 
     // champs cree lors de la requete
@@ -97,6 +98,7 @@ public class REEtatRentes extends BEntity {
 
         codePrestation = statement.dbReadString(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
         fractionRente = statement.dbReadString(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE);
+        quotiteRente = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE);
         montantPrestation = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION);
 
         // champs cree lors de la requete
@@ -181,5 +183,9 @@ public class REEtatRentes extends BEntity {
      */
     public String getNbForCode() {
         return nbForCode;
+    }
+
+    public String getQuotiteRente() {
+        return quotiteRente;
     }
 }

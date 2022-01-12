@@ -1478,6 +1478,10 @@ public class REEtatRentesAdapter {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
 
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())) {
+                            addMontant_AI_50_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_50_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1509,7 +1513,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())){
+                            addMontant_AI_53_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_53_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1537,7 +1544,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())) {
+                            addMontant_AI_54_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_54_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1565,7 +1575,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())) {
+                            addMontant_AI_55_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_55_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1593,7 +1606,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())) {
+                            addMontant_AI_56_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_56_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1621,7 +1637,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())) {
+                            addMontant_AI_70_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_70_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1652,7 +1671,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())){
+                            addMontant_AI_73_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_73_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1680,7 +1702,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())){
+                            addMontant_AI_74_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_74_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1708,7 +1733,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())){
+                            addMontant_AI_75_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_75_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }
@@ -1736,7 +1764,10 @@ public class REEtatRentesAdapter {
                             } else {
                                 throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                             }
-
+                        } else if (!JadeStringUtil.isEmpty(etatRentes.getQuotiteRente())){
+                            addMontant_AI_76_1(new FWCurrency(etatRentes.getMontantTotalForCode()));
+                            addNb_AI_76_1(Float.valueOf(etatRentes.getNbForCode()).intValue());
+                            break;
                         } else {
                             throw new Exception(session.getLabel("ERREUR_RENTE_AI_SANS_FRACTION_RENTE"));
                         }

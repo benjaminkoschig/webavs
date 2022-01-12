@@ -57,8 +57,9 @@ public class REEtatRentesManager extends BManager {
         String fields = new String();
 
         fields = REPrestationsAccordees.FIELDNAME_CODE_PRESTATION + ", "
-                + REPrestationsAccordees.FIELDNAME_FRACTION_RENTE + ", " + "SUM("
-                + REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION + ") AS "
+                + REPrestationsAccordees.FIELDNAME_FRACTION_RENTE + ", "
+                + REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE + ", "
+                + "SUM(" + REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION + ") AS "
                 + REEtatRentes.FIELDNAME_MONTANT_TOTAL_FOR_CODE + ", " + "SUM(1) AS "
                 + REEtatRentes.FIELDNAME_NB_FOR_CODE;
 
@@ -83,7 +84,8 @@ public class REEtatRentesManager extends BManager {
     @Override
     protected String _getGroupBy(BStatement statement) {
         return REPrestationsAccordees.FIELDNAME_CODE_PRESTATION + ", "
-                + REPrestationsAccordees.FIELDNAME_FRACTION_RENTE;
+                + REPrestationsAccordees.FIELDNAME_FRACTION_RENTE + ", "
+                + REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE;
     }
 
     /*
