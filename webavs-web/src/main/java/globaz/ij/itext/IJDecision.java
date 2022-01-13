@@ -27,6 +27,7 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.api.BIApplication;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
@@ -56,6 +57,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.external.IntRole;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater03;
@@ -646,32 +648,56 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 // Gestion des adresses courrier/Paiement de l'employeur
                 TIAdressePaiementData adressePaiementEmployeur;
                 String idTierEmployeur = "";
+                String idAffilie = "";
 
                 if ("standard".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
                     // Tout d'abord, retrouver la situation professionnelle (on
                     // prendra le premier employeur)
-                    IJSituationProfessionnelleManager sitProMgr = new IJSituationProfessionnelleManager();
-                    sitProMgr.setSession(getSession());
-                    sitProMgr.setForIdPrononce(prononce.getIdPrononce());
-                    sitProMgr.find(1);
 
-                    if (sitProMgr.size() > 0) {
-                        IJSituationProfessionnelle sitPro = (IJSituationProfessionnelle) sitProMgr.get(0);
-                        idTierEmployeur = sitPro.getIdEmployeur();
+                    if(prononce.isFpi()){
+                        IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
+                        agentMgr.setForIdPrononce(prononce.getIdPrononce());
+                        agentMgr.setSession(getSession());
+                        agentMgr.setForIdPrononce(prononce.getIdPrononce());
+                        agentMgr.find(BManager.SIZE_USEDEFAULT);
+
+                        if (agentMgr.size() > 0) {
+                            IJMesureJointAgentExecution agent = (IJMesureJointAgentExecution) agentMgr.get(0);
+                            if (!JadeStringUtil.isEmpty(agent.getIdTiers())) {
+                                Vector<String[]> aff = PRAffiliationHelper.getAffiliationsTiers(getSession(), agent.getIdTiers());
+                                if (aff != null && aff.size() > 0) {
+                                    idAffilie = aff.get(0)[0];
+                                }
+                                idTierEmployeur = agent.getIdTiers();
+                            }
+                        }
+                    } else {
+                        IJSituationProfessionnelleManager sitProMgr = new IJSituationProfessionnelleManager();
+                        sitProMgr.setSession(getSession());
+                        sitProMgr.setForIdPrononce(prononce.getIdPrononce());
+                        sitProMgr.find(1);
+
+                        if (sitProMgr.size() > 0) {
+                            IJSituationProfessionnelle sitPro = (IJSituationProfessionnelle) sitProMgr.get(0);
+                            idTierEmployeur = sitPro.getIdEmployeur();
+
+                            if(!JadeStringUtil.isEmpty(idTierEmployeur)) {
+                                IJEmployeur employeur = new IJEmployeur();
+                                employeur.setSession(getSession());
+                                employeur.setIdEmployeur(idTierEmployeur);
+                                employeur.retrieve();
+
+                                idTierEmployeur = employeur.getIdTiers();
+                                idAffilie = employeur.getIdAffilie();
+                            }
+                        }
                     }
 
                     if (!JadeStringUtil.isEmpty(idTierEmployeur)) {
 
-                        IJEmployeur employeur = new IJEmployeur();
-                        employeur.setSession(getSession());
-                        employeur.setIdEmployeur(idTierEmployeur);
-                        employeur.retrieve();
-
-                        idTierEmployeur = employeur.getIdTiers();
-
                         adressePaiementEmployeur = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
                                         .getCurrentThreadTransaction(), idTierEmployeur,
-                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, employeur.getIdAffilie(),
+                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, idAffilie,
                                 JACalendar.todayJJsMMsAAAA());
 
                         // formatter les infos de l'adresse pour l'affichage correct
