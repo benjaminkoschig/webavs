@@ -613,7 +613,7 @@
 						isPrintWhenDetailOverflows="true">
 							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE}!=null && !"".equals($P{P_COPIE}))]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE}]]></textFieldExpression>
@@ -759,7 +759,7 @@
 						isPrintWhenDetailOverflows="true">
 							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A}]]></textFieldExpression>
@@ -781,7 +781,7 @@
 						isPrintWhenDetailOverflows="true">
 							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A2}]]></textFieldExpression>
