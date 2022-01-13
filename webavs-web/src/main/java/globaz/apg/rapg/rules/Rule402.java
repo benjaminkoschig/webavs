@@ -19,6 +19,8 @@ import java.util.Arrays;
  */
 public class Rule402 extends RuleInterAPG {
 
+    private final int NB_JOURS_MAX_DEPUIS_2021 = 21;
+
     public Rule402(String errorCode) {
         super(errorCode, false, Arrays.asList(APGenreServiceAPG.ProtectionCivileServiceNormale), Arrays
                 .asList(APTypeProtectionCivile.CoursDeRepetition), 1, 7);
@@ -28,7 +30,7 @@ public class Rule402 extends RuleInterAPG {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         try {
             if(Dates.toDate(champsAnnonce.getStartOfPeriod()).isAfter(LocalDate.of(2020, 12,31))){
-                setNombreJoursSoldesMax(21);
+                setNombreJoursSoldesMax(NB_JOURS_MAX_DEPUIS_2021);
                 setGenresServicesAdditionnels(Arrays.asList(APGenreServiceAPG.ProtectionCivileCadreSpecialiste));
             }
             return super.check(champsAnnonce);
@@ -41,7 +43,7 @@ public class Rule402 extends RuleInterAPG {
     @Override
     public String getDetailMessageErreur() {
         String errorMessage = "";
-        if("21".equals(getNombreJoursSoldesMax())){
+        if(NB_JOURS_MAX_DEPUIS_2021 == getNombreJoursSoldesMax()){
             errorMessage = getSession().getLabel("APG_RULE_402_21");
         }else{
             errorMessage = getSession().getLabel("APG_RULE_402_7");
