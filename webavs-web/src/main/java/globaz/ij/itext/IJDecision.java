@@ -2717,18 +2717,8 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             bufferBaseCalcul.append("\n\n");
         }
 
-        Boolean isPlus25Ans = false;
-        if (tiers != null ) {
-            LocalDate dateDebutPrononce = Dates.toDate(fpiPrononce.getDateDebutPrononce());
-            LocalDate dateNaissance = Dates.toDate(tiers.getDateNaissance());
-            LocalDate date25ans = dateNaissance.plusYears(25);
-            if(dateDebutPrononce.isAfter(date25ans)) {
-                isPlus25Ans = true;
-            }
-        }
-
         // Base de calcul pour décision assuré de plus de 25 ans
-        if (isPlus25Ans) {
+        if (isPlus25ans(fpiPrononce)) {
             setBufferBaseCalculCorpsFpiPlus25ans(isPrestationEnfant, bufferBaseCalcul, bufferDevise, salpre, sal);
         } else {
             Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
@@ -2743,6 +2733,19 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 }
             }
         }
+    }
+
+    private Boolean isPlus25ans(IJFpi fpiPrononce) {
+        Boolean isPlus25Ans = false;
+        if (tiers != null ) {
+            LocalDate dateDebutPrononce = Dates.toDate(fpiPrononce.getDateDebutPrononce());
+            LocalDate dateNaissance = Dates.toDate(tiers.getDateNaissance());
+            LocalDate date25ans = dateNaissance.plusYears(25);
+            if(dateDebutPrononce.isAfter(date25ans)) {
+                isPlus25Ans = true;
+            }
+        }
+        return isPlus25Ans;
     }
 
     private void setBufferBaseCalculCorpsFpiMoins25AvecContratApprentissage(boolean isPrestationEnfant, StringBuffer bufferBaseCalcul, StringBuffer bufferDevise, FWCurrency salpre, FWCurrency sal) {
@@ -2835,7 +2838,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
         bufferBaseCalculIndJour.append(PRStringUtils.replaceString(indemniteJour, PARAM_RJM, salJour.toStringFormat()));
         Optional<IIJMotifFpi> motifFpi = IIJMotifFpi.findByCode(fpiPrononce.getCsSituationAssure());
         String indemniteTexte = document.getTextes(3).getTexte(42).getDescription();
-        if (motifFpi.isPresent() && motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE) {
+        if (motifFpi.isPresent() && motifFpi.get() == IIJMotifFpi.FPI_AVEC_CONTRAT_APPRENTISSAGE && !isPlus25ans(fpiPrononce)) {
             indemniteTexte = document.getTextes(3).getTexte(40).getDescription();
             bufferBaseCalculGratTexte.append(document.getTextes(3).getTexte(41).getDescription());
         }
