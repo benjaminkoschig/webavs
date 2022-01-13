@@ -797,6 +797,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             // (art. 3 al. S LAVS), personne ne payant pas de cotisation.
             if(!Dates.isAnneeMajeur(prononce.getDatePrononce(), tiers.getDateNaissance())) {
                 buffer.append(document.getTextes(5).getTexte(2).getDescription());
+                buffer.append("\n\n");
             }
             buffer.append(CTHtmlConverter.htmlToIText(documentProperties.getParameter("remarque"), getSession()
                     .getApplication().getProperty(CommonProperties.KEY_NO_CAISSE)));
