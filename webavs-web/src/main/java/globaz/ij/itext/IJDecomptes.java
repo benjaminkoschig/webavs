@@ -307,7 +307,6 @@ public class IJDecomptes extends FWIDocumentManager {
                         this.mergePDF(docInfo, true, 0, false, IJDecomptes.ORDER_PRINTING_BY);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     getMemoryLog().logMessage("IJDecompte afterExecuteReport():" + e.getMessage(), FWMessage.ERREUR,
                             "IJDecomptes");
                 }
@@ -462,11 +461,9 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         } catch (Exception e) {
-            e.printStackTrace();
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         }
@@ -1545,7 +1542,6 @@ public class IJDecomptes extends FWIDocumentManager {
                                     .getTextes(3).getTexte(61).getDescription(), "{nombreJourIndemnise}", nbJourNonSuivi + "/" + nbJourTotal));
                         }
                     }catch(Exception e){
-                        e.printStackTrace();
                         getMemoryLog().logMessage("IJDecompte createDataSource():" + e.getMessage(), FWMessage.ERREUR,
                                 "IJDecomptes");
                     }
@@ -1926,11 +1922,9 @@ public class IJDecomptes extends FWIDocumentManager {
             docInfo.setDocumentProperty(CTDocumentInfoHelper.TYPE_DOCUMENT_ID, documentHelper.getCsTypeDocument());
 
         } catch (RemoteException e) {
-            e.printStackTrace();
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         } catch (Exception e) {
-            e.printStackTrace();
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         }
@@ -2181,7 +2175,6 @@ public class IJDecomptes extends FWIDocumentManager {
 
             return hasNext;
         } catch (Exception e) {
-            e.printStackTrace();
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "IJDecomptes");
             abort();
 
