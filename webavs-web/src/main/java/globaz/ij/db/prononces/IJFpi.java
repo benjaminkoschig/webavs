@@ -52,7 +52,7 @@ public class IJFpi extends IJPrononce implements IPRCloneable {
         return fromClause.toString();
     }
 
-    private String csSituationAssure = "";
+    private String csSituationAssure = IIJMotifFpi.FORMATION_PROFESSIONNELLE_SUPERIEURE.getCode();
     private transient IJRevenu revenu;
     private String idDernierRevenuOuManqueAGagner = "";
     private String dateFormation = "";
