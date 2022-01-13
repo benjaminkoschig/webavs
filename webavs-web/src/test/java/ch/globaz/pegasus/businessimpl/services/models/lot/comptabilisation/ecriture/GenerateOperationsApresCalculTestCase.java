@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.*;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -176,12 +174,12 @@ public class GenerateOperationsApresCalculTestCase {
         Assert.assertEquals(0, operations.getOrdresVersements().size());
         Assert.assertEquals(1, operations.getEcritures().size());
     }
-
+    @Ignore
     @Test
     public void testGenerateOvForDom2R() throws JadeApplicationException {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
-        ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1", "105"));
-        ovs.add(OrdreVersementFactory.generateOvListRestitution("1", "50"));
+        ovs.add(OrdreVersementFactory.generateOvListBeneficiaireDom2R("1", "105"));
+        ovs.add(OrdreVersementFactory.generateOvListRestitutionDom2R("1", "50"));
         for (OrdreVersementForList ov : ovs) {
             ov.getSimpleOrdreVersement().setIdTiersAdressePaiementConjoint("20");
         }
