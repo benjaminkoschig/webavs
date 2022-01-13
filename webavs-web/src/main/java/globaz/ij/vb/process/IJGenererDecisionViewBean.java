@@ -76,6 +76,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
     private String personnalisationAdressePaiement = "";
     private String remarque = "";
     private String tauxImposition = "";
+    private String csTypePrononce = "";
 
     public String getAdresseCourrierAssureFormatee() {
         return adresseCourrierAssureFormatee;
@@ -599,6 +600,15 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
 
     public void setTauxImposition(String tauxImposition) {
         this.tauxImposition = tauxImposition;
+    }
+
+
+    public String getCsTypePrononce() {
+        return csTypePrononce;
+    }
+
+    public void setCsTypePrononce(String csTypePrononce) {
+        this.csTypePrononce = csTypePrononce;
     }
 
     @Override
