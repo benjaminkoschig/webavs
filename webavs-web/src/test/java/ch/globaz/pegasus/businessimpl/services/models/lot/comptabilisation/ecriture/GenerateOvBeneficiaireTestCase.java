@@ -54,8 +54,8 @@ public class GenerateOvBeneficiaireTestCase {
     @Test
     public void testGenerateOvComptaBeneficiareConjointDomAndDom2R() {
         List<OrdreVersementCompta> ovs = generateOvs(0, 100, 0, 100);
-        Assert.assertEquals(2, ovs.size());
-        verifiConjointDom2R(ovs.get(0), 100);
+        Assert.assertEquals(1, ovs.size());
+        verifiConjointDom2R(ovs.get(0), 200);
     }
 
     @Test
@@ -77,10 +77,10 @@ public class GenerateOvBeneficiaireTestCase {
     @Test
     public void testGenerateOvComptaBeneficiareReqConjDomAndDom2R() {
         List<OrdreVersementCompta> ovs = generateOvs(100, 100, 150, 50);
-        Assert.assertEquals(3, ovs.size());
+        Assert.assertEquals(2, ovs.size());
         verifiRequerant(ovs.get(0), 250);
-        verifiConjointDom2R(ovs.get(1), 100);
-        verifiConjoint(ovs.get(2), 50);
+        verifiConjointDom2R(ovs.get(1), 150);
+        //verifiConjoint(ovs.get(2), 50);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class GenerateOvBeneficiaireTestCase {
         Assert.assertEquals(new BigDecimal(montant), ov.getMontant());
         Assert.assertEquals(CompteAnnexeFactory.ID_TIERS_ADRESSE_PAIEMENT_CONJOINT, ov.getIdTiersAdressePaiement());
         Assert.assertEquals(CompteAnnexeFactory.ID_TIERS_DOMMAINE_APPLICATION_CONJOINT, ov.getIdDomaineApplication());
-        Assert.assertEquals(CompteAnnexeFactory.COMPTE_ANNEXE_REQUERANT, ov.getCompteAnnexe().getIdCompteAnnexe());
+        Assert.assertEquals(CompteAnnexeFactory.COMPTE_ANNEXE_CONJOINT, ov.getCompteAnnexe().getIdCompteAnnexe());
         Assert.assertEquals(CompteAnnexeFactory.ID_TIERS_CONJOINT, ov.getIdTiers());
     }
 
