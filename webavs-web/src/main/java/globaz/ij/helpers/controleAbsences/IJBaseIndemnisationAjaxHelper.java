@@ -110,11 +110,11 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
                     } else if (IJAbsence.CS_ABSENCE_ACCOUCHEMENT.equals(absence.getCodeAbsence())) {
                         baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_MATERNITE);
                     } else if (IJAbsence.CS_ABSENCE_AUTRE_MOTIF.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_AUTRES_MOTIFS);
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_AUTRES);
                     } else if (IJAbsence.CS_ABSENCE_PROCHE_AIDANT.equals(absence.getCodeAbsence())) {
                         baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_PROCHE_AIDANT);
                     } else if (IJAbsence.CS_ABSENCE_INJUSTIFIE.equals(absence.getCodeAbsence())) {
-                        baseIndemnisation.setMotifInterruption("");
+                        baseIndemnisation.setMotifInterruption(IIJBaseIndemnisation.CS_AUTRES);
                     }
                 }
             }
@@ -161,6 +161,8 @@ public class IJBaseIndemnisationAjaxHelper extends PRAbstractHelper {
         String value = vb.getCalculerBaseIndemnisation();
         if (Boolean.valueOf(value)) {
             IJBaseIndemnisationAjaxHelper.calculerValeurs(vb.getCurrentEntity());
+        } else if(vb.getPrononce().isFpi()) {
+            calculJourExterne(vb.getCurrentEntity());
         }
         super._add(viewBean, action, session);
     }
