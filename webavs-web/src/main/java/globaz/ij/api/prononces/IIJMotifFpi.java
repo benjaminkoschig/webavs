@@ -26,4 +26,8 @@ public enum IIJMotifFpi {
         return session.getLabel(label);
     }
 
+    public final String getLabelUser(BSession session, String isoLanguage) throws Exception {
+        return session.getApplication().getLabel(label, isoLanguage);
+    }
+
 }

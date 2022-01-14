@@ -1168,7 +1168,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     fpi.retrieve();
                     Optional<IIJMotifFpi> motif =  IIJMotifFpi.findByCode(fpi.getCsSituationAssure());
                     if(motif.isPresent()){
-                        code = motif.get().getLabel(getSession());
+                        code = motif.get().getLabelUser(getSession(), codeIsoLangue);
                     } else {
                         code = StringUtils.EMPTY;
                     }
