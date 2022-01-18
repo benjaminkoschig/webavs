@@ -1,5 +1,6 @@
 package globaz.hercule.itext.controleEmployeur;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -15,9 +16,11 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
 import globaz.hercule.application.CEApplication;
+import globaz.hercule.application.CEProperties;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
 import globaz.hercule.utils.CEUtils;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.application.AFApplication;
 import globaz.naos.util.AFIDEUtil;
 import globaz.pyxis.api.ITIRole;
@@ -211,12 +214,9 @@ public class CERapport_P1_Doc extends FWIDocumentManager {
         super.setParametres(CERapport_Param.P_NUM_RAPPORT, controle.getRapportNumero());
         super.setParametres(CERapport_Param.P_NOM_REVISEUR, controle.getControleurNom());
         super.setParametres(CERapport_Param.P_DATE_CONTROLE, controle.getDateEffective());
-        super.setParametres(CERapport_Param.P_PERIODE,
-                controle.getDateDebutControle() + " au " + controle.getDateFinControle());// TODO SCO :
-                                                                                          // Traduire le "au"
+        super.setParametres(CERapport_Param.P_PERIODE, controle.getDateDebutControle() + " au " + controle.getDateFinControle());// TODO SCO : Traduire le "au"
         super.setParametres(CERapport_Param.P_DATE_PRECEDENT, controle.getDatePrecedentControle());
-        super.setParametres(CERapport_Param.P_BRANCHE_ECO,
-                CEUtils.getLibelleIso(getSession(), controle.getBrancheEco(), controle.getLangueTiers()));
+        super.setParametres(CERapport_Param.P_BRANCHE_ECO, CEUtils.getLibelleIso(getSession(), getBrancheEconomiqueOuCodeNoga(), controle.getLangueTiers()));
         super.setParametres(CERapport_Param.P_FORME_JURI,
                 CEUtils.getLibelleIso(getSession(), controle.getFormeJuri(), controle.getLangueTiers()));
         super.setParametres(CERapport_Param.P_SUCCURSALE, controle.getSuccLibelle());
@@ -269,6 +269,27 @@ public class CERapport_P1_Doc extends FWIDocumentManager {
         if (controle.getEleGratification().booleanValue()) {
             super.setParametres(CERapport_Param.P_GRATIFICATION, "X");
         }
+    }
+
+    private String getBrancheEconomiqueOuCodeNoga() {
+        try {
+            if (CEProperties.CODE_NOGA.getBooleanValue()) {
+                try {
+                    String codeNoga = controle.getCodeNoga();
+                    if (!JadeStringUtil.isBlankOrZero(codeNoga)) {
+                        return codeNoga;
+                    }
+                } catch (Exception exception) {
+                    getMemoryLog().logMessage("Erreur lors de la recherche du code Noga de l'affilié.",
+                            FWMessage.AVERTISSEMENT, this.getClass().getName());
+                }
+            }
+        } catch (PropertiesException e) {
+            getMemoryLog().logMessage("Erreur lors de la recherche de la propriété [" + CEProperties.CODE_NOGA.getPropertyName() + "]",
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+        return controle.getBrancheEco();
     }
 
     @Override

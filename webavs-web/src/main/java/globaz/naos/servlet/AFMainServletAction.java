@@ -61,6 +61,8 @@ public class AFMainServletAction extends FWActionHandlerFactoryMapSupport {
         AFMainServletAction.hActionsTable.put("naos.nombreAssures.nombreAssures", AFActionNombreAssures.class);
         AFMainServletAction.hActionsTable.put("naos.particulariteAffiliation.particulariteAffiliation",
                 AFActionParticulariteAffiliation.class);
+        AFMainServletAction.hActionsTable.put("naos.particulariteAffiliation.particulariteAffiliationAjax",
+                AFActionParticulariteAffiliationAjax.class);
         AFMainServletAction.hActionsTable.put("naos.parametreAssurance.parametreAssurance",
                 AFActionParametreAssurance.class);
         AFMainServletAction.hActionsTable.put("naos.plan.plan", AFActionPlan.class);

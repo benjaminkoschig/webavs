@@ -748,6 +748,21 @@ public class CEControleEmployeur extends BEntity implements Serializable {
         return brancheEco;
     }
 
+    /**
+     * @return
+     */
+    public String getCodeNoga() {
+        try {
+            if (getAffiliation() != null) {
+                return getAffiliation().getCodeNoga();
+            }
+        } catch (Exception e) {
+            JadeLogger.warn(this, e);
+        }
+
+        return null;
+    }
+
     public String getChampConseil() {
         return champConseil;
     }

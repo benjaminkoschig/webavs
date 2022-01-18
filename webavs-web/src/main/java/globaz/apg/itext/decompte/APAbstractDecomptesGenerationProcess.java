@@ -1318,7 +1318,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 buffer.append(".");
             }
 
-            buffer.append("\n");
         }
 
         // creer les arguments a remplacer dans le texte
@@ -1494,8 +1493,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 buffer.append(textes.getTexte(103).getDescription());
             }
         }
-
-        buffer.append("\n");
 
         // creer les arguments a remplacer dans le texte
 

@@ -1,5 +1,8 @@
 package globaz.phenix.documentsItext;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.properties.PropertiesException;
+import com.beust.jcommander.Strings;
 import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.CTDocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
@@ -18,6 +21,7 @@ import globaz.phenix.db.communications.CPSedexDonneesCommerciales;
 import globaz.phenix.db.communications.CPSedexDonneesPrivees;
 import globaz.phenix.listes.itext.CPIListeCommunicationRetourDetailFiscJuParam;
 import globaz.phenix.toolbox.CPToolBox;
+import globaz.phenix.util.CPProperties;
 import globaz.phenix.util.DocumentInfoPhenix;
 
 /**
@@ -454,12 +458,9 @@ public class CPImpressionCommunicationRetourDetailFiscSEDEX1_Doc extends CPImpre
 
         getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE, getRetour().getAnnee1());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_GENRE, getRetour().getGenreAffilie());
-        try {
-            getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE,
-                    CPToolBox.unFormat(getRetour().getNumAffilie()));
-        } catch (Exception e) {
-            getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE, "");
-        }
+
+        getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE, getNumAffForDocInfo());
+
         getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_FORMATTE, getRetour().getNumAffilie());
         getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.TIERS_ID, getRetour().getIdTiers());
 
@@ -487,5 +488,28 @@ public class CPImpressionCommunicationRetourDetailFiscSEDEX1_Doc extends CPImpre
 
     public void setRetour(CPCommunicationFiscaleRetourSEDEXViewBean retour) {
         this.retour = retour;
+    }
+
+    private String getNumAffForDocInfo(){
+        boolean activeNumAffLigneTechnique;
+        try {
+            activeNumAffLigneTechnique = CPProperties.ACTIVER_NUM_AFF_LIGNE_TECHNIQUE.getBooleanValue();
+        } catch (PropertiesException e) {
+            throw new CommonTechnicalException("Propriété phenix.activerNumAffLigneTechnique non trouvée", e);
+        }
+
+        if(!activeNumAffLigneTechnique){
+            try {
+                return CPToolBox.unFormat(getRetour().getNumAffilie());
+            } catch (Exception e) {
+                return "";
+            }
+        } else{
+            String numAff = CPToolBox.formatRemoveNumSeparators(getRetour().getNumAffilie());
+            if(Strings.isStringEmpty(numAff)){
+                numAff = CPToolBox.formatRemoveNumSeparators(contribuable.getYourBusinessReferenceId());
+            }
+            return numAff;
+        }
     }
 }

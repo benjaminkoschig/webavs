@@ -496,6 +496,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             particulariteMana.setSession(getSession());
             particulariteMana.setForAffiliationId(getAffiliationId());
             particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+            particulariteMana.setDateDebutLessOrEqual("31.12." + annee);
             particulariteMana.find(BManager.SIZE_USEDEFAULT);
             if (particulariteMana.size() > 0) {
                 String numAffilie = getNumeroAffilie();
@@ -520,6 +521,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 particulariteMana.setSession(getSession());
                 particulariteMana.setForAffiliationId(getAffiliationId());
                 particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
+                particulariteMana.setDateDebutLessOrEqual("31.12." + annee);
                 particulariteMana.find(BManager.SIZE_USEDEFAULT);
                 if (particulariteMana.size() > 0) {
                     String numAffilie = getNumeroAffilie();
@@ -841,7 +843,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
         // Lors de la validation ou de la facturation d'un décompte de type 13
         // ou 14
         // On met un message d'erreur si l'affilié a une particularité
-        // "Code blocage - Décompte final"
+        // "Code blocage - Décompte final" ou "Fiche partielle"
         if (!JadeStringUtil.isBlankOrZero(getTypeDeclaration())) {
             if (DSDeclarationViewBean.CS_PRINCIPALE.equals(getTypeDeclaration())
                     || DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE.equals(getTypeDeclaration())) {
@@ -849,10 +851,18 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 particulariteMana.setSession(getSession());
                 particulariteMana.setForAffiliationId(getAffiliationId());
                 particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
+                particulariteMana.setDateDebutLessOrEqual("31.12." + annee);
                 particulariteMana.find(BManager.SIZE_USEDEFAULT);
                 if (particulariteMana.size() > 0) {
                     _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
                             + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL)
+                            + getSession().getLabel("PLAUSI_PARTICULARITE2") + " " + getNumeroAffilie());
+                }
+                particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+                particulariteMana.find(BManager.SIZE_USEDEFAULT);
+                if (particulariteMana.size() > 0) {
+                    _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
+                            + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE)
                             + getSession().getLabel("PLAUSI_PARTICULARITE2") + " " + getNumeroAffilie());
                 }
             }

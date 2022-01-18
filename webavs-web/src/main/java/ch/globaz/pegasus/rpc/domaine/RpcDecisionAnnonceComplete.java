@@ -2,13 +2,11 @@ package ch.globaz.pegasus.rpc.domaine;
 
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.domaine.demande.Demande;
 import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.pca.PcaDecision;
 import ch.globaz.pegasus.business.domaine.pca.PcaGenre;
-import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import globaz.jade.client.util.JadeDateUtil;
 
 /**
@@ -101,7 +99,7 @@ public class RpcDecisionAnnonceComplete {
         } else {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null) {
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null && !personsElementsCalcul.hasMembreDeces()) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;

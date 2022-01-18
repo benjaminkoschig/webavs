@@ -16,7 +16,8 @@ public enum CPProperties implements IProperties {
     LISTE_TAXATION_DEFINITIVE_GROUP_MAIL("liste.taxation.definitive.group.mail"),
     ETAT_CIVIL_SIMUL_CONJOINT("etatCivilCodeSimulConjoint"),
     // Indique si les décisions de cotisations personnelles doivent être créées dans l'EBusiness
-    ADI_MANAGE_DECISION_IN_EBUSINESS("adi.manage.decision.in.ebusiness");
+    ADI_MANAGE_DECISION_IN_EBUSINESS("adi.manage.decision.in.ebusiness"),
+    ACTIVER_NUM_AFF_LIGNE_TECHNIQUE("activerNumAffLigneTechnique");
 
     private String property;
 

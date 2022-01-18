@@ -67,7 +67,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="214"  isSplitAllowed="false" >
+			<band height="202"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
@@ -899,7 +899,7 @@
 						x="3"
 						y="174"
 						width="504"
-						height="27"
+						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-91"
@@ -937,7 +937,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
-						y="201"
+						y="186"
 						width="504"
 						height="12"
 						forecolor="#000000"

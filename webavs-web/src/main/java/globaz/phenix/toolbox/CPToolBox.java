@@ -1997,18 +1997,32 @@ public class CPToolBox {
     }
 
     /**
-     * Retourne un numéro sans format
+     * [Obsolète*] Retourne un numéro sans format
+     *
+     * *Utiliser formatRemoteNumSeparators
      * 
-     * @param String
+     * @param chaineFormat
      * @return String
      * @throws Exception
      */
+    @Deprecated
     public static String unFormat(String chaineFormat) throws Exception {
         String numSansFormat = JAStringFormatter.unFormat(chaineFormat, "", ".");
         numSansFormat = JAStringFormatter.unFormat(numSansFormat, "", "/");
         numSansFormat = JAStringFormatter.unFormat(numSansFormat, "", "-");
         numSansFormat = JadeStringUtil.removeChar(numSansFormat, ' ');
-        return numSansFormat = JAStringFormatter.unFormat(numSansFormat, "", "_");
+        return JAStringFormatter.unFormat(numSansFormat, "", "_");
+    }
+
+    /**
+     * Transforme un numéro en supprimant les caractères séparateurs [espace], ".", "/", "-" et "\"
+     *
+     * @param input chaine à transformer
+     * @return chaine sans les séparateurs
+     */
+    public static String formatRemoveNumSeparators(String input){
+        if(input == null) return "";
+        return input.replaceAll("[\\s\\.\\/\\-_]","");
     }
 
     /**

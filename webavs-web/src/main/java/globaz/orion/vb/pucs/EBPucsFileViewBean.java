@@ -1,14 +1,18 @@
 package globaz.orion.vb.pucs;
 
+import ch.globaz.common.util.Dates;
+import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.vb.EBAbstractViewBean;
+
 import java.util.List;
-import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
+import java.util.Optional;
 
 public class EBPucsFileViewBean extends EBAbstractViewBean {
     private String id;
@@ -16,6 +20,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
     private PucsFile pucsFile;
     private boolean hasParticulariteCodeBlocage;
     private boolean hasParticulariteFichePartiel;
+    private List<AFParticulariteAffiliation> particularites;
     private boolean hasRightAccesSecurity = false;
     private String idAffiliation;
 
@@ -24,7 +29,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         pucsFile = new PucsFile();
     }
 
-    public EBPucsFileViewBean(PucsFile pucsFile, List<String> particularites, AFAffiliation afAffiliation) {
+    public EBPucsFileViewBean(PucsFile pucsFile, List<AFParticulariteAffiliation> particularites, AFAffiliation afAffiliation) {
         super();
         this.pucsFile = pucsFile;
         id = pucsFile.getIdDb();
@@ -32,7 +37,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
             idAffiliation = afAffiliation.getAffiliationId();
         }
 
-        // Gestion du code sécurité !
+        // Gestion du code sécurité !!
         pucsFile.setLock(!PucsServiceImpl.userHasRight(afAffiliation, BSessionUtil.getSessionFromThreadContext()));
         if (!pucsFile.isLock()) {
             pucsFile.setLock(!AFAffiliationServices.hasRightAccesSecurity(pucsFile.getCodeSecuriteCi(),
@@ -40,12 +45,32 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         }
         hasRightAccesSecurity = !pucsFile.isLock();
 
+        this.particularites = particularites;
+
         // Gestion des particularités.
         if (particularites != null) {
-            hasParticulariteCodeBlocage = particularites.contains(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
-            hasParticulariteFichePartiel = particularites.contains(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+            hasParticulariteCodeBlocage = particularites.stream()
+                    .anyMatch(par -> CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL.equals(par.getParticularite()) &&
+                            Dates.toDate(par.getDateDebut()).getYear() <= Integer.parseInt(pucsFile.getAnneeDeclaration()));
+            hasParticulariteFichePartiel = particularites.stream()
+                    .anyMatch(par -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(par.getParticularite()) &&
+                            Dates.toDate(par.getDateDebut()).getYear() <= Integer.parseInt(pucsFile.getAnneeDeclaration()));
+        }
+    }
+
+    public Optional<AFParticulariteAffiliation> getParticularite() {
+        Optional<AFParticulariteAffiliation> particularite = Optional.empty();
+        if(hasParticulariteCodeBlocage) {
+            particularite = particularites.stream().filter(p -> CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL.equals(p.getParticularite())).findFirst();
+        } else if(hasParticulariteFichePartiel) {
+            particularite = particularites.stream().filter(p -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(p.getParticularite())).findFirst();
+        }
+        return particularite;
         }
 
+    public String getParticulariteId() {
+        Optional<AFParticulariteAffiliation> particularite = getParticularite();
+        return particularite.isPresent() ? particularite.get().getParticulariteId() : null;
     }
 
     @Override
@@ -104,6 +129,10 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
 
     public boolean isVisible() {
         return hasRightAccesSecurity;
+    }
+
+    public boolean hasLockParticularite() {
+        return hasParticulariteFichePartiel || hasParticulariteCodeBlocage;
     }
 
     public boolean hasLock() {

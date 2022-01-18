@@ -1,5 +1,8 @@
 package globaz.phenix.documentsItext;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.properties.PropertiesException;
+import com.beust.jcommander.Strings;
 import globaz.commons.nss.NSUtil;
 import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.CTDocumentInfoHelper;
@@ -23,6 +26,7 @@ import globaz.phenix.db.communications.CPSedexDonneesBase;
 import globaz.phenix.listes.itext.CPIListeCommunicationRetourDetailFiscJuParam;
 import globaz.phenix.listes.itext.CPIListeCommunicationRetourDetailFiscVdParam;
 import globaz.phenix.toolbox.CPToolBox;
+import globaz.phenix.util.CPProperties;
 import globaz.phenix.util.DocumentInfoPhenix;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -492,12 +496,9 @@ public class CPImpressionCommunicationRetourDetailFiscSEDEX_Doc extends CPImpres
 
         getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE, entity.getAnnee1());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_GENRE, entity.getGenreAffilie());
-        try {
-            getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE,
-                    CPToolBox.unFormat(entity.getNumAffilie()));
-        } catch (Exception e) {
-            getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE, "");
-        }
+
+        getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_NON_FORMATTE, getNumAffForDocInfo());
+
         getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_FORMATTE, entity.getNumAffilie());
         getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.TIERS_ID, entity.getIdTiers());
 
@@ -521,5 +522,28 @@ public class CPImpressionCommunicationRetourDetailFiscSEDEX_Doc extends CPImpres
 
     public void setWantDetail(Boolean wantDetail) {
         this.wantDetail = wantDetail;
+    }
+
+    private String getNumAffForDocInfo(){
+        boolean activeNumAffLigneTechnique;
+        try {
+            activeNumAffLigneTechnique = CPProperties.ACTIVER_NUM_AFF_LIGNE_TECHNIQUE.getBooleanValue();
+        } catch (PropertiesException e) {
+            throw new CommonTechnicalException("Propriété phenix.activerNumAffLigneTechnique non trouvée", e);
+        }
+
+        if(!activeNumAffLigneTechnique){
+            try {
+                return CPToolBox.unFormat(entity.getNumAffilie());
+            } catch (Exception e) {
+                return "";
+            }
+        } else{
+            String numAff = CPToolBox.formatRemoveNumSeparators(entity.getNumAffilie());
+            if(Strings.isStringEmpty(numAff)){
+                numAff = CPToolBox.formatRemoveNumSeparators(contribuable.getYourBusinessReferenceId());
+            }
+            return numAff;
+        }
     }
 }

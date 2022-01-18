@@ -132,10 +132,10 @@ public class AFParticulariteAffiliation extends BEntity {
      * @param session ,idAffiliation, genreParticularite
      * @return Une map avec comme id l'idAffiliation
      */
-    public static Map<String, List<String>> findParticularites(BSession session, Collection<String> idsAffiliation,
+    public static Map<String, List<AFParticulariteAffiliation>> findParticularites(BSession session, Collection<String> idsAffiliation,
             String... genreParticularite) {
 
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<AFParticulariteAffiliation>> map = new HashMap<>();
 
         AFParticulariteAffiliationManager particulariteManager = new AFParticulariteAffiliationManager();
         particulariteManager.setInAffiliationIds(idsAffiliation);
@@ -147,9 +147,9 @@ public class AFParticulariteAffiliation extends BEntity {
 
             for (AFParticulariteAffiliation par : entities) {
                 if (!map.containsKey(par.getAffiliationId())) {
-                    map.put(par.getAffiliationId(), new ArrayList<String>());
+                    map.put(par.getAffiliationId(), new ArrayList<>());
                 }
-                map.get(par.getAffiliationId()).add(par.getParticularite());
+                map.get(par.getAffiliationId()).add(par);
             }
             return map;
         } catch (Exception e) {
@@ -196,8 +196,7 @@ public class AFParticulariteAffiliation extends BEntity {
     /**
      * Revoie true si le genre de particularité transmis existe à une date donnée
      * 
-     * @param transaction
-     *            , idAffiliation, genreParticularite, date
+     * @param session, idAffiliation, genreParticularite, date
      * @return boolean
      */
     public static boolean existeParticulariteDateDonnee(BSession session, String idAffiliation,

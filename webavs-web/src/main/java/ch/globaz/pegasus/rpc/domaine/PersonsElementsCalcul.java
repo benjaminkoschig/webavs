@@ -134,7 +134,15 @@ public class PersonsElementsCalcul {
         }
         return false;
     }
-
+    public boolean hasMembreDeces() {
+        for (PersonElementsCalcul personneCalcul : personsElementsCalcul) {
+            if ((personneCalcul.getMembreFamille().getRoleMembreFamille().isConjoint()
+                    ||personneCalcul.getMembreFamille().getRoleMembreFamille().isRequerant()) && personneCalcul.getMembreFamille().getPersonne().isDecede() ) {
+                return true;
+            }
+        }
+        return false;
+    }
     public boolean hasEnfant() {
         for (PersonElementsCalcul personneCalcul : personsElementsCalcul) {
             if (personneCalcul.getMembreFamille().getRoleMembreFamille().isEnfant()) {

@@ -1,0 +1,3 @@
+#Test webAVS restAPI
+GET {{domain}}/{{root}}/api/infos/health
+Accept: application/json

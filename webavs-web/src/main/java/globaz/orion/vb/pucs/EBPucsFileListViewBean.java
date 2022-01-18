@@ -38,7 +38,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     private String orderBy;
     private List<PucsEntrySummary> pucsFiles = null;
     private List<PucsFile> pucsFilesFinal = new ArrayList<PucsFile>();
-    private Map<String, List<String>> mapNumAffiliationParticularite;
+    private Map<String, List<AFParticulariteAffiliation>> mapNumAffiliationParticularite;
     private Map<String, AFAffiliation> mapAffiliation;
     private EBPucsFileManager manager = new EBPucsFileManager();
 
@@ -141,14 +141,14 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
     }
 
-    private Map<String, List<String>> resolveParticularites(Map<String, AFAffiliation> mapAff) {
+    private Map<String, List<AFParticulariteAffiliation>> resolveParticularites(Map<String, AFAffiliation> mapAff) {
 
-        Map<String, List<String>> particularites = AFParticulariteAffiliation.findParticularites(
+        Map<String, List<AFParticulariteAffiliation>> particularites = AFParticulariteAffiliation.findParticularites(
                 BSessionUtil.getSessionFromThreadContext(), mapAffiliation.keySet(),
                 CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL, CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<AFParticulariteAffiliation>> map = new HashMap<>();
 
-        for (Entry<String, List<String>> entry : particularites.entrySet()) {
+        for (Entry<String, List<AFParticulariteAffiliation>> entry : particularites.entrySet()) {
             AFAffiliation afAffiliation = mapAff.get(entry.getKey());
             if (afAffiliation != null) {
                 map.put(afAffiliation.getAffiliationId(), entry.getValue());
@@ -189,9 +189,9 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     @Override
     public BIPersistentObject get(int idx) {
         PucsFile pucsFile = pucsFilesFinal.get(idx);
-        List<String> particularites = mapNumAffiliationParticularite.get(pucsFile.getIdAffiliation());
+        List<AFParticulariteAffiliation> particularites = mapNumAffiliationParticularite.get(pucsFile.getIdAffiliation());
         AFAffiliation afAffiliation = mapAffiliation.get(pucsFile.getIdAffiliation());
-        // test
+
         return pucsFilesFinal.size() > idx ? new EBPucsFileViewBean(pucsFile, particularites, afAffiliation)
                 : new EBPucsFileViewBean();
     }

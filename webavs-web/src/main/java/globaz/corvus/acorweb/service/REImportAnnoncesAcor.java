@@ -3,8 +3,6 @@ package globaz.corvus.acorweb.service;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.api.annonces.IREAnnonces;

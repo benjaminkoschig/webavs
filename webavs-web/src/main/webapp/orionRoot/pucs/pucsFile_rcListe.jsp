@@ -15,6 +15,7 @@
     String changeUserAction = baseLink+"changeUser";
 %>
 <%-- /tpl:insert --%>
+<script type="text/javascript" src="<%=request.getContextPath()%>/orionRoot/scripts/pucsFile_rcListe.js"></script>
 
 <style>
 
@@ -99,6 +100,13 @@
 </style>
 <%@ include file="/theme/list/javascripts.jspf" %>
 <script type="text/javascript">
+
+    var SUPPRIMER = '<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_POPUP_PARTICULARITE_SUPPRIMER")%>';
+    var VALIDER = '<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_POPUP_PARTICULARITE_VALIDER")%>';
+    var CONTEXT = "<%=request.getContextPath()%>";
+    var SUP_OUI = "<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_OUI")%>";
+    var SUP_NON = "<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_NON")%>";
+
     $(function () {
 
         var $tbody = $("TBODY");
@@ -128,6 +136,7 @@
 <%@page import="globaz.orion.vb.pucs.EBPucsFileViewBean"%>
 <%@page import="ch.globaz.orion.business.models.pucs.PucsSearchCriteria"%>
 <%@page import="globaz.framework.util.FWCurrency"%>
+<%@ page import="globaz.globall.db.BSessionUtil" %>
 
 <th colspan="2"><ct:FWLabel key="NUMERO_AFFILIE"/></th>
 <th><ct:FWLabel key="NOM"/></th>
@@ -163,6 +172,8 @@
         <span><i title="<%=line.getMessageLock() %>" class="icon-inprogress" ></i></span>
         <%} else if(!line.hasLock() && line.getPucsFile().getCurrentStatus().isComptabilise()) {%>
         <span><i title="<%=line.getMessageLock() %>" class="icon-finish" ></i></span>
+        <%} else if(line.hasLockParticularite()) {%>
+        <span class="editParticularite" name="editParticularite" value="<%= line.getParticulariteId() %>"><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span>
         <%} else {%>
         <span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span>
         <%} %>
@@ -218,4 +229,45 @@
 <%-- tpl:insert attribute="zoneTableFooter" --%>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/tableEnd.jspf" %>
-	
+
+<div id="dialogParticularite" title="<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_POPUP_PARTICULARITE_TITRE")%>" style="display: none;">
+    <table id="listeModeleTable" style="width:100%">
+        <TR>
+            <TD nowrap ><ct:FWLabel key="JSP_POPUP_PARTICULARITE_TYPE"/></TD>
+            <TD nowrap>
+                <INPUT type="hidden" name="idParticularite" id="idParticularite" value="">
+                <ct:FWCodeSelectTag
+                        name="particulariteCode"
+                        defaut=""
+                        codeType="VEPARTICUL"
+                        wantBlank="false"/>
+            </TD>
+            <td>
+                <img id="iconWait" src="images/common/ajax-loader-1.gif" style="display: none;"/>
+                <img id="iconOk" src="images/ok.gif" style="display: none;"/>
+            </td>
+        </TR>
+        <TR>
+            <TD nowrap width="167" height="31"><ct:FWLabel key="JSP_POPUP_PARTICULARITE_VALEUR"/></TD>
+            <TD nowrap height="31">
+                <INPUT name="particulariteValeur" id="particulariteValeur" class="libelleLong" size="20" type="text" value="">
+            </TD>
+        </TR>
+        <TR>
+            <TD nowrap height="31" width="167"><ct:FWLabel key="JSP_POPUP_PARTICULARITE_PERIODE"/></TD>
+            <TD nowrap>
+                <input name="particulariteDateDebut" id="particulariteDateDebut" value="" data-g-calendar="mandatory:false"/>
+                <ct:FWLabel key="JSP_POPUP_PARTICULARITE_PERIODE_A"/>
+                <input name="particulariteDateFin" id="particulariteDateFin" value="" data-g-calendar="mandatory:false"/>
+            </TD>
+        </TR>
+    </table>
+</div>
+
+<div id="dialog-confirm-suppression" title="?" style="display: none;">
+    <p>
+        <span style="float:left; margin:0 7px 50px 0;"></span>
+        <ct:FWLabel key="JSP_POPUP_PARTICULARITE_SUPPRIMER_CONFIRME"/>
+    </p>
+</div>
+
