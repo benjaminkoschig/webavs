@@ -2,7 +2,7 @@ package ch.globaz.common.ws;
 
 
 import acor.xsd.standard.error.StandardError;
-import globaz.prestation.acor.web.ws.AcorStandardErrorUtil;
+import globaz.prestation.acor.web.ws.TokenStandardErrorUtil;
 import ch.globaz.common.ws.configuration.WSExceptionMapper;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.prestation.acor.PRACORException;
@@ -37,7 +37,7 @@ public class WSExceptionMapperTest {
             Response resultat = mapper.toResponse(exception);
             final StandardError entity = (StandardError) resultat.getEntity();
             assertThat(entity.getLevel()).isEqualTo(1);
-            assertThat(entity.getLabelId()).isEqualTo(AcorStandardErrorUtil.ERROR_ACOR_EXPORT);
+            assertThat(entity.getLabelId()).isEqualTo(TokenStandardErrorUtil.ERROR_ACOR_EXPORT);
         } catch (Exception e) {
             e.printStackTrace();
         }
