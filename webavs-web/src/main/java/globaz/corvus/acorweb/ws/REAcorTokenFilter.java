@@ -1,15 +1,15 @@
 package globaz.corvus.acorweb.ws;
 
-import globaz.prestation.acor.web.ws.AcorTokenService;
-import globaz.prestation.acor.web.ws.AcorFilterAbstract;
-import globaz.corvus.acorweb.ws.token.REAcorTokenService;
+import globaz.prestation.acor.web.ws.TokenService;
+import globaz.prestation.acor.web.ws.TokenFilterAbstract;
+import globaz.corvus.acorweb.ws.token.REAcorTokenServiceImpl;
 import globaz.corvus.application.REApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 
 @SuppressWarnings("unused" /*Cette class est appelé par réflexion par la class WSConfiguration */)
-public class REAcorFilter extends AcorFilterAbstract {
+public class REAcorTokenFilter extends TokenFilterAbstract {
 
     @Override
     public boolean isFilterable(final HttpServletRequest request) {
@@ -22,7 +22,7 @@ public class REAcorFilter extends AcorFilterAbstract {
     }
 
     @Override
-    public AcorTokenService getInstanceTokenService() {
-        return REAcorTokenService.getInstance();
+    public TokenService getInstanceTokenService() {
+        return REAcorTokenServiceImpl.getInstance();
     }
 }

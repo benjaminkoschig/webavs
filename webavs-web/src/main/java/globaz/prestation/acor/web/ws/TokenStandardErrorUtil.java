@@ -4,17 +4,19 @@ import acor.xsd.standard.error.OriginType;
 import acor.xsd.standard.error.StandardError;
 import com.google.common.base.Throwables;
 
-public final class AcorStandardErrorUtil {
+public final class TokenStandardErrorUtil {
 
-    public static final String ERROR_ACOR_EXTERN_TOKEN_INVALID = "ERROR.ACOR_EXTERN.TOKEN.INVALID";
+    public static final String ERROR_TOKEN_INVALID = "error.token.invalid";
     public static final String ERROR_ACOR_IMPORT = "error.acor.import";
     public static final String ERROR_ACOR_EXPORT = "error.acor.export";
     public static final String ERROR_ACOR_IMPORT_SUBJECT = "error.acor.import.subject";
     public static final String ERROR_ACOR_EXPORT_SUBJECT = "error.acor.export.subject";
     public static final String ERROR_ACOR_GLOBAL = "error.acor.global";
+    public static final String ERROR_ES_TOKEN = "error.es.token";
+    public static final String ERROR_ES_RETRIEVE = "error.es.retrieve";
     public static final String TOKEN_INVALIDE = "Token invalide.";
 
-    private AcorStandardErrorUtil() {
+    private TokenStandardErrorUtil() {
     }
 
     /**

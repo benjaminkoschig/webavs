@@ -29,16 +29,16 @@ public class AcorRestApiExceptionHandler implements ExceptionHandler {
         try {
             if (StringUtils.contains(requestInfo.getPathInfo(), "import")) {
                 LOG.error("Une erreur est intervenue lors de l'importation.", e);
-                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_IMPORT_SUBJECT);
-                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_IMPORT);
+                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), TokenStandardErrorUtil.ERROR_ACOR_IMPORT_SUBJECT);
+                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), TokenStandardErrorUtil.ERROR_ACOR_IMPORT);
                 sendMailError(session, exceptionRequestInfo, objet);
-                return responseBuilder.entity(AcorStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_IMPORT)).build();
+                return responseBuilder.entity(TokenStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_IMPORT)).build();
             } else if (StringUtils.contains(requestInfo.getPathInfo(), "export")) {
                 LOG.error("Une erreur est intervenue lors de l'exportation.", e);
-                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_EXPORT_SUBJECT);
-                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_EXPORT);
+                String objet = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), TokenStandardErrorUtil.ERROR_ACOR_EXPORT_SUBJECT);
+                String label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), TokenStandardErrorUtil.ERROR_ACOR_EXPORT);
                 sendMailError(session, exceptionRequestInfo, objet);
-                return responseBuilder.entity(AcorStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                return responseBuilder.entity(TokenStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
             }
         } catch (Exception exception) {
             LOG.error("Une erreur s'est produite lors de l'envoi du mail.", e);
@@ -46,9 +46,9 @@ public class AcorRestApiExceptionHandler implements ExceptionHandler {
         LOG.error("Une erreur imprévue s'est produite.", e);
         String label = "Global error";
         if (session != null) {
-            label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), AcorStandardErrorUtil.ERROR_ACOR_GLOBAL);
+            label = JadeI18n.getInstance().getMessage(session.getIdLangueISO(), TokenStandardErrorUtil.ERROR_ACOR_GLOBAL);
         }
-        return responseBuilder.entity(AcorStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+        return responseBuilder.entity(TokenStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
     }
 
     private void sendMailError(BSession session, ExceptionRequestInfo exceptionRequestInfo, String object) throws Exception {

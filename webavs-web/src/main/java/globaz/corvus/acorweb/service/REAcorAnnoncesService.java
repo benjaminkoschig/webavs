@@ -3,7 +3,7 @@ package globaz.corvus.acorweb.service;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.globaz.common.ws.configuration.JacksonJsonProvider;
-import globaz.corvus.acorweb.ws.token.REAcorTokenService;
+import globaz.corvus.acorweb.ws.token.REAcorTokenServiceImpl;
 import globaz.prestation.acor.PRACORException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public class REAcorAnnoncesService {
     public PoolMeldungZurZAS getAnnonces(FCalcul fCalcul) throws PRACORException {
         URL url;
         HttpURLConnection con;
-        String acorBaseUrl = REAcorTokenService.getAcorBaseUrl();
+        String acorBaseUrl = REAcorTokenServiceImpl.loadAcorBaseUrl();
         PoolMeldungZurZAS annonces = null;
 
         try {

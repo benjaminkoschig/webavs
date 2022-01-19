@@ -21,11 +21,10 @@
 			<filename>qrCode.properties</filename>
 		</provider>
 		
-		<!-- CORVUS -->
-		<provider name="acor2020wsprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
-			<filename>acorWS2020.properties</filename>
+		<!-- WS -->
+		<provider name="wsprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>wsprovider.properties</filename>
 		</provider>
-
 
 		<!-- PC -->
 		<provider name="pegasusimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">

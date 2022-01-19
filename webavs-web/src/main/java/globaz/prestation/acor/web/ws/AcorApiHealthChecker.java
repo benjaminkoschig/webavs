@@ -19,7 +19,7 @@ public class AcorApiHealthChecker implements ApiHealthChecker {
     @Override
     public HealthDto check() {
         if (CommonProperties.ACOR_NAVIGATEUR.exist() && CommonProperties.ACOR_BACKEND_PATH.exist()) {
-            String apiPath = AcorTokenServiceAbstract.createApiPath(AcorApiRest.class);
+            String apiPath = TokenServiceAbstract.createApiPath(AcorApiRest.class);
             ResponseEntity<HealthDto> response = getHealth(apiPath);
             if (response != null && Objects.equals(Response.Status.OK.getStatusCode(), response.getStatus())) {
                 return response.getEntity().setState("UP").setService(SERVICE_NAME);

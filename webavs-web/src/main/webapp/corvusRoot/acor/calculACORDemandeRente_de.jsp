@@ -10,7 +10,7 @@
 <%@ page import="globaz.prestation.acor.PRACORConst" %>
 <%@ page import="globaz.prestation.jsp.taglib.PRDisplayRequerantInfoTag" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
-<%@ page import="globaz.corvus.acorweb.ws.token.REAcorTokenService" %>
+<%@ page import="globaz.corvus.acorweb.ws.token.REAcorTokenServiceImpl" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersWrapper" %>
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersHelper" %>
 <%@ page import="globaz.jade.client.util.JadeDateUtil" %>
@@ -258,7 +258,7 @@
 } else if (viewBean.isAcorV4Web()) {
 
     String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-    String token = REAcorTokenService.createToken(viewBean, bSession);
+    String token = REAcorTokenServiceImpl.createTokenRE(viewBean, bSession);
     String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
 %>
         Set shell = CreateObject ("Shell.Application")

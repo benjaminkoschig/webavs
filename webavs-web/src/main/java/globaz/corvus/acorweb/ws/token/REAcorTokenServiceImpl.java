@@ -1,10 +1,14 @@
 package globaz.corvus.acorweb.ws.token;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.corvus.acorweb.ws.REAcorApiRest;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.prestation.acor.web.ws.AcorTokenServiceAbstract;
+import globaz.prestation.acor.web.ws.TokenServiceAbstract;
+import globaz.prestation.acor.web.ws.AcorTokenImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -12,12 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class REAcorTokenService extends AcorTokenServiceAbstract {
+public class REAcorTokenServiceImpl extends TokenServiceAbstract<AcorTokenImpl> {
 
-    private static final REAcorTokenService INSTANCE = new REAcorTokenService();
+    private static final REAcorTokenServiceImpl INSTANCE = new REAcorTokenServiceImpl();
     private static final String API_PATH = createApiPath(REAcorApiRest.class);
+    private static Integer TOKEN_DURATION = CommonProperties.ACOR_TOKEN_DURATION.getIntegerWithDefaultValue(1);
 
-    public static String createToken(RECalculACORDemandeRenteViewBean bean, BSession bSession) {
+    public static REAcorTokenServiceImpl getInstance() {
+        return INSTANCE;
+    }
+
+    public static String createTokenRE(RECalculACORDemandeRenteViewBean bean, BSession bSession) {
         Map<String, Object> claims = new HashMap<>();
 
         String apiPathWithIdDemande = API_PATH + "/" + bean.getIdDemandeRente();
@@ -34,11 +43,15 @@ public class REAcorTokenService extends AcorTokenServiceAbstract {
         claims.put("timeDemande", JadeDateUtil.getHMTime(actualDate));
         claims.put("timeStampGedo", day);
 
-        return createToken(claims, bSession);
+        claims.put("acorBaseUrl", loadAcorBaseUrl());
+        claims.put(USER_ID, bSession.getUserId());
+
+        return createToken(TOKEN_DURATION, claims, bSession);
     }
 
-    public static REAcorTokenService getInstance() {
-        return INSTANCE;
+    @Override
+    protected AcorTokenImpl convertTokenSpecific(final Jws<Claims> jws) {
+        return new AcorTokenImpl();
     }
 
 }

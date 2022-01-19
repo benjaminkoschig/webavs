@@ -1,14 +1,14 @@
 package globaz.ij.acorweb.ws;
 
-import globaz.ij.acorweb.ws.token.IJAcorTokenService;
-import globaz.prestation.acor.web.ws.AcorTokenService;
-import globaz.prestation.acor.web.ws.AcorFilterAbstract;
+import globaz.ij.acorweb.ws.token.IJAcorTokenServiceImpl;
+import globaz.prestation.acor.web.ws.TokenService;
+import globaz.prestation.acor.web.ws.TokenFilterAbstract;
 import globaz.ij.application.IJApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 @SuppressWarnings("unused" /*Cette class est appelé par réflexion par la class WSConfiguration */)
-public class IJAcorFilter extends AcorFilterAbstract {
+public class IJAcorTokenFilter extends TokenFilterAbstract {
 
     @Override
     public boolean isFilterable(final HttpServletRequest request) {
@@ -21,7 +21,7 @@ public class IJAcorFilter extends AcorFilterAbstract {
     }
 
     @Override
-    public AcorTokenService getInstanceTokenService() {
-        return IJAcorTokenService.getInstance();
+    public TokenService getInstanceTokenService() {
+        return IJAcorTokenServiceImpl.getInstance();
     }
 }

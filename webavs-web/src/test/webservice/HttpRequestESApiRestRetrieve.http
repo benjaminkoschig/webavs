@@ -1,0 +1,19 @@
+###
+#Test HttpRequestESApiRestRetrieve get_extrait_compte
+POST {{domain}}/{{root}}/api/es/retrieve/get_extrait_compte
+authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+< ./ESExtraitCompteDTO.json
+
+###
+#Test HttpRequestESApiRestRetrieve get_info_facturation
+POST {{domain}}/{{root}}/api/es/retrieve/get_info_facturation
+authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+< ./ESInfoFacturationDTO.json
+
+
+
+

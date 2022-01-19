@@ -1,0 +1,6 @@
+###
+#Test HttpRequestESApiRestLogin get_token
+POST {{domain}}/{{root}}/api/es/login/get_token
+Content-Type: application/json
+
+< ./ESLoginDTO.json
