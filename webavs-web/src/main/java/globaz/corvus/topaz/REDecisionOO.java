@@ -3067,7 +3067,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
                                     userCode.retrieve();
                                     if (Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme)) {
-                                        DecimalFormat df = new DecimalFormat(" # %");
+                                        DecimalFormat df = new DecimalFormat(" #.# %");
                                         String quotite = df.format(Double.valueOf(benefs[inc].getQuotite()));
                                         line1.addData("genreRente", userCode.getLibelle() + quotite);
                                     } else {
@@ -3121,17 +3121,21 @@ public class REDecisionOO extends REAbstractJobOO {
     private String getTypeOfRA(REBeneficiaireInfoVO benef) {
         String pourRechercheCodeSysteme = benef.getGenrePrestation();
 
-        if (!JadeStringUtil.isEmpty(benef.getFraction())) {
-            pourRechercheCodeSysteme += "." + benef.getFraction();
-        } else if (!JadeStringUtil.isEmpty(benef.getQuotite())) {
-            if (Objects.equals(REGenresPrestations.GENRE_50, benef.getGenrePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, benef.getGenrePrestation())) {
-                if (Float.valueOf(benef.getQuotite()) >= 0.70) {
-                    pourRechercheCodeSysteme += ".1";
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(benef.getGenrePrestation()))) {
+            if (!JadeStringUtil.isEmpty(benef.getFraction())) {
+                pourRechercheCodeSysteme += "." + benef.getFraction();
+            } else if (!JadeStringUtil.isEmpty(benef.getQuotite())) {
+                if (Objects.equals(REGenresPrestations.GENRE_50, benef.getGenrePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, benef.getGenrePrestation())) {
+                    if (Float.valueOf(benef.getQuotite()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
                 } else {
-                    pourRechercheCodeSysteme += ".0";
+                    pourRechercheCodeSysteme += ".1";
                 }
             } else {
-                pourRechercheCodeSysteme += ".1";
+                pourRechercheCodeSysteme += ".0";
             }
         } else {
             pourRechercheCodeSysteme += ".0";
