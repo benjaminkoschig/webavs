@@ -47,33 +47,6 @@ class GenerateEcrituresResitutionBeneficiareForDecisionAc extends GenerateOperat
     private List<Ecriture> generateEcrituresBeneficiaireRestiution(List<PrestationPeriode> periodes)
             throws JadeApplicationException {
         for (PrestationPeriode periode : periodes) {
-           if(periode.getRequerant() != null && periode.getRequerant().hasDom2R()){
-               mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_REQUERANT,periode.getRequerant().getIdCompteAnnexe());
-               PRTiersWrapper tiersW = null;
-               OrdreVersement ordreVersementTemp = null;
-               String idTiersConjoint = null;
-               try {
-                   if(periode.getRequerant().getBeneficiaire() != null){
-                       idTiersConjoint = periode.getRequerant().getBeneficiaire().getIdTiersConjoint();
-                   }else{
-                       idTiersConjoint = periode.getRequerant().getRestitution().getIdTiersConjoint();
-                   }
-                   if(!JadeStringUtil.isBlankOrZero(idTiersConjoint)
-                           && !mapReqConjToIdCompteAnnexe.containsKey(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)){
-                       tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(),idTiersConjoint);
-                       String idCompteAnnexeConjoint = CABusinessServiceLocator.getCompteAnnexeService()
-                               .getCompteAnnexe(null, idTiersConjoint, IntRole.ROLE_RENTIER, tiersW.getNSS(), true).getIdCompteAnnexe();
-                       if(!JadeStringUtil.isBlankOrZero(idCompteAnnexeConjoint)){
-                           mapReqConjToIdCompteAnnexe.put(IPCDroits.CS_ROLE_FAMILLE_CONJOINT,idCompteAnnexeConjoint);
-                       }
-                   }
-               } catch (Exception e) {
-                   JadeThread.logError(GenerateEcrituresResitutionBeneficiareForDecisionAc.class.getName(),"Error when search NSS for conjoint : "+ e.getMessage());
-               }
-
-           }
-        }
-        for (PrestationPeriode periode : periodes) {
             this.generateEcrituresBeneficiaireRestiution(periode.getRequerant(), IPCDroits.CS_ROLE_FAMILLE_REQUERANT,
                     periode.getNoGroupePeriode());
             this.generateEcrituresBeneficiaireRestiution(periode.getConjoint(), IPCDroits.CS_ROLE_FAMILLE_CONJOINT,

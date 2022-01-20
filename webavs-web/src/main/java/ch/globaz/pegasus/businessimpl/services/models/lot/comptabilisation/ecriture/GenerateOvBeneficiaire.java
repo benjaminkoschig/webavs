@@ -27,18 +27,9 @@ class GenerateOvBeneficiaire {
             // + decompte.getPrenomConjoint() + " PC " + decompte.getDateDebut() + " - " + decompte.getDateFin()
             // + " " + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU")
             // + " " + decompte.getDateDecision();
+
             if (montantDispo.hasMontantDispoDom2RConjoint()) {
-                if (decompte.getCompteAnnexeConjoint() == null) {
-                    try {
-                        PRTiersWrapper tiersW = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(), decompte.getIdTiersConjoint());
-                        CompteAnnexeSimpleModel compteAnnexe = CABusinessServiceLocator.getCompteAnnexeService()
-                                .getCompteAnnexe(null, decompte.getIdTiersConjoint(), IntRole.ROLE_RENTIER, tiersW.getNSS(), true);
-                        decompte.setCompteAnnexeConjoint(compteAnnexe);
-                    } catch (Exception e) {
-                       LOG.error("Une erreur s'est produite lors de la récupération du compte annexe. ", e);
-                    }
-                }
-                generateOvComptaAndGroupe.addOvCompta(decompte.getCompteAnnexeConjoint(),
+                generateOvComptaAndGroupe.addOvCompta(decompte.getCompteAnnexeRequerant(),
                         decompte.getIdTiersAddressePaiementConjoint(), decompte.getIdDomaineApplicationConjoint(),
                         montantDispo.getDom2RConjoint(), SectionPegasus.DECISION_PC, decompte.getIdTiersConjoint(),
                         IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, IPCDroits.CS_ROLE_FAMILLE_CONJOINT,
