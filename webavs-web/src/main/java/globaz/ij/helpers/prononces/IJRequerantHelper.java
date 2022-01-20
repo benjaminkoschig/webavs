@@ -163,6 +163,7 @@ public class IJRequerantHelper extends PRAbstractHelper {
                         prononceViewBean.getPrononce().setCsCantonImpositionSource("");
                         prononceViewBean.getPrononce().setTauxImpositionSource("0");
                     }
+                    prononceViewBean.update(transaction);
                 }
             } catch (Exception e) {
                 if (transaction != null) {
