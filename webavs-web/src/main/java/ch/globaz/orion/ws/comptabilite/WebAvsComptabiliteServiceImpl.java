@@ -164,6 +164,37 @@ public class WebAvsComptabiliteServiceImpl implements WebAvsComptabiliteService 
         return processImpressionExtraitCompteAnnexe.getDocLocation();
     }
 
+    public String genererExtraitCompteAnnexe(String operation, String tri, String section, String idCompteAnnexe, String dateDebut, String dateFin, String langue) {
+        if (JadeStringUtil.isEmpty(idCompteAnnexe)) {
+            throw new IllegalArgumentException("idCompteAnnexe is null or empty");
+        }
+
+        CAProcessImpressionExtraitCompteAnnexe processImpressionExtraitCompteAnnexe = null;
+
+        // si la date du jour est vide on met la date du jour
+        if (JadeStringUtil.isBlankOrZero(dateFin)) {
+            Date dateDuJour = new Date();
+            dateFin = dateDuJour.getSwissValue();
+        }
+
+        try {
+            processImpressionExtraitCompteAnnexe = new CAProcessImpressionExtraitCompteAnnexe();
+            processImpressionExtraitCompteAnnexe.setEbusinessMode(false);
+            processImpressionExtraitCompteAnnexe.setForIdCompteAnnexe(idCompteAnnexe);
+            processImpressionExtraitCompteAnnexe.setFromDate(dateDebut);
+            processImpressionExtraitCompteAnnexe.setUntilDate(dateFin);
+            processImpressionExtraitCompteAnnexe.setForIdTypeOperation(operation);
+            processImpressionExtraitCompteAnnexe.setForSelectionTri(tri);
+            processImpressionExtraitCompteAnnexe.setForSelectionSections(section);
+            processImpressionExtraitCompteAnnexe.setPrintLanguageFromScreen(langue.toUpperCase());
+            processImpressionExtraitCompteAnnexe.executeProcess();
+            return processImpressionExtraitCompteAnnexe.getDocLocation();
+        } catch (Exception e) {
+            JadeLogger.error("Unabled to generate file extraitCompte for idCompteAnnexe : " + idCompteAnnexe, e);
+        }
+        return processImpressionExtraitCompteAnnexe.getDocLocation();
+    }
+
     @Override
     public byte[] downloadFile(String filepath) {
         byte[] byteFile = null;

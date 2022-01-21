@@ -1,7 +1,7 @@
 package globaz.osiris.eservices.ws;
 
 import globaz.osiris.eservices.service.ESService;
-import globaz.osiris.eservices.dto.ESLoginDTO;
+import globaz.osiris.eservices.dto.req.ESLoginREQ;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
@@ -31,7 +31,7 @@ public class ESApiRestLogin {
      */
     @POST
     @Path(value = "/get_token")
-    public Response getToken(ESLoginDTO dto) {
+    public Response getToken(ESLoginREQ dto) {
         LOG.info("get_token");
         return execute(service.getToken(dto));
     }

@@ -1,9 +1,9 @@
-package globaz.osiris.eservices.dto;
+package globaz.osiris.eservices.dto.req;
 
 import lombok.Data;
 
 @Data
-public class ESLoginDTO {
+public class ESLoginREQ {
     private String username;
     private String password;
 }

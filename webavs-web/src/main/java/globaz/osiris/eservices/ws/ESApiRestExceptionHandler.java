@@ -8,6 +8,8 @@ import ch.globaz.common.ws.configuration.RequestInfo;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.i18n.JadeI18n;
+import globaz.osiris.eservices.exceptions.ESBadRequestException;
+import globaz.osiris.eservices.exceptions.ESUnauthorizedException;
 import globaz.prestation.acor.web.ws.TokenStandardErrorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +26,7 @@ public class ESApiRestExceptionHandler implements ExceptionHandler {
     public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
         RequestInfo requestInfo = new RequestInfo(request);
         ExceptionRequestInfo exceptionRequestInfo = new ExceptionRequestInfo(requestInfo, e);
+        mapESExceptionWithErrorStatus(e, responseBuilder);
         BSession session = BSessionUtil.getSessionFromThreadContext();
         LOG.error("Une erreur imprévue s'est produite.", e);
         String label = "Global error";
@@ -37,5 +40,13 @@ public class ESApiRestExceptionHandler implements ExceptionHandler {
             }
         }
         return responseBuilder.entity(TokenStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+    }
+
+    private void mapESExceptionWithErrorStatus(Exception e, Response.ResponseBuilder responseBuilder) {
+        if (e instanceof ESUnauthorizedException) {
+            responseBuilder.status(Response.Status.UNAUTHORIZED);
+        } else if (e instanceof ESBadRequestException) {
+            responseBuilder.status(Response.Status.BAD_REQUEST);
+        }
     }
 }

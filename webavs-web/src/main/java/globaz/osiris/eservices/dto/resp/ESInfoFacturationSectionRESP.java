@@ -1,11 +1,11 @@
-package globaz.osiris.eservices.dto;
+package globaz.osiris.eservices.dto.resp;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ESSectionDTO {
+public class ESInfoFacturationSectionRESP {
     private String date;
     private String sectionNumber;
     private String description;
@@ -13,5 +13,5 @@ public class ESSectionDTO {
 	private String baseAmount;
 	private String payedAmount;
 	private String balancedAmount;
-    private List<ESExtraitCompteDTO> ESExtraitCompteDTO;
+    private List<ESInfoFacturationExtraitCompteRESP> infoFacturationExtraitCompte;
 }

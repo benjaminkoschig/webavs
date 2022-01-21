@@ -1,6 +1,9 @@
 package globaz.osiris.eservices.ws;
 
-import globaz.osiris.eservices.dto.ESInfoFacturationDTO;
+import globaz.osiris.eservices.dto.req.ESExtraitCompteREQ;
+import globaz.osiris.eservices.dto.req.ESInfoFacturationREQ;
+import globaz.osiris.eservices.dto.resp.ESExtraitCompteRESP;
+import globaz.osiris.eservices.dto.resp.ESInfoFacturationRESP;
 import globaz.osiris.eservices.service.ESService;
 import globaz.osiris.eservices.token.ESTokenImpl;
 import globaz.osiris.eservices.token.ESTokenServiceImpl;
@@ -33,9 +36,11 @@ public class ESApiRestRetrieve {
      */
     @POST
     @Path(value = "get_extrait_compte")
-    public Response getExtraitCompte(@HeaderParam("authorization") String token, ESInfoFacturationDTO dto) {
+    public Response getExtraitCompte(@HeaderParam("authorization") String token, ESExtraitCompteREQ dto) {
         LOG.info("get_extrait_compte");
-        return execute(token, dto, service::getExtraitCompte);
+        ESTokenImpl esToken = ESTokenServiceImpl.getInstance().convertToken(token);
+        ESExtraitCompteRESP response = service.getExtraitCompte(dto, esToken);
+        return Response.ok(response).build();
     }
 
     /**
@@ -48,9 +53,11 @@ public class ESApiRestRetrieve {
      */
     @POST
     @Path(value = "get_info_facturation")
-    public Response getInfoFacturation(@HeaderParam("authorization") String token, ESInfoFacturationDTO dto) {
+    public Response getInfoFacturation(@HeaderParam("authorization") String token, ESInfoFacturationREQ dto) {
         LOG.info("get_info_facturation");
-        return execute(token, dto, service::getInfoFacturation);
+        ESTokenImpl esToken = ESTokenServiceImpl.getInstance().convertToken(token);
+        ESInfoFacturationRESP response = service.getInfoFacturation(dto, esToken);
+        return Response.ok(response).build();
     }
 
     private <T> Response execute(String token, T object, BiConsumer<T, ESTokenImpl> consumer) {
