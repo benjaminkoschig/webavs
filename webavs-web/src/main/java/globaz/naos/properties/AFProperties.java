@@ -49,7 +49,9 @@ public enum AFProperties implements IProperties {
     CONTROLE_ANNUEL_LPP_GENERATION_EXTRAIT_DS("lpp.annuel.generation.extrait",
             "Generation de l'extrait de décompte lors de l'envoi du questionnaire LPP pour le suivi annuel"),
     DISPLAY_IS_AFFILIE_EBUSINESS("display.is.affilie.ebusiness",
-            "Indique dans le détail de l'affilié si celui-ci est actif dans EBusiness");
+            "Indique dans le détail de l'affilié si celui-ci est actif dans EBusiness"),
+    DISPLAY_GESTION_DOSSIER_CAF("gestion.dossier.caf",
+            "Activation de la gestion des dossiers CAF dans le suivi des caisses d'un affiliation");
 
     private String description;
     private String propertyName;

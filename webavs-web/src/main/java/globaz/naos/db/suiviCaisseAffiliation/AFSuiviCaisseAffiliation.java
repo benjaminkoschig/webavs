@@ -17,6 +17,7 @@ import globaz.lupus.db.journalisation.LUJournalViewBean;
 import globaz.naos.api.helper.IAFSuiviCaisseAffiliationHelper;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisationManager;
+import globaz.naos.properties.AFProperties;
 import globaz.naos.suivi.AFSuiviAttestIP;
 import globaz.naos.suivi.AFSuiviLAA;
 import globaz.naos.suivi.AFSuiviLPP;
@@ -50,7 +51,11 @@ public class AFSuiviCaisseAffiliation extends BEntity {
     private java.lang.String idTiersCaisse = new String();
     private java.lang.String motif = new String();
     private java.lang.String motifFin = new String();
-    private java.lang.String numeroAffileCaisse = new String();;
+    private java.lang.String numeroAffileCaisse = new String();
+
+    private Boolean exception = false;
+    private String remarque = "";
+    private String dateEnvoieCAF = "";
 
     // DB
     // Primary Key
@@ -261,6 +266,10 @@ public class AFSuiviCaisseAffiliation extends BEntity {
         // inforom 459
         accessoire = statement.dbReadBoolean("MYBACC");
 
+        exception = statement.dbReadBoolean("EXCEPTION_DATE");
+        remarque = statement.dbReadString("REMARQUE");
+        dateEnvoieCAF = statement.dbReadDateAMJ("DATE_ENVOIE_CAF");
+
     }
 
     /**
@@ -283,7 +292,13 @@ public class AFSuiviCaisseAffiliation extends BEntity {
         // Test: - Date de Début
         // - Date de Fin
         // *********************************************************
-        validationOK = checkDateDebutEtFin(statement, validationOK);
+        // pour la CCVS si la gestion des dossier CAF est active et getException est a true alors on n'effectue pas
+        // la validation de la période
+        boolean activationGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
+
+        if (!(activationGestionDossierCAF && getException())) {
+            validationOK = checkDateDebutEtFin(statement, validationOK);
+        }
 
         if (validationOK
                 && ((CodeSystem.GENRE_CAISSE_AF.equals(getGenreCaisse()) && !getAccessoire()) || CodeSystem.GENRE_CAISSE_AVS
@@ -366,6 +381,12 @@ public class AFSuiviCaisseAffiliation extends BEntity {
         statement.writeField("MYTMFI", this._dbWriteNumeric(statement.getTransaction(), getMotifFin(), "motifFin"));
         statement.writeField("MYBACC", this._dbWriteBoolean(statement.getTransaction(), getAccessoire(),
                 BConstants.DB_TYPE_BOOLEAN_CHAR, "accessoire"));
+
+        statement.writeField("EXCEPTION_DATE", this._dbWriteBoolean(statement.getTransaction(), getException(),
+                BConstants.DB_TYPE_BOOLEAN_CHAR, "exception"));
+        statement.writeField("REMARQUE", this._dbWriteString(statement.getTransaction(), getRemarque(), "remarque"));
+        statement.writeField("DATE_ENVOIE_CAF", this._dbWriteDateAMJ(statement.getTransaction(), getDateEnvoieCAF(),
+                "dateEnvoieCAF"));
     }
 
     /**
@@ -677,6 +698,18 @@ public class AFSuiviCaisseAffiliation extends BEntity {
         return _tiers;
     }
 
+    public Boolean getException() {
+        return exception;
+    }
+
+    public String getRemarque() {
+        return remarque;
+    }
+
+    public String getDateEnvoieCAF() {
+        return dateEnvoieCAF;
+    }
+
     /**
      * Sélection les suivis de l'affiliation pour le genre d'assurance saisi
      * 
@@ -746,5 +779,17 @@ public class AFSuiviCaisseAffiliation extends BEntity {
 
     public void setSuiviCaisseId(java.lang.String string) {
         suiviCaisseId = string;
+    }
+
+    public void setException(Boolean exception) {
+        this.exception = exception;
+    }
+
+    public void setRemarque(String remarque) {
+        this.remarque = remarque;
+    }
+
+    public void setDateEnvoieCAF(String dateEnvoieCAF) {
+        this.dateEnvoieCAF = dateEnvoieCAF;
     }
 }
