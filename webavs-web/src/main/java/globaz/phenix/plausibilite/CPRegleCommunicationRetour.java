@@ -4879,7 +4879,7 @@ public class CPRegleCommunicationRetour extends CPGenericReglePlausibilite {
                 cjt.setForDateEntreDebutEtFin("31.12." + getCommunicationRetour().getAnnee1());
                 cjt.find();
                 if (cjt.size() > 0) { // Formatage conjoint
-                    if (((TICompositionTiers) cjt.getEntity(0)).getIdTiersParent().equals(tiers.getIdTiers())) {
+                    if (((TICompositionTiers) cjt.getEntity(0)).getIdTiersParent().equals(idContribuable)) {
                         idConjoint = ((TICompositionTiers) cjt.getEntity(0)).getIdTiersEnfant();
                     } else {
                         idConjoint = ((TICompositionTiers) cjt.getEntity(0)).getIdTiersParent();
