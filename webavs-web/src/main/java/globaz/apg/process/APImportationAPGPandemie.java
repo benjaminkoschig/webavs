@@ -212,7 +212,10 @@ public class APImportationAPGPandemie extends BProcess {
                     userGestionnaire = user.getVisa();
                 }
             } catch (FWSecurityLoginException e) {
-                LOG.warn("APImportationAPGPandemie#importFiles - Erreur à la récupéreration le nom du gestionnaire :", e);
+                LOG.warn("APImportationAPGPandemie#importFiles - Erreur à la récupéreration du nom du gestionnaire :", e);
+                userGestionnaire = "";
+            }catch (Exception e) {
+                LOG.warn("APImportationAPGPandemie#importFiles - Erreur inconnue à la récupéreration du nom du gestionnaire :", e);
                 userGestionnaire = "";
             }
         }
@@ -275,6 +278,8 @@ public class APImportationAPGPandemie extends BProcess {
                         if (message != null) {
                             isTraitementSuccess = traiterMessage(message);
                             if (isAssimEmployeur) {
+                                Content content = message.getContent();
+
                                 adresseEmailAssure = message.getContent().getActivity().getCompanies().getCompany().get(0).getEmail();
                             } else {
                                 adresseEmailAssure = message.getContent().getInsuredAddress().getEmail();
