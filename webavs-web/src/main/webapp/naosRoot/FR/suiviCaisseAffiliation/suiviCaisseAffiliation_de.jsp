@@ -1,5 +1,6 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ page import="globaz.naos.properties.AFProperties" %>
+<%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%> 
@@ -62,7 +63,15 @@ function onChangeGenre(){
 	if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LPP%>&&newMotif=="") {
 		document.all('attestationIPTable').style.display = 'block';
 		<%
-			boolean showGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
+			boolean showGestionDossierCAF = false;
+			try {
+				showGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
+			} catch (Exception e) {
+				vBeanHasErrors = true;
+				viewBean.setMessage("La propriété \"DISPLAY_GESTION_DOSSIER_CAF\" n'existe pas!");
+				viewBean.setMsgType(FWViewBeanInterface.ERROR);
+			}
+
 			if (showGestionDossierCAF) {
 		%>
 		document.all('lbRemarque').style.display = 'none';

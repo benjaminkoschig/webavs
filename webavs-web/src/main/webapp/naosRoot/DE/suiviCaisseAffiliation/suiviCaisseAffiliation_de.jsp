@@ -1,4 +1,6 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.naos.properties.AFProperties" %>
+<%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%> 
@@ -60,15 +62,60 @@ function onChangeGenre(){
 	var newMotif = document.forms[0].elements('motif').value;
 	if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LPP%>&&newMotif=="") {
 		document.all('attestationIPTable').style.display = 'block';
+		<%
+			boolean showGestionDossierCAF = false;
+			try {
+				showGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
+			} catch (Exception e) {
+				vBeanHasErrors = true;
+				viewBean.setMessage("Die Eigenschaft \"DISPLAY_GESTION_DOSSIER_CAF\" existiert nicht!");
+				viewBean.setMsgType(FWViewBeanInterface.ERROR);
+			}
+
+			if (showGestionDossierCAF) {
+		%>
+		document.all('lbRemarque').style.display = 'none';
+		document.all('trEnvoieCAF').style.display = 'none';
+		document.all('trException').style.display = 'none';
+		<%
+			}
+		%>
 	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LAA%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
+		<%
+			if (showGestionDossierCAF) {
+		%>
+		document.all('lbRemarque').style.display = 'none';
+		document.all('trEnvoieCAF').style.display = 'none';
+		document.all('trException').style.display = 'none';
+		<%
+			}
+		%>
 	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_AVS%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
+		<%
+			if (showGestionDossierCAF) {
+		%>
+		document.all('lbRemarque').style.display = 'none';
+		document.all('trEnvoieCAF').style.display = 'none';
+		document.all('trException').style.display = 'none';
+		<%
+			}
+		%>
 	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_AF%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
+		<%
+			if (showGestionDossierCAF) {
+		%>
+		document.all('lbRemarque').style.display = 'block';
+		document.all('trEnvoieCAF').style.display = 'block';
+		document.all('trException').style.display = 'block';
+		<%
+			}
+		%>
 	}
 }
 
@@ -186,16 +233,32 @@ function onChangeMotif(){
 						<TR> 
 							<TD nowrap height="31" width="120" >Periode</TD>
 							
-							<TD colspan="2">
+							<TD>
 								<ct:FWCalendarTag name="dateDebut" value="<%=viewBean.getDateDebut()%>"/>
 								&nbsp;bis&nbsp;
 								<ct:FWCalendarTag name="dateFin" value="<%=viewBean.getDateFin()%>"/> 
 							</TD>
+							<%
+								if (showGestionDossierCAF) {
+							%>
+							<TD><p id="lbRemarque">Bemerkung</p></TD>
+						</TR>
+						<TR id="trEnvoieCAF">
+							<TD nowrap height="31" width="120" >Gesendet an die FZK</TD>
+							<TD>
+								<ct:FWCalendarTag name="dateEnvoieCAF" value="<%=viewBean.getDateEnvoieCAF()%>"/>
+							</TD>
+							<TD rowspan="5">
+								<TEXTAREA name="remarque" rows="10" cols="40" ><%=viewBean.getRemarque()%></TEXTAREA>
+							</TD>
+							<%
+								}
+							%>
 						</TR>
 						<TR> 
 							<TD nowrap height="31" width="120" >Arbeitnehmerkategorie</TD>
 							
-							<TD colspan="2">
+							<TD>
 								<ct:FWCodeSelectTag 
 									name="categorieSalarie"
 									defaut="<%=viewBean.getCategorieSalarie()%>"
@@ -206,7 +269,7 @@ function onChangeMotif(){
 						<TR> 
 							<TD nowrap height="31" width="120" >Grund warum nicht unterstellt</TD>
 							
-							<TD colspan="2">
+							<TD>
 								<ct:FWCodeSelectTag 
 									name="motif"
 									defaut="<%=viewBean.getMotif()%>"
@@ -220,8 +283,18 @@ function onChangeMotif(){
 						</TR>
 						<TR> 
 							<TD nowrap height="31" width="120" >Zusatzkasse</TD>
-							<TD colspan="2"><input type="checkbox" name="accessoire" <%=(viewBean.getAccessoire().booleanValue())? "checked" : "unchecked"%>></TD>
+							<TD"><input type="checkbox" name="accessoire" <%=(viewBean.getAccessoire().booleanValue())? "checked" : "unchecked"%>></TD>
 						</TR>
+						<%
+							if (showGestionDossierCAF) {
+						%>
+						<TR id="trException">
+							<TD nowrap height="31" width="120" >Ausnahme</TD>
+							<TD><input type="checkbox" name="exception" <%=(viewBean.getException().booleanValue())? "checked" : "unchecked"%>></TD>
+						</TR>
+						<%
+							}
+						%>
 						
 						
 						<%-- /tpl:put --%>
