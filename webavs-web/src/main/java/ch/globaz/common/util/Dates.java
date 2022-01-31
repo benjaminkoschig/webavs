@@ -95,6 +95,23 @@ public class Dates {
     }
 
     /**
+     * Permet de convertir une local date en une string avec la format suivant: yyyyMMdd.
+     * Ce format est surtout utilisé par la db.
+     *
+     * @param localDate La date à convertir en string yyyyMMdd.
+     *
+     * @return Le nombre de jours.
+     */
+    public static String toDbDate(TemporalAccessor localDate){
+       if(localDate == null){
+           return null;
+       }
+        return DATE_TIME_DB_FORMATTER.format(localDate);
+    }
+
+
+
+    /**
      * Permet de convertir une date en string avec la format suivant: dd.MM.yyyy
      *
      * @param date La date à convertir(01.02.2021).
@@ -111,7 +128,7 @@ public class Dates {
     /**
      * Permet de convertir une JADate en LocalDate.
      *
-     * @param date JADate.
+     * @param dateDebut JADate.
      *
      * @return La date en LocalDate.
      */
