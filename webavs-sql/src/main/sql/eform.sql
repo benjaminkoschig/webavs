@@ -1,12 +1,10 @@
 -- ajout des propriété jade pour module eFormulaire P14
 -- Application class name
-insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL) VALUES ('eform.applicationClassName', 'ch.globaz.eform.web.application.GFApplication');
+insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.applicationClassName', 'ch.globaz.eform.web.application.GFApplication', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 -- Répertoires pour l'importation des eFormulaires P14
--- Répertoire d'importation du SM client
-insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL) values ('eform.path.sm.client.form', '/job/jobadm1/SedexBackup/inbox/ok/');
 -- Répertoire d'archivage des fichiers sedex P14 importés
-insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL) values ('eform.path.storage.form', '/job/jobadm1/batch/eform/');
+insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) values ('eform.path.storage.form', '/job/jobadm1/batch/eform/', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 -- Création table de gestion des eFormulaires P14
 CREATE TABLE SCHEMA.GF_FORMULAIRE (
@@ -19,5 +17,6 @@ CREATE TABLE SCHEMA.GF_FORMULAIRE (
     BENEFICIAIRE_NOM varchar(40),
     BENEFICIAIRE_PRENOM varchar(40),
     BENEFICIAIRE_DATE_NAISSANCE varchar(10),
-    FICHIER_ZIP BLOB(512000)
+    FICHIER_ZIP BLOB(2147483647),
+    PSPY VARCHAR(25)
 )
