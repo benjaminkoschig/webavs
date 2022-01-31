@@ -322,12 +322,12 @@ public abstract class APBasesCalculBuilder {
 
         while (BSessionUtil.compareDateFirstLowerOrEqual(session, JadeDateUtil.getGlobazFormattedDate(calendar.getTime()), JadeDateUtil.getGlobazFormattedDate(fin.getTime()))) {
 
-            // si on est avant la fin de la prestation et qu'il y a des jours supplémentaires, on split la prestations standard à la fin des 98 jours standards
+            // si on est avant la fin de la maternité et qu'il y a des jours supplémentaires, on split la prestations standard à la fin des 98 jours standards
             if (finMaternite != null && calendar.after(finMaternite)) {
                 isExtension = true;
                 commands.add(new NouvelleBaseCommand(finMaternite.getTime(), false, isExtension));
 
-                // si on est avant la fin de la prestation et qu'il y a des jours supplémentaires et que la période Lamat complémentaire de 14 jours est comprise dans l'extension on split à nouveau d'une durée de 14 jours
+                // si on est avant la fin de la maternité et qu'il y a des jours supplémentaires et que la période Lamat complémentaire de 14 jours est comprise dans l'extension on split à nouveau d'une durée de 14 jours
                 if (finMaterniteLamat != null && calendar.after(finMaterniteLamat)) {
                     commands.add(new NouvelleBaseCommand(finMaterniteLamat.getTime(), false, isExtension));
                     calendar.setTime(finMaterniteLamat.getTime());
@@ -337,9 +337,7 @@ public abstract class APBasesCalculBuilder {
                     finMaternite = null;
                 }
 
-                calendar.add(Calendar.DATE, 1);
-
-            } else if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
+            } if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
                 // si ce n'est pas un paiement rétroactif ou si on est en fin
                 // d'année, ajouter la commande
                 commands.add(new NouvelleBaseCommand(calendar.getTime(), false, isExtension));
