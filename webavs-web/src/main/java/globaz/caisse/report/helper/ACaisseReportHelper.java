@@ -13,7 +13,6 @@ import globaz.jade.admin.user.service.JadeUserDetailService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.util.AFIDEUtil;
-import globaz.phenix.listes.itext.CPIListeDecisionParam;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,11 +72,12 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
     public final static String JASP_PROP_SIGN_IMAGE = "signature.image";
     public final static String JASP_PROP_SIGN_NOM_CAISSE = "signature.nom.caisse.";
     public final static String JASP_PROP_SIGN_NOM_SERVICE = "signature.nom.service.";
+    public final static String JASP_PROP_SIGN_VALIDITE_SANS_SIGNATURE = "signature.validite.sans.signature.";
     public final static String JASP_PROP_SIGN_SIGNATAIRE = "signature.signataire.";
     public final static String JASP_PROP_SIGN_NOM_GESTIONNAIRE = "signature.nom.gestionnaire.";
 
     /*
-     * OCA - remplace des variable dans une chaine de car par la/les valeurs des user details : exemple : abc
+     * OCA - remplace des variables dans une chaine de car par la/les valeurs des user details : exemple : abc
      * {user.Service} def {user.Phone} -> abc service1 def 078/767.66.42
      */
     public static String _replaceVars(String str, String idUser, Map map) throws Exception {
@@ -852,6 +852,14 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
         } else if (!JadeStringUtil.isNull(bean.getSignataire2())) {
             doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_CAISSE, "");
         }
+
+        if (!JadeStringUtil.isEmpty(bean.getService() == null ? bean.getService() : bean.getService().trim())) {
+
+            String service = ACaisseReportHelper._replaceVars(bean.getService(), null, null);
+            doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE, service);
+        } else if (!JadeStringUtil.isNull(bean.getService())) {
+            doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE, "");
+        }
     }
 
     /**
@@ -887,6 +895,16 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
                 nomService = ACaisseReportHelper._replaceVars(nomService, bean.getUser().getIdUser(), null);
             }
             doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_SERVICE, nomService);
+        }
+
+        if (doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_VALIDITE_SANS_SIGNATURE + codeIsoLangue) != null) {
+            String nomService = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_VALIDITE_SANS_SIGNATURE
+                    + codeIsoLangue);
+            if ((bean != null) && (bean.getUser() != null)) {
+                nomService = JadeStringUtil.change(nomService, "{user}", bean.getNomCollaborateur());
+                nomService = ACaisseReportHelper._replaceVars(nomService, bean.getUser().getIdUser(), null);
+            }
+            doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE, nomService);
         }
 
         if (doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE + codeIsoLangue) != null
@@ -961,6 +979,16 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
                 nomService = ACaisseReportHelper._replaceVars(nomService, bean.getUser().getIdUser(), null);
             }
             doc.setParametre(ICaisseReportHelper.PARAM_SIGNATURE_SERVICE, nomService);
+        }
+
+        if (doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_VALIDITE_SANS_SIGNATURE + codeIsoLangue) != null) {
+            String nomService = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_VALIDITE_SANS_SIGNATURE
+                    + codeIsoLangue);
+            if ((bean != null) && (bean.getUser() != null)) {
+                nomService = JadeStringUtil.change(nomService, "{user}", bean.getNomCollaborateur());
+                nomService = ACaisseReportHelper._replaceVars(nomService, bean.getUser().getIdUser(), null);
+            }
+            doc.setParametre(ICaisseReportHelper.PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE, nomService);
         }
 
         if ((doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE + codeIsoLangue) != null)

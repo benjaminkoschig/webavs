@@ -77,6 +77,9 @@ public interface ICaisseReportHelper {
     // nom de la caisse
     static String PARAM_SIGNATURE_CAISSE = "P_SIGNATURE_CAISSE";
 
+    // Spécifique FVE indication validité sans signature
+    static String PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE = "P_SIGNATURE_VALIDITE_SANS_SIGNATURE";
+
     // extra data
     static String PARAM_SIGNATURE_DATA = "P_SIGNATURE_DATA";
 

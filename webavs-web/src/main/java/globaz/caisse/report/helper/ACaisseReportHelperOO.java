@@ -41,6 +41,7 @@ public class ACaisseReportHelperOO implements ICaisseReportHelperOO {
 
     public final static String SIGN_NOM_CAISSE = "signature.nom.caisse.";
     public final static String SIGN_NOM_SERVICE = "signature.nom.service.";
+    public final static String SIGN_VALIDITE_SANS_SIGNATURE = "signature.validite.sans.signature.";
     public final static String SIGN_SIGNATAIRE = "signature.signataire.";
     private BApplication application = null;
 
@@ -175,6 +176,7 @@ public class ACaisseReportHelperOO implements ICaisseReportHelperOO {
 
         docData.addData(ICaisseReportHelperOO.PARAM_SIGNATURE_CAISSE, getProperty(SIGN_NOM_CAISSE + codeIsoLangue));
         docData.addData(ICaisseReportHelperOO.PARAM_SIGNATURE_SERVICE, getProperty(SIGN_NOM_SERVICE + codeIsoLangue));
+        docData.addData(ICaisseReportHelperOO.PARAM_SIGNATURE_VALIDITE_SANS_SIGNATURE, getProperty(SIGN_VALIDITE_SANS_SIGNATURE + codeIsoLangue));
         docData.addData(ICaisseReportHelperOO.PARAM_SIGNATURE_SIGNATAIRE, getProperty(SIGN_SIGNATAIRE + codeIsoLangue));
 
         return docData;
