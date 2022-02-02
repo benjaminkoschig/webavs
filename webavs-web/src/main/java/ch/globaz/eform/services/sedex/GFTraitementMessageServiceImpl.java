@@ -1,17 +1,20 @@
 package ch.globaz.eform.services.sedex;
 
+import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.amal.web.application.AMApplication;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandler;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandlersFactory;
+import ch.globaz.eform.services.sedex.model.GFSedexModel;
 import ch.globaz.eform.web.application.GFApplication;
+import globaz.apg.properties.APProperties;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.context.JadeContext;
-import globaz.jade.context.JadeContextImplementation;
-import globaz.jade.context.JadeThreadActivator;
-import globaz.jade.context.JadeThreadContext;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.*;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
@@ -20,21 +23,20 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.jade.sedex.JadeSedexService;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
+import globaz.jade.smtp.JadeSmtpClient;
 
-import globaz.jade.sedex.message.GroupedSedexMessage;
-import globaz.jade.sedex.message.SedexMessage;
-import globaz.jade.sedex.message.SimpleSedexMessage;
+import globaz.jade.sedex.message.*;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.*;
 
 @Slf4j
 public class GFTraitementMessageServiceImpl {
@@ -42,8 +44,7 @@ public class GFTraitementMessageServiceImpl {
     private String userSedex;
     private BSession session;
     private JadeContext context;
-
-    private String eFormBackupFolder;
+    private String currentSedexFolder;
 
     private GFFormHandlersFactory objectFactory;
 
@@ -75,6 +76,8 @@ public class GFTraitementMessageServiceImpl {
         passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
 
         objectFactory = new GFFormHandlersFactory();
+
+        currentSedexFolder = properties.getProperty("currentSedexFolder");
     }
 
     @OnReceive
@@ -92,15 +95,18 @@ public class GFTraitementMessageServiceImpl {
                     if(importSuccess){
                         LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     }else{
+                        sendMail(messageToTreat);
                         LOG.error("Traitement NOK pour le fichier {}", messageToTreat.fileLocation);
                     }
                 }
             } else if (message instanceof SimpleSedexMessage) {
                 SimpleSedexMessage messageToTreat = (SimpleSedexMessage) message;
                 boolean importSuccess = importMessagesSingle(messageToTreat);
+
                 if(importSuccess){
                     LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                 }else{
+                    sendMail(messageToTreat);
                     LOG.error("Traitement NOK pour le fichier {}", messageToTreat.fileLocation);
                 }
             } else {
@@ -123,9 +129,21 @@ public class GFTraitementMessageServiceImpl {
     private boolean importMessagesSingle(SimpleSedexMessage currentSimpleMessage) {
         boolean traitementSucceed = false;
         try {
-            GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, currentSimpleMessage.getFileLocation());
+            GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, currentSimpleMessage.getFileLocation(), currentSedexFolder);
             if(formHandler != null){
-                //traitementSucceed = formHandler.saveDataInDb(session);
+                traitementSucceed = formHandler.setDataFromFile(currentSimpleMessage, currentSimpleMessage.getFileLocation(), currentSedexFolder);
+
+                if(traitementSucceed) {
+                    boolean saveSucceed;
+                    saveSucceed = formHandler.saveDataInDb(session);
+                    if(saveSucceed){
+                        LOG.info("formulaire sauvegardé : {}.", currentSimpleMessage.fileLocation);
+                    } else {
+                        LOG.error("formulaire non sauvegardé : {}", currentSimpleMessage.fileLocation);
+                    }
+                } else {
+                    LOG.error("Le formulaire n'a pas pu être traité : {}", currentSimpleMessage.fileLocation);
+                }
             }
         }catch (JAXBValidationError | JAXBValidationWarning | JAXBException | IOException | SAXException | InstantiationException | IllegalAccessException  e){
             LOG.error("Erreur lors du traitement du message.");
@@ -191,8 +209,28 @@ public class GFTraitementMessageServiceImpl {
             session = (BSession) GlobazSystem.getApplication(GFApplication.DEFAULT_APPLICATION_EFORM)
                     .newSession(userSedex, passSedex);
         }
-
         return session;
     }
 
+    private void sendMail(SimpleSedexMessage message) throws Exception {
+        JadeSmtpClient.getInstance().sendMail(getMailsProtocole(), getMailSubjet(), getMailBody(message),
+                new String[] { message.getFileLocation() });
+    }
+
+    private String getMailSubjet(){
+        return session.getLabel("MAIL_SUBLECT_IMPORT_SEDEX");
+    }
+
+    private String getMailBody(SimpleSedexMessage message){
+        return session.getLabel("MAIL_BODY_IMPORT_SEDEX") + message.getFileLocation();
+    }
+
+    private String[] getMailsProtocole() {
+        try {
+            return GFProperties.EMAIL_EFORM.getValue().split(";");
+        } catch (PropertiesException e) {
+            LOG.error("GFTraitementMessageServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
+        }
+        return null;
+    }
 }

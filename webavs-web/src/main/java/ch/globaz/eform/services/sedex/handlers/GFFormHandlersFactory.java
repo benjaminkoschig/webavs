@@ -42,24 +42,23 @@ public class GFFormHandlersFactory {
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2514_007490._1.Message.class, GF2514007490Handler.class);
     }
 
-    public GFFormHandler getFormHandler(SimpleSedexMessage currentSimpleMessage, String zipFileLocation) throws JAXBValidationError, JAXBValidationWarning, JAXBException, IOException, SAXException, InstantiationException, IllegalAccessException {
+    public GFFormHandler getFormHandler(SimpleSedexMessage currentSimpleMessage, String zipFileLocation, String sedexCurrentFolder) throws JAXBValidationError, JAXBValidationWarning, JAXBException, IOException, SAXException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         JAXBServices jaxbs = JAXBServices.getInstance();
         Class<?>[] addClasses = mapClasses.keySet().toArray(new Class[0]);
         Object oMessage = jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-        return getGfFormHandler(zipFileLocation, oMessage, addClasses);
+        return getGfFormHandler(currentSimpleMessage, sedexCurrentFolder, oMessage, addClasses);
     }
 
-    private GFFormHandler getGfFormHandler(String zipFileLocation, Object o_Message, Class<?>[] addClasses) throws InstantiationException, IllegalAccessException, IOException {
+    private GFFormHandler getGfFormHandler(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder, Object o_Message, Class<?>[] addClasses) throws InstantiationException, IllegalAccessException, IOException, NoSuchMethodException {
         GFFormHandler handler = null;
         Iterator<Class<?>> iterator = Arrays.stream(addClasses).iterator();
-        boolean traitementOk = false;
-        while(handler == null || iterator.hasNext()){
+        while(handler == null && iterator.hasNext()){
             Class<?> theClass = iterator.next();
             if(theClass != null && theClass.isInstance(o_Message)){
                 handler = (GFFormHandler) mapClasses.get(theClass).newInstance();
-                traitementOk = handler.getDataFromFile(o_Message, zipFileLocation);
+                handler.setDataFromFile(currentSimpleMessage, o_Message, currentSedexFolder);
             }
         }
-        return traitementOk ? handler : null;
+        return handler;
     }
 }
