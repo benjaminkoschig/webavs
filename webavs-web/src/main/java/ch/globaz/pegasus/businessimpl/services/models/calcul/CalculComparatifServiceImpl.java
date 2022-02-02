@@ -174,7 +174,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     @Override
     public void consolideCacheDonneesPersonnes(List<PeriodePCAccordee> listePCAccordes,
                                                Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
-                                               String dateFinPlage, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie) throws CalculException {
+                                               String dateFinPlage, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie, boolean isAdaptationAnnuelle) throws CalculException {
 
         String dateReforme;
         try {
@@ -213,7 +213,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
             // parcourt les périodes pour executer les stratégies
             // cherche par la même occasion les entrées en home (requiert que les pca soient triés par date).
-            periodePCAccordee.consolideDonnees(dateReforme);
+            periodePCAccordee.consolideDonnees(dateReforme, isAdaptationAnnuelle);
         }
 
         // les données consolidées sont maintenant prêtes à être calculées

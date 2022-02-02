@@ -82,7 +82,7 @@ public abstract class AdaptationEntityHandlerAbstract extends PCProcessDroitUpda
 
                     // calcule le droit
                     periodePCAccordee = PegasusImplServiceLocator.getCalculDroitService().calculDroitPourComparaison(
-                            droitACalculer, collectionIdMembreFamille, containerGlobal, true, hasRetroactif());
+                            droitACalculer, collectionIdMembreFamille, containerGlobal, true, hasRetroactif(), true);
 
                     dataToSave = PCAdaptationUtils.saveData(pcAIdMembreFamilleRetenuSearch, periodePCAccordee,
                             currentDroit, properties.get(PCProcessAdapationEnum.DATE_ADAPTATION),

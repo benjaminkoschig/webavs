@@ -48,7 +48,7 @@ public interface CalculDroitService extends JadeApplicationService {
             JadeApplicationServiceNotAvailableException, CalculException, JadePersistenceException, DemandeException;
 
     public abstract IPeriodePCAccordee calculDroitPourComparaison(Droit droit, Collection<String> listeIdPersonnes,
-            DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif)
+            DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif, boolean isAdaptationAnnuelle)
             throws CalculException, JadePersistenceException, JadeApplicationException;
 
     /**

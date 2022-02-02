@@ -136,7 +136,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce, dateSplitReforme);
                 // procède au calcul à proprement dit
                 calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, containerGlobal, retroactifCalcul, dateSplitReforme);
+                        dateFinPlageCalcul, containerGlobal, retroactifCalcul, dateSplitReforme, false);
 
                 // récupère anciennes pc accordées
                 PegasusImplServiceLocator.getCalculPersistanceService().recupereAnciensPCAccordee(dateDebutPlageCalcul,
@@ -220,17 +220,17 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     @Override
     public IPeriodePCAccordee calculDroitPourComparaison(Droit droit, Collection<String> listeIdPersonnes,
-                                                         DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif)
+                                                         DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif, boolean isAdaptationAnnuelle)
             throws CalculException, JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> list = this.calculDroitPourComparaison(droit, listeIdPersonnes, containerGlobal,
-                persistCalcul, retroactif, null);
+                persistCalcul, retroactif, null, isAdaptationAnnuelle);
         return list.get(list.size() - 1);
     }
 
     private List<PeriodePCAccordee> calculDroitPourComparaison(Droit droit, Collection<String> listeIdPersonnes,
                                                                DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif,
-                                                               String dateDebutPeriodeForce) throws CalculException, JadePersistenceException, JadeApplicationException {
+                                                               String dateDebutPeriodeForce, boolean isAdaptationAnnuelle) throws CalculException, JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> listePCAccordes = null;
 
@@ -282,7 +282,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
                 // procède au calcul à proprement dit
                 calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, containerGlobal, retroactif, null);
+                        dateFinPlageCalcul, containerGlobal, retroactif, null, isAdaptationAnnuelle);
 
                 dertermineFavorableCombinaisonPersonne(listeIdPersonnes, listePCAccordes);
 
@@ -1683,7 +1683,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     private void calculeDroitTraitement(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
                                         List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme, String dateDebutPlageCalcul, String dateFinPlageCalcul,
-                                        DonneesHorsDroitsProvider containerGlobal, boolean retroactif, String dateSplitReforme) throws CalculException,
+                                        DonneesHorsDroitsProvider containerGlobal, boolean retroactif, String dateSplitReforme, boolean isAdaptationAnnuelle) throws CalculException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, TaxeJournaliereHomeException,
             HomeException {
         Map<String, CalculMembreFamille> listePersonnes = new HashMap<String, CalculMembreFamille>();
@@ -1708,7 +1708,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         if (!listePCAccordes.isEmpty()) {
             // trie et consolide les données brutes du cache de données de persistence
             PegasusImplServiceLocator.getCalculComparatifService().consolideCacheDonneesPersonnes(listePCAccordes,
-                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, false, isFratrie);
+                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, false, isFratrie, isAdaptationAnnuelle);
             // procède aux calcul comparatifs
             PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordes, calculsComparatifsImmediats);
         }
@@ -1717,7 +1717,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             // S170908_002 : ajout calcul réforme PC
             // trie et consolide les données brutes du cache de données de persistence
             PegasusImplServiceLocator.getCalculComparatifService().consolideCacheDonneesPersonnes(listePCAccordesReforme,
-                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, true, isFratrie);
+                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, true, isFratrie, isAdaptationAnnuelle);
 
             // procède aux calcul comparatifs
             PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordesReforme, calculsComparatifsImmediats);
@@ -1818,7 +1818,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> list = this.calculDroitPourComparaison(droit, listeIdPersonnes, containerGlobal, false,
-                false, dateDebutPeriodeForce);
+                false, dateDebutPeriodeForce, false);
 
         return list.get(list.size() - 1);
     }

@@ -29,7 +29,7 @@ public interface CalculComparatifService extends JadeApplicationService {
 
     public void consolideCacheDonneesPersonnes(List<PeriodePCAccordee> listePCAccordes,
                                                Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
-                                               String dateFinPlageCalcul, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie) throws CalculException;
+                                               String dateFinPlageCalcul, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie, boolean isAdaptationAnnuelle) throws CalculException;
 
     public void loadDonneesCalculComparatif(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonnees,
             List<PeriodePCAccordee> periodes, Map<String, CalculMembreFamille> listePersonnes, String debutPlage, String dateFinPlage)

@@ -67,7 +67,7 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         if (null == homeCalcul) {
             throw new CalculBusinessException("pegasus.calcul.strategie.taxeJournaliere.home.integrity");
         } else {
-            if(!JadeStringUtil.isBlankOrZero(prixJournalier) ) {
+            if(!JadeStringUtil.isBlankOrZero(prixJournalier) && (!(Boolean) context.get(Attribut.IS_ADAPTATION))) {
                 strPrixChambre = prixJournalier;
             } else {
                 strPrixChambre = homeCalcul.getPrixJournalier();

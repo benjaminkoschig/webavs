@@ -442,6 +442,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
 
             CalculDonneesHomeSearch homeSearch = new CalculDonneesHomeSearch();
             homeSearch.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+//            homeSearch.setForDateDebut(JadeDateUtil.convertDateMonthYear(dateFinPlage));
             homeSearch.setForDateFin(JadeDateUtil.convertDateMonthYear(debutPlage));
             homeSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
             homeSearch = PegasusImplServiceLocator.getCalculDonneesHomeService().search(homeSearch);

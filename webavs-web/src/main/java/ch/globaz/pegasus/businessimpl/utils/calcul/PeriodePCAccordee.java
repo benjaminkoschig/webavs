@@ -796,7 +796,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      * @throws CalculException
      *             en cas d'erreur lors du calcul
      */
-    public void consolideDonnees(String dateReforme) throws CalculException {
+    public void consolideDonnees(String dateReforme, boolean isAdaptationAnnuelle) throws CalculException {
 
         if (calculReforme && JadeDateUtil.isDateBefore(getStrDateDebut(), dateReforme)) {
             return;
@@ -805,6 +805,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         // preparation du contexte
         CalculContext context = CalculContext.getNewInstance();
         context.getValeurs().put(CalculContext.Attribut.DUREE_PERIODE, getNbJoursPeriode());
+
+        // POAVS-4013 : Distinction de processus d'adaptation
+        context.getValeurs().put(Attribut.IS_ADAPTATION, isAdaptationAnnuelle);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(dateDebut);
