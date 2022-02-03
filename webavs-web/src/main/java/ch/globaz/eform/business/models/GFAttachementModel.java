@@ -71,20 +71,20 @@ public class GFAttachementModel extends BEntity {
 
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
-        PreparedStatement pstmt = null;
-        String sql = getSqlUpdate();
-        try {
-            pstmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
-            pstmt.setBinaryStream(1, attachementFichier, attachementFichier.available());
-            pstmt.setString(2, attachementId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            LOG.debug("Erreur à l'execution de la requête : " + sql, e);
-        } catch (Exception e) {
-            LOG.debug("Erreur lors de la lecture du ZIP", e);
-        } finally {
-            closeStatement(pstmt);
-        }
+//        PreparedStatement pstmt = null;
+//        String sql = getSqlUpdate();
+//        try {
+//            pstmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
+//            pstmt.setBinaryStream(1, attachementFichier, attachementFichier.available());
+//            pstmt.setString(2, attachementId);
+//            pstmt.executeUpdate();
+//        } catch (SQLException e) {
+//            LOG.debug("Erreur à l'execution de la requête : " + sql, e);
+//        } catch (Exception e) {
+//            LOG.debug("Erreur lors de la lecture du ZIP", e);
+//        } finally {
+//            closeStatement(pstmt);
+//        }
     }
 
     private void getFichierFromDb(){
