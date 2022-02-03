@@ -17,25 +17,17 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.ij.application.IJApplication;
 import globaz.ij.helpers.process.IJDecisionACaisseReportHelper;
-import globaz.ij.vb.prononces.IJAbstractPrononceProxyViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.external.IntRole;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
-import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater03;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.PRStringUtils;
-import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.api.ITITiers;
-import globaz.pyxis.constantes.IConstantes;
-import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
-import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
-import globaz.pyxis.db.tiers.TIAdministrationManager;
-import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 
 import java.io.File;
 import java.util.*;
@@ -124,6 +116,7 @@ public class IJDecomptesEntete extends IJDecomptes {
 
                 // creation du helper pour les entetes et pieds de page
                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_IJ);
+
                 caisseHelper = new IJDecisionACaisseReportHelper(docInfo);
                 caisseHelper.init(getSession().getApplication(), codeIsoLangue);
 
@@ -137,7 +130,6 @@ public class IJDecomptesEntete extends IJDecomptes {
                 // Domaine APG pour l'entête car entête identique pour l'ensemble des documents APG / Maternité / IJ etc...
                 documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
                 documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_LETTRE_ENTETE_APG);
-
 
                 documentHelper.setDefault(Boolean.TRUE);
                 documentHelper.setActif(Boolean.TRUE);
@@ -290,44 +282,7 @@ public class IJDecomptesEntete extends IJDecomptes {
                 parametres.put("PARAM_ZONE_1", buffer.toString());
                 buffer.setLength(0);
 
-                // Insertion de la signature (Office AI du canton de ...) pour les
-                // documents IJ et ajout de l'adresse de l'office AI dans l'entête
-
-                TIAdministrationManager tiAdministrationMgr = new TIAdministrationManager();
-                tiAdministrationMgr.setSession(getSession());
-                tiAdministrationMgr.setForCodeAdministration(noOfficeAI);
-                tiAdministrationMgr.setForGenreAdministration(IJAbstractPrononceProxyViewBean.CS_ADMIN_GENRE_OFFICE_AI);
-
-                tiAdministrationMgr.find(1);
-
-                TIAdministrationViewBean tiAdministration = (TIAdministrationViewBean) tiAdministrationMgr
-                        .getFirstEntity();
-
-                String adresseOfficeAi = "";
-
-                if (tiAdministration != null) {
-
-                    adresseOfficeAi = tiAdministration.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
-                            IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
-                            new PRTiersAdresseCopyFormater03());
-
-                }
-
-                if (caisseHelper instanceof IJDecisionACaisseReportHelper) {
-                    ((IJDecisionACaisseReportHelper) caisseHelper).addHeaderParameters(getImporter(), crBean,
-                            adresseOfficeAi, codeIsoLangue, "");
-                }
-
-                TIAdresseDataManager tiAdresseDatamgr = new TIAdresseDataManager();
-                tiAdresseDatamgr.setSession(getSession());
-                tiAdresseDatamgr.setForIdTiers(tiAdministration.getIdTiers());
-                tiAdresseDatamgr.changeManagerSize(0);
-                tiAdresseDatamgr.setForDateEntreDebutEtFin(JACalendar.todayJJsMMsAAAA());
-                tiAdresseDatamgr.find(1);
-
-                TIAdresseDataSource dataSource = new TIAdresseDataSource();
-                dataSource.setLangue(codeIsoLangue);
-                dataSource.load((TIAbstractAdresseData) tiAdresseDatamgr.getFirstEntity(), "");
+                caisseHelper.addHeaderParameters(getImporter(), crBean);
 
                 buffer.setLength(0);
 
