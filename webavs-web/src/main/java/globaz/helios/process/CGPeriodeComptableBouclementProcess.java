@@ -1,13 +1,10 @@
 package globaz.helios.process;
 
+import ch.globaz.helios.business.exceptions.CGPeriodeComptableException;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.helios.api.ICGJournal;
@@ -15,25 +12,7 @@ import globaz.helios.db.avs.CGSecteurAVS;
 import globaz.helios.db.avs.CGSecteurAVSManager;
 import globaz.helios.db.bouclement.CGBouclement;
 import globaz.helios.db.bouclement.CGBouclementManager;
-import globaz.helios.db.comptes.CGBilanListViewBean;
-import globaz.helios.db.comptes.CGCompte;
-import globaz.helios.db.comptes.CGCompteManager;
-import globaz.helios.db.comptes.CGControleCompteNouvelExerciceManager;
-import globaz.helios.db.comptes.CGEcritureListViewBean;
-import globaz.helios.db.comptes.CGEcritureViewBean;
-import globaz.helios.db.comptes.CGExerciceComptable;
-import globaz.helios.db.comptes.CGJournal;
-import globaz.helios.db.comptes.CGJournalManager;
-import globaz.helios.db.comptes.CGMandat;
-import globaz.helios.db.comptes.CGMouvementCompteListViewBean;
-import globaz.helios.db.comptes.CGMouvementCompteViewBean;
-import globaz.helios.db.comptes.CGPeriodeComptable;
-import globaz.helios.db.comptes.CGPeriodeComptableManager;
-import globaz.helios.db.comptes.CGPlanComptableListViewBean;
-import globaz.helios.db.comptes.CGPlanComptableManager;
-import globaz.helios.db.comptes.CGPlanComptableViewBean;
-import globaz.helios.db.comptes.CGSolde;
-import globaz.helios.db.comptes.CGSoldeManager;
+import globaz.helios.db.comptes.*;
 import globaz.helios.db.ecritures.CGGestionEcritureViewBean;
 import globaz.helios.db.lynx.CGLynxJournalManager;
 import globaz.helios.db.osiris.CGOsirisJournal;
@@ -47,15 +26,7 @@ import globaz.jade.properties.JadePropertiesService;
 import globaz.lynx.db.journal.LXJournal;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import ch.globaz.helios.business.exceptions.CGPeriodeComptableException;
+import java.util.*;
 
 /**
  * Date de création : (20.03.2003 14:48:16)
@@ -95,6 +66,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private boolean hasPeriodePrec = true;
     private String idCompteResultatChargeSecteur2 = null;
     private String idCompteResultatProduitSecteur2 = null;
+    private String idCompteResultatChargeSecteur25 = null;
+    private String idCompteResultatProduitSecteur25 = null;
     private String idPeriodeComptable = "";
 
     private CGJournal journalClot = null;
@@ -382,7 +355,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             return false;
         }
         isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
-        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA != null && isPTRA.equals("true")) {
+        if (mandat.isEstComptabiliteAVS().booleanValue() && (bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS().booleanValue()) && isPTRA != null && isPTRA.equals("true")) {
             try {
                 clotureCompteExploitationAvsPTRA();
             } catch (Exception e) {
@@ -529,6 +502,28 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
             try {
                 equilibrageCompteChargeProduitSecteur2();
+            } catch (Exception e) {
+                this.error("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_ERROR", e.getMessage());
+                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
+                return false;
+            }
+
+            this.info("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_OK");
+        }
+        if (isPTRA != null && isPTRA.equals("true") && mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
+            try {
+                equilibrageCompteChargeProduitSecteur25();
+            } catch (Exception e) {
+                this.error("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_ERROR", e.getMessage());
+                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
+                return false;
+            }
+
+            this.info("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_OK");
+        }
+        if (isPTRA != null && isPTRA.equals("true") && mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
+            try {
+                equilibrageCompteChargeProduitSecteur25();
             } catch (Exception e) {
                 this.error("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_ERROR", e.getMessage());
                 this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
@@ -732,6 +727,132 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcritureClotureAnnuelleAVSCompteAdministrationExploitation(CGSecteurAVS secteur,
+                                                                               String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
+        // Parcours des comptes de charge pour le secteur et cumul des soldes :
+        CGCompteManager compteManager = new CGCompteManager();
+        compteManager.setSession(getSession());
+        compteManager.setForIdMandat(mandat.getIdMandat());
+        compteManager.setForIdSecteurAVS(secteur.getIdSecteurAVS());
+        compteManager.setForIdDomaine(forDomaine);
+
+        compteManager.setForIdGenre(CGCompte.CS_GENRE_CHARGE);
+        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int j = 0; j < compteManager.size(); j++) {
+            CGCompte compte = (CGCompte) compteManager.getEntity(j);
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
+                    periode.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    compte.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
+                        idCompteResultatCharge);
+            }
+        }
+
+        compteManager.setForIdGenre(CGCompte.CS_GENRE_PRODUIT);
+        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int j = 0; j < compteManager.size(); j++) {
+            CGCompte compte = (CGCompte) compteManager.getEntity(j);
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
+                    periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    compte.getIdCompte(), periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
+                        idCompteResultatProduit);
+            }
+        }
+    }
+
+    /**
+     * Ajoute les écriture pour cloture annuelle AVS des autres tâches.
+     *
+     * @param secteur
+     * @param idCompteResultatCharge
+     * @param idCompteResultatProduit
+     * @param forDomaine
+     * @throws Exception
+     */
+    private void addEcritureClotureAnnuelleAVSCompteAdministrationExploitationPTRA(CGSecteurAVS secteur,
+                                                                               String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
+        // Parcours des comptes de charge pour le secteur et cumul des soldes :
+        CGCompteManager compteManager = new CGCompteManager();
+        compteManager.setSession(getSession());
+        compteManager.setForIdMandat(mandat.getIdMandat());
+        compteManager.setForIdSecteurAVS(secteur.getIdSecteurAVS());
+        compteManager.setForIdDomaine(forDomaine);
+
+        compteManager.setForIdGenre(CGCompte.CS_GENRE_CHARGE);
+        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int j = 0; j < compteManager.size(); j++) {
+            CGCompte compte = (CGCompte) compteManager.getEntity(j);
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
+                    periode.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    compte.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
+                        idCompteResultatCharge);
+            }
+        }
+
+        compteManager.setForIdGenre(CGCompte.CS_GENRE_PRODUIT);
+        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int j = 0; j < compteManager.size(); j++) {
+            CGCompte compte = (CGCompte) compteManager.getEntity(j);
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
+                    periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    compte.getIdCompte(), periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
+                        idCompteResultatProduit);
+            }
+        }
+    }
+
+    /**
+     * Ajoute les écriture pour cloture annuelle AVS des autres tâches.
+     *
+     * @param secteur
+     * @param idCompteResultatCharge
+     * @param idCompteResultatProduit
+     * @param forDomaine
+     * @throws Exception
+     */
+    private void addEcritureClotureAnnuelleAVSCompteAdministrationExploitationPTRA(CGSecteurAVS secteur,
                                                                                String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
         // Parcours des comptes de charge pour le secteur et cumul des soldes :
         CGCompteManager compteManager = new CGCompteManager();
@@ -1144,14 +1265,20 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                                 idCompteResultatCharge, CGCompte.CS_COMPTE_ADMINISTRATION);
                     } else {
                         // Secteur 1-8
-                        if (secteur.isCompteAdministration().booleanValue()) {
-                            clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9(secteur,
+                        if(isPTRA != null && isPTRA.equals("true") && Integer.parseInt(secteur.getIdSecteurAVS())>=2500 &&Integer.parseInt(secteur.getIdSecteurAVS())<=2599){
+                            clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9PTRA(secteur,
                                     CGCompte.CS_COMPTE_ADMINISTRATION);
-                        }
+                        } else {
 
-                        if (secteur.isCompteExploitation().booleanValue()) {
-                            clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9(secteur,
-                                    CGCompte.CS_COMPTE_EXPLOITATION);
+                            if (secteur.isCompteAdministration().booleanValue()) {
+                                clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9(secteur,
+                                        CGCompte.CS_COMPTE_ADMINISTRATION);
+                            }
+
+                            if (secteur.isCompteExploitation().booleanValue()) {
+                                clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9(secteur,
+                                        CGCompte.CS_COMPTE_EXPLOITATION);
+                            }
                         }
                     }
                 }
@@ -1222,6 +1349,61 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                 idCompteResultatProduit, forDomaine);
 
     }
+    /**
+     * Clotue annuelle avs des comptes administration et exploitation non secteur 9
+     *
+     * @param secteur
+     * @param forDomaine
+     * @throws Exception
+     */
+    private void clotureAnnuelleAVSCompteAdministrationExploitationNonSecteur9PTRA(CGSecteurAVS secteur, String forDomaine)
+            throws Exception {
+        CGPlanComptableListViewBean planManager = new CGPlanComptableListViewBean();
+        planManager.setSession(getSession());
+        planManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+        planManager.setForIdMandat(mandat.getIdMandat());
+
+        planManager.setReqDomaine(forDomaine);
+
+        String idCompteResultatCharge;
+        String idCompteResultatProduit;
+
+
+            // le compte de résultat (2990,3990) himself !!! -> on ne le traite pas, il doit déjà être équilibré
+            // Cela suppose que personne n'a créer des écritures à la mano dedans.
+            // if (secteur.getIdSecteurResultat()==null || "0".equals(secteur.getIdSecteurResultat())) {
+            if ("2590".equals(secteur.getIdSecteurAVS())) {
+                return;
+            }
+
+            planManager.setReqGenreCompte(CGCompte.CS_GENRE_RESULTAT);
+            planManager.setForIdSecteurAVS(secteur.getIdSecteurResultat());
+            planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            if (planManager.size() != 1) {
+                throw (new Exception(label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_COMPTE_RESULTAT_INEXISTANT")
+                        + secteur.getIdSecteurAVS()));
+            }
+            idCompteResultatCharge = ((CGPlanComptableViewBean) planManager.getFirstEntity()).getIdCompte();
+            idCompteResultatChargeSecteur25 = idCompteResultatCharge;
+
+            planManager.setReqGenreCompte(CGCompte.CS_GENRE_PASSIF);
+            planManager.setForIdExterneLike("2500.2140%");
+            planManager.setForIdSecteurAVS("");
+            planManager.setReqDomaine(CGCompte.CS_COMPTE_BILAN);
+            planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            if (planManager.size() != 1) {
+                throw (new Exception(label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_COMPTE_RESULTAT_INEXISTANT")
+                        + secteur.getIdSecteurAVS()));
+            }
+            idCompteResultatProduit = ((CGPlanComptableViewBean) planManager.getFirstEntity()).getIdCompte();
+            idCompteResultatProduitSecteur25 = idCompteResultatProduit;
+
+
+        addEcritureClotureAnnuelleAVSCompteAdministrationExploitation(secteur, idCompteResultatCharge,
+                idCompteResultatProduit, forDomaine);
+
+    }
+
 
     /**
      * 10. Clôture du compte des autres tâches (bouclement mensuel et annuel AVS)
@@ -2648,6 +2830,64 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             }
         }
     }
+    /**
+     * Equilibrage des comptes de charges et produit du secteur 2. <br/>
+     * <br/>
+     * Les comptes de résultat de charges et produits du secteur 2 (2990.3900.0000 & 2990.4900.0000) doivent avoir des
+     * montants opposés pour la période de cloture. <br/>
+     * Il faut mettre ces soldes à zéro en transferant le solde d'un compte dans l'autre.
+     *
+     * @throws Exception
+     */
+    private void equilibrageCompteChargeProduitSecteur25() throws Exception {
+        if ((idCompteResultatChargeSecteur25 != null) && (idCompteResultatProduitSecteur25 != null)) {
+
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, idCompteResultatProduitSecteur25,
+                        idCompteResultatChargeSecteur25);
+            }
+        }
+    }
+    /**
+     * Equilibrage des comptes de charges et produit du secteur 2. <br/>
+     * <br/>
+     * Les comptes de résultat de charges et produits du secteur 2 (2990.3900.0000 & 2990.4900.0000) doivent avoir des
+     * montants opposés pour la période de cloture. <br/>
+     * Il faut mettre ces soldes à zéro en transferant le solde d'un compte dans l'autre.
+     *
+     * @throws Exception
+     */
+    private void equilibrageCompteChargeProduitSecteur25() throws Exception {
+        if ((idCompteResultatChargeSecteur25 != null) && (idCompteResultatProduitSecteur25 != null)) {
+
+            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
+                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
+
+            if (!solde.isZero()) {
+                // ouverture du journal de clôture de la période de clôture (idJournal3)
+                ouvertureJournalClot3();
+
+                // transfert de solde sur le compte de résultat :
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
+                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, idCompteResultatProduitSecteur25,
+                        idCompteResultatChargeSecteur25);
+            }
+        }
+    }
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
@@ -3241,7 +3481,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                                 libelle = getLibelleToFit(50, label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_COMPTE_A_ZERO"));
                                 addEcritureDoubleToJournalClot(libelle, montant, "" + compte125X.getIdExterne().charAt(8)
                                         + compte125X.getIdExterne().charAt(10) + compte125X.getIdExterne().charAt(11)
-                                        + compte125X.getIdExterne().charAt(12) + ".1201.0000", compte125X.getIdExterne());
+                                        + compte125X.getIdExterne().charAt(12) + ".1201.0000", compte225X.getIdExterne());
                             } else {
                                 String libelle = getLibelleToFit(50,
                                         label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_REFLETE_CUMUL"));
