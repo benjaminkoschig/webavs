@@ -103,6 +103,7 @@ public abstract class GFFormHandler {
             dbModel.setSession(bSession);
             dbModel.setFormulaireId(model.getMessageId());
             dbModel.setFormulaireSubject(model.getMessageSubject());
+            dbModel.setNomFormulaire(bSession.getLabel(model.getMessageSubject()));
             dbModel.setFormulaireDate(model.getMessageDate());
             dbModel.setNssBeneficiaire(model.getNssBeneficiaire());
             dbModel.setNomBeneficiaire(model.getNomBeneficiaire());
