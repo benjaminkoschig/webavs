@@ -844,69 +844,6 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     }
 
     /**
-     * Ajoute les écriture pour cloture annuelle AVS des autres tâches.
-     *
-     * @param secteur
-     * @param idCompteResultatCharge
-     * @param idCompteResultatProduit
-     * @param forDomaine
-     * @throws Exception
-     */
-    private void addEcritureClotureAnnuelleAVSCompteAdministrationExploitationPTRA(CGSecteurAVS secteur,
-                                                                               String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
-        // Parcours des comptes de charge pour le secteur et cumul des soldes :
-        CGCompteManager compteManager = new CGCompteManager();
-        compteManager.setSession(getSession());
-        compteManager.setForIdMandat(mandat.getIdMandat());
-        compteManager.setForIdSecteurAVS(secteur.getIdSecteurAVS());
-        compteManager.setForIdDomaine(forDomaine);
-
-        compteManager.setForIdGenre(CGCompte.CS_GENRE_CHARGE);
-        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
-        for (int j = 0; j < compteManager.size(); j++) {
-            CGCompte compte = (CGCompte) compteManager.getEntity(j);
-            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
-                    periode.getIdPeriodeComptable(), "0", getSession(), true);
-            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
-                    compte.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
-
-            if (!solde.isZero()) {
-
-                // ouverture du journal de clôture de la période de clôture (idJournal3)
-                ouvertureJournalClot3();
-
-                // transfert de solde sur le compte de résultat :
-                String libelle = getLibelleToFit(50,
-                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
-                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
-                        idCompteResultatCharge);
-            }
-        }
-
-        compteManager.setForIdGenre(CGCompte.CS_GENRE_PRODUIT);
-        compteManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
-        for (int j = 0; j < compteManager.size(); j++) {
-            CGCompte compte = (CGCompte) compteManager.getEntity(j);
-            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(), compte.getIdCompte(),
-                    periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
-            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
-                    compte.getIdCompte(), periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
-
-            if (!solde.isZero()) {
-
-                // ouverture du journal de clôture de la période de clôture (idJournal3)
-                ouvertureJournalClot3();
-
-                // transfert de solde sur le compte de résultat :
-                String libelle = getLibelleToFit(50,
-                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
-                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, compte.getIdCompte(),
-                        idCompteResultatProduit);
-            }
-        }
-    }
-
-    /**
      * Ajout d'un écriture double sur le journal3.
      *
      * @param libelle
@@ -2859,35 +2796,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             }
         }
     }
-    /**
-     * Equilibrage des comptes de charges et produit du secteur 2. <br/>
-     * <br/>
-     * Les comptes de résultat de charges et produits du secteur 2 (2990.3900.0000 & 2990.4900.0000) doivent avoir des
-     * montants opposés pour la période de cloture. <br/>
-     * Il faut mettre ces soldes à zéro en transferant le solde d'un compte dans l'autre.
-     *
-     * @throws Exception
-     */
-    private void equilibrageCompteChargeProduitSecteur25() throws Exception {
-        if ((idCompteResultatChargeSecteur25 != null) && (idCompteResultatProduitSecteur25 != null)) {
 
-            FWCurrency solde = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
-                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
-            FWCurrency soldeMonnaieEtrangere = CGSolde.computeSoldeCumuleMonnaie(exercice.getIdExerciceComptable(),
-                    idCompteResultatChargeSecteur25, periodeClot.getIdPeriodeComptable(), "0", getSession(), true);
-
-            if (!solde.isZero()) {
-                // ouverture du journal de clôture de la période de clôture (idJournal3)
-                ouvertureJournalClot3();
-
-                // transfert de solde sur le compte de résultat :
-                String libelle = getLibelleToFit(50,
-                        label("CLOTURE_ANUNELLE_AVS_COMPTE_ADMIN_EXPLOIT_LABEL_ECRITURE_TRANSFERT"));
-                addEcritureDoubleToJournal3(libelle, solde, soldeMonnaieEtrangere, idCompteResultatProduitSecteur25,
-                        idCompteResultatChargeSecteur25);
-            }
-        }
-    }
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
