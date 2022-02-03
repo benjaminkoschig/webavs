@@ -49,14 +49,14 @@ public class GFFormHandlersFactory {
         return getGfFormHandler(currentSimpleMessage, sedexCurrentFolder, oMessage, addClasses);
     }
 
-    private GFFormHandler getGfFormHandler(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder, Object o_Message, Class<?>[] addClasses) throws InstantiationException, IllegalAccessException, IOException, NoSuchMethodException {
+    private GFFormHandler getGfFormHandler(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder, Object message, Class<?>[] addClasses) throws InstantiationException, IllegalAccessException, IOException, NoSuchMethodException {
         GFFormHandler handler = null;
         Iterator<Class<?>> iterator = Arrays.stream(addClasses).iterator();
         while(handler == null && iterator.hasNext()){
             Class<?> theClass = iterator.next();
-            if(theClass != null && theClass.isInstance(o_Message)){
+            if(theClass != null && theClass.isInstance(message)){
                 handler = (GFFormHandler) mapClasses.get(theClass).newInstance();
-                handler.setDataFromFile(currentSimpleMessage, o_Message, currentSedexFolder);
+                handler.setMessage(message);
             }
         }
         return handler;

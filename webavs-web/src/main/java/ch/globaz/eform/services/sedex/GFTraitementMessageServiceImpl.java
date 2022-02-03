@@ -1,19 +1,15 @@
 package ch.globaz.eform.services.sedex;
 
-import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.amal.web.application.AMApplication;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandler;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandlersFactory;
-import ch.globaz.eform.services.sedex.model.GFSedexModel;
 import ch.globaz.eform.web.application.GFApplication;
-import globaz.apg.properties.APProperties;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.*;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeDefaultEncrypters;
@@ -23,8 +19,6 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.properties.JadePropertiesService;
-import globaz.jade.sedex.JadeSedexService;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.smtp.JadeSmtpClient;
@@ -131,7 +125,7 @@ public class GFTraitementMessageServiceImpl {
         try {
             GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, currentSimpleMessage.getFileLocation(), currentSedexFolder);
             if(formHandler != null){
-                traitementSucceed = formHandler.setDataFromFile(currentSimpleMessage, currentSimpleMessage.getFileLocation(), currentSedexFolder);
+                traitementSucceed = formHandler.setDataFromFile(currentSimpleMessage, currentSedexFolder);
 
                 if(traitementSucceed) {
                     boolean saveSucceed;

@@ -1,20 +1,13 @@
 package ch.globaz.eform.services.sedex.handlers;
 
-import ch.eahv_iv.xmlns.eahv_iv_common._4.AttachmentFileType;
 import ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
-import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.eform.business.models.GFAttachementModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.services.sedex.model.GFSedexModel;
-import eform.eahv_iv.afv_common.AttachmentType;
 import globaz.common.util.CommonBlobUtils;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.sedex.message.SimpleSedexMessage;
-import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -24,21 +17,21 @@ import java.util.*;
 public abstract class GFFormHandler {
 
     protected GFSedexModel model;
+    protected Object message;
 
-    public abstract boolean setDataFromFile(SimpleSedexMessage currentSimpleMessage, Object sedexObject, String currentSedexFolder);
+    public abstract boolean setDataFromFile(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder);
 
     protected void setAttachements(Map<String, String> attachments) {
         ArrayList<String> attachementFiles = new ArrayList<>();
         Set set=attachments.entrySet();//Converting to Set so that we can traverse
         Iterator itr=set.iterator();
-        while(itr.hasNext()){
+        while(itr.hasNext()) {
             //Converting to Map.Entry so that we can get key and value separately
-            Map.Entry entry=(Map.Entry)itr.next();
+            Map.Entry entry = (Map.Entry) itr.next();
             File file = new File(entry.getKey().toString());
-                if (file.exists() && file.isFile()) {
-                    attachementFiles.add(file.getPath());
-                }
-
+            if (file.exists() && file.isFile()) {
+                attachementFiles.add(file.getPath());
+            }
         }
         model.setAttachementFile(attachementFiles);
     }
@@ -148,5 +141,9 @@ public abstract class GFFormHandler {
      */
     private boolean hasError(BSession session, BTransaction transaction) {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
+    }
+
+    public void setMessage(Object message){
+        this.message = message;
     }
 }

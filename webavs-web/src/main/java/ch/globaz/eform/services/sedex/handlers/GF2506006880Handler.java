@@ -4,22 +4,28 @@ import ch.globaz.eform.services.sedex.model.GFSedexModel;
 
 import eform.ch.eahv_iv.xmlns.eahv_iv_2506_006880._1.*;
 import globaz.jade.sedex.message.SimpleSedexMessage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class GF2506006880Handler extends GFFormHandler {
     @Override
-    public boolean setDataFromFile(SimpleSedexMessage currentSimpleMessage, Object sedexObject, String currentSedexFolder) {
-        Message message = (Message)sedexObject;
-        if(sedexObject != null){
-            model = new GFSedexModel();
-            HeaderType header = message.getHeader();
-            if(header != null) {
-                model.setMessageId(header.getMessageId());
-                model.setMessageSubject(header.getSubject());
-                model.setMessageDate(header.getMessageDate().toGregorianCalendar().toZonedDateTime().toLocalDate());
-                setAttachements(currentSimpleMessage.attachments);
-                setBeneficiaireData(message.getContent() != null ? message.getContent().getInsuredPerson() : null);
-                model.setZipFile(getZip(currentSedexFolder));
-                return true;
+    public boolean setDataFromFile(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder) {
+        if(message != null){
+            try {
+                Message messageToTreat = (Message) message;
+                model = new GFSedexModel();
+                HeaderType header = messageToTreat.getHeader();
+                if (header != null) {
+                    model.setMessageId(header.getMessageId());
+                    model.setMessageSubject(header.getSubject());
+                    model.setMessageDate(header.getMessageDate().toGregorianCalendar().toZonedDateTime().toLocalDate());
+                    setAttachements(currentSimpleMessage.attachments);
+                    setBeneficiaireData(messageToTreat.getContent() != null ? messageToTreat.getContent().getInsuredPerson() : null);
+                    model.setZipFile(getZip(currentSedexFolder));
+                    return true;
+                }
+            }catch(ClassCastException e){
+                LOG.error("Erreur de type de message.", e);
             }
         }
         return false;
