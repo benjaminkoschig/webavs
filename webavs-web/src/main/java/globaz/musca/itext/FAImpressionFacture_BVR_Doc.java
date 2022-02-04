@@ -747,6 +747,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             qrFacture.setSession(getSession());
 
             qrFacture.setQrNeutre(APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture().getIdTypeFacture()));
+            qrFacture.setMontantMinimeOuMontantReporter(this.isFactureAvecMontantMinime() || this.isFactureMontantReport());
 
             // Initialisation des variables du document
             initVariableQR(currentDataSource.getEnteteFacture().getISOLangueTiers());

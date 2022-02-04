@@ -558,6 +558,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     qrFacture.setSession(getSession());
 
                     qrFacture.setQrNeutre(APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(sectionCourante.getSection().getIdTypeSection()));
+                    qrFacture.setMontantMinimeOuMontantReporter(this.isFactureAvecMontantMinime() || this.isFactureMontantReport());
 
                     // Initialisation des variables du document
                     initVariableQR(compteAnnexe.getTiers().getLangueISO(), new FWCurrency(_getMontantApresCompensation()), sectionCourante.getSection().getCompteAnnexe().getIdTiers());

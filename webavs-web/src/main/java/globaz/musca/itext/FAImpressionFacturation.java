@@ -359,7 +359,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
                 }
 
             }
-            qrFacture.genererReferenceQRFact(currentDataSource.getEnteteFacture(), isFactureAvecMontantMinime(), reporterMontant);
+            qrFacture.genererReferenceQRFact(currentDataSource.getEnteteFacture());
 
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée

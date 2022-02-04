@@ -615,6 +615,7 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             qrFacture.setSession(getSession());
 
             qrFacture.setQrNeutre(APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture().getIdTypeFacture()));
+            qrFacture.setMontantMinimeOuMontantReporter(this.isFactureAvecMontantMinime() || this.isFactureMontantReport());
 
             // Initialisation des variables du document
             initVariableQR(newCurrentDataSource.getEnteteFacture().getISOLangueTiers());
@@ -760,10 +761,8 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     /**
      * Méthode d'initialisation du processus de génération/impression des document
      * 
-     * @param session
-     *            La session en cours
-     * @throws Exception
-     *             Levée en cas de problème dans la récupération de l'instance application <code>FAApplication</code>
+     * @param session La session en cours
+     * @throws Exception Levée en cas de problème dans la récupération de l'instance application <code>FAApplication</code>
      *             via la session
      */
     private void init(BSession session) throws Exception {
@@ -960,8 +959,7 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     /**
      * Sets the newCurrentDataSource.getEnteteFacture()List.
      * 
-     * @param entityList
-     *            .getEnteteFacture()List The newCurrentDataSource.getEnteteFacture()List to set
+     * @param entityList .getEnteteFacture()List The newCurrentDataSource.getEnteteFacture()List to set
      */
     @Override
     public void setEntityList(ArrayList entityList) {

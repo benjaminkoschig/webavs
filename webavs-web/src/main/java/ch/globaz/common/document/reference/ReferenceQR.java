@@ -99,6 +99,7 @@ public class ReferenceQR extends AbstractReference {
 
     // Boolean qui permet d'activer un QR Neutre
     private boolean qrNeutre = false;
+    private boolean montantMinimeOuMontantReporter = false;
 
     private Map<String, String> parameters = new HashMap<>();
 
@@ -187,7 +188,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant.
         if (!qrNeutre) {
-            if (new Montant(montant).isNegative()) {
+            if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
@@ -260,7 +261,7 @@ public class ReferenceQR extends AbstractReference {
         // Dans le cadre d'un bulletin neutre, on ne renseigne pas de montant.
         if (qrNeutre) {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
-        } else if (new Montant(montant).isNegative()) {
+        } else if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter) {
             builder.append("0.00").append(CHAR_FIN_LIGNE);
         } else {
             builder.append(montant).append(CHAR_FIN_LIGNE);
@@ -331,7 +332,7 @@ public class ReferenceQR extends AbstractReference {
 
         genererReference(refQR, montant);
 
-        if (StringUtils.isEmpty(reference)) {
+        if (StringUtils.isEmpty(reference) || montantMinimeOuMontantReporter) {
             setReference(REFERENCE_NON_FACTURABLE);
             this.typeReference = SANS_REF;
         } else {
@@ -365,7 +366,7 @@ public class ReferenceQR extends AbstractReference {
      *
      * @param enteteFacture l'entête facture
      */
-    public void genererReferenceQRFact(FAEnteteFacture enteteFacture, boolean isFactureAvecMontantMinime, boolean isFactureMontantReport) throws Exception {
+    public void genererReferenceQRFact(FAEnteteFacture enteteFacture) throws Exception {
         String refQR = genererNumReference(enteteFacture.getIdRole(), enteteFacture.getIdExterneRole(), false,
                 JadeStringUtil.rightJustifyInteger(enteteFacture.getIdTypeFacture(), 2), enteteFacture.getIdExterneFacture(), null);
 
@@ -377,7 +378,7 @@ public class ReferenceQR extends AbstractReference {
             bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), refQR, getNoAdherent());
         }
 
-        if (!(new FWCurrency(enteteFacture.getTotalFacture()).isZero() || isFactureAvecMontantMinime || isFactureMontantReport)
+        if (!(new FWCurrency(enteteFacture.getTotalFacture()).isZero() || montantMinimeOuMontantReporter)
                 && (bvr != null)) {
             if (!enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
                 setReference(bvr.get_ligneReference());
@@ -960,4 +961,9 @@ public class ReferenceQR extends AbstractReference {
     public String getWorkApplicationPath() {
         return getRootApplicationPath() + "work/";
     }
+
+    public void setMontantMinimeOuMontantReporter(boolean factureAvecMontantMinime) {
+        this.montantMinimeOuMontantReporter = factureAvecMontantMinime;
+    }
+
 }
