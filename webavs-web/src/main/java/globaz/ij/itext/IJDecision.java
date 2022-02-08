@@ -821,7 +821,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             buffer.append(document.getTextes(5).getTexte(1).getDescription());
             // Ajout remarque pour personne salariée de moins de 18 l'année du prononcé pour FPI.
             // (art. 3 al. S LAVS), personne ne payant pas de cotisation.
-            if(!Dates.isAnneeMajeur(prononce.getDatePrononce(), tiers.getDateNaissance())) {
+            if(!Dates.isAnneeMajeur(prononce.getDateDebutPrononce(), tiers.getDateNaissance())) {
                 buffer.append(document.getTextes(5).getTexte(2).getDescription());
                 buffer.append("\n\n");
             }
