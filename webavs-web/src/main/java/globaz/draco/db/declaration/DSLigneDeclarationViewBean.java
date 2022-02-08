@@ -988,7 +988,11 @@ public class DSLigneDeclarationViewBean extends BEntity {
     }
 
     public String getMontantForfaitaire() {
-        return JANumberFormatter.fmt(montantForfaitaire.toString(), true, true, true, 2);
+        if (JadeStringUtil.isDecimalEmpty(montantDeclaration)) {
+            return "0.00";
+        } else {
+            return JANumberFormatter.fmt(montantDeclaration.toString(), true, true, true, 2);
+        }
     }
 
     /**
