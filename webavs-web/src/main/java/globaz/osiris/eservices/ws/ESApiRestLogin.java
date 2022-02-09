@@ -1,15 +1,12 @@
 package globaz.osiris.eservices.ws;
 
-import globaz.osiris.eservices.service.ESService;
-import globaz.osiris.eservices.dto.req.ESLoginREQ;
+import globaz.osiris.eservices.service.ESLoginService;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.function.Function;
 
 @Slf4j
 @Path("/es/login")
@@ -17,27 +14,34 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ESApiRestLogin {
 
-    private final ESService service;
+    private final ESLoginService esLoginService;
 
     public ESApiRestLogin() {
-        service = new ESService();
+        esLoginService = new ESLoginService();
     }
 
     /**
      * Web Service exposé pour récupérer un token utilisé dans le cadre des eServices Ferciam.
      *
-     * @param dto json mappé en objet qui contient le username et password pour lequel on veut générer un token
-     * @return token String d'identification
+     * @param authorization HTTP Basic Authentification qui contient le username:password pour lequel on veut générer un token
+     * @return token d'identification
      */
     @POST
     @Path(value = "/get_token")
-    public Response getToken(ESLoginREQ dto) {
+    public Response getToken(@HeaderParam("authorization") String authorization) {
         LOG.info("get_token");
-        return execute(service.getToken(dto));
+        return execute(authorization, esLoginService::getToken);
     }
 
-    private Response execute(String token) {
-        return Response.ok(token).build();
+    /**
+     * Execution de l'action du Webservice et création de la réponse.
+     *
+     * @param authorization header d'identification
+     * @param function méthode d'exécution à appeler
+     * @return Response
+     */
+    private <T, R> Response execute(T authorization, Function<T, R> function) {
+        return Response.ok(function.apply(authorization)).build();
     }
 
 }

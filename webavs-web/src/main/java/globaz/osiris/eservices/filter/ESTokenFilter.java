@@ -1,7 +1,7 @@
 package globaz.osiris.eservices.filter;
 
-import globaz.corvus.application.REApplication;
-import globaz.osiris.eservices.token.ESTokenServiceImpl;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.eservices.service.ESTokenServiceImpl;
 import globaz.osiris.eservices.ws.ESApiRestRetrieve;
 import globaz.prestation.acor.web.ws.TokenService;
 import globaz.prestation.acor.web.ws.TokenFilterAbstract;
@@ -19,7 +19,7 @@ public class ESTokenFilter extends TokenFilterAbstract {
 
     @Override
     public String getApplicationId() {
-        return REApplication.DEFAULT_APPLICATION_CORVUS;
+        return CAApplication.DEFAULT_APPLICATION_OSIRIS;
     }
 
     @Override

@@ -1,6 +1,5 @@
 ###
 #Test HttpRequestESApiRestLogin get_token
 POST {{domain}}/{{root}}/api/es/login/get_token
+authorization: Basic {{authorization}}
 Content-Type: application/json
-
-< ./ESLoginREQ.json

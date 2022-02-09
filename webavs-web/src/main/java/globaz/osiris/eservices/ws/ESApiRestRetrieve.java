@@ -1,18 +1,16 @@
 package globaz.osiris.eservices.ws;
 
-import globaz.osiris.eservices.dto.req.ESExtraitCompteREQ;
-import globaz.osiris.eservices.dto.req.ESInfoFacturationREQ;
-import globaz.osiris.eservices.dto.resp.ESExtraitCompteRESP;
-import globaz.osiris.eservices.dto.resp.ESInfoFacturationRESP;
-import globaz.osiris.eservices.service.ESService;
-import globaz.osiris.eservices.token.ESTokenImpl;
-import globaz.osiris.eservices.token.ESTokenServiceImpl;
+import globaz.osiris.eservices.dto.ESExtraitCompteDTO;
+import globaz.osiris.eservices.dto.ESInfoFacturationDTO;
+import globaz.osiris.eservices.exceptions.ESBadRequestException;
+import globaz.osiris.eservices.service.ESRetrieveService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 @Slf4j
 @Path("/es/retrieve")
@@ -20,10 +18,10 @@ import java.util.function.BiConsumer;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ESApiRestRetrieve {
 
-    private final ESService service;
+    private final ESRetrieveService service;
 
     public ESApiRestRetrieve() {
-        service = new ESService();
+        service = new ESRetrieveService();
     }
 
     /**
@@ -36,11 +34,9 @@ public class ESApiRestRetrieve {
      */
     @POST
     @Path(value = "get_extrait_compte")
-    public Response getExtraitCompte(@HeaderParam("authorization") String token, ESExtraitCompteREQ dto) {
+    public Response getExtraitCompte(@HeaderParam("authorization") String token, ESExtraitCompteDTO dto) {
         LOG.info("get_extrait_compte");
-        ESTokenImpl esToken = ESTokenServiceImpl.getInstance().convertToken(token);
-        ESExtraitCompteRESP response = service.getExtraitCompte(dto, esToken);
-        return Response.ok(response).build();
+        return execute(token, dto, service::getExtraitCompte, dto::isValid);
     }
 
     /**
@@ -53,17 +49,27 @@ public class ESApiRestRetrieve {
      */
     @POST
     @Path(value = "get_info_facturation")
-    public Response getInfoFacturation(@HeaderParam("authorization") String token, ESInfoFacturationREQ dto) {
+    public Response getInfoFacturation(@HeaderParam("authorization") String token, ESInfoFacturationDTO dto) {
         LOG.info("get_info_facturation");
-        ESTokenImpl esToken = ESTokenServiceImpl.getInstance().convertToken(token);
-        ESInfoFacturationRESP response = service.getInfoFacturation(dto, esToken);
-        return Response.ok(response).build();
+        return execute(token, dto, service::getInfoFacturation, dto::isValid);
     }
 
-    private <T> Response execute(String token, T object, BiConsumer<T, ESTokenImpl> consumer) {
-        ESTokenImpl esToken = ESTokenServiceImpl.getInstance().convertToken(token);
-        consumer.accept(object, esToken);
-        return Response.ok("{}").build();
+    /**
+     * Execution de l'action du Webservice, exécution de la validation et création de la réponse.
+     *
+     * @param token header d'identification
+     * @param dto json mappé en objet qui contient des informations sur les informations voulue par la requête
+     * @param function méthode d'exécution à appeler
+     * @param isValid méthode de validation à appeler
+     * @return Response
+     */
+    private <T, U, R> Response execute(U token, T dto, BiFunction<T, U, R> function, Supplier<Boolean> isValid) {
+
+        if (!isValid.get()) {
+             throw new ESBadRequestException("Requête invalide");
+        }
+
+        return Response.ok(function.apply(dto, token)).header("authorization", token).build();
     }
 
 }

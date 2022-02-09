@@ -86,7 +86,9 @@ public abstract class TokenServiceAbstract<T extends Token> implements TokenServ
 
         token.setLangue(jws.getBody().get(LANGUE).toString());
         token.setEmail(jws.getBody().get(EMAIL).toString());
-        token.setUserId(jws.getBody().get(USER_ID).toString());
+        if (token.getUserId() == null) {
+            token.setUserId(jws.getBody().get(USER_ID).toString());
+        }
 
         return token;
     }
@@ -104,11 +106,21 @@ public abstract class TokenServiceAbstract<T extends Token> implements TokenServ
     }
 
     protected static String encrypt(String value) {
-        JadeEncrypter encrypter = JadeEncrypterLocator.getInstance().getAdapter(JadeDefaultEncrypters.JADE_DEFAULT_ENCRYPTER);
         try {
+            JadeEncrypter encrypter = JadeEncrypterLocator.getInstance().getAdapter(JadeDefaultEncrypters.JADE_DEFAULT_ENCRYPTER);
             return encrypter.encrypt(value);
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de l'encryptage d'une valeur dans le token!", e);
+        }
+        return null;
+    }
+
+    protected static String decrypt(String value) {
+        try {
+            JadeEncrypter decrypter = JadeEncrypterLocator.getInstance().getAdapter(JadeDefaultEncrypters.JADE_DEFAULT_ENCRYPTER);
+            return decrypter.decrypt(value);
+        } catch (Exception e) {
+            LOG.error("Une erreur s'est produite lors du décryptage d'une valeur dans le token!", e);
         }
         return null;
     }

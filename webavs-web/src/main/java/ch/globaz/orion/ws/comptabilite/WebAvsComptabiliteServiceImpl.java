@@ -164,7 +164,7 @@ public class WebAvsComptabiliteServiceImpl implements WebAvsComptabiliteService 
         return processImpressionExtraitCompteAnnexe.getDocLocation();
     }
 
-    public String genererExtraitCompteAnnexe(String operation, String tri, String section, String idCompteAnnexe, String dateDebut, String dateFin, String langue) {
+    public String genererExtraitCompteAnnexe(String operation, String selectionTris, String selectionSections, String idCompteAnnexe, String noAffilie, String dateDebut, String dateFin, String documentDate, String langue) {
         if (JadeStringUtil.isEmpty(idCompteAnnexe)) {
             throw new IllegalArgumentException("idCompteAnnexe is null or empty");
         }
@@ -181,13 +181,17 @@ public class WebAvsComptabiliteServiceImpl implements WebAvsComptabiliteService 
             processImpressionExtraitCompteAnnexe = new CAProcessImpressionExtraitCompteAnnexe();
             processImpressionExtraitCompteAnnexe.setEbusinessMode(false);
             processImpressionExtraitCompteAnnexe.setForIdCompteAnnexe(idCompteAnnexe);
+            processImpressionExtraitCompteAnnexe.setFromNoAffilie(noAffilie);
+            processImpressionExtraitCompteAnnexe.setUntilNoAffilie(noAffilie);
             processImpressionExtraitCompteAnnexe.setFromDate(dateDebut);
             processImpressionExtraitCompteAnnexe.setUntilDate(dateFin);
             processImpressionExtraitCompteAnnexe.setForIdTypeOperation(operation);
-            processImpressionExtraitCompteAnnexe.setForSelectionTri(tri);
-            processImpressionExtraitCompteAnnexe.setForSelectionSections(section);
+            processImpressionExtraitCompteAnnexe.setForSelectionTri(selectionTris);
+            processImpressionExtraitCompteAnnexe.setForSelectionSections(selectionSections);
             processImpressionExtraitCompteAnnexe.setPrintLanguageFromScreen(langue.toUpperCase());
+            processImpressionExtraitCompteAnnexe.setDocumentDate(documentDate);
             processImpressionExtraitCompteAnnexe.executeProcess();
+            processImpressionExtraitCompteAnnexe.initDocLocationAndSetSendCompletionMailToFalse();
             return processImpressionExtraitCompteAnnexe.getDocLocation();
         } catch (Exception e) {
             JadeLogger.error("Unabled to generate file extraitCompte for idCompteAnnexe : " + idCompteAnnexe, e);

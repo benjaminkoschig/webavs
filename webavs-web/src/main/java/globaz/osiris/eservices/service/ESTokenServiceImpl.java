@@ -1,6 +1,7 @@
-package globaz.osiris.eservices.token;
+package globaz.osiris.eservices.service;
 
 import ch.globaz.common.properties.CommonProperties;
+import globaz.osiris.eservices.token.ESTokenImpl;
 import globaz.osiris.eservices.ws.ESApiRestLogin;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
@@ -18,7 +19,7 @@ public class ESTokenServiceImpl extends TokenServiceAbstract<ESTokenImpl> {
 
     private static final ESTokenServiceImpl INSTANCE = new ESTokenServiceImpl();
     private static final String API_PATH = createApiPath(ESApiRestLogin.class);
-    private static Integer TOKEN_DURATION = CommonProperties.ACOR_TOKEN_DURATION.getIntegerWithDefaultValue(1);
+    private static Integer TOKEN_DURATION = CommonProperties.ES_TOKEN_DURATION.getIntegerWithDefaultValue(1);
     private static final String LOGIN_URL = API_PATH + "/get_token";
 
     public static ESTokenServiceImpl getInstance() {
@@ -48,6 +49,7 @@ public class ESTokenServiceImpl extends TokenServiceAbstract<ESTokenImpl> {
             token.setDateDemande(jws.getBody().get("dateDemande").toString());
             token.setTimeDemande(jws.getBody().get("timeDemande").toString());
             token.setTimeStampGedo(jws.getBody().get("timeStampGedo").toString());
+            token.setUserId(decrypt(jws.getBody().get(USER_ID).toString()));
             return token;
         }
         return null;

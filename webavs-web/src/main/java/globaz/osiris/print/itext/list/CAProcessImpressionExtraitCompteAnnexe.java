@@ -159,14 +159,7 @@ public class CAProcessImpressionExtraitCompteAnnexe extends BProcess {
             if (ebusinessMode) {
                 buildDocumentForEbusiness();
                 exportDocument();
-                List<JadePublishDocument> listAttachedDocs = getAttachedDocuments();
-                if (listAttachedDocs.size() <= 0) {
-                    throw new Exception("Aucun document n'a été généré");
-                } else {
-                    JadePublishDocument doc = listAttachedDocs.get(0);
-                    docLocation = doc.getDocumentLocation();
-                    setSendCompletionMail(false);
-                }
+                initDocLocationAndSetSendCompletionMailToFalse();
             } else {
                 buildDocument();
                 exportDocument();
@@ -182,6 +175,17 @@ public class CAProcessImpressionExtraitCompteAnnexe extends BProcess {
             JadeLogger.error(this, e);
             getMemoryLog().logMessage(e.getMessage(), FWMessage.FATAL, this.getClass().getName());
             return false;
+        }
+    }
+
+    public void initDocLocationAndSetSendCompletionMailToFalse() throws Exception {
+        List<JadePublishDocument> listAttachedDocs = getAttachedDocuments();
+        if (listAttachedDocs.size() <= 0) {
+            throw new Exception("Aucun document n'a été généré");
+        } else {
+            JadePublishDocument doc = listAttachedDocs.get(0);
+            docLocation = doc.getDocumentLocation();
+            setSendCompletionMail(false);
         }
     }
 
