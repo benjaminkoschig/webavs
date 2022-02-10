@@ -1,13 +1,9 @@
 package globaz.ij.itext;
 
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.util.Dates;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
-import globaz.babel.api.doc.ICTScalableDocument;
-import globaz.babel.api.doc.ICTScalableDocumentCopie;
-import globaz.babel.utils.CTTiersUtils;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
@@ -28,8 +24,8 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.ij.api.codesystem.IIJCatalogueTexte;
-import globaz.ij.api.prestations.IIJIJCalculee;
 import globaz.ij.api.prestations.IIJPrestation;
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.lots.IJFactureACompenser;
 import globaz.ij.db.lots.IJFactureACompenserManager;
@@ -67,6 +63,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.CommonProperties;
+
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -97,12 +94,17 @@ public class IJDecomptes extends FWIDocumentManager {
         private final String idTiers;
         private Map<String, List<IJRepartitionJointPrestation>> repartitionsEnfants;
         private final Set<IJRepartitionJointPrestation> repartitionsPeres = new HashSet<IJRepartitionJointPrestation>();
+        private String typeIJ;
+        private String dateDebut;
         private final PRDemande demande;
 
         public Decompte(PRDemande demande, IJRepartitionJointPrestation repartition) throws Exception {
             idTiers = repartition.getIdTiers();
             idAffilie = repartition.getIdAffilie();
             employeur = repartition.isBeneficiaireEmployeur();
+            typeIJ = repartition.getCsTypeIJ();
+            dateDebut = repartition.getDateDebutPrestation();
+
             this.demande = demande;
 
             if (employeur) {
@@ -191,6 +193,14 @@ public class IJDecomptes extends FWIDocumentManager {
         public PRDemande getDemande() {
             return demande;
         }
+
+        public String getTypeIJ() {
+            return typeIJ;
+        }
+
+        public String getDateDebut() {
+            return dateDebut;
+        }
     }
 
     private static final String FICHIER_MODELE = "IJ_DECOMPTE";
@@ -228,7 +238,7 @@ public class IJDecomptes extends FWIDocumentManager {
     private int state = IJDecomptes.STATE_DEBUT;
     protected Boolean isCopie;
     protected boolean isEntete = false;
-
+    protected PRTiersWrapper tierAdresse;
 
 
     public IJDecomptes() throws FWIException {
@@ -331,11 +341,13 @@ public class IJDecomptes extends FWIDocumentManager {
             docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_IJ_TITLE"));
             docInfo.setDocumentDate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(getDate().toStrAMJ()));
 
-            if (getIsSendToGED().booleanValue()) {
+            if (getIsSendToGED().booleanValue() && pasEntetePourCopie()) {
                 docInfo.setArchiveDocument(true);
             } else {
                 docInfo.setArchiveDocument(false);
             }
+
+            String idTiers = decompteCourant.getIdTiers();
 
             IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getTransaction(),
                     decompteCourant.getIdAffilie(), decompteCourant.getIdTiers());
@@ -355,7 +367,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 if (affilie != null) {
                     // Employeur affilié --> rôle AFFILIE
                     rolePourLaGed = ITIRole.CS_AFFILIE;
-                    idTiersPourLaGED = decompteCourant.getIdTiers();
+                    idTiersPourLaGED = idTiers;
                     noAffiliePourLaGED = affilie.getNumAffilie();
                 } else {
                     // Employeur non affilié --> rôle NON_AFFILIE
@@ -363,10 +375,12 @@ public class IJDecomptes extends FWIDocumentManager {
 
                     // Pour la CICICAM, on va rechercher le premier assuré dans ce décompte si employeur non affilié
                     if (isCaisse(IJApplication.NO_CAISSE_CICICAM)) {
-                        tiers = PRTiersHelper.getTiersParId(getSession(), decompteCourant.getIdTiers());
+                        tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
                         idTiersPourLaGED = chercherIdTiersPourLigneTechinqueVersementATier(tiers);
+                    } else if(isCopie && IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ())) {
+                        idTiersPourLaGED = decompteCourant.getDemande().getIdTiers();
                     } else {
-                        idTiersPourLaGED = decompteCourant.getIdTiers();
+                        idTiersPourLaGED = idTiers;
                     }
                 }
             } else { // ASSURÉ
@@ -385,11 +399,11 @@ public class IJDecomptes extends FWIDocumentManager {
                     docInfo.setDocumentType(docInfo.getDocumentType() + "Aff");
                     docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_IJ);
 
-                    tiers = PRTiersHelper.getTiersParId(getSession(), decompteCourant.getIdTiers());
+                    tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
 
                     if (affilie != null) {
 
-                        idTiersPourLaGED = decompteCourant.getIdTiers();
+                        idTiersPourLaGED = idTiers;
 
                         if (!JadeStringUtil.isBlank(affilie.getNumAffilie())) {
                             noAffiliePourLaGED = affilie.getNumAffilie();
@@ -425,7 +439,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 TIDocumentInfoHelper.fill(docInfo, idTiersPourLaGED, getSession(), rolePourLaGed, noAffiliePourLaGED,
                         affilieFormatter.unformat(noAffiliePourLaGED));
 
-                if (getIsSendToGED().booleanValue()) {
+                if (getIsSendToGED().booleanValue() && pasEntetePourCopie()) {
                     // création / mise à jour du dossier GroupDoc
                     GroupdocPropagateUtil.propagateData(affilie, tiers, null);
                 }
@@ -467,6 +481,10 @@ public class IJDecomptes extends FWIDocumentManager {
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         }
+    }
+
+    private boolean pasEntetePourCopie() {
+        return !isCopie || isEntete;
     }
 
     private boolean isNssForcePasAZero() throws Exception, PropertiesException {
@@ -765,23 +783,25 @@ public class IJDecomptes extends FWIDocumentManager {
                 throw new FWIException("Impossible de charger le pied de page", e);
             }
 
-            if (!decompteCourant.getDemande().getIdTiers().equals(decompteCourant.getIdTiers())) {
+            if(IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ()) && state != IJDecomptes.STATE_VENTILATION) {
+                if (!decompteCourant.getDemande().getIdTiers().equals(decompteCourant.getIdTiers())) {
 
-                parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
+                    parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
 
-                TITiers tiTierCopie = new TITiers();
-                tiTierCopie.setSession(getSession());
-                tiTierCopie.setIdTiers(decompteCourant.getDemande().getIdTiers());
-                tiTierCopie.retrieve();
+                    TITiers tiTierCopie = new TITiers();
+                    tiTierCopie.setSession(getSession());
+                    tiTierCopie.setIdTiers(decompteCourant.getDemande().getIdTiers());
+                    tiTierCopie.retrieve();
 
-                String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
-                        IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
-                        new PRTiersAdresseCopyFormater04());
+                    String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
+                            IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
+                            new PRTiersAdresseCopyFormater04());
 
-                copie += "\n";
-                parametres.put("P_COPIE_A2", copie);
-            } else {
-                findCopieEmployeur(parametres);
+                    copie += "\n";
+                    parametres.put("P_COPIE_A2", copie);
+                } else {
+                    findCopieEmployeur(parametres);
+                }
             }
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, IJDecomptes.class.getSimpleName());
@@ -790,7 +810,6 @@ public class IJDecomptes extends FWIDocumentManager {
     }
 
     protected List<String> findEmployeur() throws Exception {
-
         List<String> listIdPronce = decompteCourant.getRepartitionsPeres().stream()
                 .map(IJRepartitionJointPrestation::getIdPrononce)
                 .distinct()
@@ -800,6 +819,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
             IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
             agentMgr.setSession((BSession) getSession());
+            agentMgr.setFromDateDebut(decompteCourant.getDateDebut());
             agentMgr.setForIdPrononce(idPrononce);
 
             agentMgr.find(BManager.SIZE_NOLIMIT);
@@ -810,6 +830,7 @@ public class IJDecomptes extends FWIDocumentManager {
                     .distinct()
                     .collect(Collectors.toList());
         }
+
         return Collections.emptyList();
     }
 
@@ -2168,9 +2189,16 @@ public class IJDecomptes extends FWIDocumentManager {
             if (hasNext) {
 
                 // on charge le document courant
-                if(!isCopie || isEntete) {
-                decompteCourant = iterateurDecomptes.next();
-            }
+                    if(!isCopie || isEntete) {
+                    decompteCourant = iterateurDecomptes.next();
+                }
+                if(isCopie && isEntete) {
+                    if(state == IJDecomptes.STATE_VENTILATION) {
+                        hasNext = false;
+                    } else {
+                        hasNext = controlCopie();
+                    }
+                }
             }
 
             return hasNext;
@@ -2180,6 +2208,40 @@ public class IJDecomptes extends FWIDocumentManager {
 
             return false;
         }
+    }
+
+    private boolean controlCopie() throws Exception {
+        if(!loadAdresse()) {
+            while(iterateurDecomptes.hasNext()) {
+                decompteCourant = iterateurDecomptes.next();
+                if(loadAdresse() ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private boolean loadAdresse() throws Exception {
+        // par défaut copie à l'assuré si paiement à l'employeur
+        String idTiers = decompteCourant.getDemande().getIdTiers();
+        if (idTiers.equals(decompteCourant.getIdTiers())) {
+            // le décompte est à l'assuré donc la copie à l'employeur
+            List<String> idEmployeur = findEmployeur();
+            if (idEmployeur.isEmpty()) {
+                return false;
+            }
+            idTiers = idEmployeur.get(0);
+        }
+        tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), idTiers);
+        if (tierAdresse == null) {
+            tierAdresse = PRTiersHelper.getAdministrationParId(getSession(), idTiers);
+        }
+        if (tierAdresse == null) {
+            return false;
+        }
+        return true;
     }
 
     /** passe a l'etat suivant. */

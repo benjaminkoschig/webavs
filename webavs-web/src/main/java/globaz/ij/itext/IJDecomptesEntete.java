@@ -40,7 +40,6 @@ public class IJDecomptesEntete extends IJDecomptes {
     private int nbTrue = 0;
     private String noOfficeAI = "";
     private String specificHeader = "";
-    private PRTiersWrapper tierAdresse;
 
     public IJDecomptesEntete() throws FWIException {
         super();
@@ -70,18 +69,6 @@ public class IJDecomptesEntete extends IJDecomptes {
             try {
 
                 try {
-                    if(decompteCourant.isEmployeur()) {
-                        tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), getDemandeDecompteCourant().getIdTiers());
-                    } else {
-                        List<String> idEmployeur = findEmployeur();
-                        if(idEmployeur.isEmpty()) {
-                            return;
-                        }
-                        tierAdresse = PRTiersHelper.getTiersAdresseParId(getSession(), idEmployeur.get(0));
-                    }
-
-
-
                     // le modele
                     String extensionModelCaisse = getSession().getApplication()
                             .getProperty("extensionModelITextCaisse");

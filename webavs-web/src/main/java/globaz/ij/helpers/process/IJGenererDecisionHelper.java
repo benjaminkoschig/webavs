@@ -15,13 +15,8 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.ij.api.prononces.IIJPrononce;
-import globaz.ij.db.decisions.IJAnnexeDecision;
-import globaz.ij.db.decisions.IJAnnexeDecisionManager;
-import globaz.ij.db.decisions.IJCopieDecision;
-import globaz.ij.db.decisions.IJCopieDecisionManager;
-import globaz.ij.db.decisions.IJDecisionIJAI;
+import globaz.ij.db.decisions.*;
 import globaz.ij.db.prononces.*;
-import globaz.ij.itext.IJDecision;
 import globaz.ij.vb.process.IJDecisionIJAIViewBean;
 import globaz.ij.vb.process.IJGenererDecisionViewBean;
 import globaz.jade.client.util.JadeStringUtil;
@@ -496,7 +491,7 @@ public class IJGenererDecisionHelper extends FWHelper {
     }
 
     private void addCopieEmployeurs(BSession session, IJGenererDecisionViewBean vb, CTScalableDocumentFactory factory) throws Exception {
-        if(!IIJPrononce.CS_GRANDE_IJ.equals(vb.getCsTypePrononce())) {
+        if(IIJPrononce.CS_FPI.equals(vb.getCsTypePrononce())) {
             IJMesureJointAgentExecutionManager agentMgr = new IJMesureJointAgentExecutionManager();
             agentMgr.setSession((BSession) session);
             agentMgr.setForIdPrononce(vb.getIdPrononce());
