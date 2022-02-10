@@ -975,7 +975,11 @@ public class DSLigneDeclarationViewBean extends BEntity {
     }
 
     public String getMontantDeclaration() {
+        if (JadeStringUtil.isDecimalEmpty(montantDeclaration)) {
+            return "0.00";
+        } else {
         return JANumberFormatter.fmt(montantDeclaration.toString(), true, true, true, 2);
+    }
     }
 
     /**z
@@ -988,11 +992,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
     }
 
     public String getMontantForfaitaire() {
-        if (JadeStringUtil.isDecimalEmpty(montantDeclaration)) {
-            return "0.00";
-        } else {
-            return JANumberFormatter.fmt(montantDeclaration.toString(), true, true, true, 2);
-        }
+        return JANumberFormatter.fmt(montantForfaitaire.toString(), true, true, true, 2);
     }
 
     /**
