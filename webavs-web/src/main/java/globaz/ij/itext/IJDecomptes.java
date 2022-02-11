@@ -352,6 +352,10 @@ public class IJDecomptes extends FWIDocumentManager {
             IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getTransaction(),
                     decompteCourant.getIdAffilie(), decompteCourant.getIdTiers());
 
+            if(!isCopie && IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ())) {
+                affilie = rechercheAffilierAgentExecution(decompteCourant.getIdTiers());
+            }
+
             PRTiersWrapper tiers = null;
 
             String rolePourLaGed = "";
@@ -481,6 +485,20 @@ public class IJDecomptes extends FWIDocumentManager {
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         }
+    }
+
+    private IPRAffilie rechercheAffilierAgentExecution(String idTiers) throws Exception {
+        String idAffilie = null;
+
+        Vector<String[]> aff = PRAffiliationHelper.getAffiliationsTiers(getSession(), idTiers);
+        if (aff != null && aff.size() > 0) {
+            idAffilie = aff.get(0)[0];
+        }
+
+        IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getTransaction(),
+                idAffilie, idTiers);
+
+        return affilie;
     }
 
     private boolean pasEntetePourCopie() {
@@ -2224,6 +2242,10 @@ public class IJDecomptes extends FWIDocumentManager {
     }
 
     private boolean loadAdresse() throws Exception {
+        if(isCopie && !IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ())) {
+            return false;
+        }
+
         // par défaut copie à l'assuré si paiement à l'employeur
         String idTiers = decompteCourant.getDemande().getIdTiers();
         if (idTiers.equals(decompteCourant.getIdTiers())) {
