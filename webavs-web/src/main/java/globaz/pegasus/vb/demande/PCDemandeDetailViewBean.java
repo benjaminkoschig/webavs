@@ -28,6 +28,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     private boolean actionRouvrirDemande = false;
     private boolean isRouvrirPossible = false;
     private boolean isOnlyRetro;
+    private boolean isDemandePurRetro;
     private boolean actionRefermerDemande = false;
     private Boolean annule = false;
     private Boolean isDateReduc = false;
@@ -186,6 +187,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     public void retrieve() throws Exception {
         demande = PegasusServiceLocator.getDemandeService().read(demande.getId());
         isOnlyRetro = SimpleDemandeChecker.isPossibleToCreateNewDeamande(demande.getDossier().getId());
+        isDemandePurRetro = SimpleDemandeChecker.isDemandePurRetro(demande);
         isRouvrirPossible = PegasusServiceLocator.getDemandeService().isDemandeReouvrable(demande);
 
         DroitMembreFamilleEtenduSearch membreSearch = new DroitMembreFamilleEtenduSearch();
@@ -238,6 +240,13 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
      */
     @Override
     public void update() throws Exception {
+         if (isDemandePurRetro == true && demande.getSimpleDemande().getIsPurRetro() == false) {
+            // Si l'on n'est pas sur une demande pur Retro, il n'y a pas de date de début ni de fin.
+            // On les enlève donc.
+            demande.getSimpleDemande().setDateDebut("");
+            demande.getSimpleDemande().setDateFin("");
+        }
+
         if (actionRouvrirDemande) {
             demande = PegasusServiceLocator.getDemandeService().rouvrir(demande);
         } else if (actionRefermerDemande) {
@@ -329,5 +338,13 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     public void setForcerCalculTransitoire(Boolean forcerCalculTransitoire) {
         demande.getSimpleDemande().setForcerCalculTransitoire(forcerCalculTransitoire);
+    }
+
+    public boolean isDemandePurRetro() {
+        return isDemandePurRetro;
+    }
+
+    public void setDemandePurRetro(boolean demandePurRetro) {
+        demande.getSimpleDemande().setIsPurRetro(demandePurRetro);
     }
 }

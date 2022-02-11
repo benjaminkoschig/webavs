@@ -539,8 +539,8 @@ function postInit(){
 					<td><label class="standardLabel" for="forIdDemande"><ct:FWLabel key="JSP_PC_DEM_R_DEMANDE_PUR_RETROACTIF"/></label></td>
 					<td><input type="checkbox" name="demande.simpleDemande.isPurRetro" 
 							    <%=viewBean.getDemande().getSimpleDemande().getIsPurRetro()?" checked='checked' ":"" %> 
-							    <%=viewBean.getIsOnlyRetro()?" readOnly  ":"" %>
-							    <%=viewBean.getIsOnlyRetro()?" disabled='disabled' ":"" %>
+							    <%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" readOnly  ":"" %>
+							    <%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" disabled='disabled' ":"" %>
 								id="forPurRetro" value="on" 
 									data-g-commutator="condition:($(this).prop('checked')),
                            	 							actionTrue:¦show('#forDisplayDateReto')¦,

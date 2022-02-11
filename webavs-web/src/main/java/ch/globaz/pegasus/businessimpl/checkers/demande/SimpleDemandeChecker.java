@@ -1,5 +1,9 @@
 package ch.globaz.pegasus.businessimpl.checkers.demande;
 
+import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pegasus.business.models.demande.Demande;
+import ch.globaz.pegasus.business.models.droit.DroitSearch;
+import ch.globaz.pegasus.process.adaptation.PCAdaptationUtils;
 import globaz.corvus.api.lots.IRELot;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -26,7 +30,9 @@ import ch.globaz.pegasus.business.models.lot.SimplePrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
 
     public static void checkForCreate(SimpleDemande demande) throws DemandeException, DossierException,
@@ -263,4 +269,85 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
             throw new DemandeException("Unable to check simpleDemande for checkSuperpositionPeriode", e);
         }
     }
+
+    /**
+     *
+     * @param demande
+     * @return
+     * @throws DemandeException
+     */
+    public static boolean isDemandePurRetro(Demande demande) throws DemandeException {
+        boolean isPurRetro = false;
+
+        Droit currentDroit = getDroitByIdDemande(demande.getId());
+
+        if (currentDroit!=null && isVersionDroitUn(currentDroit) && droitIsNonValide(currentDroit) && demandeIsEnAttenteCalculOrEnAttenteJustificatifs(demande.getDossier().getId())){
+            isPurRetro = true;
+        }
+
+        return isPurRetro;
+    }
+
+    private static Droit getDroitByIdDemande(String idDemande) {
+        try {
+            DroitSearch droitSearch = PCAdaptationUtils.findTheCurrentDroit(idDemande);
+            if (droitSearch.getSearchResults().length == 0) {
+                // Aucun droit trouvé, retourner false
+                return null;
+            } else {
+                Droit currentDroit = (Droit) droitSearch.getSearchResults()[0];
+                return currentDroit;
+            }
+        } catch (DroitException e) {
+            LOG.error("SimpleDemandeChecker#getDroitByIdDemande - Erreur à la lecture du droit, la demande ne pourra pas être traité en \"purement rétrocactive\"", e);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            LOG.error("SimpleDemandeChecker#getDroitByIdDemande - Erreur Application non disponible, la demande ne pourra pas être traité en \"purement rétrocactive\"", e);
+        } catch (JadePersistenceException e) {
+            LOG.error("SimpleDemandeChecker#getDroitByIdDemande - Erreur de persistence Jade, la demande ne pourra pas être traité en \"purement rétrocactive\"", e);
+        }
+        return null;
+    }
+
+
+    private static boolean isVersionDroitUn(Droit currentDroit) {
+        return "1".equals(currentDroit.getSimpleVersionDroit().getNoVersion());
+    }
+
+    /**
+     *
+     * @param currentDroit
+     * @return
+     */
+    private static boolean droitIsNonValide(Droit currentDroit) {
+       return !IPCDroits.CS_VALIDE.equals(currentDroit.getSimpleVersionDroit().getCsEtatDroit());
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     * @throws DemandeException
+     */
+    private static boolean demandeIsEnAttenteCalculOrEnAttenteJustificatifs(String id) throws DemandeException {
+        SimpleDemandeSearch search = new SimpleDemandeSearch();
+        search.setWhereKey("demandeInCsEtat");
+        List<String> inCsEtat = new ArrayList<String>();
+        inCsEtat.add(IPCDemandes.CS_EN_ATTENTE_CALCUL);
+        inCsEtat.add(IPCDemandes.CS_EN_ATTENTE_JUSTIFICATIFS);
+        search.setForCsEtatDemandeIN(inCsEtat);
+        search.setForIdDossier(id);
+        boolean exist = false;
+        try {
+            int nb = PegasusImplServiceLocator.getSimpleDemandeService().count(search);
+            if (nb > 0) {
+                exist = true;
+            }
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DemandeException("Unable to check simpleDemande for existeDemandeInVlalidEtat", e);
+        } catch (JadePersistenceException e) {
+            throw new DemandeException("Unable to check simpleDemande for existeDemandeInVlalidEtat", e);
+        }
+        return exist;
+    }
+
 }
