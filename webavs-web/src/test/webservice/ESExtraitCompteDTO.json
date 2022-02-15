@@ -1,1 +1,14 @@
-{"affiliateNumber":"XXX.XXXX", "role":"AFFILIE", "langue":"DE", "selectionSections":"all", "selectionTris":"order_by_date", "operation":"E", "startPeriod":"01.01.2022", "endPeriod":"01.02.2022", "documentDate":"01.02.2022"}
+{
+   "affiliateNumber":"XXX.XXXX",
+   "role":"AFFILIE",
+   "langue":"FR",
+   "selectionSections":"all",
+   "selectionTris":"order_by_date",
+   "operation":"E",
+   "startPeriod":"01.01.2022",
+   "endPeriod":"01.02.2022",
+   "documentDate":"01.02.2022",
+   "libre1":"",
+   "libre2":"222",
+   "libre3":""
+}

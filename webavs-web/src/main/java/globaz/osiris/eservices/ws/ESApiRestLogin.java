@@ -11,7 +11,6 @@ import java.util.function.Function;
 @Slf4j
 @Path("/es/login")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class ESApiRestLogin {
 
     private final ESLoginService esLoginService;
@@ -26,7 +25,7 @@ public class ESApiRestLogin {
      * @param authorization HTTP Basic Authentification qui contient le username:password pour lequel on veut générer un token
      * @return token d'identification
      */
-    @POST
+    @GET
     @Path(value = "/get_token")
     public Response getToken(@HeaderParam("authorization") String authorization) {
         LOG.info("get_token");

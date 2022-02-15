@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 @Data
 public class ESExtraitCompteDTO  {
+    public static final int MAX_PERIOD = 60; // max 5 ans de données autorisées;
     private String affiliateNumber;
     private String role;
     private String langue;
@@ -19,13 +20,17 @@ public class ESExtraitCompteDTO  {
     private String endPeriod; // DD.MM.YYYY
     private String documentDate; // DD.MM.YYYY
     private String document;
+    private String libre1;
+    private String libre2;
+    private String libre3;
 
     public ESExtraitCompteDTO() {
     }
 
     @JsonIgnore
     public Boolean isValid() {
-        return (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod, documentDate).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod, documentDate).allMatch(JadeDateUtil::isGlobazDate))
-            || (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate));
+        return ((Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod, documentDate).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod, documentDate).allMatch(JadeDateUtil::isGlobazDate))
+            || (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate)))
+            && (JadeDateUtil.getNbMonthsBetween(startPeriod, endPeriod) <= MAX_PERIOD);
     }
 }

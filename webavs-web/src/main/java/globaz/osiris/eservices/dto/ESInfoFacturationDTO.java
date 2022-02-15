@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 @Data
 public class ESInfoFacturationDTO {
+    public static final int MAX_PERIOD = 60; // max 5 ans de données autorisées
     private String affiliateNumber;
     private String role;
     private String langue;
@@ -18,6 +19,9 @@ public class ESInfoFacturationDTO {
     private String selectionTris;
     private String startPeriod; // DD.MM.YYYY
     private String endPeriod; // DD.MM.YYYY
+    private String libre1;
+    private String libre2;
+    private String libre3;
     private List<ESInfoFacturationSectionDTO> sections = new ArrayList();
 
     public ESInfoFacturationDTO() {
@@ -26,8 +30,7 @@ public class ESInfoFacturationDTO {
     @JsonIgnore
     public Boolean isValid() {
         return (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, startPeriod, endPeriod).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate))
-            || (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, startPeriod).allMatch(Objects::nonNull) && Stream.of(startPeriod).allMatch(JadeDateUtil::isGlobazDate))
-            || (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, endPeriod).allMatch(Objects::nonNull) && Stream.of(endPeriod).allMatch(JadeDateUtil::isGlobazDate));
+            && (JadeDateUtil.getNbMonthsBetween(startPeriod, endPeriod) <= MAX_PERIOD);
     }
 
     @Data

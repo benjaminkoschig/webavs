@@ -16,7 +16,6 @@ import globaz.osiris.db.contentieux.CALigneExtraitCompte;
 import globaz.osiris.eservices.dto.ESExtraitCompteDTO;
 import globaz.osiris.eservices.dto.ESInfoFacturationDTO;
 import globaz.osiris.eservices.exceptions.ESBadRequestException;
-import globaz.osiris.print.itext.list.CAProcessImpressionExtraitCompteAnnexe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -62,6 +61,8 @@ public class ESRetrieveService {
 
             // Génération de l'extrait de compte et récupération de son emplacement
             String docLocation = webAvsComptabiliteService.genererExtraitCompteAnnexe(dto.getOperation(), dto.getSelectionTris(), dto.getSelectionSections(), ((CACompteAnnexe) compteAnnexeManager.getFirstEntity()).getIdCompteAnnexe(), dto.getAffiliateNumber(), dto.getStartPeriod(), dto.getEndPeriod(), dto.getDocumentDate(), dto.getLangue());
+
+            // Ajoute le document dans le dto de réponse
             dto.setDocument(encodeBase64(docLocation));
 
             return dto;
@@ -91,7 +92,7 @@ public class ESRetrieveService {
                 CASectionManager sectionManager = esSearchService.searchSections(caCompteAnnexe, dto.getSelectionTris(), dto.getSelectionSections(), dto.getStartPeriod(), dto.getEndPeriod(), session);
                 for (int j = 0; j < sectionManager.size(); j++) {
                     CASection caSection = (CASection) sectionManager.get(j);
-                    ESInfoFacturationDTO.ESInfoFacturationSectionDTO section = esCreationService.createSection(caSection);
+                    ESInfoFacturationDTO.ESInfoFacturationSectionDTO section = esCreationService.createSection(caSection, dto.getLangue());
 
                     // Récupération des lignes d'extraits de comptes
                     CAExtraitCompteListViewBean ligneExtraitCompteManager = esSearchService.searchLignesExtraitComptes(caSection, dto.getSelectionTris(), dto.getSelectionSections(), dto.getLangue(), session);
@@ -100,11 +101,11 @@ public class ESRetrieveService {
                         CALigneExtraitCompte caLigneExtraitCompte = (CALigneExtraitCompte) ligneExtraitCompteManager.getLigneExtraitCompte().get(k);
                         ESInfoFacturationDTO.ESInfoFacturationLigneExtraitCompteDTO ligneExtraitCompte = esCreationService.createLigneExtraitCompte(caLigneExtraitCompte, soldeCumule);
 
-                        // Ajoute la ligne d'extrait dans la section
+                        // Ajoute la ligne d'extrait dans la section dans le dto de réponse
                         section.getLigneExtraitComptes().add(ligneExtraitCompte);
                     }
 
-                    // Ajout la section dans les info facturations
+                    // Ajout la section dans le dto de réponse
                     dto.getSections().add(section);
                 }
             }

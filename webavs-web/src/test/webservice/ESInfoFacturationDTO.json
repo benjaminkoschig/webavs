@@ -1,1 +1,12 @@
-{"affiliateNumber":"XXX.XXXX", "role":"AFFILIE", "langue":"FR", "selectionSections":"all", "selectionTris":"order_by_date", "startPeriod":"01.09.2021", "endPeriod":"01.01.2022"}
+{
+   "affiliateNumber":"XXX.XXXX",
+   "role":"AFFILIE",
+   "langue":"FR",
+   "selectionSections":"all",
+   "selectionTris":"order_by_date",
+   "startPeriod":"01.09.2021",
+   "endPeriod":"01.02.2022",
+   "libre1":"",
+   "libre2":"222",
+   "libre3":""
+}

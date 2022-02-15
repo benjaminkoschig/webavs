@@ -11,10 +11,10 @@ public class ESCreationService {
     public ESCreationService() {
     }
 
-    public ESInfoFacturationDTO.ESInfoFacturationSectionDTO createSection(CASection caSection) {
+    public ESInfoFacturationDTO.ESInfoFacturationSectionDTO createSection(CASection caSection, String langue) {
         ESInfoFacturationDTO.ESInfoFacturationSectionDTO section = new ESInfoFacturationDTO().new ESInfoFacturationSectionDTO();
         section.setSectionNumber(caSection.getIdExterne());
-        section.setDescription(caSection.getDescription());
+        section.setDescription(caSection.getDescription(langue));
         section.setDate(caSection.getDateSection());
         section.setBaseAmount(caSection.getBase());
         section.setPmtCmpAmount(caSection.getPmtCmp());
