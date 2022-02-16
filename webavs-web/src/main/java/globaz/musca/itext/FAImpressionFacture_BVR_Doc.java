@@ -59,7 +59,7 @@ import java.util.*;
  * Le document imprime les zones de facture selon les paramètres suivants: _modeRecouvrement : aucun, bvr,
  * remboursement, recouvrement direct _critereDecompte : interne, positif, note de credit, decompte zéro Date de
  * création : (26.02.2003 16:54:19)
- * 
+ *
  * @author: Administrator
  */
 public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
@@ -79,7 +79,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String TEMPLATE_FILENAME = "MUSCA_BVR_1_QR";
     public final static String TEMPLATE_FILENAME_BVR_NEUTRE = "MUSCA_BVR_NEUTRE_QR";
     public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL_QR"; // Template
-    private static String TEMPLATE_NAME= "MUSCA_BVR_NEUTRE_QR"; // Par défaut
+    private static String TEMPLATE_NAME = "MUSCA_BVR_NEUTRE_QR"; // Par défaut
     private Boolean isEbusiness = false;
     public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referenceParPaireIdExterne = new LinkedHashMap();
@@ -88,11 +88,11 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         if (FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE13.equalsIgnoreCase(entFacture.getIdExterneFacture()
                 .substring(4, 6))
                 || FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE14.equalsIgnoreCase(entFacture.getIdExterneFacture()
-                        .substring(4, 6))
+                .substring(4, 6))
                 || FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE33.equalsIgnoreCase(entFacture.getIdExterneFacture()
-                        .substring(4, 6))
+                .substring(4, 6))
                 || FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE30.equalsIgnoreCase(entFacture.getIdExterneFacture()
-                        .substring(4, 6))) {
+                .substring(4, 6))) {
             setJasperTemplate(FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME4DECSAL);
             return FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME4DECSAL; // Template pour déclaration de
             // salaire
@@ -180,7 +180,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                     .getIdTypeFacture())) {
                 getBvr().setBVRNeutre(currentDataSource.getEnteteFacture(), isFactureAvecMontantMinime(),
                         reporterMontant);
-                textMontant = getBvr().getTextBVRNeutre(getSession(),
+                textMontant = getBvr().getTextBulletinNeutre(getSession(),
                         currentDataSource.getEnteteFacture().getISOLangueTiers());
                 super.setParametres(FAImpressionFacture_Param.P_REMARQUE,
                         FWMessageFormat.format(FWMessageFormat.prepareQuotes(textMontant, false), getDateEcheance()));
@@ -318,7 +318,6 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     }
 
 
-
     protected void _summaryText() {
         String dateEcheance = "";
         int idSousType = 0;
@@ -330,7 +329,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             // initialiser le section descriptor avec les paramètres de l'entête
             // de facture
             sectionDescriptor.setSection(currentDataSource.getEnteteFacture().getIdExterneFacture(), currentDataSource
-                    .getEnteteFacture().getIdTypeFacture(), currentDataSource.getEnteteFacture().getIdSousType(),
+                            .getEnteteFacture().getIdTypeFacture(), currentDataSource.getEnteteFacture().getIdSousType(),
                     passage.getDateFacturation(), "", "");
 
             // la date d'échéance est calculée par le sectionDescriptor
@@ -389,7 +388,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                     .getISOLangueTiers())
                                     + "\n"
                                     + application.getLabel("FACTEXT_NCR2", currentDataSource.getEnteteFacture()
-                                            .getISOLangueTiers());
+                                    .getISOLangueTiers());
                         }
                     }
 
@@ -405,9 +404,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                     } else if (isFactureAvecMontantMinime()) {
                         textMontant = application.getLabel("FACTEXT_MINIMEPOS", currentDataSource.getEnteteFacture()
                                 .getISOLangueTiers());
-                    }
-
-                    else if (isModeReporterMontantMinimal()
+                    } else if (isModeReporterMontantMinimal()
                             && !new FWCurrency(currentDataSource.getEnteteFacture().getTotalFacture()).isZero()) // Dans
                     // le
                     // mode
@@ -440,7 +437,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                 textMontant = application.getLabel("FACTEXT1_BIS", currentDataSource.getEnteteFacture()
                                         .getISOLangueTiers())
                                         + application.getLabel(dateEcheance, currentDataSource.getEnteteFacture()
-                                                .getISOLangueTiers());
+                                        .getISOLangueTiers());
                             } else {
                                 if ("true".equals(((BApplication) application).getProperty("texteMontantDifferent"))) {
                                     if ((((idSousType >= 1) && (idSousType <= 12))
@@ -455,7 +452,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                                 + dateEcheance
                                                 + " "
                                                 + application.getLabel("FACTEXT_2", currentDataSource
-                                                        .getEnteteFacture().getISOLangueTiers());
+                                                .getEnteteFacture().getISOLangueTiers());
                                     }
                                 } else {
                                     textMontant = application.getLabel("FACTEXT_1", currentDataSource
@@ -464,7 +461,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                             + dateEcheance
                                             + " "
                                             + application.getLabel("FACTEXT_2", currentDataSource.getEnteteFacture()
-                                                    .getISOLangueTiers());
+                                            .getISOLangueTiers());
                                 }
                                 // en allemand, le texte de fin suit la date
                             }
@@ -479,7 +476,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                             textMontant = application.getLabel("FACTEXT1_BIS", currentDataSource.getEnteteFacture()
                                     .getISOLangueTiers())
                                     + application.getLabel(dateEcheance, currentDataSource.getEnteteFacture()
-                                            .getISOLangueTiers());
+                                    .getISOLangueTiers());
                         } else {
                             if ("true".equals(((BApplication) application).getProperty("texteMontantDifferent"))) {
                                 if ((((idSousType >= 1) && (idSousType <= 12))
@@ -494,7 +491,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                             + dateEcheance
                                             + " "
                                             + application.getLabel("FACTEXT_2", currentDataSource.getEnteteFacture()
-                                                    .getISOLangueTiers());
+                                            .getISOLangueTiers());
                                 }
                             } else {
                                 textMontant = application.getLabel("FACTEXT_1", currentDataSource.getEnteteFacture()
@@ -503,7 +500,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                                         + dateEcheance
                                         + " "
                                         + application.getLabel("FACTEXT_2", currentDataSource.getEnteteFacture()
-                                                .getISOLangueTiers());
+                                        .getISOLangueTiers());
                             }
                         }
                     }
@@ -635,7 +632,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     /**
      * Returns the factureAvecMontantMinime.
-     * 
+     *
      * @return boolean
      */
     public void checkFactureAvecMontantMinime(FAEnteteFacture entFacture) {
@@ -667,18 +664,18 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
      * @param index
      */
     private void _addLine(List list, String libelle, Double montantInitial, Double montantDejaFacture, Double masseFacture, String taux, Double montant, String dateDebut, String dateFin,
-            Integer index) {
-            Map m = new HashMap();
-            m.put("COL_1", libelle);
-            m.put("COL_2", montantInitial);
-            m.put("COL_3", montantDejaFacture);
-            m.put("COL_4", masseFacture);
-            m.put("COL_5", taux);
-            m.put("COL_6", montant);
-            m.put("COL_7_DEBUT", dateDebut);
-            m.put("COL_7_FIN", dateFin);
-            m.put("COL_ID", index);
-            list.add(m);
+                          Integer index) {
+        Map m = new HashMap();
+        m.put("COL_1", libelle);
+        m.put("COL_2", montantInitial);
+        m.put("COL_3", montantDejaFacture);
+        m.put("COL_4", masseFacture);
+        m.put("COL_5", taux);
+        m.put("COL_6", montant);
+        m.put("COL_7_DEBUT", dateDebut);
+        m.put("COL_7_FIN", dateFin);
+        m.put("COL_ID", index);
+        list.add(m);
     }
 
     @Override
@@ -749,6 +746,13 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             qrFacture.setQrNeutre(APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture().getIdTypeFacture()));
             qrFacture.setMontantMinimeOuMontantReporter(this.isFactureAvecMontantMinime() || this.isFactureMontantReport());
 
+            if (APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture().getIdTypeFacture())) {
+                textMontant = qrFacture.getTextBulletinNeutre(getSession(),
+                        currentDataSource.getEnteteFacture().getISOLangueTiers());
+                super.setParametres(FAImpressionFacture_Param.P_REMARQUE,
+                        FWMessageFormat.format(FWMessageFormat.prepareQuotes(textMontant, false), getDateEcheance()));
+            }
+
             // Initialisation des variables du document
             initVariableQR(currentDataSource.getEnteteFacture().getISOLangueTiers());
 
@@ -798,7 +802,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             Integer index = (Integer) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
 
             if (((FAAfact) faImpressionFacture_ds.getEnCours().get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION)
-                || ((FAAfact) faImpressionFacture_ds.getEnCours().get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION_INTERNE)) {
+                    || ((FAAfact) faImpressionFacture_ds.getEnCours().get(0)).getIdTypeAfact().equals(FAAfact.CS_AFACT_COMPENSATION_INTERNE)) {
                 field.setName("COL_1B");
             } else {
                 field.setName("COL_1");
@@ -858,9 +862,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     }
 
 
-
     /**
-     * 
      * @return
      * @throws Exception
      */
@@ -969,12 +971,10 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     /**
      * Méthode d'initialisation du processus de génération/impression des document
-     * 
-     * @param session
-     *            La session en cours
-     * @throws Exception
-     *             Levée en cas de problème dans la récupération de l'instance application <code>FAApplication</code>
-     *             via la session
+     *
+     * @param session La session en cours
+     * @throws Exception Levée en cas de problème dans la récupération de l'instance application <code>FAApplication</code>
+     *                   via la session
      */
     private void init(BSession session) throws Exception {
         application = ((FAApplication) session.getApplication());
@@ -1008,16 +1008,12 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     }
 
 
-
-
-
     /**
      * @return
      */
     public boolean isImprimable() {
         return imprimable;
     }
-
 
 
     private boolean isSectionContentieux(CASection section) throws CATechnicalException {
@@ -1129,7 +1125,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             if (!JANumberFormatter.deQuote(currentDataSource.getEnteteFacture().getTotalFacture()).equals(
                     currentDataSource.getMontantImprimer().toString())
                     && !APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture()
-                            .getIdTypeFacture())) {
+                    .getIdTypeFacture())) {
                 getDocumentInfo().setRejectDocument(true);
             }
 
@@ -1197,9 +1193,8 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     /**
      * Sets the currentDataSource.getEnteteFacture()List.
-     * 
-     * @param entityList
-     *            .getEnteteFacture()List The currentDataSource.getEnteteFacture()List to set
+     *
+     * @param entityList .getEnteteFacture()List The currentDataSource.getEnteteFacture()List to set
      */
     @Override
     public void setEntityList(ArrayList entityList) {

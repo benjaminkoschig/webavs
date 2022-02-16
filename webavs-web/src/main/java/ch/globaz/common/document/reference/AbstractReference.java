@@ -341,6 +341,26 @@ public abstract class AbstractReference {
 
 
     /**
+     * Retourne l'adresse pour le BVR (va rechercher dans le catalogue de textes MUSCA)
+     *
+     * @return
+     */
+    public String getTextBulletinNeutre(BSession session, String langueIso) {
+        StringBuilder text = new StringBuilder();
+        try {
+            // va rechercher les textes qui sont au niveau 1
+            if (this.getCurrentDocument(session, langueIso) == null) {
+                text.append(TEXTE_INTROUVABLE);
+            } else {
+                this.dumpNiveau(3, text, RETOUR_LIGNE, langueIso);
+            }
+        } catch (Exception e3) {
+            text.append(TEXTE_INTROUVABLE);
+        }
+        return text.toString();
+    }
+
+    /**
      * Récupère les textes pour un niveau
      *
      * @param niveau
