@@ -59,13 +59,12 @@ public class ESSearchService {
         compteAnnexeManager.setForIdExterneRole(forNumeroAffilie);
         compteAnnexeManager.setForSelectionRole(mapToSelectionRole(role));
 
-        try {
-            compteAnnexeManager.find(BManager.SIZE_NOLIMIT);
-        } catch (Exception e) {
+        compteAnnexeManager.find(BManager.SIZE_NOLIMIT);
+        if (compteAnnexeManager.size() > 0) {
+            return compteAnnexeManager;
+        } else {
             throw new Exception("Unable to find compte annexe for numeroAffilie : " + forNumeroAffilie);
         }
-
-        return compteAnnexeManager;
     }
 
     public CASectionManager searchSections(CACompteAnnexe compteAnnexe, String selectionTris, String selectionSections, String startPeriod, String endPeriod, BSession session) throws Exception {
