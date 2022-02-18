@@ -1,8 +1,8 @@
 package globaz.ij.acorweb.ws;
 
 import globaz.ij.acorweb.ws.token.IJAcorTokenServiceImpl;
-import globaz.prestation.acor.web.ws.TokenService;
-import globaz.prestation.acor.web.ws.TokenFilterAbstract;
+import ch.globaz.common.ws.token.TokenService;
+import ch.globaz.common.ws.token.TokenFilterAbstract;
 import globaz.ij.application.IJApplication;
 
 import javax.servlet.http.HttpServletRequest;

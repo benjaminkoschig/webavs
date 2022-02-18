@@ -1,4 +1,4 @@
-package globaz.prestation.acor.web.ws;
+package ch.globaz.common.ws.token;
 
 import acor.xsd.standard.error.OriginType;
 import acor.xsd.standard.error.StandardError;

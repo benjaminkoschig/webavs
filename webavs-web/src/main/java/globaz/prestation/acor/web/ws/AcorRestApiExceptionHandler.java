@@ -5,6 +5,7 @@ import ch.globaz.common.ws.ExceptionHandler;
 import ch.globaz.common.ws.ExceptionMapper;
 import ch.globaz.common.ws.configuration.ExceptionRequestInfo;
 import ch.globaz.common.ws.configuration.RequestInfo;
+import ch.globaz.common.ws.token.TokenStandardErrorUtil;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;

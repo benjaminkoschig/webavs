@@ -1,7 +1,7 @@
 package globaz.corvus.acorweb.ws;
 
-import globaz.prestation.acor.web.ws.TokenService;
-import globaz.prestation.acor.web.ws.TokenFilterAbstract;
+import ch.globaz.common.ws.token.TokenService;
+import ch.globaz.common.ws.token.TokenFilterAbstract;
 import globaz.corvus.acorweb.ws.token.REAcorTokenServiceImpl;
 import globaz.corvus.application.REApplication;
 

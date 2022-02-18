@@ -10,7 +10,7 @@ import globaz.globall.db.BSessionUtil;
 import globaz.jade.i18n.JadeI18n;
 import globaz.osiris.eservices.exceptions.ESBadRequestException;
 import globaz.osiris.eservices.exceptions.ESUnauthorizedException;
-import globaz.prestation.acor.web.ws.TokenStandardErrorUtil;
+import ch.globaz.common.ws.token.TokenStandardErrorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 

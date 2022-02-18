@@ -2,7 +2,7 @@ package ch.globaz.common.ws;
 
 
 import acor.xsd.standard.error.StandardError;
-import globaz.prestation.acor.web.ws.TokenStandardErrorUtil;
+import ch.globaz.common.ws.token.TokenStandardErrorUtil;
 import ch.globaz.common.ws.configuration.WSExceptionMapper;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.prestation.acor.PRACORException;

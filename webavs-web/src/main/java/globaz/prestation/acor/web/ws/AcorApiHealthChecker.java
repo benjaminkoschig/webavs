@@ -4,6 +4,7 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.ws.ApiHealthChecker;
 import ch.globaz.common.ws.HealthDto;
 import ch.globaz.common.ws.ResponseEntity;
+import ch.globaz.common.ws.token.TokenServiceAbstract;
 import globaz.prestation.acor.web.AcorApiRest;
 import lombok.extern.slf4j.Slf4j;
 

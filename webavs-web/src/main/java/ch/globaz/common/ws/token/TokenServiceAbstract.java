@@ -1,4 +1,4 @@
-package globaz.prestation.acor.web.ws;
+package ch.globaz.common.ws.token;
 
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonProperties;

@@ -5,7 +5,7 @@ import globaz.corvus.acorweb.ws.REAcorApiRest;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.prestation.acor.web.ws.TokenServiceAbstract;
+import ch.globaz.common.ws.token.TokenServiceAbstract;
 import globaz.prestation.acor.web.ws.AcorTokenImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

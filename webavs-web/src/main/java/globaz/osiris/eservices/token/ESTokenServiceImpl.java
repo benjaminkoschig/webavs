@@ -1,11 +1,10 @@
-package globaz.osiris.eservices.service;
+package globaz.osiris.eservices.token;
 
 import ch.globaz.common.properties.CommonProperties;
-import globaz.osiris.eservices.token.ESTokenImpl;
 import globaz.osiris.eservices.ws.ESApiRestLogin;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.prestation.acor.web.ws.TokenServiceAbstract;
+import ch.globaz.common.ws.token.TokenServiceAbstract;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;

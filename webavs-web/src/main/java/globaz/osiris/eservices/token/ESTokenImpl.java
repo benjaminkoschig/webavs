@@ -1,6 +1,6 @@
 package globaz.osiris.eservices.token;
 
-import globaz.prestation.acor.web.ws.Token;
+import ch.globaz.common.ws.token.Token;
 import lombok.Data;
 
 @Data

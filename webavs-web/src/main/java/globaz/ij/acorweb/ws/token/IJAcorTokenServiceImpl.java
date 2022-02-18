@@ -3,7 +3,7 @@ package globaz.ij.acorweb.ws.token;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.db.BSession;
 import globaz.ij.acorweb.ws.IJAcorApiRest;
-import globaz.prestation.acor.web.ws.TokenServiceAbstract;
+import ch.globaz.common.ws.token.TokenServiceAbstract;
 import globaz.prestation.acor.web.ws.AcorTokenImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

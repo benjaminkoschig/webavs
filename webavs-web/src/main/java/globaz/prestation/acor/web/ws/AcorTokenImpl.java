@@ -1,5 +1,6 @@
 package globaz.prestation.acor.web.ws;
 
+import ch.globaz.common.ws.token.Token;
 import lombok.Data;
 
 @Data

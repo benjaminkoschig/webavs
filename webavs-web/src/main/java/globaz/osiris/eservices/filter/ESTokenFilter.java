@@ -1,10 +1,10 @@
 package globaz.osiris.eservices.filter;
 
 import globaz.osiris.application.CAApplication;
-import globaz.osiris.eservices.service.ESTokenServiceImpl;
+import globaz.osiris.eservices.token.ESTokenServiceImpl;
 import globaz.osiris.eservices.ws.ESApiRestRetrieve;
-import globaz.prestation.acor.web.ws.TokenService;
-import globaz.prestation.acor.web.ws.TokenFilterAbstract;
+import ch.globaz.common.ws.token.TokenService;
+import ch.globaz.common.ws.token.TokenFilterAbstract;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
