@@ -114,7 +114,7 @@ public class GFTraitementMessageServiceImpl {
                         LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     } catch (Exception e) {
                         try {
-                            sendMail(messageToTreat);
+                            sendMail(messageToTreat, zipPath[0]);
                         } catch (Exception e1) {
                             LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                         }
@@ -128,7 +128,7 @@ public class GFTraitementMessageServiceImpl {
                     LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                 } catch (Exception e) {
                     try {
-                        sendMail(messageToTreat);
+                        sendMail(messageToTreat, zipPath[0]);
                     } catch (Exception e1) {
                         LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                     }
@@ -208,9 +208,9 @@ public class GFTraitementMessageServiceImpl {
         return context;
     }
 
-    private void sendMail(SimpleSedexMessage message) throws Exception {
+    private void sendMail(SimpleSedexMessage message, String zipPath) throws Exception {
         JadeSmtpClient.getInstance().sendMail(getMailsProtocole(), getMailSubjet(), getMailBody(message),
-                new String[] { message.getFileLocation() });
+                new String[] { zipPath });
     }
 
     private String getMailSubjet(){
