@@ -1,27 +1,20 @@
 package ch.globaz.eform.business.models;
 
 import ch.globaz.common.util.Dates;
-import globaz.apg.db.prestation.APPrestation;
+import ch.globaz.eavs.utils.StringUtils;
 import globaz.common.util.CommonBlobUtils;
-import globaz.globall.db.*;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
-import globaz.jade.context.JadeThread;
-import globaz.jade.persistence.util.JadePersistenceUtil;
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Getter
@@ -38,7 +31,8 @@ public class GFFormulaireModel extends BEntity {
     public static final String FIELDNAME_BENEFICIAIRE_NOM = "BENEFICIAIRE_NOM";
     public static final String FIELDNAME_BENEFICIAIRE_PRENOM = "BENEFICIAIRE_PRENOM";
     public static final String FIELDNAME_BENEFICIAIRE_DATE_NAISSANCE = "BENEFICIAIRE_DATE_NAISSANCE";
-    public static final String FIELDNAME_FICHIER_ZIP = "FICHIER_ZIP";
+    public static final String FIELDNAME_USER_GESTIONNAIRE = "USER_GESTIONNAIRE";
+    public static final String FIELDNAME_ATTACHEMENT_ID = "ATTACHEMENT_ID";
     public static final String TABLE_NAME_GF_FORMULAIRE = "GF_FORMULAIRE";
 
     private String formulaireId;
@@ -50,7 +44,27 @@ public class GFFormulaireModel extends BEntity {
     private String nomBeneficiaire;
     private String prenomBeneficiaire;
     private LocalDate dateNaissanceBeneficiaire;
-    private InputStream fichierZip;
+    private String userGestionnaire;
+    private String attachementId;
+
+    public GFFormulaireModel(BSession session) {
+        setSession(session);
+    }
+
+    public void addAttachement(String location) throws Exception {
+        if (StringUtils.isBlank(location)) throw new IllegalArgumentException();
+
+        this.attachementId = generateAttachementId();
+        byte[] bytes = CommonBlobUtils.fileToByteArray(location);
+        CommonBlobUtils.addBlob(this.attachementId, bytes, getSession().getCurrentThreadTransaction());
+    }
+
+    public File getAttachement(BTransaction transaction) throws Exception {
+        if (Objects.isNull(this.attachementId)) {
+            return null;
+        }
+        return (File) CommonBlobUtils.readBlob(this.attachementId, transaction);
+    }
 
     @Override
     protected String _getTableName() {
@@ -68,8 +82,8 @@ public class GFFormulaireModel extends BEntity {
         nomBeneficiaire = statement.dbReadString(FIELDNAME_BENEFICIAIRE_NOM);
         prenomBeneficiaire = statement.dbReadString(FIELDNAME_BENEFICIAIRE_PRENOM);
         dateNaissanceBeneficiaire = Dates.toDate(FIELDNAME_BENEFICIAIRE_DATE_NAISSANCE);
-        // Récupération du BLOB en Db
-        getZipFileFromDb();
+        userGestionnaire = statement.dbReadString(FIELDNAME_USER_GESTIONNAIRE);
+        attachementId = statement.dbReadString(FIELDNAME_ATTACHEMENT_ID);
     }
 
     @Override
@@ -87,9 +101,9 @@ public class GFFormulaireModel extends BEntity {
         statement.writeField(FIELDNAME_FORMULAIRE_DATE,
                 this._dbWriteString(statement.getTransaction(), Dates.toDbDate(formulaireDate), ""));
         statement.writeField(FIELDNAME_FORMULAIRE_TYPE,
-                this._dbWriteString(statement.getTransaction(),typeFormulaire, ""));
+                this._dbWriteString(statement.getTransaction(), typeFormulaire, ""));
         statement.writeField(FIELDNAME_FORMULAIRE_NOM,
-                this._dbWriteString(statement.getTransaction(),nomFormulaire, ""));
+                this._dbWriteString(statement.getTransaction(), nomFormulaire, ""));
         statement.writeField(FIELDNAME_BENEFICIAIRE_NOM,
                 this._dbWriteString(statement.getTransaction(), nomBeneficiaire, ""));
         statement.writeField(FIELDNAME_BENEFICIAIRE_PRENOM,
@@ -98,6 +112,10 @@ public class GFFormulaireModel extends BEntity {
                 this._dbWriteString(statement.getTransaction(), Dates.toDbDate(dateNaissanceBeneficiaire), ""));
         statement.writeField(FIELDNAME_BENEFICIAIRE_NSS,
                 this._dbWriteString(statement.getTransaction(), nssBeneficiaire, ""));
+        statement.writeField(FIELDNAME_USER_GESTIONNAIRE,
+                this._dbWriteString(statement.getTransaction(), userGestionnaire, ""));
+        statement.writeField(FIELDNAME_ATTACHEMENT_ID,
+                this._dbWriteString(statement.getTransaction(), attachementId, ""));
     }
 
 
@@ -108,90 +126,10 @@ public class GFFormulaireModel extends BEntity {
 
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
-//        PreparedStatement pstmt = null;
-//
-//        String sql = getSqlUpdate();
-//        try {
-//            pstmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
-//            pstmt.setBinaryStream(1, fichierZip, fichierZip.available());
-//            pstmt.setString(2, formulaireId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            LOG.debug("Erreur à l'execution de la requête : " + sql, e);
-//        } catch (Exception e) {
-//            LOG.debug("Erreur lors de la lecture du ZIP", e);
-//        } finally {
-//            closeStatement(pstmt);
-//        }
+
     }
 
-    private void getZipFileFromDb(){
-        String sql = getSqlSelect();
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            pstmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
-            pstmt.setString(1, formulaireId);
-            rs = pstmt.executeQuery();
-            if(rs.next()) {
-                fichierZip = rs.getBinaryStream(FIELDNAME_FICHIER_ZIP);
-            }
-        } catch (SQLException e) {
-            LOG.debug("Erreur à l'execution de la requête : " + sql, e);
-        } finally {
-            closeStatement(pstmt);
-            try {
-                if (Objects.nonNull(rs)) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                LOG.debug("Erreur lors de la fermeture du resultSet : " + sql, e);
-            }
-        }
-    }
-
-    private static String getSqlSelect() {
-        StringBuilder sql = new StringBuilder("SELECT * FROM ");
-        sql.append(JadePersistenceUtil.getDbSchema());
-        sql.append('.');
-        if (!JadeStringUtil.isEmpty(Jade.getInstance().getDefaultJdbcTablePrefix())) {
-            sql.append(Jade.getInstance().getDefaultJdbcTablePrefix());
-        }
-        sql.append(TABLE_NAME_GF_FORMULAIRE);
-        sql.append(" WHERE " + FIELDNAME_FORMULAIRE_ID + " = ?");
-        return sql.toString();
-    }
-
-    private static String getSqlUpdate() {
-        StringBuilder sql = new StringBuilder("UPDATE ");
-        sql.append(JadePersistenceUtil.getDbSchema());
-        sql.append('.');
-        if (!JadeStringUtil.isEmpty(Jade.getInstance().getDefaultJdbcTablePrefix())) {
-            sql.append(Jade.getInstance().getDefaultJdbcTablePrefix());
-        }
-        sql.append(TABLE_NAME_GF_FORMULAIRE + " SET " + FIELDNAME_FICHIER_ZIP + " = ? ");
-        sql.append("WHERE " + FIELDNAME_FORMULAIRE_ID + " = ?");
-        return sql.toString();
-    }
-
-    private static void closeStatement(Statement stmt) {
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-                LOG.warn("Problem to close statement, reason : " + e);
-            }
-        }
-    }
-
-    public List<GFAttachementModel> getAttachement(BTransaction transaction) throws Exception {
-        List<GFAttachementModel> attachements = new ArrayList<>();
-        GFAttachementModelManager manager = new GFAttachementModelManager();
-        manager.setForFormulaireId(this.formulaireId);
-        manager.find(transaction, BManager.SIZE_NOLIMIT);
-        for (int i = 0; i < manager.size(); i++) {
-            attachements.add((GFAttachementModel)manager.getEntity(i));
-        }
-        return attachements;
+    private String generateAttachementId() {
+        return this.getClass().getName() + "_" + JadeUUIDGenerator.createStringUUID();
     }
 }

@@ -27,7 +27,7 @@ public class GFFormulaireModelManager extends PRAbstractManager  {
 
     @Override
     protected BEntity _newEntity() throws Exception {
-        return new GFFormulaireModel();
+        return new GFFormulaireModel(getSession());
     }
 
     /**

@@ -6,34 +6,36 @@ import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandler;
 import ch.globaz.eform.services.sedex.handlers.GFFormHandlersFactory;
 import ch.globaz.eform.web.application.GFApplication;
+import globaz.framework.security.FWSecurityLoginException;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.context.*;
-import globaz.jade.crypto.JadeDecryptionNotSupportedException;
+import globaz.jade.context.JadeContext;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
+import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.jaxb.JAXBValidationError;
-import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
-import globaz.jade.smtp.JadeSmtpClient;
-
-import globaz.jade.sedex.message.*;
+import globaz.jade.sedex.message.GroupedSedexMessage;
+import globaz.jade.sedex.message.SedexMessage;
+import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
+import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.*;
+import java.io.File;
+import java.util.Objects;
+import java.util.Properties;
 
 @Slf4j
 public class GFTraitementMessageServiceImpl {
+
     private String passSedex;
     private String userSedex;
     private BSession session;
@@ -45,14 +47,11 @@ public class GFTraitementMessageServiceImpl {
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
      *
-     * @param properties
-     * @throws JadeDecryptionNotSupportedException
-     * @throws JadeEncrypterNotFoundException
-     * @throws Exception
+     * @param properties Propriété du service Sedex
      */
     @Setup
     public void setUp(Properties properties)
-            throws JadeDecryptionNotSupportedException, JadeEncrypterNotFoundException, Exception {
+            throws Exception {
 
         String encryptedUser = properties.getProperty("userSedex");
 
@@ -72,39 +71,72 @@ public class GFTraitementMessageServiceImpl {
         objectFactory = new GFFormHandlersFactory();
 
         currentSedexFolder = properties.getProperty("currentSedexFolder");
+
+        session = (BSession) GlobazSystem.getApplication(GFApplication.DEFAULT_APPLICATION_EFORM)
+                .newSession(userSedex, passSedex);
     }
 
     @OnReceive
     public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException {
+        String[] defaultUserGestionnaire = {""};
+        String[] zipPath = {null};
+
+        //Lecture dans les propriétés du gestionnaire par défaut
+        if (!GFProperties.GESTIONNAIRE_USER_DEFAULT.getValue().isEmpty()) {
+            try {
+                JadeUser user = session.getApplication()._getSecurityManager().getUserForVisa(session, GFProperties.GESTIONNAIRE_USER_DEFAULT.getValue());
+                if (Objects.nonNull(user.getVisa())) {
+                    defaultUserGestionnaire[0] = user.getVisa();
+                }
+            } catch (FWSecurityLoginException e) {
+                LOG.warn("GFTraitementMessageServiceImpl#importMessages - Erreur à la récupération du gestionnaire par défaut :", e);
+            } catch (Exception e) {
+                LOG.warn("GFTraitementMessageServiceImpl#importMessages - Erreur inconnue à la récupération du gestionnaire par défaut :", e);
+            }
+        }
+
+        // recupération du ZIP
+        File currentFolder = new File(currentSedexFolder);
+        File[] listFiles = currentFolder.listFiles();
+        if (Objects.nonNull(listFiles) && listFiles.length > 0)  {
+            zipPath[0] = listFiles[0].getAbsolutePath();
+        }
 
         try {
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), getContext());
 
             if (message instanceof GroupedSedexMessage) {
                 GroupedSedexMessage currentGroupedMessage = (GroupedSedexMessage) message;
-                Iterator<SimpleSedexMessage> messagesIterator = currentGroupedMessage.iterator();
-                while (messagesIterator.hasNext()) {
-                    SimpleSedexMessage messageToTreat = messagesIterator.next();
-                    boolean importSuccess = importMessagesSingle(messageToTreat);
-                    if(importSuccess){
+
+                currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
+                    try {
+                        importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipPath[0]);
                         LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
-                    }else{
-                        sendMail(messageToTreat);
-                        LOG.error("Traitement NOK pour le fichier {}", messageToTreat.fileLocation);
+                    } catch (Exception e) {
+                        try {
+                            sendMail(messageToTreat);
+                        } catch (Exception e1) {
+                            LOG.error("Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                        }
+                        throw new JadeApplicationRuntimeException(e);
                     }
-                }
+                });
             } else if (message instanceof SimpleSedexMessage) {
                 SimpleSedexMessage messageToTreat = (SimpleSedexMessage) message;
-                boolean importSuccess = importMessagesSingle(messageToTreat);
-
-                if(importSuccess){
+                try {
+                    importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipPath[0]);
                     LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
-                }else{
-                    sendMail(messageToTreat);
-                    LOG.error("Traitement NOK pour le fichier {}", messageToTreat.fileLocation);
+                } catch (Exception e) {
+                    try {
+                        sendMail(messageToTreat);
+                    } catch (Exception e1) {
+                        LOG.error("Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                    }
+                    throw new JadeApplicationRuntimeException(e);
                 }
             } else {
-                LOG.error("Traitement NOK pour le fichier.");
+                LOG.error("Type de message Sedex non géré!");
+                throw new JadeApplicationRuntimeException("Type de message Sedex non géré!");
             }
         } catch (Exception e1) {
             JadeLogger.error(this,
@@ -117,34 +149,20 @@ public class GFTraitementMessageServiceImpl {
 
     /**
      * Méthode de lecture du message sedex en réception, et traitement
-     *
-     * @return Retourne si le trait
      */
-    private boolean importMessagesSingle(SimpleSedexMessage currentSimpleMessage) {
-        boolean traitementSucceed = false;
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, String userGestionnaire, String zipPath) throws RuntimeException {
         try {
-            GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, currentSimpleMessage.getFileLocation(), currentSedexFolder);
+            GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
             if(formHandler != null){
-                traitementSucceed = formHandler.setDataFromFile(currentSimpleMessage, currentSedexFolder);
+                formHandler.setDataFromFile(userGestionnaire, zipPath);
+                formHandler.saveDataInDb();
 
-                if(traitementSucceed) {
-                    boolean saveSucceed;
-                    saveSucceed = formHandler.saveDataInDb(session);
-                    if(saveSucceed){
-                        LOG.info("formulaire sauvegardé : {}.", currentSimpleMessage.fileLocation);
-                    } else {
-                        LOG.error("formulaire non sauvegardé : {}", currentSimpleMessage.fileLocation);
-                    }
-                } else {
-                    LOG.error("Le formulaire n'a pas pu être traité : {}", currentSimpleMessage.fileLocation);
-                }
+                LOG.info("formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
             }
-        }catch (JAXBValidationError | JAXBValidationWarning | JAXBException | IOException | SAXException | InstantiationException | IllegalAccessException  e){
+        } catch (Exception e){
             LOG.error("Erreur lors du traitement du message.");
-        } catch (Exception e) {
-            e.printStackTrace();
+            throw new JadeApplicationRuntimeException(e);
         }
-        return traitementSucceed;
     }
 
     /**
@@ -157,7 +175,7 @@ public class GFTraitementMessageServiceImpl {
      */
     public JadeContext getContext() throws Exception {
         if (context == null) {
-            context = initContext(getSession()).getContext();
+            context = initContext(session).getContext();
         }
         return context;
     }
@@ -190,29 +208,13 @@ public class GFTraitementMessageServiceImpl {
         return context;
     }
 
-    /**
-     * Retourne une session. Si nécessaire elle est initialisée
-     *
-     * @return la session
-     *
-     * @throws Exception
-     *             Exception levée si la session ne peut être initialisée
-     */
-    public BSession getSession() throws Exception {
-        if (session == null) {
-            session = (BSession) GlobazSystem.getApplication(GFApplication.DEFAULT_APPLICATION_EFORM)
-                    .newSession(userSedex, passSedex);
-        }
-        return session;
-    }
-
     private void sendMail(SimpleSedexMessage message) throws Exception {
         JadeSmtpClient.getInstance().sendMail(getMailsProtocole(), getMailSubjet(), getMailBody(message),
                 new String[] { message.getFileLocation() });
     }
 
     private String getMailSubjet(){
-        return session.getLabel("MAIL_SUBLECT_IMPORT_SEDEX");
+        return session.getLabel("MAIL_SUBJECT_IMPORT_SEDEX");
     }
 
     private String getMailBody(SimpleSedexMessage message){

@@ -20,7 +20,6 @@ public class GFSedexModel {
     private String prenomBenefiaicaire;
     private String nssBeneficiaire;
     private LocalDate naissanceBeneficiaire;
-    private String zipFile;
+    private String userGestionnaire;
     private String zipFilePath;
-    private List<String> attachementFile;
 }

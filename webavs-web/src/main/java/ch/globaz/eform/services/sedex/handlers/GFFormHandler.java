@@ -1,39 +1,43 @@
 package ch.globaz.eform.services.sedex.handlers;
 
 import ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
-import ch.globaz.eform.business.models.GFAttachementModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.services.sedex.model.GFSedexModel;
-import globaz.common.util.CommonBlobUtils;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import globaz.jade.sedex.message.SimpleSedexMessage;
+import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.time.LocalDate;
 
 @Slf4j
 public abstract class GFFormHandler {
-
+    protected BSession session;
     protected GFSedexModel model;
     protected Object message;
 
-    public abstract boolean setDataFromFile(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder);
-
-    protected void setAttachements(Map<String, String> attachments) {
-        ArrayList<String> attachementFiles = new ArrayList<>();
-        Set set=attachments.entrySet();//Converting to Set so that we can traverse
-        Iterator itr=set.iterator();
-        while(itr.hasNext()) {
-            //Converting to Map.Entry so that we can get key and value separately
-            Map.Entry entry = (Map.Entry) itr.next();
-            File file = new File(entry.getKey().toString());
-            if (file.exists() && file.isFile()) {
-                attachementFiles.add(file.getPath());
+    public void setDataFromFile(String userGestionnaire, String zipPath) throws RuntimeException {
+        if(message != null){
+            try {
+                extractData();
+                model.setUserGestionnaire(userGestionnaire);
+                model.setZipFilePath(zipPath);
+            }catch(ClassCastException e){
+                LOG.error("Erreur de type de message.", e);
+                throw new JadeApplicationRuntimeException(e);
             }
         }
-        model.setAttachementFile(attachementFiles);
+    }
+
+    protected abstract void extractData() throws RuntimeException;
+
+    protected void initModel(String messageId, String subject, LocalDate messageDate) {
+        model = new GFSedexModel();
+
+        model.setMessageId(messageId);
+        model.setMessageSubject(subject);
+        model.setMessageDate(messageDate);
     }
 
     protected void setBeneficiaireData(NaturalPersonsOASIDIType person) {
@@ -45,11 +49,10 @@ public abstract class GFFormHandler {
         }
     }
 
-    public boolean saveDataInDb(BSession bSession) throws Exception {
-        boolean saveSucceed;
+    public void saveDataInDb() throws RuntimeException {
         BTransaction transaction = null;
         try {
-            transaction = (BTransaction) bSession.newTransaction();
+            transaction = (BTransaction) session.newTransaction();
             if (!transaction.isOpened()) {
                 transaction.openTransaction();
             }
@@ -57,80 +60,55 @@ public abstract class GFFormHandler {
             if (transaction.hasErrors()) {
                 LOG.error("Des erreurs ont été trouvés dans la transaction. : {}", transaction.getErrors());
                 transaction.clearErrorBuffer();
+                throw new JadeApplicationRuntimeException("Des erreurs ont été trouvés dans la transaction!");
             }
-            setFormulaireData(bSession);
-            for (String attachement:
-                 model.getAttachementFile()) {
-                setAttachmentData(bSession, attachement);
-            }
-            if (hasError(bSession, transaction)) {
+            setFormulaireData();
+            if (hasError(session, transaction)) {
                 transaction.rollback();
+                LOG.error("Des erreurs ont été trouvés dans la transaction!");
+                throw new JadeApplicationRuntimeException("Des erreurs ont été trouvés dans la transaction!");
             } else {
                 transaction.commit();
             }
-            saveSucceed = true;
         } catch (FileNotFoundException e) {
             LOG.error("Fichier non trouvé : " + model.getMessageId(), e);
-            saveSucceed = false;
+            throw new JadeApplicationRuntimeException(e);
         } catch (Exception e) {
             LOG.error("Erreur lors de l'ajout du formulaire en DB  : {}", model.getMessageId(), e);
             if (transaction != null) {
-                transaction.rollback();
+                try {
+                    transaction.rollback();
+                } catch (Exception e1) {
+                    LOG.error("Impossible de rollback la transaction", e1);
+                }
+
             }
-            saveSucceed = false;
+            throw new JadeApplicationRuntimeException(e);
         } finally {
             try {
                 if (transaction != null) {
                     transaction.closeTransaction();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOG.error("Impossible de cloture la transaction", e);
-                saveSucceed = false;
             }
         }
-        return saveSucceed;
     }
 
-    private void setFormulaireData(BSession bSession) throws Exception {
-            GFFormulaireModel dbModel = new GFFormulaireModel();
-            dbModel.setSession(bSession);
+    private void setFormulaireData() throws Exception {
+            GFFormulaireModel dbModel = new GFFormulaireModel(session);
+            dbModel.setSession(session);
             dbModel.setFormulaireId(model.getMessageId());
             dbModel.setFormulaireSubject(model.getMessageSubject());
-            dbModel.setNomFormulaire(bSession.getLabel(model.getMessageSubject()));
+            dbModel.setNomFormulaire(session.getLabel(model.getMessageSubject()));
             dbModel.setFormulaireDate(model.getMessageDate());
             dbModel.setNssBeneficiaire(model.getNssBeneficiaire());
             dbModel.setNomBeneficiaire(model.getNomBeneficiaire());
             dbModel.setPrenomBeneficiaire(model.getPrenomBenefiaicaire());
             dbModel.setDateNaissanceBeneficiaire(model.getNaissanceBeneficiaire());
-            if (model.getZipFile() != null) {
-                InputStream target = new ByteArrayInputStream(CommonBlobUtils.fileToByteArray(model.getZipFile()));
-                dbModel.setFichierZip(target);
-            }
+            dbModel.setUserGestionnaire(model.getUserGestionnaire());
+            dbModel.addAttachement(model.getZipFilePath());
             dbModel.add();
-    }
-
-    private void setAttachmentData(BSession bSession, String attachement) throws Exception {
-
-            GFAttachementModel attachementModel = new GFAttachementModel();
-            attachementModel.setSession(bSession);
-            attachementModel.setFormulaireId(model.getMessageId());
-            //attachementModel.setNom(attachement.getName());
-            if(attachement != null) {
-                InputStream target = new ByteArrayInputStream(CommonBlobUtils.fileToByteArray(attachement));
-                attachementModel.setFichier(target);
-            }
-            attachementModel.add();
-
-    }
-
-    protected String getZip(String fileLocation) {
-        File f = new File(fileLocation);
-        for (File file : f.listFiles()) {
-            if (file.isFile() && file.getPath().endsWith(".zip")) {
-                return file.getPath();
-            }
-        }
-        return null;
     }
 
     /**
@@ -145,5 +123,9 @@ public abstract class GFFormHandler {
 
     public void setMessage(Object message){
         this.message = message;
+    }
+
+    public void setSession(BSession session) {
+        this.session = session;
     }
 }

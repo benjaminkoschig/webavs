@@ -1,5 +1,6 @@
 package ch.globaz.eform.services.sedex.handlers;
 
+import globaz.globall.db.BSession;
 import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationWarning;
@@ -42,14 +43,14 @@ public class GFFormHandlersFactory {
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2514_007490._1.Message.class, GF2514007490Handler.class);
     }
 
-    public GFFormHandler getFormHandler(SimpleSedexMessage currentSimpleMessage, String zipFileLocation, String sedexCurrentFolder) throws JAXBValidationError, JAXBValidationWarning, JAXBException, IOException, SAXException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    public GFFormHandler getFormHandler(SimpleSedexMessage currentSimpleMessage, BSession session) throws JAXBValidationError, JAXBValidationWarning, JAXBException, IOException, SAXException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         JAXBServices jaxbs = JAXBServices.getInstance();
         Class<?>[] addClasses = mapClasses.keySet().toArray(new Class[0]);
         Object oMessage = jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-        return getGfFormHandler(currentSimpleMessage, sedexCurrentFolder, oMessage, addClasses);
+        return getGfFormHandler(oMessage, addClasses, session);
     }
 
-    private GFFormHandler getGfFormHandler(SimpleSedexMessage currentSimpleMessage, String currentSedexFolder, Object message, Class<?>[] addClasses) throws InstantiationException, IllegalAccessException, IOException, NoSuchMethodException {
+    private GFFormHandler getGfFormHandler(Object message, Class<?>[] addClasses, BSession session) throws InstantiationException, IllegalAccessException {
         GFFormHandler handler = null;
         Iterator<Class<?>> iterator = Arrays.stream(addClasses).iterator();
         while(handler == null && iterator.hasNext()){
@@ -57,6 +58,7 @@ public class GFFormHandlersFactory {
             if(theClass != null && theClass.isInstance(message)){
                 handler = (GFFormHandler) mapClasses.get(theClass).newInstance();
                 handler.setMessage(message);
+                handler.setSession(session);
             }
         }
         return handler;
