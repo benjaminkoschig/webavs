@@ -56,14 +56,14 @@ public class GFTraitementMessageServiceImpl {
         String encryptedUser = properties.getProperty("userSedex");
 
         if (encryptedUser == null) {
-            JadeLogger.error(this, "Réception message RP AMAL: user sedex non renseigné. ");
+            LOG.error("GFTraitementMessageServiceImpl#setUp - Réception message RP AMAL: user sedex non renseigné. ");
             throw new IllegalStateException("Réception message RP AMAL: user sedex non renseigné. ");
         }
         userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
 
         String encryptedPass = properties.getProperty("passSedex");
         if (encryptedPass == null) {
-            JadeLogger.error(this, "Réception message RP AMAL: pass sedex non renseigné. ");
+            LOG.error("GFTraitementMessageServiceImpl#setUp - Réception message RP AMAL: pass sedex non renseigné. ");
             throw new IllegalStateException("Réception message RP AMAL: pass sedex non renseigné. ");
         }
         passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
@@ -89,9 +89,9 @@ public class GFTraitementMessageServiceImpl {
                     defaultUserGestionnaire[0] = user.getVisa();
                 }
             } catch (FWSecurityLoginException e) {
-                LOG.warn("GFTraitementMessageServiceImpl#importMessages - Erreur à la récupération du gestionnaire par défaut :", e);
+                LOG.warn("GFTraitementMessageServiceImpl#importMessages - GFTraitementMessageServiceImpl#importMessages - Erreur à la récupération du gestionnaire par défaut :", e);
             } catch (Exception e) {
-                LOG.warn("GFTraitementMessageServiceImpl#importMessages - Erreur inconnue à la récupération du gestionnaire par défaut :", e);
+                LOG.warn("GFTraitementMessageServiceImpl#importMessages - GFTraitementMessageServiceImpl#importMessages - Erreur inconnue à la récupération du gestionnaire par défaut :", e);
             }
         }
 
@@ -111,12 +111,12 @@ public class GFTraitementMessageServiceImpl {
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
                         importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipPath[0]);
-                        LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
+                        LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     } catch (Exception e) {
                         try {
                             sendMail(messageToTreat);
                         } catch (Exception e1) {
-                            LOG.error("Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                            LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                         }
                         throw new JadeApplicationRuntimeException(e);
                     }
@@ -125,22 +125,22 @@ public class GFTraitementMessageServiceImpl {
                 SimpleSedexMessage messageToTreat = (SimpleSedexMessage) message;
                 try {
                     importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipPath[0]);
-                    LOG.info("Traitement OK pour le fichier {}", messageToTreat.fileLocation);
+                    LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                 } catch (Exception e) {
                     try {
                         sendMail(messageToTreat);
                     } catch (Exception e1) {
-                        LOG.error("Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                        LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                     }
                     throw new JadeApplicationRuntimeException(e);
                 }
             } else {
-                LOG.error("Type de message Sedex non géré!");
+                LOG.error("GFTraitementMessageServiceImpl#importMessages - Type de message Sedex non géré!");
                 throw new JadeApplicationRuntimeException("Type de message Sedex non géré!");
             }
         } catch (Exception e1) {
             JadeLogger.error(this,
-                    "Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
+                    "GFTraitementMessageServiceImpl#importMessages - Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
             throw new JadeApplicationRuntimeException(e1);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
@@ -157,10 +157,10 @@ public class GFTraitementMessageServiceImpl {
                 formHandler.setDataFromFile(userGestionnaire, zipPath);
                 formHandler.saveDataInDb();
 
-                LOG.info("formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
+                LOG.info("GFTraitementMessageServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
             }
         } catch (Exception e){
-            LOG.error("Erreur lors du traitement du message.");
+            LOG.error("GFTraitementMessageServiceImpl#importMessagesSingle - Erreur lors du traitement du message.");
             throw new JadeApplicationRuntimeException(e);
         }
     }

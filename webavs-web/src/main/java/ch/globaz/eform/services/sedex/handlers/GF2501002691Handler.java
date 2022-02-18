@@ -17,7 +17,7 @@ public class GF2501002691Handler extends GFFormHandler {
             }
             setBeneficiaireData(messageToTreat.getContent() != null ? messageToTreat.getContent().getInsuredPerson() : null);
         } catch (ClassCastException e) {
-            LOG.error("Erreur de type de message.", e);
+            LOG.error("2691Erreur de type de message.", e);
             throw new JadeApplicationRuntimeException(e);
         }
     }

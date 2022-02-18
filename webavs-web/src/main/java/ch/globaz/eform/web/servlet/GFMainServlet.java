@@ -16,8 +16,6 @@ public class GFMainServlet extends FWJadeServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(GFMainServlet.class);
-
     /**
      * Noeuds du menu désactivés en mode droit "Lecture seule"
      */

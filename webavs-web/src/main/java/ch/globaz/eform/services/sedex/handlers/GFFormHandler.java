@@ -24,7 +24,7 @@ public abstract class GFFormHandler {
                 model.setUserGestionnaire(userGestionnaire);
                 model.setZipFilePath(zipPath);
             }catch(ClassCastException e){
-                LOG.error("Erreur de type de message.", e);
+                LOG.error("GFFormHandler#setDataFromFile - Erreur de type de message.", e);
                 throw new JadeApplicationRuntimeException(e);
             }
         }
@@ -58,28 +58,28 @@ public abstract class GFFormHandler {
             }
 
             if (transaction.hasErrors()) {
-                LOG.error("Des erreurs ont été trouvés dans la transaction. : {}", transaction.getErrors());
+                LOG.error("GFFormHandler#saveDataInDb - Des erreurs ont été trouvés dans la transaction. : {}", transaction.getErrors());
                 transaction.clearErrorBuffer();
                 throw new JadeApplicationRuntimeException("Des erreurs ont été trouvés dans la transaction!");
             }
             setFormulaireData();
             if (hasError(session, transaction)) {
                 transaction.rollback();
-                LOG.error("Des erreurs ont été trouvés dans la transaction!");
+                LOG.error("GFFormHandler#saveDataInDb - Des erreurs ont été trouvés dans la transaction!");
                 throw new JadeApplicationRuntimeException("Des erreurs ont été trouvés dans la transaction!");
             } else {
                 transaction.commit();
             }
         } catch (FileNotFoundException e) {
-            LOG.error("Fichier non trouvé : " + model.getMessageId(), e);
+            LOG.error("GFFormHandler#saveDataInDb - Fichier non trouvé : " + model.getMessageId(), e);
             throw new JadeApplicationRuntimeException(e);
         } catch (Exception e) {
-            LOG.error("Erreur lors de l'ajout du formulaire en DB  : {}", model.getMessageId(), e);
+            LOG.error("GFFormHandler#saveDataInDb - Erreur lors de l'ajout du formulaire en DB  : {}", model.getMessageId(), e);
             if (transaction != null) {
                 try {
                     transaction.rollback();
                 } catch (Exception e1) {
-                    LOG.error("Impossible de rollback la transaction", e1);
+                    LOG.error("GFFormHandler#saveDataInDb - Impossible de rollback la transaction", e1);
                 }
 
             }
@@ -90,7 +90,7 @@ public abstract class GFFormHandler {
                     transaction.closeTransaction();
                 }
             } catch (Exception e) {
-                LOG.error("Impossible de cloture la transaction", e);
+                LOG.error("GFFormHandler#saveDataInDb - Impossible de cloture la transaction", e);
             }
         }
     }
