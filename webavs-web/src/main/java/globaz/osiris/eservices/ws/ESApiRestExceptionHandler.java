@@ -9,6 +9,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.i18n.JadeI18n;
 import globaz.osiris.eservices.exceptions.ESBadRequestException;
+import globaz.osiris.eservices.exceptions.ESInternalException;
 import globaz.osiris.eservices.exceptions.ESUnauthorizedException;
 import ch.globaz.common.ws.token.TokenStandardErrorUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,8 @@ public class ESApiRestExceptionHandler implements ExceptionHandler {
             responseBuilder.status(Response.Status.UNAUTHORIZED);
         } else if (e instanceof ESBadRequestException) {
             responseBuilder.status(Response.Status.BAD_REQUEST);
+        } else if (e instanceof ESInternalException) {
+            responseBuilder.status(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -5,7 +5,9 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.contentieux.CALigneExtraitCompte;
 import globaz.osiris.eservices.dto.ESInfoFacturationDTO;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ESCreationService {
 
     public ESCreationService() {

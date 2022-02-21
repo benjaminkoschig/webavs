@@ -66,7 +66,9 @@ public class ESApiRestRetrieve {
     private <T, U, R> Response execute(U token, T dto, BiFunction<T, U, R> function, Supplier<Boolean> isValid) {
 
         if (!isValid.get()) {
-             throw new ESBadRequestException("Requête invalide");
+            String message = "Une erreur de paramètres s'est produite lors de la validation de la requête.";
+            LOG.error(message);
+            throw new ESBadRequestException(message);
         }
 
         return Response.ok(function.apply(dto, token)).header("authorization", token).build();

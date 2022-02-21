@@ -1,7 +1,6 @@
 package globaz.osiris.eservices.service;
 
 import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
-import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.orion.ws.enums.Role;
 import globaz.globall.db.BManager;
@@ -12,8 +11,12 @@ import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.contentieux.CAExtraitCompteListViewBean;
+import globaz.osiris.eservices.exceptions.ESBadRequestException;
+import globaz.osiris.eservices.exceptions.ESInternalException;
 import globaz.osiris.external.IntRole;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ESSearchService {
 
     public ESSearchService() {
@@ -53,21 +56,26 @@ public class ESSearchService {
         return selectionSections;
     }
 
-    public CACompteAnnexeManager searchComptesAnnexes(String forNumeroAffilie, Role role, BSession session) throws Exception {
+    public CACompteAnnexeManager searchComptesAnnexes(String forNumeroAffilie, Role role, BSession session) throws ESInternalException, ESBadRequestException {
         CACompteAnnexeManager compteAnnexeManager = new CACompteAnnexeManager();
         compteAnnexeManager.setSession(session);
         compteAnnexeManager.setForIdExterneRole(forNumeroAffilie);
         compteAnnexeManager.setForSelectionRole(mapToSelectionRole(role));
 
-        compteAnnexeManager.find(BManager.SIZE_NOLIMIT);
-        if (compteAnnexeManager.size() > 0) {
-            return compteAnnexeManager;
-        } else {
-            throw new Exception("Unable to find compte annexe for numeroAffilie : " + forNumeroAffilie);
+        try {
+            compteAnnexeManager.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new ESInternalException("Une erreur est survenue lors de la recherche d'un compte annexe pour le numéro d'affilié : " + forNumeroAffilie, e);
         }
+
+        if (compteAnnexeManager.size() == 0) {
+            throw new ESBadRequestException("Impossible de trouver un compte annexe pour le numéro d'affilié : " + forNumeroAffilie);
+        }
+
+        return compteAnnexeManager;
     }
 
-    public CASectionManager searchSections(CACompteAnnexe compteAnnexe, String selectionTris, String selectionSections, String startPeriod, String endPeriod, BSession session) throws Exception {
+    public CASectionManager searchSections(CACompteAnnexe compteAnnexe, String selectionTris, String selectionSections, String startPeriod, String endPeriod, BSession session) throws ESInternalException {
         CASectionManager sectionManager = new CASectionManager();
         sectionManager.setSession(session);
         sectionManager.setForIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
@@ -79,13 +87,17 @@ public class ESSearchService {
         try {
             sectionManager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new Exception("Unable to find section for idCompteAnnexe : " + compteAnnexe.getIdCompteAnnexe());
+            throw new ESInternalException("Une exception est survenue lors de la recherche des sections pour l'idCompteAnnexe : " + compteAnnexe.getIdCompteAnnexe(), e);
+        }
+
+        if (sectionManager.getSize() == 0) {
+            LOG.info("Impossible de trouver une section pour l'idCompteAnnexe : " + compteAnnexe.getIdCompteAnnexe());
         }
 
         return sectionManager;
     }
 
-    public CAExtraitCompteListViewBean searchLignesExtraitComptes(CASection section, String selectionTris, String selectionSections, String langue, BSession session) throws Exception {
+    public CAExtraitCompteListViewBean searchLignesExtraitComptes(CASection section, String selectionTris, String selectionSections, String langue, BSession session) {
         CAExtraitCompteListViewBean vb = new CAExtraitCompteListViewBean();
         vb.setIdCompteAnnexe(section.getIdCompteAnnexe());
         vb.setSession(session);
@@ -95,22 +107,27 @@ public class ESSearchService {
         vb.setPrintLanguage(langue);
         vb.find();
 
-        if (vb.getSize() > 0) {
-            return vb;
-        } else {
-            throw new Exception("Unable to find extrait de compte for idSection : " + section.getIdSection());
+        if (vb.getSize() == 0) {
+            LOG.info("Impossible de trouver des lignes d'extrait de comptes pour l'idSection : " + section.getIdSection());
         }
+
+        return vb;
     }
 
-    public AffiliationSimpleModel searchAffiliation(String affiliateNumber) throws Exception {
+    public AffiliationSearchSimpleModel searchAffiliation(String affiliateNumber) throws ESInternalException, ESBadRequestException {
         AffiliationSearchSimpleModel searchModel = new AffiliationSearchSimpleModel();
         searchModel.setForNumeroAffilie(affiliateNumber);
-        searchModel = AFBusinessServiceLocator.getAffiliationService().find(searchModel);
 
-        if (searchModel.getSize() > 0) {
-            return (AffiliationSimpleModel) searchModel.getSearchResults()[0];
-        } else {
-            throw new Exception("Unable to find affiliation for affiliateNumber : " + affiliateNumber);
+        try {
+            searchModel = AFBusinessServiceLocator.getAffiliationService().find(searchModel);
+        } catch (Exception e) {
+            throw new ESInternalException("Une exception est survenue lors de la recherche d'une affiliation pour le numéro d'affilié : " + affiliateNumber, e);
         }
+
+        if (searchModel.getSize() == 0) {
+            throw new ESBadRequestException("Impossible de trouver une affiliation pour le numéro d'affilié : " + affiliateNumber);
+        }
+
+        return searchModel;
     }
 }

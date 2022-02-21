@@ -16,6 +16,7 @@ import globaz.osiris.db.contentieux.CALigneExtraitCompte;
 import globaz.osiris.eservices.dto.ESExtraitCompteDTO;
 import globaz.osiris.eservices.dto.ESInfoFacturationDTO;
 import globaz.osiris.eservices.exceptions.ESBadRequestException;
+import globaz.osiris.eservices.exceptions.ESInternalException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -67,6 +68,12 @@ public class ESRetrieveService {
 
             return dto;
 
+        } catch (ESInternalException e) {
+            LOG.error("Une erreur interne s'est produite lors de la récupération de l'extrait de compte : ", e);
+            throw e;
+        } catch (ESBadRequestException e) {
+            LOG.error("Une erreur de paramètre s'est produite lors de la récupération de l'extrait de compte : ", e);
+            throw e;
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération de l'extrait de compte : ", e);
             throw new ESBadRequestException(e);
@@ -112,9 +119,17 @@ public class ESRetrieveService {
 
             return dto;
 
+        } catch (ESInternalException e) {
+            LOG.error("Une erreur interne s'est produite lors de la récupération des informations de facturation : ", e);
+            throw e;
+        } catch (ESBadRequestException e) {
+            LOG.error("Une erreur de paramètre s'est produite lors de la récupération des informations de facturation : ", e);
+            throw e;
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération des informations de facturation : ", e);
             throw new ESBadRequestException(e);
+        } finally {
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
     }
 }
