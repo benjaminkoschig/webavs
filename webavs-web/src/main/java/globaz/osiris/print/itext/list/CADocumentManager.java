@@ -893,10 +893,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
             String typeAdresse = null;
             String domaine = null;
             if (Objects.nonNull(section)) {
-                if (JadeStringUtil.isBlankOrZero(section.getDomaine())) {
+                if (!JadeStringUtil.isBlankOrZero(section.getDomaine())) {
                     domaine = section.getDomaine();
                 }
-                if (JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
+                if (!JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
                     typeAdresse = section.getTypeAdresse();
                 }
             }
@@ -925,10 +925,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         String typeAdresse = null;
         String domaine = null;
         if (Objects.nonNull(section)) {
-            if (JadeStringUtil.isBlankOrZero(section.getDomaine())) {
+            if (!JadeStringUtil.isBlankOrZero(section.getDomaine())) {
                 domaine = section.getDomaine();
             }
-            if (JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
+            if (!JadeStringUtil.isBlankOrZero(section.getIdTypeSection())) {
                 typeAdresse = section.getTypeAdresse();
             }
         }
