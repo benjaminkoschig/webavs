@@ -17,11 +17,12 @@ public class ESInfoFacturationDTO {
     private String langue;
     private String selectionSections;
     private String selectionTris;
-    private String startPeriod; // DD.MM.YYYY
-    private String endPeriod; // DD.MM.YYYY
-    private String libre1;
-    private String libre2;
-    private String libre3;
+    private String operation = ""; // Non mandatory Field
+    private String startPeriod; // Format DD.MM.YYYY
+    private String endPeriod; // Format DD.MM.YYYY
+    private String libre1 = ""; // Non mandatory Field
+    private String libre2 = ""; // Non mandatory Field
+    private String libre3 = ""; // Non mandatory Field
     private List<ESInfoFacturationSectionDTO> sections = new ArrayList();
 
     public ESInfoFacturationDTO() {
@@ -35,10 +36,10 @@ public class ESInfoFacturationDTO {
 
     @Data
     public class ESInfoFacturationSectionDTO {
-        private String date; // DD.MM.YYYY
+        private String date; // Format DD.MM.YYYY
         private String sectionNumber;
         private String description;
-        private String dueDate; // DD.MM.YYYY
+        private String dueDate; // Format DD.MM.YYYY
         private String baseAmount;
         private String pmtCmpAmount;
         private String solde;
@@ -53,8 +54,8 @@ public class ESInfoFacturationDTO {
 
     @Data
     public class ESInfoFacturationLigneExtraitCompteDTO {
-        private String dateComptable; // DD.MM.YYYY
-        private String dateValeur; // DD.MM.YYYY
+        private String dateComptable; // Format DD.MM.YYYY
+        private String dateValeur; // Format DD.MM.YYYY
         private String description;
         private String doit;
         private String avoir;

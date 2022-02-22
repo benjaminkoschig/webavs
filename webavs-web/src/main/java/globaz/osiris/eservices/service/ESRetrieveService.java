@@ -96,13 +96,13 @@ public class ESRetrieveService {
                 CACompteAnnexe caCompteAnnexe = (CACompteAnnexe) compteAnnexeManager.get(i);
 
                 // Récupération des sections
-                CASectionManager sectionManager = esSearchService.searchSections(caCompteAnnexe, dto.getSelectionTris(), dto.getSelectionSections(), dto.getStartPeriod(), dto.getEndPeriod(), session);
+                CASectionManager sectionManager = esSearchService.searchSections(caCompteAnnexe, dto.getSelectionSections(), dto.getStartPeriod(), dto.getEndPeriod(), session);
                 for (int j = 0; j < sectionManager.size(); j++) {
                     CASection caSection = (CASection) sectionManager.get(j);
                     ESInfoFacturationDTO.ESInfoFacturationSectionDTO section = esCreationService.createSection(caSection, dto.getLangue());
 
                     // Récupération des lignes d'extraits de comptes
-                    CAExtraitCompteListViewBean ligneExtraitCompteManager = esSearchService.searchLignesExtraitComptes(caSection, dto.getSelectionTris(), dto.getSelectionSections(), dto.getLangue(), session);
+                    CAExtraitCompteListViewBean ligneExtraitCompteManager = esSearchService.searchLignesExtraitComptes(caSection, dto.getSelectionTris(), dto.getSelectionSections(), dto.getOperation(), dto.getLangue(), session);
                     FWCurrency soldeCumule = new FWCurrency();
                     for (int k = 0; k < ligneExtraitCompteManager.size(); k++) {
                         CALigneExtraitCompte caLigneExtraitCompte = (CALigneExtraitCompte) ligneExtraitCompteManager.getLigneExtraitCompte().get(k);

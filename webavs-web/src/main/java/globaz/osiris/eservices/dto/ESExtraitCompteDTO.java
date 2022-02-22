@@ -16,13 +16,13 @@ public class ESExtraitCompteDTO  {
     private String selectionSections;
     private String selectionTris;
     private String operation;
-    private String startPeriod; // DD.MM.YYYY
-    private String endPeriod; // DD.MM.YYYY
-    private String documentDate; // DD.MM.YYYY
-    private String document;
-    private String libre1;
-    private String libre2;
-    private String libre3;
+    private String startPeriod; // Format DD.MM.YYYY
+    private String endPeriod; // Format DD.MM.YYYY
+    private String documentDate; // Format DD.MM.YYYY
+    private String document = ""; // Non mandatory Field
+    private String libre1 = ""; // Non mandatory Field
+    private String libre2 = ""; // Non mandatory Field
+    private String libre3 = ""; // Non mandatory Field
 
     public ESExtraitCompteDTO() {
     }
