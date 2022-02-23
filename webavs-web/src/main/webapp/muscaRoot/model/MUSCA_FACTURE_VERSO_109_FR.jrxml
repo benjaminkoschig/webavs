@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="MUSCA_FACTURE_VERSO_109_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+		<background>
+			<band height="702"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="5"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[ABREVIATIONS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="3"
+						y="23"
+						width="32"
+						height="60"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[AVS
+AI
+APG
+AC
+CAF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="90"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[COTISATIONS PERSONNELLES AVS/AI/APG]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="107"
+						width="532"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Le présent décompte (article 34, alinéa 1, lettre c, RAVS) applique la dernière décision de la Caisse fixant les cotisations personnelles d’indépendant ou de non-actif. Il ne peut donc pas faire l’objet d'un recours.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="46"
+						y="23"
+						width="473"
+						height="60"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-23"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Assurance-vieillesse et survivants
+Assurance-invalidité
+Allocation pour perte de gain aux militaires
+Assurance-chômage (cotisations)
+Caisse d’allocations familiales]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="143"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-24"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[COTISATIONS PARITAIRES AVS/AI/APG/AC/CAF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="160"
+						width="532"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-25"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[L’acompte (article 34, alinéa 3, RAVS) est calculé d'après la moyenne des salaires versés durant la dernière période de décompte écoulée. Si le montant de l'acompte ne correspond plus à la réalité, vous pouvez en demander la modification.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="211"
+						width="532"
+						height="36"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-26"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[La contribution aux frais d’administration est fixée en pour-cent du montant des cotisations pour les indépendants, en pour-cent des
+salaires pour les autres cas. Une éventuelle rectification concernant les cotisations personnelles AVS/AI/APG ou les cotisations paritaires
+AVS/AI/APG/AC/CAF entraîne d’office un nouveau calcul de la contribution.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="195"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[FRAIS D’ADMINISTRATION SUR COTISATIONS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="255"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[SOMMATION POUR LE PAIMENT DES COTISATIONS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="271"
+						width="532"
+						height="43"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-29"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Les personnes tenues de payer des cotisations qui ne les versent pas ou ne remettent pas le décompte relatif aux cotisations paritairesdans les délais prescrits recevront une sommation écrite de la caisse de compensation, leur impartissant un délai supplémentaire de 10 à 20 jours. La sommation, qui entraîne une taxe de 10 à 200 francs à la charge de l’intéressé attirera l’attention sur les conséquences qu'aurait l’inobservation de la sommation.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="321"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-30"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[INOBSERVATION DE LA SOMMATION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="337"
+						width="532"
+						height="35"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-31"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Passe le délai supplémentaire fixe lors de la notification de la sommation, la caisse peut prononcer une amende d’ordre de Fr. 5OO.- au plus et, en cas de récidive dans les deux ans, de Fr. 2000.- au plus (art. 91 LAVS). D'autre part, le renvoi de l’affaire au juge pénal reste réservé (art. 87 LAVS).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="379"
+						width="533"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-32"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[DÉLITS (ART. 87 LAVS)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="395"
+						width="532"
+						height="127"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-33"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Celui qui, par des indications fausses ou incomplètes, ou de toute autre manière, aura obtenu, pour lui-même ou pour autrui, sur la base de la présente loi, une prestation qui ne lui revient pas,
+celui qui, par des indications fausses ou incomplètes, ou de toute autre manière, aura éludé, en tout ou en partie, l'obligation de payer des cotisations,
+celui qui, en sa qualité d’employeur, aura déduit des cotisations du salaire d’un employé ou ouvrier et les aura détournées de leur destination,
+celui qui n'aura pas observé l’obligation de garder le secret ou aura dans l’application de la présente loi, abusé de sa fonction en tant qu’organe ou que fonctionnaire ou employé au détriment de tiers ou pour son propre profit,
+celui qui, en sa qualité de réviseur ou d’aide-réviseur, aura gravement enfreint les obligations qui lui incombent lors d’une révision ou d’un contrôle, ou en rédigeant ou présentant le rapport de révision ou de contrôle,
+sera puni, à moins qu’il ne s'agisse d’un crime ou d’un délit frappé d’une peine plus élevée par le code pénal, de l’emprisonnement pour six mois au plus ou d’une amende de vingt mille francs au plus. Les deux peines peuvent être cumulées.]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="84"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

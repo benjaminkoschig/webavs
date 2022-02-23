@@ -221,7 +221,7 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/logo_cvci_bvr.jpg"]]></imageExpression>				</image>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/logo_cvci_sommation.jpg"]]></imageExpression>				</image>
 			</band>
 		</pageHeader>
 		<columnHeader>
