@@ -506,6 +506,14 @@
                         </li>
                         <%}%>
 
+                        <%if (objSession.hasRight("eform", globaz.framework.secure.FWSecureConstants.READ)) {%>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/eform" target="_top">
+                                DE_Gestion des formulaires
+                            </a>
+                        </li>
+                        <%}%>
+
                         <%if (objSession.hasRight("campus", globaz.framework.secure.FWSecureConstants.READ)) {%>
                         <li>
                             <a href="<%=request.getContextPath()%>/campus" target="_top">

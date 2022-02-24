@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="eform-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+<!--		<nodes>-->
+<!--			<node>-->
+<!--				<label refId="MENU_OPTION_GLOBAL_VIEW"/>-->
+<!--				<action command="/eform" responseTarget="fr_main">-->
+<!--					<parameter name="userAction" value="eform.formulaire.chercher"/>-->
+<!--					<parameter name="selectedId"/>-->
+<!--					<parameter name="csDomaine"/>-->
+<!--				</action>-->
+<!--			</node>-->
+<!--		</nodes>-->
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option Detail étape              -->
+	<!-- ***************************************** -->
+	<menu id="eform-eFormulaireDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="MENU_DETAIL"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.formulaire.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_TELECHARGEMENT"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.formulaire.telecharger"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option empty		    -->
+	<!-- ************************** -->
+	<menu id="eform-optionsempty">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>
+</menus>

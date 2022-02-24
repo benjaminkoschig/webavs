@@ -415,6 +415,14 @@
                         </li>
                         <%}%>
 
+                        <%if (objSession.hasRight("eform", globaz.framework.secure.FWSecureConstants.READ)) {%>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/eform" target="_top">
+                                Gestion des formulaires
+                            </a>
+                        </li>
+                        <%}%>
+
                         <%if (objSession.hasRight("pyxis", globaz.framework.secure.FWSecureConstants.READ)) {%>
                         <li>
                             <a href="<%=request.getContextPath()%>/pyxis" target="_top">

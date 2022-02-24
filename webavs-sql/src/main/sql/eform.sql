@@ -20,3 +20,7 @@ CREATE TABLE SCHEMA.GF_FORMULAIRE (
     PSPY VARCHAR(25),
     PRIMARY KEY (FORMULAIRE_ID)
 );
+
+-- création des droits et autorisations
+INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFAdmin', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFAdmin', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
