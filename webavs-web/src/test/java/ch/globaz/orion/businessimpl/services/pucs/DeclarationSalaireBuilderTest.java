@@ -10,6 +10,8 @@ import java.util.Locale;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
@@ -261,6 +263,7 @@ public class DeclarationSalaireBuilderTest {
     }
 
     @Test
+    @Ignore
     public void testPdf() throws Exception {
 
         // pucsGros.xml;
