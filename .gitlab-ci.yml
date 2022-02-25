@@ -1,0 +1,4 @@
+include:
+  - project: 'ci-cd/product-currents-gitlab-ci'
+    ref: master
+    file: '/mvn-gitlab-ci.yml'
