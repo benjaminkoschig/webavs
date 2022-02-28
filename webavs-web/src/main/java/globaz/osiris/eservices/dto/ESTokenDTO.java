@@ -1,6 +1,7 @@
 package globaz.osiris.eservices.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
 import java.util.Objects;
@@ -16,6 +17,6 @@ public class ESTokenDTO {
 
     @JsonIgnore
     public Boolean isValid() {
-        return Stream.of(token).allMatch(Objects::nonNull);
+        return Stream.of(token).noneMatch(JadeStringUtil::isEmpty);
     }
 }
