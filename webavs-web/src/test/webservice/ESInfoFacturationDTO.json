@@ -4,8 +4,9 @@
    "langue":"FR",
    "selectionSections":"all",
    "selectionTris":"order_by_date",
-   "startPeriod":"01.09.2021",
-   "endPeriod":"01.02.2022",
+   "operation":"EPB",
+   "startPeriod":"10.12.2021",
+   "endPeriod":"14.12.2021",
    "libre1":"",
    "libre2":"222",
    "libre3":""

@@ -2,6 +2,8 @@ package globaz.osiris.eservices.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -11,13 +13,12 @@ import java.util.stream.Stream;
 
 @Data
 public class ESInfoFacturationDTO {
-    public static final int MAX_PERIOD = 60; // max 5 ans de données autorisées
     private String affiliateNumber;
     private String role;
-    private String langue;
+    private String langue = ""; // Non mandatory Field
     private String selectionSections;
     private String selectionTris;
-    private String operation = ""; // Non mandatory Field
+    private String operation = CAExtraitCompteManager.FOR_ALL_IDTYPEOPERATION;
     private String startPeriod; // Format DD.MM.YYYY
     private String endPeriod; // Format DD.MM.YYYY
     private String libre1 = ""; // Non mandatory Field
@@ -30,8 +31,8 @@ public class ESInfoFacturationDTO {
 
     @JsonIgnore
     public Boolean isValid() {
-        return (Stream.of(affiliateNumber, role, langue, selectionSections, selectionTris, startPeriod, endPeriod).allMatch(Objects::nonNull) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate))
-            && (JadeDateUtil.getNbMonthsBetween(startPeriod, endPeriod) <= MAX_PERIOD);
+        return (Stream.of(affiliateNumber, role, selectionSections, selectionTris, operation, startPeriod, endPeriod).noneMatch(JadeStringUtil::isEmpty) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate))
+            && ESValidateDTO.isValid(langue, selectionSections, selectionTris, operation, startPeriod, endPeriod);
     }
 
     @Data
@@ -47,7 +48,7 @@ public class ESInfoFacturationDTO {
 
         @JsonIgnore
         public Boolean isValid() {
-            return Stream.of(date, sectionNumber, description, dueDate, baseAmount, pmtCmpAmount, solde).allMatch(Objects::nonNull)
+            return Stream.of(date, sectionNumber, description, dueDate, baseAmount, pmtCmpAmount, solde).noneMatch(JadeStringUtil::isEmpty)
                     && Stream.of(date, dueDate).allMatch(JadeDateUtil::isGlobazDate);
         }
     }
@@ -63,7 +64,7 @@ public class ESInfoFacturationDTO {
 
         @JsonIgnore
         public Boolean isValid() {
-            return Stream.of(dateComptable, dateValeur, description, doit, avoir, solde).allMatch(Objects::nonNull)
+            return Stream.of(dateComptable, dateValeur, description, doit, avoir, solde).noneMatch(JadeStringUtil::isEmpty)
                     && Stream.of(dateComptable, dateValeur).allMatch(JadeDateUtil::isGlobazDate);
         }
     }

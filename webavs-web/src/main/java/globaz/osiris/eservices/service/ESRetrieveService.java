@@ -76,7 +76,7 @@ public class ESRetrieveService {
             throw e;
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération de l'extrait de compte : ", e);
-            throw new ESBadRequestException(e);
+            throw new ESInternalException(e);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -127,7 +127,7 @@ public class ESRetrieveService {
             throw e;
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération des informations de facturation : ", e);
-            throw new ESBadRequestException(e);
+            throw new ESInternalException(e);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
