@@ -28,28 +28,28 @@
 	</filter>
  -->
 
-<!-- ResponseFilterMapping: uncomment to protect from HttpResponseSplitting attacks-->
-<!--
-	<filter-mapping id="GlobazResponseFilterMapping">
-		<filter-name>ResponseFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
--->
+	<!-- ResponseFilterMapping: uncomment to protect from HttpResponseSplitting attacks-->
+	<!--
+        <filter-mapping id="GlobazResponseFilterMapping">
+            <filter-name>ResponseFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+    -->
 
-<!-- RequestFilterMapping: uncomment to protect from XSS attacks-->
-<!--
-	<filter-mapping id="GlobazRequestFilterMapping">
-		<filter-name>RequestFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
--->
+	<!-- RequestFilterMapping: uncomment to protect from XSS attacks-->
+	<!--
+        <filter-mapping id="GlobazRequestFilterMapping">
+            <filter-name>RequestFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+    -->
 
-<!--
-	<filter-mapping id="GlobazGZIPFilterMapping">
-		<filter-name>GZIPFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	 -->
+	<!--
+        <filter-mapping id="GlobazGZIPFilterMapping">
+            <filter-name>GZIPFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+         -->
 
 	<!--  Utilisation de la servlet de gestion de la persistence -->
 	<servlet>
@@ -63,7 +63,7 @@
 		<url-pattern>/persistence</url-pattern>
 	</servlet-mapping>
 
-		<!-- Servlet pour la documentation est les testes des notations javascript -->
+	<!-- Servlet pour la documentation est les testes des notations javascript -->
 	<servlet>
 		<servlet-name>notation</servlet-name>
 		<display-name>notation</display-name>
@@ -172,7 +172,7 @@
 		<servlet-name>orion</servlet-name>
 		<display-name>ORION</display-name>
 		<servlet-class>ch.globaz.orion.servlet.EBMainServlet</servlet-class>
-	<load-on-startup>1</load-on-startup>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet id="GlobazPhenixServlet">
 		<servlet-name>phenix</servlet-name>
@@ -303,24 +303,30 @@
 		<servlet-class>ch.globaz.amal.web.servlet.AMMainServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet id="GlobazEformServlet">
+		<servlet-name>eform</servlet-name>
+		<display-name>EFORM</display-name>
+		<servlet-class>ch.globaz.eform.web.servlet.GFMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 
-    <servlet id="WSRestServlet">
-        <servlet-name>WSRest</servlet-name>
-        <!-- TOMCAT -->
-<!--        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
-        <!-- IBM -->
+	<servlet id="WSRestServlet">
+		<servlet-name>WSRest</servlet-name>
+		<!-- TOMCAT -->
+		<!--        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
+		<!-- IBM -->
 		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>ch.globaz.common.ws.configuration.WSConfiguration</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>ch.globaz.common.ws.configuration.WSConfiguration</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 
-    <servlet-mapping id="WSRestServletMapping">
-        <servlet-name>WSRest</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping id="WSRestServletMapping">
+		<servlet-name>WSRest</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping id="GlobazVulpeculaServletMapping">
 		<servlet-name>vulpecula</servlet-name>
@@ -444,8 +450,8 @@
 		<url-pattern>/tucana</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping id="GlobazOrionServletMapping">
-	<servlet-name>orion</servlet-name>
-	<url-pattern>/orion</url-pattern>
+		<servlet-name>orion</servlet-name>
+		<url-pattern>/orion</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping id="GlobazLibraServletMapping">
 		<servlet-name>libra</servlet-name>
@@ -487,6 +493,10 @@
 	<servlet-mapping id="GlobazPropertiesServletMapping">
 		<servlet-name>properties-service</servlet-name>
 		<url-pattern>/properties-service</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazEformServletMapping">
+		<servlet-name>eform</servlet-name>
+		<url-pattern>/eform</url-pattern>
 	</servlet-mapping>
 	<taglib id="GlobazTagLib">
 		<taglib-uri>taglib</taglib-uri>
