@@ -77,4 +77,6 @@
 	
 	<!-- BMS - VULPECULA - POSTE DE TRAVAIL -->
 	<model-mapping import="PTModelMapping.xml"/>
+
+	<model-mapping import="EFormModelMapping.xml"/>
 </globaz.jade.persistence.mapping.JadeModelMappingProvider>
