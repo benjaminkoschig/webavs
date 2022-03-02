@@ -1,6 +1,7 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ page import="globaz.naos.properties.AFProperties" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
+<%@ page import="globaz.naos.translation.CodeSystem" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%> 
@@ -18,7 +19,39 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%> 
 <SCRIPT language="JavaScript">
+String.prototype.replaceLast = function (what, replacement) {
+	if (this.indexOf(what) === -1) {
+		return this;
+	}
+	var pcs = this.split(what);
+	var lastPc = pcs.pop();
+	return pcs.join(what) + replacement + lastPc;
+};
 
+function check(elem) {
+	if(/^[0-9]+$/.test(elem.getAttribute("maxlength"))) {
+		var maxlength = parseInt(elem.getAttribute("maxlength"), 10);
+
+		if (elem.value.length > maxlength) {
+			alert ("Vous avez dépassé le nombre maximum de caractères");
+			elem.value = elem.value.substr(0, maxlength);
+			//Le retour chariot est sur 2 caractères '\r\n'
+			//Si celui-ci fait dépasser la limite '\r' doit-être géré.
+			if (elem.value.slice(-1) === '\r') {
+				elem.value = elem.value.substr(0, elem.value.length - 1);
+			}
+			return false;
+		}
+	}
+	if(/^[0-9]+$/.test(elem.getAttribute("maxrow"))) {
+		var maxrow = parseInt(elem.getAttribute("maxrow"), 10);
+		var lines = (elem.value.match(/\r\n/g) || []).length;
+		if (lines >= maxrow) {
+			elem.value = elem.value.replaceLast('\r\n', '');
+			return false;
+		}
+	}
+}
 
 function add() {
 	document.forms[0].elements('userAction').value="naos.suiviCaisseAffiliation.suiviCaisseAffiliation.ajouter"
@@ -60,7 +93,7 @@ function init() {
 function onChangeGenre(){
 	var newGenreValeur = document.forms[0].elements('genreCaisse').value;
 	var newMotif = document.forms[0].elements('motif').value;
-	if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LPP%>&&newMotif=="") {
+	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LPP%>&&newMotif=="") {
 		document.all('attestationIPTable').style.display = 'block';
 		<%
 			boolean showGestionDossierCAF = false;
@@ -80,7 +113,7 @@ function onChangeGenre(){
 		<%
 			}
 		%>
-	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LAA%>){
+	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LAA%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
 		<%
@@ -92,7 +125,7 @@ function onChangeGenre(){
 		<%
 			}
 		%>
-	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_AVS%>){
+	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AVS%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
 		<%
@@ -104,7 +137,7 @@ function onChangeGenre(){
 		<%
 			}
 		%>
-	} else if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_AF%>){
+	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
 		<%
@@ -132,13 +165,21 @@ function onChangeMotif(){
 			document.forms[0].elements('caisseSelector').disabled = true;
 		document.forms[0].elements('numeroAffileCaisse').disabled = true;
 		document.all('attestationIPTable').style.display = 'none';
+		document.all('lbRemarque').style.display = 'none';
+		document.all('trEnvoieCAF').style.display = 'none';
+		document.all('trException').style.display = 'none';
 	}else{
 		if(document.forms[0].elements('caisseSelector')!=null)
 			document.forms[0].elements('caisseSelector').disabled = false;
 		document.forms[0].elements('numeroAffileCaisse').disabled = false;
 		document.forms[0].elements('attestationIp').disabled = false;
-		if (newGenreValeur == <%=globaz.naos.translation.CodeSystem.GENRE_CAISSE_LPP%>) {
+		if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LPP%>) {
 			document.all('attestationIPTable').style.display = 'block';
+		}
+		if (newGenreValeur === <%=CodeSystem.GENRE_CAISSE_AF%>) {
+			document.all('lbRemarque').style.display = 'block';
+			document.all('trEnvoieCAF').style.display = 'block';
+			document.all('trException').style.display = 'block';
 		}
 	}
 }
@@ -170,7 +211,7 @@ function onChangeMotif(){
 										document.getElementsByName('genreCaisse')[0].onchange = function() {onChangeGenre();};
 									</script>
 								<%if(!"add".equals(request.getParameter("_method"))){
-									String genreValue = globaz.naos.translation.CodeSystem.getLibelle(viewBean.getSession(),viewBean.getGenreCaisse());
+									String genreValue =CodeSystem.getLibelle(viewBean.getSession(),viewBean.getGenreCaisse());
 									%>
 									<INPUT name="genreCaisseDummy" size="10" type="hidden" value="<%=genreValue%>" readonly="readonly" tabindex="-1" class="Disabled">
 									<INPUT name="genreCaisse" size="10" type="hidden" value="<%=viewBean.getGenreCaisse()%>" >
@@ -249,7 +290,7 @@ function onChangeMotif(){
 								<ct:FWCalendarTag name="dateEnvoieCAF" value="<%=viewBean.getDateEnvoieCAF()%>"/>
 							</TD>
 							<TD rowspan="5">
-								<TEXTAREA name="remarque" rows="10" cols="40" ><%=viewBean.getRemarque()%></TEXTAREA>
+								<TEXTAREA name="remarque" maxrow="3" maxlength="5000" rows="10" cols="40" onkeyup="check(this)" onblur="check(this)"><%=viewBean.getRemarque()%></TEXTAREA>
 							</TD>
 							<%
 								}
@@ -283,7 +324,7 @@ function onChangeMotif(){
 						</TR>
 						<TR> 
 							<TD nowrap height="31" width="120" >Zusatzkasse</TD>
-							<TD"><input type="checkbox" name="accessoire" <%=(viewBean.getAccessoire().booleanValue())? "checked" : "unchecked"%>></TD>
+							<TD><input type="checkbox" name="accessoire" <%=(viewBean.getAccessoire().booleanValue())? "checked" : "unchecked"%>></TD>
 						</TR>
 						<%
 							if (showGestionDossierCAF) {
