@@ -34,7 +34,7 @@ function check(elem) {
 		var maxlength = parseInt(elem.getAttribute("maxlength"), 10);
 
 		if (elem.value.length > maxlength) {
-			alert ("Vous avez dépassé le nombre maximum de caractères");
+			alert ("Vous avez dépassé le nombre maximum de caractères autorisé");
 			elem.value = elem.value.substr(0, maxlength);
 			//Le retour chariot est sur 2 caractères '\r\n'
 			//Si celui-ci fait dépasser la limite '\r' doit-être géré.
@@ -292,7 +292,7 @@ function onChangeMotif(){
 								<ct:FWCalendarTag name="dateEnvoieCAF" value="<%=viewBean.getDateEnvoieCAF()%>"/>
 							</TD>
 							<TD rowspan="5">
-								<TEXTAREA id="remarque" name="remarque" maxrow="3" maxlength="5000" rows="10" cols="40" onkeyup="check(this);" onblur="check(this);"><%=viewBean.getRemarque()%></TEXTAREA>
+								<TEXTAREA id="remarque" name="remarque" maxrow="4" maxlength="5000" rows="10" cols="40" onkeyup="check(this);" onblur="check(this);"><%=viewBean.getRemarque()%></TEXTAREA>
 							</TD>
 							<%
 								}
