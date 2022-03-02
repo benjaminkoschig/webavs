@@ -89,19 +89,19 @@ public class StrategieFinalFortuneImmobiliere201101 implements StrategieCalculFi
             if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_PRINCIPAL_PLAFONNEE)) {
                 float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY);
                 donnee.addEnfantTuple(new TupleDonneeRapport(
-                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY, montant, BSessionUtil.getSessionFromThreadContext().getLabel("LIBELLE_DETTE_PLAFONNEE")));
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY, montant, "LIBELLE_DETTE_PLAFONNEE"));
             }
 
             if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_ANNEXE_PLAFONNEE)) {
                 float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED);
                 donnee.addEnfantTuple(new TupleDonneeRapport(
-                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, montant, BSessionUtil.getSessionFromThreadContext().getLabel("LIBELLE_DETTE_PLAFONNEE")));
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, montant,"LIBELLE_DETTE_PLAFONNEE"));
             }
 
             if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NON_HABITABLE_PLAFONNEE)) {
                 float montant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED);
                 donnee.addEnfantTuple(new TupleDonneeRapport(
-                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED, montant, BSessionUtil.getSessionFromThreadContext().getLabel("LIBELLE_DETTE_PLAFONNEE")));
+                        IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED, montant, "LIBELLE_DETTE_PLAFONNEE"));
             }
         }else{
             somme = UtilStrategieFinalFortuneImmobiliere.plafonneValeurBiensImmoDeduit(somme);
@@ -122,7 +122,7 @@ public class StrategieFinalFortuneImmobiliere201101 implements StrategieCalculFi
 
     /**
      * Methode gérant les conditions métiers propores a cette donnée financières
-     * 
+     *
      * @param donnee
      * @return boolean, etat de la condition métier
      */

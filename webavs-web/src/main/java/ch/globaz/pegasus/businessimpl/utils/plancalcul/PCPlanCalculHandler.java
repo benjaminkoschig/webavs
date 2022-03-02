@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 
@@ -53,7 +53,7 @@ public class PCPlanCalculHandler {
     /**
      * Constructeur statique pour le chargement du plan de calcul via l'id de la pca<br/>
      * Va charger le plan de calcul défini comme retenu pour la pc<br/>
-     * 
+     *
      * @param session
      *            l'instance de BSession
      * @param idPca
@@ -82,7 +82,7 @@ public class PCPlanCalculHandler {
 
     /**
      * Constructeur statique pour le chargement du plan de calcul via l'id du plan de calcul</br>
-     * 
+     *
      * @param session
      *            l'instance de BSession
      * @param idPcal
@@ -133,7 +133,7 @@ public class PCPlanCalculHandler {
 
     /**
      * Constructeur privé. Utilisé par les constrcuteur statique.
-     * 
+     *
      * @param session
      * @param idBeneficiaire
      * @throws CalculException
@@ -181,13 +181,13 @@ public class PCPlanCalculHandler {
                         + ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille().getNom()
                         + " - "
                         + ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille()
-                                .getDateNaissance());
+                        .getDateNaissance());
             } else {
                 if (idBeneficiaire.equals(((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille()
                         .getMembreFamille().getPersonneEtendue().getTiers().getIdTiers())) {
                     buildBeneficiaireString(((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille()
-                            .getMembreFamille().getPrenom(), ((PlanDeCalculWitMembreFamille) model)
-                            .getDroitMembreFamille().getMembreFamille().getNom(),
+                                    .getMembreFamille().getPrenom(), ((PlanDeCalculWitMembreFamille) model)
+                                    .getDroitMembreFamille().getMembreFamille().getNom(),
                             ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille()
                                     .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel(),
                             ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille()
@@ -196,8 +196,8 @@ public class PCPlanCalculHandler {
                 } else {
 
                     buildConjointString(((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille()
-                            .getMembreFamille().getPrenom(), ((PlanDeCalculWitMembreFamille) model)
-                            .getDroitMembreFamille().getMembreFamille().getNom(),
+                                    .getMembreFamille().getPrenom(), ((PlanDeCalculWitMembreFamille) model)
+                                    .getDroitMembreFamille().getMembreFamille().getNom(),
                             ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille()
                                     .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel(),
                             ((PlanDeCalculWitMembreFamille) model).getDroitMembreFamille().getMembreFamille()
@@ -215,7 +215,7 @@ public class PCPlanCalculHandler {
 
     /**
      * Creation du bloc fortune et retour de la liste des ligne du plan de calcul
-     * 
+     *
      * @return ArrayList contenant les lignes du plan de calcul
      * @throws Exception
      */
@@ -227,7 +227,7 @@ public class PCPlanCalculHandler {
 
     /**
      * Creation des lignes du bloc final de resume
-     * 
+     *
      * @throws Exception
      */
     public ArrayList<PCLignePlanCalculHandler> createBlocResume(String langueTiers) throws Exception {
@@ -245,7 +245,7 @@ public class PCPlanCalculHandler {
     }
 
     private ArrayList<PCLignePlanCalculHandler> dealLibelle(ArrayList<PCLignePlanCalculHandler> liste,
-            Boolean isForTotal, String langueTiers) throws Exception {
+                                                            Boolean isForTotal, String langueTiers) throws Exception {
 
         // langue par defaut pour affichage plan calcul usage interne
         if (null == langueTiers) {
@@ -321,7 +321,10 @@ public class PCPlanCalculHandler {
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL)) {
                         if (!ligne.getLegende().isEmpty()) {
-                            lib[0] = lib[0].replace("{libelle}", ligne.getLegende());
+                            String label = BSessionUtil.getSessionFromThreadContext().getLabel(ligne.getLegende());
+                            // On contrôle que le label ait été trouvé, il pourrait y avoir des plan de calcul éditer avant la mise en place du label
+                            String libelleAAfficher = labelFound(label) ? label : ligne.getLegende();
+                            lib[0] = lib[0].replace("{libelle}", libelleAAfficher);
                         } else {
                             lib[0] = lib[0].replace("{libelle}", "");
 
@@ -341,6 +344,16 @@ public class PCPlanCalculHandler {
         }
 
         return liste;
+    }
+
+    /**
+     * Méthode qui contrôle si le label est trouvé ou non
+     *
+     * @param label
+     * @return
+     */
+    private boolean labelFound(String label) {
+        return !label.contains("label not found");
     }
 
     private String getLibelleForValeurLocative(Langues langues) throws Exception {
@@ -389,7 +402,7 @@ public class PCPlanCalculHandler {
      * traitement traditionnel par la session est laissé.
      * Le traitement traditionnel par la session a été laissé intentionnellement en raison des dépendances de la méthode
      * mère "generateBlocs" avec plusieurs process.
-     * 
+     *
      * @param langueTiers
      * @param ligne
      * @return un code système utilisable par la méthode dealLibelle
@@ -419,7 +432,7 @@ public class PCPlanCalculHandler {
 
     /**
      * Cette signature permet de tenir compte de la langue du tiers bénéficiaire de la demande
-     * 
+     *
      * @param tupleRoot
      * @param langueTiers
      * @throws Exception
