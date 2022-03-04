@@ -13,7 +13,7 @@ public class GFApplication extends BApplication {
     private static final long serialVersionUID = 1L;
     public static final String APPLICATION_NAME = "EFORM";
     public static final String APPLICATION_PREFIX = "GF";
-    public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
+    public static final String DEFAULT_APPLICATION_ROOT = "gfRoot";
     public static final String DEFAULT_APPLICATION_EFORM = "EFORM";
 
     /**
@@ -42,8 +42,8 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _initializeApplication() throws Exception {
-        FWMenuCache cache = FWMenuCache.getInstance();
-        cache.addFile("EFORMMenu.xml");
+//        FWMenuCache cache = FWMenuCache.getInstance();
+//        cache.addFile("EFORMMenu.xml");
     }
 
     /**
