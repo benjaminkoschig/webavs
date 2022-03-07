@@ -3,6 +3,7 @@
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.applicationClassName', 'ch.globaz.eform.web.application.GFApplication', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.email.sedex.validation', '', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.user.gestionnaire.default', '', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.groupe.eform.gestionnaire', 'gEformUser', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 --========================================================================================================================
 -- SQL Script for create table (GF_FORMULAIRE)
@@ -43,3 +44,14 @@ COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.USER_GESTIONNAIRE is 'Gestionnaire attitr
 -- création des droits et autorisations
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFAdmin', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFAdmin', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFUser', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFReader', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFManager', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFManager', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFUser', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFReader', 'eform', 'Y', 'N', 'N', 'N', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+INSERT INTO SCHEMA.FWSGRPP (KGROUP, FRIGHT, FCOMMENT, PSPY) VALUES ('gEformUser', 'ADMINISTRATOR', 'Gestionnaires eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
