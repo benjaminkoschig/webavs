@@ -25,7 +25,7 @@ public class ESValidateDTO {
             && ESValidateDTO.validLangue.contains(langue.toLowerCase())
             && ESValidateDTO.validSelectionSections.contains(selectionSections.toLowerCase())
             && ESValidateDTO.validSelectionTris.contains(selectionTris.toLowerCase())
-            && ESValidateDTO.validOperation.contains(operation.toLowerCase())
+            && ESValidateDTO.validOperation.contains(operation)
             && JadeDateUtil.getNbMonthsBetween(startPeriod, endPeriod) <= ESValidateDTO.MAX_PERIOD;
     }
 }
