@@ -34,7 +34,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sferqa1.ju.globaz.ch:50005/ferqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -55,7 +55,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sglobdev2.ju.globaz.ch:50005/dev2prod</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -85,7 +85,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sglobdev1.ju.globaz.ch:50005/dev1prod</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -115,7 +115,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://sferqa1.ju.globaz.ch:50005/ferqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -158,7 +158,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sccjuqa1.ju.globaz.ch:50005/ccjuqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -168,7 +168,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://spcrfmq1.ju.globaz.ch:50005/rfmqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -178,7 +178,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://sciciqa1.ju.globaz.ch:50005/ciciqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -208,7 +208,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://sfpvqa1.ju.globaz.ch:50005/fpvqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -218,7 +218,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://sh51xqa1.ju.globaz.ch:50005/h51xqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -239,7 +239,7 @@
 		<driver>com.ibm.db2.jcc.DB2Driver</driver>
 		<url>jdbc:db2://sccvsqa1.ju.globaz.ch:50005/ccvsqua</url>
 		<user>db2inst1</user>
-		<password>db2inst1</password>
+		<password>InS2stanD@lon3</password>
 		<maxConnections>100</maxConnections>
 		<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 		<urlParameter name="prompt" value="false"/>
@@ -249,7 +249,7 @@
                <driver>com.ibm.db2.jcc.DB2Driver</driver>
                <url>jdbc:db2://sccvsqa1.ju.globaz.ch:50005/ccvsqa2</url>
                <user>db2inst1</user>
-               <password>db2inst1</password>
+               <password>InS2stanD@lon3</password>
                <maxConnections>100</maxConnections>
                <transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
                <urlParameter name="prompt" value="false"/>
@@ -303,7 +303,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://ccjui1.intranet-heb.ch:50005/ccjui1</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -394,7 +394,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sbmsqa1.ju.globaz.ch:50005/bmsqua</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
@@ -424,7 +424,7 @@
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
 			<url>jdbc:db2://sglobre3.ju.globaz.ch:54003/rep3prod</url>
 			<user>db2inst1</user>
-			<password>db2inst1</password>
+			<password>InS2stanD@lon3</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
