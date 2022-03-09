@@ -24,10 +24,10 @@ import javax.ws.rs.core.Response;
 public class ESApiRestExceptionHandler implements ExceptionHandler {
 
     @Override
-    public Response generateResponse(final Exception e, final Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
+    public Response generateResponse(final Exception e, Response.ResponseBuilder responseBuilder, final HttpServletRequest request) {
         RequestInfo requestInfo = new RequestInfo(request);
         ExceptionRequestInfo exceptionRequestInfo = new ExceptionRequestInfo(requestInfo, e);
-        mapESExceptionWithErrorStatus(e, responseBuilder);
+        responseBuilder = mapESExceptionWithErrorStatus(e, responseBuilder);
         BSession session = BSessionUtil.getSessionFromThreadContext();
         LOG.error("Une erreur imprévue s'est produite.", e);
         String label = "Global error";
@@ -43,13 +43,15 @@ public class ESApiRestExceptionHandler implements ExceptionHandler {
         return responseBuilder.entity(TokenStandardErrorUtil.getStandardError(label, e, 1, OriginType.TECHNICAL_EXPORT)).build();
     }
 
-    private void mapESExceptionWithErrorStatus(Exception e, Response.ResponseBuilder responseBuilder) {
+    private Response.ResponseBuilder mapESExceptionWithErrorStatus(Exception e, Response.ResponseBuilder responseBuilder) {
         if (e instanceof ESUnauthorizedException) {
-            responseBuilder.status(Response.Status.UNAUTHORIZED);
+            return responseBuilder.status(Response.Status.UNAUTHORIZED);
         } else if (e instanceof ESBadRequestException) {
-            responseBuilder.status(Response.Status.BAD_REQUEST);
+            return responseBuilder.status(Response.Status.BAD_REQUEST);
         } else if (e instanceof ESInternalException) {
-            responseBuilder.status(Response.Status.INTERNAL_SERVER_ERROR);
+            return responseBuilder.status(Response.Status.INTERNAL_SERVER_ERROR);
+        } else {
+            return responseBuilder;
         }
     }
 }
