@@ -21,9 +21,14 @@
 			<filename>qrCode.properties</filename>
 		</provider>
 		
-		<!-- WS -->
-		<provider name="wsprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
-			<filename>wsprovider.properties</filename>
+		<!-- WS ACOR -->
+		<provider name="acor2020wsprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>acorWS2020.properties</filename>
+		</provider>
+
+		<!-- WS ES -->
+		<provider name="eswsprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>eswsprovider.properties</filename>
 		</provider>
 
 		<!-- PC -->
