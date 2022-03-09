@@ -156,7 +156,12 @@ function onChangeGenre(){
 function onChangeMotif(){
 	var newMotif = document.forms[0].elements('motif').value;
 	var newGenreValeur = document.forms[0].elements('genreCaisse').value;
-	if (newMotif !== "") {
+	if (newGenreValeur === undefined) {
+		newGenreValeur = "<%=viewBean.getGenreCaisse()%>";
+		newMotif = "<%=viewBean.getMotif()%>";
+	}
+	document.all('attestationIPTable').style.display = 'none';
+	if (newMotif != "0") {
 		document.forms[0].elements('idTiersCaisse').value = "";
 		document.forms[0].elements('numeroCaisse').value = "";
 		document.forms[0].elements('nomCaisse').value = "";
@@ -165,23 +170,22 @@ function onChangeMotif(){
 		if(document.forms[0].elements('caisseSelector')!=null)
 			document.forms[0].elements('caisseSelector').disabled = true;
 		document.forms[0].elements('numeroAffileCaisse').disabled = true;
-		document.all('attestationIPTable').style.display = 'none';
-		document.all('lbRemarque').style.display = 'none';
-		document.all('trEnvoieCAF').style.display = 'none';
-		document.all('trException').style.display = 'none';
 	}else{
 		if(document.forms[0].elements('caisseSelector')!=null)
 			document.forms[0].elements('caisseSelector').disabled = false;
 		document.forms[0].elements('numeroAffileCaisse').disabled = false;
 		document.forms[0].elements('attestationIp').disabled = false;
-		if (newGenreValeur === <%=CodeSystem.GENRE_CAISSE_LPP%>) {
+		if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LPP%>) {
 			document.all('attestationIPTable').style.display = 'block';
 		}
-		if (newGenreValeur === <%=CodeSystem.GENRE_CAISSE_AF%>) {
-			document.all('lbRemarque').style.display = 'block';
-			document.all('trEnvoieCAF').style.display = 'block';
-			document.all('trException').style.display = 'block';
-		}
+	}
+	document.all('lbRemarque').style.display = 'none';
+	document.all('trEnvoieCAF').style.display = 'none';
+	document.all('trException').style.display = 'none';
+	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>) {
+		document.all('lbRemarque').style.display = 'block';
+		document.all('trEnvoieCAF').style.display = 'block';
+		document.all('trException').style.display = 'block';
 	}
 }
 
