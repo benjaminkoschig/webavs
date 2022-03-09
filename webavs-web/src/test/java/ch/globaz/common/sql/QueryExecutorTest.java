@@ -25,7 +25,7 @@ public class QueryExecutorTest {
 
     // Database credentials
     static final String USER = "db2inst1";
-    static final String PASS = "db2inst1";
+    static final String PASS = "InS2stanD@lon3";
 
     @Test
     public void testExecuteQueryList() throws Exception {
