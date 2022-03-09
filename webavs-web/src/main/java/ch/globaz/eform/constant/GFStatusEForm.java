@@ -4,7 +4,7 @@ public enum GFStatusEForm {
     RECEIVE,
     PROCESSING,
     TREAT,
-    TO_VALIDATE,
+    TO_VALIDAT,
     IN_ERROR,
     REJECTED,
     TREATY
