@@ -11,10 +11,11 @@ import globaz.globall.db.BApplication;
 public class GFApplication extends BApplication {
 
     private static final long serialVersionUID = 1L;
-    public static final String APPLICATION_NAME = "EFORM";
+
+    public static final String APPLICATION_ID = "EFORM";
+    public static final String APPLICATION_NAME = "GestionFormulaire";
     public static final String APPLICATION_PREFIX = "GF";
-    public static final String DEFAULT_APPLICATION_ROOT = "gfRoot";
-    public static final String DEFAULT_APPLICATION_EFORM = "EFORM";
+    public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
 
     /**
      * Constructeur
@@ -22,7 +23,7 @@ public class GFApplication extends BApplication {
      * @throws Exception
      */
     public GFApplication() throws Exception {
-        super(GFApplication.DEFAULT_APPLICATION_EFORM);
+        super(GFApplication.APPLICATION_ID);
     }
 
     /**
@@ -32,7 +33,6 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _declareAPI() {
-
     }
 
     /**
@@ -42,8 +42,8 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _initializeApplication() throws Exception {
-//        FWMenuCache cache = FWMenuCache.getInstance();
-//        cache.addFile("EFORMMenu.xml");
+        FWMenuCache cache = FWMenuCache.getInstance();
+        cache.addFile("EFORMMenu.xml");
     }
 
     /**
@@ -53,7 +53,6 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _initializeCustomActions() {
-
         // Définition et enregistrement des Custom actions à exécuter dans le module.
     }
 }

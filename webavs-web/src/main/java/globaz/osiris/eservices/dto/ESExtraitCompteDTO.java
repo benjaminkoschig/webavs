@@ -31,6 +31,6 @@ public class ESExtraitCompteDTO  {
     public Boolean isValid() {
         return (Stream.of(affiliateNumber, role, selectionSections, selectionTris, operation, startPeriod, endPeriod).noneMatch(JadeStringUtil::isEmpty) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate))
             && (JadeStringUtil.isEmpty(documentDate) || (!JadeStringUtil.isEmpty(documentDate) && (JadeDateUtil.isGlobazDate(documentDate))))
-            && ESValidateDTO.isValid(langue, selectionSections, selectionTris, operation, startPeriod, endPeriod);
+            && ESValidateDTO.isValid(role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod);
     }
 }

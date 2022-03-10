@@ -32,7 +32,7 @@ public class ESInfoFacturationDTO {
     @JsonIgnore
     public Boolean isValid() {
         return (Stream.of(affiliateNumber, role, selectionSections, selectionTris, operation, startPeriod, endPeriod).noneMatch(JadeStringUtil::isEmpty) && Stream.of(startPeriod, endPeriod).allMatch(JadeDateUtil::isGlobazDate))
-            && ESValidateDTO.isValid(langue, selectionSections, selectionTris, operation, startPeriod, endPeriod);
+            && ESValidateDTO.isValid(role, langue, selectionSections, selectionTris, operation, startPeriod, endPeriod);
     }
 
     @Data
