@@ -7,7 +7,9 @@
 <ct:menuChange displayId="options" menuId="eform-optionsempty" showTab="options"/>
 
 <%
+    /*
     selectedIdValue = "";
+
     idEcran = "GF0005";
     userActionValue = "eform.formulaire.detail";
 
@@ -22,7 +24,7 @@
     bButtonDelete = false;
     bButtonCancel = false;
     bButtonNew = false;
-
+     */
 %>
 <%-- /tpl:insert --%>
 <%-- tpl:insert attribute="zoneBusiness" --%>

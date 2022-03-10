@@ -1,6 +1,7 @@
-<%@ page import="globaz.eform.helpers.GFGestionnaireHelper" %>
 <%@ page import="globaz.eform.helpers.GFFormulaireHelper" %>
 <%@ page import="ch.globaz.eform.constant.GFStatusEForm" %>
+<%@page import="globaz.eform.vb.formulaire.GFFormulaireViewBean"%>
+
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -9,7 +10,6 @@
 <%@ include file="/theme/find/header.jspf" %>
 
 <%-- tpl:insert attribute="zoneInit" --%>
-
 <ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="eform-optionsempty"/>
 <%-- /tpl:insert --%>
@@ -54,7 +54,7 @@
 	</td>
 	<td>
 		<ct:FWCodeSelectTag name="formulaireSearch.forStatus"
-							defaut="<%=GFStatusEForm.RECEIVE%>"
+							defaut="RECEIVE"
 							codeType="GFSTATUS"/>
 	</td>
 	<td width="25px">
@@ -96,7 +96,7 @@
 		</LABEL>
 	</td>
 	<td width="150px">
-		<ct:inputText name="envoiComplexModel.envoiJobSimpleModel.id"/>
+		<ct:inputText name="envoiJobSimpleModel.id"/>
 	</td>
 	<td>
 	</td>
