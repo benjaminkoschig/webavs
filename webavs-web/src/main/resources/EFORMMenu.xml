@@ -4,24 +4,25 @@
 	<!-- ************** -->
 	<!-- Menu Principal -->
 	<!-- ************** -->
+	<!--
+			- Recherche
+	-->
 	<menu id="eform-menuprincipal">
 		<label refId="MENU_PRINCIPAL"/>
-<!--		<nodes>-->
-<!--			<node>-->
-<!--				<label refId="MENU_OPTION_GLOBAL_VIEW"/>-->
-<!--				<action command="/eform" responseTarget="fr_main">-->
-<!--					<parameter name="userAction" value="eform.formulaire.chercher"/>-->
-<!--					<parameter name="selectedId"/>-->
-<!--					<parameter name="csDomaine"/>-->
-<!--				</action>-->
-<!--			</node>-->
-<!--		</nodes>-->
+		<nodes>
+			<node id="Recherche">
+				<label refId="MENU_RECHERCHE"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
+				</action>
+			</node>
+		</nodes>
 	</menu>
 	
 	<!-- ***************************************** -->
-	<!-- Menu Option Detail étape              -->
+	<!-- Menu Option Detail étape                  -->
 	<!-- ***************************************** -->
-	<menu id="eform-eFormulaireDetail">
+	<!--<menu id="eform-eFormulaireDetail">
 		<label refId="OPTIONS" />
 		<nodes>
 			<node>
@@ -39,12 +40,12 @@
 				</action>
 			</node>
 		</nodes>
-	</menu>
+	</menu>-->
 
 	<!-- ************************** -->
 	<!-- Menu Option empty		    -->
 	<!-- ************************** -->
-	<menu id="eform-optionsempty">
+	<!--<menu id="eform-optionsempty">
 		<label refId="MENU_OPTION_TITRE"/>
-	</menu>
+	</menu>-->
 </menus>

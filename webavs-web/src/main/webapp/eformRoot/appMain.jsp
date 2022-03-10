@@ -15,7 +15,7 @@ function showErrors() {
 	if (errorObj.text != "") {
 		showModalDialog('<%=request.getContextPath()%>/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');
 	} else {
-		<%--location.replace('<%=request.getContextPath()%>/eform?userAction=eform.formulaires.chercher');--%>
+		location.replace('<%=request.getContextPath()%>/eform?userAction=eform.formulaire.formulaire.chercher');
 	}
 }
 

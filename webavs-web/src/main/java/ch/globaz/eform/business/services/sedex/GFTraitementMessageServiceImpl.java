@@ -71,8 +71,7 @@ public class GFTraitementMessageServiceImpl {
 
         currentSedexFolder = properties.getProperty("currentSedexFolder");
 
-        session = (BSession) GlobazSystem.getApplication(GFApplication.DEFAULT_APPLICATION_EFORM)
-                .newSession(userSedex, passSedex);
+        session = (BSession) GlobazSystem.getApplication(GFApplication.APPLICATION_ID).newSession(userSedex, passSedex);
     }
 
     @OnReceive
