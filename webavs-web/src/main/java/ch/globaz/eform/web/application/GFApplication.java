@@ -13,7 +13,7 @@ public class GFApplication extends BApplication {
     private static final long serialVersionUID = 1L;
 
     public static final String APPLICATION_ID = "EFORM";
-    public static final String APPLICATION_NAME = "GestionFormulaire";
+    public static final String APPLICATION_NAME = "EFORM";
     public static final String APPLICATION_PREFIX = "GF";
     public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
 
