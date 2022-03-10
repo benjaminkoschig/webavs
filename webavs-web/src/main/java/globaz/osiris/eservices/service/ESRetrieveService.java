@@ -1,7 +1,6 @@
 package globaz.osiris.eservices.service;
 
 import ch.globaz.orion.ws.comptabilite.WebAvsComptabiliteServiceImpl;
-import ch.globaz.orion.ws.enums.Role;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -58,7 +57,7 @@ public class ESRetrieveService {
             }
 
             // Récupération du compte annexe
-            CACompteAnnexeManager compteAnnexeManager = esSearchService.searchComptesAnnexes(dto.getAffiliateNumber(), Role.valueOf(dto.getRole().toUpperCase(Locale.ROOT)), session);
+            CACompteAnnexeManager compteAnnexeManager = esSearchService.searchComptesAnnexes(dto.getAffiliateNumber(), dto.getRole(), session);
 
             // Génération de l'extrait de compte et récupération de son emplacement
             String docLocation = webAvsComptabiliteService.genererExtraitCompteAnnexe(dto.getOperation(), dto.getSelectionTris(), dto.getSelectionSections(), ((CACompteAnnexe) compteAnnexeManager.getFirstEntity()).getIdCompteAnnexe(), dto.getAffiliateNumber(), dto.getStartPeriod(), dto.getEndPeriod(), dto.getDocumentDate(), dto.getLangue());
@@ -91,7 +90,7 @@ public class ESRetrieveService {
             }
 
             // Récupération des compte annexes
-            CACompteAnnexeManager compteAnnexeManager = esSearchService.searchComptesAnnexes(dto.getAffiliateNumber(), Role.valueOf(dto.getRole().toUpperCase(Locale.ROOT)), session);
+            CACompteAnnexeManager compteAnnexeManager = esSearchService.searchComptesAnnexes(dto.getAffiliateNumber(), dto.getRole(), session);
             for (int i = 0; i < compteAnnexeManager.size(); i++) {
                 CACompteAnnexe caCompteAnnexe = (CACompteAnnexe) compteAnnexeManager.get(i);
 
