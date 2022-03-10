@@ -21,6 +21,11 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 
 <%-- tpl:insert attribute="zoneScripts" --%>
+<script >
+	var bFind = true;
+	var detailLink = "<%=actionNew%>";
+	var usrAction = "eform.formulaire.lister";
+</script>
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/bodyStart.jspf" %>
