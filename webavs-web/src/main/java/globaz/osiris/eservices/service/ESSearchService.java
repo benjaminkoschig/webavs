@@ -2,19 +2,17 @@ package globaz.osiris.eservices.service;
 
 import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
-import ch.globaz.orion.ws.enums.Role;
+import globaz.osiris.eservices.enums.ESRole;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import globaz.osiris.db.comptes.CACompteAnnexe;
-import globaz.osiris.db.comptes.CACompteAnnexeManager;
-import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.comptes.CASectionManager;
+import globaz.osiris.db.comptes.*;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.contentieux.CAExtraitCompteListViewBean;
 import globaz.osiris.eservices.exceptions.ESBadRequestException;
 import globaz.osiris.eservices.exceptions.ESInternalException;
-import globaz.osiris.external.IntRole;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Locale;
 
 @Slf4j
 public class ESSearchService {
@@ -22,26 +20,8 @@ public class ESSearchService {
     public ESSearchService() {
     }
 
-    private String mapToSelectionRole(Role role) {
-        String selectionRole;
-        switch (role) {
-            case EMPLOYEUR:
-                selectionRole = IntRole.ROLE_AFFILIE_PARITAIRE;
-                break;
-            case INDEPENDANT:
-                selectionRole = IntRole.ROLE_AFFILIE_PERSONNEL;
-                break;
-            case AF:
-                selectionRole = IntRole.ROLE_AF;
-                break;
-            case AFFILIE:
-                selectionRole = IntRole.ROLE_AFFILIE;
-                break;
-            default:
-                throw new IllegalArgumentException("invalid role " + role);
-        }
-
-        return selectionRole;
+    private String mapToSelectionRole(String role) {
+        return ESRole.valueOf(role.toUpperCase(Locale.ROOT)).getCS();
     }
 
     private String mapToSelectionSections(String selectionSections) {
@@ -56,7 +36,7 @@ public class ESSearchService {
         return selectionSections;
     }
 
-    public CACompteAnnexeManager searchComptesAnnexes(String forNumeroAffilie, Role role, BSession session) throws ESInternalException, ESBadRequestException {
+    public CACompteAnnexeManager searchComptesAnnexes(String forNumeroAffilie, String role, BSession session) throws ESInternalException, ESBadRequestException {
         CACompteAnnexeManager compteAnnexeManager = new CACompteAnnexeManager();
         compteAnnexeManager.setSession(session);
         compteAnnexeManager.setForIdExterneRole(forNumeroAffilie);
