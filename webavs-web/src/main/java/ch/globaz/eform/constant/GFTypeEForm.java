@@ -34,4 +34,8 @@ public enum GFTypeEForm {
     public String getDesignation(BSession session) {
         return session.getLabel("FORMULAIRE_" + code);
     }
+
+    public String getLabel(BSession session){
+        return session.getLabel("FORMULAIRE_" + code);
+    }
 }
