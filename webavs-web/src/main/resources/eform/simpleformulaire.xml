@@ -20,11 +20,32 @@
 
         <search-definition name="default">
             <search-group operator="AND">
-                <search-field name="forId" field-ref="id" operation="EQUALS"/>
+                <search-field name="byId" field-ref="id" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="formulaire">
+            <search-group operator="AND">
+                <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
+                <search-field name="byType" field-ref="type" operation="EQUALS"/>
+                <search-field name="byDate" field-ref="date" operation="EQUALS"/>
+                <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
+                <search-field name="byLastName" field-ref="beneficiaireNom" operation="EQUALS"/>
+                <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="EQUALS"/>
+                <search-field name="likeNss" field-ref="beneficiaireNss" operation="EQUALS"/>
             </search-group>
         </search-definition>
         <order-by name="default">
-            <order-field field-ref="id" order="DESC"/>
-        </order-by>-
+            <order-field field-ref="date" order="DESC"/>
+        </order-by>
+        <order-by name="orderByType">
+            <order-field field-ref="type" order="DESC"/>
+        </order-by>
+        <order-by name="orderByNSS">
+            <order-field field-ref="beneficiaireNss" order="DESC"/>
+        </order-by>
+        <order-by name="orderByGestionnaire">
+            <order-field field-ref="userGestionnaire" order="DESC"/>
+        </order-by>
     </simple-model>
 </model-mapping>

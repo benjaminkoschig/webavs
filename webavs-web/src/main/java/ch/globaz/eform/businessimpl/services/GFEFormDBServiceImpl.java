@@ -37,7 +37,7 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
         if (!GFEFormValidator.isExists(id)) throw new IllegalArgumentException("Unable to delete gfeFormModel, the model passed is not in database!");
 
         GFEFormSearch search = new GFEFormSearch();
-        search.setForId(id);
+        search.setByMessageId(id);
 
         return delete(search) > 0;
     }
@@ -54,7 +54,7 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
         if (Objects.isNull(id)) throw new IllegalArgumentException("Unable to read gfeFormModel, the id passed is null!");
 
         GFEFormSearch search = new GFEFormSearch();
-        search.setForId(id);
+        search.setByMessageId(id);
 
         search = search(search);
 
