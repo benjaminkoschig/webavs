@@ -44,6 +44,8 @@
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <script type="text/javascript">
+    var JOUR_SUPPLEMENTAIRE_PAT = true;
+    var JOUR_SUPPLEMENTAIRE_PAI = false;
     var SOUMIS_COTISATION_PERIODE = true;
     var EDITION_MODE = false;
     <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
@@ -96,8 +98,10 @@
         document.getElementById("dateDecesAffiche").disabled = true;
         document.getElementById("csEtatCivilAffiche").disabled = true;
         document.getElementById("csSexeAffiche").disabled = true;
-        $('#isSoumisCotisation').prop( "disabled", true);
-        $('#tauxImpotSource').prop( "disabled", true);
+        $('#nbJourSolde').prop("disabled", true);
+        $('#jourSupplementaire').prop("disabled", true);
+        $('#isSoumisCotisation').prop("disabled", true);
+        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function validate() {
@@ -184,7 +188,7 @@
 
         // Si au moins un des 3 champs n'est pas vide
         if (dateDebut || dateFin) {
-            addPeriode();
+            addPeriodePatP();
         }
         // Si aucune période n'est renseigné -> message d'erreurs
         if (periodes.lenght == 0) {
@@ -214,6 +218,47 @@
         }
         $('#periodesAsString').val(tmp);
 
+    }
+
+    // PAT 3.1.3.7.
+    /* Contrôle que la date fin période n'est pas trop éloigné de la date de naissance */
+    function isDelaiCadreDepasse(dateFin) {
+        var dateNaissance = Date.toDate($('#dateDebutDroit').val());
+        var moisMaxDelaiAutorise = 6;
+        var dateMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+moisMaxDelaiAutorise));
+
+        if (dateFin > dateMax) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // PAT 3.6 K211118_001
+    /* Contrôle que la date de début n'est pas avant la date de naissance */
+    function isDateDebutAvantNaissance(dateDebut) {
+        // ESVE PAT TODO
+        return false;
+    }
+
+    // PAT 3.1.3.5.
+    /* Contrôle que les champs jours supplémentaires et jours de congées sont dans les limites autorisées */
+    function isChampsHorsLimites(nbJourSuppChamp, nbJourSoldeChamp) {
+        if (nbJourSuppChamp > 4 || nbJourSoldeChamp > 10) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // PAT 3.1.3.5.
+    /* Contrôle que le nombre total de jours de congées + le nombre de jours supplémentaires ne dépasse pas la maximum autorisé */
+    function isNbJourPlusGrandQueJourMax(nbJourTot, nbJourMax) {
+        if (nbJourTot > nbJourMax) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function cancel() {
@@ -351,8 +396,10 @@
         } else {
             document.getElementById("linkTiers").style.visibility = "hidden";
         }
-        $('#isSoumisCotisation').prop( "disabled", true);
-        $('#tauxImpotSource').prop( "disabled", true);
+        $('#nbJourSolde').prop("disabled", true);
+        $('#jourSupplementaire').prop("disabled", true);
+        $('#isSoumisCotisation').prop("disabled", true);
+        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function periodeChange() {
@@ -360,16 +407,18 @@
         var dateFin = $('#dateFinPeriode').val();
         var impot = $('#isSoumisCotisation');
         var taux = $('#tauxImpotSource');
+        $('#nbJourSolde').prop("disabled", false);
+        $('#jourSupplementaire').prop("disabled", false);
 
         if(impot.is(':disabled')
             && dateDebut != ''
             && dateFin != '') {
-            impot.prop( "disabled", false);
-            taux.prop( "disabled", false);
+            impot.prop("disabled", false);
+            taux.prop("disabled", false);
         } else if(!impot.is(':disabled')
             && (dateDebut == '' || dateFin == '')) {
-            impot.prop( "disabled", true);
-            taux.prop( "disabled", true);
+            impot.prop("disabled", true);
+            taux.prop("disabled", true);
         }
     }
 
@@ -485,14 +534,124 @@
         }
     }
 
+    function addPeriodePatP() {
+        var nbJourSoldeTableau = 0
+        var periodeConsecutive = 0
+        var nbJourSuppTableau = 0
+        $("#periodes .nbJourPourUnePeriode").each(function (index, element) {
+            if ($(element).text()) {
+                nbJourSoldeTableau = nbJourSoldeTableau + ($(element).text() * 1);
+                if (($(element).text() * 1) >= 5) {
+                    periodeConsecutive += 1;
+                }
+            }
+        });
+
+        $("#periodes .ndJourSup").each(function(index, element) {
+            if ($(element).text()) {
+                nbJourSuppTableau = nbJourSuppTableau + ($(element).text() * 1);
+            }
+        });
+
+        // initialise les valeures selon les périodes du calendrier
+        var dateDebut = Date.toDate($('#dateDebutPeriode').val());
+        var dateFin = Date.toDate($('#dateFinPeriode').val());
+        var nbJourSoldePeriode = dateDebut.daysBetween(dateFin);
+
+        var nbJourSoldesActuel;
+        var nbJourSoldeChamp =  $('#nbJourSolde').val();
+        if (nbJourSoldeChamp) {
+            nbJourSoldesActuel = Number(nbJourSoldeChamp);
+        } else{
+            nbJourSoldesActuel = Number(nbJourSoldePeriode);
+        }
+
+        var nbJourSoldeTot = Number(nbJourSoldeTableau) + Number(nbJourSoldesActuel);
+
+        // On calcul le nombre de jours supplémentaires
+        var nbJourSuppChamp = $('#jourSupplementaire').val();
+        var nbJourSuppActuel = '';
+        if (nbJourSuppChamp) {
+            nbJourSuppActuel = Number(nbJourSuppChamp);
+        } else {
+            if (nbJourSoldesActuel >= 10) {
+                nbJourSuppActuel = 4;
+            } else if (nbJourSoldesActuel >= 5) {
+                nbJourSuppActuel = 2;
+            } else if (nbJourSoldeTot >= 5 && (nbJourSuppTableau < 2)) {
+                nbJourSuppActuel = 2;
+            } else if (nbJourSoldeTot >= 10 && nbJourSuppTableau < 4) {
+                nbJourSuppActuel = 2;
+            }
+        }
+
+        // On met à jour le champ jourSupplementaire avec la valeur calculé
+        $('#jourSupplementaire').val(nbJourSuppActuel);
+
+        // On ajoute les jours supplémentaires au jours soldes pour trouver le total des jours
+        if (nbJourSuppActuel) {
+            if (nbJourSoldeTot === 7 || nbJourSoldeTot === 14) {
+                nbJourSoldeTot -= nbJourSuppActuel;
+            } else {
+                nbJourSoldeTot += nbJourSuppActuel;
+            }
+            nbJourSoldeTot += nbJourSuppTableau;
+        }
+
+        // PAT 3.1.3.7.
+        if (isDelaiCadreDepasse(dateFin)) {
+            var text = "<%=viewBean.getSession().getLabel("ERREUR_MAX_DATE_APRES_DATE_NAI")%>";
+            showErrorMessage(text);
+            return;
+        }
+
+        // PAT 3.6 K211118_001
+        if (isDateDebutAvantNaissance(dateDebut)) {
+            var text = "<%=viewBean.getSession().getLabel("ERREUR_DATE_DEBUT_AVANT_DATE_NAI")%>";
+            showErrorMessage(text);
+            return;
+        }
+
+        // PAT 3.1.3.5.
+        if (isChampsHorsLimites(nbJourSuppChamp, nbJourSoldeChamp)) {
+            var text = "<%=viewBean.getSession().getLabel("ERREUR_SAISIES_DANS_LES_LIMITES")%>";
+            showErrorMessage(text);
+            return;
+        }
+
+        // PAT 3.1.3.2.
+        if (isNbJourPlusGrandQueJourMax(nbJourSoldeTot, 14)) {
+            var text = "<%=viewBean.getSession().getLabel("ERREUR_NB_JOURS_PLUS_GRAND_QUE_JOUR_MAX")%>";
+            showErrorMessage(text);
+            return;
+        }
+
+        // PAT 3.1.3.3.
+        if (nbJourSoldesActuel > dateDebut.daysInMonth()) {
+            globazNotation.utils.dialogWarn("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", {
+                "Ok": function () {
+                    $(this).dialog("close");
+                    addPeriode()
+                },
+                "Annuler": function () {
+                    $(this).dialog("close");
+                }
+            });
+        } else {
+            addPeriode()
+        }
+    }
+
     $(document).ready(function () {
 
         $('#btnUpd').click(function () {
             EDITION_MODE = true;
             $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
             repaintTablePeriodes();
-            $('#isSoumisCotisation').prop( "disabled", true);
-            $('#tauxImpotSource').prop( "disabled", true);
+            $('#nbJourSolde').prop("disabled", false);
+            $('#jourSupplementaire').prop("disabled", false);
+            $('#isSoumisCotisation').prop("disabled", true);
+            $('#tauxImpotSource').prop("disabled", true);
         });
 
         <%
@@ -505,7 +664,8 @@
         var tis = '<%=periode.getTauxImposition() %>';
         var cis = '<%=periode.getCantonImposition() %>';
         var cisLibelle = '<%=objSession.getCodeLibelle(periode.getCantonImposition()) %>';
-        addPeriodeToTable(ddd, ddf, ndj, tis, cis, cisLibelle);
+        var nbJourSup = '<%=periode.getNbJoursupplementaire() %>';
+        addPeriodeToTable(ddd, ddf, ndj, tis, cis, cisLibelle, nbJourSup);
         <%
     }%>
     });
@@ -758,7 +918,7 @@
                     <input type="button"
                            name=""
                            value="<ct:FWLabel key="JSP_AJOUTER" />"
-                           onclick="addPeriode()"/>
+                           onclick="addPeriodePatP()"/>
                 </td>
                 <td colspan="2" rowspan="4" width="50%">
                     <table class="areaTable" width="100%">
@@ -771,7 +931,10 @@
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
                             <th width="10%">
-                                <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
+                                <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                            </th>
+                            <th width="10%">
+                                <ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/>
                             </th>
                             <th width="10%">
                                 <ct:FWLabel key="MENU_OPTION_TAUX_IMPOSITIONS_RACC"/>
@@ -789,8 +952,9 @@
                         <table id="periodes" name=periode" class="areaTable" width="100%">
                             <thead>
                             <tr style="height: 0px;">
-                                <th width="30%"></th>
-                                <th width="30%"></th>
+                                <th width="25%"></th>
+                                <th width="25%"></th>
+                                <th width="10%"></th>
                                 <th width="10%"></th>
                                 <th width="10%"></th>
                                 <th width="10%"></th>
@@ -801,6 +965,47 @@
                             </tbody>
                         </table>
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="nbJourSolde">
+                        <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                    </label>
+                </td>
+                <td colspan="3">
+                    <input type="text"
+                           data-g-integer="sizeMax:2"
+                           size="5"
+                           id="nbJourSolde"
+                           name="nbJourSolde"
+                    />
+
+                    <label style="margin-left:40px " for="jourSupplementaire">
+                        <ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/>
+                    </label>
+                    <input type="text"
+                           data-g-integer="sizeMax:2"
+                           size="5"
+                           id="jourSupplementaire"
+                           name="jourSupplementaire"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="dateFinCalcule">
+                        <ct:FWLabel key="JSP_DATE_FIN_CALCULEE"/>
+                    </label>
+
+                </td>
+                <td colspan="3">
+                    <input type="text"
+                           data-g-integer="sizeMax:2"
+                           size="5"
+                           id="dateFinCalcule"
+                           name="dateFinCalcule"
+                    />
                 </td>
             </tr>
             <tr>

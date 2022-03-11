@@ -326,3 +326,7 @@ INPUT.inactive {
 	background: url(../images/icon_back_small.png) center right no-repeat;
 	padding-right: 19px;
 }
+
+.nbJourSuppSummary td{
+    border-top: 1px dashed black;
+}

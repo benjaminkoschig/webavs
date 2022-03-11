@@ -202,6 +202,9 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
                 if (dates.length > 4) {
                     periode.setCantonImposition(dates[4]);
                 }
+                if (dates.length > 5) {
+                    periode.setNbJoursupplementaire(dates[5]);
+                }
                 if (!isPeriodeDejaExistante(periode)) {
                     periodes.add(periode);
                 }
@@ -404,13 +407,19 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
     }
 
+    // PAT 3.1.3.2.
     public void checkWarningVerifJour(BSession session){
-        int nbJourSolde = 0;
+        int nbJourSoldeTot = 0;
         int nbJourMax = getJourPaternite(session);
         for(PRPeriode p: periodes) {
-            nbJourSolde += Integer.valueOf(p.getNbJour());
+            if (!JadeStringUtil.isBlankOrZero(p.getNbJour())) {
+                    nbJourSoldeTot += Integer.valueOf(p.getNbJour());
+            }
+            if (!JadeStringUtil.isBlankOrZero(p.getNbJoursupplementaire())) {
+                    nbJourSoldeTot += Integer.valueOf(p.getNbJoursupplementaire());
+            }
         }
-        hasMessageWarn = nbJourSolde < nbJourMax;
+        hasMessageWarn = nbJourSoldeTot < nbJourMax;
         if(hasMessageWarn) {
             messagesWarn = session.getLabel("JSP_WARN_PATERNITE_NB_JOUR");
             messagesWarn = messagesWarn.replace("{0}", Integer.toString(nbJourMax));
