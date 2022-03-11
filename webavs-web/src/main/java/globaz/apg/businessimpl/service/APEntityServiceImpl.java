@@ -1279,7 +1279,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
             Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
             dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
-        } else{
+        } else {
             manager.setIdCodeSysteme("1");
             manager.find(BManager.SIZE_NOLIMIT);
             if (manager.size() > 0) {
