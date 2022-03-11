@@ -38,7 +38,15 @@
 
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:insert attribute="zoneList" --%>
-<TD class="mtd dec<%=line.getId().getClass()%> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getType() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getSubject() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getDate() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getId() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNss() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiairePrenom() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getStatus() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getUserGestionnaire() %> </TD>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:insert attribute="zoneTableFooter" --%>
