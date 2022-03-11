@@ -1,9 +1,15 @@
 periodes = [];
 
 try {
-    JOUR_SUPPLEMENTAIRE;
+    JOUR_SUPPLEMENTAIRE_PAI;
 } catch (e) {
-    JOUR_SUPPLEMENTAIRE = false;
+    JOUR_SUPPLEMENTAIRE_PAI = false;
+}
+
+try {
+    JOUR_SUPPLEMENTAIRE_PAT;
+} catch (e) {
+    JOUR_SUPPLEMENTAIRE_PAT = false;
 }
 
 try {
@@ -91,8 +97,17 @@ function addPeriode() {
         var dateEnd = new Date(dateFin.split('.')[2], dateFin.split('.')[1] - 1, dateFin.split('.')[0]);
 
         nbJour = Math.round(Math.abs((dateBegin - dateEnd) / (24 * 60 * 60 * 1000))) + 1;
-        if($jourSupplementaire.val()) {
-            nbJour -= $jourSupplementaire.val();
+
+        if (JOUR_SUPPLEMENTAIRE_PAI) { // Si Proche aidant le nombre de jours est soustrait des jours supplémentaires
+            if ($jourSupplementaire.val()) {
+                nbJour -= $jourSupplementaire.val();
+            }
+        } else if (JOUR_SUPPLEMENTAIRE_PAT) { // Si Paternité et nombre de jours == 7 jours ou 14 jours consécutif le nombre de jours est soustrait des jours supplémentaires
+            if (nbJour == 7 || nbJour == 14) {
+                if ($jourSupplementaire.val()) {
+                    nbJour -= $jourSupplementaire.val();
+                }
+            }
         }
     }
 
@@ -155,11 +170,18 @@ function addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImp
 
 function repaintTablePeriodes() {
     $('#periodes tbody > tr').remove();
+    var nbJourSoldesTot = 0;
+    var nbJourSuppTot = 0;
     for (var ctr = 0; ctr < periodes.length; ctr++) {
         var periode = periodes[ctr];
+        nbJourSoldesTot += periode.getNbJour() * 1;
+        nbJourSuppTot += periode.jourSupplementaire * 1;
         var width = "30%";
-        if (JOUR_SUPPLEMENTAIRE) {
+        if (JOUR_SUPPLEMENTAIRE_PAI) {
             width = "25%";
+        }
+        if (JOUR_SUPPLEMENTAIRE_PAT) {
+            width = "30%";
         }
         var ddd = '<td width="' + width + '" align="center" class="dateDebut">' + periode.getDateDeDebut() + '</td>';
         var ddf = '<td width="' + width + '" align="center">' + periode.getDateDeFin() + '</td>';
@@ -171,7 +193,7 @@ function repaintTablePeriodes() {
         }
 
         var njg = '<td width="' + widthJour + '" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour()  + '</td>';
-        if (JOUR_SUPPLEMENTAIRE) {
+        if (JOUR_SUPPLEMENTAIRE_PAI || JOUR_SUPPLEMENTAIRE_PAT) {
             jsp = '<td width="' + widthJour + '" align="center" class="ndJourSup">' + periode.jourSupplementaire + '</td>';
         }
         if(!SOUMIS_COTISATION_PERIODE){
@@ -196,6 +218,24 @@ function repaintTablePeriodes() {
         var html = '<tr>' + ddd + ddf + njg + jsp + tis + cis + deleteBtn + spacer + editBtn + '</tr>';
         $('#periodes tbody').append(html);
     }
+    if (JOUR_SUPPLEMENTAIRE_PAT) {
+        addJourSuppSummaryLine(nbJourSoldesTot, nbJourSuppTot);
+    }
+}
+
+function addJourSuppSummaryLine(nbJourSoldesTot, nbJourSuppTot) {
+    var $tableBody = $('#periodes').find("tbody");
+    var $trLast = $tableBody.find("tr:last").not('.nbJourSuppSummary');
+    var $trSummary = '<TR class="nbJourSuppSummary">' +
+                '<TD class="dateDebut" width="30%" align="center">&nbsp</TD>' +
+                '<TD width="30%" align="center">&nbsp</TD>' +
+                '<TD width="10%" align="center">' + nbJourSoldesTot + '</TD>' +
+                '<TD width="10%" align="center">' + nbJourSuppTot + '</TD>' +
+                '<TD width="10%" align="center">&nbsp</TD>' +
+                '<TD width="10%" align="center">&nbsp</TD>' +
+                '<TD width="10%" align="center">&nbsp</TD>' +
+            '</TR>';
+    $trLast.after($trSummary);
 }
 
 function isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, displayMessage) {
