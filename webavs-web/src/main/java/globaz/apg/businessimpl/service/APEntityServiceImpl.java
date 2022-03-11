@@ -1245,6 +1245,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             datesDeDebut.add(periodes.get(ctr).getDateDeDebut());
             datesDeFin.add(periodes.get(ctr).getDateDeFin());
             joursSoldes += Integer.parseInt(periodes.get(ctr).getNbJour());
+            if (!JadeStringUtil.isBlankOrZero(periodes.get(ctr).getNbJoursupplementaire())) {
+                joursSoldes += Integer.parseInt(periodes.get(ctr).getNbJoursupplementaire());
+            }
         }
         datesDeDebut = PRDateUtils.sortDate(datesDeDebut, DateOrder.NEWER_TO_OLDER);
         datesDeFin = PRDateUtils.sortDate(datesDeFin, DateOrder.OLDER_TO_NEWER);
@@ -1276,7 +1279,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
             Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
             dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
-        }else{
+        } else{
             manager.setIdCodeSysteme("1");
             manager.find(BManager.SIZE_NOLIMIT);
             if (manager.size() > 0) {
@@ -1285,6 +1288,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
             }
         }
+        // PAT 3.6 K211118_001
         if (JadeDateUtil.isDateBefore(dateNaissance, dateMin)) {
             String msgError = session.getLabel("ERREUR_MIN_DATE_NAI");
             msgError = PRStringUtils.replaceString(msgError, "{0}", dateMin);
@@ -1308,6 +1312,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 joursMax = new BigDecimal(param.getValeurNumParametre());
             }
         }
+        // PAT 3.1.3.2.
         if (joursSoldes > joursMax.intValue()) {
             throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
         }
@@ -1532,7 +1537,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return periodes;
     }
 
-
+    // PAT 3.1.3.2.
     private List<PRPeriode> validerNombreJoursSoldesPat(final APDroitPatPViewBean viewBean) throws Exception {
         final List<PRPeriode> periodes = viewBean.getPeriodes();
 
@@ -1547,6 +1552,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                     + 1);
             if (!JadeStringUtil.isBlankOrZero(periode.getNbJour())) {
                 nombreDeJoursSaisies += Integer.valueOf(periode.getNbJour());
+                if (!JadeStringUtil.isBlankOrZero(periode.getNbJoursupplementaire())) {
+                    nombreDeJoursPeriodes += Integer.parseInt(periode.getNbJoursupplementaire());
+                }
             } else {
                 nombreDeJoursSaisies = 0;
             }
@@ -2361,6 +2369,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             p.setNbrJours(periode.getNbJour());
             p.setTauxImposition(periode.getTauxImposition());
             p.setCantonImposition(periode.getCantonImposition());
+            p.setNbJourSupplementaire(periode.getNbJoursupplementaire());
             p.wantCallValidate(false);
             p.add(transaction);
         }

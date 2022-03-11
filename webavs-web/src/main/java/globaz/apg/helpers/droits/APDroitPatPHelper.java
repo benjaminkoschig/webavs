@@ -159,6 +159,7 @@ public class APDroitPatPHelper extends APAbstractDroitPHelper {
                 periode.setDateDeFin(p.getDateFinPeriode());
                 periode.setTauxImposition(p.getTauxImposition());
                 periode.setCantonImposition(p.getCantonImposition());
+                periode.setNbJoursupplementaire(p.getNbJourSupplementaire());
                 if (!StringUtils.equals(p.getNbrJours(), "0")) {
                     periode.setNbJour(p.getNbrJours());
                 }

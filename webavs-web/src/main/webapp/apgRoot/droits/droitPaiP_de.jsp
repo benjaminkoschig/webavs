@@ -38,7 +38,8 @@
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <script type="text/javascript">
-    var JOUR_SUPPLEMENTAIRE = true;
+    var JOUR_SUPPLEMENTAIRE_PAI = true;
+    var JOUR_SUPPLEMENTAIRE_PAT = false;
     var SOUMIS_COTISATION_PERIODE = false;
     var EDITION_MODE = false;
     <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
@@ -797,7 +798,6 @@
                     <label for="nbJourSolde">
                         <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
                     </label>
-
                 </td>
                 <td colspan="3">
                     <input type="text"
