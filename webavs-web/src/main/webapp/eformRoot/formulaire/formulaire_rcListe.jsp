@@ -1,5 +1,7 @@
 <%@ page import="globaz.eform.vb.formulaire.GFFormulaireListViewBean" %>
 <%@ page import="globaz.eform.vb.formulaire.GFFormulaireViewBean" %>
+<%@ page import="globaz.commons.nss.NSUtil" %>
+<%@ page import="ch.globaz.eform.constant.GFTypeEForm" %>
 <%@ page errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
@@ -44,15 +46,15 @@
     </ct:menuPopup>
 
 </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getType() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getSubject() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getDate() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getId() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNss() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getSubject() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getSubject() %> </TD>
+<TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getSubject()%> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getDate() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getDate() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getMessageId() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getMessageId() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNss() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= NSUtil.formatAVSUnknown(line.getFormulaire().getBeneficiaireNss()) %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiairePrenom() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getStatus() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getUserGestionnaire() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiairePrenom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiairePrenom()%> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getStatus() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getStatus() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getUserGestionnaire() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getUserGestionnaire() %> </TD>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:insert attribute="zoneTableFooter" --%>

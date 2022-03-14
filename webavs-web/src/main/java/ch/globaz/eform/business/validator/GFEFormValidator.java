@@ -11,7 +11,9 @@ public class GFEFormValidator {
     public static boolean isExists(String id) {
         GFEFormSearch gfeFormSearch = new GFEFormSearch();
         gfeFormSearch.setByMessageId(id);
-
+        if (id == null) {
+            return false;
+        }
         try {
             gfeFormSearch = GFEFormServiceLocator.getGFEFormService().search(gfeFormSearch);
             return gfeFormSearch.getSearchResults().length > 0;
