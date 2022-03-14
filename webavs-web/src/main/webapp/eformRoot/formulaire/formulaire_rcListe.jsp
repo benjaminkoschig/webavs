@@ -17,6 +17,7 @@
 <%-- /tpl:insert --%>
 
 <tr>
+    <TH></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_TYPE"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_NOM_FORMULAIRE"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_DATE"/></TH>
@@ -32,12 +33,17 @@
 <%-- tpl:insert attribute="zoneCondition" --%>
 <% GFFormulaireViewBean line = (GFFormulaireViewBean)viewBean.getEntity(i);
     String detailUrl = "parent.fr_detail.location.href='" + detailLink + line.getId() + "'";
-
 %>
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:insert attribute="zoneList" --%>
+<TD class="mtd dec<%=line.getFormulaire().getId()%>" nowrap width="20px">
+    <ct:menuPopup menu="eform-optionsformulaires" target="top.fr_main">
+        <ct:menuParam key="selectedId" value="<%=line.getFormulaire().getId()%>" />
+    </ct:menuPopup>
+
+</TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getType() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getSubject() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getDate() %> </TD>

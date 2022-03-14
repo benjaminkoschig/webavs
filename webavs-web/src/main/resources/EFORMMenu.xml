@@ -22,8 +22,9 @@
 	<!-- ***************************************** -->
 	<!-- Menu Option Detail étape                  -->
 	<!-- ***************************************** -->
-	<!--<menu id="eform-eFormulaireDetail">
-		<label refId="OPTIONS" />
+
+	<menu id="eform-optionsformulaires">
+		<label refId="MENU_OPTIONS_FORMULAIRES" />
 		<nodes>
 			<node>
 				<label refId="MENU_DETAIL"/>
@@ -35,12 +36,42 @@
 			<node>
 				<label refId="MENU_TELECHARGEMENT"/>
 				<action command="/eform" responseTarget="fr_main">
-					<parameter name="userAction" value="eform.formulaire.telecharger"/>
+<!--					<parameter name="userAction" value="eform.formulaire.telecharger"/>-->
+<!--					<parameter name="selectedId"/>-->
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_DECLARER_GESTIONNAIRE"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.gestionnaire"/>-->
+<!--					<parameter name="selectedId"/>-->
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_STATUT_ENCOURS"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="selectedId"/>
+					<parameter name="ENCOURS"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_STATUT_TRAITE"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="selectedId"/>
+					<parameter name="TRAITE"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_VISU_TIERS"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.visutiers"/>-->
 					<parameter name="selectedId"/>
 				</action>
 			</node>
 		</nodes>
-	</menu>-->
+	</menu>
 
 	<!-- ************************** -->
 	<!-- Menu Option empty		    -->
