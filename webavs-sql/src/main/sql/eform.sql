@@ -57,13 +57,13 @@ INSERT INTO SCHEMA.FWSGRPP (KGROUP, FRIGHT, FCOMMENT, PSPY) VALUES ('gEformUser'
 
 INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
 VALUES (81000000, 'GFSTATUS', 0, 1, 0, 2, 'Status Formulaire', 2, 2, 2, 2, 2, 1, 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000001, 'GFSTATUS', 1, 1, 0, 2, 'Reçu', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000002, 'GFSTATUS', 2, 1, 0, 2, 'En traitement', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000003, 'GFSTATUS', 3, 1, 0, 2, 'A traiter', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000004, 'GFSTATUS', 4, 1, 0, 2, 'A valider', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000005, 'GFSTATUS', 5, 1, 0, 2, 'En erreur', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000006, 'GFSTATUS', 6, 1, 0, 2, 'Rejeter', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000007, 'GFSTATUS', 7, 1, 0, 2, 'Traité', 1, 2, 2, 2, 2, 1, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+       (81000001, 'GFSTATUS', 1, 1, 0, 2, 'Reçu', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000002, 'GFSTATUS', 2, 1, 0, 2, 'En traitement', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000003, 'GFSTATUS', 3, 1, 0, 2, 'A traiter', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000004, 'GFSTATUS', 4, 1, 0, 2, 'A valider', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000005, 'GFSTATUS', 5, 1, 0, 2, 'En erreur', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000006, 'GFSTATUS', 6, 1, 0, 2, 'Rejeter', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000007, 'GFSTATUS', 7, 1, 0, 2, 'Traité', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 INSERT INTO FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (81000000, 'F', '', 'Status Formulaire', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),

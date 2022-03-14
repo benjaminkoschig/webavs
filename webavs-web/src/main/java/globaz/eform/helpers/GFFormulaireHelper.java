@@ -17,12 +17,13 @@ public abstract class GFFormulaireHelper {
 
     private static Vector gestionnaires = null;
     private static Vector<String[]> type = null;
+    private static Vector<String[]> sortBy = null;
 
     public static  Vector<String[]> getTypeData(BSession session) {
         if (Objects.isNull(type)) {
             type = new Vector<>();
             Arrays.stream(GFTypeEForm.values()).forEach(gfTypeEForm -> {
-                type.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getDesignation(session) });
+                type.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getCodeEForm() + " - " + gfTypeEForm.getDesignation(session) });
             });
 
             type.insertElementAt(new String[] { "", "" }, 0);
@@ -63,5 +64,16 @@ public abstract class GFFormulaireHelper {
         }
 
         return gestionnaires;
+    }
+
+    public static Vector<String[]> getSortByData(BSession session) {
+        sortBy = new Vector<>();
+
+        sortBy.add(new String[] { "default", session.getLabel("ORDER_BY_DATE") });
+        sortBy.add(new String[] { "orderByType", session.getLabel("ORDER_BY_TYPE") });
+        sortBy.add(new String[] { "orderByNSS", session.getLabel("ORDER_BY_NSS") });
+        sortBy.add(new String[] { "orderByGestionnaire", session.getLabel("ORDER_BY_GESTIONNAIRE") });
+
+        return sortBy;
     }
 }

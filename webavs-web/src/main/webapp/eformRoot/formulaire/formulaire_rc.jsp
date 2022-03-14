@@ -1,13 +1,15 @@
 <%@ page import="globaz.eform.helpers.GFFormulaireHelper" %>
-<%@ page import="ch.globaz.eform.constant.GFStatusEForm" %>
-<%@page import="globaz.eform.vb.formulaire.GFFormulaireViewBean"%>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 
+
 <%@ include file="/theme/find/header.jspf" %>
+<%
+	idEcran="GF0001";
+%>
 
 <%-- tpl:insert attribute="zoneInit" --%>
 <ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
@@ -15,7 +17,8 @@
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/javascripts.jspf" %>
-<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" />
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/eform/formulaire/formulaire_rc.css" />
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
@@ -38,44 +41,44 @@
 
 <%-- tpl:insert attribute="zoneMain" --%>
 <tr>
-	<td width="50px">
-	</td>
-	<td width="150px">
+	<td style="width:10px"></td>
+	<td style="width:150px">
 		<LABEL for="byGestionnaire">
 			<ct:FWLabel key="GESTIONNAIRE"/>
 		</LABEL>
 	</td>
 	<td>
-		<ct:FWListSelectTag data="<%=GFFormulaireHelper.getGestionnairesData(objSession)%>"
-							defaut=""
-							name="formulaireSearch.byGestionnaire"/>
+		<ct:FWListSelectTag name="byGestionnaire"
+							data="<%=GFFormulaireHelper.getGestionnairesData(objSession)%>"
+							defaut="<%=objSession.getUserId()%>"/>
 	</td>
-	<td width="25px">
+	<td style="width:25px">
 	</td>
-	<td width="150px">
+	<td style="width:150px">
 		<LABEL for="byStatus">
 			<ct:FWLabel key="STATUS"/>
 		</LABEL>
 	</td>
 	<td>
-		<ct:FWCodeSelectTag name="formulaireSearch.forStatus"
-							defaut="RECEIVE"
+		<ct:FWCodeSelectTag name="byStatus"
+							defaut=""
+							wantBlank="true"
 							codeType="GFSTATUS"/>
 	</td>
-	<td width="25px">
+	<td style="width:25px;height: 10px">
 	</td>
-	<td width="150px">
+	<td style="width:150px">
 	</td>
+	<td></td>
+	<td style="width:10px"></td>
+</tr>
+<tr>
+	<td colspan="10" style="height: 10px"></td>
+</tr>
+<tr>
 	<td>
 	</td>
-</tr>
-<tr>
-	<td colspan="9"></td>
-</tr>
-<tr>
-	<td width="50px">
-	</td>
-	<td width="150px">
+	<td>
 		<LABEL for="byType">
 			<ct:FWLabel key="TYPE_FORMULAIRE"/>
 		</LABEL>
@@ -83,86 +86,82 @@
 	<td>
 		<ct:FWListSelectTag data="<%=GFFormulaireHelper.getTypeData(objSession)%>"
 							defaut=""
-							name="formulaireSearch.byStatus"/>
+							name="byType"/>
+	<td>
 	</td>
-	<td width="25px">
-	</td>
-	<td width="150px">
+	<td>
 		<LABEL for="byDate">
 			<ct:FWLabel key="DATE_FORMULAIRE"/>
 		</LABEL>
 	</td>
 	<td>
-		<ct:FWCalendarTag name="formulaireSearch.byDate" value=""/>
-	</td>
-	<td width="25px">
-		<LABEL for="byId">
-			<ct:FWLabel key="ID_FORMULAIRE"/>
-		</LABEL>
-	</td>
-	<td width="150px">
-		<ct:inputText name="envoiJobSimpleModel.id"/>
+		<ct:FWCalendarTag name="byDate" value=""/>
 	</td>
 	<td>
 	</td>
-</tr>
-<tr>
-	<td colspan="9"></td>
-</tr>
-<tr>
-	<td width="50px">
+	<td>
+		<LABEL for="byMessageId">
+			<ct:FWLabel key="ID_FORMULAIRE"/>
+		</LABEL>
 	</td>
-	<td width="150px">
-		<LABEL for="likeNSS">
+	<td>
+		<ct:inputText name="byMessageId" id="byMessageId"/>
+	</td>
+	<td></td>
+</tr>
+<tr>
+	<td colspan="10" style="height: 10px"></td>
+</tr>
+<tr>
+	<td>
+	</td>
+	<td>
+		<LABEL for="likeNss">
 			<ct:FWLabel key="NSS"/>
 		</LABEL>
 	</td>
 	<td>
 		<nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="likeNss" newnss="true" tabindex="3"/>
 
-		<ct:inputHidden name="searchModel.likeNss"/>
+		<ct:inputHidden name="likeNss"/>
 	</td>
-	<td width="25px">
+	<td>
 	</td>
-	<td width="150px">
-		<LABEL for="forStatus">
-			<ct:FWLabel key="STATUS"/>
+	<td>
+		<LABEL for="byLastName">
+			<ct:FWLabel key="LASTNAME"/>
 		</LABEL>
 	</td>
 	<td>
-
-	</td>
-	<td width="25px">
-	</td>
-	<td width="150px">
+		<ct:inputText name="byLastName" id="byLastName"/>
 	</td>
 	<td>
 	</td>
-</tr>
-<tr>
-	<td colspan="9"></td>
-</tr>
-<tr>
-	<td width="50px">
-	</td>
-	<td width="150px">
-		<LABEL for="forGestionnaire">
-			<ct:FWLabel key="GESTIONNAIRE"/>
+	<td>
+		<LABEL for="byFirstName">
+			<ct:FWLabel key="FIRSTNAME"/>
 		</LABEL>
 	</td>
 	<td>
+		<ct:inputText name="byFirstName" id="byFirstName"/>
 	</td>
-	<td width="25px">
-	</td>
-	<td width="150px">
-	</td>
+	<td></td>
+</tr>
+<tr>
+	<td colspan="10" style="height: 10px"></td>
+</tr>
+<tr>
 	<td>
 	</td>
-	<td width="25px">
-	</td>
-	<td width="150px">
-	</td>
 	<td>
+		<LABEL for="sortBy">
+			<ct:FWLabel key="SORT_BY"/>
+		</LABEL>
+	</td>
+	<td colspan="8">
+		<ct:FWListSelectTag name="sortBy"
+							data="<%=GFFormulaireHelper.getSortByData(objSession)%>"
+							defaut="default"/>
 	</td>
 </tr>
 <%-- /tpl:insert --%>

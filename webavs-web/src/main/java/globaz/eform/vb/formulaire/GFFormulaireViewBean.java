@@ -10,6 +10,16 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     GFEFormModel formulaire;
 
+    private String byGestionnaire = null;
+
+    public String getByGestionnaire() {
+        return byGestionnaire;
+    }
+
+    public void setByGestionnaire(String byGestionnaire) {
+        this.byGestionnaire = byGestionnaire;
+    }
+
     public GFFormulaireViewBean() {
         super();
         formulaire = new GFEFormModel();
@@ -43,6 +53,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void retrieve() throws Exception {
+
     }
 
     @Override

@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GFEFormValidator {
     public static boolean isExists(String id) {
         GFEFormSearch gfeFormSearch = new GFEFormSearch();
-        gfeFormSearch.setForId(id);
+        gfeFormSearch.setByMessageId(id);
 
         try {
             gfeFormSearch = GFEFormServiceLocator.getGFEFormService().search(gfeFormSearch);
