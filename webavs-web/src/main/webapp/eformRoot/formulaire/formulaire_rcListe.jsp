@@ -49,14 +49,14 @@
 
 </TD>
 <TD class="mtd dec<%=line.getFormulaire().getSubject() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getSubject() %> </TD>
-<TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getSubject()%> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getDate() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getDate() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getMessageId() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getMessageId() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNss() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= NSUtil.formatAVSUnknown(line.getFormulaire().getBeneficiaireNss()) %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getBeneficiairePrenom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiairePrenom()%> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getStatus() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= GFStatusEForm.getStatusByCode(line.getFormulaire().getStatus()).getDesignation(objSession)%></TD>
-<TD class="mtd dec<%=line.getFormulaire().getUserGestionnaire() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%=GFFormulaireHelper.getGestionnaireDesignation(line.getFormulaire().getUserGestionnaire()) %> </TD>
+<TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>"><%= line.getSubject()%> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getDate() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getDate() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getMessageId() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getMessageId() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNss() %>" nowrap onclick="<%=detailUrl%>"><%= NSUtil.formatAVSUnknown(line.getFormulaire().getBeneficiaireNss()) %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBeneficiairePrenom() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBeneficiairePrenom()%> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getStatus() %>" nowrap onclick="<%=detailUrl%>"><%= GFStatusEForm.getStatusByCode(line.getFormulaire().getStatus()).getDesignation(objSession)%></TD>
+<TD class="mtd dec<%=line.getFormulaire().getUserGestionnaire() %>" nowrap onclick="<%=detailUrl%>"><%=GFFormulaireHelper.getGestionnaireDesignation(line.getFormulaire().getUserGestionnaire()) %> </TD>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:insert attribute="zoneTableFooter" --%>
