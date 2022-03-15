@@ -7,7 +7,6 @@ import ch.globaz.eform.constant.GFTypeEForm;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
-import javassist.NotFoundException;
 
 public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
