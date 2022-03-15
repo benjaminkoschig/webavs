@@ -95,7 +95,8 @@
 		</LABEL>
 	</td>
 	<td>
-		<ct:FWCalendarTag name="byDate" value=""/>
+		<INPUT id="byDate" name="byDate" class="clearable" value="" data-g-calendar="mandatory:false"/>
+<%--		<ct:FWCalendarTag name="byDate" value=""/>--%>
 	</td>
 	<td>
 	</td>

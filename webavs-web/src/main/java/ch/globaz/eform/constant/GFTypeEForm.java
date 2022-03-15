@@ -1,9 +1,11 @@
 package ch.globaz.eform.constant;
 
 import globaz.globall.db.BSession;
+import javassist.NotFoundException;
+
+import java.util.Arrays;
 
 public enum GFTypeEForm {
-    NONE("", "", ""),
     F318_370("318.370", "2504", "003700"),
     F318_371("318.371", "2504", "003710"),
     F318_282("318.282", "2504", "002820"),
@@ -53,21 +55,17 @@ public enum GFTypeEForm {
         return session.getLabel("FORMULAIRE_" + code);
     }
 
-    public static GFTypeEForm getGFTypeEForm(String code){
-        for (GFTypeEForm typeEForm : GFTypeEForm.values()) {
-            if(typeEForm.getCodeEForm().equals(code)){
-                return typeEForm;
-            }
-        }
-        return NONE;
+    public static GFTypeEForm getGFTypeEForm(String code) throws NotFoundException {
+        return Arrays.stream(GFTypeEForm.values())
+                .filter(type -> type.getCodeEForm().equals(code))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("formulaire non géré! " + code));
     }
 
-    public static GFTypeEForm getGFTypeEForm(String messageSubTypeId, String messageTypeId){
-        for (GFTypeEForm typeEForm : GFTypeEForm.values()) {
-            if(typeEForm.getMessageTypeId().equals(messageTypeId) && typeEForm.getMessageSubTypeId().equals(messageSubTypeId)){
-                return typeEForm;
-            }
-        }
-        return NONE;
+    public static GFTypeEForm getGFTypeEForm(String messageSubTypeId, String messageTypeId) throws NotFoundException {
+        return Arrays.stream(GFTypeEForm.values())
+                .filter(type -> type.getMessageTypeId().equals(messageTypeId) && type.getMessageSubTypeId().equals(messageSubTypeId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Type et sous type de formulaire non géré! Type : " + messageTypeId + " sous-type : " + messageSubTypeId));
     }
 }
