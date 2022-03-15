@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import java.util.Arrays;
 
+import java.util.Arrays;
+
 public enum GFTypeEForm {
     F318_370("318.370", "2504", "003700"),
     F318_371("318.371", "2504", "003710"),
