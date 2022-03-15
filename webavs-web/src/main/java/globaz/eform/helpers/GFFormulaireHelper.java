@@ -22,11 +22,11 @@ public abstract class GFFormulaireHelper {
     public static  Vector<String[]> getTypeData(BSession session) {
         if (Objects.isNull(type)) {
             type = new Vector<>();
-            Arrays.stream(GFTypeEForm.values()).forEach(gfTypeEForm -> {
-                type.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getCodeEForm() + " - " + gfTypeEForm.getDesignation(session) });
-            });
+            type.add(new String[] { "", "" });
+            
+            Arrays.stream(GFTypeEForm.values())
+                    .forEach(gfTypeEForm -> type.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getCodeEForm() + " - " + gfTypeEForm.getDesignation(session) }));
 
-            type.insertElementAt(new String[] { "", "" }, 0);
         }
 
         return type;
