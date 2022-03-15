@@ -2,6 +2,7 @@ package globaz.eform.vb.formulaire;
 
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFEFormModel;
+import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.constant.GFTypeEForm;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
@@ -76,13 +77,8 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         return formulaire;
     }
 
-    public String getSubject() {
-//        try{
-            return GFTypeEForm.getGFTypeEForm(formulaire.getSubject())
-                    .getDesignation(getSession());
-//        } catch (NotFoundException ex) {
-//            return "";
-//        }
-
+    public String getSubject() throws ch.globaz.common.exceptions.NotFoundException {
+        return GFTypeEForm.getGFTypeEForm(formulaire.getSubject())
+                .getDesignation(getSession());
     }
 }

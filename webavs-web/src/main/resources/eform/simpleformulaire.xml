@@ -30,8 +30,8 @@
                 <search-field name="byType" field-ref="subject" operation="EQUALS"/>
                 <search-field name="byDate" field-ref="date" operation="EQUALS"/>
                 <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
-                <search-field name="byLastName" field-ref="beneficiaireNom" operation="EQUALS"/>
-                <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="EQUALS"/>
+                <search-field name="byLastName" field-ref="beneficiaireNom" operation="LIKE"/>
+                <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="LIKE"/>
                 <search-field name="likeNss" field-ref="beneficiaireNss" operation="EQUALS"/>
             </search-group>
         </search-definition>

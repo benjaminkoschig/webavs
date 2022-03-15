@@ -1,5 +1,7 @@
 package ch.globaz.eform.constant;
 
+import globaz.globall.db.BSession;
+
 import java.util.Arrays;
 
 public enum GFStatusEForm {
@@ -27,6 +29,10 @@ public enum GFStatusEForm {
 
     public String getCode() {
         return code;
+    }
+
+    public String getDesignation(BSession session) {
+        return session.getLabel(code);
     }
 
     public static GFStatusEForm getStatusByCodeSystem(String codeSystem) {

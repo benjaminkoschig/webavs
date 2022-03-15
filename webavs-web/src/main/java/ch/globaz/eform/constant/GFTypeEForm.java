@@ -2,7 +2,6 @@ package ch.globaz.eform.constant;
 
 import ch.globaz.common.exceptions.NotFoundException;
 import globaz.globall.db.BSession;
-import javassist.NotFoundException;
 
 import java.util.Arrays;
 
