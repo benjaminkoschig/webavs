@@ -3,6 +3,7 @@
 <%@ page import="globaz.commons.nss.NSUtil" %>
 <%@ page import="ch.globaz.eform.constant.GFTypeEForm" %>
 <%@ page import="ch.globaz.eform.constant.GFStatusEForm" %>
+<%@ page import="globaz.eform.helpers.GFFormulaireHelper" %>
 <%@ page errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
@@ -55,7 +56,7 @@
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiairePrenom() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getBeneficiairePrenom()%> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getStatus() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= GFStatusEForm.getStatusByCode(line.getFormulaire().getStatus()).getDesignation(objSession)%></TD>
-<TD class="mtd dec<%=line.getFormulaire().getUserGestionnaire() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getFormulaire().getUserGestionnaire() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getUserGestionnaire() %>" nowrap onclick="<%=detailUrl%>" data-g-periodformatter=" "><%=GFFormulaireHelper.getGestionnaireDesignation(line.getFormulaire().getUserGestionnaire()) %> </TD>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:insert attribute="zoneTableFooter" --%>

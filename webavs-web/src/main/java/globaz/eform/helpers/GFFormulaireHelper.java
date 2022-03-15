@@ -4,6 +4,9 @@ import ch.globaz.eform.constant.GFTypeEForm;
 import ch.globaz.eform.web.application.GFApplication;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.admin.user.service.JadeUserService;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 
 import java.util.Arrays;
@@ -64,6 +67,14 @@ public abstract class GFFormulaireHelper {
         }
 
         return gestionnaires;
+    }
+
+    public static String getGestionnaireDesignation(String visa) throws Exception {
+        JadeUserService userService = JadeAdminServiceLocatorProvider.getLocator().getUserService();
+
+        JadeUser user = userService.load(userService.findIdUserForVisa(visa));
+
+        return  user.getFirstname() + " " + user.getLastname();
     }
 
     public static Vector<String[]> getSortByData(BSession session) {
