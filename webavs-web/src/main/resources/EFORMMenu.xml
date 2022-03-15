@@ -8,10 +8,10 @@
 			- Recherche
 	-->
 	<menu id="eform-menuprincipal">
-		<label refId="MENU_PRINCIPAL"/>
+		<label refId="MENU_EFORM_PRINCIPAL"/>
 		<nodes>
 			<node id="Recherche">
-				<label refId="MENU_RECHERCHE"/>
+				<label refId="MENU_EFORM_RECHERCHE"/>
 				<action command="/eform" responseTarget="fr_main">
 					<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
 				</action>
