@@ -7,6 +7,3 @@ input#byMessageId, input#byLastName, input#byFirstName{
 input#partiallikeNss {
     width: 250px;
 }
-input#byDate {
-    width: 273px;
-}
