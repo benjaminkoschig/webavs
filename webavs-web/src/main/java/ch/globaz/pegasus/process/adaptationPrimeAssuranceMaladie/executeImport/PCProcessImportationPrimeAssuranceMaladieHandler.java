@@ -61,6 +61,8 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
     private static final int AGE_ADULTE = 26;
     private static final int AGE_JEUNE_ADULTE = 19;
 
+    private boolean isProcessAdaptationPrimeLamal = false;
+
     private DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("MM.yyyy")
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1).toFormatter();
 
@@ -81,6 +83,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
 
         try {
             initBsession();
+            this.isProcessAdaptationPrimeLamal = Boolean.valueOf(properties.get(PCProcessAdapationEnum.IS_ADAPTATION_PRIME_LAMAL));
             if (isAdaptationAnnuel) {
                 fillDroitToUpdate();
             } else {
@@ -138,11 +141,14 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
             for (JadeAbstractModel object : membreSearch.getSearchResults()) {
                 MembreFamilleEtendu membreFamille = (MembreFamilleEtendu) object;
                 String numAvs = membreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim();
+                boolean isConjoint = IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC());
 
-                boolean isEnfant = (membreFamille.getSimpleDonneesPersonnelles().getIsEnfant() || membreFamille.getSimpleDonneesPersonnelles().getIsRepresentantLegal());
+                boolean isEnfant = (membreFamille.getSimpleDonneesPersonnelles().getIsEnfant()
+                        || membreFamille.getSimpleDonneesPersonnelles().getIsRepresentantLegal()
+                        || IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC()));
 
                 if (!Objects.equals(numAvs, numAvsRequerant)
-                        && ((isEnfant && isRenteOuverteForNSS(membreFamille)) || !(isEnfant))){
+                        && ((isEnfant && isRenteOuverteForNSS(membreFamille)) || !(isEnfant) || isConjoint)){
                         createPrimeForMembreFamille(membreFamille.getDroitMembreFamille(), modificateurDroitDonneeFinanciere);
                 }
             }
@@ -252,11 +258,19 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
                         listeWarn.add(messageAvertissementPrimeMoyenne + assuranceMaladie.getNss() + "\n");
                     }
                 } else {
-                    throw new AdaptationException(messageAvertissementMontantExistant + assuranceMaladie.getNss());
+                    if (isAdaptationAnnuel) {
+                        listeWarn.add(messageAvertissementMontantExistant);
+                    } else {
+                        throw new AdaptationException(messageAvertissementMontantExistant + assuranceMaladie.getNss());
+                    }
                 }
             }
-        }else {
-            throw new AdaptationException("Le Nss suivant n'a pas été trouvé dans le fichier CSV : " + numAVS);
+        } else {
+            if (isAdaptationAnnuel) {
+                listeWarn.add("Le Nss suivant n'a pas été trouvé dans le fichier CSV : " + numAVS);
+            } else {
+                throw new AdaptationException("Le Nss suivant n'a pas été trouvé dans le fichier CSV : " + numAVS);
+            }
         }
     }
 
@@ -267,8 +281,12 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
             if (isExistingPrimeAssuranceMaladie(searchAssuranceMaladie)) {
                 return true;
             } else {
-                // Dans le cas ou une prime n'existerait pas en DB, on renvoie une erreur
-                throw new AdaptationException("La prime récupérée du CSV est vide ou nulle, et il n'y a pas de prime en DB pour le NSS : "+ primeAssuranceMaladieFromCSV.getNss());
+                if (isAdaptationAnnuel) {
+                    return true;
+                } else {
+                    // Dans le cas ou une prime n'existerait pas en DB, on renvoie une erreur
+                    throw new AdaptationException("La prime récupérée du CSV est vide ou nulle, et il n'y a pas de prime en DB pour le NSS : "+ primeAssuranceMaladieFromCSV.getNss());
+                }
             }
         }
         return false;
