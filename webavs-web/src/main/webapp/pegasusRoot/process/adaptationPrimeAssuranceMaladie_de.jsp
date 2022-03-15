@@ -28,5 +28,6 @@
 	<div>
 		<label for="DATE_ADAPTATION">Mois adaptation </label>
 		<input id="DATE_ADAPTATION" data-g-calendar="type:month,mandatory:true" value="" />
+		<input id="IS_ADAPTATION_PRIME_LAMAL" value="true" style="display: none"/>
 	</div>
 </div>
