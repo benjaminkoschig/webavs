@@ -4,25 +4,27 @@
 	<!-- ************** -->
 	<!-- Menu Principal -->
 	<!-- ************** -->
+	<!--
+			- Recherche
+	-->
 	<menu id="eform-menuprincipal">
-		<label refId="MENU_PRINCIPAL"/>
-<!--		<nodes>-->
-<!--			<node>-->
-<!--				<label refId="MENU_OPTION_GLOBAL_VIEW"/>-->
-<!--				<action command="/eform" responseTarget="fr_main">-->
-<!--					<parameter name="userAction" value="eform.formulaire.chercher"/>-->
-<!--					<parameter name="selectedId"/>-->
-<!--					<parameter name="csDomaine"/>-->
-<!--				</action>-->
-<!--			</node>-->
-<!--		</nodes>-->
+		<label refId="MENU_EFORM_PRINCIPAL"/>
+		<nodes>
+			<node id="Recherche">
+				<label refId="MENU_EFORM_RECHERCHE"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
+				</action>
+			</node>
+		</nodes>
 	</menu>
 	
 	<!-- ***************************************** -->
-	<!-- Menu Option Detail étape              -->
+	<!-- Menu Option Detail étape                  -->
 	<!-- ***************************************** -->
-	<menu id="eform-eFormulaireDetail">
-		<label refId="OPTIONS" />
+
+	<menu id="eform-optionsformulaires">
+		<label refId="MENU_OPTIONS_FORMULAIRES" />
 		<nodes>
 			<node>
 				<label refId="MENU_DETAIL"/>
@@ -34,7 +36,37 @@
 			<node>
 				<label refId="MENU_TELECHARGEMENT"/>
 				<action command="/eform" responseTarget="fr_main">
-					<parameter name="userAction" value="eform.formulaire.telecharger"/>
+<!--					<parameter name="userAction" value="eform.formulaire.telecharger"/>-->
+<!--					<parameter name="selectedId"/>-->
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_DECLARER_GESTIONNAIRE"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.gestionnaire"/>-->
+<!--					<parameter name="selectedId"/>-->
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_STATUT_ENCOURS"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="selectedId"/>
+					<parameter name="ENCOURS"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_STATUT_TRAITE"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="selectedId"/>
+					<parameter name="TRAITE"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_VISU_TIERS"/>
+				<action command="/eform" responseTarget="fr_main">
+<!--					<parameter name="userAction" value="eform.formulaire.visutiers"/>-->
 					<parameter name="selectedId"/>
 				</action>
 			</node>
@@ -44,7 +76,7 @@
 	<!-- ************************** -->
 	<!-- Menu Option empty		    -->
 	<!-- ************************** -->
-	<menu id="eform-optionsempty">
+	<!--<menu id="eform-optionsempty">
 		<label refId="MENU_OPTION_TITRE"/>
-	</menu>
+	</menu>-->
 </menus>
