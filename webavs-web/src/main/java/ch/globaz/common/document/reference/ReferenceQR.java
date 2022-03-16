@@ -443,7 +443,7 @@ public class ReferenceQR extends AbstractReference {
      */
     public void genererCreAdresse() {
 
-        String[] adresseSplit = getAdresse().split("\r\n");
+        String[] adresseSplit = getAdresse(getLangueDoc()).split("\r\n");
 
         this.creAdressTyp = COMBINE;
 
