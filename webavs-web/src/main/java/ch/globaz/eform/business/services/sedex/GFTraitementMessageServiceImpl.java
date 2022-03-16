@@ -78,6 +78,7 @@ public class GFTraitementMessageServiceImpl {
     public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException {
         String[] defaultUserGestionnaire = {""};
         String[] zipPath = {null};
+        String[] zipName = {null};
         byte[][] zipByte = {null};
 
         //Lecture dans les propriétés du gestionnaire par défaut
@@ -100,6 +101,7 @@ public class GFTraitementMessageServiceImpl {
             File[] listFiles = currentFolder.listFiles();
             if (Objects.nonNull(listFiles) && listFiles.length > 0)  {
                 zipPath[0] = listFiles[0].getAbsolutePath();
+                zipName[0] = listFiles[0].getName();
                 zipByte[0] = CommonBlobUtils.fileToByteArray(listFiles[0].getAbsolutePath());
             }
 
@@ -110,7 +112,7 @@ public class GFTraitementMessageServiceImpl {
 
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
-                        importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipByte[0]);
+                        importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipName[0], zipByte[0]);
                         LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     } catch (Exception e) {
                         try {
@@ -124,7 +126,7 @@ public class GFTraitementMessageServiceImpl {
             } else if (message instanceof SimpleSedexMessage) {
                 SimpleSedexMessage messageToTreat = (SimpleSedexMessage) message;
                 try {
-                    importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipByte[0]);
+                    importMessagesSingle(messageToTreat, defaultUserGestionnaire[0], zipName[0], zipByte[0]);
                     LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                 } catch (Exception e) {
                     try {
@@ -150,11 +152,11 @@ public class GFTraitementMessageServiceImpl {
     /**
      * Méthode de lecture du message sedex en réception, et traitement
      */
-    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, String userGestionnaire, byte[] zipByte) throws RuntimeException {
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, String userGestionnaire, String zipName, byte[] zipByte) throws RuntimeException {
         try {
             GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
             if(formHandler != null){
-                formHandler.setDataFromFile(userGestionnaire, zipByte);
+                formHandler.setDataFromFile(userGestionnaire, zipName, zipByte);
                 formHandler.saveDataInDb();
 
                 LOG.info("GFTraitementMessageServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
