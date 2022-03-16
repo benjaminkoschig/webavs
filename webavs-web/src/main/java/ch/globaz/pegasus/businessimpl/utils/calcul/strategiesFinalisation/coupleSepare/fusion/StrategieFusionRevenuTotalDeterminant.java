@@ -18,7 +18,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
 
     @Override
     public void calcule(TupleDonneeRapport donneeCommun, TupleDonneeRapport donneeAvecEnfants,
-            TupleDonneeRapport donneeSeul, TupleDonneeRapport donneeFusionne, CalculContext context, Date dateDebut)
+                        TupleDonneeRapport donneeSeul, TupleDonneeRapport donneeFusionne, CalculContext context, Date dateDebut)
             throws CalculException {
 
         boolean hasImputationFortuneCoupleSepare = donneeCommun.getLegendeEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART) != null;
@@ -33,7 +33,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
         }
 
         float sommeRevenuCommun = calculRevenuCommun(donneeFusionne, donneeCommun, context, fortuneCommun
-                );
+        );
 
         float sommeRevenuPropre = calculRevenuCommun(donneeFusionne, donneeAvecEnfants, context, 0);
 
@@ -57,7 +57,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
     }
 
     private float calculRevenuCommun(TupleDonneeRapport donneeFusionne, TupleDonneeRapport donneeCommun,
-            CalculContext context, float sommeRevenuCommun) throws CalculException {
+                                     CalculContext context, float sommeRevenuCommun) throws CalculException {
         // final float TAUX_REVENU_ACTIVITE_LUCRATIVE = Float.parseFloat(((ControlleurVariablesMetier) context
         // .get(Attribut.CS_FRACTION_REVENUS_PRIVILEGIES)).getValeurCourante());
         // final String TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE = ((ControlleurVariablesMetier) context
@@ -118,6 +118,10 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
 
         // ajout des revenus autres
         sommeRevenuCommun += donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_TOTAL);
+
+        // ajout des subsides d'assurance maladie
+        sommeRevenuCommun += donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_SUBSIDE_ASSURANCE_MALADIE_TOTAL);
+
         return sommeRevenuCommun;
     }
 

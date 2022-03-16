@@ -36,6 +36,7 @@ public class StrategiesCoupleSepareFinalisationFactory {
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun
                 .add(new StrategieFinalRevenuActiviteLucrativeEnfant());
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun.add(new StrategieFinalRevenuAutresRentes());
+        StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun.add(new StrategieFinalRevenuSubsideAssuranceMaladie());
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun.add(new StrategieFinalRevenuAutresCommun());
 
         // revenu propre
@@ -45,7 +46,6 @@ public class StrategiesCoupleSepareFinalisationFactory {
                 .add(new StrategieFinalRevenuImmobiliereSeul());
         StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuAPI());
         StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuAutresSeul());
-        StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuSubsideAssuranceMaladie());
         StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuActiviteLucrativeEnfant());
 
     }
