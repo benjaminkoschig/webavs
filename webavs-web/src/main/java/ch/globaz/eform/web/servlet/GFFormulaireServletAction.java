@@ -1,5 +1,6 @@
 package ch.globaz.eform.web.servlet;
 
+import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -67,10 +68,10 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
             ((GFFormulaireViewBean) viewBean).getFormulaire().setId(id);
             if (actionPart.equals(ACTION_CHANGE_STATUT)) {
                 String statut = request.getParameter("statut");
-                ((GFFormulaireViewBean) viewBean).getFormulaire().setStatus(statut);
+                ((GFFormulaireViewBean) viewBean).getFormulaire().setStatus(GFStatusEForm.getStatusByCode(statut).getCodeSystem());
             }
             // Copie des propriétés
-            globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+            JSPUtils.setBeanProperties(request, viewBean);
 
             // Traitement
             viewBean = dispatcher.dispatch(viewBean, action);
@@ -83,9 +84,9 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
                 if(actionPart.equals(ACTION_TELECHARGER)) {
                     GFFileUtils.downloadFile(response, ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachementName(), ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachement());
                 }
-                destination = _getDestModifierSucces(session, request, response, viewBean);
+                destination = _getDestChercherSucces(session, request, response, viewBean);
             } else {
-                destination = _getDestModifierEchec(session, request, response, viewBean);
+                destination = _getDestChercherEchec(session, request, response, viewBean);
             }
 
         } catch (Exception e) {
@@ -95,5 +96,15 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
 
         // Redirection vers la destination
         goSendRedirect(destination, request, response);
+    }
+
+    protected String _getDestChercherSucces(HttpSession session, HttpServletRequest request,
+                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
+        return this.getActionFullURL() + ".chercher";
+    }
+
+    protected String _getDestChercherEchec(HttpSession session, HttpServletRequest request,
+                                           HttpServletResponse response, FWViewBeanInterface viewBean) {
+        return this._getDestEchec(session, request, response, viewBean);
     }
 }
