@@ -41,6 +41,7 @@ public class StrategieFinalRevenuSuppressionSeul implements StrategieCalculFinal
             IPCValeursPlanCalcul.CLE_REVEN_INTFORMO_TOTAL,
             IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL,
             IPCValeursPlanCalcul.CLE_REVEN_RENAVSAI_TOTAL,
+            IPCValeursPlanCalcul.CLE_REVEN_SUBSIDE_ASSURANCE_MALADIE_TOTAL,
             // IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_TOTAL,
             IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_TOTAL,
             IPCValeursPlanCalcul.CLE_REVEN_REV_DETE_TOTAL,
