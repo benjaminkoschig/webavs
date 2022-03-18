@@ -293,15 +293,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     if(IIJPrononce.CS_PETITE_IJ.equals(generationAnnonce.getCsTypeIJ())) {
                         annonceACreer.setDroitAcquis4emeRevision("1");
                     } else if (!JadeStringUtil.isBlankOrZero(noRevision)) {
-                        if (3 == Integer.valueOf(noRevision).intValue()) {
-
-                            // Ce champ siginifie : Garantie des droit acquis de
-                            // la 3ème révision
-                            // pour une annonce de 4ème révision
-                            annonceACreer.setDroitAcquis4emeRevision("1");
-                        } else {
-                            annonceACreer.setDroitAcquis4emeRevision("0");
-                        }
+                        annonceACreer.setDroitAcquis4emeRevision("0");
                     }
 
                     String noDecisionComplet = IJUtils.getNumeroDecisionIJAIComplet(getSession(),
