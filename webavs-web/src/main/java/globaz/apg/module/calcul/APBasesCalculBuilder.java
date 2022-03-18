@@ -11,6 +11,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.salaire.APMontantVerse;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
+import globaz.apg.utils.APGDatesUtils;
 import globaz.apg.utils.APGUtils;
 import globaz.globall.db.*;
 import globaz.globall.util.JADate;
@@ -140,6 +141,7 @@ public abstract class APBasesCalculBuilder {
     HashMap<String, Integer> nbContratsList = new HashMap<>();
 
     int nbJoursSoldes;
+    int nbJoursSoldesAnneeSuivante;
 
     // le niveau d'activation est plus grand que 0 si l'on est dans une période
     // de prestation
@@ -235,18 +237,18 @@ public abstract class APBasesCalculBuilder {
         }
     }
 
-       /**
-         * couper par mois:
-         *
+    /**
+     * couper par mois:
+     *
      * allocations par mois, on ajoute donc des com
      *mandes qui vont découper la période de
-         * prestation en unités mensuelles.
-         *
-         * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
+     * prestation en unités mensuelles.
+     *
+     * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
      *
      * @param debut
      * @param fin
-         */
+     */
     protected void couperParMois(Date debut, Calendar fin) {
         Calendar moisDernier = getCalendarInstance();
         // instancié à la date du
@@ -795,6 +797,11 @@ public abstract class APBasesCalculBuilder {
 
                 baseCourante.setTypeAllocation(droit.getGenreService());
             } else {
+                if(droit instanceof APDroitPaternite
+                        && baseCourante.getDateDebut() != null
+                        && !APGDatesUtils.isMemeAnnee(baseCourante.getDateDebut().getYear(), date)){
+                    nbJoursSoldes = nbJoursSoldesAnneeSuivante;
+                }
                 baseCourante = (APBaseCalcul) baseCourante.clone();
             }
 
