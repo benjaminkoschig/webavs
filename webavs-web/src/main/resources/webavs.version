@@ -3,3 +3,12 @@ version=${webavs.version.business}
 version.technical=${webavs.version.technical}
 version.servicepack=
 date=${maven.timestamp}
+
+git.build.number=${git.build.number}
+git.build.number.unique=${git.build.number.unique}
+git.closest.tag.name=${git.closest.tag.name}
+git.commit.id.abbrev=${git.commit.id.abbrev}
+git.commit.id=${git.commit.id}
+git.branch=${scm.branch}
+git.commit.id.describe=${git.commit.id.describe}
+git.commit.id.describe-short=${git.commit.id.describe-short}

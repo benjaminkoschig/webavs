@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>java-superpom</artifactId>
-		<version>3.0.0</version>
+		<version>3.1.0</version>
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
@@ -23,7 +23,7 @@
 	<properties>
 		<java.source.version>1.8</java.source.version>
 
-		<wiki.parent>WebAVS RN</wiki.parent>
+		<wiki.parent>WebAVS RN </wiki.parent>
 		<!-- SCM ATTRIBUTES -->
 		<scm.path>products-current/webavs/</scm.path>
 		<wiki.home>https://confluence.globaz.ch</wiki.home>
@@ -50,25 +50,29 @@
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-        <jackson.version>2.12.4</jackson.version>
-        <jjwt.version>0.11.2 </jjwt.version>
+    <jackson.version>2.12.4</jackson.version>
+    <jjwt.version>0.11.2 </jjwt.version>
 
 		<anakin.version>3.4.2</anakin.version>
 		<apiguardian-api.version>1.1.2</apiguardian-api.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
 
-        <slf4j.version>1.7.21</slf4j.version>
-        <logback.version>1.1.7</logback.version>
+    <slf4j.version>1.7.21</slf4j.version>
+    <logback.version>1.1.7</logback.version>
 
-        <assertj-core.version>3.19.0</assertj-core.version>
-        <mockito-core.version>3.10.0</mockito-core.version>
+    <assertj-core.version>3.19.0</assertj-core.version>
+    <mockito-core.version>3.10.0</mockito-core.version>
 
-        <junit.version>4.13.2</junit.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <powermock.version>2.0.2</powermock.version>
+    <junit.version>4.13.2</junit.version>
+    <hamcrest.version>1.3</hamcrest.version>
+    <powermock.version>2.0.2</powermock.version>
 		<jersey.version>2.13</jersey.version>
-		<!-- CONTINUOUS INTEGRATION -->
+
+    <pl.project13.maven.version>4.9.10</pl.project13.maven.version>
+
+
+    <!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
 	</properties>
 
@@ -596,7 +600,21 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<reporting>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <configuration>
+          <injectAllReactorProjects>true</injectAllReactorProjects>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+  <reporting>
 		<plugins>
 			<!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
 			<plugin>

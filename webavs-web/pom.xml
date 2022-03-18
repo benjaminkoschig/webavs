@@ -22,8 +22,12 @@
         <web.resources>src/main/webapp</web.resources>
 
         <!-- Ajout d'un build number pour les version SNAPSHOT -->
-        <webavs.version.business>${project.version}-r${svn.revision}</webavs.version.business>
+        <!--suppress UnresolvedMavenProperty -->
+        <scm.branch>${git.branch}</scm.branch>
+        <!--suppress UnresolvedMavenProperty -->
+        <webavs.version.business>${project.version}-r${git.commit.id.abbrev}</webavs.version.business>
         <webavs.version.technical>${webavs.version.business}</webavs.version.technical>
+
     </properties>
 
     <build>

@@ -1,6 +1,7 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@ page import="globaz.webavs.common.WebavsDocumentionLocator" %>
 <HTML>
 <HEAD>
 <%@ page
@@ -53,7 +54,8 @@ if (datasource != null) {
 	                        <TD>Application :</TD>
 	                        <TD>
 	                        	<B>Web@AVS / Web@AHV (technical version <%=globaz.webavs.common.WebavsDocumentionLocator.getVersionTechnique()%><%=globaz.webavs.common.WebavsDocumentionLocator.getServicePackVersion()%> released on <%=globaz.webavs.common.WebavsDocumentionLocator.getDate()%>)</B>
-	                        	<BR>
+                                 <%=WebavsDocumentionLocator.VERSION_PROPERTIES.getScmBranch()%>
+                                <BR>
 	                        	<%
 	                        		java.util.List applications = new java.util.LinkedList();
 	                        		// liste les applications
