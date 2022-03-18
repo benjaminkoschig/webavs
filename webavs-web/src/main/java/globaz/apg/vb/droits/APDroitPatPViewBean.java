@@ -1,6 +1,5 @@
 package globaz.apg.vb.droits;
 
-import ch.globaz.vulpecula.web.views.association.FacturationAPViewService;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.enums.APModeEditionDroit;
@@ -9,20 +8,11 @@ import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeContext;
-import globaz.jade.context.JadeContextImplementation;
-import globaz.jade.context.JadeThreadActivator;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
-import org.apache.commons.httpclient.util.DateUtil;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,6 +26,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     private String dateDeces = null;
     private String dateDebutPeriode = "";
     private String dateFinPeriode = "";
+    private String dateFinCalculee = "";
     private List<PRPeriode> periodes;
     private String remarque = "";
     private APGSeodorErreurListEntities messagesError = new APGSeodorErreurListEntities();
@@ -123,6 +114,14 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     public void setDateFinPeriode(String dateFinPeriode) {
         this.dateFinPeriode = dateFinPeriode;
+    }
+
+    public String getDateFinCalculee() {
+        return dateFinCalculee;
+    }
+
+    public void setDateFinCalculee(String dateFinCalculee) {
+        this.dateFinCalculee = dateFinCalculee;
     }
 
     public List<PRPeriode> getPeriodes() {
@@ -397,7 +396,6 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
         return dateMin;
     }
-
 
     public int getJourPaternite(BSession session) {
         try {

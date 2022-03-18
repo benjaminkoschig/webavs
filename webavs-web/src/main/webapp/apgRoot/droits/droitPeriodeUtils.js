@@ -184,7 +184,7 @@ function repaintTablePeriodes() {
             width = "30%";
         }
         var ddd = '<td width="' + width + '" align="center" class="dateDebut">' + periode.getDateDeDebut() + '</td>';
-        var ddf = '<td width="' + width + '" align="center">' + periode.getDateDeFin() + '</td>';
+        var ddf = '<td width="' + width + '" align="center" class="dateFin">' + periode.getDateDeFin() + '</td>';
         var jsp = '';
 
         var widthJour = "10%";
@@ -227,10 +227,10 @@ function addJourSuppSummaryLine(nbJourSoldesTot, nbJourSuppTot) {
     var $tableBody = $('#periodes').find("tbody");
     var $trLast = $tableBody.find("tr:last").not('.nbJourSuppSummary');
     var $trSummary = '<TR class="nbJourSuppSummary">' +
-                '<TD class="dateDebut" width="30%" align="center">&nbsp</TD>' +
                 '<TD width="30%" align="center">&nbsp</TD>' +
-                '<TD width="10%" align="center">' + nbJourSoldesTot + '</TD>' +
-                '<TD width="10%" align="center">' + nbJourSuppTot + '</TD>' +
+                '<TD width="30%" align="center">&nbsp</TD>' +
+                '<TD id="nbJourSoldesTot" width="10%" align="center">' + nbJourSoldesTot + '</TD>' +
+                '<TD id="nbJourSuppTot" width="10%" align="center">' + nbJourSuppTot + '</TD>' +
                 '<TD width="10%" align="center">&nbsp</TD>' +
                 '<TD width="10%" align="center">&nbsp</TD>' +
                 '<TD width="10%" align="center">&nbsp</TD>' +
