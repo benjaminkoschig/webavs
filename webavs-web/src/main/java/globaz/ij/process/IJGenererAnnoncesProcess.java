@@ -292,7 +292,7 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     String noRevision = generationAnnonce.getNoRevision();
                     if(IIJPrononce.CS_PETITE_IJ.equals(generationAnnonce.getCsTypeIJ())) {
                         annonceACreer.setDroitAcquis4emeRevision("1");
-                    } else if (!JadeStringUtil.isBlankOrZero(noRevision)) {
+                    } else {
                         annonceACreer.setDroitAcquis4emeRevision("0");
                     }
 
