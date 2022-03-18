@@ -105,7 +105,6 @@ public class WebavsDocumentionLocator {
             technicalProperties.setProjectVersionTechnical(versionProp.getProperty("version.technical"));
             technicalProperties.setDate(versionProp.getProperty("date"));
             technicalProperties.setVersionServicePack(versionProp.getProperty("version.servicepack"));
-            technicalProperties.setProjectVersion(versionProp.getProperty("project.version"));
 
             technicalProperties.setBuildNumber(versionProp.getProperty("git.commit.id.abbrev"));
             technicalProperties.setBuildNumberUnique(versionProp.getProperty("git.build.number.unique"));
