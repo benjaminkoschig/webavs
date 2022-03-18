@@ -290,7 +290,9 @@ public class IJGenererAnnoncesProcess extends BProcess {
                     annonceACreer.setIjReduite(generationAnnonce.getGarantieAAReduite().booleanValue() ? "1" : "0");
 
                     String noRevision = generationAnnonce.getNoRevision();
-                    if (!JadeStringUtil.isBlankOrZero(noRevision)) {
+                    if(IIJPrononce.CS_PETITE_IJ.equals(generationAnnonce.getCsTypeIJ())) {
+                        annonceACreer.setDroitAcquis4emeRevision("1");
+                    } else if (!JadeStringUtil.isBlankOrZero(noRevision)) {
                         if (3 == Integer.valueOf(noRevision).intValue()) {
 
                             // Ce champ siginifie : Garantie des droit acquis de
