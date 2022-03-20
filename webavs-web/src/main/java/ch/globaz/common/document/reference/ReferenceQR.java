@@ -8,6 +8,7 @@ import ch.globaz.common.util.GenerationQRCode;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import globaz.aquila.print.COParameter;
+import globaz.babel.api.ICTListeTextes;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
@@ -433,7 +434,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public void recupererIban() throws Exception {
-        this.compte = this.getNumeroCC();
+        this.compte = this.getNumeroCC(getLangueDoc());
     }
 
 
@@ -443,7 +444,7 @@ public class ReferenceQR extends AbstractReference {
      */
     public void genererCreAdresse() {
 
-        String[] adresseSplit = getAdresse().split("\r\n");
+        String[] adresseSplit = getAdresse(getLangueDoc()).split("\r\n");
 
         this.creAdressTyp = COMBINE;
 
@@ -966,4 +967,34 @@ public class ReferenceQR extends AbstractReference {
         this.montantMinimeOuMontantReporter = factureAvecMontantMinime;
     }
 
+    /**
+     * Va chercher le numéro du compte dans Babel
+     *
+     * @author: sel Créé le : 28 nov. 06
+     * @return le N° du compte (ex: 01-12345-1)
+     * @throws Exception
+     */
+    public String getNumeroCC(String langueTiers) throws Exception {
+        return getTexteBabel(2, 1, langueTiers);
+    }
+
+    /**
+     * Récupère les textes du catalogue de texte
+     *
+     * @author: sel Créé le : 28 nov. 06
+     * @param niveau
+     * @param position
+     * @return texte
+     * @throws Exception
+     */
+    public String getTexteBabel(int niveau, int position, String langueTiers) throws Exception {
+        StringBuilder resString = new StringBuilder();
+        if (this.getCurrentDocument(getSession(), langueTiers) == null) {
+            resString.append(TEXTE_INTROUVABLE);
+        } else {
+            ICTListeTextes listeTextes = this.getCurrentDocument(getSession(), langueTiers).getTextes(niveau);
+            resString.append(listeTextes.getTexte(position));
+        }
+        return resString.toString();
+    }
 }
