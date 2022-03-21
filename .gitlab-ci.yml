@@ -5,4 +5,4 @@ include:
 
 build-maven:
   before_script:
-    -export JAVA_OPTS=iso-8859-1
+    - export JAVA_OPTS=iso-8859-1
