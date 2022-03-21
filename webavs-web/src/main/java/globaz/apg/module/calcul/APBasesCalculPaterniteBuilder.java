@@ -5,6 +5,7 @@ import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.db.droits.APEnfantMatManager;
 import globaz.apg.db.droits.APPeriodeComparable;
 import globaz.apg.properties.APParameter;
+import globaz.apg.utils.APGDatesUtils;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
@@ -27,10 +28,10 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
     void ajoutDesCommandes() throws Exception {
         ajouterSituationProfessionnelle();
         ajouterDateMinDebutParam(APParameter.PATERNITE.getParameterName(), "");
-        nbJoursSoldes = ajouterSituationFamilialePat();
+        ajouterSituationFamilialePat();
     }
 
-    private Integer ajouterSituationFamilialePat() throws Exception {
+    private void ajouterSituationFamilialePat() throws Exception {
         List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
 
         // ajouter les enfants aux commandes
@@ -40,7 +41,9 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
         mgr.setForIdDroitMaternite(droit.getIdDroit());
         mgr.find(session.getCurrentThreadTransaction(), BManager.SIZE_USEDEFAULT);
 
-        int nbJourSoldes = 0;
+        nbJoursSoldes = 0;
+        nbJoursSoldesAnneeSuivante = 0;
+        boolean isNewYear = false;
         // pour chaque période
 
         String dateDebut = listPeriode.get(0).getDateDebutPeriode();
@@ -48,7 +51,18 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
         String currentCanton = listPeriode.get(0).getCantonImposition();
         String currentTaux = listPeriode.get(0).getTauxImposition();
 
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+
         for (APPeriodeComparable periode : listPeriode) {
+
+            if(!APGDatesUtils.isMemeAnnee(periode.getDateDebutPeriode(), dateFin)) {
+                ajouterSituationFamilialePat(mgr, dateDebut, dateFin);
+                dateDebut = periode.getDateDebutPeriode();
+                dateFin = periode.getDateFinPeriode();
+                currentCanton = periode.getCantonImposition();
+                currentTaux = periode.getTauxImposition();
+                isNewYear = true;
+            }
 
             if(changeImposition(periode, currentCanton, currentTaux)){
                 ajouterSituationFamilialePat(mgr, dateDebut, dateFin);
@@ -68,29 +82,35 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
                 dateFin = periode.getDateFinPeriode();
             }
 
-            Integer nbJourBetween =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+            Integer nbJours =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
             if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
-                Integer nbJour = Integer.valueOf(periode.getNbrJours());
-                if (nbJourBetween > nbJour) {
-                    nbJourBetween = nbJour;
+                Integer nbJoursPeriode = Integer.valueOf(periode.getNbrJours());
+                if (nbJours > nbJoursPeriode) {
+                    nbJours = nbJoursPeriode;
                 }
             }
-            nbJourSoldes += nbJourBetween;
-
+            addJour(nbJours, jourMax, isNewYear);
         }
         ajouterSituationFamilialePat(mgr, dateDebut, dateFin);
         if (!JadeStringUtil.isBlankOrZero(currentCanton)){
             ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
         }
 
-        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+        ((APDroitPaternite) droit).setNbrJourSoldes(String.valueOf(nbJoursSoldes + nbJoursSoldesAnneeSuivante));
+    }
 
-        if(nbJourSoldes > jourMax) {
-            nbJourSoldes = jourMax;
+    private void addJour(int nbJours, int jourMax, boolean isNewYear) {
+        if(!isNewYear) {
+            nbJoursSoldes += nbJours;
+            if(nbJoursSoldes > jourMax) {
+                nbJoursSoldes = jourMax;
+            }
+        } else {
+            nbJoursSoldesAnneeSuivante += nbJours;
+            if(nbJoursSoldesAnneeSuivante + nbJoursSoldes > jourMax) {
+                nbJoursSoldesAnneeSuivante =  jourMax - nbJoursSoldes;
+            }
         }
-
-        ((APDroitPaternite) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
-        return nbJourSoldes;
     }
 
     // ajouter les événements relatifs à la situation familiale paternité à la
