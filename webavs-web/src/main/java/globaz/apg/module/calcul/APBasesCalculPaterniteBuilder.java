@@ -82,14 +82,14 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
                 dateFin = periode.getDateFinPeriode();
             }
 
-            Integer nbJourBetween =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+            Integer nbJours =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
             if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
-                Integer nbJour = Integer.valueOf(periode.getNbrJours());
-                if (nbJourBetween > nbJour) {
-                    nbJourBetween = nbJour;
+                Integer nbJoursPeriode = Integer.valueOf(periode.getNbrJours());
+                if (nbJours > nbJoursPeriode) {
+                    nbJours = nbJoursPeriode;
                 }
             }
-            addJour(nbJourBetween, jourMax, isNewYear);
+            addJour(nbJours, jourMax, isNewYear);
         }
         ajouterSituationFamilialePat(mgr, dateDebut, dateFin);
         if (!JadeStringUtil.isBlankOrZero(currentCanton)){
