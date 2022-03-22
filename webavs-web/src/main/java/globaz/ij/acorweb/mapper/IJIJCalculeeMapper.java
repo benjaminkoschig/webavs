@@ -27,6 +27,9 @@ public class IJIJCalculeeMapper {
     private final IJPrononce prononce;
     private final EntityService entityService;
 
+    // code genre de réadaptation à partir duquel il ne faut pas renseigner le revenu déterminant
+    private static final int PAS_REVENU_DET_DEPUIS_GENRE_READAPTATION = 5;
+
     public IJIJCalculee map(FCalcul.Cycle.BasesCalcul basesCalcul) {
         IJIJCalculee ijijCalculee;
 
@@ -60,7 +63,7 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDatePrononce())));
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
-        if(basesCalcul.getRevenuDeterminant() != null) {
+        if(basesCalcul.getRevenuDeterminant() != null && hasRevenuDeterminant(basesCalcul.getGenreReadaptation())) {
             ijijCalculee.setRevenuDeterminant(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
             ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getDate())));
         }
@@ -77,6 +80,10 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setNoRevision(Strings.toStringOrNull(basesCalcul.getRevision()));
         entityService.add(ijijCalculee);
         return ijijCalculee;
+    }
+
+    private boolean hasRevenuDeterminant(int genreReadaptation) {
+        return genreReadaptation < PAS_REVENU_DET_DEPUIS_GENRE_READAPTATION;
     }
 
     private IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
