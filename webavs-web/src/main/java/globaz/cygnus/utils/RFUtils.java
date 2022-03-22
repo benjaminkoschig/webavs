@@ -153,7 +153,11 @@ public class RFUtils {
         try {
             if (EPCProperties.LVPC.getBooleanValue()) {
                 if (IPCHomes.CS_SERVICE_ETAT_SASH.equals(codeSystemPCTypeHome)
-                        || IPCHomes.CS_SERVICE_ETAT_EPS.equals(codeSystemPCTypeHome)) {
+                        || IPCHomes.CS_SERVICE_ETAT_EPS.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_FA.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_SPEN.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SASH;
                 } else if (IPCHomes.CS_SERVICE_ETAT_SPAS.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SPAS;
@@ -286,10 +290,10 @@ public class RFUtils {
      * Ajoute une ligne dans le log des importations AVASAD
      * 
      * @param typeDeMessage
-     * @param idLigne
-     * @param idTiersBeneficiaire
+     * @param numeroLigne
      * @param nss
      * @param msgErreur
+     * @param isErreurImportation
      * @param logsList
      */
     public static void ajouterLogImportationsAvasad(int typeDeMessage, String numeroLigne, String nss,
@@ -344,9 +348,11 @@ public class RFUtils {
 
     /**
      * Méthode qui calcul l'augmentation d'une Qd
-     * 
-     * @param String
-     *            , BSession
+     *
+     * @param idQdStr
+     * @param session
+     * @return
+     * @throws Exception
      */
     public static String getAugmentationQd(String idQdStr, BSession session) throws Exception {
 
@@ -375,8 +381,8 @@ public class RFUtils {
     /**
      * Méthode qui recherche les codes type et sous-type de soin
      * 
-     * @param FWViewBeanInterface
-     *            , BITransaction
+     * @param csSousTypeDeSoin
+     * @param session
      * @throws Exception
      * @return String[codeType, codeSousType]
      */
@@ -446,9 +452,11 @@ public class RFUtils {
     /**
      * Retourne le dossier en fonction d'un idTiers, retourne null si non trouvé
      * 
-     * @param String
-     *            , BSession
+     * @param idTiers
+     * @param idDossier
+     * @param session
      * @throws Exception
+     * @return
      */
     private static RFPrDemandeJointDossier getDossierJointPrDemande(String idTiers, String idDossier, BSession session)
             throws Exception {
@@ -553,9 +561,11 @@ public class RFUtils {
     /**
      * Méthode qui recherche l'id cs sous-type de soin en fonction des codes type et sous-type de soin du viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , BITransaction
+     * @param codeTypeDeSoin
+     * @param codeSousTypeDeSoin
+     * @param session
      * @throws Exception
+     * @return
      */
     public static String getIdSousTypeDeSoin(String codeTypeDeSoin, String codeSousTypeDeSoin, BSession session)
             throws Exception {
@@ -589,8 +599,11 @@ public class RFUtils {
 
     /**
      * Méthode qui retourne le code système d'un code type de soin
-     * 
-     * @param String
+     *
+     * @param codeTypeDeSoin
+     * @param session
+     * @return
+     * @throws Exception
      */
     public static String getIdTypeDeSoin(String codeTypeDeSoin, BSession session) throws Exception {
         RFTypeDeSoinManager rfTypeDeSoinMgr = new RFTypeDeSoinManager();
@@ -773,9 +786,12 @@ public class RFUtils {
 
     /**
      * Méthode qui calcul le montant résiduel d'une Qd
-     * 
-     * @param String
-     *            , String, String, String
+     *
+     * @param limiteAnnuelle
+     * @param augmentationQd
+     * @param soldeCharge
+     * @param chargeRFM
+     * @return
      */
     public static String getMntResiduel(String limiteAnnuelle, String augmentationQd, String soldeCharge,
             String chargeRFM) {
@@ -805,11 +821,12 @@ public class RFUtils {
      * @param codeSousTypeDeSoin
      * @param etatQd
      * @param anneeQd
-     * @param dateDebut
-     * @param dateDeFin
+     * @param dateDebutBetweenPeriode
+     * @param dateFinBetweenPeriode
      * @param dateBetweenPeriode
      * @param forCsEtatNotCloture
      * @param idQdToIgnore
+     * @param csTypeRelation
      * @return RFQdAssureJointDossierJointTiersManager
      * @throws Exception
      */
@@ -847,9 +864,11 @@ public class RFUtils {
 
     /**
      * Méthode qui calcul le solde de charge d'une Qd
-     * 
-     * @param String
-     *            , BSession
+     *
+     * @param idQdStr
+     * @param session
+     * @return
+     * @throws Exception
      */
     public static String getSoldeDeCharge(String idQdStr, BSession session) throws Exception {
 
@@ -878,9 +897,11 @@ public class RFUtils {
 
     /**
      * Méthode qui calcul le solde excedent de revenu d'une Qd
-     * 
-     * @param String
-     *            , BSession
+     *
+     * @param idQdStr
+     * @param session
+     * @return
+     * @throws Exception
      */
     public static String getSoldeExcedentDeRevenu(String idQdStr, BSession session) throws Exception {
 
@@ -981,9 +1002,8 @@ public class RFUtils {
     /**
      * Teste si un montant est arrondi au 5 cts
      * 
-     * @param FWViewBeanInterface
-     *            , String, String
-     * @throws Exception
+     * @param montant
+     * @return
      */
     public static Boolean isMontantArrondiCinqCts(String montant) {
 
@@ -1048,8 +1068,7 @@ public class RFUtils {
     /**
      * Retourne vrai si le sous type de soin concerne plusieurs personnes
      * 
-     * @param codeTypeDeSoin
-     * @param codeSousTypeDeSoin
+     * @param csSousTypeDeSoin
      * @return
      */
     public static boolean isSousTypeDeSoinCsConcernePlusieursPersonnes(String csSousTypeDeSoin) {
@@ -1118,9 +1137,9 @@ public class RFUtils {
     /**
      * Méthode qui ajoute une erreur inattendue dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String, String
-     * @throws Exception
+     * @param viewBean
+     * @param methode
+     * @param classe
      */
     public static void setMsgErreurInattendueViewBean(FWViewBeanInterface viewBean, String methode, String classe) {
         if (null != viewBean) {
@@ -1132,9 +1151,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
      */
     public static void setMsgErreurViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
         if (null != viewBean) {
@@ -1149,9 +1167,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param message
      */
     public static void setMsgExceptionErreurViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1165,9 +1182,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param message
      */
     public static void setMsgExceptionWarningViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1181,9 +1197,9 @@ public class RFUtils {
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
+     * @param args
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle, Object... args) {
 
@@ -1200,9 +1216,8 @@ public class RFUtils {
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
 
