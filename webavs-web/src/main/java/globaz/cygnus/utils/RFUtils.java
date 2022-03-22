@@ -153,7 +153,11 @@ public class RFUtils {
         try {
             if (EPCProperties.LVPC.getBooleanValue()) {
                 if (IPCHomes.CS_SERVICE_ETAT_SASH.equals(codeSystemPCTypeHome)
-                        || IPCHomes.CS_SERVICE_ETAT_EPS.equals(codeSystemPCTypeHome)) {
+                        || IPCHomes.CS_SERVICE_ETAT_EPS.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_SESAF.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_FOYER.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_DGEJ_FA.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_SPEN.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SASH;
                 } else if (IPCHomes.CS_SERVICE_ETAT_SPAS.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SPAS;
@@ -220,9 +224,9 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * Création d'un dossier RFM selon un idTiers et un gestionnaire
-     *
+     * 
      * @param idTiers
      * @param idGestionnaire
      * @param session
@@ -231,7 +235,7 @@ public class RFUtils {
      * @throws Exception
      */
     public static String ajouterDossier(String idTiers, String idGestionnaire, BSession session,
-                                        BITransaction transaction) throws Exception {
+            BITransaction transaction) throws Exception {
 
         // creation du dossier prdemap
         PRDemande demandePrestation = new PRDemande();
@@ -259,11 +263,11 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * Ajoute une ligne dans le log des adaptations new String[] { typeDeMessage, idAdaptationJournaliere,
      * idTiersBeneficiaire, nss, msgErreur, idDecisionPc }
-     *
-     *
+     * 
+     * 
      * @param typeDeMessage
      * @param idAdaptationJournaliere
      * @param idTiersBeneficiaire
@@ -273,8 +277,8 @@ public class RFUtils {
      * @param logsList
      */
     public static void ajouterLogAdaptation(String typeDeMessage, String idAdaptationJournaliere,
-                                            String idTiersBeneficiaire, String nss, String idDecisionPc, String numDecisionPc, String msgErreur,
-                                            List<String[]> logsList) {
+            String idTiersBeneficiaire, String nss, String idDecisionPc, String numDecisionPc, String msgErreur,
+            List<String[]> logsList) {
 
         logsList.add(new String[] { typeDeMessage, idAdaptationJournaliere, idTiersBeneficiaire, nss, msgErreur,
                 idDecisionPc, numDecisionPc });
@@ -282,9 +286,9 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * Ajoute une ligne dans le log des importations AVASAD
-     *
+     * 
      * @param typeDeMessage
      * @param numeroLigne
      * @param nss
@@ -293,7 +297,7 @@ public class RFUtils {
      * @param logsList
      */
     public static void ajouterLogImportationsAvasad(int typeDeMessage, String numeroLigne, String nss,
-                                                    String msgErreur, boolean isErreurImportation, List<String[]> logsList) {
+            String msgErreur, boolean isErreurImportation, List<String[]> logsList) {
 
         logsList.add(new String[] { Integer.valueOf(typeDeMessage).toString(), numeroLigne, nss, msgErreur });
 
@@ -327,7 +331,7 @@ public class RFUtils {
      * @param logsList
      */
     public static void ajouterLogImportationsTmr(int typeDeMessage, String numeroLigne, String nss,
-                                                 String msgErreur, List<String[]> logsList) {
+                                                     String msgErreur, List<String[]> logsList) {
 
         logsList.add(new String[] { Integer.valueOf(typeDeMessage).toString(), numeroLigne, nss, msgErreur });
 
@@ -376,9 +380,9 @@ public class RFUtils {
 
     /**
      * Méthode qui recherche les codes type et sous-type de soin
-     *
-     * @param csSousTypeDeSoin
-     * @param session
+     * 
+     * @param FWViewBeanInterface
+     *            , BITransaction
      * @throws Exception
      * @return String[codeType, codeSousType]
      */
@@ -428,7 +432,7 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * @param dateDernierPaiementMensuelRente
      *            , session
      * @return La date du dernier pmt mensuel effectué, au format mm.aaaa
@@ -447,10 +451,9 @@ public class RFUtils {
 
     /**
      * Retourne le dossier en fonction d'un idTiers, retourne null si non trouvé
-     *
-     * @param idTiers
-     * @param idDossier
-     * @param session
+     * 
+     * @param String
+     *            , BSession
      * @throws Exception
      * @return
      */
@@ -556,10 +559,9 @@ public class RFUtils {
 
     /**
      * Méthode qui recherche l'id cs sous-type de soin en fonction des codes type et sous-type de soin du viewBean
-     *
-     * @param codeTypeDeSoin
-     * @param codeSousTypeDeSoin
-     * @param session
+     * 
+     * @param FWViewBeanInterface
+     *            , BITransaction
      * @throws Exception
      * @return
      */
@@ -647,12 +649,12 @@ public class RFUtils {
     /**
      * Méthode renvoyant les membres de la famille d'un idTiers sous forme d'un tableau de String[IdTiers,
      * RelationAuRequerant, Nss, Nom, Prénom, DateNaissance, CsSexe, CsNationalite]
-     *
+     * 
      * @return Vector
      * @throws Exception
      */
     public static Vector<String[]> getMembreFamille(BTransaction transaction, String idTiers, String date,
-                                                    boolean isFratrie, BSession session) throws Exception {
+            boolean isFratrie, BSession session) throws Exception {
 
         Vector<String[]> membresFamilleVec = new Vector<String[]>();
 
@@ -666,14 +668,14 @@ public class RFUtils {
 
                     if (membreFamille.getRelationAuRequerant().equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT)
                             || membreFamille.getRelationAuRequerant().equals(
-                            ISFSituationFamiliale.CS_TYPE_RELATION_ENFANT)
+                                    ISFSituationFamiliale.CS_TYPE_RELATION_ENFANT)
                             || membreFamille.getRelationAuRequerant().equals(
-                            ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT)) {
+                                    ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT)) {
 
                         // Pas d'idTiers, pas de RFM
                         if (!JadeStringUtil.isIntegerEmpty(membreFamille.getIdTiers())) {
 
-                            String[] tabBeneficiaire = new String[10];
+                            String[] tabBeneficiaire = new String[9];
 
                             tabBeneficiaire[0] = membreFamille.getIdTiers();
 
@@ -691,7 +693,6 @@ public class RFUtils {
                             tabBeneficiaire[6] = membreFamille.getCsSexe();
                             tabBeneficiaire[7] = membreFamille.getCsNationalite();
                             tabBeneficiaire[8] = Boolean.TRUE.toString();
-                            tabBeneficiaire[9] = Boolean.FALSE.toString();
 
                             membresFamilleVec.add(tabBeneficiaire);
                         }
@@ -739,7 +740,7 @@ public class RFUtils {
 
     /**
      * Construit un tableau représentant le détail d'une famille
-     *
+     * 
      * @param idTiers
      * @param typeRelation
      * @param nss
@@ -751,9 +752,9 @@ public class RFUtils {
      * @return String[idTiers,typeRelation,nss,nom,prenom,dateNaissance,csSexe,csNationalite,isComprisDansCalcul]
      */
     public static String[] getMembreFamilleTabString(String idTiers, String typeRelation, String nss, String nom,
-                                                     String prenom, String dateNaissance, String csSexe, String csNationalite, Boolean isComprisDansCalcul) {
+            String prenom, String dateNaissance, String csSexe, String csNationalite, Boolean isComprisDansCalcul) {
 
-        String[] tab = new String[10];
+        String[] tab = new String[9];
 
         tab[0] = idTiers;
         tab[1] = typeRelation;
@@ -764,7 +765,6 @@ public class RFUtils {
         tab[6] = csSexe;
         tab[7] = csNationalite;
         tab[8] = isComprisDansCalcul.booleanValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
-        tab[9] = Boolean.FALSE.toString();
 
         return tab;
 
@@ -792,7 +792,7 @@ public class RFUtils {
      * @return
      */
     public static String getMntResiduel(String limiteAnnuelle, String augmentationQd, String soldeCharge,
-                                        String chargeRFM) {
+            String chargeRFM) {
 
         BigDecimal montantResiduel = new BigDecimal(0.00);
 
@@ -809,9 +809,9 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * Méthode retournant les qds assurées selon les critères passés en paramètres
-     *
+     * 
      * @param session
      * @param idsMembresFamille
      * @param idTiers
@@ -829,9 +829,9 @@ public class RFUtils {
      * @throws Exception
      */
     public static RFQdAssureJointDossierJointTiersManager getRFQdAssureJointDossierJointTiersManager(BSession session,
-                                                                                                     Set<String> idsMembresFamille, String idTiers, String codeTypeDeSoin, String codeSousTypeDeSoin,
-                                                                                                     String etatQd, String anneeQd, String dateDebutBetweenPeriode, String dateFinBetweenPeriode,
-                                                                                                     String dateBetweenPeriode, boolean forCsEtatNotCloture, String idQdToIgnore, String csTypeRelation)
+            Set<String> idsMembresFamille, String idTiers, String codeTypeDeSoin, String codeSousTypeDeSoin,
+            String etatQd, String anneeQd, String dateDebutBetweenPeriode, String dateFinBetweenPeriode,
+            String dateBetweenPeriode, boolean forCsEtatNotCloture, String idQdToIgnore, String csTypeRelation)
             throws Exception {
 
         RFQdAssureJointDossierJointTiersManager rfQdAssJointDosJointTieMgr = new RFQdAssureJointDossierJointTiersManager();
@@ -999,9 +999,10 @@ public class RFUtils {
 
     /**
      * Teste si un montant est arrondi au 5 cts
-     *
-     * @param montant
-     * @return
+     * 
+     * @param FWViewBeanInterface
+     *            , String, String
+     * @throws Exception
      */
     public static Boolean isMontantArrondiCinqCts(String montant) {
 
@@ -1021,9 +1022,9 @@ public class RFUtils {
     }
 
     /**
-     *
+     * 
      * Méthode qui test le format d'un NSS
-     *
+     * 
      * @param numAvs
      * @return boolean
      */
@@ -1049,13 +1050,13 @@ public class RFUtils {
 
     /**
      * Retourne vrai si le sous type de soin concerne plusieurs personnes
-     *
+     * 
      * @param codeTypeDeSoin
      * @param codeSousTypeDeSoin
      * @return
      */
     public static boolean isSousTypeDeSoinCodeConcernePlusieursPersonnes(String codeTypeDeSoin,
-                                                                         String codeSousTypeDeSoin) {
+            String codeSousTypeDeSoin) {
         return ((codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_13_MAINTIEN_A_DOMICILE) && codeSousTypeDeSoin
                 .equals(IRFCodeTypesDeSoins.SOUS_TYPE_13_2_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)) || (codeTypeDeSoin
                 .equals(IRFCodeTypesDeSoins.TYPE_13_MAINTIEN_A_DOMICILE) && codeSousTypeDeSoin
@@ -1065,8 +1066,9 @@ public class RFUtils {
 
     /**
      * Retourne vrai si le sous type de soin concerne plusieurs personnes
-     *
-     * @param csSousTypeDeSoin
+     * 
+     * @param codeTypeDeSoin
+     * @param codeSousTypeDeSoin
      * @return
      */
     public static boolean isSousTypeDeSoinCsConcernePlusieursPersonnes(String csSousTypeDeSoin) {
@@ -1077,16 +1079,16 @@ public class RFUtils {
 
     /**
      * Retourne vrai si le sous-type de soin ne s'impute pas sur la grande Qd
-     *
+     * 
      * @param codeTypeDeSoin
      * @param codeSousTypeDeSoin
      * @return
      */
     public static boolean isSousTypeDeSoinNonImputeSurGrandeQd(String codeTypeDeSoin, String codeSousTypeDeSoin) {
         return (/*
-         * (codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_12_STRUCTURE_ET_SEJOURS) && codeSousTypeDeSoin
-         * .equals(IRFCodeTypesDeSoins.SOUS_TYPE_12_7_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)) ||
-         */(codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS) && codeSousTypeDeSoin
+                 * (codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_12_STRUCTURE_ET_SEJOURS) && codeSousTypeDeSoin
+                 * .equals(IRFCodeTypesDeSoins.SOUS_TYPE_12_7_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)) ||
+                 */(codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS) && codeSousTypeDeSoin
                 .equals(IRFCodeTypesDeSoins.SOUS_TYPE_20_1_FINANCEMENT_DES_SOINS)));
 
     }
@@ -1134,10 +1136,10 @@ public class RFUtils {
 
     /**
      * Méthode qui ajoute une erreur inattendue dans le viewBean
-     *
-     * @param viewBean
-     * @param methode
-     * @param classe
+     * 
+     * @param FWViewBeanInterface
+     *            , String, String
+     * @throws Exception
      */
     public static void setMsgErreurInattendueViewBean(FWViewBeanInterface viewBean, String methode, String classe) {
         if (null != viewBean) {
@@ -1148,9 +1150,10 @@ public class RFUtils {
 
     /**
      * Ajoute une erreur au viewBean
-     *
-     * @param viewBean
-     * @param labelLibelle
+     * 
+     * @param FWViewBeanInterface
+     *            , String
+     * @throws Exception
      */
     public static void setMsgErreurViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
         if (null != viewBean) {
@@ -1164,9 +1167,10 @@ public class RFUtils {
 
     /**
      * Ajoute une erreur au viewBean
-     *
-     * @param viewBean
-     * @param message
+     * 
+     * @param FWViewBeanInterface
+     *            , String
+     * @throws Exception
      */
     public static void setMsgExceptionErreurViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1179,9 +1183,10 @@ public class RFUtils {
 
     /**
      * Ajoute une erreur au viewBean
-     *
-     * @param viewBean
-     * @param message
+     * 
+     * @param FWViewBeanInterface
+     *            , String
+     * @throws Exception
      */
     public static void setMsgExceptionWarningViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1194,10 +1199,10 @@ public class RFUtils {
 
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
-     *
-     * @param viewBean
-     * @param labelLibelle
-     * @param args
+     * 
+     * @param FWViewBeanInterface
+     *            , String
+     * @throws Exception
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle, Object... args) {
 
@@ -1213,9 +1218,10 @@ public class RFUtils {
 
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
-     *
-     * @param viewBean
-     * @param labelLibelle
+     * 
+     * @param FWViewBeanInterface
+     *            , String
+     * @throws Exception
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
 
@@ -1230,7 +1236,7 @@ public class RFUtils {
 
     /**
      * Charge et renvoie une administration en fonction de son idTiers.
-     *
+     * 
      * @param idAdministration l'id de l'administration/idTiers
      * @param aSession pour accéder à la DB.
      * @return une administration. Sera <code>null</code> si la session est <code>null</code>, que l'idAdministration
@@ -1261,7 +1267,7 @@ public class RFUtils {
 
     /**
      * Calcule la date d'envoi du lot en fonction de la prestation correspondante.
-     *
+     * 
      * @return Jamais <code>null</code>. La date d'envoi du lot, ou la date du jour si le lot n'a pas pu être lu;
      * @throws Exception si la session n'est pas bonne ou qu'un problème d'accès DB se produit.
      */
@@ -1292,7 +1298,7 @@ public class RFUtils {
 
     /**
      * Recherche si le bénéficiaire concerne un enfant
-     *
+     * 
      * @param session
      * @param idTier
      * @param idQd
@@ -1334,6 +1340,6 @@ public class RFUtils {
         return !((IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS.equals(codeTypeDeSoin)
                 && IRFCodeTypesDeSoins.SOUS_TYPE_20_1_FINANCEMENT_DES_SOINS.equals(codeSousTypeDeSoin))
                 || (IRFCodeTypesDeSoins.TYPE_25_SOIN_A_DOMICILE.equals(codeTypeDeSoin)
-                && IRFCodeTypesDeSoins.SOUS_TYPE_25_1_SOIN_A_DOMICILE.equals(codeSousTypeDeSoin)));
+                        && IRFCodeTypesDeSoins.SOUS_TYPE_25_1_SOIN_A_DOMICILE.equals(codeSousTypeDeSoin)));
     }
 }
