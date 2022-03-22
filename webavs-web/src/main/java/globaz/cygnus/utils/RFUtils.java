@@ -381,8 +381,8 @@ public class RFUtils {
     /**
      * Méthode qui recherche les codes type et sous-type de soin
      * 
-     * @param FWViewBeanInterface
-     *            , BITransaction
+     * @param csSousTypeDeSoin
+     * @param session
      * @throws Exception
      * @return String[codeType, codeSousType]
      */
@@ -452,8 +452,9 @@ public class RFUtils {
     /**
      * Retourne le dossier en fonction d'un idTiers, retourne null si non trouvé
      * 
-     * @param String
-     *            , BSession
+     * @param idTiers
+     * @param idDossier
+     * @param session
      * @throws Exception
      * @return
      */
@@ -560,8 +561,9 @@ public class RFUtils {
     /**
      * Méthode qui recherche l'id cs sous-type de soin en fonction des codes type et sous-type de soin du viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , BITransaction
+     * @param codeTypeDeSoin
+     * @param codeSousTypeDeSoin
+     * @param session
      * @throws Exception
      * @return
      */
@@ -1000,9 +1002,8 @@ public class RFUtils {
     /**
      * Teste si un montant est arrondi au 5 cts
      * 
-     * @param FWViewBeanInterface
-     *            , String, String
-     * @throws Exception
+     * @param montant
+     * @return
      */
     public static Boolean isMontantArrondiCinqCts(String montant) {
 
@@ -1067,8 +1068,7 @@ public class RFUtils {
     /**
      * Retourne vrai si le sous type de soin concerne plusieurs personnes
      * 
-     * @param codeTypeDeSoin
-     * @param codeSousTypeDeSoin
+     * @param csSousTypeDeSoin
      * @return
      */
     public static boolean isSousTypeDeSoinCsConcernePlusieursPersonnes(String csSousTypeDeSoin) {
@@ -1137,9 +1137,9 @@ public class RFUtils {
     /**
      * Méthode qui ajoute une erreur inattendue dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String, String
-     * @throws Exception
+     * @param viewBean
+     * @param methode
+     * @param classe
      */
     public static void setMsgErreurInattendueViewBean(FWViewBeanInterface viewBean, String methode, String classe) {
         if (null != viewBean) {
@@ -1151,9 +1151,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
      */
     public static void setMsgErreurViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
         if (null != viewBean) {
@@ -1168,9 +1167,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param message
      */
     public static void setMsgExceptionErreurViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1184,9 +1182,8 @@ public class RFUtils {
     /**
      * Ajoute une erreur au viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param message
      */
     public static void setMsgExceptionWarningViewBean(FWViewBeanInterface viewBean, String message) {
         if (null != viewBean) {
@@ -1200,9 +1197,9 @@ public class RFUtils {
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
+     * @param args
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle, Object... args) {
 
@@ -1219,9 +1216,8 @@ public class RFUtils {
     /**
      * Méthode qui ajoute un avertissement dans le viewBean
      * 
-     * @param FWViewBeanInterface
-     *            , String
-     * @throws Exception
+     * @param viewBean
+     * @param labelLibelle
      */
     public static void setMsgWarningViewBean(FWViewBeanInterface viewBean, String labelLibelle) {
 
