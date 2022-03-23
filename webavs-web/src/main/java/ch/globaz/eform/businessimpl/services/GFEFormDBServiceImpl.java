@@ -54,7 +54,7 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
         if (Objects.isNull(id)) throw new IllegalArgumentException("Unable to read gfeFormModel, the id passed is null!");
 
         GFEFormSearch search = new GFEFormSearch();
-        search.setByMessageId(id);
+        search.setById(id);
 
         search = search(search);
 
@@ -69,6 +69,27 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
     public GFEFormSearch search(GFEFormSearch gfeFormSearch) throws JadePersistenceException {
         if (Objects.isNull(gfeFormSearch)) throw new IllegalArgumentException("Unable to search gfeFormModel, the search passed is null!");
         return (GFEFormSearch) JadePersistenceManager.search(gfeFormSearch);
+    }
+
+    @Override
+    public GFEFormModel readWithBlobs(String id) throws JadePersistenceException {
+        if (Objects.isNull(id)) throw new IllegalArgumentException("Unable to read gfeFormModel, the id passed is null!");
+
+        GFEFormSearch search = new GFEFormSearch();
+        search.setById(id);
+        search = searchWithBlobs(search);
+        if (search.getSearchResults().length == 1) {
+            return (GFEFormModel) search.getSearchResults()[0];
+        }
+
+        return null;
+    }
+
+    @Override
+    public GFEFormSearch searchWithBlobs(GFEFormSearch gfeFormSearch) throws JadePersistenceException{
+        if (Objects.isNull(gfeFormSearch)) throw new IllegalArgumentException("Unable to search gfeFormModel, the search passed is null!");
+        gfeFormSearch = (GFEFormSearch) JadePersistenceManager.search(gfeFormSearch, true);
+        return gfeFormSearch;
     }
 
     @Override

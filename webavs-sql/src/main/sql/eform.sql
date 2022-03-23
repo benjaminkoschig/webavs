@@ -24,6 +24,7 @@ CREATE TABLE SCHEMA.GF_FORMULAIRE
     PSPY 	VARCHAR(24) 	NOT NULL,
     STATUS 	VARCHAR(255) 	NOT NULL,
     USER_GESTIONNAIRE 	VARCHAR(255) 	,
+    ATTACHEMENT_NAME    VARCHAR(255)    ,
     PRIMARY KEY(ID)
 );
 COMMENT ON TABLE SCHEMA.GF_FORMULAIRE is 'contient les données saisies par l''utilisateur selon l''attestation reçue';
@@ -40,15 +41,15 @@ COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.BENEFICIAIRE_NOM is 'Nom du bénificiaire'
 COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.PSPY is 'spy - Champ espion, défini quand et qui a effectué la dernière modification de l''entité';
 COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.STATUS is 'Status du formulaire';
 COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.USER_GESTIONNAIRE is 'Gestionnaire attitré';
+COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.ATTACHEMENT_NAME is 'Nom du fichier attaché';
 
 -- création des droits et autorisations
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFAdmin', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFAdmin', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFUser', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFReader', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFManager', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
+INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFAdmin', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFManager', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFUser', 'eform', 'Y', 'Y', 'Y', 'Y', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (KROLE, KELEMENT, FISREAD, FISADD, FISUPDATE, FISREMOVE, PSPY) VALUES ('rGFReader', 'eform', 'Y', 'N', 'N', 'N', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');

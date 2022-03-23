@@ -1,22 +1,29 @@
-package globaz.eform.helpers;
+package globaz.eform.helpers.formulaire;
 
 import ch.globaz.eform.constant.GFTypeEForm;
 import ch.globaz.eform.web.application.GFApplication;
+import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
+import globaz.eform.vb.formulaire.GFFormulaireViewBean;
+import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.controller.FWAction;
+import globaz.framework.controller.FWHelper;
+import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Vector;
 
-public abstract class GFFormulaireHelper {
+public class GFFormulaireHelper extends FWHelper {
     private static final String ERREUR_GESTIONNAIRES_INTROUVABLE = "GESTIONNAIRES_INTROUVABLE";
 
-    public static final String PROPERTY_GROUPE_GESTIONNAIRE = "groupe.gestionnaire";
+    public static final String PROPERTY_GROUPE_GESTIONNAIRE = "groupe.eform.gestionnaire";
 
     private static Vector gestionnaires = null;
     private static Vector<String[]> type = null;
@@ -70,6 +77,10 @@ public abstract class GFFormulaireHelper {
     }
 
     public static String getGestionnaireDesignation(String visa) throws Exception {
+        if (StringUtils.isEmpty(visa)) {
+            return "";
+        }
+
         JadeUserService userService = JadeAdminServiceLocatorProvider.getLocator().getUserService();
 
         JadeUser user = userService.load(userService.findIdUserForVisa(visa));
@@ -87,4 +98,41 @@ public abstract class GFFormulaireHelper {
 
         return sortBy;
     }
+
+    @Override
+    protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {
+        if (GFFormulaireServletAction.ACTION_TELECHARGER.equals(action.getActionPart()) && (viewBean instanceof GFFormulaireViewBean)) {
+            GFFormulaireViewBean bean = (GFFormulaireViewBean) viewBean;
+            try {
+                if (bean.getFormulaire().isNew()) {
+                    bean.retrieveWithBlob();
+                    if(bean.getFormulaire().getAttachement() == null) {
+                        viewBean.setMessage("Pas de fichier trouvé pour cet id : "+((GFFormulaireViewBean) viewBean).getId());
+                        viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                    }
+                }
+            } catch (Exception e) {
+                viewBean.setMessage(e.toString());
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
+            return viewBean;
+        } else if(GFFormulaireServletAction.ACTION_CHANGE_STATUT.equals(action.getActionPart()) && (viewBean instanceof GFFormulaireViewBean)) {
+            GFFormulaireViewBean bean = (GFFormulaireViewBean) viewBean;
+            try {
+                if (bean.getFormulaire().isNew()) {
+                    String statut = bean.getFormulaire().getStatus();
+                    bean.retrieveWithBlob();
+                    bean.getFormulaire().setStatus(statut);
+                    bean.update();
+                }
+            } catch (Exception e) {
+                viewBean.setMessage(e.toString());
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
+            return viewBean;
+        } else {
+            return super.execute(viewBean, action, session);
+        }
+    }
+
 }

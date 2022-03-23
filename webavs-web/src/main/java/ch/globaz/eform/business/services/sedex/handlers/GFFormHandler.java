@@ -20,11 +20,12 @@ public abstract class GFFormHandler {
     protected GFSedexModel model;
     protected Object message;
 
-    public void setDataFromFile(String userGestionnaire, byte[] zipByte) throws RuntimeException {
+    public void setDataFromFile(String userGestionnaire, String zipName, byte[] zipByte) throws RuntimeException {
         if(message != null){
             try {
                 extractData();
                 model.setUserGestionnaire(userGestionnaire);
+                model.setAttachementName(zipName);
                 model.setZipFile(zipByte);
             }catch(ClassCastException e){
                 LOG.error("GFFormHandler#setDataFromFile - Erreur de type de message.", e);
@@ -68,13 +69,14 @@ public abstract class GFFormHandler {
             GFEFormModel dbModel = new GFEFormModel();
             dbModel.setMessageId(model.getMessageId());
             dbModel.setSubject(model.getMessageSubject());
-            dbModel.setStatus(GFStatusEForm.RECEIVE.toString());
+            dbModel.setStatus(GFStatusEForm.RECEIVE.getCodeSystem());
             dbModel.setDate(Dates.formatSwiss(model.getMessageDate()));
             dbModel.setBeneficiaireNss(model.getNssBeneficiaire());
             dbModel.setBeneficiaireNom(model.getNomBeneficiaire());
             dbModel.setBeneficiairePrenom(model.getPrenomBenefiaicaire());
             dbModel.setBeneficiaireDateNaissance(Dates.formatSwiss(model.getNaissanceBeneficiaire()));
             dbModel.setUserGestionnaire(model.getUserGestionnaire());
+            dbModel.setAttachementName(model.getAttachementName());
             dbModel.setAttachement(model.getZipFile());
 
             GFEFormServiceLocator.getGFEFormService().create(dbModel);
