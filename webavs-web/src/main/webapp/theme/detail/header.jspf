@@ -55,7 +55,7 @@ boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWSe
 boolean vBeanHasErrors = false;
 %>
 <HEAD>
-    <%if(applicationId.equals(GFApplication.APPLICATION_ID)){%>
+    <%if(GFApplication.APPLICATION_ID.equals(applicationId)){%>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <<%}%>
 <SCRIPT type="text/javascript">
