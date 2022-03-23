@@ -20,6 +20,7 @@ import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.exceptions.APBusinessException;
 import globaz.apg.exceptions.APEntityNotFoundException;
+import globaz.apg.helpers.droits.APAbstractDroitPHelper;
 import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.properties.APParameter;
 import globaz.apg.utils.APGUtils;
@@ -1462,8 +1463,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     public boolean isDelaiCadreDepasse(String dateNaissance, String dateDeFinDroit) {
         LocalDate dateNaissanceD = Dates.toDate(dateNaissance);
         LocalDate dateDeFinDroitD = Dates.toDate(dateDeFinDroit);
-        long paterniteMoisMaxDelaiCadre = 6;
-        LocalDate dateDeFinDroitMax = dateNaissanceD.plusMonths(paterniteMoisMaxDelaiCadre);
+        LocalDate dateDeFinDroitMax = dateNaissanceD.plusMonths(APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE);
 
         if (dateDeFinDroitD.compareTo(dateDeFinDroitMax) > 0) {
             return true;

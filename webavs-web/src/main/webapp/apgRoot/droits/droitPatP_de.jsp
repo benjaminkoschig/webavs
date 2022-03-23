@@ -16,6 +16,7 @@
 <%@ page import="globaz.globall.db.FWFindParameter" %>
 <%@ page import="globaz.apg.properties.APParameter" %>
 <%@ page import="globaz.globall.db.FWFindParameterManager" %>
+<%@ page import="globaz.apg.helpers.droits.APAbstractDroitPHelper" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -281,7 +282,7 @@
     /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
     function isDelaiCadreDepasse(dateFin) {
         var dateNaissance = Date.toDate($('#dateDebutDroit').val());
-        var paterniteMoisMaxDelaiCadre = 6;
+        var paterniteMoisMaxDelaiCadre = parseInt("<%=APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE%>");
         var dateDeFinDroitMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+paterniteMoisMaxDelaiCadre));
 
         if (dateFin > dateDeFinDroitMax) {
