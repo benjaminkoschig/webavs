@@ -23,6 +23,8 @@ import ch.globaz.pegasus.business.models.decision.DecisionRefus;
 import ch.globaz.pegasus.business.models.decision.DecisionRefusSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaDecisionHistorisee;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaDecisionHistoriseeSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.adresse.AdresseLoader;
 import ch.globaz.pegasus.businessimpl.services.donneeFinanciere.DonneeFinanciereLoader;
@@ -564,6 +566,7 @@ public class RpcDataLoader {
     private Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> loadMembreFamilleWithDonneesFinancieres(
             IdsContainer idsContainer, PaysList paysList) {
         Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> map = new HashMap<>();
+        boolean isReformePC = false;
 
         if (!idsContainer.getIdsPca().isEmpty()) {
 
@@ -584,6 +587,24 @@ public class RpcDataLoader {
                 String idVersionDroit = entry.getKey();
                 map.put(idVersionDroit, new HashMap<>());
                 DonneesFinancieresContainer container = mapDonneesFinancieres.get(idVersionDroit);
+
+                Map<String, MembresFamilles> membresFamillesMap = entry.getValue();
+
+                for (String idPca : membresFamillesMap.keySet()) {
+                    SimplePlanDeCalculSearch planSearch = new SimplePlanDeCalculSearch();
+                    planSearch.setForIdPCAccordee(idPca);
+                    try {
+                        ArrayList<SimplePlanDeCalcul> planCalculs = PegasusServiceLocator.getPCAccordeeService().searchPlanCalcul(planSearch);
+                        for (SimplePlanDeCalcul plan : planCalculs) {
+                            if (plan.getIsPlanRetenu() && plan.getReformePc()){
+                                isReformePC = true;
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOG.error("RpcDataLoader#loadMembreFamilleWithDonneesFinancieres Erreur à la recherche des plans de calcul pour annonce RPC", e);
+                    }
+                }
+
                 if (container == null) {
                     LOG.error("Aucune données fiancières trouvées avec cette idVersionDroit: "
                             + idVersionDroit
@@ -593,8 +614,14 @@ public class RpcDataLoader {
                 } else {
                     for (Entry<String, MembresFamilles> mapFam : entry.getValue().entrySet()) {
                         for (MembreFamille membreFamille : mapFam.getValue().getMembresFamilles()) {
-                            DonneesFinancieresContainer containerMembre = container
-                                    .filtreForMembreFamille(membreFamille);
+                            DonneesFinancieresContainer containerMembre;
+                            if (isReformePC) {
+                                containerMembre = container.filtreForMembreFamille(membreFamille);
+                            } else {
+                                // Si l'on est sur un droit Non Reforme, certain champ ne doivent pas être
+                                // annoncé. On filtre donc ces champs
+                                containerMembre = container.filtreForNonReformePC(membreFamille);
+                            }
                             if (!map.get(idVersionDroit).containsKey(mapFam.getKey())) {
                                 map.get(idVersionDroit).put(mapFam.getKey(),
                                         new ArrayList<>());
