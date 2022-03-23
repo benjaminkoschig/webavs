@@ -737,7 +737,7 @@
 				</subreport>
 				<staticText>
 					<reportElement
-						mode="Opaque"
+						mode="Transparent"
 						x="24"
 						y="-16"
 						width="534"
@@ -785,7 +785,7 @@
 				</subreport>
 				<staticText>
 					<reportElement
-						mode="Opaque"
+						mode="Transparent"
 						x="24"
 						y="-16"
 						width="534"

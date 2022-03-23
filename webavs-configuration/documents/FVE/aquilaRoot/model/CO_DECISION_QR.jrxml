@@ -354,7 +354,7 @@
 			<band height="297"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
-						mode="Opaque"
+						mode="Transparent"
 						x="24"
 						y="-25"
 						width="529"
@@ -401,7 +401,7 @@
 			<band height="297"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
-						mode="Opaque"
+						mode="Transparent"
 						x="23"
 						y="-25"
 						width="529"
