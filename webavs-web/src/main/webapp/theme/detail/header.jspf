@@ -57,7 +57,7 @@ boolean vBeanHasErrors = false;
 <HEAD>
     <%if(GFApplication.APPLICATION_ID.equals(applicationId)){%>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <<%}%>
+    <%}%>
 <SCRIPT type="text/javascript">
 var langue = "<%=languePage%>"; 
 </SCRIPT>
