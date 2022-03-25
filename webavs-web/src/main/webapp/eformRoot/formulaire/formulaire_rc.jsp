@@ -155,12 +155,12 @@
 	<td>
 	</td>
 	<td>
-		<LABEL for="sortBy">
+		<LABEL for="orderBy">
 			<ct:FWLabel key="SORT_BY"/>
 		</LABEL>
 	</td>
 	<td colspan="8">
-		<ct:FWListSelectTag name="sortBy"
+		<ct:FWListSelectTag name="orderBy"
 							data="<%=GFFormulaireHelper.getSortByData(objSession)%>"
 							defaut="default"/>
 	</td>

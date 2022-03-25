@@ -3,6 +3,7 @@
 <%@ page import="globaz.eform.vb.formulaire.GFFormulaireViewBean" %>
 <%@ page import="globaz.commons.nss.NSUtil" %>
 <%@ page import="globaz.eform.helpers.formulaire.GFFormulaireHelper" %>
+<%@ page import="globaz.jade.admin.user.bean.JadeUser" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -15,18 +16,21 @@
 
 <%
     idEcran = "GF0002";
+    JadeUser currentUser = objSession.getUserInfo();
 
     GFFormulaireViewBean viewBean = (GFFormulaireViewBean) session.getAttribute("viewBean");
     viewBean.retrieveWithBlob();
     selectedIdValue = viewBean.getId();
 
+    boolean updateManager = objSession.hasRight("eform.formulaire.formulaire.manager", "UPDATE");
+    boolean owner = currentUser.getVisa().equals(viewBean.getFormulaire().getUserGestionnaire());
     userActionValue = "eform.formulaire.formulaire.afficher";
 
     bButtonNew = false;
-    bButtonUpdate = true;
+    bButtonUpdate = owner;
     bButtonDelete = false;
-    bButtonValidate = true;
-    bButtonCancel = true;
+    bButtonValidate = owner;
+    bButtonCancel = owner;
 
     btnUpdLabel = objSession.getLabel("MODIFIER");
     btnValLabel = objSession.getLabel("VALIDER");
@@ -58,6 +62,8 @@
 
     function upd() {
         document.forms[0].elements('userAction').value="eform.formulaire.formulaire.modifier";
+        document.forms[0].elements('byStatus').disabled = <%= !owner %>
+        document.forms[0].elements('byGestionnaire').disabled = <%= !updateManager %>;
     }
 
     function validate() {
@@ -325,11 +331,13 @@
         <div class="row-fluid">
             <div class="span12">
                 <div style="float:right;">
-                    <%if (bButtonNew) {%><input class="btnCtrl" type="button" id="btnNew" value="<%=btnNewLabel%>" onclick="onClickNew();btnNew.onclick='';hideAllButtons();document.location.href='<%=actionNew%>'"><%}%>
-                    <%if (bButtonUpdate) {%><input class="btnCtrl" id="btnUpd" type="button" value="<%=btnUpdLabel%>" onclick="action(UPDATE);upd();"><%}%>
-                    <%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
-                    <%if (bButtonValidate) {%><input class="btnCtrl inactive" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if (validate()) action(COMMIT);"><%}%>
-                    <%if (bButtonCancel) {%><input class="btnCtrl inactive" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);"><%}%>
+                    <ct:ifhasright element="eform.formulaire.formulaire.statut" crud="u">
+                        <%if (bButtonNew) {%><input class="btnCtrl" type="button" id="btnNew" value="<%=btnNewLabel%>" onclick="onClickNew();btnNew.onclick='';hideAllButtons();document.location.href='<%=actionNew%>'"><%}%>
+                        <%if (bButtonUpdate) {%><input class="btnCtrl" id="btnUpd" type="button" value="<%=btnUpdLabel%>" onclick="action(UPDATE);upd();"><%}%>
+                        <%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
+                        <%if (bButtonValidate) {%><input class="btnCtrl inactive" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if (validate()) action(COMMIT);"><%}%>
+                        <%if (bButtonCancel) {%><input class="btnCtrl inactive" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);"><%}%>
+                    </ct:ifhasright>
                 </div>
             </div>
         </div>

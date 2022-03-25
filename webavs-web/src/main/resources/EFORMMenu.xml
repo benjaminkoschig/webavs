@@ -19,9 +19,9 @@
 		</nodes>
 	</menu>
 	
-	<!-- ***************************************** -->
-	<!-- Menu Option Detail étape                  -->
-	<!-- ***************************************** -->
+	<!-- ************************************************ -->
+	<!-- Menu Option Detail étape Gestionnaire ou manager -->
+	<!-- ************************************************ -->
 
 	<menu id="eform-optionsformulaires">
 		<label refId="MENU_OPTIONS_FORMULAIRES" />
@@ -40,7 +40,7 @@
 					<parameter name="selectedId"/>
 				</action>
 			</node>
-			<node>
+			<node id="STATUT_ENCOURS">
 				<label refId="MENU_STATUT_ENCOURS"/>
 				<action command="/eform" responseTarget="fr_main">
 					<parameter name="userAction" value="eform.formulaire.formulaire.statut"/>
@@ -48,7 +48,7 @@
 					<parameter name="statut" value="PROCESSING"/>
 				</action>
 			</node>
-			<node>
+			<node id="STATUT_TRAITE">
 				<label refId="MENU_STATUT_TRAITE"/>
 				<action command="/eform" responseTarget="fr_main">
 					<parameter name="userAction" value="eform.formulaire.formulaire.statut"/>

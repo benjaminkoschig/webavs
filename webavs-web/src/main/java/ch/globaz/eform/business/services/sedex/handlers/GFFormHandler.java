@@ -36,10 +36,11 @@ public abstract class GFFormHandler {
 
     protected abstract void extractData() throws RuntimeException;
 
-    protected void initModel(String messageId, String subject, LocalDate messageDate) {
+    protected void initModel(String messageId, String type, String subject, LocalDate messageDate) {
         model = new GFSedexModel();
 
         model.setMessageId(messageId);
+        model.setFormulaireType(type);
         model.setMessageSubject(subject);
         model.setMessageDate(messageDate);
     }
@@ -68,6 +69,7 @@ public abstract class GFFormHandler {
     private void setFormulaireData() throws Exception {
             GFEFormModel dbModel = new GFEFormModel();
             dbModel.setMessageId(model.getMessageId());
+            dbModel.setType(model.getFormulaireType());
             dbModel.setSubject(model.getMessageSubject());
             dbModel.setStatus(GFStatusEForm.RECEIVE.getCodeSystem());
             dbModel.setDate(Dates.formatSwiss(model.getMessageDate()));

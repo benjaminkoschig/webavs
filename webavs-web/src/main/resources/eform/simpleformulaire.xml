@@ -38,15 +38,27 @@
         </search-definition>
         <order-by name="default">
             <order-field field-ref="date" order="DESC"/>
+            <order-field field-ref="subject" order="ASC"/>
+            <order-field field-ref="beneficiaireNss" order="ASC"/>
+            <order-field field-ref="userGestionnaire" order="ASC"/>
         </order-by>
         <order-by name="orderByType">
-            <order-field field-ref="type" order="DESC"/>
+            <order-field field-ref="subject" order="ASC"/>
+            <order-field field-ref="date" order="DESC"/>
+            <order-field field-ref="beneficiaireNss" order="ASC"/>
+            <order-field field-ref="userGestionnaire" order="ASC"/>
         </order-by>
         <order-by name="orderByNSS">
-            <order-field field-ref="beneficiaireNss" order="DESC"/>
+            <order-field field-ref="beneficiaireNss" order="ASC"/>
+            <order-field field-ref="date" order="DESC"/>
+            <order-field field-ref="subject" order="ASC"/>
+            <order-field field-ref="userGestionnaire" order="ASC"/>
         </order-by>
         <order-by name="orderByGestionnaire">
-            <order-field field-ref="userGestionnaire" order="DESC"/>
+            <order-field field-ref="userGestionnaire" order="ASC"/>
+            <order-field field-ref="date" order="DESC"/>
+            <order-field field-ref="subject" order="ASC"/>
+            <order-field field-ref="beneficiaireNss" order="ASC"/>
         </order-by>
     </simple-model>
 </model-mapping>

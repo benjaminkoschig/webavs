@@ -122,7 +122,8 @@ public class GFFormulaireHelper extends FWHelper {
                 if (bean.getFormulaire().isNew()) {
                     String statut = bean.getFormulaire().getStatus();
                     bean.retrieveWithBlob();
-                    bean.getFormulaire().setStatus(statut);
+                    bean.setByStatus(statut);
+                    bean.setByGestionnaire(bean.getFormulaire().getUserGestionnaire());
                     bean.update();
                 }
             } catch (Exception e) {
