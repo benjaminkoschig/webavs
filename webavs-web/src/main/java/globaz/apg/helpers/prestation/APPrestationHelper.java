@@ -475,7 +475,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public APPrestationViewBean calculDesPrestationsMATCIAB2AvecCalculateurGlobaz(final FWViewBeanInterface vb,
-                                                                          final FWAction action, final BSession session) throws Exception {
+                                                                                  final FWAction action, final BSession session) throws Exception {
 
         APPrestationViewBean viewBean = null;
         if (!(vb instanceof APPrestationViewBean)) {
@@ -1033,7 +1033,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      *
      */
     private void calculerPrestationsMATCIAB2(final BSession session, final BTransaction transaction,
-                                         final APDroitLAPG droitLAPG) throws Exception {
+                                             final APDroitLAPG droitLAPG) throws Exception {
 
         if (!isCalculDisponibleMATCIAB(droitLAPG))  {
             return;
@@ -1094,7 +1094,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     private void genererLesCotisationsMATCIAB2(final BSession session,
-                                       List<APPrestationCalculeeAPersister> resultatCalculAPersister, APDroitLAPG droit) throws Exception {
+                                               List<APPrestationCalculeeAPersister> resultatCalculAPersister, APDroitLAPG droit) throws Exception {
 
         // List des prestations à créer.
         List listDesPrestationsACreer = new ArrayList();
@@ -1360,12 +1360,12 @@ public class APPrestationHelper extends PRAbstractHelper {
             viewBean.setDetailRequerant(getDetailRequerant(session, demande.getIdTiers()));
 
 
-                if (viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()) {
-                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
-                }else{
-                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+            if (viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()) {
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
+            }else{
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
             }
-                    droit.update();
+            droit.update();
 
 
             if (!hasErrors(session, transaction)) {
@@ -1844,8 +1844,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             tauxParPrestation.put(apPrestation.getIdPrestation(), tauxParSitPro);
         }
 
-    return tauxParPrestation;
-}
+        return tauxParPrestation;
+    }
 
     private void setDateFinContrat(BSession session, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) throws Exception {
         for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
@@ -2152,30 +2152,32 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestations) {
 
-            Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
-                    apRepJointPrestation.getIdAffilie(), session);
-            String idAssuranceEmployeur = null;
+            if(!JadeStringUtil.isBlankOrZero(apRepJointPrestation.getIdAffilie())) {
+                Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
+                        apRepJointPrestation.getIdAffilie(), session);
+                String idAssuranceEmployeur = null;
 
-            // recheche d'une assurance dans les propriétés
-            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
-                if (apRepJointPrestation.loadSituationProfessionnelle().getIsIndependant()) {
-                    if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
-                        idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
-                        idAssuranceEmployeur = idAssurancePersonnelJU;
-                    }
-                } else {
-                    if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
-                        idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
-                        idAssuranceEmployeur = idAssuranceParitaireJU;
+                // recheche d'une assurance dans les propriétés
+                for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+                    if (apRepJointPrestation.loadSituationProfessionnelle().getIsIndependant()) {
+                        if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
+                            idAssuranceEmployeur = idAssurancePersonnelBE;
+                        } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
+                            idAssuranceEmployeur = idAssurancePersonnelJU;
+                        }
+                    } else {
+                        if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
+                            idAssuranceEmployeur = idAssuranceParitaireBE;
+                        } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
+                            idAssuranceEmployeur = idAssuranceParitaireJU;
+                        }
                     }
                 }
-            }
 
-            // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
-            if (idAssuranceEmployeur != null) {
-                apRepJointPrestationsIsComplement.add(apRepJointPrestation);
+                // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
+                if (idAssuranceEmployeur != null) {
+                    apRepJointPrestationsIsComplement.add(apRepJointPrestation);
+                }
             }
         }
         return apRepJointPrestationsIsComplement;
@@ -2333,7 +2335,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private ACM2PersistenceInputData getDonneesPersistancePourCalculMATCIAB2(final APDroitMaternite droit,
-                                                                         final BSession session, final BTransaction transaction) throws Exception {
+                                                                             final BSession session, final BTransaction transaction) throws Exception {
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
 
