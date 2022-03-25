@@ -537,7 +537,7 @@
 			</band>
 		</background>
 		<title>
-			<band height="340"  isSplitAllowed="true" >
+			<band height="384"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
