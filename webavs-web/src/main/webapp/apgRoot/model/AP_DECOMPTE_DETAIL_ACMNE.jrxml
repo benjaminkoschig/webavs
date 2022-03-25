@@ -357,7 +357,7 @@
 						x="444"
 						y="60"
 						width="20"
-						height="12"
+						height="10"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-47"
@@ -523,7 +523,7 @@
 						x="444"
 						y="84"
 						width="20"
-						height="12"
+						height="10"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-55"
@@ -741,7 +741,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[new Boolean($P{PARAM_FIELD_PREST_COMPL}!=null && $P{PARAM_FIELD_PREST_COMPL}!="")]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_PREST_COMPL}]]></textFieldExpression>
@@ -761,7 +761,7 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_DETAIL_COTISATIONS_FNE}]]></textFieldExpression>
@@ -783,7 +783,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[new Boolean($P{PARAM_FIELD_DETAIL_COTISATIONS_FNE}!=null)]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_DEVISE}]]></textFieldExpression>
@@ -803,7 +803,7 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_MONTANT_COTISATIONS_FNE}]]></textFieldExpression>

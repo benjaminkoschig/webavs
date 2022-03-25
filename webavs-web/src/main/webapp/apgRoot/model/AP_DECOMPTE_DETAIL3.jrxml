@@ -45,7 +45,7 @@
 						x="3"
 						y="0"
 						width="177"
-						height="12"
+						height="10"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-28"
@@ -95,7 +95,7 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_PREST_COMPL}]]></textFieldExpression>
