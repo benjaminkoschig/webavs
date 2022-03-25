@@ -16,6 +16,7 @@
 <%@ page import="globaz.globall.db.FWFindParameter" %>
 <%@ page import="globaz.apg.properties.APParameter" %>
 <%@ page import="globaz.globall.db.FWFindParameterManager" %>
+<%@ page import="globaz.apg.helpers.droits.APAbstractDroitPHelper" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -55,6 +56,7 @@
     var ACTION_DROIT = "apg.droits.droitPatP",
         jsonAnnonce;
 
+    /* Contrôle que la date de naissance n'est pas avant la dateMin du "01.01.2021" */
     function checkDateDebutAPG(date) {
         var dateRaw = date.split('.');
         var dateDebut = new Date(dateRaw[0] + '/' + dateRaw[1] + '/' + dateRaw[2]);
@@ -100,6 +102,7 @@
         document.getElementById("csSexeAffiche").disabled = true;
         $('#nbJourSolde').prop("disabled", true);
         $('#jourSupplementaire').prop("disabled", true);
+        $('#dateFinCalculee').prop("disabled", true);
         $('#isSoumisCotisation').prop("disabled", true);
         $('#tauxImpotSource').prop("disabled", true);
     }
@@ -220,25 +223,73 @@
 
     }
 
+    // PAT 3.1.3.3.
+    // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
+    function resolveDateFinCalculee(nbJourSoldeTot) {
+
+        // si nbJourSoldeTot n'est pas initialisé on reprends les valeurs du tableau dans la ligne nbJourSuppSummary
+        if (!nbJourSoldeTot) {
+            nbJourSoldeTot = Number($(".nbJourSuppSummary #nbJourSoldesTot").text()) + Number($(".nbJourSuppSummary #nbJourSuppTot").text());
+        }
+
+        var dateFinDernierePeriode = $('#dateFinPeriode').val(); // init avec la date saisie dans le champs "période au"
+        var dateFinTableau;
+        $("#periodes .dateFin").each(function(index, element) {
+            dateFinTableau = $(element).text();
+            if (dateFinTableau) {
+                if (!dateFinDernierePeriode) { // si la date saisie dans le champs "période au" est vide on reinit avec la première dateFinTableau
+                    dateFinDernierePeriode = dateFinTableau;
+                } else if (dateFinDernierePeriode < dateFinTableau) { // si dateFinTableau est plus éloigné on la prends comme dateFinDernierePeriode
+                    dateFinDernierePeriode = dateFinTableau;
+                }
+            }
+        });
+
+        var dateDebutDernierePeriode = $('#dateDebutPeriode').val(); // init avec la date saisie dans le champs "période du"
+        var dateDebutTableau;
+        $("#periodes .dateDebut").each(function(index, element) {
+            dateDebutTableau = $(element).text();
+            if (dateDebutTableau) {
+                if (!dateDebutDernierePeriode) { // si la date saisie dans le champs "période du" est vide on reinit avec la première dateDebutTableau
+                    dateDebutDernierePeriode = dateDebutTableau;
+                } else if (dateDebutDernierePeriode > dateDebutTableau) { // si dateDebutTableau est plus proche on la prends comme dateDebutDernierePeriode
+                    dateDebutDernierePeriode = dateDebutTableau;
+                }
+            }
+        });
+
+        // nb de jours disponible = jour entre la date de début de la première période et la date de fin de la dernière période saisie pour le droit
+        var nbJoursDisponible = Date.toDate(dateDebutDernierePeriode).daysBetween(Date.toDate(dateFinDernierePeriode));
+
+        // nb de jours de difference = difference entre nb jours soldées total (jours soldées + indemnités supplémentaires) et nb de jours disponible
+        var nbJoursDifference = Math.abs(nbJoursDisponible - nbJourSoldeTot);
+
+        // variable dateFinCalculee
+        var dateFinCalculee;
+
+        // si nb jours soldées total (jours soldées + indemnités supplémentaires) > nb jours disponibles dans la période de la prestation
+        if (nbJourSoldeTot > nbJoursDisponible) {
+            dateFinCalculee = Date.toDate(dateFinDernierePeriode);
+            dateFinCalculee.setDate(dateFinCalculee.getDate() + nbJoursDifference);
+        } else {
+            dateFinCalculee = Date.toDate(dateFinDernierePeriode);
+        }
+
+        return globazNotation.utilsDate.convertJSDateToGlobazStringDateFormat(dateFinCalculee);
+    }
+
     // PAT 3.1.3.7.
-    /* Contrôle que la date fin période n'est pas trop éloigné de la date de naissance */
+    /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
     function isDelaiCadreDepasse(dateFin) {
         var dateNaissance = Date.toDate($('#dateDebutDroit').val());
-        var moisMaxDelaiAutorise = 6;
-        var dateMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+moisMaxDelaiAutorise));
+        var paterniteMoisMaxDelaiCadre = parseInt("<%=APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE%>");
+        var dateDeFinDroitMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+paterniteMoisMaxDelaiCadre));
 
-        if (dateFin > dateMax) {
+        if (dateFin > dateDeFinDroitMax) {
             return true;
         } else {
             return false;
         }
-    }
-
-    // PAT 3.6 K211118_001
-    /* Contrôle que la date de début n'est pas avant la date de naissance */
-    function isDateDebutAvantNaissance(dateDebut) {
-        // ESVE PAT TODO
-        return false;
     }
 
     // PAT 3.1.3.5.
@@ -251,7 +302,7 @@
         }
     }
 
-    // PAT 3.1.3.5.
+    // PAT 3.1.3.2.
     /* Contrôle que le nombre total de jours de congées + le nombre de jours supplémentaires ne dépasse pas la maximum autorisé */
     function isNbJourPlusGrandQueJourMax(nbJourTot, nbJourMax) {
         if (nbJourTot > nbJourMax) {
@@ -280,6 +331,10 @@
         if (<%=viewBean.getIsSoumisCotisation()%>) {
             document.getElementById("isSoumisCotisation").checked = true;
         }
+
+        // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
+        $('#dateFinCalculee').val(resolveDateFinCalculee());
+
         showCantonImpotSource();
         checkParametersWebService();
         checkMsgWarn();
@@ -398,6 +453,7 @@
         }
         $('#nbJourSolde').prop("disabled", true);
         $('#jourSupplementaire').prop("disabled", true);
+        $('#dateFinCalculee').prop("disabled", true);
         $('#isSoumisCotisation').prop("disabled", true);
         $('#tauxImpotSource').prop("disabled", true);
     }
@@ -585,34 +641,32 @@
             }
         }
 
-        // On met à jour le champ jourSupplementaire avec la valeur calculé
+        // On met à jour le champ jourSupplementaire avec la valeur calculée
         $('#jourSupplementaire').val(nbJourSuppActuel);
 
-        // On ajoute les jours supplémentaires au jours soldes pour trouver le total des jours
+        // On ajoute les jours supplémentaires au jours soldes pour trouver le nb jour soldes total
         if (nbJourSuppActuel) {
-            if (nbJourSoldeTot === 7 || nbJourSoldeTot === 14) {
+            if (nbJourSoldeTot === 7 || nbJourSoldeTot === 14 || nbJourSoldesActuel === 7) {
                 nbJourSoldeTot -= nbJourSuppActuel;
             } else {
                 nbJourSoldeTot += nbJourSuppActuel;
             }
-            nbJourSoldeTot += nbJourSuppTableau;
         }
+        nbJourSoldeTot += nbJourSuppTableau;
+
+        // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
+        $('#dateFinCalculee').val(resolveDateFinCalculee(nbJourSoldeTot));
 
         // PAT 3.1.3.7.
+        /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
         if (isDelaiCadreDepasse(dateFin)) {
-            var text = "<%=viewBean.getSession().getLabel("ERREUR_MAX_DATE_APRES_DATE_NAI")%>";
-            showErrorMessage(text);
-            return;
-        }
-
-        // PAT 3.6 K211118_001
-        if (isDateDebutAvantNaissance(dateDebut)) {
-            var text = "<%=viewBean.getSession().getLabel("ERREUR_DATE_DEBUT_AVANT_DATE_NAI")%>";
+            var text = "<%=viewBean.getSession().getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI")%>";
             showErrorMessage(text);
             return;
         }
 
         // PAT 3.1.3.5.
+        /* Contrôle que les champs jours supplémentaires et jours de congées sont dans les limites autorisées */
         if (isChampsHorsLimites(nbJourSuppChamp, nbJourSoldeChamp)) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_SAISIES_DANS_LES_LIMITES")%>";
             showErrorMessage(text);
@@ -620,26 +674,15 @@
         }
 
         // PAT 3.1.3.2.
+        /* Contrôle que le nombre total de jours de congées + le nombre de jours supplémentaires ne dépasse pas la maximum autorisé */
         if (isNbJourPlusGrandQueJourMax(nbJourSoldeTot, 14)) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_NB_JOURS_PLUS_GRAND_QUE_JOUR_MAX")%>";
             showErrorMessage(text);
             return;
         }
 
-        // PAT 3.1.3.3.
-        if (nbJourSoldesActuel > dateDebut.daysInMonth()) {
-            globazNotation.utils.dialogWarn("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", {
-                "Ok": function () {
-                    $(this).dialog("close");
-                    addPeriode()
-                },
-                "Annuler": function () {
-                    $(this).dialog("close");
-                }
-            });
-        } else {
-            addPeriode()
-        }
+        // Si on arrive jusqu'ici tous les contrôles sont passés et on peut ajouter la période
+        addPeriode();
     }
 
     $(document).ready(function () {
@@ -650,6 +693,7 @@
             repaintTablePeriodes();
             $('#nbJourSolde').prop("disabled", false);
             $('#jourSupplementaire').prop("disabled", false);
+            $('#dateFinCalculee').prop("disabled", true);
             $('#isSoumisCotisation').prop("disabled", true);
             $('#tauxImpotSource').prop("disabled", true);
         });
@@ -994,17 +1038,17 @@
             </tr>
             <tr>
                 <td>
-                    <label for="dateFinCalcule">
+                    <label for="dateFinCalculee">
                         <ct:FWLabel key="JSP_DATE_FIN_CALCULEE"/>
                     </label>
 
                 </td>
                 <td colspan="3">
                     <input type="text"
-                           data-g-integer="sizeMax:2"
-                           size="5"
-                           id="dateFinCalcule"
-                           name="dateFinCalcule"
+                            data-g-calendar=" "
+                            value="<%=viewBean.getDateFinCalculee()%>"
+                            id="dateFinCalculee"
+                            name="dateFinCalculee"
                     />
                 </td>
             </tr>
