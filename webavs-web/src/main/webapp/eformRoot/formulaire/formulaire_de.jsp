@@ -11,7 +11,7 @@
 
 <%@ page isELIgnored ="false" %>
 
-<%@ include file="/theme/detail/header.jspf" %>
+<%@ include file="/theme/detail_ajax/header.jspf" %>
 <%-- tpl:insert attribute="zoneInit" --%>
 
 <%
