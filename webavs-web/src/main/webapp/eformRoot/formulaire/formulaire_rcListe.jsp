@@ -4,6 +4,7 @@
 <%@ page import="ch.globaz.eform.constant.GFStatusEForm" %>
 <%@ page import="globaz.eform.helpers.formulaire.GFFormulaireHelper" %>
 <%@ page import="globaz.jade.admin.user.bean.JadeUser" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFFormulaireServletAction" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
 <%@ page errorPage="/errorPage.jsp" %>
@@ -16,8 +17,17 @@
     detailLink = baseLink + "afficher&selectedId=";
 %>
 <%-- tpl:insert attribute="zoneScripts" --%>
-<%-- /tpl:insert --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
+<script type="text/javascript">
+    $(function (){
+        // surcharge l'action télécharger afin de fermer le menu
+        overLoadActionMenu("<%=GFFormulaireServletAction.PATH_EFORM+"."+GFFormulaireServletAction.ACTION_TELECHARGER%>", /(selectedId)=(\d*)/g, function (values, element, defaultAction){
+            FWOptionSelectorButton_win.hidePopup();
+            defaultAction();
+        });
+    });
+</script>
+<%-- /tpl:insert --%>
 
 <%-- tpl:insert attribute="zoneHeaders" --%>
 <%-- /tpl:insert --%>
