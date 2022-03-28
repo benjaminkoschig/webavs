@@ -17,6 +17,8 @@ import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -26,20 +28,21 @@ public class GFFormulaireHelper extends FWHelper {
     public static final String PROPERTY_GROUPE_GESTIONNAIRE = "groupe.eform.gestionnaire";
 
     private static Vector gestionnaires = null;
-    private static Vector<String[]> type = null;
-    private static Vector<String[]> sortBy = null;
+    private static final Map<String, Vector<String[]>> type = new HashMap<>();
+    private static final Map<String, Vector<String[]>> sortBy = new HashMap<>();
 
     public static  Vector<String[]> getTypeData(BSession session) {
-        if (Objects.isNull(type)) {
-            type = new Vector<>();
-            type.add(new String[] { "", "" });
+        if (!type.containsKey(session.getIdLangueISO())) {
+            Vector<String[]> vec = new Vector<>();
+            type.put(session.getIdLangueISO(), vec);
+            vec.add(new String[] { "", "" });
             
             Arrays.stream(GFTypeEForm.values())
-                    .forEach(gfTypeEForm -> type.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getCodeEForm() + " - " + gfTypeEForm.getDesignation(session) }));
+                    .forEach(gfTypeEForm -> vec.add(new String[] { gfTypeEForm.getCodeEForm(), gfTypeEForm.getCodeEForm() + " - " + gfTypeEForm.getDesignation(session) }));
 
         }
 
-        return type;
+        return type.get(session.getIdLangueISO());
     }
 
     /**
@@ -89,14 +92,17 @@ public class GFFormulaireHelper extends FWHelper {
     }
 
     public static Vector<String[]> getSortByData(BSession session) {
-        sortBy = new Vector<>();
+        if (!sortBy.containsKey(session.getIdLangueISO())) {
+            Vector<String[]> vec = new Vector<>();
+            sortBy.put(session.getIdLangueISO(), vec);
 
-        sortBy.add(new String[] { "default", session.getLabel("ORDER_BY_DATE") });
-        sortBy.add(new String[] { "orderByType", session.getLabel("ORDER_BY_TYPE") });
-        sortBy.add(new String[] { "orderByNSS", session.getLabel("ORDER_BY_NSS") });
-        sortBy.add(new String[] { "orderByGestionnaire", session.getLabel("ORDER_BY_GESTIONNAIRE") });
+            vec.add(new String[]{"default", session.getLabel("ORDER_BY_DATE")});
+            vec.add(new String[]{"orderByType", session.getLabel("ORDER_BY_TYPE")});
+            vec.add(new String[]{"orderByNSS", session.getLabel("ORDER_BY_NSS")});
+            vec.add(new String[]{"orderByGestionnaire", session.getLabel("ORDER_BY_GESTIONNAIRE")});
+        }
 
-        return sortBy;
+        return sortBy.get(session.getIdLangueISO());
     }
 
     @Override
