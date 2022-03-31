@@ -69,7 +69,7 @@ public class GenerationQRCode {
             // Save as new file to the target location
             ImageIO.write(combinedQrCodeImage, "PNG", new File(qrCodePath));
         } catch (IOException e) {
-            throw new CommonTechnicalException("Erreur lors de l'ajout de la croix suisse au QR Code", e);
+            throw new CommonTechnicalException("Erreur lors de la création du fichier image du QR", e);
         }
         return qrCodePath;
     }
