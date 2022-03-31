@@ -54,6 +54,13 @@ public class GenerationQRCode {
         BufferedImage qrCodeImage = generateQrCodeImage(payload);
         String qrCodePath;
         try {
+            // Ensure appWorkDir exists
+            File appWorkDir = new File(referenceQR.getWorkApplicationPath());
+            if(!appWorkDir.exists()){
+                if(!appWorkDir.mkdirs()){
+                    throw new IOException("Impossible de créer le dossier au Work Application Path : " + appWorkDir.getAbsolutePath());
+                }
+            }
             // overlay the qr code with a Swiss Cross
             BufferedImage combinedQrCodeImage = overlayWithSwissCross(qrCodeImage);
             String filePath = referenceQR.getWorkApplicationPath() + TARGET_FINAL_NAME + "_" + referenceQR.getUID() + TARGET_FINAL_EXTENSION;
