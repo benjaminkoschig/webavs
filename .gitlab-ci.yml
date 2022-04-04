@@ -5,4 +5,9 @@ include:
 
 build-maven:
   before_script:
-    - export JAVA_OPTS=iso-8859-1
+    - echo $JAVA_OPTS
+    - export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=Cp1252 -Dsun.jnu.encoding=Cp1252 -Duser.timezone=Europe/Zurich -Duser.country=CH"
+    - echo $JAVA_OPTS
+    - echo $MAVEN_OPTS
+    - export MAVEN_OPTS="$MAVEN_OPTS -Dfile.encoding=Cp1252 -Dsun.jnu.encoding=Cp1252 -Duser.timezone=Europe/Zurich -Duser.country=CH"
+    - mvn -v
