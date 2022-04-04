@@ -1,5 +1,7 @@
 package src.ant
 
+import java.nio.charset.Charset
+
 import static groovy.io.FileType.*
 
 // D:/workspaces/avs/1.14.00/sql
@@ -13,11 +15,22 @@ class FusionSql {
     def mapTableReorg = [:]
 
     public FusionSql(currentVersion, sourceSqlDir, targetSqlDir) {
-        super() 
+        super()
+       /* System.setProperty("file.encoding","Cp1252")
+        System.setProperty("sun.jnu.encoding","Cp1252")
+        System.setProperty("user.timezone","Europe/Zurich")
+        System.setProperty("user.country","CH")
+        */
         println '     Groovy args : '
         println '     -> currentVersion' + currentVersion
         println '     -> sourceSqlDir=' + sourceSqlDir
         println '     -> targetSqlDir=' + targetSqlDir
+        println '     Encoding :'
+        println '     -> file.encoding: ' + System.getProperty("file.encoding")
+        println '     -> Default Locale: ' + Locale.getDefault()
+        println '     -> Default Charset: ' + System.getProperty("sun.jnu.encoding")
+        println '     -> Default Encoding: ' + Charset.defaultCharset().name()
+
         version = currentVersion
         sqlFilePath = sourceSqlDir
         distributionDir = targetSqlDir

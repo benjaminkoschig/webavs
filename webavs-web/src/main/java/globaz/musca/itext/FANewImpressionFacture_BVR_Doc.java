@@ -47,6 +47,7 @@ import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
 
 import java.util.ArrayList;
+
 import net.sf.jasperreports.engine.JasperPrint;
 
 /**
@@ -615,6 +616,7 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
             qrFacture.setQrNeutre(APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture().getIdTypeFacture()));
             qrFacture.setMontantMinimeOuMontantReporter(this.isFactureAvecMontantMinime() || this.isFactureMontantReport());
+            qrFacture.setRecouvrementDirect(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT.equals(currentDataSource.getEnteteFacture().getIdModeRecouvrement()));
 
             if (APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(newCurrentDataSource.getEnteteFacture()
                     .getIdTypeFacture())) {
