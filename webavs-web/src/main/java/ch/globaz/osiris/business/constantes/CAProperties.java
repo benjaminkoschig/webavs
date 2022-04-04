@@ -25,6 +25,7 @@ public enum CAProperties implements IProperties {
     EBILL_FTP_KNOWN_HOSTS("eBill.known.hosts", "known hosts file pour eBill"),
     EBILL_FTP_IN("eBill.dossier.Inbox","nom du dossier pour les inscriptions et les traitements eBill"),
     EBILL_FTP_OUT("eBill.dossier.Outbox","nom du dossier pour les factures eBill"),
+    EBILL_EMAIL_CONFIRMATION("eBill.email.confirmation","L’adresse email d’expédition pour les emails de confirmation"),
 
     ISO_SEPA_FTP_CAMT054_HOST("iso.sepa.ftp.camt054.host", "host sftp pour les receptions camt054 ISO20022"),
     ISO_SEPA_FTP_CAMT054_PORT("iso.sepa.ftp.camt054.port", "port sftp pour les receptions camt054 ISO20022"),

@@ -12,6 +12,7 @@ import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.properties.JadePropertiesService;
@@ -29,6 +30,7 @@ import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
+import globaz.osiris.process.ebill.EBillMail;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -46,6 +48,8 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private static final String MAIL_CONTENT = "EBILL_MAIL_INSCRIPTION_CONTENT";
     private static final String MAIL_ERROR_CONTENT = "EBILL_MAIL_INSCRIPTION_ERROR_CONTENT";
     private static final String MAIL_SUBJECT = "EBILL_MAIL_INSCRIPTION_SUBJECT";
+    private static final String COMPTE_ANNEXE_EMAIL_MANQUANTE = "EBILL_COMPTE_ANNEXE_EMAIL_MANQUANTE";
+    private static final String COMPTE_ANNEXE_EMAIL_FAILED = "EBILL_COMPTE_ANNEXE_EMAIL_FAILED";
     private static final String CSV_EXTENSION = ".csv";
     private static final char SEPARATOR = ';';
     private static final String BOOLEAN_TRUE = "on";
@@ -692,6 +696,22 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             compteAnnexe.update();
         } catch (Exception e) {
             String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            LOG.error(erreurInterne, e);
+            inscriptionEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            return false;
+        }
+        if(JadeStringUtil.isEmpty(email)) {
+            String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            LOG.error(erreurInterne);
+            inscriptionEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n");
+            return false;
+        }
+        try {
+            EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
+        } catch (Exception e) {
+            String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
