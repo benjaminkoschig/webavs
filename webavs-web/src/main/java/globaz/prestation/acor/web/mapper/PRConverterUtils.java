@@ -198,22 +198,6 @@ public final class PRConverterUtils {
     }
 
     /**
-     * Conversion et formatage d'un nombre de mois MM en années et mois AA.MM
-     *
-     * @param mois les mois à convertir
-     * @return le nb d'années et de mois au format AA.MM
-     */
-    public static String formatMMtoAAxMM(Integer mois) {
-        if (Objects.nonNull(mois)) {
-            LocalDate now = LocalDate.now();
-            LocalDate delay = now.plusMonths(mois);
-            Period period = Period.between(now, delay);
-            return String.format(FORMAT_S_S, formatIntToStringWithTwoChar(period.getYears()), formatIntToStringWithTwoChar(period.getMonths()));
-        }
-        return StringUtils.EMPTY;
-    }
-
-    /**
      * Conversion et formatage d'un Integer correspondant à AAMM ou AMM en String correspondant à AA.MM
      *
      * @param duree durée au format AAMM ou AMM

@@ -53,6 +53,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
     private static final String ERREUR_DROITS_ACQUIS_PAS_ARRONDI = "DROITS_ACQUIS_PAS_ARRONDI";
     private static final String ERREUR_NOM_OU_PRENOM_INVALIDE = "NOM_OU_PRENOM_INVALIDE";
     protected boolean hasBeanInsertedIntoTiers = false;
+    public static final long PATERNITE_MOIS_MAX_DELAI_CADRE = 6;
 
     /**
      * @see globaz.framework.controller.FWHelper#_add(globaz.framework.bean.FWViewBeanInterface,

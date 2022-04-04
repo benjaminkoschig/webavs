@@ -44,7 +44,7 @@ public class GFEFormSearch extends JadeSearchSimpleModel {
     }
 
     public void setByStatus(String byStatus) {
-        this.byStatus = GFStatusEForm.getStatusByCodeSystem(byStatus).getCode();
+        this.byStatus = byStatus;
     }
 
     public String getByType() {

@@ -454,46 +454,6 @@ public class PRConverterUtilsTest {
     }
 
     @Test
-    public void formatMMtoAAxMM_avecNull_renvoiStringEmpty() {
-        // arrange
-        // act
-        String result = PRConverterUtils.formatMMtoAAxMM(null);
-
-        // assert
-        assertThat(result).isEqualTo(StringUtils.EMPTY);
-    }
-
-    @Test
-    public void formatMMtoAAxMM_avecNbMoisSupA12_renvoiDateAAxMM() {
-        // arrange
-        // act
-        String result = PRConverterUtils.formatMMtoAAxMM(23);
-
-        // assert
-        assertThat(result).isEqualTo("01.11");
-    }
-
-    @Test
-    public void formatMMtoAAxMM_avecNbMoisInfA12_renvoiDateAAxMM() {
-        // arrange
-        // act
-        String result = PRConverterUtils.formatMMtoAAxMM(9);
-
-        // assert
-        assertThat(result).isEqualTo("00.09");
-    }
-
-    @Test
-    public void formatMMtoAAxMM_avec12mois_renvoiDateAAxMM() {
-        // arrange
-        // act
-        String result = PRConverterUtils.formatMMtoAAxMM(12);
-
-        // assert
-        assertThat(result).isEqualTo("01.00");
-    }
-
-    @Test
     public void formatAAMMtoAAxMM_avecNull_renvoiStringEmpty() {
         // arrange
         // act

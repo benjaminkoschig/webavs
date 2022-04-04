@@ -19,9 +19,9 @@
 		</nodes>
 	</menu>
 	
-	<!-- ***************************************** -->
-	<!-- Menu Option Detail étape                  -->
-	<!-- ***************************************** -->
+	<!-- ************************************************ -->
+	<!-- Menu Option Detail étape Gestionnaire ou manager -->
+	<!-- ************************************************ -->
 
 	<menu id="eform-optionsformulaires">
 		<label refId="MENU_OPTIONS_FORMULAIRES" />
@@ -29,45 +29,38 @@
 			<node>
 				<label refId="MENU_DETAIL"/>
 				<action command="/eform" responseTarget="fr_main">
-					<parameter name="userAction" value="eform.formulaire.afficher"/>
+					<parameter name="userAction" value="eform.formulaire.formulaire.afficher"/>
 					<parameter name="selectedId"/>
 				</action>
 			</node>
 			<node>
 				<label refId="MENU_TELECHARGEMENT"/>
 				<action command="/eform" responseTarget="fr_main">
-<!--					<parameter name="userAction" value="eform.formulaire.telecharger"/>-->
-<!--					<parameter name="selectedId"/>-->
+					<parameter name="userAction" value="eform.formulaire.formulaire.telecharger"/>
+					<parameter name="selectedId"/>
 				</action>
 			</node>
-			<node>
-				<label refId="MENU_DECLARER_GESTIONNAIRE"/>
-				<action command="/eform" responseTarget="fr_main">
-<!--					<parameter name="userAction" value="eform.formulaire.gestionnaire"/>-->
-<!--					<parameter name="selectedId"/>-->
-				</action>
-			</node>
-			<node>
+			<node id="STATUT_ENCOURS">
 				<label refId="MENU_STATUT_ENCOURS"/>
 				<action command="/eform" responseTarget="fr_main">
-<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="userAction" value="eform.formulaire.formulaire.statut"/>
 					<parameter name="selectedId"/>
-					<parameter name="ENCOURS"/>
+					<parameter name="statut" value="PROCESSING"/>
 				</action>
 			</node>
-			<node>
+			<node id="STATUT_TRAITE">
 				<label refId="MENU_STATUT_TRAITE"/>
 				<action command="/eform" responseTarget="fr_main">
-<!--					<parameter name="userAction" value="eform.formulaire.statut"/>-->
+					<parameter name="userAction" value="eform.formulaire.formulaire.statut"/>
 					<parameter name="selectedId"/>
-					<parameter name="TRAITE"/>
+					<parameter name="statut" value="TREATY"/>
 				</action>
 			</node>
-			<node>
+			<node id="VISU_TIERS">
 				<label refId="MENU_VISU_TIERS"/>
-				<action command="/eform" responseTarget="fr_main">
-<!--					<parameter name="userAction" value="eform.formulaire.visutiers"/>-->
-					<parameter name="selectedId"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+					<parameter name="idTiers"/>
 				</action>
 			</node>
 		</nodes>
@@ -76,7 +69,7 @@
 	<!-- ************************** -->
 	<!-- Menu Option empty		    -->
 	<!-- ************************** -->
-	<!--<menu id="eform-optionsempty">
-		<label refId="MENU_OPTION_TITRE"/>
-	</menu>-->
+	<menu id="eform-optionsempty">
+		<label refId="MENU_EFORM_OPTION_TITRE"/>
+	</menu>
 </menus>

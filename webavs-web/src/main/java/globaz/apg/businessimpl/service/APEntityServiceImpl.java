@@ -20,6 +20,7 @@ import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.exceptions.APBusinessException;
 import globaz.apg.exceptions.APEntityNotFoundException;
+import globaz.apg.helpers.droits.APAbstractDroitPHelper;
 import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.properties.APParameter;
 import globaz.apg.utils.APGUtils;
@@ -65,6 +66,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1260,13 +1262,15 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         /**
-         * CONTROLE SUR LE JOURS MAX ET DATE MAX
+         * CONTROLE SUR JOURS MAX PATERNITE, DATE NAISSANCE VIDE, DATE NAISSANCE AVANT DATE MIN, DELAI CADRE RESPECTE
          */
         final String dateNaissance = viewBean.getDateDebutDroit();
 
+        /* Contrôle que le champs date de naissance n'est pas vide */
         if (JadeStringUtil.isBlankOrZero(dateNaissance)) {
             throw new Exception(session.getLabel("DATE_DE_NAISSANCE_VIDE"));
         }
+
         String parameterName = null;
         parameterName = APParameter.PATERNITE.getParameterName();
         FWFindParameterManager manager = new FWFindParameterManager();
@@ -1288,10 +1292,25 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
             }
         }
-        // PAT 3.6 K211118_001
-        if (JadeDateUtil.isDateBefore(dateNaissance, dateMin)) {
+
+        /* Contrôle que la date de naissance n'est pas avant la dateMin du "01.01.2021" */
+        if (isNaissanceAvantDateMin(dateNaissance, dateMin)) {
             String msgError = session.getLabel("ERREUR_MIN_DATE_NAI");
             msgError = PRStringUtils.replaceString(msgError, "{0}", dateMin);
+            throw new Exception(msgError);
+        }
+
+        // PAT 3.6 K211118_001
+        /* Contrôle que dateDeDebutDroit n'est pas avant la date de naissance */
+        if (isDateDebutAvantNaissance(dateNaissance, dateDeDebutDroit)) {
+            String msgError = session.getLabel("ERREUR_DATE_DEBUT_AVANT_DATE_NAI");
+            throw new Exception(msgError);
+        }
+
+        // PAT 3.1.3.7.
+        /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+        if (isDelaiCadreDepasse(dateNaissance, dateDeFinDroit)) {
+            String msgError = session.getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI");
             throw new Exception(msgError);
         }
 
@@ -1304,7 +1323,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         if (manager.size() > 0) {
             FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
             joursMax = new BigDecimal(param.getValeurNumParametre());
-        }else{
+        } else {
             manager.setIdCodeSysteme("0");
             manager.find(BManager.SIZE_NOLIMIT);
             if (manager.size() > 0) {
@@ -1312,7 +1331,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 joursMax = new BigDecimal(param.getValeurNumParametre());
             }
         }
-        // PAT 3.1.3.2.
+
+        /* Contrôle que le nombre de jour de paternité ne dépasse pas le nombre de jours maximum */
         if (joursSoldes > joursMax.intValue()) {
             throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
         }
@@ -1327,7 +1347,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         if (manager.size() > 0) {
             FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
             nombreMoisMaxApres = new BigDecimal(param.getValeurNumParametre());
-        }else{
+        } else {
             manager.setIdCodeSysteme("0");
             manager.find(BManager.SIZE_NOLIMIT);
             if (manager.size() > 0) {
@@ -1417,6 +1437,39 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         remplacerPeriodesDroitPat(session, transaction, droitPat.getIdDroit(), viewBean.getPeriodes());
         return droitPat;
+    }
+
+    /* Contrôle que la date de naissance n'est pas avant la dateMin du "01.01.2021" */
+    public boolean isNaissanceAvantDateMin(String dateNaissance, String dateMin) throws Exception {
+        if (JadeDateUtil.isDateBefore(dateNaissance, dateMin)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // PAT 3.6 K211118_001
+    /* Contrôle que dateDeDebutDroit n'est pas avant la date de naissance */
+    public boolean isDateDebutAvantNaissance(String dateNaissance, String dateDeDebutDroit) throws Exception {
+        if (JadeDateUtil.isDateBefore(dateDeDebutDroit, dateNaissance)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // PAT 3.1.3.7.
+    /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+    public boolean isDelaiCadreDepasse(String dateNaissance, String dateDeFinDroit) {
+        LocalDate dateNaissanceD = Dates.toDate(dateNaissance);
+        LocalDate dateDeFinDroitD = Dates.toDate(dateDeFinDroit);
+        LocalDate dateDeFinDroitMax = dateNaissanceD.plusMonths(APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE);
+
+        if (dateDeFinDroitD.compareTo(dateDeFinDroitMax) > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private APDroitProcheAidant editionDroitPai(final BSession session, final BTransaction transaction,

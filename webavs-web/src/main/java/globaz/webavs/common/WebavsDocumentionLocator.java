@@ -2,43 +2,31 @@ package globaz.webavs.common;
 
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+@Slf4j
 public class WebavsDocumentionLocator {
 
-    private static Properties prop = null;
-
-    private static final String PROP_DATE = "date";
-
-    private static final String PROP_NAME = "name";
-    private static final String PROP_VERSION = "version";
-    private static final String PROP_VERSION_TECHNIQUE = "version.technical";
-    private static final String PROP_VERSION_SERVICEPACK = "version.servicepack";
-    private static final String WEBAVS_VERSION_PROP_FILE = "/webavs.version";
-
+    public static final VersionProperties VERSION_PROPERTIES = loadAnCreateObject();
     private static final String WEBCONTENTS_DOCUMENTS_PATH = "documents/";
 
     /**
      * Retourne la date de version actuelle.
-     * 
-     * @return
+     *
+     * @return la date de version actuelle.
      */
     public static String getDate() {
-        try {
-            loadProperties();
-
-            return prop.getProperty(PROP_DATE);
-        } catch (Exception e) {
-            return "";
-        }
+        return VERSION_PROPERTIES.getDate();
     }
 
     /**
      * Retourne l'emplacement de la documentation. Si non spécifiée dans Jade.xml => documents/ sous répertoire de
      * webavs/Web Content.
-     * 
+     *
      * @return
      */
     public static String getDocumentationLocation() {
@@ -58,77 +46,77 @@ public class WebavsDocumentionLocator {
 
     /**
      * Retourne le nom du projet (webavs).
-     * 
-     * @return
+     *
+     * @return le nom du projet (webavs).
      */
     public static String getName() {
-        try {
-            loadProperties();
-
-            return prop.getProperty(PROP_NAME);
-        } catch (Exception e) {
-            return "";
-        }
+        return VERSION_PROPERTIES.getProjectName();
     }
 
     /**
      * Retourne le numéro de version du service pack actuelle.
-     * 
-     * @return
+     *
+     * @return le numéro de version du service pack actuelle.
      */
     public static String getServicePackVersion() {
-        try {
-            loadProperties();
-
-            return prop.getProperty(PROP_VERSION_SERVICEPACK);
-        } catch (Exception e) {
-            return "";
-        }
+        return VERSION_PROPERTIES.getVersionServicePack();
     }
 
     /**
      * Retourne le numéro de version business actuelle.
-     * 
-     * @return
+     *
+     * @return le numéro de version business actuelle.
      */
     public static String getVersion() {
-        try {
-            loadProperties();
-
-            return prop.getProperty(PROP_VERSION);
-        } catch (Exception e) {
-            return "";
-        }
+        return VERSION_PROPERTIES.getProjectVersion();
     }
 
     /**
-     * Retourne le numéro de version technique
-     * 
-     * @return
+     * Retourne le numéro de version technique.
+     *
+     * @return le numéro de version technique.
      */
     public static String getVersionTechnique() {
-        try {
-            loadProperties();
-
-            return prop.getProperty(PROP_VERSION_TECHNIQUE);
-        } catch (Exception e) {
-            return "";
-        }
+        return VERSION_PROPERTIES.getProjectVersionTechnical();
     }
 
     /**
      * Charge les propriétés webavs.version.
-     * 
      */
-    private static void loadProperties() {
-        if (prop == null) {
-            try {
-                prop = new Properties();
-                InputStream is = WebavsDocumentionLocator.class.getResourceAsStream(WEBAVS_VERSION_PROP_FILE);
-                prop.load(is);
-            } catch (IOException e) {
-                prop = null;
-            }
+    private static Properties loadProperties() {
+        Properties prop = new Properties();
+        try {
+            InputStream is = WebavsDocumentionLocator.class.getResourceAsStream("/webavs.version");
+            prop.load(is);
+        } catch (IOException e) {
+            LOG.error("Unable to load the resource webavs.version", e);
+            prop = null;
         }
+        return prop;
+    }
+
+    private static VersionProperties loadAnCreateObject() {
+        Properties versionProp = loadProperties();
+        VersionProperties technicalProperties = new VersionProperties();
+
+        if (versionProp != null) {
+            technicalProperties.setProjectName(versionProp.getProperty("name"));
+            technicalProperties.setProjectVersion(versionProp.getProperty("version"));
+            technicalProperties.setProjectVersionTechnical(versionProp.getProperty("version.technical"));
+            technicalProperties.setDate(versionProp.getProperty("date"));
+            technicalProperties.setVersionServicePack(versionProp.getProperty("version.servicepack"));
+
+            technicalProperties.setBuildNumber(versionProp.getProperty("git.commit.id.abbrev"));
+            technicalProperties.setBuildNumberUnique(versionProp.getProperty("git.build.number.unique"));
+            technicalProperties.setClosestTagName(versionProp.getProperty("git.closest.tag.name"));
+            technicalProperties.setCommitId(versionProp.getProperty("git.commit.id.full"));
+            technicalProperties.setCommitIdAbbrev(versionProp.getProperty("git.commit.id.abbrev"));
+            technicalProperties.setCommitIdDescribe(versionProp.getProperty("git.commit.id.describe"));
+            technicalProperties.setCommitIdDescribeShort(versionProp.getProperty("git.commit.id.describe-short"));
+
+            technicalProperties.setScmBranch(versionProp.getProperty("git.branch"));
+            technicalProperties.setTimestamp(versionProp.getProperty("git.build.time"));
+        }
+        return technicalProperties;
     }
 }
