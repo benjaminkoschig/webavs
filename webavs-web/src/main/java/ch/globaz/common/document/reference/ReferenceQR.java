@@ -101,6 +101,7 @@ public class ReferenceQR extends AbstractReference {
     // Boolean qui permet d'activer un QR Neutre
     private boolean qrNeutre = false;
     private boolean montantMinimeOuMontantReporter = false;
+    private boolean recouvrementDirect = false;
 
     private Map<String, String> parameters = new HashMap<>();
 
@@ -137,7 +138,6 @@ public class ReferenceQR extends AbstractReference {
 
     /**
      * Méthode qui génère un uid pour la referenceQR
-     *
      */
     public void initUID(String documentUID) {
         this.setUID(documentUID + "_" + new Date().getTime());
@@ -189,7 +189,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant.
         if (!qrNeutre) {
-            if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter) {
+            if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
@@ -241,7 +241,7 @@ public class ReferenceQR extends AbstractReference {
 
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
         builder.append(creNom.replace(CHAR_FIN_LIGNE, ESPACE)).append(CHAR_FIN_LIGNE);
-        builder.append(creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE,ESPACE)).append(CHAR_FIN_LIGNE);
+        builder.append(creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, ESPACE)).append(CHAR_FIN_LIGNE);
         builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, ESPACE)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
@@ -262,7 +262,7 @@ public class ReferenceQR extends AbstractReference {
         // Dans le cadre d'un bulletin neutre, on ne renseigne pas de montant.
         if (qrNeutre) {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
-        } else if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter) {
+        } else if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
             builder.append("0.00").append(CHAR_FIN_LIGNE);
         } else {
             builder.append(montant).append(CHAR_FIN_LIGNE);
@@ -286,13 +286,18 @@ public class ReferenceQR extends AbstractReference {
         } else {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
         }
-        builder.append(trailer).append(CHAR_FIN_LIGNE);
+
+        builder.append(trailer);
         if (!StringUtils.isEmpty(infoFacture)) {
-            builder.append(infoFacture).append(CHAR_FIN_LIGNE);
+            builder.append(CHAR_FIN_LIGNE).append(infoFacture);
         }
         // Procédure alternative
-        builder.append(pa1Param).append(CHAR_FIN_LIGNE);
-        builder.append(pa2Param);
+        if (!StringUtils.isEmpty(pa1Param)) {
+            builder.append(CHAR_FIN_LIGNE).append(pa1Param);
+        }
+        if (!StringUtils.isEmpty(pa2Param)) {
+            builder.append(CHAR_FIN_LIGNE).append(pa2Param);
+        }
 
         return builder.toString();
     }
@@ -333,7 +338,7 @@ public class ReferenceQR extends AbstractReference {
 
         genererReference(refQR, montant);
 
-        if (StringUtils.isEmpty(reference) || montantMinimeOuMontantReporter) {
+        if (StringUtils.isEmpty(reference) || montantMinimeOuMontantReporter || recouvrementDirect) {
             setReference(REFERENCE_NON_FACTURABLE);
             this.typeReference = SANS_REF;
         } else {
@@ -374,14 +379,14 @@ public class ReferenceQR extends AbstractReference {
         JABVR bvr = null;
 
         if ((new FWCurrency(enteteFacture.getTotalFacture()).isPositive()
-                && !enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT))
+                && !recouvrementDirect)
                 || (Objects.nonNull(enteteFacture) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(enteteFacture.getIdTypeFacture()))) {
             bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), refQR, getNoAdherent());
         }
 
         if (!(new FWCurrency(enteteFacture.getTotalFacture()).isZero() || montantMinimeOuMontantReporter)
                 && (bvr != null)) {
-            if (!enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
+            if (!recouvrementDirect) {
                 setReference(bvr.get_ligneReference());
                 this.typeReference = QR_IBAN;
             } else {
@@ -967,12 +972,16 @@ public class ReferenceQR extends AbstractReference {
         this.montantMinimeOuMontantReporter = factureAvecMontantMinime;
     }
 
+    public void setRecouvrementDirect(boolean recouvrementDirect) {
+        this.recouvrementDirect = recouvrementDirect;
+    }
+
     /**
      * Va chercher le numéro du compte dans Babel
      *
-     * @author: sel Créé le : 28 nov. 06
      * @return le N° du compte (ex: 01-12345-1)
      * @throws Exception
+     * @author: sel Créé le : 28 nov. 06
      */
     public String getNumeroCC(String langueTiers) throws Exception {
         return getTexteBabel(2, 1, langueTiers);
@@ -981,11 +990,11 @@ public class ReferenceQR extends AbstractReference {
     /**
      * Récupère les textes du catalogue de texte
      *
-     * @author: sel Créé le : 28 nov. 06
      * @param niveau
      * @param position
      * @return texte
      * @throws Exception
+     * @author: sel Créé le : 28 nov. 06
      */
     public String getTexteBabel(int niveau, int position, String langueTiers) throws Exception {
         StringBuilder resString = new StringBuilder();
