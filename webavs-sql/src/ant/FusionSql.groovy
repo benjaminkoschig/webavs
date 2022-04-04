@@ -14,8 +14,8 @@ class FusionSql {
 
     public FusionSql(currentVersion, sourceSqlDir, targetSqlDir) {
         super()
-       /* System.setProperty("file.encoding","iso-8859-1")
-        System.setProperty("sun.jnu.encoding","iso-8859-1")
+       /* System.setProperty("file.encoding","ISO-8859-1")
+        System.setProperty("sun.jnu.encoding","ISO-8859-1")
         System.setProperty("user.timezone","Europe/Zurich")
         System.setProperty("user.country","CH")
         */
