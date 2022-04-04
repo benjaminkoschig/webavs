@@ -189,7 +189,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant.
         if (!qrNeutre) {
-            if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
+            if (!new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
@@ -281,7 +281,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(getReferenceWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         // Info Supp
-        if (qrNeutre && new Montant(montant).isNegative()) {
+        if (!new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect) {
             builder.append(pInfoAddErreur + " " + communicationNonStructuree).append(CHAR_FIN_LIGNE);
         } else {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
