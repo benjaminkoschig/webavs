@@ -701,21 +701,24 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
-        if(JadeStringUtil.isEmpty(email)) {
-            String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
-            LOG.error(erreurInterne);
-            inscriptionEBill.setTexteErreurInterne(erreurInterne);
-            error.append(erreurInterne).append("\n");
-            return false;
-        }
-        try {
-            EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
-        } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
-            LOG.error(erreurInterne, e);
-            inscriptionEBill.setTexteErreurInterne(erreurInterne);
-            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
-            return false;
+        // envoie un mail pour les inscriptions seulement
+        if(JadeStringUtil.isEmpty(numeroAdherent)) {
+            if (JadeStringUtil.isEmpty(email)) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+                LOG.error(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
+                return false;
+            }
+            try {
+                EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
+            } catch (Exception e) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
+                LOG.error(erreurInterne, e);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                return false;
+            }
         }
         return true;
     }
