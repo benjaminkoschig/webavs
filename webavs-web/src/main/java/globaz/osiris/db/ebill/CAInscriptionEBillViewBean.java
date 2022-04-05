@@ -13,7 +13,7 @@ import globaz.osiris.process.ebill.EBillMail;
 import java.util.List;
 import java.util.Optional;
 
-public class CAInscriptionEBillViewBean  extends CAInscriptionEBill implements FWViewBeanInterface {
+public class CAInscriptionEBillViewBean extends CAInscriptionEBill implements FWViewBeanInterface {
 
     public void updateStatutFichier() throws Exception {
         BTransaction transaction = (BTransaction) getSession().newTransaction();
