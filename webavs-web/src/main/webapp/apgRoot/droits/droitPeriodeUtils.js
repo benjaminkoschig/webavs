@@ -130,6 +130,7 @@ function addPeriode() {
 function deletePeriode(index) {
     periodes.splice(index, 1);
     repaintTablePeriodes();
+    $('#dateFinCalculee').val(resolveDateFinCalculee());
 }
 
 function editPeriode(index) {
