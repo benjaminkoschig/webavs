@@ -31,7 +31,7 @@ public class IJIJCalculeeMapper {
         IJIJCalculee ijijCalculee;
 
         if(PRACORConst.CA_TYPE_IJ_GRANDE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))
-            || PRACORConst.CA_TYPE_IJ_AVEC_REVENU.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
+                || PRACORConst.CA_TYPE_IJ_AVEC_REVENU.equals(Strings.toStringOrNull(basesCalcul.getGenre()))){
             ijijCalculee = createAndMapGrandeIJ(basesCalcul);
         }else if(PRACORConst.CA_TYPE_IJ_PETITE.equals(Strings.toStringOrNull(basesCalcul.getGenre()))) {
             ijijCalculee = createAndMapPetiteIJ(basesCalcul, prononce);
@@ -59,7 +59,7 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setDatePrononce(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDatePrononce())));
         ijijCalculee.setDateDebutDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getDebutDroit())));
         ijijCalculee.setDateFinDroit(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getFinDroit())));
-        if(basesCalcul.getRevenuDeterminant() != null && doitCalculerRevenueDeterminant(ijijCalculee)) {
+        if(basesCalcul.getRevenuDeterminant() != null && IJGenrePrestation.calculRevenuDeterminant(ijijCalculee.getGenreReadaptationAnnonce())) {
             ijijCalculee.setRevenuDeterminant(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getRevenuJournalier()));
             ijijCalculee.setDateRevenu(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(Strings.toStringOrNull(basesCalcul.getRevenuDeterminant().getDate())));
         }
@@ -76,16 +76,6 @@ public class IJIJCalculeeMapper {
         ijijCalculee.setNoRevision(Strings.toStringOrNull(basesCalcul.getRevision()));
         entityService.add(ijijCalculee);
         return ijijCalculee;
-    }
-
-    /**
-     * Vérifie qu'il faut le calcul déterminant s'il s'agit d'une petite IJ
-     * @param ijijCalculee
-     * @return
-     */
-    private boolean doitCalculerRevenueDeterminant(IJIJCalculee ijijCalculee) {
-        return !IIJPrononce.CS_PETITE_IJ.equals(ijijCalculee.getCsTypeIJ())
-                || IJGenrePrestation.calculRevenuDeterminant(ijijCalculee.getGenreReadaptationAnnonce());
     }
 
     private IJIJCalculee createAndMapPetiteIJ(FCalcul.Cycle.BasesCalcul basesCalcul, IJPrononce prononce) {
