@@ -42,12 +42,28 @@ public interface GFEFormDBService extends JadeApplicationService {
     GFEFormModel read(String id) throws JadePersistenceException;
 
     /**
+     * Permet de charger en mémoire une formulaireModel avec les données blob
+     *
+     * @param id L'identifiant du formulaireModel à charger en mémoire
+     * @return formulaireModel chargée
+     */
+    GFEFormModel readWithBlobs(String id) throws JadePersistenceException;
+
+    /**
      * Permet de chercher des formulaires selon un modèle de critères.
      *
      * @param gfeFormSearch Le modèle de critères
      * @return Le modèle de critère avec les résultats
      */
     GFEFormSearch search(GFEFormSearch gfeFormSearch) throws JadePersistenceException;
+
+    /**
+     * Permet de chercher des formulaires selon un modèle de critères et de récupérer les données blob.
+     *
+     * @param gfeFormSearch Le modèle de critères
+     * @return Le modèle de critère avec les résultats
+     */
+    GFEFormSearch searchWithBlobs(GFEFormSearch gfeFormSearch) throws JadePersistenceException;
 
     /**
      * Permet la mise à jour d'une entité Prestation

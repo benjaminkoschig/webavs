@@ -1,5 +1,7 @@
 package globaz.eform.vb.formulaire;
 
+import ch.globaz.common.exceptions.NotFoundException;
+import ch.globaz.common.file.FileUtils;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFEFormModel;
 import ch.globaz.eform.constant.GFStatusEForm;
@@ -7,12 +9,21 @@ import ch.globaz.eform.constant.GFTypeEForm;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.pyxis.db.tiers.TIPersonneAvsManager;
+import globaz.pyxis.db.tiers.TITiersViewBean;
+import globaz.pyxis.util.CommonNSSFormater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GFFormulaireViewBean.class);
 
     GFEFormModel formulaire;
 
     private String byGestionnaire = null;
+    
+    private String byStatus = null;
 
     public String getByGestionnaire() {
         return byGestionnaire;
@@ -22,6 +33,16 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         this.byGestionnaire = byGestionnaire;
     }
 
+    public String getByStatus() {
+        return byStatus;
+    }
+
+    public void setByStatus(String byStatus) {
+        this.byStatus = byStatus;
+    }
+
+    public String idTiers = "";
+
     public GFFormulaireViewBean() {
         super();
         formulaire = new GFEFormModel();
@@ -30,6 +51,11 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
     public GFFormulaireViewBean(GFEFormModel formulaire) {
         super();
         this.formulaire = formulaire;
+        try {
+            idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
+        } catch (Exception e) {
+            LOG.error("Un problème est survenu lors de la récupération du Tiers "+formulaire.getBeneficiaireNss(), e);
+        }
     }
 
     @Override
@@ -55,7 +81,21 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void retrieve() throws Exception {
+        formulaire = GFEFormServiceLocator.getGFEFormService().read(getId());
+        try {
+            idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
+        } catch (Exception e) {
+            LOG.error("Un problème est survenu lors de la récupération du Tiers "+formulaire.getBeneficiaireNss(), e);
+        }
+    }
 
+    public void retrieveWithBlob() throws Exception {
+        formulaire = GFEFormServiceLocator.getGFEFormService().readWithBlobs(formulaire.getId());
+        try {
+            idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
+        } catch (Exception e) {
+            LOG.error("Un problème est survenu lors de la récupération du Tiers "+formulaire.getBeneficiaireNss(), e);
+        }
     }
 
     @Override
@@ -65,6 +105,9 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void update() throws Exception {
+        formulaire.setStatus(getByStatus());
+        formulaire.setUserGestionnaire(getByGestionnaire());
+        
         GFEFormServiceLocator.getGFEFormService().update(formulaire);
     }
 
@@ -76,8 +119,35 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         return formulaire;
     }
 
-    public String getSubject() throws ch.globaz.common.exceptions.NotFoundException {
+    public String getCompleteSubject(BSession session) throws NotFoundException {
+        GFTypeEForm type = GFTypeEForm.getGFTypeEForm(formulaire.getSubject());
+        return type.getCodeEForm() + " - " + type.getDesignation(session);
+    }
+
+    public String getSubject() throws NotFoundException {
         return GFTypeEForm.getGFTypeEForm(formulaire.getSubject())
                 .getDesignation(getSession());
+    }
+
+    private String searchTierByNss(String nss) throws Exception {
+        if(nss == null || nss.isEmpty()){
+            return "";
+        }
+        CommonNSSFormater commonNSSFormater = new CommonNSSFormater();
+        String nssFormate = commonNSSFormater.format(nss);
+        TIPersonneAvsManager personneAvsManager = new TIPersonneAvsManager();
+        personneAvsManager.setSession(getSession());
+        personneAvsManager.setForNumAvsActuel(nssFormate);
+        personneAvsManager.find(1);
+        TITiersViewBean tiers = (TITiersViewBean) personneAvsManager.getFirstEntity();
+        return tiers != null ? tiers.getId() : "";
+    }
+
+    public String getIdTiers() {
+        return idTiers;
+    }
+
+    public String getTailleAttachement() {
+        return FileUtils.formatTaille(formulaire.getAttachement(), false);
     }
 }

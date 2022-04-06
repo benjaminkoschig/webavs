@@ -29,6 +29,7 @@ public class GFEFormModel extends JadeSimpleModel {
     private String beneficiairePrenom;
     private String beneficiaireDateNaissance;
     private String userGestionnaire;
+    private String attachementName;
     private byte[] attachement;
 
     @Override
@@ -62,7 +63,7 @@ public class GFEFormModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(status)) {
             result.addError("status", ValidationError.MANDATORY);
-        } else if (Arrays.stream(GFStatusEForm.values()).map(GFStatusEForm::toString).noneMatch(e -> e.equals(status))) {
+        } else if (Arrays.stream(GFStatusEForm.values()).map(GFStatusEForm::getCodeSystem).noneMatch(e -> e.equals(status))) {
             result.addError("status", ValidationError.ILLEGAL_VALUE);
         }
 

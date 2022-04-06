@@ -489,7 +489,7 @@ public class DonneesFinancieresContainer {
     /**
      * Filtre toutes les données financière qui sont liées à une personne
      * 
-     * @param membreFamille Le membre de famille à sur qui on veux filtrer les données financièers
+     * @param roleMembreFamille
      * @return Une nouvelle instance du container avec les données financières comprises dans la période données.
      */
     public DonneesFinancieresContainer filtreForRole(RoleMembreFamille roleMembreFamille) {
@@ -621,6 +621,60 @@ public class DonneesFinancieresContainer {
                 + primeAssuranceMaladie.size() + ", subsideAssuranceMaladie="
                 + subsideAssuranceMaladie.size() + ", sejourMoisPartiel="
                 + sejourMoisPartiel.size()+ "]";
+    }
+
+    /**
+     * Filtre toutes les données financière qui sont liées à une personne
+     *
+     * @param membreFamille
+     * @return Une nouvelle instance du container avec les données financières comprises dans la période données.
+     */
+    public DonneesFinancieresContainer filtreForNonReformePC(MembreFamille membreFamille) {
+        DonneesFinancieresContainer container = new DonneesFinancieresContainer();
+
+        container.allocationsFamilliale = allocationsFamilliale.filtreForMembreFamille(membreFamille);
+        container.apisAvsAi = apisAvsAi.filtreForMembreFamille(membreFamille);
+        container.assurancesRentesViageres = assurancesRentesViageres.filtreForMembreFamille(membreFamille);
+        container.assurancesVie = assurancesVie.filtreForMembreFamille(membreFamille);
+        container.autresApi = autresApi.filtreForMembreFamille(membreFamille);
+        container.autresDettesProuvees = autresDettesProuvees.filtreForMembreFamille(membreFamille);
+        container.autresFortunesMobilieres = autresFortunesMobilieres.filtreForMembreFamille(membreFamille);
+        container.autresRentes = autresRentes.filtreForMembreFamille(membreFamille);
+        container.autresRevenus = autresRevenus.filtreForMembreFamille(membreFamille);
+        container.betails = betails.filtreForMembreFamille(membreFamille);
+        container.biensImmobiliersNonHabitable = biensImmobiliersNonHabitable.filtreForMembreFamille(membreFamille);
+        container.biensImmobiliersNonPrincipale = biensImmobiliersNonPrincipale.filtreForMembreFamille(membreFamille);
+        container.biensImmobiliersServantHabitationPrincipale = biensImmobiliersServantHabitationPrincipale
+                .filtreForMembreFamille(membreFamille);
+        container.capitalsLpp = capitalsLpp.filtreForMembreFamille(membreFamille);
+        container.comptesBancairePostal = comptesBancairePostal.filtreForMembreFamille(membreFamille);
+        container.contratsEntretienViager = contratsEntretienViager.filtreForMembreFamille(membreFamille);
+        container.cotisationsPsal = cotisationsPsal.filtreForMembreFamille(membreFamille);
+        container.dessaisissementsRevenu = dessaisissementsRevenu.filtreForMembreFamille(membreFamille);
+        container.dessaississementsFortune = dessaississementsFortune.filtreForMembreFamille(membreFamille);
+        container.ijAis = ijAis.filtreForMembreFamille(membreFamille);
+        container.indemintesJournaliereApg = indemintesJournaliereApg.filtreForMembreFamille(membreFamille);
+        container.loyers = loyers.filtreForMembreFamille(membreFamille);
+        container.taxesJournaliereHome = taxesJournaliereHome.filtreForMembreFamille(membreFamille);
+        container.marchandisesStocks = marchandisesStocks.filtreForMembreFamille(membreFamille);
+        container.numeraires = numeraires.filtreForMembreFamille(membreFamille);
+        container.pensionsAlimentaire = pensionsAlimentaire.filtreForMembreFamille(membreFamille);
+        container.pretsEnversTiers = pretsEnversTiers.filtreForMembreFamille(membreFamille);
+        container.rentesAvsAi = rentesAvsAi.filtreForMembreFamille(membreFamille);
+        container.revenusActiviteLucrativeIndependante = revenusActiviteLucrativeIndependante
+                .filtreForMembreFamille(membreFamille);
+        container.revenusActiviteLucrativeDependante = revenusActiviteLucrativeDependante
+                .filtreForMembreFamille(membreFamille);
+        container.revenusHypothtique = revenusHypothtique.filtreForMembreFamille(membreFamille);
+        container.fraisDeGarde = fraisDeGarde.filtreForMembreFamille(membreFamille);
+        container.titres = titres.filtreForMembreFamille(membreFamille);
+        container.vehicules = vehicules.filtreForMembreFamille(membreFamille);
+        container.regimes = regimes.filtreForMembreFamille(membreFamille);
+        container.sejourMoisPartiel = sejourMoisPartiel.filtreForMembreFamille(membreFamille);
+        container.primeAssuranceMaladie = primeAssuranceMaladie.filtreForMembreFamille(membreFamille);
+//        container.subsideAssuranceMaladie = subsideAssuranceMaladie.filtreForMembreFamille(membreFamille);
+
+        return container;
     }
 
     public boolean addAll(Regimes regimesRfm) {
