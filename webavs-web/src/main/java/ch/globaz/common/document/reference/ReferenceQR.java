@@ -189,7 +189,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant.
         if (!qrNeutre) {
-            if (!new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect) {
+            if (isNotUseForPaiement()) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
@@ -300,6 +300,18 @@ public class ReferenceQR extends AbstractReference {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * On contrôle si la QR facture doit être utilisé pour le paiement ou non. Règle pour ne pas l'utiliser:
+     * - montant non positif
+     * - montant minime ou reporter
+     * - recouvrement direct
+     *
+     * @return true si on ne doit pas utiliser cette QR facture pour le paiement.
+     */
+    private boolean isNotUseForPaiement() {
+        return !new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect;
     }
 
     /**
