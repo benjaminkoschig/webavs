@@ -281,7 +281,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(getReferenceWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         // Info Supp
-        if (!new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect) {
+        if (isNotUseForPaiement() && !qrNeutre) {
             builder.append(pInfoAddErreur + " " + communicationNonStructuree).append(CHAR_FIN_LIGNE);
         } else {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
