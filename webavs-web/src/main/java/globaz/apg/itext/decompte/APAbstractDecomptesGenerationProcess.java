@@ -2992,6 +2992,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             // Recupération du nombre de jours soldés
             final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
+            final int nbIndemniteComplementaire = 3;
 
             if (nbJours != 0) {
                 // Récupération du montant brut
@@ -3001,14 +3002,44 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Arrondi du montant brut à 2 décimal
                 montantJournalier = montantJournalier.setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                // Récupération du texte dans le catalogue
-                if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
-                        || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
-                } else {
-                    // TODO ESVE PAT 4.1.3.5.
-                    texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
-                }
+                // Création du document paternité
+                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                    if (nbIndemniteComplementaire == 0) {
+
+                        texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
+                        // Insertion du nombre de jours dans le texte
+                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                                Integer.toString(nbJours));
+
+                        // Insertion du montant journalier dans le texte
+                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
+                                String.valueOf(montantJournalier));
+                    } else {
+                        texteDetailJournalier = document.getTextes(3).getTexte(52).getDescription();
+
+                        // Insertion du nombre de jours dans le texte
+                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                                Integer.toString(nbJours));
+
+                        // Insertion du montant journalier dans le texte
+                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
+                                String.valueOf(montantJournalier));
+
+                        // Insertion des indémnités supplémentaires
+                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{indemSupp}",
+                                String.valueOf(nbIndemniteComplementaire));
+                    }
+
+
+                } else
+                    // Récupération du texte dans le catalogue
+                    if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
+                            || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                        texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
+                    } else {
+                        // TODO ESVE PAT 4.1.3.5.
+                        texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
+                    }
                 // Insertion du nombre de jours dans le texte
                 if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
