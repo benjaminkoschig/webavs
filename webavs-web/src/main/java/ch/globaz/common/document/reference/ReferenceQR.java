@@ -961,7 +961,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getRootApplicationPath() {
-        return JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + getSession().getApplicationId().toLowerCase() + "Root/", "\\", "/");
+        return JadeStringUtil.change(Jade.getInstance().getHomeDir() + getSession().getApplicationId().toLowerCase() + "Root/", "\\", "/");
     }
 
     public String getWorkApplicationPath() {
