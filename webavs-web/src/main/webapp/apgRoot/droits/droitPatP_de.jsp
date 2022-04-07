@@ -22,7 +22,8 @@
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 
 <%@ include file="/theme/detail/header.jspf" %>
-<%
+<%!
+    %><%
     idEcran = "PAP0012";
 
     APDroitPatPViewBean viewBean = (APDroitPatPViewBean) session.getAttribute("viewBean");
@@ -590,6 +591,16 @@
             trCantonImposition.style.visibility = "hidden";
         }
     }
+    function isDayPositiveNumber(){
+        var nbJourSoldeInput = $('#nbJourSolde').val();
+        var jourSupplementaireInput = $('#jourSupplementaire').val();
+
+        if(nbJourSoldeInput <0|| jourSupplementaireInput<0 ){
+            return false;
+        }else{
+            return true;
+        }
+    }
 
     function addPeriodePatP() {
         var nbJourSoldeTableau = 0
@@ -689,10 +700,17 @@
             showErrorMessage(text);
             return;
         }
+        // Contrôle que le nombre de jours de congé et l'indemnité supplémentaire sont négatifs.
+        if(!isDayPositiveNumber()){
+            var text = "<%=viewBean.getSession().getLabel("ERROR_PATERNITE_JOUR_NEGATIF")%>";
+            showErrorMessage(text);
+            return;
+        }
 
         // Si on arrive jusqu'ici tous les contrôles sont passés et on peut ajouter la période
         addPeriode();
     }
+
 
     $(document).ready(function () {
 
