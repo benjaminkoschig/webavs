@@ -262,7 +262,7 @@ public class ReferenceQR extends AbstractReference {
         // Dans le cadre d'un bulletin neutre, on ne renseigne pas de montant.
         if (qrNeutre) {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
-        } else if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
+        } else if (isNotUseForPaiement()) {
             builder.append("0.00").append(CHAR_FIN_LIGNE);
         } else {
             builder.append(montant).append(CHAR_FIN_LIGNE);
