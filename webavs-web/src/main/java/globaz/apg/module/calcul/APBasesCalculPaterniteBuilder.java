@@ -41,6 +41,8 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
         mgr.setForIdDroitMaternite(droit.getIdDroit());
         mgr.find(session.getCurrentThreadTransaction(), BManager.SIZE_USEDEFAULT);
 
+        nbJoursConges = 0;
+        nbJoursSupp = 0;
         nbJoursSoldes = 0;
         nbJoursSoldesAnneeSuivante = 0;
         boolean isNewYear = false;
@@ -81,6 +83,10 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
             if(JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateFin)) {
                 dateFin = periode.getDateFinPeriode();
             }
+            // On prends la date de fin calculee si elle est plus grande que la date de fin de la période
+            if(JadeDateUtil.isDateAfter((((APDroitPaternite) droit).getDateFinDroitCalculee()), dateFin)) {
+                dateFin = (((APDroitPaternite) droit).getDateFinDroitCalculee());
+            }
 
             Integer nbJours =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
             if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
@@ -90,6 +96,9 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
                 }
             }
             addJour(nbJours, jourMax, isNewYear);
+            nbJoursConges = nbJoursSoldes;
+            // On sommes les jours supplémentaires pour toutes les périodes
+            nbJoursSupp += Integer.valueOf(periode.getNbJourSupplementaire());
         }
         ajouterSituationFamilialePat(mgr, dateDebut, dateFin);
         if (!JadeStringUtil.isBlankOrZero(currentCanton)){

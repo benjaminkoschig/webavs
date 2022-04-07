@@ -239,6 +239,9 @@ public class APGUtils {
         return globaz.prestation.api.IPRDemande.CS_TYPE_PROCHE_AIDANT == (String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION);
     }
 
+    public static boolean isPaternite(HttpSession session) {
+        return globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE == (String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION);
+    }
 
     public static String resolveCSDomaineParGenreService(String genreService) {
         return getCSDomaineFromTypeDemande(resolveTypeDemandeParGenreService(genreService));

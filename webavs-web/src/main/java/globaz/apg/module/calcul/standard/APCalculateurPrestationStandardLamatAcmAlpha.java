@@ -243,6 +243,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         } else {
             prestCalculee.setNombreJoursSoldes(String.valueOf(nbJoursPeriodeBase));
         }
+        prestCalculee.setNombreJoursConge(String.valueOf(prestationWrapper.getPrestationBase().getNombreJoursConges()));
+        prestCalculee.setNombreJoursSupp(String.valueOf(prestationWrapper.getPrestationBase().getNombreJoursSupplementaires()));
 
         prestCalculee.setIdDroit(droit.getIdDroit());
 
@@ -534,6 +536,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     resultatCalcul.setNombreJoursSoldes((new BigDecimal(soldeJoursRestants)).intValue());
                 }
 
+                resultatCalcul.setNombreJoursConges(baseCalcul.getNombreJoursConges());
+                resultatCalcul.setNombreJoursSupplementaires(baseCalcul.getNombreJoursSupp());
                 resultatCalcul.setDateDebut(element.getDateDebut());
                 resultatCalcul.setDateFin(element.getDateFin());
                 resultatCalcul.setRevision(element.getNoRevision());
@@ -561,6 +565,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             resultatCalcul.setDateDebut(element.getDateDebut());
             resultatCalcul.setDateFin(element.getDateFin());
             resultatCalcul.setNombreJoursSoldes(baseCalcul.getNombreJoursSoldes());
+            resultatCalcul.setNombreJoursConges(baseCalcul.getNombreJoursConges());
+            resultatCalcul.setNombreJoursSupplementaires(baseCalcul.getNombreJoursSupp());
             resultatCalcul.setRevision(element.getNoRevision());
 
             final APPrestationWrapper prestationWrapper = new APPrestationWrapper();
@@ -941,6 +947,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
 
             entity.setNombreJoursSoldes(prestationACreer.getNombreJoursSoldes());
+            entity.setNombreJoursConges(prestationACreer.getNombreJoursConge());
+            entity.setNombreJoursSupp(prestationACreer.getNombreJoursSupp());
             entity.setRevenuMoyenDeterminant(
                     prestationACreer.getRevenuDeterminantMoyen().getBigDecimalValue().toString());
             entity.setRevenuMoyenDeterminantSansArrondi(
@@ -1350,7 +1358,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             final APPrestation restitution = addRestitution(session, transaction, idDroit, pgpcRestitution,
                     sommeMontantJournalier, sommeFraisGarde, sommeMontantAllocExploitation, nbrJoursSolde, noRevision,
-                    prestationsARestituer[0].getGenre());
+                    prestationsARestituer[0].getGenre()); // TODO ESVE PAT AJOUTER NbrJoursConges et nbJoursSupp pour restit?
 
             final APModuleRepartitionPaiements repartitionPaiements = new APModuleRepartitionPaiements();
             repartitionPaiements.restituerPaiements(session, transaction, restitution, prestationsARestituer);

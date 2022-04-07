@@ -986,7 +986,7 @@
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
                             <th width="10%">
-                                <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                                <ct:FWLabel key="JSP_NB_JOURS_CONGES"/>
                             </th>
                             <th width="10%">
                                 <ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/>
@@ -1025,7 +1025,7 @@
             <tr>
                 <td>
                     <label for="nbJourSolde">
-                        <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                        <ct:FWLabel key="JSP_NB_JOURS_CONGES"/>
                     </label>
                 </td>
                 <td colspan="3">

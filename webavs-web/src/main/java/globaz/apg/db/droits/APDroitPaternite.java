@@ -43,6 +43,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
     public static final String FIELDNAME_IDDROIT_PAT = "ID_DROIT";
     public static final String FIELDNAME_IDSITUATIONFAM = "VBISIF";
     public static final String FIELDNAME_REMARQUE = "REMARQUE";
+    public static final String FIELDNAME_DATEFINDROIT_CALCULEE = "VADDFC";
     private String nbrJourSoldes = "";
     private String idSituationFam = "";
     private Boolean duplicata = Boolean.FALSE;
@@ -50,6 +51,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
     private String noControlePers = "";
     private String noRevision = "";
     private String remarque = "";
+    private String dateFinDroitCalculee = "";
 
     /**
      * retourne la durée en jours d'un droit paternité.
@@ -264,6 +266,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
         duplicata = statement.dbReadBoolean(APDroitPaternite.FIELDNAME_DUPLICATA);
         noRevision = statement.dbReadNumeric(APDroitAPG.FIELDNAME_REVISION);
         remarque = statement.dbReadString(APDroitPaternite.FIELDNAME_REMARQUE);
+        dateFinDroitCalculee = statement.dbReadDateAMJ(APDroitPaternite.FIELDNAME_DATEFINDROIT_CALCULEE);
     }
 
     /**
@@ -338,7 +341,8 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
                 this._dbWriteNumeric(statement.getTransaction(), noRevision, "noRevision"));
         statement.writeField(APDroitPaternite.FIELDNAME_REMARQUE,
                 this._dbWriteString(statement.getTransaction(), remarque, "remarque"));
-
+        statement.writeField(APDroitPaternite.FIELDNAME_DATEFINDROIT_CALCULEE,
+                this._dbWriteDateAMJ(statement.getTransaction(), dateFinDroitCalculee, "dateFinDroitCalculee"));
     }
 
     @Override
@@ -526,6 +530,14 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
 
     public void setNbrJourSoldes(String nbrJourSoldes) {
         this.nbrJourSoldes = nbrJourSoldes;
+    }
+
+    public String getDateFinDroitCalculee() {
+        return dateFinDroitCalculee;
+    }
+
+    public void setDateFinDroitCalculee(String dateFinDroitCalculee) {
+        this.dateFinDroitCalculee = dateFinDroitCalculee;
     }
 
     public Boolean getDuplicata() {

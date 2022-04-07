@@ -41,6 +41,7 @@ public class APResultatCalcul {
     private FWCurrency montantJournalier = null;
 
     private int nombreJoursSoldes = 0;
+    private int nombreJoursConges = 0;
     private int nombreJoursSupplementaires = 0;
     @Setter
     private List<APResultatCalculSituationProfessionnel> resultatsCalculsSitProfessionnelle = null;
@@ -165,6 +166,15 @@ public class APResultatCalcul {
      */
     public int getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours congées
+     *
+     * @return la valeur courante de l'attribut nombre jours congées
+     */
+    public int getNombreJoursConges() {
+        return nombreJoursConges;
     }
 
     /**
@@ -364,6 +374,16 @@ public class APResultatCalcul {
      */
     public void setNombreJoursSupplementaires(int nombreJoursSupplementaires) {
         this.nombreJoursSupplementaires = nombreJoursSupplementaires;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours de congés
+     *
+     * @param nombreJoursConges
+     *              une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursConges(int nombreJoursConges) {
+        this.nombreJoursConges = nombreJoursConges;
     }
 
     /**
