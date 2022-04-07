@@ -405,7 +405,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
     }
 
-    // PAT 3.1.3.2.
+    /* Contrôle si le nombre de jours soldes est plus petit que le nombre de jours max autorisé et en informe l'utilisateur */
     public void checkWarningVerifJour(BSession session){
         int nbJourSoldeTot = 0;
         int nbJourMax = getJourPaternite(session);
