@@ -1,6 +1,9 @@
 package ch.globaz.eform.web.application;
 
+import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
+import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
+import globaz.framework.secure.FWSecureConstants;
 import globaz.globall.db.BApplication;
 
 /**
@@ -54,5 +57,7 @@ public class GFApplication extends BApplication {
     @Override
     protected void _initializeCustomActions() {
         // Définition et enregistrement des Custom actions à exécuter dans le module.
+        FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_TELECHARGER, FWSecureConstants.READ);
+        FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_CHANGE_STATUT, FWSecureConstants.UPDATE);
     }
 }

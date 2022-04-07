@@ -641,14 +641,25 @@
         if (nbJourSuppChamp) {
             nbJourSuppActuel = Number(nbJourSuppChamp);
         } else {
-            if (nbJourSoldesActuel >= 10) {
+            // Si nombre de jours actuel est +5 et qu'il y a -4 jours supp
+            if (nbJourSoldesActuel >= 5 && nbJourSuppTableau < 4) {
+                nbJourSuppActuel = 2;
+            }
+            // Si nombre de jours tot est +5 jours et qu'il y a -2 jours supp
+            if (nbJourSoldeTot >= 5 && nbJourSuppTableau < 2) {
+                nbJourSuppActuel = 2;
+            }
+            // Si nombre de jours tot est +10 jours et qu'il y a -4 jours supp
+            if (nbJourSoldeTot >= 10 && nbJourSuppTableau < 4) {
+                nbJourSuppActuel = 2;
+            }
+            // Si nombre de jours tot est +10 jours et qu'il y a -2 jours supp
+            if (nbJourSoldeTot >= 10 && nbJourSuppTableau < 2) {
                 nbJourSuppActuel = 4;
-            } else if (nbJourSoldesActuel >= 5) {
-                nbJourSuppActuel = 2;
-            } else if (nbJourSoldeTot >= 5 && (nbJourSuppTableau < 2)) {
-                nbJourSuppActuel = 2;
-            } else if (nbJourSoldeTot >= 10 && nbJourSuppTableau < 4) {
-                nbJourSuppActuel = 2;
+            }
+            // Si nombre de jours actuel est +10 et qu'il y a -2 jours supp
+            if (nbJourSoldesActuel >= 10 && nbJourSuppTableau < 2) {
+                nbJourSuppActuel = 4;
             }
         }
 
@@ -993,7 +1004,7 @@
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
                             <th width="10%">
-                                <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                                <ct:FWLabel key="JSP_NB_JOURS_CONGES"/>
                             </th>
                             <th width="10%">
                                 <ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/>
@@ -1032,7 +1043,7 @@
             <tr>
                 <td>
                     <label for="nbJourSolde">
-                        <ct:FWLabel key="JSP_NB_JOURS_CONGE"/>
+                        <ct:FWLabel key="JSP_NB_JOURS_CONGES"/>
                     </label>
                 </td>
                 <td colspan="3">

@@ -1,4 +1,4 @@
-<%@ page import="globaz.eform.helpers.GFFormulaireHelper" %>
+<%@ page import="globaz.eform.helpers.formulaire.GFFormulaireHelper" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -12,8 +12,6 @@
 %>
 
 <%-- tpl:insert attribute="zoneInit" --%>
-<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/javascripts.jspf" %>
@@ -22,12 +20,14 @@
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
+
 
 <%-- tpl:insert attribute="zoneScripts" --%>
 <script >
 	var bFind = true;
 	var detailLink = "<%=actionNew%>";
-	var usrAction = "eform.formulaire.lister";
+	var usrAction = "eform.formulaire.formulaire.lister";
 </script>
 <%-- /tpl:insert --%>
 
@@ -155,12 +155,12 @@
 	<td>
 	</td>
 	<td>
-		<LABEL for="sortBy">
+		<LABEL for="orderBy">
 			<ct:FWLabel key="SORT_BY"/>
 		</LABEL>
 	</td>
 	<td colspan="8">
-		<ct:FWListSelectTag name="sortBy"
+		<ct:FWListSelectTag name="orderBy"
 							data="<%=GFFormulaireHelper.getSortByData(objSession)%>"
 							defaut="default"/>
 	</td>
@@ -174,6 +174,8 @@
 <%@ include file="/theme/find/bodyEnd.jspf" %>
 
 <%-- tpl:insert attribute="zoneVieuxBoutons" --%>
+<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/bodyClose.jspf" %>

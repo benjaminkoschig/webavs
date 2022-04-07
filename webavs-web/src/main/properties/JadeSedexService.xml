@@ -36,27 +36,6 @@
         </mapping>
         <mapping>
             <criteria name="//message/header/messageType">2504</criteria>
-            <criteria name="//message/header/subMessageType">003700</criteria>
-            <handler>
-                <class>ch.globaz.eform.business.services.sedex.GFTraitementMessageServiceImpl</class>
-                <param key="userSedex">xX7AfUh0qvAxzfDVG0vNMA==</param>
-                <param key="passSedex">VodoAfBz+wZIR+D4weSlcw==</param>
-                <param key="currentSedexFolder">D:\sedex\backup\inbox\current\</param>
-            </handler>
-        </mapping>
-        <mapping>
-            <criteria name="//message/header/messageType">2504</criteria>
-            <criteria name="//message/header/subMessageType">002820</criteria>
-            <handler>
-                <class>ch.globaz.eform.business.services.sedex.GFTraitementMessageServiceImpl</class>
-                <param key="userSedex">xX7AfUh0qvAxzfDVG0vNMA==</param>
-                <param key="passSedex">VodoAfBz+wZIR+D4weSlcw==</param>
-                <param key="currentSedexFolder">D:\sedex\backup\inbox\current\</param>
-            </handler>
-        </mapping>
-        <mapping>
-            <criteria name="//message/header/messageType">2504</criteria>
-            <criteria name="//message/header/subMessageType">003710</criteria>
             <handler>
                 <class>ch.globaz.eform.business.services.sedex.GFTraitementMessageServiceImpl</class>
                 <param key="userSedex">xX7AfUh0qvAxzfDVG0vNMA==</param>

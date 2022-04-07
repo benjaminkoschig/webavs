@@ -11,6 +11,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.salaire.APMontantVerse;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
+import globaz.apg.utils.APGDatesUtils;
 import globaz.apg.utils.APGUtils;
 import globaz.globall.db.*;
 import globaz.globall.util.JADate;
@@ -140,6 +141,9 @@ public abstract class APBasesCalculBuilder {
     HashMap<String, Integer> nbContratsList = new HashMap<>();
 
     int nbJoursSoldes;
+    int nbJoursSoldesAnneeSuivante;
+    int nbJoursConges;
+    int nbJoursSupp;
 
     // le niveau d'activation est plus grand que 0 si l'on est dans une période
     // de prestation
@@ -235,18 +239,18 @@ public abstract class APBasesCalculBuilder {
         }
     }
 
-       /**
-         * couper par mois:
-         *
+    /**
+     * couper par mois:
+     *
      * allocations par mois, on ajoute donc des com
      *mandes qui vont découper la période de
-         * prestation en unités mensuelles.
-         *
-         * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
+     * prestation en unités mensuelles.
+     *
+     * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
      *
      * @param debut
      * @param fin
-         */
+     */
     protected void couperParMois(Date debut, Calendar fin) {
         Calendar moisDernier = getCalendarInstance();
         // instancié à la date du
@@ -662,10 +666,14 @@ public abstract class APBasesCalculBuilder {
                     // jours soldés sur les premières périodes
                     if (nbJoursSoldes > 0) {
                         baseCourante.setNombreJoursSoldes(Math.min(nbJours, nbJoursSoldes));
+                        baseCourante.setNombreJoursConges(Math.min(nbJours, nbJoursSoldes)); // nombreJoursConges copie valeur nbJoursSoldes
                         nbJoursSoldes = Math.max(0, nbJoursSoldes - nbJours);
+                        nbJoursConges = nbJoursSoldes;
                     } else {
                         baseCourante.setNombreJoursSoldes(0);
+                        baseCourante.setNombreJoursConges(0);
                     }
+                    baseCourante.setNombreJoursSupp(nbJoursSupp);
                 }
 
                 bases.add(baseCourante);
@@ -786,6 +794,8 @@ public abstract class APBasesCalculBuilder {
 
                 if (droit instanceof APDroitAPG) {
                     baseCourante.setNombreJoursSoldes(Integer.parseInt(((APDroitAPG) droit).getNbrJourSoldes()));
+                    baseCourante.setNombreJoursConges(Integer.parseInt(((APDroitAPG) droit).getNbrJourSoldes())); // TODO ESVE PAT problème on a pas joursConges ici
+                    baseCourante.setNombreJoursSupp(Integer.parseInt(((APDroitAPG) droit).getJoursSupplementaires()));
                     baseCourante.setNoRevision(((APDroitAPG) droit).getNoRevision());
                     baseCourante.setNombreEnfants(Integer.parseInt(((APDroitAPG) droit).loadSituationFamilliale()
                             .getNbrEnfantsDebutDroit()));
@@ -795,6 +805,12 @@ public abstract class APBasesCalculBuilder {
 
                 baseCourante.setTypeAllocation(droit.getGenreService());
             } else {
+                if(droit instanceof APDroitPaternite
+                        && baseCourante.getDateDebut() != null
+                        && !APGDatesUtils.isMemeAnnee(baseCourante.getDateDebut().getYear(), date)){
+                    nbJoursSoldes = nbJoursSoldesAnneeSuivante;
+                    nbJoursConges = nbJoursSoldesAnneeSuivante;
+                }
                 baseCourante = (APBaseCalcul) baseCourante.clone();
             }
 

@@ -5,6 +5,8 @@ import globaz.framework.menu.FWMenuBlackBox;
 import globaz.framework.servlets.FWJadeServlet;
 import globaz.framework.servlets.FWServlet;
 import globaz.framework.utils.urls.FWUrlsStack;
+import globaz.framework.utils.urls.rules.FWRemoveActionsEndingWith;
+import globaz.framework.utils.urls.rules.FWSuppressSameUserActions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +44,12 @@ public class GFMainServlet extends FWJadeServlet {
         // ************* gestion des actions à exclure du stacktrace pour bon fonctionnement bouton applicatif retour
         // action standards
         ///FWRemoveActionsEndingWith removeLister = new FWRemoveActionsEndingWith(".lister");
+
+        aStack.addRule(new FWRemoveActionsEndingWith(".lister"));
+        aStack.addRule(new FWRemoveActionsEndingWith(".modifier"));
+
+        // Evite de garder 2 fois la même page
+        aStack.addRule(new FWSuppressSameUserActions());
     }
 
     /**

@@ -42,6 +42,7 @@ public enum PCProcessAdapationEnum {
     PSAL_MONTANT_ANCIEN("pegasus.process.adaptation.ancienMontantPSAL"),
     PSAL_MONTANT_NOUVEAU("pegasus.process.adaptation.nouveauMontantPSAL"),
     DATE_DOCUMENT_IMPRESSION("pegasus.process.adaptation.dateDocImpression"),
+    IS_ADAPTATION_PRIME_LAMAL("pegasus.process.adaptation.isAdaptationPrimeLamal"),
     PATH_CSV_TO_IMPORT("pegasus.process.adaptation.pathCsvToImport");
 
     private final String idLabel;

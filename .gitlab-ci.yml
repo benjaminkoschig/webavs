@@ -2,3 +2,7 @@ include:
   - project: 'ci-cd/product-currents-gitlab-ci'
     ref: master
     file: '/mvn-gitlab-ci.yml'
+
+build-maven:
+  before_script:
+    - export JAVA_OPTS=iso-8859-1

@@ -2991,8 +2991,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
 
             // Recupération du nombre de jours soldés
-            final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
-            final int nbIndemniteComplementaire = 3;
+            final int nbJours = Integer.parseInt(repartition.getNbJoursConges());
+            final int nbJoursSupp = Integer.parseInt(repartition.getNbJoursSupp());
 
             if (nbJours != 0) {
                 // Récupération du montant brut
@@ -3004,8 +3004,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 // Création du document paternité
                 if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-                    if (nbIndemniteComplementaire == 0) {
-
+                    if (nbJoursSupp == 0) {
                         texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                         // Insertion du nombre de jours dans le texte
                         texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
@@ -3027,17 +3026,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                         // Insertion des indémnités supplémentaires
                         texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{indemSupp}",
-                                String.valueOf(nbIndemniteComplementaire));
+                                String.valueOf(nbJoursSupp));
                     }
-
-
                 } else
                     // Récupération du texte dans le catalogue
                     if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
                             || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                         texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
                     } else {
-                        // TODO ESVE PAT 4.1.3.5.
                         texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                     }
                 // Insertion du nombre de jours dans le texte

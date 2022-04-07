@@ -30,6 +30,8 @@ public class APPrestationCalculee {
     private String idDroit = null;
     private FWCurrency montantJournalier = null;
     private String nombreJoursSoldes = null;
+    private String nombreJoursConge = null;
+    private String nombreJoursSupp = null;
     private APResultatCalcul resultatCalcul = null;
     private FWCurrency revenuDeterminantMoyen = null;
     private FWCurrency revenuDeterminantMoyenSansArrondi = null;
@@ -140,6 +142,24 @@ public class APPrestationCalculee {
      */
     public String getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours de congés
+     *
+     * @return la valeur courante de l'attribut nombre jours soldes
+     */
+    public String getNombreJoursConge() {
+        return nombreJoursConge;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours supplémentaires
+     *
+     * @return la valeur courante de l'attribut nombre jours soldes
+     */
+    public String getNombreJoursSupp() {
+        return nombreJoursSupp;
     }
 
     /**
@@ -275,6 +295,26 @@ public class APPrestationCalculee {
      */
     public void setNombreJoursSoldes(String s) {
         nombreJoursSoldes = s;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours de congés
+     *
+     * @param nombreJoursConge
+     *              une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursConge(String nombreJoursConge) {
+        this.nombreJoursConge = nombreJoursConge;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours de supplémentaires
+     *
+     * @param nombreJoursSupp
+     *              une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursSupp(String nombreJoursSupp) {
+        this.nombreJoursSupp = nombreJoursSupp;
     }
 
     /**
