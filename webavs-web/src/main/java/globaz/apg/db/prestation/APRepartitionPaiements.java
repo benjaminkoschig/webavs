@@ -95,6 +95,12 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     private String nombreJoursSoldes = "";
     @Getter
     @Setter
+    private String nombreJoursConges = "";
+    @Getter
+    @Setter
+    private String nombreJoursSupp = "";
+    @Getter
+    @Setter
     private String montantJournalierRepartition = "";
 
     /**

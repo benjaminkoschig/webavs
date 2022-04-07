@@ -34,6 +34,8 @@ public class APBaseCalcul implements Cloneable {
 
     private int nombreEnfants = 0;
     private int nombreJoursSoldes = 0;
+    private int nombreJoursConges = 0;
+    private int nombreJoursSupp = 0;
     private String noRevision = null;
 
     private boolean salarie = false;
@@ -132,6 +134,24 @@ public class APBaseCalcul implements Cloneable {
      */
     public int getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+     /**
+     * getter pour l'attribut nombre jours congées
+     *
+     * @return la valeur courante de l'attribut nombre jours congés
+     */
+    public int getNombreJoursConges() {
+        return nombreJoursConges;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours supplémentaires
+     *
+     * @return la valeur courante de l'attribut nombre jours supplémentaires
+     */
+    public int getNombreJoursSupp() {
+        return nombreJoursSupp;
     }
 
     /**
@@ -291,6 +311,26 @@ public class APBaseCalcul implements Cloneable {
      */
     public void setNombreJoursSoldes(int i) {
         nombreJoursSoldes = i;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours congés
+     *
+     * @param nombreJoursConges
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursConges(int nombreJoursConges) {
+        this.nombreJoursConges = nombreJoursConges;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours supplémentaires
+     *
+     * @param nombreJoursSupp
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursSupp(int nombreJoursSupp) {
+        this.nombreJoursSupp = nombreJoursSupp;
     }
 
     /**

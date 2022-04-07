@@ -1423,6 +1423,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         droitPat.setNoControlePers(viewBean.getNoControlePers());
         droitPat.setNoCompte(viewBean.getNoCompte());
         droitPat.setNbrJourSoldes(viewBean.getNbrJourSoldes());
+        droitPat.setDateFinDroitCalculee(viewBean.getDateFinCalculee());
         droitPat.setDuplicata(viewBean.getDuplicata());
         droitPat.setCsProvenanceDroitAcquis(viewBean.getCsProvenanceDroitAcquis());
         droitPat.setIdCaisse(idCaisse);

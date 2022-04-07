@@ -174,12 +174,21 @@ idEcran="PAP0034";
 						</TR>
 						<TR>
 							<%if(APGUtils.isProcheAidant(session)) {%>
-							<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_CUMULES"/></TD>
+								<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_CUMULES"/></TD>
 							<%}else {%>
-							<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_SOLDES"/></TD>
+								<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_SOLDES"/></TD>
 							<%}%>
 							<td></td>
 							<TD colspan="5"><INPUT type="text" name="nombreJoursSoldes" value="<%=viewBean.getNombreJoursSoldes()%>" onchange="validateIntegerNumber(this);recalculer();" onkeypress="return filterCharForInteger(window.event);" <%=viewBean.isRestitution()?"class=\"numeroCourt disabled\" readonly":" class=\"numeroCourt\""%>></TD>
+
+							<%if(APGUtils.isPaternite(session)) {%>
+								<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_CONGES"/></TD>
+								<TD colspan="2"><INPUT type="text" name="nombreJoursConges" value="<%=viewBean.getNombreJoursConges()%>" onchange="validateIntegerNumber(this);recalculer();" onkeypress="return filterCharForInteger(window.event);" <%=viewBean.isRestitution()?"class=\"numeroCourt disabled\" readonly":" class=\"numeroCourt\""%>></TD>
+								<TD colspan="2"><ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/></TD>
+								<TD colspan="2"><INPUT type="text" name="nombreJoursSupp" value="<%=viewBean.getNombreJoursSupp()%>" onchange="validateIntegerNumber(this);recalculer();" onkeypress="return filterCharForInteger(window.event);" <%=viewBean.isRestitution()?"class=\"numeroCourt disabled\" readonly":" class=\"numeroCourt\""%>></TD>
+							  	<TD colspan="2"><ct:FWLabel key="JSP_DATEFIN_SAISIE"/></TD>
+								<TD colspan="2"><INPUT type="text" name="dateFinSaisie" value="<%=viewBean.getDateFinSaisie()%>" <%=viewBean.isRestitution()?"class=\"date disabled\" readonly":" class=\"date\""%>></TD>
+							<%}%>
 						</TR>
 						<TR>
 							<TD colspan="2"><ct:FWLabel key="JSP_TAUX_JOURNALIER"/></TD>

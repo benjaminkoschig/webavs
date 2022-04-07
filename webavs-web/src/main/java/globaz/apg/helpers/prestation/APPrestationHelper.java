@@ -1166,6 +1166,8 @@ public class APPrestationHelper extends PRAbstractHelper {
                 prestationCalculee.setDateDebut(new JADate(prestationCourant.getPrestation().getDateDebut()));
                 prestationCalculee.setDateFin(new JADate(prestationCourant.getPrestation().getDateFin()));
                 prestationCalculee.setNombreJoursSoldes(prestationCourant.getPrestation().getNombreJoursSoldes());
+                prestationCalculee.setNombreJoursConge(prestationCourant.getPrestation().getNombreJoursConges());
+                prestationCalculee.setNombreJoursSupp(prestationCourant.getPrestation().getNombreJoursSupp());
 
                 genererCotisationsPourRepartition(session, prestationCalculee,
                         repartitionCourante.getRepartitionPaiements());
