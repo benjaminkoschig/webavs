@@ -103,9 +103,11 @@ function addPeriode() {
                 nbJour -= $jourSupplementaire.val();
             }
         } else if (JOUR_SUPPLEMENTAIRE_PAT) { // Si Paternité et nombre de jours == 7 jours ou 14 jours consécutif le nombre de jours est soustrait des jours supplémentaires
-            if (nbJour == 7 || nbJour == 14) {
-                if ($jourSupplementaire.val()) {
+            if ($jourSupplementaire.val()) {
+                if (nbJour == 14) {
                     nbJour -= $jourSupplementaire.val();
+                } else if (nbJour == 7) {
+                    nbJour -= 2;
                 }
             }
         }

@@ -224,8 +224,7 @@
 
     }
 
-    // PAT 3.1.3.3.
-    // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
+    // On définit dateFinCalculee en comparant les jours disponibles entre les périodes saisies et le nombres de jours soldes total saisi ou calculé
     function resolveDateFinCalculee(nbJourSoldeTot) {
 
         // si nbJourSoldeTot n'est pas initialisé on reprends les valeurs du tableau dans la ligne nbJourSuppSummary
@@ -233,53 +232,57 @@
             nbJourSoldeTot = Number($(".nbJourSuppSummary #nbJourSoldesTot").text()) + Number($(".nbJourSuppSummary #nbJourSuppTot").text());
         }
 
-        var dateFinDernierePeriode = $('#dateFinPeriode').val(); // init avec la date saisie dans le champs "période au"
-        var dateFinTableau;
+        var dateFinSaisiePeriode = Date.toDate($('#dateFinPeriode').val()); // init avec la date saisie dans le champs "période au"
+
+        // recherche dans tous le tableau si une des dateFin du tableau est plus grande que la dernière date saisie
         $("#periodes .dateFin").each(function(index, element) {
-            dateFinTableau = $(element).text();
+            var dateFinTableau = Date.toDate($(element).text());
             if (dateFinTableau) {
-                if (!dateFinDernierePeriode) { // si la date saisie dans le champs "période au" est vide on reinit avec la première dateFinTableau
-                    dateFinDernierePeriode = dateFinTableau;
-                } else if (dateFinDernierePeriode < dateFinTableau) { // si dateFinTableau est plus éloigné on la prends comme dateFinDernierePeriode
-                    dateFinDernierePeriode = dateFinTableau;
+                if (isNaN(dateFinSaisiePeriode.getTime())) { // si la date saisie dans le champs "période au" est vide on prends la dateFinTableau à la place
+                    dateFinSaisiePeriode = dateFinTableau;
+                } else if (dateFinSaisiePeriode < dateFinTableau) { // si dateFinTableau est plus grande on la prends comme dateFinDernierePeriode
+                    dateFinSaisiePeriode = dateFinTableau;
                 }
             }
         });
 
-        var dateDebutDernierePeriode = $('#dateDebutPeriode').val(); // init avec la date saisie dans le champs "période du"
-        var dateDebutTableau;
+        var dateDebutSaisiePeriode = Date.toDate($('#dateDebutPeriode').val()); // init avec la date saisie dans le champs "période du"
+
+        // recherche dans tous le tableau si une des dateDebut du tableau est plus petite que la dernière date saisie
         $("#periodes .dateDebut").each(function(index, element) {
-            dateDebutTableau = $(element).text();
+            var dateDebutTableau = Date.toDate($(element).text());
             if (dateDebutTableau) {
-                if (!dateDebutDernierePeriode) { // si la date saisie dans le champs "période du" est vide on reinit avec la première dateDebutTableau
-                    dateDebutDernierePeriode = dateDebutTableau;
-                } else if (dateDebutDernierePeriode > dateDebutTableau) { // si dateDebutTableau est plus proche on la prends comme dateDebutDernierePeriode
-                    dateDebutDernierePeriode = dateDebutTableau;
+                if (isNaN(dateDebutSaisiePeriode.getTime())) { // si la date saisie dans le champs "période du" est vide on prends dateDebutTableau à la place
+                    dateDebutSaisiePeriode = dateDebutTableau;
+                } else if (dateDebutSaisiePeriode > dateDebutTableau) { // si dateDebutTableau est plus petite on la prends comme dateDebutDernierePeriode
+                    dateDebutSaisiePeriode = dateDebutTableau;
                 }
             }
         });
 
-        // nb de jours disponible = jour entre la date de début de la première période et la date de fin de la dernière période saisie pour le droit
-        var nbJoursDisponible = Date.toDate(dateDebutDernierePeriode).daysBetween(Date.toDate(dateFinDernierePeriode));
+        // nb de jours disponible = jour entre la date de début la plus petite et la date de fin la plus grande
+        var nbJoursDisponible = dateDebutSaisiePeriode.daysBetween(dateFinSaisiePeriode);
 
         // nb de jours de difference = difference entre nb jours soldées total (jours soldées + indemnités supplémentaires) et nb de jours disponible
         var nbJoursDifference = Math.abs(nbJoursDisponible - nbJourSoldeTot);
 
-        // variable dateFinCalculee
         var dateFinCalculee;
 
         // si nb jours soldées total (jours soldées + indemnités supplémentaires) > nb jours disponibles dans la période de la prestation
         if (nbJourSoldeTot > nbJoursDisponible) {
-            dateFinCalculee = Date.toDate(dateFinDernierePeriode);
+            dateFinCalculee = Date.toDate(dateFinSaisiePeriode);
             dateFinCalculee.setDate(dateFinCalculee.getDate() + nbJoursDifference);
         } else {
-            dateFinCalculee = Date.toDate(dateFinDernierePeriode);
+            dateFinCalculee = Date.toDate(dateFinSaisiePeriode);
         }
 
-        return globazNotation.utilsDate.convertJSDateToGlobazStringDateFormat(dateFinCalculee);
+        if (isNaN(dateFinCalculee.getTime())) {
+            return "";
+        } else {
+            return globazNotation.utilsDate.convertJSDateToGlobazStringDateFormat(dateFinCalculee);
+        }
     }
 
-    // PAT 3.1.3.7.
     /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
     function isDelaiCadreDepasse(dateFin) {
         var dateNaissance = Date.toDate($('#dateDebutDroit').val());
@@ -293,7 +296,6 @@
         }
     }
 
-    // PAT 3.1.3.5.
     /* Contrôle que les champs jours supplémentaires et jours de congées sont dans les limites autorisées */
     function isChampsHorsLimites(nbJourSuppChamp, nbJourSoldeChamp) {
         if (nbJourSuppChamp > 4 || nbJourSoldeChamp > 10) {
@@ -303,7 +305,6 @@
         }
     }
 
-    // PAT 3.1.3.2.
     /* Contrôle que le nombre total de jours de congées + le nombre de jours supplémentaires ne dépasse pas la maximum autorisé */
     function isNbJourPlusGrandQueJourMax(nbJourTot, nbJourMax) {
         if (nbJourTot > nbJourMax) {
@@ -679,7 +680,6 @@
         // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
         $('#dateFinCalculee').val(resolveDateFinCalculee(nbJourSoldeTot));
 
-        // PAT 3.1.3.7.
         /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
         if (isDelaiCadreDepasse(dateFin)) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI")%>";
@@ -687,7 +687,6 @@
             return;
         }
 
-        // PAT 3.1.3.5.
         /* Contrôle que les champs jours supplémentaires et jours de congées sont dans les limites autorisées */
         if (isChampsHorsLimites(nbJourSuppChamp, nbJourSoldeChamp)) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_SAISIES_DANS_LES_LIMITES")%>";
@@ -695,7 +694,6 @@
             return;
         }
 
-        // PAT 3.1.3.2.
         /* Contrôle que le nombre total de jours de congées + le nombre de jours supplémentaires ne dépasse pas la maximum autorisé */
         if (isNbJourPlusGrandQueJourMax(nbJourSoldeTot, 14)) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_NB_JOURS_PLUS_GRAND_QUE_JOUR_MAX")%>";
