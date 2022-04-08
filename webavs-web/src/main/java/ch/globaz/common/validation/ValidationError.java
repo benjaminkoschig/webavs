@@ -4,5 +4,7 @@ public enum ValidationError {
     MANDATORY,
     EMPTY,
     MALFORMED,
-    ILLEGAL_VALUE
+    ILLEGAL_VALUE,
+    INTERNAL_ERROR,
+    ALREADY_EXIST
 }
