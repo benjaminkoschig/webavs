@@ -2984,82 +2984,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
      * @return String
      * @param repartition
      */
-//    private String getDetailJournalier(final APRepartitionJointPrestation repartition) throws Exception {
-//
-//        String texteDetailJournalier = "";
-//
-//        try {
-//
-//            // Recupération du nombre de jours soldés
-//            final int nbJours = Integer.parseInt(repartition.getNbJoursConges());
-//            final int nbJoursSupp = Integer.parseInt(repartition.getNbJoursSupp());
-//
-//            if (nbJours != 0) {
-//                // Récupération du montant brut
-//                final Double montantBrut = Double.valueOf(repartition.getMontantBrut());
-//                // Division du montant brut par le nombre de jours
-//                BigDecimal montantJournalier = BigDecimal.valueOf(montantBrut / nbJours);
-//                // Arrondi du montant brut à 2 décimal
-//                montantJournalier = montantJournalier.setScale(2, BigDecimal.ROUND_HALF_UP);
-//
-//                // Création du document paternité
-//                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-//                    if (nbJoursSupp == 0) {
-//                        texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
-//                        // Insertion du nombre de jours dans le texte
-//                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-//                                Integer.toString(nbJours));
-//
-//                        // Insertion du montant journalier dans le texte
-//                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
-//                                String.valueOf(montantJournalier));
-//                    } else {
-//                        texteDetailJournalier = document.getTextes(3).getTexte(52).getDescription();
-//
-//                        // Insertion du nombre de jours dans le texte
-//                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-//                                Integer.toString(nbJours));
-//
-//                        // Insertion du montant journalier dans le texte
-//                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
-//                                String.valueOf(montantJournalier));
-//
-//                        // Insertion des indémnités supplémentaires
-//                        texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{indemSupp}",
-//                                String.valueOf(nbJoursSupp));
-//                    }
-//                } else
-//                    // Récupération du texte dans le catalogue
-//                    if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
-//                            || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-//                        texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
-//                    } else {
-//                        texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
-//                    }
-//                // Insertion du nombre de jours dans le texte
-//                if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
-//                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-//                            NB_JOURS_DECES);
-//                } else {
-//                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-//                            Integer.toString(nbJours));
-//                }
-//                // Insertion du montant journalier dans le texte
-//                texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
-//                        String.valueOf(montantJournalier));
-//            }
-//
-//        } catch (final Exception e) {
-//            String message = getSession().getLabel("GENERATION_DECOMPTE_ERREUR_CHARGEMENT_DETAILS_JOURNALIER");
-//            message = message.replace("{0}", repartition.getIdTiers());
-//            message += " : ";
-//            message += e.toString();
-//            throw new Exception(message, e);
-//        }
-//
-//        return texteDetailJournalier;
-//    }
-
     private String getDetailJournalier(final APRepartitionJointPrestation repartition) throws Exception {
 
         String texteDetailJournalier = "";
@@ -3067,7 +2991,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             // Recupération du nombre de jours soldés
             final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
-            final int nbJoursSupp = Integer.parseInt(repartition.getNbJoursSupp());
+            int nbJoursSupp;
+            if(repartition.getNbJoursSupp()==""||repartition.getNbJoursSupp()==null){
+                nbJoursSupp=0;
+            }else {
+                nbJoursSupp=Integer.parseInt(repartition.getNbJoursSupp());
+            }
+
+
             if (nbJours != 0) {
                 // Récupération du montant brut
                 final Double montantBrut = Double.valueOf(repartition.getMontantBrut());
