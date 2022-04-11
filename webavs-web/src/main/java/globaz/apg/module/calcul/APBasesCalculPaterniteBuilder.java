@@ -146,10 +146,10 @@ public class APBasesCalculPaterniteBuilder extends APBasesCalculBuilder{
     }
 
     private String controleDateFinSelonDateFinSaisie(String dateDebut, String dateFin) throws JAException {
-        if (nbJoursSoldesAnneeSuivante != 0 && nbJoursSoldesAnneeSuivante >= Dates.daysBetween(dateDebut, dateFin)) {
+        if (nbJoursSoldesAnneeSuivante != 0 && nbJoursSoldesAnneeSuivante > Dates.daysBetween(dateDebut, dateFin)) {
             // si il y a 2 années : control qu'il y a suffisamment de jour pour l'année n + 1
             dateFinSaisieAnneeSuivante = new JADate(dateFin);
-            return JadeDateUtil.addDays(dateFin, nbJoursSoldesAnneeSuivante);
+            return JadeDateUtil.addDays(dateFin, nbJoursSoldesAnneeSuivante - 1);
         // Sinon on prend la date de fin calculee si elle est plus grande que la date de fin de la période
         } else if(JadeDateUtil.isDateAfter((((APDroitPaternite) droit).getDateFinDroitCalculee()), dateFin)) {
             return (((APDroitPaternite) droit).getDateFinDroitCalculee());
