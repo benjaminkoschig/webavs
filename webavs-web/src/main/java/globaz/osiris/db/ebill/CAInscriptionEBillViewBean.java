@@ -74,7 +74,7 @@ public class CAInscriptionEBillViewBean extends CAInscriptionEBill implements FW
         } catch (Exception e) {
             return addError("EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED", geteBillAccountID());
         }
-        if(!controleCompteAnnexe(manager)) {
+        if(!controleCompteAnnexePourMemeEBillAccountID(manager)) {
             return addError("EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED", geteBillAccountID());
         }
 
@@ -99,7 +99,7 @@ public class CAInscriptionEBillViewBean extends CAInscriptionEBill implements FW
         return true;
     }
 
-    private boolean controleCompteAnnexe(CACompteAnnexeManager manager){
+    private boolean controleCompteAnnexePourMemeEBillAccountID(CACompteAnnexeManager manager){
         if(manager.size() == 1) {
             return true;
         } else if (manager.size() == 2) {

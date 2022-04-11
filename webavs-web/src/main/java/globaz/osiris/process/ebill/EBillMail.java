@@ -17,7 +17,7 @@ public class EBillMail {
         String from = CAProperties.EBILL_EMAIL_CONFIRMATION.getValue();
         if(from.isEmpty()) {
             throw new EBillMailException("L'adresse mail de la propriété "+CAProperties.EBILL_EMAIL_CONFIRMATION.getPropertyName()+" est vide");
-        } else if(!checkMail(from)) {
+        } else if(!isMailValid(from)) {
             throw new EBillMailException("L'adresse mail de la propriété "+CAProperties.EBILL_EMAIL_CONFIRMATION.getPropertyName()+" n'est pas valide : "+from+"\n("+REGEX_MAIL+")");
         }
         String titre = JadeI18n.getInstance().getMessage(codeIso, CONFIRMATION_TITLE);
@@ -30,7 +30,7 @@ public class EBillMail {
         }
     }
 
-    public static boolean checkMail(String mailAdress) {
+    public static boolean isMailValid(String mailAdress) {
         return mailAdress.matches(REGEX_MAIL);
     }
 

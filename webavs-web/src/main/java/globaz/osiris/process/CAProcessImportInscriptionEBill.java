@@ -808,6 +808,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
+        return sendMail(inscriptionEBill, numeroAdherent, email, compteAnnexe);
+    }
+
+    private boolean sendMail(CAInscriptionEBill inscriptionEBill, String numeroAdherent, String email, CACompteAnnexe compteAnnexe) {
         // envoie un mail pour les inscriptions seulement
         if(JadeStringUtil.isEmpty(numeroAdherent)) {
             if (JadeStringUtil.isEmpty(email)) {

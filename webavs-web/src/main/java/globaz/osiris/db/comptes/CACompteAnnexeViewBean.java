@@ -193,7 +193,7 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
                 }
             }
         }
-        if(StringUtils.isNotEmpty(geteBillMail()) && !EBillMail.checkMail(geteBillMail())) {
+        if(StringUtils.isNotEmpty(geteBillMail()) && !EBillMail.isMailValid(geteBillMail())) {
             _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("EBILL_MAIL_FORMAT"), geteBillMail()));
         }
     }
