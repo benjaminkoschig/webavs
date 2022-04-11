@@ -245,6 +245,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
         prestCalculee.setNombreJoursConge(String.valueOf(prestationWrapper.getPrestationBase().getNombreJoursConges()));
         prestCalculee.setNombreJoursSupp(String.valueOf(prestationWrapper.getPrestationBase().getNombreJoursSupplementaires()));
+        prestCalculee.setDateFinSaisie(prestationWrapper.getPrestationBase().getDateFinSaisie());
 
         prestCalculee.setIdDroit(droit.getIdDroit());
 
@@ -538,6 +539,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 resultatCalcul.setNombreJoursConges(baseCalcul.getNombreJoursConges());
                 resultatCalcul.setNombreJoursSupplementaires(baseCalcul.getNombreJoursSupp());
+                resultatCalcul.setDateFinSaisie(baseCalcul.getDateFinSaisie());
                 resultatCalcul.setDateDebut(element.getDateDebut());
                 resultatCalcul.setDateFin(element.getDateFin());
                 resultatCalcul.setRevision(element.getNoRevision());
@@ -881,6 +883,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             entity.setDateCalcul(JACalendar.todayJJsMMsAAAA());
             entity.setDateDebut(prestationACreer.getDateDebut().toStr("."));
             entity.setDateFin(prestationACreer.getDateFin().toStr("."));
+            if(prestationACreer.getDateFinSaisie() != null) {
+                entity.setDateFinSaisie(prestationACreer.getDateFinSaisie().toStr("."));
+            }
             entity.setNoRevision(prestationACreer.getResultatCalcul().getRevision());
             entity.setEtat(prestationACreer.getEtat());
             entity.setIdDroit(prestationACreer.getIdDroit());

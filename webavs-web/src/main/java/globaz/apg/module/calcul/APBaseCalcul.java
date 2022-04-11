@@ -48,6 +48,9 @@ public class APBaseCalcul implements Cloneable {
     @Setter
     @Getter
     private boolean isExtension = false;
+    @Setter
+    @Getter
+    private JADate dateFinSaisie = null;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------

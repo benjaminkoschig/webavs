@@ -1239,6 +1239,16 @@ public class APPrestation extends BEntity implements IAPPrestation {
     }
 
     /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param dateFinSaisie
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(String dateFinSaisie) {
+        this.dateFinSaisie = dateFinSaisie;
+    }
+
+    /**
      * setter pour l'attribut no revision
      * 
      * @param string

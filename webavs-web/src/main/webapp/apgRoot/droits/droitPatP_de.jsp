@@ -995,10 +995,10 @@
                     <table class="areaTable" width="100%">
                         <thead>
                         <tr>
-                            <th width="30%">
+                            <th width="25%">
                                 <ct:FWLabel key="DATE_DE_DEBUT"/>
                             </th>
-                            <th width="30%">
+                            <th width="25%">
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
                             <th width="10%">

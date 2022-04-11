@@ -9,7 +9,7 @@ public class APGDatesUtils {
         if(date1 == null || date1.length() != 10 || date2 == null || date2.length() != 10) {
             return false;
         }
-        return date1.substring(4).equals(date2.substring(4));
+        return date1.substring(6).equals(date2.substring(6));
     }
 
     public static boolean isMemeAnnee(int year, Date date2) {

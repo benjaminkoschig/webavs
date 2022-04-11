@@ -36,6 +36,7 @@ public class APResultatCalcul {
     private FWCurrency basicDailyAmount = null;
     private JADate dateDebut = null;
     private JADate dateFin = null;
+    private JADate dateFinSaisie = null;
 
     private String idTauxImposition = "";
     private FWCurrency montantJournalier = null;
@@ -141,6 +142,15 @@ public class APResultatCalcul {
      */
     public JADate getDateFin() {
         return dateFin;
+    }
+
+    /**
+     * getter pour l'attribut date fin saisie
+     *
+     * @return la valeur courante de l'attribut date fin
+     */
+    public JADate getDateFinSaisie() {
+        return dateFinSaisie;
     }
 
     public String getIdTauxImposition() {
@@ -341,6 +351,16 @@ public class APResultatCalcul {
      */
     public void setDateFin(JADate date) {
         dateFin = date;
+    }
+
+    /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param date
+     *                 une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(JADate date) {
+        dateFinSaisie = date;
     }
 
     public void setIdTauxImposition(String idTauxImposition) {

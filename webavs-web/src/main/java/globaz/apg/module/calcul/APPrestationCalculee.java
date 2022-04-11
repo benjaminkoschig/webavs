@@ -42,6 +42,9 @@ public class APPrestationCalculee {
     @Getter
     @Setter
     private List<APMontantJour> montantJournalierList;
+    @Getter
+    @Setter
+    private JADate dateFinSaisie = null;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
