@@ -1,5 +1,5 @@
-<%@ page import="ch.globaz.common.util.DateUtils" %>
 <%@ page import="java.time.LocalDate" %>
+<%@ page import="ch.globaz.common.util.Dates" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -50,9 +50,9 @@
 	</td>
 	<td>
 		<div id="byPeriod">
-			<input id="byStartDate" name="byStartDate" class="clearable" value="<%= DateUtils.getFirstDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
+			<input id="byStartDate" name="byStartDate" class="clearable" value="<%= Dates.getFirstDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
 			<ct:FWLabel key="AU"/>
-			<input id="byEndDate" name="byEndDate" class="clearable" value="<%= DateUtils.getLastDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
+			<input id="byEndDate" name="byEndDate" class="clearable" value="<%= Dates.getLastDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
 		</div>
 	</td>
 </tr>
