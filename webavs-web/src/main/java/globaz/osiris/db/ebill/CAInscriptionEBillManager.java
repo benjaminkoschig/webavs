@@ -50,7 +50,7 @@ public class CAInscriptionEBillManager extends BManager {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(AND);
             }
-            sqlWhere.append(CAInscriptionEBillEnum.RECIPIENT_ID.getSql()).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
+            sqlWhere.append(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql()).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
         }
         // Type
         if (!JadeStringUtil.isIntegerEmpty(getForType())) {

@@ -33,16 +33,16 @@ public enum CAInscriptionEBillEnum implements AutoCloseable {
     private int index;
     private String titre;
     //Nom de la colonne dans le fichier csv V2
-    private String csv;
+    private String colNameCsv;
     //Nom de la colonne en base de données
-    private String sql;
+    private String colNameSql;
     private boolean ignored;
 
     CAInscriptionEBillEnum(int index, String csvV1, String csvV2, String sql, boolean ignored) {
         this.index = index;
         this.titre = csvV1;
-        this.csv = csvV2;
-        this.sql = sql;
+        this.colNameCsv = csvV2;
+        this.colNameSql = sql;
         this.ignored = ignored;
     }
 
@@ -50,12 +50,12 @@ public enum CAInscriptionEBillEnum implements AutoCloseable {
         return titre;
     }
 
-    public String getCsv() {
-        return csv;
+    public String getColNameCsv() {
+        return colNameCsv;
     }
 
-    public String getSql() {
-        return sql;
+    public String getColNameSql() {
+        return colNameSql;
     }
 
     public boolean isIgnored() {
@@ -63,7 +63,7 @@ public enum CAInscriptionEBillEnum implements AutoCloseable {
     }
 
     public static CAInscriptionEBillEnum getInscriptionEBill(String csv) {
-        return Arrays.stream(CAInscriptionEBillEnum.values()).filter(ebillEnum -> Objects.equals(ebillEnum.csv, csv)).findFirst().orElseThrow(() -> new NotFoundException(csv + " value not found"));
+        return Arrays.stream(CAInscriptionEBillEnum.values()).filter(ebillEnum -> Objects.equals(ebillEnum.colNameCsv, csv)).findFirst().orElseThrow(() -> new NotFoundException(csv + " value not found"));
     }
 
     /**

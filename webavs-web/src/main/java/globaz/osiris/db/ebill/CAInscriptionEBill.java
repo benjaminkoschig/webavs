@@ -45,7 +45,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     private String adresse2;
     private String npa;
     private String localite;
-    private String paye;
+    private String pays;
     private String email;
     private String numTel;
     private String numAdherentBVR;
@@ -67,23 +67,23 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         statut = bStatement.dbReadNumeric(CAInscriptionEBill.FIELD_STATUT);
         texteErreurInterne = bStatement.dbReadString(CAInscriptionEBill.FIELD_TEXTE_ERREUR_INTERNE);
 
-        eBillAccountID = bStatement.dbReadString(CAInscriptionEBillEnum.RECIPIENT_ID.getSql());
-        eBillAccountType = bStatement.dbReadString(CAInscriptionEBillEnum.RECIPIENT_TYPE.getSql());
-        numeroAffilie = bStatement.dbReadString(CAInscriptionEBillEnum.CUSTOMER_NBR.getSql());
-        type = bStatement.dbReadNumeric(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getSql());
-        nom = bStatement.dbReadString(CAInscriptionEBillEnum.FAMILY_NAME.getSql());
-        prenom = bStatement.dbReadString(CAInscriptionEBillEnum.GIVEN_NAME.getSql());
-        entreprise = bStatement.dbReadString(CAInscriptionEBillEnum.COMPANY_NAME.getSql());
-        roleParitaire = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PARITAIRE.getSql());
-        rolePersonnel = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PERSONNEL.getSql());
-        adresse1 = bStatement.dbReadString(CAInscriptionEBillEnum.ADRESSE.getSql());
-        npa = bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getSql());
-        localite = bStatement.dbReadString(CAInscriptionEBillEnum.CITY.getSql());
-        paye = bStatement.dbReadString(CAInscriptionEBillEnum.COUNTRY.getSql());
-        email = bStatement.dbReadString(CAInscriptionEBillEnum.EMAIL.getSql());
-        numTel = bStatement.dbReadString(bStatement.dbReadString(CAInscriptionEBillEnum.PHONE.getSql()));
-        numAdherentBVR = bStatement.dbReadString(bStatement.dbReadString(CAInscriptionEBillEnum.CREDIT_ACCOUNT.getSql()));
-        numRefBVR = bStatement.dbReadString(CAInscriptionEBillEnum.CREDITOR_REFERENCE.getSql());
+        eBillAccountID = bStatement.dbReadString(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql());
+        eBillAccountType = bStatement.dbReadString(CAInscriptionEBillEnum.RECIPIENT_TYPE.getColNameSql());
+        numeroAffilie = bStatement.dbReadString(CAInscriptionEBillEnum.CUSTOMER_NBR.getColNameSql());
+        type = bStatement.dbReadNumeric(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getColNameSql());
+        nom = bStatement.dbReadString(CAInscriptionEBillEnum.FAMILY_NAME.getColNameSql());
+        prenom = bStatement.dbReadString(CAInscriptionEBillEnum.GIVEN_NAME.getColNameSql());
+        entreprise = bStatement.dbReadString(CAInscriptionEBillEnum.COMPANY_NAME.getColNameSql());
+        roleParitaire = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PARITAIRE.getColNameSql());
+        rolePersonnel = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PERSONNEL.getColNameSql());
+        adresse1 = bStatement.dbReadString(CAInscriptionEBillEnum.ADRESSE.getColNameSql());
+        npa = bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getColNameSql());
+        localite = bStatement.dbReadString(CAInscriptionEBillEnum.CITY.getColNameSql());
+        pays = bStatement.dbReadString(CAInscriptionEBillEnum.COUNTRY.getColNameSql());
+        email = bStatement.dbReadString(CAInscriptionEBillEnum.EMAIL.getColNameSql());
+        numTel = bStatement.dbReadString(bStatement.dbReadString(CAInscriptionEBillEnum.PHONE.getColNameSql()));
+        numAdherentBVR = bStatement.dbReadString(bStatement.dbReadString(CAInscriptionEBillEnum.CREDIT_ACCOUNT.getColNameSql()));
+        numRefBVR = bStatement.dbReadString(CAInscriptionEBillEnum.CREDITOR_REFERENCE.getColNameSql());
     }
 
     @Override
@@ -112,35 +112,35 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         bStatement.writeField(CAInscriptionEBill.FIELD_TEXTE_ERREUR_INTERNE,
                 this._dbWriteString(bStatement.getTransaction(), getTexteErreurInterne(), "texteErreurInterne"));
 
-        bStatement.writeField(CAInscriptionEBillEnum.RECIPIENT_ID.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
-        bStatement.writeField(CAInscriptionEBillEnum.CUSTOMER_NBR.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.CUSTOMER_NBR.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumeroAffilie(), "numeroAffilie"));
-        bStatement.writeField(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getColNameSql(),
                 this._dbWriteNumeric(bStatement.getTransaction(), type, "type"));
-        bStatement.writeField(CAInscriptionEBillEnum.FAMILY_NAME.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.FAMILY_NAME.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNom(), "nom"));
-        bStatement.writeField(CAInscriptionEBillEnum.GIVEN_NAME.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.GIVEN_NAME.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getPrenom(), "prenom"));
-        bStatement.writeField(CAInscriptionEBillEnum.COMPANY_NAME.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.COMPANY_NAME.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getEntreprise(), "entreprise"));
-        bStatement.writeField(CAInscriptionEBillEnum.PARITAIRE.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.PARITAIRE.getColNameSql(),
                 this._dbWriteBoolean(bStatement.getTransaction(), getRoleParitaire(), "roleParitaire"));
-        bStatement.writeField(CAInscriptionEBillEnum.PERSONNEL.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.PERSONNEL.getColNameSql(),
                 this._dbWriteBoolean(bStatement.getTransaction(), getRolePersonnel(), "rolePersonnel"));
-        bStatement.writeField(CAInscriptionEBillEnum.ADRESSE.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.ADRESSE.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getAdresse1(), "adresse1"));
-        bStatement.writeField(CAInscriptionEBillEnum.ZIP.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.ZIP.getColNameSql(),
                 this._dbWriteNumeric(bStatement.getTransaction(), getNpa(), "npa"));
-        bStatement.writeField(CAInscriptionEBillEnum.CITY.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.CITY.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getLocalite(), "localite"));
-        bStatement.writeField(CAInscriptionEBillEnum.EMAIL.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.EMAIL.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getEmail(), "email"));
-        bStatement.writeField(CAInscriptionEBillEnum.PHONE.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.PHONE.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumTel(), "numTel"));
-        bStatement.writeField(CAInscriptionEBillEnum.CREDIT_ACCOUNT.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.CREDIT_ACCOUNT.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumAdherentBVR(), "numAdherentBVR"));
-        bStatement.writeField(CAInscriptionEBillEnum.CREDITOR_REFERENCE.getSql(),
+        bStatement.writeField(CAInscriptionEBillEnum.CREDITOR_REFERENCE.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumRefBVR(), "numRefBVR"));
 
     }
@@ -367,12 +367,12 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.eBillAccountType = eBillAccountType;
     }
 
-    public String getPaye() {
-        return paye;
+    public String getPays() {
+        return pays;
     }
 
-    public void setPaye(String paye) {
-        this.paye = paye;
+    public void setPays(String pays) {
+        this.pays = pays;
     }
 
     public String getBillerId() {

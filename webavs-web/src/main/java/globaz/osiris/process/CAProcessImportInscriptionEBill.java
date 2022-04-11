@@ -52,7 +52,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * CRON permettant le traitement des fichiers d'inscription eBill.
@@ -399,7 +398,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     inscriptionEBill.setLocalite(datasTemp[index]);
                     break;
                 case COUNTRY:
-                    inscriptionEBill.setPaye(datasTemp[index]);
+                    inscriptionEBill.setPays(datasTemp[index]);
                     break;
                 case EMAIL:
                     inscriptionEBill.setEmail(datasTemp[index]);
