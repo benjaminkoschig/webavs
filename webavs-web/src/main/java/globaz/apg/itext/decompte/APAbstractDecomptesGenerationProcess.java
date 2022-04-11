@@ -2991,12 +2991,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             // Recupération du nombre de jours soldés
             final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
-            int nbJoursSupp;
-            if(repartition.getNbJoursSupp()==""||repartition.getNbJoursSupp()==null){
-                nbJoursSupp=0;
-            }else {
-                nbJoursSupp=Integer.parseInt(repartition.getNbJoursSupp());
-            }
+            final int nbJoursConges = JadeStringUtil.isEmpty(repartition.getNbJoursConges()) ? 0 : Integer.parseInt(repartition.getNbJoursConges());
+            final int nbJoursSupp = JadeStringUtil.isEmpty(repartition.getNbJoursSupp()) ? 0 : Integer.parseInt(repartition.getNbJoursSupp());
 
 
             if (nbJours != 0) {
@@ -3020,6 +3016,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             NB_JOURS_DECES);
+                } else if (nbJoursConges>0) {
+                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                            Integer.toString(nbJoursConges));
                 } else {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             Integer.toString(nbJours));
