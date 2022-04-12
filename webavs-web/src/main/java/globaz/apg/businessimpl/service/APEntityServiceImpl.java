@@ -1300,14 +1300,12 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception(msgError);
         }
 
-        // PAT 3.6 K211118_001
         /* Contrôle que dateDeDebutDroit n'est pas avant la date de naissance */
         if (isDateDebutAvantNaissance(dateNaissance, dateDeDebutDroit)) {
             String msgError = session.getLabel("ERREUR_DATE_DEBUT_AVANT_DATE_NAI");
             throw new Exception(msgError);
         }
 
-        // PAT 3.1.3.7.
         /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
         if (isDelaiCadreDepasse(dateNaissance, dateDeFinDroit)) {
             String msgError = session.getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI");
@@ -1423,6 +1421,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         droitPat.setNoControlePers(viewBean.getNoControlePers());
         droitPat.setNoCompte(viewBean.getNoCompte());
         droitPat.setNbrJourSoldes(viewBean.getNbrJourSoldes());
+        droitPat.setDateFinDroitCalculee(viewBean.getDateFinCalculee());
         droitPat.setDuplicata(viewBean.getDuplicata());
         droitPat.setCsProvenanceDroitAcquis(viewBean.getCsProvenanceDroitAcquis());
         droitPat.setIdCaisse(idCaisse);
@@ -1448,7 +1447,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
     }
 
-    // PAT 3.6 K211118_001
     /* Contrôle que dateDeDebutDroit n'est pas avant la date de naissance */
     public boolean isDateDebutAvantNaissance(String dateNaissance, String dateDeDebutDroit) throws Exception {
         if (JadeDateUtil.isDateBefore(dateDeDebutDroit, dateNaissance)) {
@@ -1458,7 +1456,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
     }
 
-    // PAT 3.1.3.7.
     /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
     public boolean isDelaiCadreDepasse(String dateNaissance, String dateDeFinDroit) {
         LocalDate dateNaissanceD = Dates.toDate(dateNaissance);
@@ -1572,6 +1569,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return droitAPG;
     }
 
+    /* Contrôle que le nombre de jours soldes ne dépasse pas le nombre de jours des périodes saisies */
     private List<PRPeriode> validerNombreJoursSoldes(final APDroitAPGPViewBean viewBean) throws Exception {
         final List<PRPeriode> periodes = viewBean.getPeriodes();
 
@@ -1590,7 +1588,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return periodes;
     }
 
-    // PAT 3.1.3.2.
     private List<PRPeriode> validerNombreJoursSoldesPat(final APDroitPatPViewBean viewBean) throws Exception {
         final List<PRPeriode> periodes = viewBean.getPeriodes();
 

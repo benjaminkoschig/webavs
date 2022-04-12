@@ -1106,6 +1106,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             APPrestationCalculee prestationCalculee = new APPrestationCalculee();
             prestationCalculee.setDateDebut(new JADate(prestationCourant.getPrestation().getDateDebut()));
             prestationCalculee.setDateFin(new JADate(prestationCourant.getPrestation().getDateFin()));
+            prestationCalculee.setDateFinSaisie(new JADate(prestationCourant.getPrestation().getDateFinSaisie()));
             prestationCalculee.setNombreJoursSoldes(prestationCourant.getPrestation().getNombreJoursSoldes());
             prestationCalculee.setRevenuDeterminantMoyen(new FWCurrency(prestationCourant.getPrestation().getRevenuMoyenDeterminant()));
             prestationCalculee.setRevenuDeterminantMoyenSansArrondi(new FWCurrency(prestationCourant.getPrestation().getRevenuMoyenDeterminantSansArrondi()));
@@ -1166,6 +1167,9 @@ public class APPrestationHelper extends PRAbstractHelper {
                 prestationCalculee.setDateDebut(new JADate(prestationCourant.getPrestation().getDateDebut()));
                 prestationCalculee.setDateFin(new JADate(prestationCourant.getPrestation().getDateFin()));
                 prestationCalculee.setNombreJoursSoldes(prestationCourant.getPrestation().getNombreJoursSoldes());
+                prestationCalculee.setNombreJoursConge(prestationCourant.getPrestation().getNombreJoursConges());
+                prestationCalculee.setNombreJoursSupp(prestationCourant.getPrestation().getNombreJoursSupp());
+                prestationCalculee.setDateFinSaisie(new JADate(prestationCourant.getPrestation().getDateFinSaisie()));
 
                 genererCotisationsPourRepartition(session, prestationCalculee,
                         repartitionCourante.getRepartitionPaiements());

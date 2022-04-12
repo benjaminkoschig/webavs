@@ -36,11 +36,13 @@ public class APResultatCalcul {
     private FWCurrency basicDailyAmount = null;
     private JADate dateDebut = null;
     private JADate dateFin = null;
+    private JADate dateFinSaisie = null;
 
     private String idTauxImposition = "";
     private FWCurrency montantJournalier = null;
 
     private int nombreJoursSoldes = 0;
+    private int nombreJoursConges = 0;
     private int nombreJoursSupplementaires = 0;
     @Setter
     private List<APResultatCalculSituationProfessionnel> resultatsCalculsSitProfessionnelle = null;
@@ -142,6 +144,15 @@ public class APResultatCalcul {
         return dateFin;
     }
 
+    /**
+     * getter pour l'attribut date fin saisie
+     *
+     * @return la valeur courante de l'attribut date fin
+     */
+    public JADate getDateFinSaisie() {
+        return dateFinSaisie;
+    }
+
     public String getIdTauxImposition() {
         return idTauxImposition;
     }
@@ -165,6 +176,15 @@ public class APResultatCalcul {
      */
     public int getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours congées
+     *
+     * @return la valeur courante de l'attribut nombre jours congées
+     */
+    public int getNombreJoursConges() {
+        return nombreJoursConges;
     }
 
     /**
@@ -333,6 +353,16 @@ public class APResultatCalcul {
         dateFin = date;
     }
 
+    /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param date
+     *                 une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(JADate date) {
+        dateFinSaisie = date;
+    }
+
     public void setIdTauxImposition(String idTauxImposition) {
         this.idTauxImposition = idTauxImposition;
     }
@@ -364,6 +394,16 @@ public class APResultatCalcul {
      */
     public void setNombreJoursSupplementaires(int nombreJoursSupplementaires) {
         this.nombreJoursSupplementaires = nombreJoursSupplementaires;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours de congés
+     *
+     * @param nombreJoursConges
+     *              une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursConges(int nombreJoursConges) {
+        this.nombreJoursConges = nombreJoursConges;
     }
 
     /**
