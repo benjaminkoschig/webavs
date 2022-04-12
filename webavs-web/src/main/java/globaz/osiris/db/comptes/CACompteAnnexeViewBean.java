@@ -1,6 +1,8 @@
 package globaz.osiris.db.comptes;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
@@ -8,8 +10,13 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.contentieux.CAMotifContentieux;
 import globaz.osiris.db.contentieux.CAMotifContentieuxManager;
+import globaz.osiris.process.ebill.EBillMail;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author user To change this generated comment edit the template variable "typecomment":
@@ -160,7 +167,35 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
                 setContEstBloque(Boolean.TRUE);
             }
         }
+        validateEBill(statement);
         super._validate(statement);
+    }
+
+    /**
+     * Contrôle : le champs eBill AccountId ne doit pas exister pour un autre affilié
+     * @param statement
+     */
+    private void validateEBill(BStatement statement) {
+        if(StringUtils.isNotEmpty(geteBillAccountID())) {
+            CACompteAnnexeManager manager = new CACompteAnnexeManager();
+            manager.setSession(getSession());
+            manager.setForEBillAccountID(geteBillAccountID());
+            try {
+                manager.find(BManager.SIZE_USEDEFAULT);
+            } catch (Exception e) {
+                _addError(statement.getTransaction(), e.getMessage());
+            }
+            if(!manager.isEmpty()) {
+                List<CACompteAnnexe> list = manager.getContainer();
+                Optional<CACompteAnnexe> eBillIdAutreCompte = list.stream().filter(c -> !c.getIdTiers().equals(getIdTiers())).findFirst();
+                if(eBillIdAutreCompte.isPresent()) {
+                    _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("EBILL_COMPTE_ANNEXE_CONTROLE"), eBillIdAutreCompte.get().getIdExterneRole()));
+                }
+            }
+        }
+        if(StringUtils.isNotEmpty(geteBillMail()) && !EBillMail.isMailValid(geteBillMail())) {
+            _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("EBILL_MAIL_FORMAT"), geteBillMail()));
+        }
     }
 
     /**

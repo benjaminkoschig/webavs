@@ -32,7 +32,7 @@ public class CAFichierInscriptionEBillManager extends BManager {
         return _getCollection() + CAFichierInscriptionEBill.TABLE_FICHIER_INSCRIPTION_EBILL + " fichier" +
                 " LEFT JOIN " + _getCollection() + CAInscriptionEBill.TABLE_INSCRIPTION_EBILL + " inscription" +
                 " ON " + FICHIER + CAFichierInscriptionEBill.FIELD_ID_FICHIER +
-                " = " + INSCRIPTION +CAInscriptionEBill.FIELD_ID_FICHIER;
+                " = " + INSCRIPTION + CAInscriptionEBill.FIELD_ID_FICHIER;
     }
 
     /*

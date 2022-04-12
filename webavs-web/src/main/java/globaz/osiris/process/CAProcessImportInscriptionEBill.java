@@ -2,21 +2,25 @@ package globaz.osiris.process;
 
 import ch.globaz.common.document.reference.AbstractReference;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.util.BooleanUtils;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.jcraft.jsch.SftpException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.jade.common.JadeClassCastException;
 import globaz.jade.properties.JadePropertiesService;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -29,13 +33,25 @@ import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
+import globaz.osiris.process.ebill.EBillMail;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * CRON permettant le traitement des fichiers d'inscription eBill.
@@ -46,11 +62,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private static final String MAIL_CONTENT = "EBILL_MAIL_INSCRIPTION_CONTENT";
     private static final String MAIL_ERROR_CONTENT = "EBILL_MAIL_INSCRIPTION_ERROR_CONTENT";
     private static final String MAIL_SUBJECT = "EBILL_MAIL_INSCRIPTION_SUBJECT";
+    private static final String COMPTE_ANNEXE_EMAIL_MANQUANTE = "EBILL_COMPTE_ANNEXE_EMAIL_MANQUANTE";
+    private static final String COMPTE_ANNEXE_EMAIL_FAILED = "EBILL_COMPTE_ANNEXE_EMAIL_FAILED";
     private static final String CSV_EXTENSION = ".csv";
-    private static final char SEPARATOR = ';';
+    private static final String SEPARATOR = ";";
     private static final String BOOLEAN_TRUE = "on";
     private final StringBuilder error = new StringBuilder();
-    private List<String> filesToSend = new ArrayList<>();
+    private final List<String> filesToSend = new ArrayList<>();
     private boolean isPlusieursTypeAffilie;
     private EBillSftpProcessor serviceFtp;
     private int inscriptionOK = 0;
@@ -63,10 +81,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         //Nothing to do
     }
 
-    /**
-     * @return
-     * @throws Exception
-     */
     @Override
     protected boolean _executeProcess() throws Exception {
         try {
@@ -78,7 +92,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             initBsession();
             initServiceFtp();
 
-            isPlusieursTypeAffilie = Boolean.valueOf(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
+            isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
             boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
 
             if (isActive) {
@@ -103,8 +117,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
     /**
      * Méthode permettant de générer le bilan du traitement et l'envoi du mail récapitulatif.
-     *
-     * @throws Exception : exception envoyée si un problème intervient lors de l'envoi du mail.
      */
     private void generationProtocol() {
         String mailContent;
@@ -175,15 +187,12 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     /**
      * Récupération et traitement des données dans le fichier d'inscription eBill
      *
-     * @param nomFichierDistant : le nom du fichier à traiter.
-     * @throws JadeServiceActivatorException
-     * @throws JadeClassCastException
-     * @throws JadeServiceLocatorException
+     * @param nomFichierDistant : le nom du fichier à traiter
      */
     private void importFile(String nomFichierDistant) throws PropertiesException {
         // Enregistrement des données de traitement du fichier
         CAFichierInscriptionEBill fichierInscription = saveFichierInscription(nomFichierDistant);
-        // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite et le problème sera remonté dans le rapport par mail.
+        // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite pas et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichierInscription)) {
 
             String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
@@ -198,23 +207,53 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
                 // Traitement du fichier CSV
                 try (BufferedReader reader = new BufferedReader(new FileReader(localFile))) {
-                    List<CAInscriptionEBill> allInscriptions = new ArrayList<>();
+                    boolean toutesInscriptionsEnSucces;
+                    String line = reader.readLine();
 
-                    // TODO : contrôler le nombre de colonne sur la première ligne
-                    int i = 0;
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        // on passe la première ligne.
-                        if (i > 0 && !line.isEmpty()) {
-                            CAInscriptionEBill inscriptionEBill = extractDataFromFile(line);
-                            allInscriptions.add(inscriptionEBill);
+                    List<CAInscriptionEBill> allInscriptions = new ArrayList<>();
+                    if ( CAProperties.EBILL_BASCULE.getBooleanValue()) {
+                        //Chargement de l'ordre des colonne
+                        String[] csvColonnes = line.split(SEPARATOR);
+
+                        Map<Integer, CAInscriptionEBillEnum> csvColonneOrder = new HashMap<>();
+                        int[] index = {0};
+
+                        Arrays.stream(csvColonnes).forEach(colonne -> {
+                            try (CAInscriptionEBillEnum inscription = CAInscriptionEBillEnum.getInscriptionEBill(colonne)) {
+                                if (!inscription.isIgnored()) {
+                                    csvColonneOrder.put(index[0], inscription);
+                                }
+                                index[0]++;
+                            } catch (Exception e) {
+                                //ne peux pas être déclenché en théorie
+                                LOG.error("Une erreur imprevue est survenu", e);
+                            }
+                        });
+
+                        while (!StringUtils.isEmpty(line = reader.readLine())) {
+                            CAInscriptionEBill inscriptionEBill = extractDataFromFile(line, csvColonneOrder);
+
+                            if (CAProperties.EBILL_BILLER_ID.getValue().equals(inscriptionEBill.getBillerId())) {
+                                allInscriptions.add(inscriptionEBill);
+                            }
+
                         }
-                        i++;
+                        // Enregistre toutes les inscriptions en BD et met à jour le status du fichier d'inscription
+                        toutesInscriptionsEnSucces = saveInscriptions(allInscriptions, fichierInscription);
+                    } else {
+                        while (!StringUtils.isEmpty(line = reader.readLine())) {
+                            allInscriptions.add(extractDataFromFileV1(line));
+                        }
+
+                        // Enregistre toutes les inscriptions en BD et met à jour le status du fichier d'inscription
+                        toutesInscriptionsEnSucces = saveInscriptions(allInscriptions, fichierInscription);
                     }
 
-                    // Enregistre toutes les inscriptions en BD et met à jour le status du fichier d'inscription
-                    boolean toutesInscriptionsEnSucces = saveInscriptions(allInscriptions, fichierInscription);
+
                     updateInscriptionFileStatut(fichierInscription, toutesInscriptionsEnSucces, localFile);
+                } catch (IllegalArgumentException impossible) {
+                    //ne peux pas être déclenché en théorie
+                    LOG.error("error get method", impossible);
                 }
 
             } catch (FileNotFoundException e) {
@@ -260,7 +299,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Sauvegarde de l'inscription.
+     * Sauvegarde de l'inscription V1.
      *
      * @param fichier         : le fichier lié à l'inscription.
      * @param eachInscription : l'inscription à sauvegarder.
@@ -285,7 +324,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         }
         return true;
     }
-
 
     /**
      * Sauvegarde les informations du fichier traité en BDD.
@@ -318,64 +356,140 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      * @param line : la ligne à caster
      * @return l'inscription lié à la ligne.
      */
-    private CAInscriptionEBill extractDataFromFile(String line) {
+    private CAInscriptionEBill extractDataFromFile(String line, Map<Integer, CAInscriptionEBillEnum> orderColonnes) {
         CAInscriptionEBill inscriptionEBill = new CAInscriptionEBill();
 
-        String regex = Character.toString(SEPARATOR);
         // Suppression des espaces de fin de ligne
         line = line.trim();
 
         // Split des données
-        String[] datasTemp = line.split(regex);
+        String[] datasTemp = line.split(SEPARATOR);
+
+        orderColonnes.forEach((index, col) -> {
+            switch (col) {
+                case SUBSCRIPTION_TYPE:
+                    inscriptionEBill.setType(datasTemp[index]);
+                    break;
+                case BILLER_ID:
+                    inscriptionEBill.setBillerId(datasTemp[index]);
+                    break;
+                case RECIPIENT_ID:
+                    inscriptionEBill.seteBillAccountID(datasTemp[index]);
+                    break;
+                case RECIPIENT_TYPE:
+                    inscriptionEBill.seteBillAccountType(datasTemp[index]);
+                    break;
+                case GIVEN_NAME:
+                    inscriptionEBill.setPrenom(datasTemp[index]);
+                    break;
+                case FAMILY_NAME:
+                    inscriptionEBill.setNom(datasTemp[index]);
+                    break;
+                case COMPANY_NAME:
+                    inscriptionEBill.setEntreprise(datasTemp[index]);
+                    break;
+                case ADRESSE:
+                    inscriptionEBill.setAdresse1(datasTemp[index]);
+                    break;
+                case ZIP:
+                    inscriptionEBill.setNpa(datasTemp[index]);
+                    break;
+                case CITY:
+                    inscriptionEBill.setLocalite(datasTemp[index]);
+                    break;
+                case COUNTRY:
+                    inscriptionEBill.setPays(datasTemp[index]);
+                    break;
+                case EMAIL:
+                    inscriptionEBill.setEmail(datasTemp[index]);
+                    break;
+                case CREDIT_ACCOUNT:
+                    inscriptionEBill.setNumAdherentBVR(datasTemp[index]);
+                    break;
+                case CREDITOR_REFERENCE:
+                    inscriptionEBill.setNumRefBVR(datasTemp[index]);
+                    break;
+                case CUSTOMER_NBR:
+                    inscriptionEBill.setNumeroAffilie(datasTemp[index]);
+                    break;
+                case PHONE:
+                    inscriptionEBill.setNumTel(datasTemp[index]);
+                    break;
+                case PARITAIRE:
+                    inscriptionEBill.setRoleParitaire(BooleanUtils.translateBoolean(datasTemp[index]));
+                    break;
+                case PERSONNEL:
+                    inscriptionEBill.setRolePersonnel(BooleanUtils.translateBoolean(datasTemp[index]));
+                    break;
+            }
+        });
+        return inscriptionEBill;
+    }
+
+    //TODO a supprimé après l'activation de la version 2
+    /**
+     * Méthode permettant de caster les lignes du fichier csv V1.
+     *
+     * @param line : la ligne à caster
+     * @return l'inscription lié à la ligne.
+     */
+    private CAInscriptionEBill extractDataFromFileV1(String line) {
+        CAInscriptionEBill inscriptionEBill = new CAInscriptionEBill();
+
+        // Suppression des espaces de fin de ligne
+        line = line.trim();
+
+        // Split des données
+        String[] datasTemp = line.split(SEPARATOR);
 
         // on démarre à 1 pour ne pas caster la première ligne.
         for (int i = 0; i < datasTemp.length; i++) {
-            CAInscriptionEBillEnum enumInscriptionEBill = CAInscriptionEBillEnum.fromIndex(String.valueOf(i));
+            CAInscriptionEBillEnum enumInscriptionEBill = CAInscriptionEBillEnum.fromIndex(i);
             if (Objects.nonNull(enumInscriptionEBill)) {
                 switch (enumInscriptionEBill) {
-                    case NUMERO_ADHERENT:
+                    case RECIPIENT_ID:
                         inscriptionEBill.seteBillAccountID(datasTemp[i]);
                         break;
-                    case PRENOM:
+                    case GIVEN_NAME:
                         inscriptionEBill.setPrenom(datasTemp[i]);
                         break;
-                    case NOM:
+                    case FAMILY_NAME:
                         inscriptionEBill.setNom(datasTemp[i]);
                         break;
-                    case ENTREPRISE:
+                    case COMPANY_NAME:
                         inscriptionEBill.setEntreprise(datasTemp[i]);
                         break;
-                    case ADRESSE_1:
+                    case ADRESSE:
                         inscriptionEBill.setAdresse1(datasTemp[i]);
                         break;
                     case ADRESSE_2:
                         inscriptionEBill.setAdresse2(datasTemp[i]);
                         break;
-                    case NPA:
+                    case ZIP:
                         inscriptionEBill.setNpa(datasTemp[i]);
                         break;
-                    case LOCALITE:
+                    case CITY:
                         inscriptionEBill.setLocalite(datasTemp[i]);
                         break;
-                    case NUMERO_TEL:
+                    case PHONE:
                         inscriptionEBill.setNumTel(datasTemp[i]);
                         break;
                     case EMAIL:
                         inscriptionEBill.setEmail(datasTemp[i]);
                         break;
-                    case NUMERO_AFFILIE:
+                    case CUSTOMER_NBR:
                         inscriptionEBill.setNumeroAffilie(datasTemp[i]);
                         break;
-                    case ROLE_PARITAIRE:
+                    case PARITAIRE:
                         inscriptionEBill.setRoleParitaire(StringUtils.equals(BOOLEAN_TRUE, datasTemp[i]));
                         break;
-                    case ROLE_PERSONNEL:
+                    case PERSONNEL:
                         inscriptionEBill.setRolePersonnel(StringUtils.equals(BOOLEAN_TRUE, datasTemp[i]));
                         break;
-                    case NUM_ADHERENT_BVR:
+                    case CREDIT_ACCOUNT:
                         inscriptionEBill.setNumAdherentBVR(datasTemp[i]);
                         break;
-                    case NUM_REF_BVR:
+                    case CREDITOR_REFERENCE:
                         inscriptionEBill.setNumRefBVR(datasTemp[i]);
                         break;
                     case STATUS:
@@ -390,7 +504,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Sauvegardes des inscriptions eBill.
+     * Sauvegardes des inscriptions eBill V1.
      *
      * @param allInscriptions toutes les inscriptions du fichier.
      * @param fichier         le fichier en cours de traitement.
@@ -399,7 +513,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private boolean saveInscriptions(List<CAInscriptionEBill> allInscriptions, CAFichierInscriptionEBill fichier) {
         boolean toutesInscriptionsSucces = true;
         for (CAInscriptionEBill eachInscription : allInscriptions) {
-
             final String numeroAdherent = eachInscription.geteBillAccountID();
             final CAInscriptionTypeEBillEnum typeEBillEnum = eachInscription.getType();
 
@@ -408,7 +521,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             if (StringUtils.isNotEmpty(numeroAdherent)) {
                 switch (typeEBillEnum) {
                     case INSCRIPTION:
-                        result = this.updateCompteAnnexeTitulariseCasInscription(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasInscription(eachInscription, numeroAdherent);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             inscriptionOK++;
@@ -418,7 +531,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         }
                         break;
                     case INSCRIPTION_DIRECTE:
-                        result = this.updateCompteAnnexeTitulariseCasInscriptionDirect(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasInscriptionDirect(eachInscription, numeroAdherent);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             inscriptionOK++;
@@ -428,7 +541,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         }
                         break;
                     case RESILIATION:
-                        result = this.updateCompteAnnexeTitulariseCasResiliation(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasResiliation(eachInscription, numeroAdherent);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             resiliationOK++;
@@ -453,7 +566,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe lors d'une résiliation.
+     * Mise à jour du compte annexe lors d'une résiliation V1.
      *
      * @param numeroAdherent : le numéro d'adhérent (id eBill) lié à la résiliation.
      * @return vrai si la mise à jour du compte annexe est en succès.
@@ -465,7 +578,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         manager.setForEBillAccountID(numeroAdherent);
         if (isPlusieursTypeAffilie) {
             if (eachInscription.getRoleParitaire() && eachInscription.getRolePersonnel()) {
-                Set<String> idsRole = new HashSet();
+                HashSet<String> idsRole = new HashSet();
                 idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
                 idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
                 manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
@@ -511,7 +624,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe lors d'une inscription directe.
+     * Mise à jour du compte annexe lors d'une inscription directe V1.
      *
      * @param inscriptionEBill l'inscription eBill à traiter.
      * @param numeroAdherent   le numéro d'adhérent (id eBill) lié à l'inscription.
@@ -591,7 +704,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         return false;
     }
 
-
     /**
      * Méthode permettant de formatter le numéro depuis la référence BVR : on doit supprimer les 0 devant la première valeur.
      *
@@ -610,7 +722,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe lors d'une inscription.
+     * Mise à jour du compte annexe lors d'une inscription V1.
      *
      * @param inscriptionEBill l'inscription eBill à traiter.
      * @param numeroAdherent   le numéro d'adhérent (id eBill) lié à l'inscription.
@@ -618,8 +730,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      */
     private boolean updateCompteAnnexeTitulariseCasInscription(CAInscriptionEBill inscriptionEBill,
                                                                final String numeroAdherent) {
-        String numeroAffilie;
-        numeroAffilie = inscriptionEBill.getNumeroAffilie();
+        String numeroAffilie = inscriptionEBill.getNumeroAffilie();
         if (StringUtils.isNotEmpty(numeroAffilie)) {
 
             // Récupération du compte annexe.
@@ -628,7 +739,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             manager.setForIdExterneRole(numeroAffilie);
             if (isPlusieursTypeAffilie) {
                 if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel()) {
-                    Set<String> idsRole = new HashSet();
+                    HashSet<String> idsRole = new HashSet();
                     idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
                     idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
                     manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
@@ -676,7 +787,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe.
+     * Mise à jour du compte annexe pour une inscription V1.
      *
      * @param numeroAdherent : le numéro d'adhérent (id eBill) de l'inscription --> vide dans le cas d'une résiliation.
      * @param email          : le mail lié à l'inscription --> vide dans le cadre d'une résiliation.
@@ -694,6 +805,53 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            return false;
+        }
+        return sendMail(inscriptionEBill, numeroAdherent, email, compteAnnexe);
+    }
+
+    private boolean sendMail(CAInscriptionEBill inscriptionEBill, String numeroAdherent, String email, CACompteAnnexe compteAnnexe) {
+        // envoie un mail pour les inscriptions seulement
+        if(JadeStringUtil.isEmpty(numeroAdherent)) {
+            if (JadeStringUtil.isEmpty(email)) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+                LOG.error(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
+                return false;
+            }
+            try {
+                EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
+            } catch (Exception e) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
+                LOG.error(erreurInterne, e);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Mise à jour du compte annexe.
+     *
+     * @param numeroAdherent : le numéro d'adhérent (id eBill) de l'inscription --> vide dans le cas d'une résiliation.
+     * @param email          : le mail lié à l'inscription --> vide dans le cadre d'une résiliation.
+     * @param compteAnnexe   : le compte annexe à mettre à jour.
+     * @return vrai si l'update s'est bien passé.
+     */
+    private boolean majCompteAnnexe(final String numeroAdherent,
+                                    final String email,
+                                    final CACompteAnnexe compteAnnexe) {
+        compteAnnexe.seteBillAccountID(numeroAdherent);
+        compteAnnexe.seteBillMail(email);
+        try {
+            compteAnnexe.update();
+        } catch (Exception e) {
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            LOG.error(erreurInterne, e);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }

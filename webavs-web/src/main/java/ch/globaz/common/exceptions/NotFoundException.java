@@ -1,7 +1,10 @@
 package ch.globaz.common.exceptions;
 
 public class NotFoundException extends RuntimeException {
-   public NotFoundException(String msg) {
+    public NotFoundException() {
+    }
+
+    public NotFoundException(String msg) {
         super(msg);
     }
 
