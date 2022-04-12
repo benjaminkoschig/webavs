@@ -92,7 +92,7 @@ public class APPeriodeComparable extends APPeriodeAPG implements Comparable<APPe
     public long nbJourSoldes() {
         long nbJourPeriodes = nbJourPeriode() + 1;
         long nbJourIsole = !JadeStringUtil.isBlankOrZero(getNbrJours()) ?  Long.valueOf(getNbrJours()) : 0L;
-        nbJourIsole += !JadeStringUtil.isBlankOrZero(getNbJourSupplementaire()) ?  Long.valueOf(getNbJourSupplementaire()) : 0L; // ICI BENJA PROCHE AIDANT
+        nbJourIsole += !JadeStringUtil.isBlankOrZero(getNbJourSupplementaire()) ?  Long.valueOf(getNbJourSupplementaire()) : 0L;
         if (nbJourIsole > 0 && nbJourPeriodes > nbJourIsole) {
             return nbJourIsole;
         }

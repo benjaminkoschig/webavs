@@ -22,8 +22,7 @@
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 
 <%@ include file="/theme/detail/header.jspf" %>
-<%!
-    %><%
+<%
     idEcran = "PAP0012";
 
     APDroitPatPViewBean viewBean = (APDroitPatPViewBean) session.getAttribute("viewBean");
@@ -957,7 +956,7 @@
 </tr>
 <tr>
     <td colspan="6">
-        <table width="100%">
+        <table style="width:100%">
             <tr>
 
                 <td>
@@ -991,45 +990,45 @@
                            value="<ct:FWLabel key="JSP_AJOUTER" />"
                            onclick="addPeriodePatP()"/>
                 </td>
-                <td colspan="2" rowspan="4" width="50%">
-                    <table class="areaTable" width="100%">
+                <td colspan="2" rowspan="4" style="width:50%">
+                    <table class="areaTable" style="width:100%">
                         <thead>
                         <tr>
-                            <th width="25%">
+                            <th style="width:25%">
                                 <ct:FWLabel key="DATE_DE_DEBUT"/>
                             </th>
-                            <th width="25%">
+                            <th style="width:25%">
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
-                            <th width="10%">
+                            <th style="width:10%">
                                 <ct:FWLabel key="JSP_NB_JOURS_CONGES"/>
                             </th>
-                            <th width="10%">
+                            <th style="width:10%">
                                 <ct:FWLabel key="JSP_INDEMNITE_SUPPLEMENTAIRES"/>
                             </th>
-                            <th width="10%">
+                            <th style="width:10%">
                                 <ct:FWLabel key="MENU_OPTION_TAUX_IMPOSITIONS_RACC"/>
                             </th>
-                            <th width="10%">
+                            <th style="width:10%">
                                 <ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE_RACC"/>
                             </th>
-                            <th width="10%"></th>
+                            <th style="width:10%"></th>
                         </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
                     <div style="height:120px; overflow-y:scroll; width:100%; background-color:#FFF; margin-left: 3px;">
-                        <table id="periodes" name=periode" class="areaTable" width="100%">
+                        <table id="periodes" name=periode" class="areaTable" style="width:100%">
                             <thead>
                             <tr style="height: 0px;">
-                                <th width="25%"></th>
-                                <th width="25%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
+                                <th style="width:25%"></th>
+                                <th style="width:25%"></th>
+                                <th style="width:10%"></th>
+                                <th style="width:10%"></th>
+                                <th style="width:10%"></th>
+                                <th style="width:10%"></th>
+                                <th style="width:10%"></th>
                             </tr>
                             </thead>
                             <tbody>
