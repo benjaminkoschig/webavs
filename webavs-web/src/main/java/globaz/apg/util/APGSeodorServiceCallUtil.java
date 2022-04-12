@@ -1,7 +1,7 @@
 package globaz.apg.util;
 
-import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
-import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
+import ch.admin.zas.seodor.ws.service_periods._2.ServicePeriodsPort20;
+import ch.admin.zas.seodor.ws.service_periods._2.ServicePeriodsService20;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -50,40 +50,40 @@ public class APGSeodorServiceCallUtil {
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final Logger LOG = LoggerFactory.getLogger(APGSeodorServiceCallUtil.class);
 
-        public static final List<APGSeodorDataBean> getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
-            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
+    public static final List<APGSeodorDataBean> getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
 
-            try {
-                String webServiceNameSpace = CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue();
-                String webServiceName = CommonProperties.SEODOR_WEBSERVICE_NAME.getValue();
+        try {
+            String webServiceNameSpace = CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue();
+            String webServiceName = CommonProperties.SEODOR_WEBSERVICE_NAME.getValue();
 
-                String keyStorePath = CommonProperties.SEODOR_KEYSTORE_PATH.getValue();
-                String keyStoreType = CommonProperties.SEODOR_KEYSTORE_TYPE.getValue();
-                String keyStorePass = CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue();
-                String contextType = CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue();
+            String keyStorePath = CommonProperties.SEODOR_KEYSTORE_PATH.getValue();
+            String keyStoreType = CommonProperties.SEODOR_KEYSTORE_TYPE.getValue();
+            String keyStorePass = CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue();
+            String contextType = CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue();
 
-                URL wsdlLocation = classloader.getResource(CommonProperties.SEODOR_SEODOR_WSDL_PATH.getValue());
+            URL wsdlLocation = classloader.getResource(CommonProperties.SEODOR_SEODOR_WSDL_PATH.getValue());
 
-                // Création du ServicePort
-                ServicePeriodsPort10 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
+            // Création du ServicePort
+            ServicePeriodsPort20 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
 
-                // Condition pour générer la config SSL et le Binding
-                if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
-                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
-                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
+            // Condition pour générer la config SSL et le Binding
+            if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
 
-                    // Config SSL
-                    configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
+                // Config SSL
+                configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
 
-                    BindingProvider bindingProvider = (BindingProvider) port;
+                BindingProvider bindingProvider = (BindingProvider) port;
 
-                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
-                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
-                    if (StringUtils.isNotEmpty(endpoint)) {
-                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
-                    }
+                // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+                String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
+                if (StringUtils.isNotEmpty(endpoint)) {
+                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
                 }
+            }
 
             GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
 
@@ -91,55 +91,55 @@ public class APGSeodorServiceCallUtil {
 
             apgSeodorDataBeans = APGSeodorServiceMappingUtil.putResponseDeliveryResultInApgSeodorDataBean(session, responseDelivery, apgSeodorDataBean);
 
-            } catch (ConnectException e) {
-                if (apgSeodorDataBean == null) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-                apgSeodorDataBean.setHasTechnicalError(true);
-                String message = session.getLabel("WEBSERVICE_SEODOR_DELAIS_DEPASSE");
-                apgSeodorDataBean.setMessageTechnicalError(message);
-                LOG.error(message, e);
-            } catch (SSLHandshakeException | ClientTransportException e) {
-                if (apgSeodorDataBean == null) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-                apgSeodorDataBean.setHasTechnicalError(true);
-                String message = session.getLabel("WEBSERVICE_SEODOR_AUTHENTICATION_INVALID");
-                apgSeodorDataBean.setMessageTechnicalError(message);
-                LOG.error(message, e);
-            } catch (Exception e) {
-                if (apgSeodorDataBean == null) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-                apgSeodorDataBean.setHasTechnicalError(true);
-                String message = session.getLabel("SEODOR_ERREUR_TECHNIQUE_PARAMETRE");
-                apgSeodorDataBean.setMessageTechnicalError(message);
-                //apgSeodorDataBean.setMessageForUser(message);
-                LOG.error(message, e);
-            } finally {
-
-                if (Objects.isNull(apgSeodorDataBeans)) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-
-                if (apgSeodorDataBean.isHasTechnicalError()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("TechnicalError as occurr : errorReason = [");
-                    //sb.append(apgSeodorDataBean.getErrorReason());
-                    sb.append("] ");
-                    sb.append("errorDetailedReason = [");
-                    //sb.append(apgSeodorDataBean.getErrorDetailedReason());
-                    sb.append("] ");
-                    sb.append("errorComment = [");
-                    //sb.append(apgSeodorDataBean.getErrorComment());
-                    sb.append("]");
-                    LOG.error(sb.toString());
-                    apgSeodorDataBeans.add(apgSeodorDataBean);
-                }
-
-                return apgSeodorDataBeans;
+        } catch (ConnectException e) {
+            if (apgSeodorDataBean == null) {
+                apgSeodorDataBean = new APGSeodorDataBean();
             }
+            apgSeodorDataBean.setHasTechnicalError(true);
+            String message = session.getLabel("WEBSERVICE_SEODOR_DELAIS_DEPASSE");
+            apgSeodorDataBean.setMessageTechnicalError(message);
+            LOG.error(message, e);
+        } catch (SSLHandshakeException | ClientTransportException e) {
+            if (apgSeodorDataBean == null) {
+                apgSeodorDataBean = new APGSeodorDataBean();
+            }
+            apgSeodorDataBean.setHasTechnicalError(true);
+            String message = session.getLabel("WEBSERVICE_SEODOR_AUTHENTICATION_INVALID");
+            apgSeodorDataBean.setMessageTechnicalError(message);
+            LOG.error(message, e);
+        } catch (Exception e) {
+            if (apgSeodorDataBean == null) {
+                apgSeodorDataBean = new APGSeodorDataBean();
+            }
+            apgSeodorDataBean.setHasTechnicalError(true);
+            String message = session.getLabel("SEODOR_ERREUR_TECHNIQUE_PARAMETRE");
+            apgSeodorDataBean.setMessageTechnicalError(message);
+            //apgSeodorDataBean.setMessageForUser(message);
+            LOG.error(message, e);
+        } finally {
+
+            if (Objects.isNull(apgSeodorDataBeans)) {
+                apgSeodorDataBean = new APGSeodorDataBean();
+            }
+
+            if (apgSeodorDataBean.isHasTechnicalError()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("TechnicalError as occurr : errorReason = [");
+                //sb.append(apgSeodorDataBean.getErrorReason());
+                sb.append("] ");
+                sb.append("errorDetailedReason = [");
+                //sb.append(apgSeodorDataBean.getErrorDetailedReason());
+                sb.append("] ");
+                sb.append("errorComment = [");
+                //sb.append(apgSeodorDataBean.getErrorComment());
+                sb.append("]");
+                LOG.error(sb.toString());
+                apgSeodorDataBeans.add(apgSeodorDataBean);
+            }
+
+            return apgSeodorDataBeans;
         }
+    }
 
     /**
      * Méthode qui créé le ServicePeriodsPort
@@ -149,11 +149,11 @@ public class APGSeodorServiceCallUtil {
      * @param webServiceName
      * @return
      */
-        private static ServicePeriodsPort10 createServicePeriodsPort(URL wsdlLocation, String webServiceNameSpace, String webServiceName) {
-            ServicePeriodsService10 servicePeriodsService10 = new ServicePeriodsService10(wsdlLocation,
-                    new QName(webServiceNameSpace, webServiceName));
-            return servicePeriodsService10.getPort(ServicePeriodsPort10.class);
-        }
+    private static ServicePeriodsPort20 createServicePeriodsPort(URL wsdlLocation, String webServiceNameSpace, String webServiceName) {
+        ServicePeriodsService20 servicePeriodsService10 = new ServicePeriodsService20(wsdlLocation,
+                new QName(webServiceNameSpace, webServiceName));
+        return servicePeriodsService10.getPort(ServicePeriodsPort20.class);
+    }
 
     /**
      * Configure SSL On the client
@@ -162,7 +162,7 @@ public class APGSeodorServiceCallUtil {
      * @param keyStorePass certificat password
      * @param keyStoreType keyStoreType key types
      */
-    private static void configureSSLOnTheClient(final ServicePeriodsPort10 proxy, final String keyStorePath, final String keyStorePass, String keyStoreType) throws Exception {
+    private static void configureSSLOnTheClient(final ServicePeriodsPort20 proxy, final String keyStorePath, final String keyStorePass, String keyStoreType) throws Exception {
 
         SSLContext sc = null;
         KeyStore ks = null;
