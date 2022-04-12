@@ -16,6 +16,7 @@ import globaz.hera.interfaces.tiers.SFTiersWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Objects;
@@ -26,6 +27,7 @@ import java.util.Objects;
  * Pour changer le modèle de ce commentaire de type généré, allez à :
  * Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
  */
+@Slf4j
 public class SFPeriodeViewBean extends SFPeriode implements FWViewBeanInterface {
     /**
      *
@@ -112,7 +114,8 @@ public class SFPeriodeViewBean extends SFPeriode implements FWViewBeanInterface 
                     addStringWithSeparator(nomRecueillant, getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Impossible de récupérer le tiers recueillant. ", e);
+                return StringUtils.EMPTY;
             }
         }
         return nomRecueillant.toString();
