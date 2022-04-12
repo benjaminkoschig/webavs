@@ -33,7 +33,13 @@ public class GFStatistiqueListViewBean extends BJadePersistentObjectListViewBean
 
     @Override
     public void find() throws Exception {
-        statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE);
+        if (Objects.isNull(statistiqueSearch.getByStartDate()) && !Objects.isNull(statistiqueSearch.getByEndDate())) {
+            statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE_BEFORE);
+        } else if (Objects.isNull(statistiqueSearch.getByEndDate()) && !Objects.isNull(statistiqueSearch.getByStartDate())) {
+            statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE_AFTER);
+        } else if (!(Objects.isNull(statistiqueSearch.getByStartDate()) || Objects.isNull(statistiqueSearch.getByEndDate()))) {
+            statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE_BETWEEN);
+        }
         statistiqueSearch = GFEFormServiceLocator.getGFEFormService().search(statistiqueSearch);
         calculStatistique();
     }

@@ -36,9 +36,19 @@
                 <search-field name="likeNss" field-ref="beneficiaireNss" operation="EQUALS"/>
             </search-group>
         </search-definition>
-        <search-definition name="statistique">
-            <search-group operator="OR">
+        <search-definition name="statistiqueBetween">
+            <search-group operator="AND">
                 <search-field name="byStartDate" field-ref="date" operation="GREATER_OR_EQUALS"/>
+                <search-field name="byEndDate" field-ref="date" operation="LESS_OR_EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="statistiqueAfter">
+            <search-group operator="AND">
+                <search-field name="byStartDate" field-ref="date" operation="GREATER_OR_EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="statistiqueBefore">
+            <search-group operator="AND">
                 <search-field name="byEndDate" field-ref="date" operation="LESS_OR_EQUALS"/>
             </search-group>
         </search-definition>
