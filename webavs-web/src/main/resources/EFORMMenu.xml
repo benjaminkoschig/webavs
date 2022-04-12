@@ -16,6 +16,12 @@
 					<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
 				</action>
 			</node>
+			<node id="Statistique">
+				<label refId="MENU_EFORM_STATISTIQUE"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.statistique.statistique.chercher"/>
+				</action>
+			</node>
 		</nodes>
 	</menu>
 	

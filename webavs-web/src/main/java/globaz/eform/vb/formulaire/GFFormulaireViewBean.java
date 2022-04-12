@@ -3,8 +3,7 @@ package globaz.eform.vb.formulaire;
 import ch.globaz.common.exceptions.NotFoundException;
 import ch.globaz.common.file.FileUtils;
 import ch.globaz.eform.business.GFEFormServiceLocator;
-import ch.globaz.eform.business.models.GFEFormModel;
-import ch.globaz.eform.constant.GFStatusEForm;
+import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.constant.GFTypeEForm;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
@@ -19,7 +18,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GFFormulaireViewBean.class);
 
-    GFEFormModel formulaire;
+    GFFormulaireModel formulaire;
 
     private String byGestionnaire = null;
     
@@ -45,10 +44,10 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     public GFFormulaireViewBean() {
         super();
-        formulaire = new GFEFormModel();
+        formulaire = new GFFormulaireModel();
     }
 
-    public GFFormulaireViewBean(GFEFormModel formulaire) {
+    public GFFormulaireViewBean(GFFormulaireModel formulaire) {
         super();
         this.formulaire = formulaire;
         try {
@@ -115,7 +114,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         return (BSession) getISession();
     }
 
-    public GFEFormModel getFormulaire() {
+    public GFFormulaireModel getFormulaire() {
         return formulaire;
     }
 

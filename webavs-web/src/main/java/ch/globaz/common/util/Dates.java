@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -242,5 +243,25 @@ public class Dates {
             return anneeComparaison >= anneeMajorite;
         }
         return true;
+    }
+
+    public static String getFirstDayOfMonth(LocalDate date) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.clear();
+        calendar.set(date.getYear(), date.getMonthValue() - 1, 1);
+
+        SimpleDateFormat format = new SimpleDateFormat(ch.globaz.common.domaine.Date.DATE_PATTERN_SWISS);
+        return format.format(calendar.getTime());
+    }
+
+    public static String getLastDayOfMonth(LocalDate date) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.clear();
+        calendar.set(date.getYear(), date.getMonthValue() - 1, date.lengthOfMonth());
+
+        SimpleDateFormat format = new SimpleDateFormat(ch.globaz.common.domaine.Date.DATE_PATTERN_SWISS);
+        return format.format(calendar.getTime());
     }
 }

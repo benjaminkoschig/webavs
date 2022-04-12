@@ -1,4 +1,5 @@
 <%@ page import="globaz.osiris.db.ebill.enums.CAStatutEBillEnum" %>
+<%@ page import="globaz.osiris.db.ebill.CAInscriptionEBill" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -40,13 +41,13 @@
 <TH nowrap align="left">Teilnehmernummer</TH>
 <TH align="left">Typ</TH>
 <TH align="left">Interner Status</TH>
-<%	globaz.osiris.db.ebill.CAInscriptionEBill _inscriptionEBill = null ; %>
+<%	CAInscriptionEBill _inscriptionEBill = null ; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
 <%-- tpl:put name="zoneCondition" --%> <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:put name="zoneList" --%>
-<%_inscriptionEBill = (globaz.osiris.db.ebill.CAInscriptionEBill) viewBean.getEntity(i);
+<%_inscriptionEBill = (CAInscriptionEBill) viewBean.getEntity(i);
     actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "'";
 
     actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "&nom=" + nom + "&date=" + date + "&statutFichier=" + statutFichier + "'";

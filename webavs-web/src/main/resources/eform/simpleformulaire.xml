@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <model-mapping>
-    <simple-model className="ch.globaz.eform.business.models.GFEFormModel" >
+    <simple-model className="ch.globaz.eform.business.models.GFFormulaireModel" >
         <description>contient les données saisies par l'utilisateur selon l'attestation reçue</description>
         <table name="GF_FORMULAIRE" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
         <fields>
@@ -34,6 +34,22 @@
                 <search-field name="byLastName" field-ref="beneficiaireNom" operation="LIKE"/>
                 <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="LIKE"/>
                 <search-field name="likeNss" field-ref="beneficiaireNss" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="statistiqueBetween">
+            <search-group operator="AND">
+                <search-field name="byStartDate" field-ref="date" operation="GREATER_OR_EQUALS"/>
+                <search-field name="byEndDate" field-ref="date" operation="LESS_OR_EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="statistiqueAfter">
+            <search-group operator="AND">
+                <search-field name="byStartDate" field-ref="date" operation="GREATER_OR_EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="statistiqueBefore">
+            <search-group operator="AND">
+                <search-field name="byEndDate" field-ref="date" operation="LESS_OR_EQUALS"/>
             </search-group>
         </search-definition>
         <order-by name="default">

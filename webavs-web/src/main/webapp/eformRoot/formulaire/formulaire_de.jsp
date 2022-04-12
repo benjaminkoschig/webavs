@@ -22,15 +22,15 @@
     viewBean.retrieveWithBlob();
     selectedIdValue = viewBean.getId();
 
-    boolean updateManager = objSession.hasRight("eform.formulaire.formulaire.manager", "UPDATE");
+    boolean manager = objSession.hasRight("eform.formulaire.formulaire.manager", "UPDATE");
     boolean owner = currentUser.getVisa().equals(viewBean.getFormulaire().getUserGestionnaire());
     userActionValue = "eform.formulaire.formulaire.afficher";
 
     bButtonNew = false;
-    bButtonUpdate = owner;
+    bButtonUpdate = owner || manager;
     bButtonDelete = false;
-    bButtonValidate = owner;
-    bButtonCancel = owner;
+    bButtonValidate = owner || manager;
+    bButtonCancel = owner || manager;
 
     btnUpdLabel = objSession.getLabel("MODIFIER");
     btnValLabel = objSession.getLabel("VALIDER");
@@ -63,7 +63,7 @@
     function upd() {
         document.forms[0].elements('userAction').value="eform.formulaire.formulaire.modifier";
         document.forms[0].elements('byStatus').disabled = <%= !owner %>
-        document.forms[0].elements('byGestionnaire').disabled = <%= !updateManager %>;
+        document.forms[0].elements('byGestionnaire').disabled = <%= !manager %>;
     }
 
     function validate() {
@@ -159,7 +159,8 @@
 
     .demandeurAlign {
         width: 110px;
-        text-align: right;
+        text-align: left;
+        white-space:nowrap;
     }
 
     .nssAlign {
@@ -246,14 +247,8 @@
                                     <dd class="demandeurAlign">${viewBean.formulaire.beneficiaireNom}</dd>
                                     <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_PRENOM"/></strong></dt>
                                     <dd class="demandeurAlign">${viewBean.formulaire.beneficiairePrenom}</dd>
-                                </dl>
-
-                                <dl class="dl-horizontal">
                                     <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_DATE_NAISSANCE"/></strong></dt>
                                     <dd class="demandeurAlign">${viewBean.formulaire.beneficiaireDateNaissance}</dd>
-                                </dl>
-
-                                <dl class="dl-horizontal">
                                     <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_NSS"/></strong></dt>
                                     <% if(viewBean.getIdTiers().isEmpty()){ %>
                                         <dd class="demandeurAlign">
@@ -350,6 +345,6 @@
     </SCRIPT>
 
     <ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
-    <ct:menuChange displayId="options" menuId="eform-optionsempty" showTab="options"/>
+    <ct:menuChange displayId="options" menuId="eform-optionsempty"/>
 </body>
 </html>

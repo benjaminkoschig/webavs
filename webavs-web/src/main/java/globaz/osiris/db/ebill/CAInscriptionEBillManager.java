@@ -4,6 +4,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
 
 public class CAInscriptionEBillManager extends BManager {
 
@@ -49,21 +50,21 @@ public class CAInscriptionEBillManager extends BManager {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(AND);
             }
-            sqlWhere.append(CAInscriptionEBill.FIELD_EBILL_ACCOUNT_ID).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
+            sqlWhere.append(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql()).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
         }
         // Type
         if (!JadeStringUtil.isIntegerEmpty(getForType())) {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(AND);
             }
-            sqlWhere.append(CAInscriptionEBill.FIELD_TYPE).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForType()));
+            sqlWhere.append(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForType()));
         }
         // Numéro affilié
         if (!JadeStringUtil.isEmpty(getForNumAffilie())) {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(AND);
             }
-            sqlWhere.append(CAInscriptionEBill.FIELD_NUMERO_AFFILIE).append(" like ").append(this._dbWriteString(statement.getTransaction(), "%" + getForNumAffilie() + "%"));
+            sqlWhere.append(CAInscriptionEBillEnum.CUSTOMER_NBR).append(" like ").append(this._dbWriteString(statement.getTransaction(), "%" + getForNumAffilie() + "%"));
         }
         // Statut interne
         if (!JadeStringUtil.isIntegerEmpty(getForStatutInterne())) {

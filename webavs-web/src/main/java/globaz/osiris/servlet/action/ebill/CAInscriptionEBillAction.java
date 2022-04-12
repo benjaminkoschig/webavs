@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 public class CAInscriptionEBillAction extends CADefaultServletAction {
     /**
@@ -193,9 +192,11 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
             JSPUtils.setBeanProperties(request, viewBean);
 
-            viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
-            viewBean.update();
-            viewBean.updateStatutFichier();
+            if(viewBean.envoieMailConfirmation()) {
+                viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
+                viewBean.update();
+                viewBean.updateStatutFichier();
+            }
 
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
 

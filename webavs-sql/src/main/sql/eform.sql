@@ -7,7 +7,7 @@ insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.group
 
 --========================================================================================================================
 -- SQL Script for create table (GF_FORMULAIRE)
--- Simple model's class name : (ch.globaz.eform.business.models.GFEFormModel)
+-- Simple model's class name : (ch.globaz.eform.business.models.GFFormulaireModel)
 --========================================================================================================================
 CREATE TABLE SCHEMA.GF_FORMULAIRE
 (
