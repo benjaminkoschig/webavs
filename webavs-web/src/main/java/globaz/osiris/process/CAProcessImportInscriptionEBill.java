@@ -835,30 +835,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe.
-     *
-     * @param numeroAdherent : le numéro d'adhérent (id eBill) de l'inscription --> vide dans le cas d'une résiliation.
-     * @param email          : le mail lié à l'inscription --> vide dans le cadre d'une résiliation.
-     * @param compteAnnexe   : le compte annexe à mettre à jour.
-     * @return vrai si l'update s'est bien passé.
-     */
-    private boolean majCompteAnnexe(final String numeroAdherent,
-                                    final String email,
-                                    final CACompteAnnexe compteAnnexe) {
-        compteAnnexe.seteBillAccountID(numeroAdherent);
-        compteAnnexe.seteBillMail(email);
-        try {
-            compteAnnexe.update();
-        } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
-            LOG.error(erreurInterne, e);
-            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Envoi le résultat du traitement par mail.
      *
      * @param mailContent : le contenu du mail envoyé.
