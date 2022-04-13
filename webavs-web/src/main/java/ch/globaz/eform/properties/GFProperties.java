@@ -10,7 +10,8 @@ public enum GFProperties implements IProperties {
     APPLICATION_MAIN_CLASS("applicationClassName", "Nom de la classe principale de l'application eFromulaire."),
     EMAIL_EFORM("email.sedex.validation", "Email pour l'envoi des fichiers sedex P14 non traités"),
     EMAIL_BODY_ERROR("email.sedex.error", "Email d'erreur pour le traitement sedex P14 en erreur"),
-    GESTIONNAIRE_USER_DEFAULT("user.gestionnaire.default", "Gestionnaire par défaut");
+    GESTIONNAIRE_USER_DEFAULT("user.gestionnaire.default", "Gestionnaire par défaut"),
+    EMAIl_RECAP_FORMULAIRE("email.recap.formulaire", "Email d'envoie du fichier récapitulatif des formulaires au statut reçu");
 
     private final String description;
     private final String propertyName;
