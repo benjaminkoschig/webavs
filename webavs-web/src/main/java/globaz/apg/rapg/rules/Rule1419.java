@@ -9,11 +9,12 @@ import globaz.apg.pojo.APChampsAnnonce;
 
 import java.time.LocalDate;
 
+/**
+ * Suite à l'importation d'un formulaire paternité : Si période de droit débutant avant la naissance de l'enfant,
+ * afficher breakrule bloquante 1419
+ */
 public class Rule1419 extends Rule {
 
-    /**
-     * @param errorCode
-     */
     public Rule1419(String errorCode) {
         super(errorCode, true);
     }
