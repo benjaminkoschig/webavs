@@ -459,7 +459,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
         statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
         statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), geteBillMail(), "eBillMail"));
-        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), geteBillDateInscription(), "eBillInscriptionDate"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), geteBillDateInscription(), "eBillDateInscription"));
     }
 
     /**
