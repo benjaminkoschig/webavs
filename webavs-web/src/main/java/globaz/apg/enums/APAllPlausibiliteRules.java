@@ -93,6 +93,7 @@ public enum APAllPlausibiliteRules {
     R_511(true, 511),
     R_512(true, 512),
     R_513(true, 513),
+    R_1419(true, 1419),
     R_1509(true, 1509),
     R_2000(true, 2000);
 
