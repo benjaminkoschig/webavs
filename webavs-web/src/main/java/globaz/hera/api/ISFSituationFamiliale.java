@@ -99,7 +99,7 @@ public interface ISFSituationFamiliale {
      * @return le {@link ISFMembreFamille membre} créé
      * @throws Exception
      */
-    public ISFMembreFamille addMembreCelibataire(String idTiers) throws Exception;
+    ISFMembreFamille addMembreCelibataire(String idTiers) throws Exception;
 
     /**
      * <p>
@@ -110,7 +110,7 @@ public interface ISFSituationFamiliale {
      * @return {@link ISFEnfant l'enfant}
      * @throws Exception en cas d'erreur
      */
-    public ISFEnfant getEnfant(String idMembreFamille) throws Exception;
+    ISFEnfant getEnfant(String idMembreFamille) throws Exception;
 
     /**
      * <p>
@@ -121,7 +121,7 @@ public interface ISFSituationFamiliale {
      * @return le {@link ISFMembreFamille membre de la famille}
      * @throws Exception en cas d'erreur
      */
-    public ISFMembreFamille getMembreFamille(String idMembreFamille) throws Exception;
+    ISFMembreFamille getMembreFamille(String idMembreFamille) throws Exception;
 
     /**
      * <p>
@@ -133,7 +133,7 @@ public interface ISFSituationFamiliale {
      * @return le détail du {@link ISFMembreFamille membre de la famille}
      * @throws Exception en cas d'erreur
      */
-    public ISFMembreFamille getMembreFamille(String idMembreFamille, String date) throws Exception;
+    ISFMembreFamille getMembreFamille(String idMembreFamille, String date) throws Exception;
 
     /**
      * <p>
@@ -146,7 +146,7 @@ public interface ISFSituationFamiliale {
      * invalide
      * @throws Exception
      */
-    public ISFMembreFamilleRequerant[] getMembresFamille(String idTiers) throws Exception;
+    ISFMembreFamilleRequerant[] getMembresFamille(String idTiers) throws Exception;
 
     /**
      * <p>
@@ -158,7 +158,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFMembreFamille membre de la famille} selon le membre passé en paramètre
      * @throws Exception
      */
-    public ISFMembreFamille[] getMembresFamilleEtendue(String idMembreFamille, Boolean inclureParents) throws Exception;
+    ISFMembreFamille[] getMembresFamilleEtendue(String idMembreFamille, Boolean inclureParents) throws Exception;
 
     /**
      * <p>
@@ -171,7 +171,7 @@ public interface ISFSituationFamiliale {
      * de tiers invalide
      * @throws Exception
      */
-    public ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers) throws Exception;
+    ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers) throws Exception;
 
     /**
      * <p>
@@ -193,7 +193,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFMembreFamille membres de la famille} du requérant
      * @throws Exception
      */
-    public ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers, String date) throws Exception;
+    ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers, String date) throws Exception;
 
     /**
      * <p>
@@ -206,7 +206,7 @@ public interface ISFSituationFamiliale {
      * de membre invalide
      * @throws Exception
      */
-    public ISFMembreFamilleRequerant[] getMembresFamilleRequerantParMbrFamille(String idMembreFamille) throws Exception;
+    ISFMembreFamilleRequerant[] getMembresFamilleRequerantParMbrFamille(String idMembreFamille) throws Exception;
 
     /**
      * <p>
@@ -218,7 +218,7 @@ public interface ISFSituationFamiliale {
      * de tiers invalide
      * @throws Exception
      */
-    public ISFMembreFamille[] getParents(String idTiers) throws Exception;
+    ISFMembreFamille[] getParents(String idTiers) throws Exception;
 
     /**
      * <p>
@@ -230,7 +230,7 @@ public interface ISFSituationFamiliale {
      * de membre invalide
      * @throws Exception
      */
-    public ISFMembreFamille[] getParentsParMbrFamille(String idMembreFamille) throws Exception;
+    ISFMembreFamille[] getParentsParMbrFamille(String idMembreFamille) throws Exception;
 
     /**
      * <p>
@@ -241,7 +241,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFPeriode périodes} du membres de la famille
      * @throws Exception
      */
-    public ISFPeriode[] getPeriodes(String idMembreFamille) throws Exception;
+    ISFPeriode[] getPeriodes(String idMembreFamille) throws Exception;
 
     /**
      * <p>
@@ -253,7 +253,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFPeriode périodes} du membre selon le type
      * @throws Exception
      */
-    public ISFPeriode[] getPeriodes(String idMembreFamille, String typePeriode) throws Exception;
+    ISFPeriode[] getPeriodes(String idMembreFamille, String typePeriode) throws Exception;
 
     /**
      * <p>
@@ -268,7 +268,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFRelationFamiliale relations familiales} à la date donnée
      * @throws Exception
      */
-    public ISFRelationFamiliale[] getRelationsConjoints(String idTiersRequerant, String date) throws Exception;
+    ISFRelationFamiliale[] getRelationsConjoints(String idTiersRequerant, String date) throws Exception;
 
     /**
      * <p>
@@ -286,7 +286,7 @@ public interface ISFSituationFamiliale {
      * @return un tableau de taille 0, si les membres n'ont aucune relation
      * @throws Exception
      */
-    public ISFRelationFamiliale[] getRelationsConjointsEtendues(String idTiersRequerant, String date) throws Exception;
+    ISFRelationFamiliale[] getRelationsConjointsEtendues(String idTiersRequerant, String date) throws Exception;
 
     /**
      * <p>
@@ -300,7 +300,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFRelationFamiliale relations familiales}
      * @throws Exception
      */
-    public ISFRelationFamiliale[] getToutesRelationsConjoints(String idMembreFamille1, String idMembreFamille2,
+    ISFRelationFamiliale[] getToutesRelationsConjoints(String idMembreFamille1, String idMembreFamille2,
                                                               Boolean triDateDebutDecroissant) throws Exception;
 
     /**
@@ -315,7 +315,7 @@ public interface ISFSituationFamiliale {
      * @return les {@link ISFRelationFamiliale relations familiales}
      * @throws Exception
      */
-    public ISFRelationFamiliale[] getToutesRelationsConjointsParIdTiers(String idTiers1, String idTiers2,
+    ISFRelationFamiliale[] getToutesRelationsConjointsParIdTiers(String idTiers1, String idTiers2,
                                                                         Boolean triDateDebutDecroissant) throws Exception;
 
     /**
@@ -327,7 +327,7 @@ public interface ISFSituationFamiliale {
      * @param csDomaine
      * @return <code>true</code> si requérant existe, <code>false</code> sinon.
      */
-    public Boolean isRequerant(String idTiersRequerant, String csDomaine) throws Exception;
+    Boolean isRequerant(String idTiersRequerant, String csDomaine) throws Exception;
 
     /**
      * <p>
@@ -337,5 +337,5 @@ public interface ISFSituationFamiliale {
      * @param domaine le code système du nouveau domaine
      * @throws Exception
      */
-    public void setDomaine(String domaine) throws Exception;
+    void setDomaine(String domaine) throws Exception;
 }

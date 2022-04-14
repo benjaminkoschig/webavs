@@ -1,10 +1,6 @@
 package globaz.prestation.acor.web.mapper;
 
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeBTEType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeEnfantTypeEnum;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.PeriodeRecueilliGType;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.util.Dates;
 import globaz.commons.nss.NSUtil;
 import globaz.hera.api.ISFEnfant;
@@ -116,11 +112,12 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
     private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
         ISFPeriode[] periodes = recupererPeriodesMembre(membre);
         for (ISFPeriode isfPeriode : periodes) {
-            // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
             if (isPeriodeBTE(isfPeriode)) {
                 enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
-            } else if (isPeriodeEnfant(isfPeriode)) {
+            } else if (isPeriodeEnfantRecueilliGratuitement(isfPeriode)) {
                 enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
+            } else if (isPeriodeEnfantRecueilliGratuitementConjoint(isfPeriode)) {
+                enfant.getPeriodeRecueilliC().add(createPeriodeRecueilliC(isfPeriode));
             } else if (isPeriodeRefusAF(isfPeriode)) {
                 PeriodeEnfantType periode = createPeriodeEnfant(enfant, isfPeriode);
                 enfant.getPeriode().add(periode);
@@ -135,8 +132,12 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_GARDE_ETC_BTE, isfPeriode.getType());
     }
 
-    private boolean isPeriodeEnfant(ISFPeriode isfPeriode) {
+    private boolean isPeriodeEnfantRecueilliGratuitement(ISFPeriode isfPeriode) {
         return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_ENFANT_RECUEILLI_GRATUITEMENT, isfPeriode.getType());
+    }
+
+    private boolean isPeriodeEnfantRecueilliGratuitementConjoint(ISFPeriode isfPeriode) {
+        return StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT, isfPeriode.getType()) || StringUtils.equals(PRACORConst.CA_PERIODE_ENFANT_RECUEILLI_GRATUITEMENT_CONJOINT, isfPeriode.getType());
     }
 
     private boolean isPeriodeRefusAF(final ISFPeriode isfPeriode) {
@@ -232,6 +233,14 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
         periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
         periode.setTuteur(StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur()));
+        return periode;
+    }
+
+    private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
+        PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
+        periode.setDebut(Dates.toXMLGregorianCalendar(isfPeriode.getDateDebut()));
+        periode.setFin(Dates.toXMLGregorianCalendar(isfPeriode.getDateFin()));
+        periode.setParentNonBiologique(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsRecueillant())));
         return periode;
     }
 

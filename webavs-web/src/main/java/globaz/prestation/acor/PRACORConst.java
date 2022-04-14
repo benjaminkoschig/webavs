@@ -100,6 +100,7 @@ public class PRACORConst {
     // le type de période
     public static final String CA_PERIODE_DOMICILE_EN_SUISSE = "do";
     public static final String CA_PERIODE_ENFANT_RECUEILLI_GRATUITEMENT = "rc";
+    public static final String CA_PERIODE_ENFANT_RECUEILLI_GRATUITEMENT_CONJOINT = "rgc";
     public static final String CA_PERIODE_ETUDE = "et";
     public static final String CA_PERIODE_EXEMPTION_COTISATION = "ex";
     public static final String CA_PERIODE_GARDE_ETC_BTE = "be";
