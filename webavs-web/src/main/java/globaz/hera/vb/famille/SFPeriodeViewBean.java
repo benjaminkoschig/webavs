@@ -103,9 +103,9 @@ public class SFPeriodeViewBean extends SFPeriode implements FWViewBeanInterface 
     public String getTiersRequerant() {
         SFTiersWrapper tiers;
         StringBuilder nomRecueillant = new StringBuilder();
-        if (StringUtils.isNotEmpty(getIdRecueillant())) {
+        if (StringUtils.isNotEmpty(getNoAvsRecueillant())) {
             try {
-                tiers = SFTiersHelper.getPersonneAVS(getSession(), getIdRecueillant());
+                tiers = SFTiersHelper.getTiers(getSession(), getNoAvsRecueillant());
                 if (Objects.nonNull(tiers)) {
                     addStringWithSeparator(nomRecueillant, tiers.getProperty(SFTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                     addStringWithSeparator(nomRecueillant, new StringBuilder(tiers.getProperty(SFTiersWrapper.PROPERTY_NOM)).append(" ").append(tiers.getProperty(SFTiersWrapper.PROPERTY_PRENOM)).toString());

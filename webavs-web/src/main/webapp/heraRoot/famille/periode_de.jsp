@@ -393,7 +393,7 @@
             String redirectUrl = ((String)request.getAttribute("mainServletPath")+"Root")+"/famille/periode_de.jsp";
 
             Object[] recueillantMethods= new Object[]{
-                    new String[]{"setIdRecueillant","getIdTiers"}
+                    new String[]{"setNoAvsRecueillant","getNumAvsActuel"}
             };
 
         %>

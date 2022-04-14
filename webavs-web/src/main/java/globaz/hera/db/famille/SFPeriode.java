@@ -34,7 +34,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     public static final String FIELD_PAYS = "WHTPAY";
     public static final String FIELD_TYPE = "WHTTYP";
     public static final String FIELD_TYPE_DE_DETENTEUR = "WHTYDE";
-    public static final String FIELD_ID_RECUEILLANT = "ID_RECUEILLANT";
+    public static final String FIELD_RECUEILLANT = "RECUEILLANT";
 
     public static final String TABLE_NAME = "SFPERIOD";
 
@@ -51,7 +51,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     private String type = "";
     private String csTypeDeDetenteur;
 
-    private String idRecueillant;
+    private String noAvsRecueillant;
 
     public SFPeriode() {
         super();
@@ -62,7 +62,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
         setIdPeriode(this._incCounter(transaction, "0"));
 
         if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
-            setIdRecueillant("");
+            setNoAvsRecueillant("");
         }
     }
 
@@ -81,7 +81,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
         pays = statement.dbReadNumeric(SFPeriode.FIELD_PAYS);
         idDetenteurBTE = statement.dbReadNumeric(SFPeriode.FIELD_IDDETENTEURBTE);
         csTypeDeDetenteur = statement.dbReadNumeric(SFPeriode.FIELD_TYPE_DE_DETENTEUR);
-        idRecueillant = statement.dbReadNumeric(SFPeriode.FIELD_ID_RECUEILLANT);
+        noAvsRecueillant = statement.dbReadString(SFPeriode.FIELD_RECUEILLANT);
     }
 
     @Override
@@ -207,8 +207,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
                 this._dbWriteNumeric(statement.getTransaction(), idDetenteurBTE, "idDetenteurBTE"));
         statement.writeField(SFPeriode.FIELD_TYPE_DE_DETENTEUR,
                 this._dbWriteNumeric(statement.getTransaction(), csTypeDeDetenteur, "csTypeDeDetenteur"));
-        statement.writeField(SFPeriode.FIELD_ID_RECUEILLANT,
-                this._dbWriteNumeric(statement.getTransaction(), idRecueillant, "idRecueillant"));
+        statement.writeField(SFPeriode.FIELD_RECUEILLANT,
+                this._dbWriteString(statement.getTransaction(), noAvsRecueillant, "noAvsRecueillant"));
     }
 
     /**
@@ -316,12 +316,12 @@ public class SFPeriode extends BEntity implements ISFPeriode {
         }
     }
 
-    public String getIdRecueillant() {
-        return idRecueillant;
+    public String getNoAvsRecueillant() {
+        return noAvsRecueillant;
     }
 
-    public void setIdRecueillant(String idRecueillant) {
-        this.idRecueillant = idRecueillant;
+    public void setNoAvsRecueillant(String noAvsRecueillant) {
+        this.noAvsRecueillant = noAvsRecueillant;
     }
 
     /**
@@ -490,7 +490,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         super._beforeUpdate(transaction);
         if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
-            setIdRecueillant("");
+            setNoAvsRecueillant("");
         }
 
     }
