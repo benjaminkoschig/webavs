@@ -12,6 +12,14 @@
 	globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationViewBean viewBean 
 		= (globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationViewBean)session.getAttribute ("viewBean");
 	String method = request.getParameter("_method");
+	boolean showGestionDossierCAF = false;
+	try {
+		showGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
+	} catch (Exception e) {
+		vBeanHasErrors = true;
+		viewBean.setMessage("Die Eigenschaft \"DISPLAY_GESTION_DOSSIER_CAF\" existiert nicht!");
+		viewBean.setMsgType(FWViewBeanInterface.ERROR);
+	}
 
 %>
 <%-- /tpl:put --%>
@@ -95,60 +103,27 @@ function onChangeGenre(){
 	var newMotif = document.forms[0].elements('motif').value;
 	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LPP%>&&newMotif=="") {
 		document.all('attestationIPTable').style.display = 'block';
-		<%
-			boolean showGestionDossierCAF = false;
-			try {
-				showGestionDossierCAF = AFProperties.DISPLAY_GESTION_DOSSIER_CAF.getBooleanValue();
-			} catch (Exception e) {
-				vBeanHasErrors = true;
-				viewBean.setMessage("Die Eigenschaft \"DISPLAY_GESTION_DOSSIER_CAF\" existiert nicht!");
-				viewBean.setMsgType(FWViewBeanInterface.ERROR);
-			}
-
-			if (showGestionDossierCAF) {
-		%>
-		document.all('lbRemarque').style.display = 'none';
-		document.all('trEnvoieCAF').style.display = 'none';
-		document.all('trException').style.display = 'none';
-		<%
-			}
-		%>
+		<%if (showGestionDossierCAF) {%>
+		hideRemarqueCaf();
+		<%}%>
 	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_LAA%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
-		<%
-			if (showGestionDossierCAF) {
-		%>
-		document.all('lbRemarque').style.display = 'none';
-		document.all('trEnvoieCAF').style.display = 'none';
-		document.all('trException').style.display = 'none';
-		<%
-			}
-		%>
+		<%if (showGestionDossierCAF) {%>
+		hideRemarqueCaf();
+		<%}%>
 	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AVS%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
-		<%
-			if (showGestionDossierCAF) {
-		%>
-		document.all('lbRemarque').style.display = 'none';
-		document.all('trEnvoieCAF').style.display = 'none';
-		document.all('trException').style.display = 'none';
-		<%
-			}
-		%>
+		<%if (showGestionDossierCAF) {%>
+		hideRemarqueCaf();
+		<%}%>
 	} else if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>){
 		document.forms[0].elements('attestationIp').checked = false;
 		document.all('attestationIPTable').style.display = 'none';
-		<%
-			if (showGestionDossierCAF) {
-		%>
-		document.all('lbRemarque').style.display = 'block';
-		document.all('trEnvoieCAF').style.display = 'block';
-		document.all('trException').style.display = 'block';
-		<%
-			}
-		%>
+		<%if (showGestionDossierCAF) {%>
+		showRemarqueCaf();
+		<%}%>
 	}
 }
 
@@ -157,10 +132,8 @@ function onChangeMotif(){
 	var newGenreValeur = document.forms[0].elements('genreCaisse').value;
 	if (newGenreValeur === undefined) {
 		newGenreValeur = "<%=viewBean.getGenreCaisse()%>";
-		newMotif = "<%=viewBean.getMotif()%>";
 	}
-	document.all('attestationIPTable').style.display = 'none';
-	if (newMotif != "0") {
+	if (newMotif != "") {
 		document.forms[0].elements('idTiersCaisse').value = "";
 		document.forms[0].elements('numeroCaisse').value = "";
 		document.forms[0].elements('nomCaisse').value = "";
@@ -169,6 +142,7 @@ function onChangeMotif(){
 		if(document.forms[0].elements('caisseSelector')!=null)
 			document.forms[0].elements('caisseSelector').disabled = true;
 		document.forms[0].elements('numeroAffileCaisse').disabled = true;
+		document.all('attestationIPTable').style.display = 'none';
 	}else{
 		if(document.forms[0].elements('caisseSelector')!=null)
 			document.forms[0].elements('caisseSelector').disabled = false;
@@ -178,14 +152,25 @@ function onChangeMotif(){
 			document.all('attestationIPTable').style.display = 'block';
 		}
 	}
-	document.all('lbRemarque').style.display = 'none';
-	document.all('trEnvoieCAF').style.display = 'none';
-	document.all('trException').style.display = 'none';
+	<%if (showGestionDossierCAF) {%>
 	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>) {
-		document.all('lbRemarque').style.display = 'block';
-		document.all('trEnvoieCAF').style.display = 'block';
-		document.all('trException').style.display = 'block';
+		showRemarqueCaf();
+	} else {
+		hideRemarqueCaf();
 	}
+	<%}%>
+}
+
+function showRemarqueCaf() {
+	$('#lbRemarque').show();
+	$('#trEnvoieCAF').show();
+	$('#trException').show();
+}
+
+function hideRemarqueCaf() {
+	$('#lbRemarque').hide();
+	$('#trEnvoieCAF').hide();
+	$('#trException').hide();
 }
 
 </SCRIPT>
