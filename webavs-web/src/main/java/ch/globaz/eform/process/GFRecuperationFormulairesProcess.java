@@ -23,7 +23,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +112,7 @@ public class GFRecuperationFormulairesProcess extends BProcess {
     }
 
     private void sendMail(String joinFilePath) throws PropertiesException {
-        String email = GFProperties.EMAIl_RECAP_FORMULAIRE.getValue();
+        String email = GFProperties.EMAIL_RECAP_FORMULAIRE.getValue();
 
         String subject;
         String body;
