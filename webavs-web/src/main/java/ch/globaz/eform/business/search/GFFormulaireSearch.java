@@ -4,7 +4,7 @@ import ch.globaz.eform.business.models.GFFormulaireModel;
 import globaz.jade.persistence.model.JadeSearchSimpleModel;
 
 public class GFFormulaireSearch extends JadeSearchSimpleModel {
-    public static String ORDER_DEFINITION_FORMULAIRE = "formulaire";
+    public static String WHERE_DEFINITION_FORMULAIRE = "formulaire";
 
     //Id technique
     private String byId = null;
