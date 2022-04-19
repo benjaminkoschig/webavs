@@ -15,7 +15,7 @@
 <%-- tpl:insert attribute="zoneInit" --%>
 
 <%
-    idEcran = "GF0002";
+    idEcran = "GFE0002";
     JadeUser currentUser = objSession.getUserInfo();
 
     GFFormulaireViewBean viewBean = (GFFormulaireViewBean) session.getAttribute("viewBean");
