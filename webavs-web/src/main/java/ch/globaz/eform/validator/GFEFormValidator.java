@@ -1,5 +1,6 @@
 package ch.globaz.eform.validator;
 
+import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.validation.ValidationError;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
@@ -55,13 +56,15 @@ public class GFEFormValidator {
 
             //Validation des attachements
             NodeList nodeList = (NodeList) xPath.compile("/message/header/attachment").evaluate(xmlDocument, XPathConstants.NODESET);
-            for (int i = 0; i < nodeList.getLength(); i++) {
+            int i = 0;
+            while (!result.hasError() && i < nodeList.getLength()) {
                 Node attachmentNode = nodeList.item(i);
                 String attachmentPath = attachmentNode.getChildNodes().item(13).getChildNodes().item(1).getFirstChild().getNodeValue();
                 if (messageSedex.attachments.entrySet().stream()
                         .noneMatch(entry -> ("attachments_" + entry.getValue()).equals(attachmentPath))) {
                     result.addError("attachment", ValidationError.EMPTY);
                 }
+                i++;
             }
 
             //Validation du doublon du message ID
@@ -97,6 +100,8 @@ public class GFEFormValidator {
             String nss = nodeVn.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(nss)) {
                 result.addError("nss", ValidationError.MANDATORY);
+            } else if (!NSSUtils.checkNSS(nss)) {
+                result.addError("nss", ValidationError.MALFORMED);
             }
         } catch (ParserConfigurationException e) {
             LOG.error("Erreur dans la configuration du parceur XML", e);
