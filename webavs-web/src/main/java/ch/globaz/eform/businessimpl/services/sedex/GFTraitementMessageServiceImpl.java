@@ -159,7 +159,7 @@ public class GFTraitementMessageServiceImpl {
         try {
             ValidationResult result = GFEFormValidator.sedexMessage(currentSimpleMessage);
             if (result.hasError()) {
-                throw new Exception("Le message sedex compporte des erreurs");
+                throw new Exception("Le message sedex comporte des erreurs");
             }
             GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
             if(formHandler != null){

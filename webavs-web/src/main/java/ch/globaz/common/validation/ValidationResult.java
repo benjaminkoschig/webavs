@@ -20,7 +20,7 @@ public final class ValidationResult {
      * @param type type of error
      */
     public void addError(String propertie, ValidationError type) {
-
+        this.error.put(propertie, type);
     }
 
     public Map<String, ValidationError> getError(){

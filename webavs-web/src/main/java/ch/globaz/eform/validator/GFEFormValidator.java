@@ -55,13 +55,15 @@ public class GFEFormValidator {
 
             //Validation des attachements
             NodeList nodeList = (NodeList) xPath.compile("/message/header/attachment").evaluate(xmlDocument, XPathConstants.NODESET);
-            for (int i = 0; i < nodeList.getLength(); i++) {
+            int i = 0;
+            while (!result.hasError() && i < nodeList.getLength()) {
                 Node attachmentNode = nodeList.item(i);
                 String attachmentPath = attachmentNode.getChildNodes().item(13).getChildNodes().item(1).getFirstChild().getNodeValue();
                 if (messageSedex.attachments.entrySet().stream()
                         .noneMatch(entry -> ("attachments_" + entry.getValue()).equals(attachmentPath))) {
                     result.addError("attachment", ValidationError.EMPTY);
                 }
+                i++;
             }
 
             //Validation du doublon du message ID
