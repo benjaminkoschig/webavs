@@ -1,5 +1,6 @@
 package ch.globaz.eform.validator;
 
+import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.validation.ValidationError;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
@@ -99,6 +100,8 @@ public class GFEFormValidator {
             String nss = nodeVn.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(nss)) {
                 result.addError("nss", ValidationError.MANDATORY);
+            } else if (!NSSUtils.checkNSS(nss)) {
+                result.addError("nss", ValidationError.MALFORMED);
             }
         } catch (ParserConfigurationException e) {
             LOG.error("Erreur dans la configuration du parceur XML", e);
