@@ -110,6 +110,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     public static final String FIELD_EBILL_ID= "EBILLID";
     public static final String FIELD_EBILL_MAIL= "EBILLMAIL";
+    public static final String FIELD_EBILL_DATE_INSCRIPTION= "EBILLDATEINSCRIPTION";
 
     public static final String GENRE_COMPTE_STANDARD = "0";
     public static final String LABEL_OPERATION_AUXILIAIRE_NON_INSEREE = "OPERATION_AUXILIAIRE_NON_INSEREE";
@@ -156,6 +157,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     private String eBillAccountID = new String();
     private String eBillMail = new String();
+    private String eBillDateInscription = new String();
 
     private FWParametersUserCode ucMotifContentieuxSuspendu = null;
 
@@ -292,6 +294,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
         eBillAccountID = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_ID);
         eBillMail = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_MAIL);
+        eBillDateInscription = statement.dbReadDateAMJ(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION);
     }
 
     /**
@@ -457,6 +460,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
         statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
         statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), geteBillMail(), "eBillMail"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), geteBillDateInscription(), "eBillDateInscription"));
     }
 
     /**
@@ -1989,5 +1993,13 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     public void seteBillMail(String eBillMail) {
         this.eBillMail = eBillMail;
+    }
+
+    public String geteBillDateInscription() {
+        return eBillDateInscription;
+    }
+
+    public void seteBillDateInscription(String eBillDateInscription) {
+        this.eBillDateInscription = eBillDateInscription;
     }
 }

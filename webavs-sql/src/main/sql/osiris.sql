@@ -14,3 +14,5 @@ ALTER TABLE SCHEMA.CAET ALTER NOM SET DATA TYPE varchar(70);
 
 --eBill
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('osiris.eBill.email.confirmation','', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+-- ajout date inscription ebill (WEBAVS-11960, S210303_006)
+ALTER TABLE SCHEMA.CACPTAP ADD EBILLDATEINSCRIPTION decimal(8);
