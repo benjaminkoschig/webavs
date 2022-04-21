@@ -272,6 +272,6 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
 
     @Override
     public GlobazJobQueue jobQueue() {
-        return GlobazJobQueue.READ_SHORT;
+        return GlobazJobQueue.READ_LONG;
     }
 }
