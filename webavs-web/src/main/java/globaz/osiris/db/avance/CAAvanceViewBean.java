@@ -1,5 +1,9 @@
 package globaz.osiris.db.avance;
 
+import ch.globaz.exceptions.ExceptionMessage;
+import ch.globaz.exceptions.GlobazTechnicalException;
+import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
+import ch.globaz.osiris.business.service.CABusinessServiceLocator;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.framework.translation.FWTranslation;
@@ -12,11 +16,22 @@ import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
+import globaz.jade.context.JadeThreadContext;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.recouvrement.CAPlanRecouvrementViewBean;
+import globaz.osiris.external.IntRole;
+import globaz.prestation.interfaces.af.IPRAffilie;
+import globaz.prestation.interfaces.af.PRAffiliationHelper;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -24,13 +39,13 @@ import java.util.Vector;
 /**
  * Class extends de l'entité du Plan de recouvrement. <br>
  * Représente l'entité pour la gestion des Avances.
- * 
+ *
  * @author dda
  */
 public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWViewBeanInterface {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -43,6 +58,10 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     private static final String LABEL_AUCUNE_ECHEANCE_ASSOCIEE = "AUCUNE_ECHEANCE_ASSOCIEE";
     private static final String LABEL_DATE_FIN_ETOU_PLAFOND = "DATE_FIN_ETOU_PLAFOND";
     private static final String LABEL_MISSING_MODE_AVANCE = "MISSING_MODE_AVANCE";
+
+
+    private String idExterneRoleFromScreen = "";
+
     static {
         CAAvanceViewBean.CODES_EXCLUS_POUR_ECRANS.add(CAPlanRecouvrement.CS_BVR);
         CAAvanceViewBean.CODES_EXCLUS_POUR_ECRANS.add(CAPlanRecouvrement.CS_DIRECT);
@@ -54,7 +73,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne la liste de tous les idCodes séparés par des virgules, permis pour cet utilisateur et n'étant pas
      * contenus dans le set exclus.
-     * 
+     *
      * @see #modesPourUtilisateurCourant(BSession, Set, boolean)
      */
     public static final String listeIdsModesPourUtilisateurCourant(BSession session, Set exclus) throws Exception {
@@ -63,7 +82,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
 
     /**
      * idem que modesPourUtilisateurCourant(session, CODES_EXCLUS_POUR_ECRANS, true).
-     * 
+     *
      * @see #modesPourUtilisateurCourant(BSession, Set, boolean)
      */
     public static final Vector /* String[]{idCode, libelleCode} */modesPourUtilisateurCourant(BSession session)
@@ -75,17 +94,14 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
      * Retourne un vecteur utilisable dans un FWListSelectTag contenant des tableaux de String[2] {idCode, libelleCode},
      * les codes sont ceux sur lesquels l'utilisateur courant a le droit de lecture et qui ne sont pas dans le set
      * exclus.
-     * 
-     * @param session
-     *            la session permettant de retrouver l'utilisateur
-     * @param exclus
-     *            un ensemble d'id de code à exclure du résultat
-     * @param tous
-     *            vrai pour que le vecteur contiennent l'option 'Tous'
+     *
+     * @param session la session permettant de retrouver l'utilisateur
+     * @param exclus  un ensemble d'id de code à exclure du résultat
+     * @param tous    vrai pour que le vecteur contiennent l'option 'Tous'
      * @return un vecteur, jamais null, peut-etre vide
      */
     public static final Vector /* String[]{idCode, libelleCode} */modesPourUtilisateurCourant(BSession session,
-            Set exclus, boolean tous) throws Exception {
+                                                                                              Set exclus, boolean tous) throws Exception {
         Vector retValue = new Vector();
         StringBuffer tousModes = new StringBuffer();
         FWParametersSystemCodeManager codes = FWTranslation.getSystemCodeList("OSIPLRMOD", session);
@@ -97,7 +113,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
             if (!exclus.contains(idCode)
                     && session.hasRight(CAAvanceViewBean.FX_ELEMENT_PREFIX + idCode, FWSecureConstants.READ)) {
                 // créer les infos
-                String[] codeInfo = new String[] { idCode, code.getCurrentCodeUtilisateur().getLibelle() };
+                String[] codeInfo = new String[]{idCode, code.getCurrentCodeUtilisateur().getLibelle()};
 
                 retValue.add(codeInfo);
 
@@ -111,7 +127,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
         }
 
         if (tous) {
-            retValue.insertElementAt(new String[] { tousModes.toString(), session.getLabel("TOUS") }, 0);
+            retValue.insertElementAt(new String[]{tousModes.toString(), session.getLabel("TOUS")}, 0);
         }
 
         return retValue;
@@ -139,7 +155,6 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     }
 
     /**
-     * @see globaz.osiris.db.access.recouvrement#_afterDelete(globaz.globall.db.BTransaction)
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
@@ -294,16 +309,70 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
                         getSession().getLabel(CAPlanRecouvrement.LABEL_DATE_ECHEANCE_MUST_BE_EMPTY));
             }
         }
+        if (getIdModeRecouvrement().equals(CAPlanRecouvrement.CS_AVANCE_PTRA) &&
+                JadeStringUtil.isBlankOrZero(getIdCompteAnnexe()) || !checkIfIsPTRA()) {
+            CompteAnnexeSimpleModel compteAnnexe = null;
+            String nss = this.idExterneRoleFromScreen;
+            String idTiers = "";
+            JadeThreadContext threadContext = initThreadContext(getSession());
+            try {
+                CACompteAnnexe compteAnnexeExist = getCompteAnnexe();
+                if (compteAnnexeExist != null) {
+                    idTiers = compteAnnexeExist.getIdTiers();
+                } else {
+                    PRTiersWrapper tw = PRTiersHelper.getTiers(getSession(), nss);
+                    if (tw != null) {
+                        idTiers = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    } else {
+                        IPRAffilie aff = PRAffiliationHelper.getEmployeurParNumAffilie(getSession(), nss);
+                        if (aff != null) {
+                            idTiers = aff.getIdTiers();
+                        }
+                    }
+                }
+                JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
+                compteAnnexe = CABusinessServiceLocator.getCompteAnnexeService().getCompteAnnexe(null,
+                        idTiers, IntRole.ROLE_PTRA,
+                        nss, true);
+                getSession().getCurrentThreadTransaction().commit();
+            } catch (Exception e) {
+                JadeLogger.error(this, e);
+                _addError(statement.getTransaction(), e.getMessage());
+            } finally {
+                JadeThreadActivator.stopUsingContext(threadContext);
+            }
+            if (compteAnnexe != null) {
+                setIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
+            }
+        }
 
         // Compte annexe
         _propertyMandatory(statement.getTransaction(), getIdCompteAnnexe(),
                 getSession().getLabel(CAPlanRecouvrement.LABEL_COMPTEANNEXE_OBLIGATOIRE));
     }
 
+    public void setIdExterneRoleFromScreen(String idExterneRoleFromScreen) {
+        this.idExterneRoleFromScreen = idExterneRoleFromScreen;
+    }
+
+    public String getIdExterneRoleFromScreen() {
+        return this.idExterneRoleFromScreen;
+    }
+
+    private boolean checkIfIsPTRA() {
+        if (!JadeStringUtil.isBlankOrZero(getIdCompteAnnexe())) {
+            CACompteAnnexe compteAnnexe = getCompteAnnexe();
+            if (compteAnnexe.getIdRole().equals(IntRole.ROLE_PTRA)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Retourne la valeur formaté. Si cette dernière est déjà formatté aucune opération ne sera effectué pour la
      * reformaté.
-     * 
+     *
      * @see globaz.osiris.db.access.recouvrement.CAPlanRecouvrement#getPlafondFormate()
      */
     @Override
@@ -318,7 +387,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne le nom du tiers du compte annexe. <br>
      * Utilisé dans la page jsp de détail.
-     * 
+     *
      * @return
      */
     public String getCompteAnnexeNom() {
@@ -346,7 +415,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
 
     /**
      * Retourne la date de fin de l'avance.
-     * 
+     *
      * @return
      */
     public String getDateMax() {
@@ -356,7 +425,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne l'échéance de l'avance. <br>
      * Utilisation du manager car la recherche se fait sur l'idPlanRecouvrement.
-     * 
+     *
      * @param transaction
      * @return
      * @throws Exception
@@ -379,7 +448,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne l'idExterneRole du Compte Annexe. <br>
      * Utilisé dans la page jsp de détail.
-     * 
+     *
      * @return
      */
     public String getIdExterneRole() {
@@ -408,7 +477,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne la valeur formaté. Si cette dernière est déjà formatté aucune opération ne sera effectué pour la
      * reformaté.
-     * 
+     *
      * @see globaz.osiris.db.access.recouvrement.CAPlanRecouvrement#getPlafondFormate()
      */
     @Override
@@ -423,7 +492,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
     /**
      * Retourne la valeur formaté. Si cette dernière est déjà formatté aucune opération ne sera effectué pour la
      * reformaté.
-     * 
+     *
      * @see globaz.osiris.db.access.recouvrement.CAPlanRecouvrement#getPlafondFormate()
      */
     @Override
@@ -437,7 +506,7 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
 
     /**
      * Set la date de fin de l'avance.
-     * 
+     *
      * @param string
      */
     public void setDateMax(String string) {
@@ -446,12 +515,36 @@ public class CAAvanceViewBean extends CAPlanRecouvrementViewBean implements FWVi
 
     /**
      * Mise à jour ou ajout des valeurs de l'échéance (table CAECHPP).
-     * 
+     *
      * @param echeance
      */
     private void setEcheanceValue(CAAvanceEcheance echeance) {
         echeance.setIdPlanRecouvrement(getIdPlanRecouvrement());
         echeance.setDateExigibilite(getDateMax());
         echeance.setDateRappel(getDateEcheance());
+    }
+
+    protected JadeThreadContext initThreadContext(BSession session) {
+        JadeThreadContext context;
+        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
+        ctxtImpl.setApplicationId(session.getApplicationId());
+        ctxtImpl.setLanguage(session.getIdLangueISO());
+        ctxtImpl.setUserEmail(session.getUserEMail());
+        ctxtImpl.setUserId(session.getUserId());
+        ctxtImpl.setUserName(session.getUserName());
+        String[] roles;
+        try {
+            roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
+                    .findAllIdRoleForIdUser(session.getUserId());
+        } catch (Exception e) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
+        }
+        if ((roles != null) && (roles.length > 0)) {
+            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+        }
+        context = new JadeThreadContext(ctxtImpl);
+        context.storeTemporaryObject("bsession", session);
+
+        return context;
     }
 }

@@ -12,6 +12,11 @@ ALTER TABLE SCHEMA.CAET ALTER ENTREPRISE SET DATA TYPE varchar(70);
 ALTER TABLE SCHEMA.CAET ALTER NOM SET DATA TYPE varchar(70);
 -- reorg table SCHEMA.CAET;
 
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (517046 , 'PYROLE    ', 1, 1, 0, 0, 'PTRA', 2, 1, 2, 2, 2, 2, 10500017, 0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (517046, 'D', '          ', 'Ptra', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (517046, 'F', '          ', 'Ptra', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+
+
 --eBill
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('osiris.eBill.email.confirmation','', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 ALTER TABLE SCHEMA.CACPTAP ADD COLUMN EBILLDATEINSCRIPTION DECIMAL(8);
