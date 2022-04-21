@@ -1,7 +1,9 @@
 package globaz.ged;
 
+import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BAbstractEntityExternalService;
 import globaz.globall.db.BEntity;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
@@ -99,6 +101,32 @@ public class AirsSynchroTiers extends BAbstractEntityExternalService {
                     "Could not propagate data for " + entity + "(" + entity.getId() + "): " + e.toString());
         }
     }
+
+    /**
+     * Cette méthode permet de propager un tiers dans le domaine passé en paramètre.
+     * @param tiers
+     * @param domaine
+     * @throws Exception
+     */
+    public static void propagateTiers(TITiersViewBean tiers, String domaine) throws Exception {
+        Properties properties = new Properties();
+
+        properties.setProperty(AirsConstants.DOMAINE, domaine);
+        if (tiers != null && !tiers.isNew()) {
+            properties.setProperty(AirsConstants.NSS, getDefaultValue(NSUtil.unFormatAVS(tiers.getNumAvsActuel())));
+            properties.setProperty(AirsConstants.NOM, getDefaultValue(tiers.getDesignation1()));
+            properties.setProperty(AirsConstants.PRENOM, getDefaultValue(tiers.getDesignation2()));
+        }
+        properties.setProperty(AirsConstants.DATE_CREATION, JACalendar.todayJJsMMsAAAA());
+        properties.setProperty(AirsConstants.USER_ID, tiers.getSession().getUserId());
+
+        JadeGedFacade.propagate(properties);
+    }
+
+    private static String getDefaultValue(String value) {
+        return JadeStringUtil.isBlankOrZero(value) ? "" : value;
+    }
+
 
     @Override
     public void validate(BEntity entity) throws Throwable {
