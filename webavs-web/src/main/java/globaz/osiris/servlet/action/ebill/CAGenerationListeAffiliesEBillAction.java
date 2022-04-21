@@ -5,7 +5,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.ebill.CAGenerationListeAffiliesEBillViewBean;
+import globaz.osiris.process.ebill.CAProcessGenererListeAffiliesEBill;
 import globaz.osiris.servlet.action.CADefaultServletAction;
 
 import javax.servlet.ServletException;
@@ -38,15 +38,10 @@ public class CAGenerationListeAffiliesEBillAction extends CADefaultServletAction
                                   FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination = getRelativeURL(request, session) + "_de.jsp";
 
-        CAGenerationListeAffiliesEBillViewBean viewBean;
+        CAProcessGenererListeAffiliesEBill viewBean;
 
         try {
-            /*if ((session.getAttribute(CADefaultServletAction.VB_ELEMENT) != null)
-                    && (session.getAttribute(CADefaultServletAction.VB_ELEMENT) instanceof CAGenerationListeAffiliesEBillViewBean)) {
-                viewBean = (CAGenerationListeAffiliesEBillViewBean) session.getAttribute(CADefaultServletAction.VB_ELEMENT);
-            } else {*/
-                viewBean = new CAGenerationListeAffiliesEBillViewBean();
-            //}
+            viewBean = new CAProcessGenererListeAffiliesEBill();
             viewBean.setISession(mainDispatcher.getSession());
             JSPUtils.setBeanProperties(request, viewBean);
             setSessionAttribute(session, CADefaultServletAction.VB_ELEMENT, viewBean);

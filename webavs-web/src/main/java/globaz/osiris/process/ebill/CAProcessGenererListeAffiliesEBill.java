@@ -31,7 +31,7 @@ import java.util.List;
 public class CAProcessGenererListeAffiliesEBill extends BProcess {
 
     public class CACompteAnnexePourListe{
-        public static final String NUMERO_INFOROM = "0325CCE";
+        public static final String NUMERO_INFOROM = "0346GCA";
         private String numeroAffilie;
         private String nss;
         private String nom;
@@ -82,7 +82,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
                 codePostal = "";
                 lieu = "";
             }
-            role = compte.getIdRole();
+            role = getSession().getCodeLibelle(compte.getIdRole());
             hasEBill = JadeStringUtil.isBlankOrZero(compte.geteBillAccountID()) ? "non" : "oui";
             eBillAccountId = compte.geteBillAccountID();
             emailEBill = compte.geteBillMail();
@@ -222,6 +222,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
         manager.setSession(getSession());
         manager.orderBy = CACompteAnnexe.FIELD_IDTIERS;
         manager.find(BManager.SIZE_NOLIMIT);
+        setProgressScaleValue(manager.size());
         if (manager.size() <= 0) {
             getMemoryLog().logMessage(getSession().getLabel("LABEL_MAIL_LISTE_AFFILIATION_EBILL_NO_DATA"),
                     FWMessage.INFORMATION, this.getClass().getName());
@@ -236,6 +237,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
         List<CACompteAnnexePourListe> liste = new ArrayList<>();
 
         for (int i = 0; i < compteAnnexeManager.size(); i++) {
+            incProgressCounter();
             CACompteAnnexe compte = (CACompteAnnexe) compteAnnexeManager.getEntity(i);
             try {
                 liste.add(new CACompteAnnexePourListe(compte));
@@ -266,7 +268,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
 
     @Override
     protected String getEMailObject() {
-        return "Gereration Liste Affilies eBill";
+        return "Generation Liste Affilies eBill";
     }
 
 
