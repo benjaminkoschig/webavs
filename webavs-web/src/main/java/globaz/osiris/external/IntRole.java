@@ -29,6 +29,7 @@ public interface IntRole extends BIEntity {
     String ROLE_FCF = "19170088";
     String ROLE_IJAI = "517034";
     String ROLE_PCF = "517045";
+    String ROLE_PTRA = "517046";
     String ROLE_RENTIER = "517038";
     String ROLE_BENEFICIAIRE_PRESTATIONS_CONVENTIONNELLES = "68902001";
     String ROLE_ASSOCIATION_PROFESSIONNELLE = "68902003";

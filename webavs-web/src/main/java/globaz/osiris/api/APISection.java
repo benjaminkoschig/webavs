@@ -76,6 +76,7 @@ public interface APISection extends BIEntity {
     String CATEGORIE_SECTION_RENTES = "28";
     String CATEGORIE_SECTION_RESTITUTIONS = "26";
     String CATEGORIE_SECTION_RETOUR = "72";
+    String CATEGORIE_SECTION_RETOUR_PTRA = "65";
     String CATEGORIE_SECTION_AVANCE_PTRA = "68";
     // Constante pour description des sections d'intérêts
     String DEC_INT_MORATOIRE_1_SEMESTRE = "256061";
@@ -209,6 +210,7 @@ public interface APISection extends BIEntity {
     String ID_TYPE_SECTION_RENTE_AVS_AI = "4";
     String ID_TYPE_SECTION_RESTITUTION = "26";
     String ID_TYPE_SECTION_RETOUR = "5";
+    String ID_TYPE_SECTION_RETOUR_PTRA = "9";
     String ID_TYPE_SECTION_RFM = "76";
     String ID_TYPE_SECTION_ASSOCIATION = "10";
     String ID_TYPE_SECTION_CPP = "11";
@@ -399,9 +401,7 @@ public interface APISection extends BIEntity {
 
     /**
      * Cette méthode permet de setter l'identifiant du passage dans lequel le report de la section est pris en compte
-     * 
-     * @param String
-     *            idPassageComp
+     *
      */
     void setIdPassageComp(String idPassageComp);
 
