@@ -220,7 +220,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
     protected boolean _executeProcess() throws Exception {
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(getSession());
-        manager.setForIdTiers("4800");
+        manager.orderBy = CACompteAnnexe.FIELD_IDTIERS;
         manager.find(BManager.SIZE_NOLIMIT);
         if (manager.size() <= 0) {
             getMemoryLog().logMessage(getSession().getLabel("LABEL_MAIL_LISTE_AFFILIATION_EBILL_NO_DATA"),
