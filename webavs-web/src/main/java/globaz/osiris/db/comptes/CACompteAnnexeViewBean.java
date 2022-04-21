@@ -6,6 +6,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.contentieux.CAMotifContentieux;
@@ -13,10 +14,7 @@ import globaz.osiris.db.contentieux.CAMotifContentieuxManager;
 import globaz.osiris.process.ebill.EBillMail;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author user To change this generated comment edit the template variable "typecomment":
@@ -37,6 +35,7 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
     private Collection<String> idMotifContentieux = null;
     private Collection<String> idSectionMotif = null;
     private CAMotifContentieuxManager mgr = null;
+    private boolean isNewEbill = true;
 
     /**
      * Constructor for CACompteAnnexeViewBean.
@@ -56,6 +55,14 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
         mgr = new CAMotifContentieuxManager();
         mgr.setSession(getSession());
         mgr.changeManagerSize(0);
+    }
+
+    @Override
+    protected void _beforeUpdate(BTransaction transaction) throws Exception {
+        if(isNewEbill){
+            seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        }
+        updateIsNewEbill();
     }
 
     /*
@@ -120,6 +127,15 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
                 motif.delete();
             }
         }
+    }
+
+    /**
+     * Check if it the ebill informations are empty or not (ebill account id and date). a variable will memories the state
+     * and used in beforeUpdate to create the date of subscription or not.
+     */
+    public void updateIsNewEbill(){
+        isNewEbill = (JadeStringUtil.isBlankOrZero(geteBillDateInscription())
+                && JadeStringUtil.isBlankOrZero(geteBillAccountID()));
     }
 
     /**

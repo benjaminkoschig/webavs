@@ -51,27 +51,27 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
             IntTiers tiers = compte.getTiers();
             IntAdresseCourrier addresse = tiers.getAdresseCourrier(IntAdresseCourrier.PRINCIPALE);
 
-            CAInscriptionEBill inscriptionEBill = new CAInscriptionEBill();
-            inscriptionEBill.setSession(getSession());
-            inscriptionEBill.seteBillAccountID(compte.geteBillAccountID());
+            try{
+                AFAffiliationManager affiliation = new AFAffiliationManager();
+                affiliation.setSession(getSession());
+                affiliation.setForIdTiers(compte.getIdTiers());
+                affiliation.find();
 
-            inscriptionEBill.retrieve();
-            if(inscriptionEBill.isNew()){
-                try{
-                    AFAffiliationManager affiliation = new AFAffiliationManager();
-                    affiliation.setSession(getSession());
-                    affiliation.setForIdTiers(compte.getIdTiers());
-                    affiliation.find();
+                numeroAffilie = ((AFAffiliation)affiliation.getFirstEntity()).getAffilieNumero();
+            } catch (Exception e){
+                CAInscriptionEBill inscriptionEBill = new CAInscriptionEBill();
+                inscriptionEBill.setSession(getSession());
+                inscriptionEBill.seteBillAccountID(compte.geteBillAccountID());
+                inscriptionEBill.retrieve();
 
-                    numeroAffilie = ((AFAffiliation)affiliation.getFirstEntity()).getAffilieNumero();
-                } catch (Exception e){
+                if(inscriptionEBill.isNew()){
                     numeroAffilie = "";
+                } else{
+                    numeroAffilie = inscriptionEBill.getNumeroAffilie();
                 }
-                dateInscriptionEBill = "";
-            } else{
-                numeroAffilie = inscriptionEBill.getNumeroAffilie();
-                dateInscriptionEBill = inscriptionEBill.getCreationDate();
             }
+
+            dateInscriptionEBill = compte.geteBillDateInscription();
 
             nom = tiers.getNom();
             nss = tiers.getNumAvsActuel();

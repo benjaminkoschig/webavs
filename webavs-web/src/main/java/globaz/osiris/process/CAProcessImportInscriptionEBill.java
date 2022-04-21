@@ -18,6 +18,7 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.properties.JadePropertiesService;
@@ -45,13 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * CRON permettant le traitement des fichiers d'inscription eBill.
@@ -799,6 +794,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                                     final CACompteAnnexe compteAnnexe) {
         compteAnnexe.seteBillAccountID(numeroAdherent);
         compteAnnexe.seteBillMail(email);
+        if(JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillDateInscription())){
+            compteAnnexe.seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        }
         try {
             compteAnnexe.update();
         } catch (Exception e) {
