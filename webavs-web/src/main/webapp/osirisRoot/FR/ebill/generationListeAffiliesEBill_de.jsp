@@ -15,7 +15,7 @@
     subTableWidth="0";
 
     // mettre directement la bonne valeur pour appeller le process
-    userActionValue="osiris.ebill.generationListeAffilies.executer";
+    userActionValue="osiris.ebill.generationListeAffiliesEBill.executer";
     //userActionValue="osiris.print.impressionPlan.executer";
 %>
 <%-- /tpl:put --%>
