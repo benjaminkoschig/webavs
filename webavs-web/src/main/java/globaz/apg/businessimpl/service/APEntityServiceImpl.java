@@ -1364,10 +1364,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
 
-        if (viewBean.getCsSexe().equals(ALCSTiers.SEXE_FEMME)) {
-            throw new Exception(session.getLabel("ERROR_PATERNITE_S"));
-        }
-
         //FIN DE CONTROLE
 
         final APDroitPaternite droitPat = new APDroitPaternite();
