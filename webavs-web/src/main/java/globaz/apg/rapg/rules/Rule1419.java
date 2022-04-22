@@ -30,7 +30,7 @@ public class Rule1419 extends Rule {
         if(APGenreServiceAPG.Paternite.getCodePourAnnonce().equals(champsAnnonce.getServiceType())) {
             LocalDate dateNaissance = Dates.toDate(champsAnnonce.getNewbornDateOfBirth());
             LocalDate dateDebut = Dates.toDate(champsAnnonce.getStartOfPeriod());
-            return dateNaissance.isBefore(dateDebut);
+            return !dateNaissance.isAfter(dateDebut);
         }
         return true;
     }

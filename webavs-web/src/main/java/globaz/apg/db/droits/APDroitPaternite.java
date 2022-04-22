@@ -457,23 +457,6 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
             retValue = false;
         }
 
-        // la date de naissance du premier enfant doit être antérieure ou égale
-        // é la date de debut du droit
-        boolean enfantAvant = false;
-        for (int idEnfant = 0; idEnfant < mgr.size(); ++idEnfant) {
-            APEnfantPat enfant = (APEnfantPat) mgr.get(idEnfant);
-            if (JAUtil.isDateEmpty(enfant.getDateNaissance())
-                    || BSessionUtil.compareDateFirstLowerOrEqual(getSession(), enfant.getDateNaissance(),
-                            getDateDebutDroit())) {
-                enfantAvant = true;
-                break;
-            }
-        }
-
-        if (!enfantAvant) {
-            retValue = false;
-            _addError(transaction, getSession().getLabel("DATE_NAISSANCE_SUP_DATE_DEBUT_DROIT"));
-        }
         return super.validateBeforeCalcul(transaction) && retValue;
     }
 
