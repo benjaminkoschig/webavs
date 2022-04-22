@@ -100,23 +100,14 @@ public class SFPeriodeViewBean extends SFPeriode implements FWViewBeanInterface 
         }
     }
 
-    public String getTiersRequerant() {
-        SFTiersWrapper tiers;
+    public String getRecueillant() {
         StringBuilder nomRecueillant = new StringBuilder();
-        if (StringUtils.isNotEmpty(getNoAvsRecueillant())) {
-            try {
-                tiers = SFTiersHelper.getTiers(getSession(), getNoAvsRecueillant());
-                if (Objects.nonNull(tiers)) {
-                    addStringWithSeparator(nomRecueillant, tiers.getProperty(SFTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
-                    addStringWithSeparator(nomRecueillant, new StringBuilder(tiers.getProperty(SFTiersWrapper.PROPERTY_NOM)).append(" ").append(tiers.getProperty(SFTiersWrapper.PROPERTY_PRENOM)).toString());
-                    addStringWithSeparator(nomRecueillant, tiers.getProperty(SFTiersWrapper.PROPERTY_DATE_NAISSANCE));
-                    addStringWithSeparator(nomRecueillant, getSession().getCodeLibelle(tiers.getProperty(SFTiersWrapper.PROPERTY_SEXE)));
-                    addStringWithSeparator(nomRecueillant, getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))));
-                }
-            } catch (Exception e) {
-                LOG.error("Impossible de récupérer le tiers recueillant. ", e);
-                return StringUtils.EMPTY;
-            }
+        if (Objects.nonNull(getTiersRecueillant())) {
+            addStringWithSeparator(nomRecueillant, getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+            addStringWithSeparator(nomRecueillant, new StringBuilder(getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_NOM)).append(" ").append(getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_PRENOM)).toString());
+            addStringWithSeparator(nomRecueillant, getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_DATE_NAISSANCE));
+            addStringWithSeparator(nomRecueillant, getSession().getCodeLibelle(getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_SEXE)));
+            addStringWithSeparator(nomRecueillant, getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", getTiersRecueillant().getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))));
         }
         return nomRecueillant.toString();
     }

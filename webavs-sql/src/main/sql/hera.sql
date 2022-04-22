@@ -6,7 +6,7 @@ INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'D
 INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'I','rgc','Bambino accolto gratuitamente dal coniuge',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 ALTER TABLE SCHEMA.SFPERIOD
-    ADD COLUMN RECUEILLANT CHARACTER(20);
+    ADD COLUMN ID_RECUEILLANT decimal(15);
 -- reorg table SCHEMA.SFPERIOD;
 call sysproc.admin_cmd('REORG TABLE SFPERIOD');
 
