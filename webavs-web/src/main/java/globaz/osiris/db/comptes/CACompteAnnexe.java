@@ -109,7 +109,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     public static final String FIELD_EBILL_ID= "EBILLID";
     public static final String FIELD_EBILL_MAIL= "EBILLMAIL";
-    public static final String FIELD_EBILL_DATE_INSCRIPTION = "EBILLDATEINSCRIPTION";
+    public static final String FIELD_EBILL_DATE_INSCRIPTION= "EBILLDATEINSCRIPTION";
 
     public static final String GENRE_COMPTE_STANDARD = "0";
     public static final String LABEL_OPERATION_AUXILIAIRE_NON_INSEREE = "OPERATION_AUXILIAIRE_NON_INSEREE";
