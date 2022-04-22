@@ -13,8 +13,6 @@ import java.util.List;
  * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Si le champ « serviceType »
  * (genre de service) = 90, le NAVS13 figurant dans le champ « insu-rant/personIdentificationType/vn » doit appartenir à
  * une femme.</br><strong>Champs concerné(s) :</strong></br> serviceType</br>insurant/personIdentificationType/vn
- * OU
- * Si le champ « serviceType » (genre de service) = 91, le NAVS13 figurant dans le champ « insurant/personIdentificationType/vn » doit appartenir à un homme.
  * @author lga
  */
 public class Rule300 extends Rule {
@@ -46,12 +44,6 @@ public class Rule300 extends Rule {
                 return false;
             }
         }
-        if (!JadeStringUtil.isEmpty(serviceType) && "91".equals(serviceType)) {
-            if (!"516001".equals(champsAnnonce.getInsurantSexe())) {
-                genreService = "91";
-                return false;
-            }
-        }
         return true;
     }
 
@@ -60,8 +52,6 @@ public class Rule300 extends Rule {
         String errorMessage = "";
         if("90".equals(genreService)){
             errorMessage = getSession().getLabel("APG_RULE_300_F");
-        }else{
-            errorMessage = getSession().getLabel("APG_RULE_300_H");
         }
         return errorMessage;
 
