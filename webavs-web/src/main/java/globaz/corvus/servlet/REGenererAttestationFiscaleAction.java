@@ -1,6 +1,7 @@
 package globaz.corvus.servlet;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -547,11 +548,18 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         }
 
                                         userCode.retrieve();
+                                        String libelle = userCode.getLibelle();
+                                        if ((Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme))
+                                                && !JadeStringUtil.isEmpty(ra.getQuotite())) {
+                                            DecimalFormat dft = new DecimalFormat(" #.# %");
+                                            String quotite = dft.format(Double.valueOf(ra.getQuotite()));
+                                            libelle += quotite;
+                                        }
                                         String index = Integer.toString(j);
                                         assure.put(index, infoTiers);
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));
                                         this.montant.put(index, montantAfficher.toStringFormat());
-                                        libelleRente.put(index, userCode.getLibelle());
+                                        libelleRente.put(index, libelle);
                                         codePrestation.put(index, ra.getCodePrestation());
                                     }
 
