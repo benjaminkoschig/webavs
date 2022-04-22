@@ -280,7 +280,6 @@ function resetFormConj(){
                             + "&noAVSId=" + viewBean.getIdTiersAssure()
                             + "&idTiersExtraFolder=" + viewBean.getIdTiersInterneAssure()
                             + "&serviceNameId=" + viewBean.getGedServiceName();
-                    //+ "&serviceNameId=" + viewBean.getSession().getApplication().getProperty(IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED);
                 %>
                 <a href="#" onclick="window.open('<%=urlGED%>','GED_CONSULT')">
                     <ct:FWLabel key="JSP_LIEN_GED"/>
