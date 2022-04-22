@@ -55,7 +55,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
                 AFAffiliationManager affiliation = new AFAffiliationManager();
                 affiliation.setSession(getSession());
                 affiliation.setForIdTiers(compte.getIdTiers());
-                affiliation.find();
+                affiliation.find(1);
 
                 numeroAffilie = ((AFAffiliation)affiliation.getFirstEntity()).getAffilieNumero();
             } catch (Exception e){
@@ -83,7 +83,9 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
                 lieu = "";
             }
             role = getSession().getCodeLibelle(compte.getIdRole());
-            hasEBill = JadeStringUtil.isBlankOrZero(compte.geteBillAccountID()) ? "non" : "oui";
+            hasEBill = JadeStringUtil.isBlankOrZero(compte.geteBillAccountID()) ?
+                    getSession().getLabel("LISTE_AFFILIATION_EBILL_DISABLED"):
+                    getSession().getLabel("LISTE_AFFILIATION_EBILL_ENABLED");
             eBillAccountId = compte.geteBillAccountID();
             emailEBill = compte.geteBillMail();
         }
@@ -223,8 +225,8 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
         manager.orderBy = CACompteAnnexe.FIELD_IDTIERS;
         manager.find(BManager.SIZE_NOLIMIT);
         setProgressScaleValue(manager.size());
-        if (manager.size() <= 0) {
-            getMemoryLog().logMessage(getSession().getLabel("LABEL_MAIL_LISTE_AFFILIATION_EBILL_NO_DATA"),
+        if (manager.isEmpty()) {
+            getMemoryLog().logMessage(getSession().getLabel("MAIL_LISTE_AFFILIATION_EBILL_NO_DATA"),
                     FWMessage.INFORMATION, this.getClass().getName());
         }
 
@@ -268,7 +270,7 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
 
     @Override
     protected String getEMailObject() {
-        return "Generation Liste Affilies eBill";
+        return getSession().getLabel("MAIL_LISTE_AFFILIATION_EBILL_EMAIL_OBJECT");
     }
 
 
