@@ -24,7 +24,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%>Erstellung der eBill Mitgliederliste<%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%>Generierung eBill-Affiliate-Listen<%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 

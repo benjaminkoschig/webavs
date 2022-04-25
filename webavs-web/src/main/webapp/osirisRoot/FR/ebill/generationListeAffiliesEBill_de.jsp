@@ -24,7 +24,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%>Generation liste des affiliés eBill<%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%>Génération liste des affiliés eBill<%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 

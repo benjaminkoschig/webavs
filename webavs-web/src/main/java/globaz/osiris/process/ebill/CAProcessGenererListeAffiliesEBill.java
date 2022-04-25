@@ -84,8 +84,8 @@ public class CAProcessGenererListeAffiliesEBill extends BProcess {
             }
             role = getSession().getCodeLibelle(compte.getIdRole());
             hasEBill = JadeStringUtil.isBlankOrZero(compte.geteBillAccountID()) ?
-                    getSession().getLabel("LISTE_AFFILIATION_EBILL_DISABLED"):
-                    getSession().getLabel("LISTE_AFFILIATION_EBILL_ENABLED");
+                    getSession().getLabel("NON"):
+                    getSession().getLabel("OUI");
             eBillAccountId = compte.geteBillAccountID();
             emailEBill = compte.geteBillMail();
         }
