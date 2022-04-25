@@ -9,13 +9,20 @@ import globaz.framework.secure.FWSecureConstants;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.pavo.db.splitting.CIDossierSplitting;
 import globaz.pavo.db.splitting.CIDossierSplittingViewBean;
 import globaz.pavo.db.splitting.CIImprimerAnalyseViewBean;
 import globaz.pavo.db.splitting.CIImprimerApercuViewBean;
+import globaz.prestation.ged.PRGedAffichageDossier;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Insérez la description du type ici. Date de création : (16.10.2002 09:56:57)
@@ -422,6 +429,8 @@ public class CIActionDossierSplitting extends CIActionCIDefault {
             _actionReAfficherDossier(session, request, response, dispatcher);
         } else if (getAction().getActionPart().equals("ouvrir")) {
             _actionOuvrir(session, request, response, dispatcher);
+        } else if (getAction().getActionPart().equals("actionAfficherDossierGed")) {
+            _actionAfficherDossierGed(session, request, response, dispatcher);
         } else {
             actionDefault(session, request, response, dispatcher);
         }
@@ -461,5 +470,20 @@ public class CIActionDossierSplitting extends CIActionCIDefault {
         }
         return null;
     }
+
+    public void _actionAfficherDossierGed(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+            FWDispatcher mainDispatcher) throws ServletException, IOException, NullPointerException, ClassCastException{
+        FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewBean");
+        try {
+            PRGedAffichageDossier.actionAfficherDossierGed(session, request, response, mainDispatcher, viewBean);
+        } catch (JadeServiceLocatorException e) {
+            throw new ServletException(e);
+        } catch (JadeServiceActivatorException e) {
+            throw new ServletException(e);
+        } catch (JadeClassCastException e) {
+            throw new ServletException(e);
+        }
+    }
+
 
 }
