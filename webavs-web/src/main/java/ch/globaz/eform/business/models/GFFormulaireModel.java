@@ -1,5 +1,6 @@
 package ch.globaz.eform.business.models;
 
+import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.util.Strings;
 import ch.globaz.common.validation.ValidationError;
 import ch.globaz.common.validation.ValidationResult;
@@ -15,7 +16,6 @@ import java.util.Arrays;
 @EqualsAndHashCode(callSuper = true)
 public class GFFormulaireModel extends JadeSimpleModel {
     private final String typePattern = "^25(\\d{2})";
-    private final String nssPattern = "^756\\.\\d{4}\\.\\d{4}\\.\\d{2}$";
     private final String datePattern = "^(0[1-9]|[12][0-9]|3[01])[.](0[1-9]|1[012])[.]((?:19|20)\\d\\d)$";
 
     private String id;
@@ -43,10 +43,16 @@ public class GFFormulaireModel extends JadeSimpleModel {
     }
 
     public ValidationResult validating() {
-        ValidationResult result = new ValidationResult();
+        return validating(new ValidationResult());
+    }
 
-        if (JadeStringUtil.isBlank(id)) {
-            result.addError("id", ValidationError.MANDATORY);
+    public ValidationResult validating(ValidationResult result) {
+        if (!isNew() && JadeStringUtil.isBlank(id)) {
+            result.addError("id", ValidationError.EMPTY);
+        }
+
+        if (JadeStringUtil.isBlank(messageId)) {
+            result.addError("messageId", ValidationError.MANDATORY);
         }
 
         if (JadeStringUtil.isBlank(type)) {
@@ -69,7 +75,7 @@ public class GFFormulaireModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(beneficiaireNss)) {
             result.addError("beneficiaireNss", ValidationError.MANDATORY);
-        } else if (!Strings.match(beneficiaireNss, nssPattern)) {
+        } else if (!NSSUtils.checkNSS(beneficiaireNss)) {
             result.addError("beneficiaireNss", ValidationError.MALFORMED);
         }
 

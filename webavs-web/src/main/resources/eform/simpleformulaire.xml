@@ -24,6 +24,11 @@
                 <search-field name="byId" field-ref="id" operation="EQUALS"/>
             </search-group>
         </search-definition>
+        <search-definition name="messageId">
+            <search-group operator="AND">
+                <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
         <search-definition name="formulaire">
             <search-group operator="AND">
                 <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>
