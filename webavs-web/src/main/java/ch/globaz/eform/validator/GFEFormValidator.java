@@ -73,6 +73,7 @@ public class GFEFormValidator {
             if (!StringUtils.isEmpty(messageId)) {
                 GFFormulaireSearch search = new GFFormulaireSearch();
                 search.setByMessageId(messageId);
+                search.setWhereKey("messageId");
                 search = GFEFormServiceLocator.getGFEFormService().search(search);
                 if (search.getSearchResults().length != 0) {
                     result.addError("messageId", ValidationError.ALREADY_EXIST);
