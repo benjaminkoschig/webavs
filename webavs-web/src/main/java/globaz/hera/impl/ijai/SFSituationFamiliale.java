@@ -208,6 +208,8 @@ public class SFSituationFamiliale extends globaz.hera.impl.standard.SFSituationF
             wrapper.setNoAvsDetenteurBTE(periode.getNoAvsDetenteurBTE());
             wrapper.setPays(periode.getPays());
             wrapper.setType(getSession().getCode(periode.getType()));
+            wrapper.setIdRecueillant(periode.getIdRecueillant());
+            wrapper.setNoAvsRecueillant(periode.getNoAvsRecueillant());
 
             iPeriodes[i] = wrapper;
         }

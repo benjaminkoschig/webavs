@@ -78,5 +78,10 @@ public interface ISFPeriode {
     /**
      * @return l'Id du recueillant
      */
+    String getIdRecueillant();
+
+    /**
+     * @return le numéro avs du recueillant
+     */
     String getNoAvsRecueillant();
 }

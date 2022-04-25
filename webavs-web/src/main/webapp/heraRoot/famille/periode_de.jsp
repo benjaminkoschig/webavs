@@ -393,11 +393,11 @@
             String redirectUrl = ((String)request.getAttribute("mainServletPath")+"Root")+"/famille/periode_de.jsp";
 
             Object[] recueillantMethods= new Object[]{
-                    new String[]{"setNoAvsRecueillant","getNumAvsActuel"}
+                    new String[]{"setIdRecueillant","getIdTiers"}
             };
 
         %>
-        <INPUT type="text" id="recueillantName" size="80" maxlength="80" value="<%=globaz.jade.client.util.JadeStringUtil.change(viewBean.getTiersRequerant(),"\"","&quot;")%>" tabindex="-1" readOnly class="disabled">
+        <INPUT type="text" id="recueillantName" size="80" maxlength="80" value="<%=globaz.jade.client.util.JadeStringUtil.change(viewBean.getRecueillant(),"\"","&quot;")%>" tabindex="-1" readOnly class="disabled">
 
         <ct:FWSelectorTag
                 name="recueillantSelector"
