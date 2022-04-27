@@ -16,6 +16,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.process.REListerEcheancesProcess;
 import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.utils.REGedUtils.TypeRente;
+import globaz.corvus.utils.RENumberFormatter;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BManager;
@@ -370,29 +371,18 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
 
         // Récupération du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-
-        userCode.retrieve();
-
+        String libelle = RENumberFormatter.codeSystemToLibelle(
+                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                codeIsoLangue, getSession());
         // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
         if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
+            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, libelle
                     + " " + document.getTextes(9).getTexte(4));
         } else if (rd.isRAInvalidite().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
+            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, libelle
                     + " " + document.getTextes(9).getTexte(5));
         } else {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle());
+            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, libelle);
         }
 
         concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,
@@ -525,20 +515,9 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
 
         // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-
-        userCode.retrieve();
-
+        String libelle = RENumberFormatter.codeSystemToLibelle(
+                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                codeIsoLangue, getSession());
         RERenteAccordee rd = new RERenteAccordee();
         rd.setSession(getSession());
         rd.setId(echeanceCourrante.getIdRenteAccordee());
@@ -547,13 +526,13 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
         if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle() + " " + document.getTextes(9).getTexte(4));
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle + " " + document.getTextes(9).getTexte(4));
         } else if (rd.isRAInvalidite().equals(Boolean.TRUE)) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle() + " " + document.getTextes(9).getTexte(5));
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle + " " + document.getTextes(9).getTexte(5));
         } else {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle());
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle);
         }
 
         concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,
@@ -728,19 +707,9 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
         }
 
-        // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-        userCode.retrieve();
+        String libelle = RENumberFormatter.codeSystemToLibelle(
+                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                codeIsoLangue, getSession());
 
         RERenteAccordee rd = new RERenteAccordee();
         rd.setSession(getSession());
@@ -750,13 +719,13 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
         if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle() + " " + document.getTextes(9).getTexte(4));
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle + " " + document.getTextes(9).getTexte(4));
         } else if (rd.isRAInvalidite().equals(Boolean.TRUE)) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle() + " " + document.getTextes(9).getTexte(5));
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle + " " + document.getTextes(9).getTexte(5));
         } else {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(3).getDescription(),
-                    REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle());
+                    REEcheanceRenteOO.CDT_GENTREPREST, libelle);
         }
 
         concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,

@@ -15,6 +15,7 @@ import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.utils.RENumberFormatter;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -155,23 +156,12 @@ public class REAttestationProlongationEtudeOO {
             pourRechercheCodeSysteme += "." + ra.getFractionRente();
         }
 
-        // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-
-        userCode.retrieve();
+        String libelle = RENumberFormatter.codeSystemToLibelle(
+                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                codeIsoLangue, getSession());
 
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_GENTREPREST,
-                userCode.getLibelle());
+                libelle);
 
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_MONTANTPREST,
                 ra.getMontantPrestation());

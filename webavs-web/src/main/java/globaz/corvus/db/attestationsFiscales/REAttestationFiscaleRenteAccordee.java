@@ -54,6 +54,8 @@ public class REAttestationFiscaleRenteAccordee extends BEntity {
     private String prenomBenef = "";
     private String sexe = "";
 
+    private String quotite = "";
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -116,6 +118,7 @@ public class REAttestationFiscaleRenteAccordee extends BEntity {
         idTiersBaseCalcul = statement.dbReadNumeric(REBasesCalcul.FIELDNAME_ID_TIERS_BASE_CALCUL);
         idInfoCompta = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA);
         sexe = statement.dbReadString(REAttestationFiscaleRenteAccordee.FIELDNAME_SEXE);
+        quotite = statement.dbReadNumeric(RERenteAccordee.FIELDNAME_QUOTITE_RENTE);
     }
 
     /**
@@ -214,6 +217,10 @@ public class REAttestationFiscaleRenteAccordee extends BEntity {
         return sexe;
     }
 
+    public String getQuotite() {
+        return quotite;
+    }
+
     public void setCodePrestation(String codePrestation) {
         this.codePrestation = codePrestation;
     }
@@ -272,5 +279,9 @@ public class REAttestationFiscaleRenteAccordee extends BEntity {
 
     public void setSexe(String sexe) {
         this.sexe = sexe;
+    }
+
+    public void setQuotite(String quotite) {
+        this.quotite = quotite;
     }
 }
