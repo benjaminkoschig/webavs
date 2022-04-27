@@ -44,13 +44,13 @@
 	        libelleTypeDetenteur = objSession.getLabel(typeDeDetenteur.getLabelKey());
 	    }
 	}
-	
+
 %>
 <TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=ctrl.getSession().getCodeLibelle(line.getType())%></TD>
 <TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=line.getDateDebut()%></TD>
 <TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=line.getDateFin()%></TD>
 <TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=libelleTypeDetenteur%></TD>
-<TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=(line.getIdDetenteurBTE().equals("0"))?"":rh.getNomPrenomMembre(line.getIdDetenteurBTE(), (BSession)ctrl.getSession())%></TD>
+<TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%= (line.getIdDetenteurBTE().equals("0"))?((JadeStringUtil.isBlankOrZero(line.getIdRecueillant()))?"": line.getRecueillantLibelle()):rh.getNomPrenomMembre(line.getIdDetenteurBTE(), (BSession)ctrl.getSession())%></TD>
 <TD class="mtd" nowrap onclick="<%=detail%>" align="center"><%=(line.getPays().equals("0"))?"":ctrl.getSession().getCodeLibelle(line.getPays())%></TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
