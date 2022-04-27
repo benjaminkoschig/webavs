@@ -1,5 +1,6 @@
 package ch.globaz.eform.business.services;
 
+import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.search.GFFormulaireSearch;
 import ch.globaz.eform.business.search.GFStatistiqueSearch;
@@ -23,6 +24,15 @@ public interface GFEFormDBService extends JadeApplicationService {
      * @return formulaireModel créé
      */
     GFFormulaireModel create(GFFormulaireModel GFFormulaireModel) throws JadeApplicationServiceNotAvailableException, JadePersistenceException;
+
+    /**
+     * Permet la création d'une entité Prestation
+     *
+     * @param GFFormulaireModel Le formulaireModel à créer
+     * @param validationResult permet de remonté la validation des informations
+     * @return formulaireModel créé
+     */
+    GFFormulaireModel create(GFFormulaireModel GFFormulaireModel, ValidationResult validationResult) throws JadeApplicationServiceNotAvailableException, JadePersistenceException;
 
     /**
      * Permet la suppression d'une entité simplePresation

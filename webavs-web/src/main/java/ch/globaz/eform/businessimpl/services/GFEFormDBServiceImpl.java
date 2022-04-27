@@ -22,14 +22,23 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
     }
 
     @Override
-    public GFFormulaireModel create(GFFormulaireModel gfeFormModel) throws JadePersistenceException {
+    public GFFormulaireModel create(GFFormulaireModel gfeFormModel, ValidationResult validationResult) throws JadePersistenceException {
         if (Objects.isNull(gfeFormModel)) throw new IllegalArgumentException("Unable to create gfeFormModel, the model passed is null!");
         if (GFEFormValidator.isExists(gfeFormModel.getId())) throw new IllegalArgumentException("Unable to create gfeFormModel, the model passed is already in database id : " + gfeFormModel.getId() + "!");
 
-        ValidationResult validationResult = gfeFormModel.validating();
+        gfeFormModel.validating(validationResult);
 
-        if (validationResult.hasError()) throw new IllegalArgumentException("model contain errors!");
-        return (GFFormulaireModel) JadePersistenceManager.add(gfeFormModel);
+        //On exécute l'insertion si aucune erreur n'est détecté
+        if (!validationResult.hasError()) {
+            JadePersistenceManager.add(gfeFormModel);
+        }
+
+        return gfeFormModel;
+    }
+
+    @Override
+    public GFFormulaireModel create(GFFormulaireModel gfeFormModel) throws JadePersistenceException {
+        return create(gfeFormModel, new ValidationResult());
     }
 
     @Override
@@ -89,8 +98,7 @@ public class GFEFormDBServiceImpl implements GFEFormDBService {
     @Override
     public GFFormulaireSearch searchWithBlobs(GFFormulaireSearch gfeFormSearch) throws JadePersistenceException{
         if (Objects.isNull(gfeFormSearch)) throw new IllegalArgumentException("Unable to search gfeFormModel, the search passed is null!");
-        gfeFormSearch = (GFFormulaireSearch) JadePersistenceManager.search(gfeFormSearch, true);
-        return gfeFormSearch;
+        return (GFFormulaireSearch) JadePersistenceManager.search(gfeFormSearch, true);
     }
 
     @Override

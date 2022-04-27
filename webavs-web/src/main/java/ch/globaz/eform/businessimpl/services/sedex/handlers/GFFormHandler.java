@@ -2,6 +2,7 @@ package ch.globaz.eform.businessimpl.services.sedex.handlers;
 
 import ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import ch.globaz.common.util.Dates;
+import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
@@ -54,9 +55,9 @@ public abstract class GFFormHandler {
         }
     }
 
-    public void saveDataInDb() throws RuntimeException {
+    public void saveDataInDb(ValidationResult result) throws RuntimeException {
         try {
-            setFormulaireData();
+            setFormulaireData(result);
         } catch (FileNotFoundException e) {
             LOG.error("GFFormHandler#saveDataInDb - Fichier non trouvé : " + model.getMessageId(), e);
             throw new JadeApplicationRuntimeException(e);
@@ -66,7 +67,7 @@ public abstract class GFFormHandler {
         }
     }
 
-    private void setFormulaireData() throws Exception {
+    private void setFormulaireData(ValidationResult result) throws Exception {
             GFFormulaireModel dbModel = new GFFormulaireModel();
             dbModel.setMessageId(model.getMessageId());
             dbModel.setType(model.getFormulaireType());
@@ -81,7 +82,7 @@ public abstract class GFFormHandler {
             dbModel.setAttachementName(model.getAttachementName());
             dbModel.setAttachement(model.getZipFile());
 
-            GFEFormServiceLocator.getGFEFormService().create(dbModel);
+            GFEFormServiceLocator.getGFEFormService().create(dbModel, result);
     }
 
     /**
