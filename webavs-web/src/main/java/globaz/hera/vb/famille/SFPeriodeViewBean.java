@@ -112,6 +112,15 @@ public class SFPeriodeViewBean extends SFPeriode implements FWViewBeanInterface 
         return nomRecueillant.toString();
     }
 
+    public String getRecueillantLibelle() {
+        StringBuilder nomRecueillant = new StringBuilder();
+        if (Objects.nonNull(getTiersRecueillant())) {
+            nomRecueillant.append(getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_NOM));
+            nomRecueillant.append(" ").append(getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_PRENOM));
+        }
+        return nomRecueillant.toString();
+    }
+
     private void addStringWithSeparator(StringBuilder nomRecueillant, String param) {
         if (StringUtils.isNotEmpty(param)) {
             if (StringUtils.isNotEmpty(nomRecueillant.toString())) {
