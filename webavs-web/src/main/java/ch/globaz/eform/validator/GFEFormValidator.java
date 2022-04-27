@@ -43,8 +43,10 @@ public class GFEFormValidator {
     }
 
     public static ValidationResult sedexMessage(SimpleSedexMessage messageSedex) {
-        ValidationResult result = new ValidationResult();
+        return sedexMessage(messageSedex, new ValidationResult());
+    }
 
+    public static ValidationResult sedexMessage(SimpleSedexMessage messageSedex, ValidationResult result) {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document xmlDocument;
@@ -62,7 +64,7 @@ public class GFEFormValidator {
                 String attachmentPath = attachmentNode.getChildNodes().item(13).getChildNodes().item(1).getFirstChild().getNodeValue();
                 if (messageSedex.attachments.entrySet().stream()
                         .noneMatch(entry -> ("attachments_" + entry.getValue()).equals(attachmentPath))) {
-                    result.addError("attachment", ValidationError.EMPTY);
+                    result.addError("attachment", ValidationError.MISSING);
                 }
                 i++;
             }
