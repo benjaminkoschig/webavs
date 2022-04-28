@@ -6,7 +6,6 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ebill.enums.CAInscriptionTypeEBillEnum;
 import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
@@ -209,14 +208,6 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getNomPrenomOuEntreprise() {
-        if (!JadeStringUtil.isEmpty(entreprise)) {
-            return entreprise;
-        } else {
-            return nom + " " + prenom;
-        }
     }
 
     public String getNom() {
