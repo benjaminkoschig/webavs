@@ -62,7 +62,7 @@
 
     function upd() {
         document.forms[0].elements('userAction').value="eform.formulaire.formulaire.modifier";
-        document.forms[0].elements('byStatus').disabled = <%= !owner %>
+        //document.forms[0].elements('byStatus').disabled = <%= !owner %>
         document.forms[0].elements('byGestionnaire').disabled = <%= !manager %>;
     }
 
@@ -169,9 +169,14 @@
     }
 
     .selectAlign {
-        width: 250px;
+        width: 275px;
         text-align: right;
     }
+
+    SELECT {
+        width: 275px;
+    }
+
 
     .dl-horizontal-warning-red dd {
         color: red;
@@ -309,7 +314,7 @@
                                 </dl>
 
                                 <dl class="dl-horizontal">
-                                    <dt><strong><LABEL for="byStatus"><ct:FWLabel key="JSP_EFORM_FORMULAIRE_GESTIONNAIRE"/></LABEL></strong></dt>
+                                    <dt><strong><LABEL for="byGestionnaire"><ct:FWLabel key="JSP_EFORM_FORMULAIRE_GESTIONNAIRE"/></LABEL></strong></dt>
                                     <dd class="selectAlign">
                                         <ct:FWListSelectTag name="byGestionnaire"
                                                             data="<%=GFFormulaireHelper.getGestionnairesData(objSession)%>"

@@ -9,7 +9,7 @@ public interface NSSUtils {
     static boolean checkNSS(String nss) {
         String unformatNss = NSUtil.unFormatAVS(nss);
 
-        if (!(StringUtils.isNumeric(unformatNss) || nss.length() == 13)) {
+        if (!StringUtils.isNumeric(unformatNss) || unformatNss.length() != 13) {
             return false;
         }
 
@@ -26,7 +26,7 @@ public interface NSSUtils {
             }
         }
 
-        int numControle = 10 - nbControle % 10;
+        int numControle = nbControle % 10 == 0 ? 0 : 10 - nbControle % 10;
 
         return StringUtils.endsWith(unformatNss, String.valueOf(numControle));
     }
