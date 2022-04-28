@@ -524,13 +524,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
                                         codePrestation.put(index, ra.getCodePrestation());
                                     } else {
-                                        String pourRechercheCodeSysteme = ra.getCodePrestation();
-
-                                        if (JadeStringUtil.isEmpty(ra.getFractionRente())) {
-                                            pourRechercheCodeSysteme += ".0";
-                                        } else {
-                                            pourRechercheCodeSysteme += "." + ra.getFractionRente();
-                                        }
+                                        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
 
                                         String libelle = RENumberFormatter.codeSystemToLibelle(
                                                 bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
@@ -773,6 +767,30 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
     }
 
+    private String getRERechercheCodeSystem(REAttestationFiscaleRenteAccordee ra){
+        String pourRechercheCodeSysteme = ra.getCodePrestation();
+
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
+            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
+                pourRechercheCodeSysteme += "." + ra.getFractionRente();
+            } else if (!JadeStringUtil.isEmpty(ra.getQuotite())) {
+                if (Objects.equals(REGenresPrestations.GENRE_50, ra.getCodePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, ra.getCodePrestation())) {
+                    if (Float.valueOf(ra.getQuotite()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
+                } else {
+                    pourRechercheCodeSysteme += ".1";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".0";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
+    }
     /**
      * Permet de trier les rentes.
      */
