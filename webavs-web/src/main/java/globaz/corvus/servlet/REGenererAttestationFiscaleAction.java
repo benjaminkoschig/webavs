@@ -767,6 +767,12 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
     }
 
+    /**
+     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
+     *
+     * @param ra    Rente accordé
+     * @return      La chaîne permettant de chercher le code système
+     */
     private String getRERechercheCodeSystem(REAttestationFiscaleRenteAccordee ra){
         String pourRechercheCodeSysteme = ra.getCodePrestation();
 
@@ -791,6 +797,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
         }
         return pourRechercheCodeSysteme;
     }
+
     /**
      * Permet de trier les rentes.
      */
