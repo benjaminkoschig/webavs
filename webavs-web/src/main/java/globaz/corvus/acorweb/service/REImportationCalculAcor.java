@@ -4,6 +4,7 @@ import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1.Message;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
+import bsh.util.BshCanvas;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;
@@ -12,6 +13,7 @@ import ch.globaz.corvus.domaine.constantes.TypeCalculDemandeRente;
 import ch.globaz.corvus.domaine.constantes.TypeDemandeRente;
 import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
 import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
+import ch.globaz.pegasus.utils.RpcUtil;
 import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
 import ch.globaz.pyxis.domaine.PersonneAVS;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
@@ -53,6 +55,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.acor.PRACORConst;
@@ -62,9 +65,13 @@ import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -395,30 +402,39 @@ public class REImportationCalculAcor {
             String content = FWMessageFormat.format(JadeI18n.getInstance().getMessage(session.getIdLangueISO(), "warn.acor.export.bte"), allNumber.toString());
             sendMailWarn(session, object, content);
         }
-        // swap
-//            Message message = fCalcul.getAnnexes().getMessage().get(0);
-//
-//            if(!StringUtils.isBlank(message.getSwapId())){
-//           Message fullSwapMessage= REAcorSwapService.getInstance().getSwap(message);
-//           System.out.println(fullSwapMessage);
-//            }
+        //swap
+        generationFormulaireSwap(fCalcul);
+    }
+    public void generationFormulaireSwap(FCalcul fCalcul) throws Exception {
         if(isSwap(fCalcul)){
             Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
-            getSwapMessageFromAcor(messageFromFcalcul);
+            String messageFromAcor=getSwapMessageFromAcor(messageFromFcalcul);
+            sendSwapFormulaireMail(messageFromAcor,fCalcul);
         }
     }
 
     public boolean isSwap(FCalcul fCalcul){
         return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId());
     }
-    public Message getSwapMessageFromAcor(Message message) throws PRACORException {
+    public String getSwapMessageFromAcor(Message message) throws PRACORException {
         return REAcorSwapService.getInstance().getSwap(message);
     }
-    private void sendSwapMail(){
-        //email sending
+    private void sendSwapFormulaireMail(String message, FCalcul fCalcul) throws Exception {
+        Properties prop= new Properties(); // create a properties file
+        String nss = RpcUtil.formatNss(fCalcul.getAssure().get(0).getId().getValue());
+        String userMail= BSessionUtil.getSessionFromThreadContext().getUserEMail();
+
+        String filePath="D:/Workspaces/webavs/webavs-web/src/main/webapp/work/["+nss+"].xml";
+        File file = new File(filePath);
+        FileWriter writer= new FileWriter(file);
+        writer.write(message);
+        writer.close();
+
+        JadeSmtpClient.getInstance().sendMail(userMail, "Formulaire SWAP pour"+"["+nss+"]", "Vous trouvez en pièce-jointe le formulaire SWAP de l'assuré mentionné",new String[]{filePath});
+
+        FileUtils.deleteQuietly(file);
+
     }
-
-
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
