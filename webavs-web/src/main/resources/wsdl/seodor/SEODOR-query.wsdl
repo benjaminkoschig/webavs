@@ -60,7 +60,7 @@
 
   <wsdl:service name="ServicePeriodsService-2-0">
     <wsdl:port name="ServicePeriodsPort-2-0" binding="ServicePeriodsBinding-2-0">
-      <soap:address location="https://ws.seodor.zas.admin.ch/seodor/ws/service-periods/2"/>
+      <soap:address location="https://ws.seodor.zas.admin.ch/services/seodor/ws/service-periods/2"/>
     </wsdl:port>
   </wsdl:service>
 
