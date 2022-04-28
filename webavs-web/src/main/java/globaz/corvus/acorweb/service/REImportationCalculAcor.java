@@ -1,6 +1,7 @@
 package globaz.corvus.acorweb.service;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1.Message;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
@@ -394,8 +395,29 @@ public class REImportationCalculAcor {
             String content = FWMessageFormat.format(JadeI18n.getInstance().getMessage(session.getIdLangueISO(), "warn.acor.export.bte"), allNumber.toString());
             sendMailWarn(session, object, content);
         }
-
+        // swap
+//            Message message = fCalcul.getAnnexes().getMessage().get(0);
+//
+//            if(!StringUtils.isBlank(message.getSwapId())){
+//           Message fullSwapMessage= REAcorSwapService.getInstance().getSwap(message);
+//           System.out.println(fullSwapMessage);
+//            }
+        if(isSwap(fCalcul)){
+            Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
+            getSwapMessageFromAcor(messageFromFcalcul);
+        }
     }
+
+    public boolean isSwap(FCalcul fCalcul){
+        return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId());
+    }
+    public Message getSwapMessageFromAcor(Message message) throws PRACORException {
+        return REAcorSwapService.getInstance().getSwap(message);
+    }
+    private void sendSwapMail(){
+        //email sending
+    }
+
 
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
