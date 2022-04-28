@@ -1,6 +1,5 @@
 package globaz.corvus.acorweb.service;
 
-import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1.Message;
 import ch.globaz.common.ws.configuration.JacksonJsonProvider;
 import globaz.corvus.acorweb.ws.token.REAcorTokenServiceImpl;
@@ -11,7 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Scanner;
+
 
 public class REAcorSwapService {
     public REAcorSwapService() {
@@ -26,11 +25,11 @@ public class REAcorSwapService {
         return instance;
     }
 
-    public Message getSwap(Message message) throws PRACORException {
+    public String getSwap(Message message) throws PRACORException {
         URL url;
         HttpURLConnection con;
         String acorBaseUrl = REAcorTokenServiceImpl.loadAcorBaseUrl();
-        Message messageResponse = null;
+        String response = null;
 
         try {
             url = new URL(acorBaseUrl + "/xmlswap");
@@ -43,28 +42,20 @@ public class REAcorSwapService {
             OutputStream os = con.getOutputStream();
 
             JacksonJsonProvider.getInstance().writeValue(os, message);
-//            if (con.getResponseCode() <= 400) {
-//                InputStream response = con.getInputStream();
-//                Scanner scanner = new Scanner(response);
-//                String responseBody = scanner.next();
-//                messageResponse = JacksonJsonProvider.getInstance().readValue(responseBody, Message.class);
-//            }
+
             if (con.getInputStream() != null) {
                 final InputStream inputStream = con.getInputStream();
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-                StringBuilder response = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
-                    response.append(line);
+                    sb.append(line);
                 }
-
-                System.out.println(response);
-                // transfo en Classe Message
+                response=sb.toString();
 
             }
-
             con.disconnect();
         } catch (MalformedURLException e) {
             throw new PRACORException("Un problème est intervenu lors de la récupération de l'URL du webService " + acorBaseUrl, e);
@@ -73,6 +64,6 @@ public class REAcorSwapService {
         } catch (IOException e) {
             throw new PRACORException("Un problème de connexion au webService ", e);
         }
-        return messageResponse;
+        return response;
     }
 }
