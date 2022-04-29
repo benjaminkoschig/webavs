@@ -4,7 +4,6 @@ import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1.Message;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
-import bsh.util.BshCanvas;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;
@@ -55,7 +54,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
+import globaz.jade.common.Jade;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.acor.PRACORConst;
@@ -403,38 +402,46 @@ public class REImportationCalculAcor {
             sendMailWarn(session, object, content);
         }
         //swap
-        generationFormulaireSwap(fCalcul);
+        generationFormulaireSwap(fCalcul,session);
     }
-    public void generationFormulaireSwap(FCalcul fCalcul) throws Exception {
+    public void generationFormulaireSwap(FCalcul fCalcul,BSession session) throws Exception {
         if(isSwap(fCalcul)){
             Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
-            String messageFromAcor=getSwapMessageFromAcor(messageFromFcalcul);
-            sendSwapFormulaireMail(messageFromAcor,fCalcul);
+            String xmlFromAcor= getSwapXmlFromAcor(messageFromFcalcul);
+            sendSwapFormulaireMail(xmlFromAcor,fCalcul,session);
         }
     }
 
     public boolean isSwap(FCalcul fCalcul){
         return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId());
     }
-    public String getSwapMessageFromAcor(Message message) throws PRACORException {
+    public String getSwapXmlFromAcor(Message message) throws PRACORException {
         return REAcorSwapService.getInstance().getSwap(message);
     }
-    private void sendSwapFormulaireMail(String message, FCalcul fCalcul) throws Exception {
-        Properties prop= new Properties(); // create a properties file
+    private void sendSwapFormulaireMail(String xmlAcor, FCalcul fCalcul,BSession session) throws Exception {
         String nss = RpcUtil.formatNss(fCalcul.getAssure().get(0).getId().getValue());
-        String userMail= BSessionUtil.getSessionFromThreadContext().getUserEMail();
+        String userMail= session.getUserEMail();
+        String filePath=Jade.getInstance().getHomeDir() + "work/"+"p["+nss+"].xml";
+        String subject=session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT")+ "["+nss+"]";
+        String body=session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
+        File swapXmlFile= createSwapXmlFile(filePath,xmlAcor);
 
-        String filePath="D:/Workspaces/webavs/webavs-web/src/main/webapp/work/["+nss+"].xml";
-        File file = new File(filePath);
-        FileWriter writer= new FileWriter(file);
-        writer.write(message);
-        writer.close();
+        JadeSmtpClient.getInstance().sendMail(userMail,subject,body,new String[]{filePath});
 
-        JadeSmtpClient.getInstance().sendMail(userMail, "Formulaire SWAP pour"+"["+nss+"]", "Vous trouvez en pièce-jointe le formulaire SWAP de l'assuré mentionné",new String[]{filePath});
-
-        FileUtils.deleteQuietly(file);
+        deleteSwapXmlFile(swapXmlFile);
 
     }
+    public File createSwapXmlFile(String filePath,String xmlAcor) throws IOException {
+        File file = new File(filePath);
+        FileWriter writer= new FileWriter(file);
+        writer.write(xmlAcor);
+        writer.close();
+        return file;
+    }
+    public void deleteSwapXmlFile(File file) throws IOException {
+        FileUtils.forceDelete(file);
+    }
+
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
