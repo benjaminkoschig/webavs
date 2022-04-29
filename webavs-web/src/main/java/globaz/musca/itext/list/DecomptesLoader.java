@@ -9,6 +9,7 @@ import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.translation.CodeSystem;
 import globaz.musca.util.FAUtil;
+import globaz.osiris.application.CAApplication;
 import globaz.pyxis.db.tiers.TITiers;
 import net.sf.jasperreports.engine.JRException;
 import ch.globaz.common.domaine.Montant;
@@ -70,7 +71,7 @@ class DecomptesLoader {
         bean.setMontant(new Montant(entity.getTotalFacture()));
         boolean isAdressePaimentEmpty = JadeStringUtil.isBlankOrZero(bean.getAddressPaiement());
         bean.setRecRem(generateRemarque(entity, isAdressePaimentEmpty));
-        bean.setImprimable(resolveIsImprimable(entity));
+        bean.setImprimable(resolveIsImprimableOrIsEbillPrinted(entity));
         return bean;
     }
 
@@ -92,13 +93,19 @@ class DecomptesLoader {
      * 
      * @return java.lang.String
      */
-    private String resolveIsImprimable(FAEnteteFacture entity) {
-        // marquer d'un X si la facture est non imprimable
-        if (!entity.isNonImprimable()
-                && !FAEnteteFacture.CS_MODE_IMP_PASIMPZERO.equalsIgnoreCase(entity.getIdCSModeImpression())) {
-            return "X";
+    private String resolveIsImprimableOrIsEbillPrinted(FAEnteteFacture entity) {
+        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(session);
+        if (isEBillActive && entity.iseBillPrinted()) {
+            // marquer d'un "e" si la facture à été imprimé avec eBill
+            return "P";
         } else {
-            return "";
+            // marquer d'un "X" si la facture est non imprimable
+            if (!entity.isNonImprimable()
+                    && !FAEnteteFacture.CS_MODE_IMP_PASIMPZERO.equalsIgnoreCase(entity.getIdCSModeImpression())) {
+                return "X";
+            } else {
+                return "";
+            }
         }
     }
 

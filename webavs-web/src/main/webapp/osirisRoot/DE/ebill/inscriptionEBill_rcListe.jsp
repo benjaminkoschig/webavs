@@ -1,5 +1,6 @@
 <%@ page import="globaz.osiris.db.ebill.enums.CAStatutEBillEnum" %>
 <%@ page import="globaz.osiris.db.ebill.CAInscriptionEBill" %>
+<%@ page import="globaz.globall.db.BSession" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -37,7 +38,8 @@
     notationManager.b_stop = true;
 </script>
 <TH colspan="2">eBillAccountID</TH>
-<TH align="left">Name</TH>
+<TH align="left">Anmeldung name</TH>
+<TH align="left">WebAVS name</TH>
 <TH nowrap align="left">Teilnehmernummer</TH>
 <TH align="left">Typ</TH>
 <TH align="left">Interner Status</TH>
@@ -69,7 +71,8 @@
     </ct:menuPopup>
 </TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.geteBillAccountID()%></TD>
-<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getNomPrenomOuEntreprise()%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomPrenomOuEntrepriseInscription(_inscriptionEBill)%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomWebAVS((BSession) session.getAttribute("objSession"), _inscriptionEBill)%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getChampNumeroAffilie()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleType()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleStatut()%></TD>
