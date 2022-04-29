@@ -413,7 +413,13 @@ public class REImportationCalculAcor {
     }
 
     public boolean isSwap(FCalcul fCalcul){
-        return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId());
+        boolean response=false;
+        if(fCalcul.getAnnexes()!=null && fCalcul.getAnnexes().getMessage().size()!=0){
+            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId())){
+                response=true;
+            }
+        }
+        return response;
     }
     public String getSwapXmlFromAcor(Message message) throws PRACORException {
         return REAcorSwapService.getInstance().getSwap(message);
