@@ -77,6 +77,7 @@ public class GFTraitementMessageServiceImpl {
     public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException {
         String[] defaultUserGestionnaire = {""};
         ZipFile zipFile;
+        boolean[] errorMailSanded = {false};
 
         //Lecture dans les propriétés du gestionnaire par défaut
         if (!GFProperties.GESTIONNAIRE_USER_DEFAULT.getValue().isEmpty()) {
@@ -109,6 +110,7 @@ public class GFTraitementMessageServiceImpl {
 
                         if (result.hasError()) {
                             sendMail(zipFile, result);
+                            errorMailSanded[0] = true;
                             LOG.error("GFTraitementMessageServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
                             result.getErrors().forEach(error -> LOG.error("GFTraitementMessageServiceImpl#importMessages - {} ", error.getDesignation(session)));
                             //Déclenchement de l'exception pour invalidé l'import sedex
@@ -117,10 +119,12 @@ public class GFTraitementMessageServiceImpl {
                             LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                         }
                     } catch (Exception e) {
-                        try {
-                            sendMail(zipFile);
-                        } catch (Exception e1) {
-                            LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                        if (!errorMailSanded[0]) {
+                            try {
+                                sendMail(zipFile);
+                            } catch (Exception e1) {
+                                LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                            }
                         }
                         throw new JadeApplicationRuntimeException(e);
                     }
@@ -136,6 +140,7 @@ public class GFTraitementMessageServiceImpl {
 
                     if (result.hasError()) {
                         sendMail(zipFile, result);
+                        errorMailSanded[0] = true;
                         LOG.error("GFTraitementMessageServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
                         result.getErrors().forEach(error -> LOG.error("GFTraitementMessageServiceImpl#importMessages - {} ", error.getDesignation(session)));
                         //Déclenchement de l'exception pour invalidé l'import sedex
@@ -144,10 +149,12 @@ public class GFTraitementMessageServiceImpl {
                         LOG.info("GFTraitementMessageServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     }
                 } catch (Exception e) {
-                    try {
-                        sendMail(zipFile);
-                    } catch (Exception e1) {
-                        LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                    if (!errorMailSanded[0]) {
+                        try {
+                            sendMail(zipFile);
+                        } catch (Exception e1) {
+                            LOG.error("GFTraitementMessageServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                        }
                     }
                     throw new JadeApplicationRuntimeException(e);
                 }
@@ -257,7 +264,7 @@ public class GFTraitementMessageServiceImpl {
         return null;
     }
 
-    public class ZipFile {
+    public static class ZipFile {
         private final File file;
         private byte[] byteFile;
 
