@@ -1,5 +1,9 @@
 package ch.globaz.al.businessimpl.services.decision;
 
+import ch.globaz.al.business.models.dossier.*;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.FWFindParameter;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -24,11 +28,6 @@ import ch.globaz.al.business.constantes.ALConstLangue;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
 import ch.globaz.al.business.exceptions.protocoles.ALProtocoleException;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
-import ch.globaz.al.business.models.dossier.CommentaireModel;
-import ch.globaz.al.business.models.dossier.CommentaireSearchModel;
-import ch.globaz.al.business.models.dossier.CopieComplexModel;
-import ch.globaz.al.business.models.dossier.CopieComplexSearchModel;
-import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.droit.DroitModel;
@@ -49,6 +48,8 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class racine qui permet de remplir les données nécessaires à la génération des documents de décisions
@@ -56,6 +57,8 @@ import ch.globaz.topaz.datajuicer.DocumentData;
  * @author JER/PTA/JTS
  */
 public abstract class DecisionAbstractServiceImpl extends AbstractDocument implements DecisionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DecisionAbstractServiceImpl.class);
 
     /**
      * Indique si la page d'accompagnement d'une copie doit être générée
@@ -789,7 +792,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
 
     /**
      * Méthode qui charge le données liées à un bénéficiaire d'un droit
-     * 
+     *
      * @param droitModel
      * @param droitBeneficiaire
      * @throws JadePersistenceException
@@ -1283,6 +1286,37 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
 
         documentData.addData("texte_paragraphe_3", this.getText("al.decision.standard.paragraphe3", langueDocument));
 
+        if (ALCSDossier.ACTIVITE_SALARIE.equals(dossierComplexModel.getDossierModel().getActiviteAllocataire())) {
+            documentData.addData("texte_paragraphe_4", generateParagraphe4(langueDocument, dossierComplexModel.getDossierModel()));
+        }
+
+    }
+
+    private String generateParagraphe4(String langueDocument, DossierModel dossierModel) {
+        try {
+            String dateDebutValidite = dossierModel.getDebutValidite();
+            if (!JadeDateUtil.isGlobazDate(dateDebutValidite)) {
+                LOGGER.warn("Impossible de trouver la date de début de validité de la décision, le paragraphe ne sera pas généré dans la décision.");
+                return null;
+            }
+
+            BSession session = BSessionUtil.getSessionFromThreadContext();
+            String SALBMINMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINMO", dateDebutValidite, "", 0));
+            String SALBMINAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINAN", dateDebutValidite, "", 0));
+            String REVENMAXMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVENMAXMO", dateDebutValidite, "", 0));
+            String REVEFMAXAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVEFMAXAN", dateDebutValidite, "", 0));
+
+            String paragraphe4 = this.getText("al.decision.standard.paragraphe4", langueDocument);
+            paragraphe4 = paragraphe4.replace("{SALBMINMO}", SALBMINMO);
+            paragraphe4 = paragraphe4.replace("{SALBMINAN}", SALBMINAN);
+            paragraphe4 = paragraphe4.replace("{REVENMAXMO}", REVENMAXMO);
+            paragraphe4 = paragraphe4.replace("{REVEFMAXAN}", REVEFMAXAN);
+            return paragraphe4;
+
+        } catch (Exception e) {
+            LOGGER.error("Une erreur est intervenue lors de la recherche des plages de valeurs nécessaire au paragraphe de la décision.", e);
+            return null;
+        }
     }
 
     /**
