@@ -49,6 +49,7 @@ public class GFRecuperationFormulairesProcess extends BProcess {
 
         initBsession();
         this.setSendMailOnError(true);
+        this.setSendCompletionMail(false);
 
         findFormulaireContainer();
 
