@@ -54,7 +54,7 @@ public class REAcorAnnoncesService {
             con.setDoOutput(true);
             OutputStream os = con.getOutputStream();
             JacksonJsonProvider.getInstance().writeValue(os, fCalcul);
-            if (con.getResponseCode() <= 400) {
+            if (con.getResponseCode()==HttpURLConnection.HTTP_OK) {
                 InputStream response = con.getInputStream();
                 Scanner scanner = new Scanner(response);
                 String responseBody = scanner.next();

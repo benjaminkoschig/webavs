@@ -43,18 +43,18 @@ public class REAcorSwapService {
 
             JacksonJsonProvider.getInstance().writeValue(os, message);
 
-            if (con.getInputStream() != null) {
-                final InputStream inputStream = con.getInputStream();
-                final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            if (con.getResponseCode()==HttpURLConnection.HTTP_OK) {
+                try (final InputStream inputStream = con.getInputStream();
+                     final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-                StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new StringBuilder();
 
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    sb.append(line);
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    response = sb.toString();
                 }
-                response=sb.toString();
-
             }
             con.disconnect();
         } catch (MalformedURLException e) {
