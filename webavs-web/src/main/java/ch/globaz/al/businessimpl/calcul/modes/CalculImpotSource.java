@@ -1,6 +1,8 @@
 package ch.globaz.al.businessimpl.calcul.modes;
 
-import ch.globaz.al.business.constantes.*;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSPays;
+import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.allocataire.AllocataireModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
@@ -8,10 +10,10 @@ import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationGenComplexModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationGenComplexSearchModel;
+import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleComplexModel;
+import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleSearchComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.businessimpl.generation.prestations.GenPrestationDossier;
+import ch.globaz.al.businessimpl.generation.prestations.GenPrestationAbstract;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.al.impotsource.domain.TauxImpositions;
@@ -29,6 +31,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -58,57 +61,72 @@ public class CalculImpotSource {
     public static void computeISforDroit(DossierModel dossierModel, CalculBusinessModel droitCalcule, String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String dateFinMoisPourPeriode)
             throws JadeApplicationException {
         try {
-            // cherche si le droit de ce dossier possède une prestations déjà comptabilisée à extourner pour la période en cours de traitement,
-            String prestationImpotSourceAExtourner = hasPrestationAExtourner(dossierModel, droitCalcule, JACalendar.format(dateFinMoisPourPeriode, JACalendar.FORMAT_MMsYYYY));
-
-            // si montantIS de la prestationImpotSourceAExtourner existe on l'utilise tel quel
-            if (!JadeStringUtil.isEmpty(prestationImpotSourceAExtourner)) {
-                droitCalcule.setCalculResultMontantIS(prestationImpotSourceAExtourner);
-            } else { // sinon on utilise le taux impot source à la date d'aujourd'hui pour recalculer le montantIS
-                String dateAujourdhuiPourCalculImpotSource = JadeDateUtil.getGlobazFormattedDate(new java.util.Date());
-                Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateAujourdhuiPourCalculImpotSource);
-                Montant montantPrestation = new Montant(montant);
-                Montant impots = montantPrestation.multiply(tauxApplicable).normalize();
-                droitCalcule.setCalculResultMontantIS(impots.getValue());
+            // Si pas de montant prestation pas de montantIS
+            if(JadeStringUtil.isBlankOrZero(montant)){
+                return;
             }
+            // cherche si le droit de ce dossier possède une prestation déjà comptabilisée à extourner pour la période en cours de traitement,
+            DeclarationVersementDetailleComplexModel prestationImpotSourceAExtourner = recherchePrestationAExtourner(dossierModel, droitCalcule, JACalendar.format(dateFinMoisPourPeriode, JACalendar.FORMAT_MMsYYYY));
+
+            String montantIS;
+            if (prestationImpotSourceAExtourner != null) {
+                if(montant.equals(prestationImpotSourceAExtourner.getMontantDetailPrestation())) {
+                    // l'ancien montant correspond au nouveau : on garde le montantIS précédemment calculé
+                    montantIS = prestationImpotSourceAExtourner.getMontantIS();
+                } else {
+                    Montant montantPrestation = new Montant(montant).add(new Montant(prestationImpotSourceAExtourner.getMontantDetailPrestation()).negate());
+                    if(montantPrestation.isPositive()) {
+                        // montant à verser supérieur : on applique le taux actuel sur la différence et ajoute l'ancien montantIS
+                        Montant impotsDiff = rechercheImpot(montantPrestation.getValue(), tauxGroupByCanton, tauxImpositionRepository, cantonImposition, JadeDateUtil.getGlobazFormattedDate(new java.util.Date()));
+                        montantIS = impotsDiff.add(new Montant(prestationImpotSourceAExtourner.getMontantIS())).getValue();
+                    } else {
+                        // montant à verser inférieur : on calcule le montantIS avec l'ancien taux
+                        montantIS = rechercheImpot(montant, tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateFinMoisPourPeriode).getValue();
+                    }
+                }
+            } else { // Pas de montant à extourner : on utilise le taux impot source à la date d'aujourd'hui pour recalculer le montantIS
+                montantIS = rechercheImpot(montant, tauxGroupByCanton, tauxImpositionRepository, cantonImposition, JadeDateUtil.getGlobazFormattedDate(new java.util.Date())).getValue();
+            }
+            droitCalcule.setCalculResultMontantIS(montantIS);
         } catch (TauxImpositionNotFoundException e) {
             throw new ALCalculException(e.getMessage());
         }
     }
+    private static Montant rechercheImpot(String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String date) throws TauxImpositionNotFoundException {
+        Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
+        return new Montant(montant).multiply(tauxApplicable).normalize();
+    }
 
-    public static String hasPrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule, String dateFinMoisPourPeriode) {
+    public static DeclarationVersementDetailleComplexModel recherchePrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule, String dateFinMoisPourPeriode) {
         try {
-            DetailPrestationGenComplexSearchModel search = GenPrestationDossier.searchExistingPrestSansContextAffilie(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dateFinMoisPourPeriode, droitCalcule.getDroit().getId());
+            DeclarationVersementDetailleSearchComplexModel search = GenPrestationAbstract.searchExistingPrestNssEnfant(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dateFinMoisPourPeriode, droitCalcule.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
 
-            ArrayList<String> processed = new ArrayList<String>();
+            ArrayList<String> processed = new ArrayList<>();
             String lastDate = null;
             String lastPeriod = null;
 
             // si des prestations existent, génération d'une prestation inverse
-            if (search.getSize() > 0) {
-                for (int i = 0; i < search.getSize(); i++) {
-                    DetailPrestationGenComplexModel oldPrest = (DetailPrestationGenComplexModel) search.getSearchResults()[i];
+            for (JadeAbstractModel abstractModel : search.getSearchResults()) {
+                DeclarationVersementDetailleComplexModel oldPrest = (DeclarationVersementDetailleComplexModel) abstractModel;
 
-                    if (JadeStringUtil.isBlank(lastPeriod)) {
-                        lastPeriod = oldPrest.getPeriodeValidite();
-                    }
+                if (JadeStringUtil.isBlank(lastPeriod)) {
+                    lastPeriod = oldPrest.getPeriode();
+                }
 
-                    if (JadeStringUtil.isBlank(lastDate)) {
-                        lastDate = oldPrest.getDateVersement();
-                    }
+                if (JadeStringUtil.isBlank(lastDate)) {
+                    lastDate = oldPrest.getDateVersement();
+                }
 
-                    if (!oldPrest.getPeriodeValidite().equals(lastPeriod) || !oldPrest.getDateVersement().equals(lastDate)) {
-                        lastDate = oldPrest.getDateVersement();
-                        processed.add(lastPeriod);
-                        lastPeriod = oldPrest.getPeriodeValidite();
-                    }
+                if (!oldPrest.getPeriode().equals(lastPeriod) || !oldPrest.getDateVersement().equals(lastDate)) {
+                    lastDate = oldPrest.getDateVersement();
+                    processed.add(lastPeriod);
+                    lastPeriod = oldPrest.getPeriode();
+                }
 
-                    if (!processed.contains(lastPeriod)) {
-                        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
-                                && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())) {
-                            return oldPrest.getMontantIS();
-                        }
-                    }
+                if (!processed.contains(lastPeriod)
+                        && ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                        && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())) {
+                    return oldPrest;
                 }
             }
 
