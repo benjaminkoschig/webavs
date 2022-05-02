@@ -545,7 +545,7 @@ public class FAImpressionFactureEBillXml {
         LineItemType lineItem = of.createLineItemType();
 
         lineItem.setLineItemType(eBillFacture.getLineItemType());
-        lineItem.setLineItemID(((Integer) lignes.get("COL_ID")).toString());
+        lineItem.setLineItemID(lignes.get("COL_ID") != null ? String.valueOf((Integer) lignes.get("COL_ID")) : null);
 
         String dateDebut = (String) lignes.get("COL_1");
         String dateFin = (String) lignes.get("COL_2");
