@@ -21,7 +21,6 @@ import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BManager;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -53,7 +52,13 @@ import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
@@ -503,7 +508,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
                 pourRechercheCodeSysteme += "." + ra.getFractionRente();
             } else if (!JadeStringUtil.isEmpty(ra.getQuotiteRente())) {
-                if (Objects.equals(REGenresPrestations.GENRE_50, ra.getCodePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, ra.getCodePrestation())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
                     if (Float.parseFloat(ra.getQuotiteRente()) >= 0.70) {
                         pourRechercheCodeSysteme += ".1";
                     } else {

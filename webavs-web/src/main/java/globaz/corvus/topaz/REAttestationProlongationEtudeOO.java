@@ -1,6 +1,9 @@
 package globaz.corvus.topaz;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
 
 import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.api.ICTDocument;
@@ -10,13 +13,15 @@ import globaz.caisse.report.helper.ICaisseReportHelperOO;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.codesystem.IRECatalogueTexte;
 import globaz.corvus.application.REApplication;
-import globaz.corvus.db.rentesaccordees.*;
+import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -463,7 +468,7 @@ public class REAttestationProlongationEtudeOO {
             if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
                 pourRechercheCodeSysteme += "." + ra.getFractionRente();
             } else if (!JadeStringUtil.isEmpty(ra.getQuotiteRente())) {
-                if (Objects.equals(REGenresPrestations.GENRE_50, ra.getCodePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, ra.getCodePrestation())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
                     if (Float.parseFloat(ra.getQuotiteRente()) >= 0.70) {
                         pourRechercheCodeSysteme += ".1";
                     } else {
