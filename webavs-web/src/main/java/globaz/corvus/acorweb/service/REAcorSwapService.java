@@ -27,7 +27,7 @@ public class REAcorSwapService {
 
     public String getSwap(Message message) throws PRACORException {
         URL url;
-        HttpURLConnection con;
+        HttpURLConnection con = null;
         String acorBaseUrl = REAcorTokenServiceImpl.loadAcorBaseUrl();
         String response = null;
 
@@ -39,16 +39,15 @@ public class REAcorSwapService {
             con.setRequestProperty("Accept", "application/xml");
             con.setRequestMethod("POST");
             con.setDoOutput(true);
-            OutputStream os = con.getOutputStream();
+            try (OutputStream os = con.getOutputStream()) {
+                JacksonJsonProvider.getInstance().writeValue(os, message);
+            }
 
-            JacksonJsonProvider.getInstance().writeValue(os, message);
+            try (final InputStream inputStream = con.getInputStream();
+                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-            if (con.getResponseCode()==HttpURLConnection.HTTP_OK) {
-                try (final InputStream inputStream = con.getInputStream();
-                     final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     StringBuilder sb = new StringBuilder();
-
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
                         sb.append(line);
@@ -56,13 +55,16 @@ public class REAcorSwapService {
                     response = sb.toString();
                 }
             }
-            con.disconnect();
         } catch (MalformedURLException e) {
             throw new PRACORException("Un problème est intervenu lors de la récupération de l'URL du webService " + acorBaseUrl, e);
         } catch (ProtocolException e) {
             throw new PRACORException("Un problème de protocole est intervenu lors de la connexion au webService ", e);
         } catch (IOException e) {
             throw new PRACORException("Un problème de connexion au webService ", e);
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
         }
         return response;
     }
