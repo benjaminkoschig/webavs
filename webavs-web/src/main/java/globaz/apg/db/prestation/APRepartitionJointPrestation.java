@@ -90,6 +90,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
     private String cleTri = "";
     private String dateDebut = "";
     private String dateFin = "";
+    private String dateFinSaisie = "";
     private transient String fromClause = null;
     private String genrePrestationPrestation = "";
     private String genreService = "";
@@ -146,6 +147,7 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         super._readProperties(statement);
         dateDebut = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEDEBUT);
         dateFin = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN);
+        dateFinSaisie = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN_SAISIE);
         idDroit = statement.dbReadNumeric(APPrestation.FIELDNAME_IDDROIT);
         nbJoursSoldes = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSSOLDES);
         nbJoursConges = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSCONGES);
@@ -247,6 +249,15 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public String getDateFin() {
         return dateFin;
+    }
+
+    /**
+     * getter pour l'attribut date fin saisie
+     *
+     * @return la valeur courante de l'attribut date fin saisie
+     */
+    public String getDateFinSaisie() {
+        return dateFinSaisie;
     }
 
     /**
@@ -400,6 +411,16 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public void setDateFin(final String string) {
         dateFin = string;
+    }
+
+    /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param string
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(final String string) {
+        dateFinSaisie = string;
     }
 
     /**
