@@ -28,6 +28,7 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
      */
     private static final long serialVersionUID = 1L;
     public final static String BVR = "210002";
+    public final static String QR = "210003";
     public final static String CODE_ISO_MONNAIE_CHF = "CHF";
     public final static String CODE_PAYS_SUISSE = "CH";
     public static final String FIELD_CODEISOMONBON = "CODEISOMONBON";
@@ -281,10 +282,11 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
             }
 
             // Vérifier la référence BVR
-            if (JadeStringUtil.isBlank(getReferenceBVR()) && getTypeVirement().equals(CAOrdreVersement.BVR)) {
+            if (JadeStringUtil.isBlank(getReferenceBVR()) && CAOrdreVersement.BVR.equals(getTypeVirement())) {
                 getMemoryLog().logMessage("5144", null, FWMessage.ERREUR, this.getClass().getName());
             }
-            if (!JadeStringUtil.isBlank(getReferenceBVR()) && !getTypeVirement().equals(CAOrdreVersement.BVR)) {
+            if (!JadeStringUtil.isBlank(getReferenceBVR()) && !(CAOrdreVersement.BVR.equals(getTypeVirement())
+                    || CAOrdreVersement.QR.equals(getTypeVirement()))) {
                 getMemoryLog().logMessage("5145", null, FWMessage.ERREUR, this.getClass().getName());
             }
 

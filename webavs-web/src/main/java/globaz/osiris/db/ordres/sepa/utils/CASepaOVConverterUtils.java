@@ -40,6 +40,8 @@ public class CASepaOVConverterUtils {
     public static final String ExternalLocalInstrument1_CPP = "CPP";
     public static final String ExternalLocalInstrument1_CH01 = "CH01";// FIXME, not from ExternalCodeSet
 
+    public static final String ExternalLocalInstrument1_QRR = "QRR";
+
     public static final String ExternalCategoryPurpose1_RENTE_AVS_AI = "PENS";
     public static final String ExternalCategoryPurpose1_AUTRE = "SSBE";
     public static final String ExternalPaymentPurpose1_ALLOC_FAM = "BECH"; // FIXME, not from ExternalCodeSet Category
