@@ -17,10 +17,10 @@ import globaz.corvus.process.REListerEcheancesProcess;
 import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.utils.REGedUtils.TypeRente;
 import globaz.corvus.utils.RENumberFormatter;
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BManager;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -51,6 +51,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiers;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -58,6 +59,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
@@ -362,13 +364,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             throw new Exception("Internal error : Le sexe du bénéficiaire n'a pas pu être trouvé");
         }
 
-        String pourRechercheCodeSysteme = echeanceToResolve.getCodePrestation();
-
-        if (JadeStringUtil.isEmpty(echeanceToResolve.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + echeanceToResolve.getFractionRente();
-        }
+        String pourRechercheCodeSysteme = getRERechercheCodeSystem(echeanceToResolve);
 
         // Récupération du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
         String libelle = RENumberFormatter.codeSystemToLibelle(
@@ -499,6 +495,37 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         allDoc.addDocument(data, pubInfo25ans);
     }
 
+    /**
+     * Prépare la chaîne pour retrouver le code système avec .0 ou .1 ou autres fractions selon les règles analysées
+     *
+     * @param ra    Rente accordé
+     * @return      La chaîne permettant de chercher le code système
+     */
+    private String getRERechercheCodeSystem(REListerEcheanceRenteJoinMembresFamille ra){
+        String pourRechercheCodeSysteme = ra.getCodePrestation();
+
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
+            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
+                pourRechercheCodeSysteme += "." + ra.getFractionRente();
+            } else if (!JadeStringUtil.isEmpty(ra.getQuotiteRente())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
+                    if (Float.parseFloat(ra.getQuotiteRente()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
+                } else {
+                    pourRechercheCodeSysteme += ".1";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".0";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
+    }
+
     private void chargementDonneesMotifAgeAVS(String motif) throws Exception {
         data = new DocumentData();
         data.addData("idProcess", "REEcheanceRenteOO");
@@ -506,13 +533,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
         // Traitement du concerne, j'insere les valeurs type de rente, montant, prenom/nom et date anniversaire en
         // fonction du sexe de l'enfant
-        String pourRechercheCodeSysteme = echeanceCourrante.getCodePrestation();
-
-        if (JadeStringUtil.isEmpty(echeanceCourrante.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
-        }
+        String pourRechercheCodeSysteme = getRERechercheCodeSystem(echeanceCourrante);
 
         // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
         String libelle = RENumberFormatter.codeSystemToLibelle(
@@ -700,12 +721,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
         // Traitement du concerne, j'insere les valeurs type de rente, montant, prenom/nom et date anniversaire en
         // fonction du sexe de l'enfant
-        String pourRechercheCodeSysteme = echeanceCourrante.getCodePrestation();
-        if (JadeStringUtil.isEmpty(echeanceCourrante.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
-        }
+        String pourRechercheCodeSysteme = getRERechercheCodeSystem(echeanceCourrante);
 
         String libelle = RENumberFormatter.codeSystemToLibelle(
                 getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),

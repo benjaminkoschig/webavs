@@ -51,7 +51,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.http.JSPUtils;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -524,13 +523,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
                                         codePrestation.put(index, ra.getCodePrestation());
                                     } else {
-                                        String pourRechercheCodeSysteme = ra.getCodePrestation();
-
-                                        if (JadeStringUtil.isEmpty(ra.getFractionRente())) {
-                                            pourRechercheCodeSysteme += ".0";
-                                        } else {
-                                            pourRechercheCodeSysteme += "." + ra.getFractionRente();
-                                        }
+                                        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
 
                                         String libelle = RENumberFormatter.codeSystemToLibelle(
                                                 bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
@@ -771,6 +764,37 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         }
 
+    }
+
+    /**
+     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
+     *
+     * @param ra    Rente accordé
+     * @return      La chaîne permettant de chercher le code système
+     */
+    private String getRERechercheCodeSystem(REAttestationFiscaleRenteAccordee ra){
+        String pourRechercheCodeSysteme = ra.getCodePrestation();
+
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
+            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
+                pourRechercheCodeSysteme += "." + ra.getFractionRente();
+            } else if (!JadeStringUtil.isEmpty(ra.getQuotite())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
+                    if (Float.valueOf(ra.getQuotite()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
+                } else {
+                    pourRechercheCodeSysteme += ".1";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".0";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
     }
 
     /**
