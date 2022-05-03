@@ -1956,7 +1956,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
                     } else {
                         // 2. les infos sur la prestation
-                        String dateFinPrestation = !JadeStringUtil.isBlankOrZero(repartition.getDateFinSaisie()) ? repartition.getDateFinSaisie() : repartition.getDateFin();
+                        String dateFinPrestation = !JadeStringUtil.isBlank(repartition.getDateFinSaisie()) ? repartition.getDateFinSaisie() : repartition.getDateFin();
                         champs.put("FIELD_DETAIL_PERIODE",
                                 PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
                                         JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
