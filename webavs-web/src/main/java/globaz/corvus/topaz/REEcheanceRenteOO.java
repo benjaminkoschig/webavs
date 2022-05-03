@@ -108,6 +108,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
     private String moisEcheance;
     private String nomBeneficiaire;
     private boolean renteDeVeufGED;
+    private boolean echanceEnfantRecueilliGratuitementGED;
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
     private PRTiersWrapper tiersAdressePaiement;
@@ -139,6 +140,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         moisEcheance = "";
         nomBeneficiaire = "";
         renteDeVeufGED = false;
+        echanceEnfantRecueilliGratuitementGED= false;
         tiersAdresse = null;
         tiersBeneficiaire = null;
         titre = "";
@@ -214,11 +216,17 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             chargementDonneesMotifAgeAVSConjoint();
         } else if (REMotifEcheance.RenteDeVeuf.name().equals(echeanceCourrante.getMotifLettre())) {
             chargementDonnéesMotifVeuf();
+        } else if (REMotifEcheance.EcheanceEnfantRecueilliGratuitement.name().equals(echeanceCourrante.getMotifLettre())) {
+            chargementDonneesEcheancesEnfantRecueilliGratuitement();
         } else {
             // Pas de signalement de ces cas
             // String message = this.getSession().getLabel("AUCUNE_LETTRE_GENEREE_POUR_MOTIF_SUIVANT");
             // throw new Exception(message + " [" + this.echeanceCourrante.getMotifLettre() + "]");
         }
+    }
+
+    private void chargementDonneesEcheancesEnfantRecueilliGratuitement() {
+        // TODO : implémenter le chargement du catalogue de texte.
     }
 
     private void chargementDonneesMotif18ans(boolean hasDoubleRowObject) throws Exception {
@@ -1631,6 +1639,14 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
     public void setRenteDeVeufGED(boolean renteDeVeufGED) {
         this.renteDeVeufGED = renteDeVeufGED;
+    }
+
+    public boolean isEchanceEnfantRecueilliGratuitementGED() {
+        return echanceEnfantRecueilliGratuitementGED;
+    }
+
+    public void setEchanceEnfantRecueilliGratuitementGED(boolean echanceEnfantRecueilliGratuitementGED) {
+        this.echanceEnfantRecueilliGratuitementGED = echanceEnfantRecueilliGratuitementGED;
     }
 
     public PRTiersWrapper getTiersAdressePaiement() {

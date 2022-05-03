@@ -1,7 +1,7 @@
--- Création du nouveau type de périodes "Enfant reccueilli gratuitement par le conjoint"
+-- Création du nouveau type de périodes "Enfant recueilli gratuitement par le conjoint"
 INSERT INTO schema.FWCOSP (PCOSID,PPTYGR,PCONCS,PPTYCN,PPTYCL,PPTYSA,PCOSLI,PCOSDF,PCOSDM,PCOSDP,PCOIAN,PCOIDE,PCODFI,PCOITC,PCOISE,PSPY)
 VALUES (36002014,'SFTYPPER  ',1,1,0,0,'ENFANT_CONJOINT',2,1,2,2,2,2,35000002,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
-INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'F','rgc','Enfant reccueilli gratuitement par le conjoint',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'F','rgc','Enfant recueilli gratuitement par le conjoint',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'D','rgc','Kind, das unentgeltlich vom Ehepartner aufgenommen wurde',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'I','rgc','Bambino accolto gratuitamente dal coniuge',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 

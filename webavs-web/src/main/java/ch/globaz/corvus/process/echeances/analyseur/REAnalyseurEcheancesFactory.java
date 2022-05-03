@@ -1,21 +1,12 @@
 package ch.globaz.corvus.process.echeances.analyseur;
 
+import ch.globaz.corvus.process.echeances.analyseur.modules.*;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleAnalyseEcheance;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheance18Ans;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheance25Ans;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceAjournement;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceCertificatDeVie;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceEtude;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceFemmeAgeAvs;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceHommeAgeAvs;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheanceRenteDeVeuf;
-import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEcheancesForcees;
 
 /**
  * Construit deux types d'analyseur : un standard et un prenant en charge les échéances forcées (voir la doc de
@@ -34,7 +25,8 @@ public class REAnalyseurEcheancesFactory {
         EcheancesForcees("OPTION_AUTRES_ECHEANCES"),
         FemmeArrivantAgeAvs("OPTION_FEMME_ARRIVANT_AGE_AVS"),
         HommeArrivantAgeAvs("OPTION_HOMME_ARRIVANT_AGE_AVS"),
-        RenteDeVeuf("OPTION_RENTE_DE_VEUF");
+        RenteDeVeuf("OPTION_RENTE_DE_VEUF"),
+        EcheanceEnfantRecueilliGratuitement("OPTION_ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT");
 
         private String idLabelMotif;
 
@@ -137,6 +129,8 @@ public class REAnalyseurEcheancesFactory {
                         getDateDebutPriseEnCompteAgeAvsDepasse());
             case RenteDeVeuf:
                 return new REModuleEcheanceRenteDeVeuf(getSession(), moisTraitement);
+            case EcheanceEnfantRecueilliGratuitement:
+                return new REModuleEchanceEnfantRecueilliGratuitement(getSession(), moisTraitement);
         }
         throw new UnsupportedOperationException("Motif inconnu : " + type.getIdLabelMotif() + " ("
                 + getSession().getLabel(type.getIdLabelMotif()) + ")");

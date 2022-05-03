@@ -47,6 +47,9 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
     private Boolean isRenteDeVeuf = Boolean.FALSE;
     private Boolean isRenteDeVeufDOC = Boolean.FALSE;
     private Boolean isRenteDeVeufGED = Boolean.FALSE;
+    private Boolean isEcheanceEnfantRecueilliGratuitement = Boolean.FALSE;
+    private Boolean isEcheanceEnfantRecueilliGratuitementDOC = Boolean.FALSE;
+    private Boolean isEcheanceEnfantRecueilliGratuitementGED = Boolean.FALSE;
 
     private REListeTravauxAEffectuerDocumentGenerator listGenerator;
 
@@ -104,6 +107,7 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
         listGenerator.setFemmeArrivantAgeVieillesse(isFemmeArrivantAgeVieillesse);
         listGenerator.setHommeArrivantAgeVieillesse(isHommeArrivantAgeVieillesse);
         listGenerator.setRenteDeVeuf(isRenteDeVeuf);
+        listGenerator.setEcheanceEnfantRecueilliGratuitement(isEcheanceEnfantRecueilliGratuitement);
         return listGenerator;
     }
 
@@ -172,6 +176,10 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
                         echeancesAImprimer.add(echeance);
                     }
                     break;
+                case EcheanceEnfantRecueilliGratuitement:
+                    if (isEcheanceEnfantRecueilliGratuitementDOC) {
+                        echeancesAImprimer.add(echeance);
+                    }
                 default:
                     break;
             }
@@ -234,6 +242,9 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
                 }
                 if (getIsRenteDeVeufGED()) {
                     reEcheanceRenteOO.setRenteDeVeufGED(true);
+                }
+                if (getEcheanceEnfantRecueilliGratuitementGED()) {
+                    reEcheanceRenteOO.setEchanceEnfantRecueilliGratuitementGED(true);
                 }
                 BProcessLauncher.start(reEcheanceRenteOO, false);
             } catch (Exception e) {
@@ -451,5 +462,13 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
 
     public final void setIsRenteDeVeufGED(Boolean isRenteDeVeufGED) {
         this.isRenteDeVeufGED = isRenteDeVeufGED;
+    }
+
+    public Boolean getEcheanceEnfantRecueilliGratuitementGED() {
+        return isEcheanceEnfantRecueilliGratuitementGED;
+    }
+
+    public void setEcheanceEnfantRecueilliGratuitementGED(Boolean echeanceEnfantRecueilliGratuitementGED) {
+        isEcheanceEnfantRecueilliGratuitementGED = echeanceEnfantRecueilliGratuitementGED;
     }
 }

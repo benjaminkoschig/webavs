@@ -33,6 +33,7 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
     private boolean isSendToGedFemmeVieillesse;
     private boolean isSendToGedHommeVieillesse;
     private boolean isSendToGedRenteVeuf;
+    private boolean isSendToGedEnfantRecueilliGratuitement;
     private transient LYSimpleEcheanceSearchModel searchModel;
     private boolean isValidationDecisionAutorise;
 
@@ -49,6 +50,7 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         isSendToGedHommeVieillesse = false;
         isSendToGedRenteVeuf = false;
         isValidationDecisionAutorise = true;
+        isSendToGedEnfantRecueilliGratuitement = false;
     }
 
     private void checkGED() throws Exception {
@@ -80,6 +82,10 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         if (PRGedUtils.isDocumentInGed(IRENoDocumentInfoRom.ECHEANCE_RENTE_DE_VEUF,
                 BSessionUtil.getSessionFromThreadContext())) {
             setSendToGedRenteVeuf(true);
+        }
+        if (PRGedUtils.isDocumentInGed(IRENoDocumentInfoRom.ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT,
+                BSessionUtil.getSessionFromThreadContext())) {
+            setSendToGedEnfantRecueilliGratuitement(true);
         }
     }
 
@@ -253,5 +259,13 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
 
     public void setValidationDecisionAuthorise(boolean isValidDecAut) {
         isValidationDecisionAutorise = isValidDecAut;
+    }
+
+    public boolean isSendToGedEnfantRecueilliGratuitement() {
+        return isSendToGedEnfantRecueilliGratuitement;
+    }
+
+    public void setSendToGedEnfantRecueilliGratuitement(boolean sendToGedEnfantRecueilliGratuitement) {
+        isSendToGedEnfantRecueilliGratuitement = sendToGedEnfantRecueilliGratuitement;
     }
 }
