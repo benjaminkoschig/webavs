@@ -51,7 +51,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.http.JSPUtils;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -780,7 +779,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
                 pourRechercheCodeSysteme += "." + ra.getFractionRente();
             } else if (!JadeStringUtil.isEmpty(ra.getQuotite())) {
-                if (Objects.equals(REGenresPrestations.GENRE_50, ra.getCodePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, ra.getCodePrestation())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
                     if (Float.valueOf(ra.getQuotite()) >= 0.70) {
                         pourRechercheCodeSysteme += ".1";
                     } else {
