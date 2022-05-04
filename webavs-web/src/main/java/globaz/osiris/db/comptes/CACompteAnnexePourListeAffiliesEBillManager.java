@@ -41,7 +41,7 @@ public class CACompteAnnexePourListeAffiliesEBillManager extends BManager implem
 
     @Override
     protected String _getOrder(BStatement statement) {
-        return " HXNAFF ";
+        return " MALNAF ";
     }
 
 }
