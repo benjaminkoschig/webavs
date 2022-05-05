@@ -152,7 +152,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
      * 
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
-    protected ISFMembreFamilleRequerant[] _getMembresFamilleAvecEnfantRecuilli(String idTiers, String csDomaine) throws Exception {
+    protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers, String csDomaine) throws Exception {
         ISFMembreFamilleRequerant[] membres = _getMembresFamille(idTiers, csDomaine);
         SFPeriodeManager periodeMgr = new SFPeriodeManager();
         List<ISFMembreFamilleRequerant> membreList = new ArrayList<>();

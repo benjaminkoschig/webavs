@@ -161,7 +161,6 @@ public interface ISFSituationFamiliale {
      */
     ISFMembreFamilleRequerant[] getMembresFamille(String idTiers) throws Exception;
 
-
     /**
      * <p>
      * Retourne la liste de tous les membres de la famille par rapport à un membre donné.
