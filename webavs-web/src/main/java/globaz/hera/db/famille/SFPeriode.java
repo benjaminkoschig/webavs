@@ -67,7 +67,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
         setIdPeriode(this._incCounter(transaction, "0"));
 
-        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())
+                && !ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(getType())) {
             setIdRecueillant("");
         }
     }
@@ -332,7 +333,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     }
 
     public SFTiersWrapper getTiersRecueillant() {
-        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)) {
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)
+            || ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(type)) {
             if (tiersRecueillant == null) {
                 try {
                     tiersRecueillant = SFTiersHelper.getTiersParId(getSession(), getIdRecueillant());
@@ -519,7 +521,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         super._beforeUpdate(transaction);
-        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())
+                && !ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(getType())) {
             setIdRecueillant("");
         }
 
