@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.pyxis.db.tiers.TITiers" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
@@ -68,13 +69,14 @@ function postInit(){
 		<TD><ct:FWLabel key="CHAMP"/></TD>
 		<TD>
 			<select name="champ" id="champ" onchange="onchangeChamp(this);">
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION1%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION1.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_RAISON_SOC"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION2%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION2.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="PRENOM_RAISON_SOC"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION3%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION3.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_SUITE_1"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION4%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION4.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_SUITE_2"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_TITRE%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_TITRE.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="TITRE"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_PAYS%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_PAYS.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NATIONALITE"/></option>
-				<option value="<%=globaz.pyxis.db.tiers.TITiers.FIELD_DATE_DECES%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DATE_DECES.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="DECES"/></option>
+				<option value="<%=TITiers.FIELD_DESIGNATION1%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION1.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_RAISON_SOC"/></option>
+				<option value="<%=TITiers.FIELD_DESIGNATION2%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION2.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="PRENOM_RAISON_SOC"/></option>
+				<option value="<%=TITiers.FIELD_DESIGNATION3%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION3.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_SUITE_1"/></option>
+				<option value="<%=TITiers.FIELD_DESIGNATION4%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION4.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NOM_SUITE_2"/></option>
+				<option value="<%=TITiers.FIELD_TITRE%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_TITRE.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="TITRE"/></option>
+				<option value="<%=TITiers.FIELD_PAYS%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_PAYS.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="NATIONALITE"/></option>
+				<option value="<%=TITiers.FIELD_DATE_DECES%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_DATE_DECES.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="DECES"/></option>
+				<option value="<%=TITiers.FIELD_SEXE%>" <%=globaz.pyxis.db.tiers.TITiers.FIELD_SEXE.equals(viewBean.getChamp())?"selected=\"selected\"":""%>><ct:FWLabel key="SEXE"/></option>
 			</select>
 			<script language="Javascript"> 
 				function onchangeChamp(node){
@@ -88,6 +90,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION2%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='block';
@@ -96,6 +99,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION3%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='none';
@@ -104,6 +108,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_DESIGNATION4%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='none';
@@ -112,6 +117,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_TITRE%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='none';
@@ -120,6 +126,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='block';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_PAYS%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='none';
@@ -128,6 +135,7 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='block';
 								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='none';
 							} else if(node.children[i].value=='<%=globaz.pyxis.db.tiers.TITiers.FIELD_DATE_DECES%>'){
 								document.getElementById('val1').style.display='none';
 								document.getElementById('val2').style.display='none';
@@ -136,6 +144,16 @@ function postInit(){
 								document.getElementById('valTi').style.display='none';
 								document.getElementById('valPa').style.display='none';
 								document.getElementById('valDa').style.display='block';
+								document.getElementById('valSe').style.display='none';
+							} else if(node.children[i].value=='<%=TITiers.FIELD_SEXE%>'){
+								document.getElementById('val1').style.display='none';
+								document.getElementById('val2').style.display='none';
+								document.getElementById('val3').style.display='none';
+								document.getElementById('val4').style.display='none';
+								document.getElementById('valTi').style.display='none';
+								document.getElementById('valPa').style.display='none';
+								document.getElementById('valDa').style.display='none';
+								document.getElementById('valSe').style.display='block';
 							}
 						}
 					}					
@@ -155,6 +173,7 @@ function postInit(){
 		<TD id="valTi"><ct:FWCodeSelectTag name="csTitre" defaut="<%=viewBean.getCsTitre()%>" codeType="PYTITRE" wantBlank="true"/></TD>
 		<TD id="valPa"><ct:FWListSelectTag name="idPays" defaut="<%=viewBean.getIdPays()%>" data="<%=globaz.pyxis.db.adressecourrier.TIPays.getPaysList(session)%>"/></TD>
 		<TD id="valDa"><ct:FWCalendarTag name="valeurDate" value="<%=viewBean.getValeurDate()%>" doClientValidation="CALENDAR"/></TD>
+		<TD id="valSe"><ct:FWCodeSelectTag name="csSexe" defaut="<%=viewBean.getCsSexe()%>"	wantBlank="true"  codeType="PYSEXE"/></TD>
 	</TR>
 	
 	<TR>

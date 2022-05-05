@@ -1,4 +1,4 @@
-<%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
+<%@ page import="globaz.pyxis.db.tiers.TITiers" %><%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
 <%-- tpl:put name="zoneScripts"  --%>
@@ -56,6 +56,9 @@
 	<%}else if(globaz.pyxis.db.tiers.TITiers.FIELD_DATE_DECES.equals(line.getChamp())){%>
 		<TD class="mtd" onclick="<%=actionDetail%>"><ct:FWLabel key="DECES"/></TD>
 		<TD class="mtd" onClick="<%=actionDetail%>"><%="".equals(line.getValeur())?"&nbsp;": line.getValeurDate()%></TD>
+<%}else if(TITiers.FIELD_SEXE.equals(line.getChamp())){%>
+<TD class="mtd" onclick="<%=actionDetail%>"><ct:FWLabel key="SEXE"/></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%="".equals(line.getValeur())?"&nbsp;": line.getValeurSexe()%></TD>
 	<%}%>
 	<TD class="mtd" onClick="<%=actionDetail%>"><%="".equals(line.getDateDebut())?"&nbsp;": line.getDateDebut()%></TD>
 	<TD class="mtd" onClick="<%=actionDetail%>"><%="".equals(line.getMotif())?"&nbsp;": line.getSession().getCodeLibelle(line.getMotif())%></TD>

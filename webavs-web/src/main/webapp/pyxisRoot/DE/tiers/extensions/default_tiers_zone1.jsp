@@ -155,14 +155,20 @@ TITiersViewBean viewBean = (TITiersViewBean)session.getAttribute ("viewBean");
 	</td>			
 	</tr>
 			<tr>
-			<td>Geschlecht</td>
+				<td>
+					<%if ((request.getParameter("_method")==null)||(!request.getParameter("_method").equalsIgnoreCase("add"))) { %><a  href="javascript:HistoriqueSexe()"><%}%>
+					Geschlecht
+					<%if ((request.getParameter("_method")==null)||(!request.getParameter("_method").equalsIgnoreCase("add"))) { %></a><%}%>
+				</td>
 	<td>
 	  <ct:FWCodeRadioTag name="sexe"
 			defaut="<%=viewBean.getSexe()%>"
 			codeType="PYSEXE"
 			orientation="H"
 			libelle="libelle" />
-		
+		<input type ="hidden" name="motifModifSexe" value="">
+		<input type ="hidden" name="dateModifSexe" value="">
+		<input type ="hidden" name="oldSexe" value="<%=viewBean.getOldSexe()%>">
 	</td></tr>
 		</table>
 	</td>
