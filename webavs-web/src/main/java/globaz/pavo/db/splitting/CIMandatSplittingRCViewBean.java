@@ -33,9 +33,17 @@ public class CIMandatSplittingRCViewBean extends CIDossierSplitting implements F
     public String getGedServiceName() throws Exception {
         return ((CIApplication) getSession().getApplication()).getSplittingServiceGed();
     }
+
+    /**
+     * @return l'id Tiers interne selon le type (Assuré ou Conjoint) choisi dans le menu déroulant
+     */
     public String getIdTiersInterne() {
         return ASSURE.equals(getTypePersonne()) ? getIdTiersInterneAssure() : getIdTiersInterneConjoint();
     }
+
+    /**
+     * @return l'id Tiers selon le type (Assuré ou Conjoint) choisi dans le menu déroulant
+     */
     public String getIdTiers() {
         return ASSURE.equals(getTypePersonne()) ? getIdTiersAssure() : getIdTiersConjoint();
     }
