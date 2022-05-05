@@ -16,6 +16,7 @@ import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.APISynchronisable;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CAOperation;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -289,6 +290,11 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
             if (!JadeStringUtil.isBlank(getReferenceBVR()) && !(CAOrdreVersement.BVR.equals(getTypeVirement())
                     || CAOrdreVersement.QR.equals(getTypeVirement()))) {
                 getMemoryLog().logMessage("5145", null, FWMessage.ERREUR, this.getClass().getName());
+            }
+
+            // Vérifie le QR IBAN
+            if (CAOrdreVersement.QR.equals(getTypeVirement()) && !CASepaCommonUtils.isQRIBAN(getAdressePaiement())) {
+                getMemoryLog().logMessage("NOT_QR_IBAN", null, FWMessage.ERREUR, this.getClass().getName());
             }
 
             // Vérifier l'adresse de paiement
