@@ -6,6 +6,7 @@ package globaz.osiris.api;
  * @author: Administrator
  */
 public interface APIOperationOrdreVersement extends APIOperation {
+    java.lang.String QR = "210003";
     java.lang.String BVR = "210002";
     java.lang.String VIREMENT = "210001";
 
