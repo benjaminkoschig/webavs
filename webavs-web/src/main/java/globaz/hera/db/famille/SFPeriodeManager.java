@@ -25,6 +25,7 @@ public class SFPeriodeManager extends BManager {
     private String forIdMembreFamille;
     private String forOrderBy;
     private String forType;
+    private String forIdRecueillant;
 
     public SFPeriodeManager() {
         super();
@@ -33,6 +34,7 @@ public class SFPeriodeManager extends BManager {
         forOrderBy = "";
         forType = "";
         forCsTypePeriodeIn = null;
+        forIdRecueillant = "";
     }
 
     @Override
@@ -82,6 +84,15 @@ public class SFPeriodeManager extends BManager {
 
             sql.append(")");
         }
+
+        if (!JadeStringUtil.isEmpty(forIdRecueillant)) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(tablePeriodes).append(".").append(SFPeriode.FIELD_ID_RECUEILLANT).append("=")
+                    .append(this._dbWriteNumeric(statement.getTransaction(), forIdRecueillant));
+        }
+
         return sql.toString();
     }
 
@@ -112,6 +123,10 @@ public class SFPeriodeManager extends BManager {
 
     public void setForIdMembreFamille(String forIdMembreFamille) {
         this.forIdMembreFamille = forIdMembreFamille;
+    }
+
+    public void setForIdRecueillant(String forIdRecueillant) {
+        this.forIdRecueillant = forIdRecueillant;
     }
 
     public void setForOrderBy(String forOrderBy) {

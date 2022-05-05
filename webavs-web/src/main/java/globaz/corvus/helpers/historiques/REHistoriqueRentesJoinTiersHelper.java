@@ -54,7 +54,7 @@ public class REHistoriqueRentesJoinTiersHelper extends PRAbstractHelper {
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
         ISFMembreFamilleRequerant[] membresFamille = null;
         try {
-            membresFamille = sf.getMembresFamille(idTiersRequerant);
+            membresFamille = sf.getMembresFamilleAvecEnfantRecuilli(idTiersRequerant);
         }
         // Peut arriver lorsque l'on change de bénéficiaire, et que ce dernier n'existe pas dans les familles.
         catch (Exception e) {
