@@ -19,6 +19,7 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CAReferenceRubrique;
 import globaz.osiris.db.comptes.CARubrique;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.retours.CALignesRetours;
 import globaz.osiris.db.retours.CALignesRetoursListViewBean;
 import globaz.osiris.db.retours.CALignesRetoursViewBean;
@@ -39,22 +40,22 @@ import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
  * Insérez la description du type ici. Date de création : (25.02.2002 13:41:13)
- * 
+ *
  * @author: bsc
  */
 public class CAProcessComptabiliserRetours extends BProcess {
 
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
+// ~ Instance fields
+// ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private CAJournal journal = null;
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
+// ~ Constructors
+// ---------------------------------------------------------------------------------------------------
 
     /**
      * Commentaire relatif au constructeur CAProcessComptabiliserRetours.
@@ -65,7 +66,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2002 10:50:34)
-     * 
+     *
      * @param parent
      *            BProcess
      */
@@ -73,8 +74,8 @@ public class CAProcessComptabiliserRetours extends BProcess {
         super(parent);
     }
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
+// ~ Methods
+// --------------------------------------------------------------------------------------------------------
 
     /**
      * Nettoyage après erreur ou exécution Date de création : (13.02.2002 14:12:14)
@@ -85,7 +86,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (14.02.2002 14:26:51)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -174,9 +175,18 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
                     ecriture.setIdCompteAnnexe(retour.getIdCompteAnnexe());
                     // Bug 6227
-                    APISection section = compta.getSectionByIdExterne(retour.getIdCompteAnnexe(),
-                            APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
-                                    + APISection.CATEGORIE_SECTION_RETOUR + "000");
+                    APISection section;
+                    if(lot.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)
+                            && retour.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)){
+                        section = compta.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                APISection.ID_TYPE_SECTION_RETOUR_PTRA, "" + JACalendar.getYear(retour.getDateRetour())
+                                        + APISection.CATEGORIE_SECTION_RETOUR + "000");
+                    }else{
+                        section = compta.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
+                                        + APISection.CATEGORIE_SECTION_RETOUR + "000");
+                    }
+
                     ecriture.setIdSection(section.getIdSection());
 
                     ecriture.setDate(lot.getDateLot());
@@ -197,7 +207,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
                     getMemoryLog().logMessage(
                             java.text.MessageFormat.format(getSession()
-                                    .getLabel("INFO_PROCESS_COMPTABILISATION_RETOUR"),
+                                            .getLabel("INFO_PROCESS_COMPTABILISATION_RETOUR"),
                                     new Object[] { retour.getMontantRetour(), rubrique.getIdExterne() }),
                             FWMessage.INFORMATION, this.getClass().getName());
 
@@ -319,9 +329,19 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
                             // Bugzilla 4992: la section de retour ne doit pas etre retrouvee avec l'annee de la date du
                             // jour, mais avec l'annee de la date de retour
-                            APISection section = comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
-                                    APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
-                                    /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+
+
+                            APISection section;
+                            if(lot.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)
+                                    && retour.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)){
+                                section = comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                        APISection.ID_TYPE_SECTION_RETOUR_PTRA, "" + JACalendar.getYear(retour.getDateRetour())
+                                                /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+                            }else{
+                                section = comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                        APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
+                                                /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+                            }
                             ordreVersement.setIdSection(section.getIdSection());
 
                             ordreVersement.setMontant(lir.getMontant());
@@ -401,9 +421,19 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
                             // Bugzilla 4992: la section de retour ne doit pas etre retrouvee avec l'annee de la date du
                             // jour, mais avec l'annee de la date de retour
-                            APISection sectionRetour = comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
-                                    APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
-                                    /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+                            APISection sectionRetour;
+                            if(lot.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)
+                                    && retour.getCsNatureOrdre().equals(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE)){
+                                sectionRetour =  comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                        APISection.ID_TYPE_SECTION_RETOUR_PTRA, "" + JACalendar.getYear(retour.getDateRetour())
+                                                /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+                            }else{
+                                 sectionRetour = comptaBis.getSectionByIdExterne(retour.getIdCompteAnnexe(),
+                                        APISection.ID_TYPE_SECTION_RETOUR, "" + JACalendar.getYear(retour.getDateRetour())
+                                                /* JACalendar.today().getYear() */+ APISection.CATEGORIE_SECTION_RETOUR + "000");
+                            }
+
+
 
                             // Ici, on utilisle la rubrique de compensation
                             APIRubrique rubriqueCompensation = null;
@@ -560,7 +590,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (14.02.2002 14:22:21)
-     * 
+     *
      * @return String
      */
     @Override
@@ -583,7 +613,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
     /**
      * Method jobQueue. Cette méthode définit la nature du traitement s'il s'agit d'un processus qui doit-être lancer de
      * jour en de nuit
-     * 
+     *
      * @return GlobazJobQueue
      */
     @Override

@@ -90,12 +90,15 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
     private String cleTri = "";
     private String dateDebut = "";
     private String dateFin = "";
+    private String dateFinSaisie = "";
     private transient String fromClause = null;
     private String genrePrestationPrestation = "";
     private String genreService = "";
     private String idDroit = "";
     private String montantJournalier = "";
     private String nbJoursSoldes = "";
+    private String nbJoursConges = "";
+    private String nbJoursSupp = "";
     private String remarque = "";
     private String contenuAnnonce = "";
     private String revenuMoyenDeterminant = "";
@@ -144,8 +147,11 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
         super._readProperties(statement);
         dateDebut = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEDEBUT);
         dateFin = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN);
+        dateFinSaisie = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN_SAISIE);
         idDroit = statement.dbReadNumeric(APPrestation.FIELDNAME_IDDROIT);
         nbJoursSoldes = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSSOLDES);
+        nbJoursConges = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSCONGES);
+        nbJoursSupp = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSSUPP);
         montantJournalier = statement.dbReadNumeric(APPrestation.FIELDNAME_MONTANT_JOURNALIER);
         genreService = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_GENRESERVICE);
         remarque = statement.dbReadString(APPrestation.FIELDNAME_REMARQUE);
@@ -246,6 +252,15 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
     }
 
     /**
+     * getter pour l'attribut date fin saisie
+     *
+     * @return la valeur courante de l'attribut date fin saisie
+     */
+    public String getDateFinSaisie() {
+        return dateFinSaisie;
+    }
+
+    /**
      * getter pour l'attribut genre prestation
      * 
      * @return la valeur courante de l'attribut genre prestation
@@ -309,6 +324,26 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public String getNbJoursSoldes() {
         return !JadeStringUtil.isBlankOrZero(getNombreJoursSoldes()) ? getNombreJoursSoldes() : nbJoursSoldes;
+    }
+
+    /**
+     * getter pour l'attribut nb jours de congés
+     * retourne le nb jour de congé de la répartition sinon celui de la prestation
+     *
+     * @return la valeur courante de l'attribut nb jours congés
+     */
+    public String getNbJoursConges() {
+        return !JadeStringUtil.isBlankOrZero(getNombreJoursConges()) ? getNombreJoursConges() : nbJoursConges;
+    }
+
+    /**
+     * getter pour l'attribut nb jours supplémentaires
+     * retourne le nb jour supplémentaires de la répartition sinon celui de la prestation
+     *
+     * @return la valeur courante de l'attribut nb jours supplémentaires
+     */
+    public String getNbJoursSupp() {
+        return !JadeStringUtil.isBlankOrZero(getNombreJoursSupp()) ? getNombreJoursSupp() : nbJoursSupp;
     }
 
     public String getPaiementPourLibelle() {
@@ -376,6 +411,16 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public void setDateFin(final String string) {
         dateFin = string;
+    }
+
+    /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param string
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(final String string) {
+        dateFinSaisie = string;
     }
 
     /**
@@ -448,6 +493,26 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public void setNbJoursSoldes(final String nbJoursSoldes) {
         this.nbJoursSoldes = nbJoursSoldes;
+    }
+
+    /**
+     * setter pour l'attribut nb jours congés
+     *
+     * @param nbJoursConges
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNbJoursConges(final String nbJoursConges) {
+        this.nbJoursConges = nbJoursConges;
+    }
+
+    /**
+     * setter pour l'attribut nb jours supplémentaires
+     *
+     * @param nbJoursSupp
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNbJoursSupp(final String nbJoursSupp) {
+        this.nbJoursSupp = nbJoursSupp;
     }
 
     /**

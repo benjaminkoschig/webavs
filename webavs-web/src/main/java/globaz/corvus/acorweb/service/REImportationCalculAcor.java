@@ -1,6 +1,7 @@
 package globaz.corvus.acorweb.service;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1.Message;
 import acor.rentes.xsd.fcalcul.FCalcul;
 import acor.ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
@@ -11,6 +12,7 @@ import ch.globaz.corvus.domaine.constantes.TypeCalculDemandeRente;
 import ch.globaz.corvus.domaine.constantes.TypeDemandeRente;
 import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
 import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
+import ch.globaz.pegasus.utils.RpcUtil;
 import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
 import ch.globaz.pyxis.domaine.PersonneAVS;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
@@ -52,6 +54,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.acor.PRACORConst;
@@ -61,9 +64,13 @@ import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -394,7 +401,51 @@ public class REImportationCalculAcor {
             String content = FWMessageFormat.format(JadeI18n.getInstance().getMessage(session.getIdLangueISO(), "warn.acor.export.bte"), allNumber.toString());
             sendMailWarn(session, object, content);
         }
+        //swap
+        generationFormulaireSwap(fCalcul,session);
+    }
+    public void generationFormulaireSwap(FCalcul fCalcul,BSession session) throws Exception {
+        if(isSwap(fCalcul)){
+            Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
+            String xmlFromAcor= getSwapXmlFromAcor(messageFromFcalcul);
+            sendSwapFormulaireMail(xmlFromAcor,fCalcul,session);
+        }
+    }
 
+    public boolean isSwap(FCalcul fCalcul){
+        boolean response=false;
+        if(fCalcul.getAnnexes()!=null && fCalcul.getAnnexes().getMessage().size()!=0){
+            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId())){
+                response=true;
+            }
+        }
+        return response;
+    }
+    public String getSwapXmlFromAcor(Message message) throws PRACORException {
+        return REAcorSwapService.getInstance().getSwap(message);
+    }
+    private void sendSwapFormulaireMail(String xmlAcor, FCalcul fCalcul,BSession session) throws Exception {
+        String nss = RpcUtil.formatNss(fCalcul.getAssure().get(0).getId().getValue());
+        String userMail= session.getUserEMail();
+        String filePath=Jade.getInstance().getHomeDir() + "work/"+"p["+nss+"].xml";
+        String subject=session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT")+ "["+nss+"]";
+        String body=session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
+        File swapXmlFile= createSwapXmlFile(filePath,xmlAcor);
+
+        JadeSmtpClient.getInstance().sendMail(userMail,subject,body,new String[]{filePath});
+
+        deleteSwapXmlFile(swapXmlFile);
+
+    }
+    public File createSwapXmlFile(String filePath,String xmlAcor) throws IOException {
+        File file = new File(filePath);
+        FileWriter writer= new FileWriter(file);
+        writer.write(xmlAcor);
+        writer.close();
+        return file;
+    }
+    public void deleteSwapXmlFile(File file) throws IOException {
+        FileUtils.forceDelete(file);
     }
 
     private void sendMailWarn(BSession session, String object, String content) throws Exception {

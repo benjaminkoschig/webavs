@@ -601,6 +601,9 @@
 					<subreportParameter  name="P_PAGE_NUMBER">
 						<subreportParameterExpression><![CDATA[$V{PAGE_NUMBER}]]></subreportParameterExpression>
 					</subreportParameter>
+					<subreportParameter  name="P_COL_ID">
+						<subreportParameterExpression><![CDATA[$F{COL_ID}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
 				</subreport>
 			</band>

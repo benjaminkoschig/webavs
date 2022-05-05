@@ -24,6 +24,8 @@ public class SFPeriodeWrapper implements ISFPeriode {
     private String csTypeDeDetenteur;
     private String pays = "";
     private String type = "";
+    private String idRecueillant = "";
+    private String noAvsRecueillant = "";
 
     /**
      * @return
@@ -139,4 +141,21 @@ public class SFPeriodeWrapper implements ISFPeriode {
         this.csTypeDeDetenteur = csTypeDeDetenteur;
     }
 
+    @Override
+    public String getIdRecueillant() {
+        return idRecueillant;
+    }
+
+    public void setIdRecueillant(String idRecueillant) {
+        this.idRecueillant = idRecueillant;
+    }
+
+    @Override
+    public String getNoAvsRecueillant() {
+        return noAvsRecueillant;
+    }
+
+    public void setNoAvsRecueillant(String noAvsRecueillant) {
+        this.noAvsRecueillant = noAvsRecueillant;
+    }
 }

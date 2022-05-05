@@ -7,11 +7,12 @@
 		<!--  name [REQUIRED]: nom du protocole-->
 		<!--  class [REQUIRED]: classe implementant le protocole (doit implementer JadeFsService)-->
 		<protocol name="JadeFsServiceJDBC" class="globaz.jade.fs.service.jdbc.JadeFsService">
-			<url>jdbc:jade:CCJU_QUALITE_1_6</url>
+			<url>jdbc:jade:FERCIAM_QUA</url>
 		</protocol>
 		<protocol name="JadeFsServiceSftp" class="globaz.jade.fs.service.jsch.JadeFsService">
 			<!--private.key.1>C:\\Documents and Settings\\DDA\\Bureau\\keys\\id_dsa_513</private.key.1-->
-			<private.key.1>C:\\Documents and Settings\\DDA\\Bureau\\keys\\key_dal</private.key.1>
+			<private.key.1>C:\\Users\\tpa\\.ssh\\id_dsa_fds.ju.globaz.ch</private.key.1>
+			<private.key.2 passphrase="true">C:\\Users\\tpa\\.ssh\\private_openssh_id_rsa_fdsbc.post.ch</private.key.2>
 		</protocol>
 	</protocols>
 </globaz.jade.fs.service.JadeFsServer>

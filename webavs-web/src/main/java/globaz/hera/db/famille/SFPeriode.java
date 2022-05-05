@@ -1,32 +1,34 @@
 /*
  * Créé le 8 sept. 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
 package globaz.hera.db.famille;
 
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
+import globaz.globall.db.*;
 import globaz.globall.util.JAUtil;
 import globaz.hera.api.ISFPeriode;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.enums.TypeDeDetenteur;
+import globaz.hera.interfaces.tiers.SFTiersHelper;
+import globaz.hera.interfaces.tiers.SFTiersWrapper;
 import globaz.hera.vb.famille.SFPeriodeVO;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Calendar;
 
 /**
- * 
  * @author mmu
  */
+@Slf4j
 public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELD_DATEDEBUT = "WHDDEB";
@@ -37,6 +39,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     public static final String FIELD_PAYS = "WHTPAY";
     public static final String FIELD_TYPE = "WHTTYP";
     public static final String FIELD_TYPE_DE_DETENTEUR = "WHTYDE";
+    public static final String FIELD_ID_RECUEILLANT = "ID_RECUEILLANT";
 
     public static final String TABLE_NAME = "SFPERIOD";
 
@@ -48,10 +51,13 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     // Cache
     private SFMembreFamille membreFamille = null;
     private SFMembreFamille membreFamilleBTE = null;
+    private SFTiersWrapper tiersRecueillant = null;
 
     private String pays = "";
     private String type = "";
     private String csTypeDeDetenteur;
+
+    private String idRecueillant;
 
     public SFPeriode() {
         super();
@@ -60,6 +66,10 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     @Override
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
         setIdPeriode(this._incCounter(transaction, "0"));
+
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+            setIdRecueillant("");
+        }
     }
 
     @Override
@@ -77,6 +87,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
         pays = statement.dbReadNumeric(SFPeriode.FIELD_PAYS);
         idDetenteurBTE = statement.dbReadNumeric(SFPeriode.FIELD_IDDETENTEURBTE);
         csTypeDeDetenteur = statement.dbReadNumeric(SFPeriode.FIELD_TYPE_DE_DETENTEUR);
+        idRecueillant = statement.dbReadNumeric(SFPeriode.FIELD_ID_RECUEILLANT);
     }
 
     @Override
@@ -202,11 +213,13 @@ public class SFPeriode extends BEntity implements ISFPeriode {
                 this._dbWriteNumeric(statement.getTransaction(), idDetenteurBTE, "idDetenteurBTE"));
         statement.writeField(SFPeriode.FIELD_TYPE_DE_DETENTEUR,
                 this._dbWriteNumeric(statement.getTransaction(), csTypeDeDetenteur, "csTypeDeDetenteur"));
+        statement.writeField(SFPeriode.FIELD_ID_RECUEILLANT,
+                this._dbWriteNumeric(statement.getTransaction(), idRecueillant, "idRecueillant"));
     }
 
     /**
      * getter pour l'attribut date début
-     * 
+     *
      * @return la valeur courante de l'attribut date début
      */
     @Override
@@ -216,7 +229,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * getter pour l'attribut date fin
-     * 
+     *
      * @return la valeur courante de l'attribut date fin
      */
     @Override
@@ -226,7 +239,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * getter pour l'attribut id détenteur BTE
-     * 
+     *
      * @return la valeur courante de l'attribut id détenteur BTE
      */
     @Override
@@ -240,7 +253,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * getter pour l'attribut id période
-     * 
+     *
      * @return la valeur courante de l'attribut id période
      */
     public String getIdPeriode() {
@@ -309,9 +322,41 @@ public class SFPeriode extends BEntity implements ISFPeriode {
         }
     }
 
+    @Override
+    public String getNoAvsRecueillant() {
+        if (getTiersRecueillant() != null) {
+            return getTiersRecueillant().getProperty(SFTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
+
+    public SFTiersWrapper getTiersRecueillant() {
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)) {
+            if (tiersRecueillant == null) {
+                try {
+                    tiersRecueillant = SFTiersHelper.getTiersParId(getSession(), getIdRecueillant());
+                } catch (Exception e) {
+                    LOG.warn("Impossible de récupérer le tiers recueillant. ", e);
+                }
+            }
+            return tiersRecueillant;
+        } else {
+            return null;
+        }
+    }
+
+    public String getIdRecueillant() {
+        return idRecueillant;
+    }
+
+    public void setIdRecueillant(String idRecueillant) {
+        this.idRecueillant = idRecueillant;
+    }
+
     /**
      * getter pour l'attribut pays
-     * 
+     *
      * @return la valeur courante de l'attribut pays
      */
     @Override
@@ -321,7 +366,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * getter pour l'attribut type
-     * 
+     *
      * @return la valeur courante de l'attribut type
      */
     @Override
@@ -331,9 +376,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut date début
-     * 
-     * @param dateDebut
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateDebut une nouvelle valeur pour cet attribut
      */
     public void setDateDebut(String dateDebut) {
         this.dateDebut = dateDebut;
@@ -341,9 +385,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut date fin
-     * 
-     * @param dateFin
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateFin une nouvelle valeur pour cet attribut
      */
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
@@ -351,9 +394,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut id détenteur BTE
-     * 
-     * @param idDetenteurBTE
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param idDetenteurBTE une nouvelle valeur pour cet attribut
      */
     public void setIdDetenteurBTE(String idDetenteurBTE) {
         this.idDetenteurBTE = idDetenteurBTE;
@@ -365,9 +407,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut id période
-     * 
-     * @param idPeriode
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param idPeriode une nouvelle valeur pour cet attribut
      */
     public void setIdPeriode(String idPeriode) {
         this.idPeriode = idPeriode;
@@ -375,9 +416,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut pays
-     * 
-     * @param Pays
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param Pays une nouvelle valeur pour cet attribut
      */
     public void setPays(String Pays) {
         pays = Pays;
@@ -385,9 +425,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * setter pour l'attribut type
-     * 
-     * @param Type
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param Type une nouvelle valeur pour cet attribut
      */
     public void setType(String Type) {
         type = Type;
@@ -404,10 +443,10 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * Retourne le type énuméré correspondant au code système 'TypeDeDetenteur'
-     * 
-     * @see TypeDeDetenteur
+     *
      * @return le énuméré correspondant au code système 'TypeDeDetenteur' ou null si 'csTypeDeDetenteur' n'est pas
-     *         renseigné
+     * renseigné
+     * @see TypeDeDetenteur
      */
     public TypeDeDetenteur getTypeDeDetenteur() {
         for (TypeDeDetenteur type : TypeDeDetenteur.values()) {
@@ -427,7 +466,7 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
     /**
      * Retourne la SFPeriode sous forme de SFPeriodeVO
-     * 
+     *
      * @return la SFPeriode sous forme de SFPeriodeVO
      */
     public SFPeriodeVO toValueObject(BSession session) {
@@ -475,5 +514,14 @@ public class SFPeriode extends BEntity implements ISFPeriode {
             }
         }
         return valueObject;
+    }
+
+    @Override
+    protected void _beforeUpdate(BTransaction transaction) throws Exception {
+        super._beforeUpdate(transaction);
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+            setIdRecueillant("");
+        }
+
     }
 }

@@ -4,10 +4,11 @@ insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.appli
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.email.sedex.validation', '', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.user.gestionnaire.default', '', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.groupe.eform.gestionnaire', 'gEformUser', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
+insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.email.recap.formulaire', '', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 --========================================================================================================================
 -- SQL Script for create table (GF_FORMULAIRE)
--- Simple model's class name : (ch.globaz.eform.business.models.GFEFormModel)
+-- Simple model's class name : (ch.globaz.eform.business.models.GFFormulaireModel)
 --========================================================================================================================
 CREATE TABLE SCHEMA.GF_FORMULAIRE
 (
@@ -23,8 +24,8 @@ CREATE TABLE SCHEMA.GF_FORMULAIRE
     BENEFICIAIRE_NOM 	VARCHAR(255) 	NOT NULL,
     PSPY 	VARCHAR(24) 	NOT NULL,
     STATUS 	VARCHAR(255) 	NOT NULL,
-    USER_GESTIONNAIRE 	VARCHAR(255) 	,
-    ATTACHEMENT_NAME    VARCHAR(255)    ,
+    USER_GESTIONNAIRE 	VARCHAR(255),
+    ATTACHEMENT_NAME    VARCHAR(255),
     PRIMARY KEY(ID)
 );
 COMMENT ON TABLE SCHEMA.GF_FORMULAIRE is 'contient les données saisies par l''utilisateur selon l''attestation reçue';
@@ -73,16 +74,16 @@ INSERT INTO FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (81000000, 'F', '', 'Status Formulaire', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000000, 'D', '', 'Statusformular', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000001, 'F', 'RECEIVE', 'Reçu', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000001, 'D', 'RECEIVE', 'Empfangen', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000001, 'D', 'RECEIVE', 'Erhalten', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000002, 'F', 'PROCESSING', 'En traitement', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000002, 'D', 'PROCESSING', 'wird bearbeitet', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000002, 'D', 'PROCESSING', 'In Bearbeitung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000003, 'F', 'TREAT', 'A traiter', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000003, 'D', 'TREAT', 'Behandeln', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000003, 'D', 'TREAT', 'Zu bearbeite', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000004, 'F', 'TO_VALIDAT', 'A valider', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000004, 'D', 'TO_VALIDAT', 'Bestätigen', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000004, 'D', 'TO_VALIDAT', 'Zu validieren', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000005, 'F', 'IN_ERROR', 'En erreur', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000005, 'D', 'IN_ERROR', 'Fehlerhaft', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000006, 'F', 'REJECTED', 'Rejeter', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000006, 'D', 'REJECTED', 'Ablehnen', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (81000006, 'D', 'REJECTED', 'Zurückgewiesen', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (81000007, 'F', 'TREATY', 'Traité', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (81000007, 'D', 'TREATY', 'Vertrag', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+       (81000007, 'D', 'TREATY', 'Bearbeitet', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');

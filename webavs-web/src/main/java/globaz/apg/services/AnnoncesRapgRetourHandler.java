@@ -4,13 +4,9 @@
 package globaz.apg.services;
 
 import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazServer;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.context.JadeContextImplementation;
-import globaz.jade.context.JadeThreadActivator;
-import globaz.jade.context.JadeThreadContext;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
@@ -24,37 +20,59 @@ import java.util.Properties;
 public class AnnoncesRapgRetourHandler {
 
     String[] emails;
-    BSession session;
-    Object token = new Object();
+    private String passSedex = "";
+    private BSession session = null;
+    private String userSedex = "";
 
     @Override
     protected void finalize() throws Throwable {
-        JadeThreadActivator.stopUsingContext(token);
-
         super.finalize();
     }
 
-    private JadeThreadContext initContext(BSession session) throws Exception {
-        JadeThreadContext context;
-        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(session.getApplicationId());
-        ctxtImpl.setLanguage(session.getIdLangueISO());
-        ctxtImpl.setUserEmail(session.getUserEMail());
-        ctxtImpl.setUserId(session.getUserId());
-        ctxtImpl.setUserName(session.getUserName());
-        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
-                .findAllIdRoleForIdUser(session.getUserId());
-        if ((roles != null) && (roles.length > 0)) {
-            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
-        }
-        context = new JadeThreadContext(ctxtImpl);
-        context.storeTemporaryObject("bsession", session);
-        return context;
+    public String[] getEmails() {
+        return emails;
+    }
+
+    public String getPassSedex() {
+        return passSedex;
+    }
+
+    public BSession getSession() {
+        return session;
+    }
+
+    public String getUserSedex() {
+        return userSedex;
+    }
+
+    public void setEmails(String[] emails) {
+        this.emails = emails;
+    }
+
+    public void setPassSedex(String passSedex) {
+        this.passSedex = passSedex;
+    }
+
+    public void setSession(BSession session) {
+        this.session = session;
+    }
+
+    public void setUserSedex(String userSedex) {
+        this.userSedex = userSedex;
     }
 
     @OnReceive
     public void onReceive(SimpleSedexMessage message) throws Exception {
+        BSession session;
         try {
+            if ((!JadeStringUtil.isEmpty(getUserSedex())) && (!JadeStringUtil.isEmpty(getPassSedex()))) {
+                session = new BSession("APG");
+                session.connect(getUserSedex(), getPassSedex());
+                setSession(session);
+            } else {
+                throw new Exception("Utilisateur Sedex non défini (JadeSedexService)");
+            }
+
             String[] attachements = new String[message.attachments.size()];
             int i = 0;
             for (String o : message.attachments.keySet()) {
@@ -72,8 +90,23 @@ public class AnnoncesRapgRetourHandler {
     @Setup
     public void setup(Properties properties) throws Exception {
         try {
-            session = BSessionUtil.createSession("APG", properties.getProperty("userSedex"));
-            JadeThreadActivator.startUsingJdbcContext(token, initContext(session).getContext());
+            String encryptedUser = properties.getProperty("userSedex");
+            if (encryptedUser == null) {
+                JadeLogger.error(this, "Réception message 2015/000501: user sedex non renseigné. ");
+                throw new IllegalStateException("Réception message 2015/000501: user sedex non renseigné. ");
+            }
+            String decryptedUser = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
+
+            String encryptedPass = properties.getProperty("passSedex");
+            if (encryptedPass == null) {
+                JadeLogger.error(this, "Réception message 2015/000501: mot de passe sedex non renseigné. ");
+                throw new IllegalStateException("Réception message 2015/000501: mot de passe sedex non renseigné. ");
+            }
+            String decryptedPass = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
+
+            setUserSedex(decryptedUser);
+            setPassSedex(decryptedPass);
+
             String mails = GlobazServer.getCurrentSystem().getApplication("APG")
                     .getProperty("rapg.sedexRecipientGroup");
             emails = mails.split(",");

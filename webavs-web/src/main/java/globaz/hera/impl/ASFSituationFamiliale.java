@@ -1586,6 +1586,8 @@ public abstract class ASFSituationFamiliale extends BEntity {
             wrapper.setPays(periode.getPays());
             wrapper.setType(periode.getType());
             wrapper.setCsTypeDeDetenteur(periode.getCsTypeDeDetenteur());
+            wrapper.setIdRecueillant(periode.getIdRecueillant());
+            wrapper.setNoAvsRecueillant(periode.getNoAvsRecueillant());
             iPeriodes[i] = wrapper;
         }
 

@@ -103,9 +103,11 @@ function addPeriode() {
                 nbJour -= $jourSupplementaire.val();
             }
         } else if (JOUR_SUPPLEMENTAIRE_PAT) { // Si Paternité et nombre de jours == 7 jours ou 14 jours consécutif le nombre de jours est soustrait des jours supplémentaires
-            if (nbJour == 7 || nbJour == 14) {
-                if ($jourSupplementaire.val()) {
+            if ($jourSupplementaire.val()) {
+                if (nbJour == 14) {
                     nbJour -= $jourSupplementaire.val();
+                } else if (nbJour == 7) {
+                    nbJour -= 2;
                 }
             }
         }
@@ -130,6 +132,7 @@ function addPeriode() {
 function deletePeriode(index) {
     periodes.splice(index, 1);
     repaintTablePeriodes();
+    $('#dateFinCalculee').val(resolveDateFinCalculee());
 }
 
 function editPeriode(index) {
@@ -181,7 +184,7 @@ function repaintTablePeriodes() {
             width = "25%";
         }
         if (JOUR_SUPPLEMENTAIRE_PAT) {
-            width = "30%";
+            width = "25%";
         }
         var ddd = '<td width="' + width + '" align="center" class="dateDebut">' + periode.getDateDeDebut() + '</td>';
         var ddf = '<td width="' + width + '" align="center" class="dateFin">' + periode.getDateDeFin() + '</td>';
@@ -209,10 +212,10 @@ function repaintTablePeriodes() {
         var height = '12px';
         var spacer = '<span style="width:6px; heigth:10px"></span>'
         if (EDITION_MODE) {
-            var deleteBtn = '<td width="10%" align="center"><a onclick="deletePeriode(' + ctr + ')"><img src="images/small_error.png" height="' + height + '" width="12px" alt="delete" /></a>';
+            var deleteBtn = '<td width="10%" align="right"><a onclick="deletePeriode(' + ctr + ')"><img src="images/small_error.png" height="' + height + '" width="12px" alt="delete" /></a>';
             var editBtn = '<a onclick="editPeriode(' + ctr + ')"><img src="images/edit_pen.png" height="' + height + '" width="12px" alt="edition" /></a></td>';
         } else {
-            var deleteBtn = '<td width="10%" align="center">';
+            var deleteBtn = '<td width="10%" align="right">';
             var editBtn = '</td>';
         }
         var html = '<tr>' + ddd + ddf + njg + jsp + tis + cis + deleteBtn + spacer + editBtn + '</tr>';
@@ -227,8 +230,8 @@ function addJourSuppSummaryLine(nbJourSoldesTot, nbJourSuppTot) {
     var $tableBody = $('#periodes').find("tbody");
     var $trLast = $tableBody.find("tr:last").not('.nbJourSuppSummary');
     var $trSummary = '<TR class="nbJourSuppSummary">' +
-                '<TD width="30%" align="center">&nbsp</TD>' +
-                '<TD width="30%" align="center">&nbsp</TD>' +
+                '<TD width="25%" align="center">&nbsp</TD>' +
+                '<TD width="25%" align="center">&nbsp</TD>' +
                 '<TD id="nbJourSoldesTot" width="10%" align="center">' + nbJourSoldesTot + '</TD>' +
                 '<TD id="nbJourSuppTot" width="10%" align="center">' + nbJourSuppTot + '</TD>' +
                 '<TD width="10%" align="center">&nbsp</TD>' +

@@ -47,6 +47,7 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
     private String degreInvalidite = "";
     private String etat = "";
     private String fractionRente = "";
+    private String quotiteRente = "";
     private boolean GenererLettre = false;
     private String idConjoints = "";
     private String idConjointT = "";
@@ -119,6 +120,7 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
         setDateDebutDroit(statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT));
         setDateFinDroit(statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT));
         setFractionRente(statement.dbReadString(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE));
+        setQuotiteRente(statement.dbReadString(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE));
         setDateEcheanceRenteAccordee(statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_ECHEANCE));
         setIdTiers(statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE));
         setIdInfoCompta(statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA));
@@ -276,6 +278,10 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
 
     public String getFractionRente() {
         return fractionRente;
+    }
+
+    public String getQuotiteRente() {
+        return quotiteRente;
     }
 
     public String getIdConjoints() {
@@ -488,6 +494,10 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
 
     public void setFractionRente(String fractionRente) {
         this.fractionRente = fractionRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
     }
 
     public void setGenererLettre(boolean genererLettre) {

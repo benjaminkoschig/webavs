@@ -77,6 +77,18 @@
 				<search-field name="forTiers" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>				
 			</search-group>
 		</search-definition>
+
+		<!-- Recherche utilisée pendant une génération pour vérifier si une prestation existe déjà pour un dossier, Nss enfant et une période donnée -->
+		<search-definition name="PrestationNssExistante">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forPeriodeDebut" field-ref="detailPrestationModel.periodeValidite" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPeriodeFin" field-ref="detailPrestationModel.periodeValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forMontantPositif" field-ref="detailPrestationModel.montant" operation="GREATER" value="0"/>
+				<search-field name="forNotEtatPrestation" field-ref="entetePrestationModel.etatPrestation" operation="NOT_EQUALS"/>
+				<search-field name="forNss" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
 		
 		<order-by name="default">
 				<order-field field-ref="dateNaissanceEnfant" order="ASC"/>
@@ -97,6 +109,11 @@
 				<order-field field-ref="periode" order="ASC"/>
 		
 		</order-by>
-		
+
+		<order-by name="PrestationNssExistante">
+			<order-field field-ref="periode" order="ASC"/>
+			<order-field field-ref="dateVersement" order="DESC"/>
+		</order-by>
+
 	</complexe-model>
 </model-mapping>

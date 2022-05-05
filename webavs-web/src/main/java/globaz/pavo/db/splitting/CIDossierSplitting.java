@@ -1,17 +1,12 @@
 package globaz.pavo.db.splitting;
 
-import java.util.HashMap;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.framework.secure.user.FWSecureUser;
+import globaz.ged.AirsSynchroTiers;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BConstants;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAUtil;
 import globaz.hermes.api.IHEAnnoncesViewBean;
@@ -20,7 +15,9 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.service.JadeTarget;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFUtil;
@@ -35,6 +32,9 @@ import globaz.pavo.print.itext.CISplittingApercuAndLettreAccompagnementMergeProc
 import globaz.pavo.print.itext.CISplittingInvitationExConjoint_Doc;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.api.ITIPersonneAvs;
+import globaz.pyxis.db.tiers.TITiersViewBean;
+
+import java.util.HashMap;
 
 /**
  * Classe représentant un dossier de splitting. Date de création : (14.10.2002 15:43:18)
@@ -138,6 +138,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
     private String typePersonne;
     // noms
     private String utilisateurNomComplet = new String(); // pas utilisé
+    private String idTiersInterneAssure = "";
+    private String idTiersInterneConjoint = "";
 
     /**
      * Constructeur.
@@ -504,6 +506,16 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         if (getChkInvitationExConjoint() && JadeStringUtil.isBlankOrZero(getAdresseExConjoint())) {
             _addError(statement.getTransaction(), getSession().getLabel("ERREUR_EXCONJOINT_ADRESSE_EMPTY"));
         }
+
+        CIApplication application = (CIApplication)getSession().getApplication();
+        if(application.isSplittingWantLienGed()) {
+            if(JadeStringUtil.isEmpty(getIdTiersInterneAssure())) {
+                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_ASSURE_EMPTY"));
+            }
+            if(JadeStringUtil.isEmpty(getIdTiersInterneConjoint())) {
+                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_CONJOINT_EMPTY"));
+            }
+        }
     }
 
     /**
@@ -849,6 +861,25 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         wantCallValidate(false);
         this.update();
         wantCallValidate(true);
+
+        if(((CIApplication)getSession().getApplication()).isSplittingWantLienGed()) {
+            miseJourGed(getIdTiersInterneAssure());
+            miseJourGed(getIdTiersInterneConjoint());
+        }
+    }
+
+    private void miseJourGed(String idTiers) throws Exception {
+        if (!JadeStringUtil.isEmpty(idTiers) && JadeGedFacade.isInstalled()) {
+            JadeTarget target = JadeGedFacade.getInstance().getTarget("JadeGedFacade");
+            if (globaz.jade.ged.adapter.airs.JadeGedAdapter.class.isAssignableFrom(target.getClass())) {
+                TITiersViewBean tiers = new TITiersViewBean();
+                tiers.setSession(getSession());
+                tiers.setIdTiers(idTiers);
+                tiers.retrieve();
+
+                AirsSynchroTiers.propagateTiers(tiers, ((CIApplication) getSession().getApplication()).getSplittingServiceGed());
+            }
+        }
     }
 
     public String getAdresseAssure() {
@@ -1680,6 +1711,9 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 }
 
             }
+            if(!JadeStringUtil.isEmpty(tiersAssure.getIdTiers())) {
+                idTiersInterneAssure = tiersAssure.getIdTiers();
+            }
             if (!isLoadedFromManager()) {
                 String adresseAssu = tiersAssure.getAdressePrincipaleCourrier(CIApplication.CS_DOMAINE_ADRESSE_CI_ARC);
                 if (!JAUtil.isStringEmpty(adresseAssu)) {
@@ -1703,6 +1737,9 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 if (ciConjoint != null) {
                     tiersConjointNom = ciConjoint.getNomPrenom();
                 }
+            }
+            if(!JadeStringUtil.isEmpty(tiersConjoint.getIdTiers())) {
+                idTiersInterneConjoint = tiersConjoint.getIdTiers();
             }
             if (!isLoadedFromManager()) {
                 String adresseConj = tiersConjoint
@@ -2698,4 +2735,11 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         this.idArc65Conjoint = idArc65Conjoint;
     }
 
+    public String getIdTiersInterneAssure() {
+        return idTiersInterneAssure;
+    }
+
+    public String getIdTiersInterneConjoint() {
+        return idTiersInterneConjoint;
+    }
 }

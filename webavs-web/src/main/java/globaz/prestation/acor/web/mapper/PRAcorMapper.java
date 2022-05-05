@@ -1,14 +1,13 @@
 package globaz.prestation.acor.web.mapper;
 
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesPostalesType;
 import acor.xsd.common.AdresseType;
 import acor.xsd.common.BanqueAdresseType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesPostalesType;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.hera.api.ISFMembreFamilleRequerant;
-import globaz.hera.api.ISFSituationFamiliale;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;

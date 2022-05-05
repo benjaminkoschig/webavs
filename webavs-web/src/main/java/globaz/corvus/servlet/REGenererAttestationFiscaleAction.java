@@ -1,6 +1,7 @@
 package globaz.corvus.servlet;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteJoinAj
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.RERentesToCompare;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -49,7 +51,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.http.JSPUtils;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -522,36 +523,22 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
                                         codePrestation.put(index, ra.getCodePrestation());
                                     } else {
-                                        String pourRechercheCodeSysteme = ra.getCodePrestation();
+                                        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
 
-                                        if (JadeStringUtil.isEmpty(ra.getFractionRente())) {
-                                            pourRechercheCodeSysteme += ".0";
-                                        } else {
-                                            pourRechercheCodeSysteme += "." + ra.getFractionRente();
+                                        String libelle = RENumberFormatter.codeSystemToLibelle(
+                                                bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                                                codeIsoLangue, bSession);
+                                        if ((Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme))
+                                                && !JadeStringUtil.isEmpty(ra.getQuotite())) {
+                                            DecimalFormat dft = new DecimalFormat(" #.# %");
+                                            String quotite = dft.format(Double.valueOf(ra.getQuotite()));
+                                            libelle += quotite;
                                         }
-
-                                        // Recuperation du code système en fonction
-                                        // de codeIsoLangue et non en fonction de la
-                                        // langue de l'utilisateur
-                                        FWParametersUserCode userCode = new FWParametersUserCode();
-                                        userCode.setSession(bSession);
-                                        userCode.setIdCodeSysteme(
-                                                bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-                                        if (codeIsoLangue.equals("IT")) {
-                                            userCode.setIdLangue("I");
-                                        } else if (codeIsoLangue.equals("DE")) {
-                                            userCode.setIdLangue("D");
-                                        } else {
-                                            userCode.setIdLangue("F");
-                                        }
-
-                                        userCode.retrieve();
                                         String index = Integer.toString(j);
                                         assure.put(index, infoTiers);
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));
                                         this.montant.put(index, montantAfficher.toStringFormat());
-                                        libelleRente.put(index, userCode.getLibelle());
+                                        libelleRente.put(index, libelle);
                                         codePrestation.put(index, ra.getCodePrestation());
                                     }
 
@@ -621,19 +608,11 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
                                                     if (ov.getCsType().equals(IREOrdresVersements.CS_TYPE_DETTE)) {
                                                         // BZ 4877, changement du format d'affichage de la dette
-                                                        FWParametersUserCode csOv = new FWParametersUserCode();
-                                                        csOv.setSession(bSession);
-                                                        csOv.setIdCodeSysteme(ov.getCsType());
-                                                        if (codeIsoLangue.equals("IT")) {
-                                                            csOv.setIdLangue("I");
-                                                        } else if (codeIsoLangue.equals("DE")) {
-                                                            csOv.setIdLangue("D");
-                                                        } else {
-                                                            csOv.setIdLangue("F");
-                                                        }
-                                                        csOv.retrieve();
 
-                                                        designation = csOv.getLibelle() + " - " + designation;
+                                                        String libelle = RENumberFormatter.codeSystemToLibelle(
+                                                                ov.getCsType(), codeIsoLangue, bSession);
+
+                                                        designation = libelle + " - " + designation;
                                                     } else {
 
                                                         String no = ov.getNoFacture().substring(
@@ -657,19 +636,11 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
                                             if (IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE.equals(ov.getCsType())) {
                                                 // BZ 4877, changement du format d'affichage de l'intérêt moratoire
-                                                FWParametersUserCode csOv = new FWParametersUserCode();
-                                                csOv.setSession(bSession);
-                                                csOv.setIdCodeSysteme(ov.getCsType());
-                                                if (codeIsoLangue.equals("IT")) {
-                                                    csOv.setIdLangue("I");
-                                                } else if (codeIsoLangue.equals("DE")) {
-                                                    csOv.setIdLangue("D");
-                                                } else {
-                                                    csOv.setIdLangue("F");
-                                                }
-                                                csOv.retrieve();
+
+                                                String libelle = RENumberFormatter.codeSystemToLibelle(ov.getCsType(),
+                                                        codeIsoLangue, bSession);
                                                 OVDesignation.put(ovIndex,
-                                                        "+ " + csOv.getLibelle() + " (" + designation + ")");
+                                                        "+ " + libelle + " (" + designation + ")");
                                             } else {
                                                 OVDesignation.put(ovIndex, "./. " + designation);
                                             }
@@ -793,6 +764,37 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         }
 
+    }
+
+    /**
+     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
+     *
+     * @param ra    Rente accordé
+     * @return      La chaîne permettant de chercher le code système
+     */
+    private String getRERechercheCodeSystem(REAttestationFiscaleRenteAccordee ra){
+        String pourRechercheCodeSysteme = ra.getCodePrestation();
+
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
+            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
+                pourRechercheCodeSysteme += "." + ra.getFractionRente();
+            } else if (!JadeStringUtil.isEmpty(ra.getQuotite())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
+                    if (Float.valueOf(ra.getQuotite()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
+                } else {
+                    pourRechercheCodeSysteme += ".1";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".0";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
     }
 
     /**

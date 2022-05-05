@@ -189,7 +189,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant.
         if (!qrNeutre) {
-            if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
+            if (isNotUseForPaiement()) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
@@ -262,7 +262,7 @@ public class ReferenceQR extends AbstractReference {
         // Dans le cadre d'un bulletin neutre, on ne renseigne pas de montant.
         if (qrNeutre) {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
-        } else if (new Montant(montant).isNegative() || montantMinimeOuMontantReporter || recouvrementDirect) {
+        } else if (isNotUseForPaiement()) {
             builder.append("0.00").append(CHAR_FIN_LIGNE);
         } else {
             builder.append(montant).append(CHAR_FIN_LIGNE);
@@ -281,7 +281,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(getReferenceWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         // Info Supp
-        if (qrNeutre && new Montant(montant).isNegative()) {
+        if (isNotUseForPaiement() && !qrNeutre) {
             builder.append(pInfoAddErreur + " " + communicationNonStructuree).append(CHAR_FIN_LIGNE);
         } else {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
@@ -300,6 +300,18 @@ public class ReferenceQR extends AbstractReference {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * On contrôle si la QR facture doit être utilisé pour le paiement ou non. Règle pour ne pas l'utiliser:
+     * - montant non positif
+     * - montant minime ou reporter
+     * - recouvrement direct
+     *
+     * @return true si on ne doit pas utiliser cette QR facture pour le paiement.
+     */
+    private boolean isNotUseForPaiement() {
+        return !new Montant(montant).isPositive() || montantMinimeOuMontantReporter || recouvrementDirect;
     }
 
     /**
@@ -961,7 +973,7 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getRootApplicationPath() {
-        return JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + getSession().getApplicationId().toLowerCase() + "Root/", "\\", "/");
+        return JadeStringUtil.change(Jade.getInstance().getHomeDir() + getSession().getApplicationId().toLowerCase() + "Root/", "\\", "/");
     }
 
     public String getWorkApplicationPath() {

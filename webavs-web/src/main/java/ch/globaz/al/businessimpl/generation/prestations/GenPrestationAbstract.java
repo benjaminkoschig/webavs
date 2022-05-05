@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.generation.prestations;
 
+import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleSearchComplexModel;
 import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -353,6 +354,22 @@ public abstract class GenPrestationAbstract implements GenPrestation {
         search.setOrderKey("PrestationExistante");
 
         return ALImplServiceLocator.getDetailPrestationGenComplexModelService().search(search);
+    }
+
+    public static DeclarationVersementDetailleSearchComplexModel searchExistingPrestNssEnfant(String idDossier, String  debutPeriode, String finPeriode, String nss) throws JadeApplicationException, JadePersistenceException {
+        // recherche de prestations existante pour dans la période en cours de
+        // génération
+        DeclarationVersementDetailleSearchComplexModel search = new DeclarationVersementDetailleSearchComplexModel();
+        search.setForIdDossier(idDossier);
+        search.setForNss(nss);
+        search.setForPeriodeDebut(debutPeriode);
+        search.setForPeriodeFin(finPeriode);
+        // recherche les prest dont l'état est différent de TMP
+        search.setForNotEtatPrestation(ALCSPrestation.ETAT_TMP);
+        search.setWhereKey("PrestationNssExistante");
+        search.setOrderKey("PrestationNssExistante");
+
+        return ALImplServiceLocator.getDeclarationVersementDetailleComplexModelService().search(search);
     }
 
     /**

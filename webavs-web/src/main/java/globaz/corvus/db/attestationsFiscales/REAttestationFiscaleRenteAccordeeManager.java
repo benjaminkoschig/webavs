@@ -224,7 +224,9 @@ public class REAttestationFiscaleRenteAccordeeManager extends BManager {
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
                 .append(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA).append(", ");
         sql.append(_getCollection()).append(REBasesCalcul.TABLE_NAME_BASES_CALCUL).append(POINT)
-                .append(REBasesCalcul.FIELDNAME_ID_TIERS_BASE_CALCUL).append(" ");
+                .append(REBasesCalcul.FIELDNAME_ID_TIERS_BASE_CALCUL).append(", ");
+        sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
+                .append(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE).append(" ");
 
         sql.append(" FROM ");
         sql.append(_getCollection());
