@@ -465,6 +465,8 @@ public class REEcheancesManager extends BManager {
         sql.append(_getCollection()).append(SFPeriode.TABLE_NAME).append(".").append(SFPeriode.FIELD_TYPE);
         sql.append(" IN (");
         sql.append(ISFPeriode.CS_TYPE_PERIODE_ETUDE).append(",");
+        sql.append(ISFPeriode.CS_TYPE_PERIODE_ENFANT).append(",");
+        sql.append(ISFPeriode.CS_TYPE_PERIODE_ENFANT_CONJOINT).append(",");
         sql.append(ISFPeriode.CS_TYPE_PERIODE_CERTIFICAT_DE_VIE);
         sql.append("))");
 

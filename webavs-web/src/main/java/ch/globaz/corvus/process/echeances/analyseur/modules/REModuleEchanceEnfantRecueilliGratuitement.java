@@ -5,6 +5,8 @@ import ch.globaz.hera.business.constantes.ISFPeriode;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 
+import java.util.Iterator;
+
 public class REModuleEchanceEnfantRecueilliGratuitement extends REModuleAnalyseEcheance {
 
     public REModuleEchanceEnfantRecueilliGratuitement(BSession session, String moisTraitement) {
@@ -14,7 +16,9 @@ public class REModuleEchanceEnfantRecueilliGratuitement extends REModuleAnalyseE
     @Override
     protected REReponseModuleAnalyseEcheance analyserEcheance(IREEcheances echeancesPourUnTiers) {
 
-        for (IREPeriodeEcheances unePeriode : echeancesPourUnTiers.getPeriodes()) {
+        Iterator<IREPeriodeEcheances> iteratorDesPeriodes = echeancesPourUnTiers.getPeriodes().iterator();
+        while (iteratorDesPeriodes.hasNext()) {
+            IREPeriodeEcheances unePeriode = iteratorDesPeriodes.next();
 
             // si la période n'est pas une période enfant ou enfant conjoint, on l'ignore
             if (ISFPeriode.CS_TYPE_PERIODE_ENFANT.equals(unePeriode.getCsTypePeriode())
