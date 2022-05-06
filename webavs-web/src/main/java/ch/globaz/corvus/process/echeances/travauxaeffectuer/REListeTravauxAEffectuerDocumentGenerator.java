@@ -67,10 +67,6 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
         this.isEnfantDe25ans = isEnfantDe25ans;
     }
 
-    public void setEcheanceEnfantRecueilliGratuitement(boolean echeanceEnfantRecueilliGratuitement) {
-        isEcheanceEnfantRecueilliGratuitement = echeanceEnfantRecueilliGratuitement;
-    }
-
     public final void setFemmeArrivantAgeVieillesse(boolean isFemmeArrivantAgeVieillesse) {
         this.isFemmeArrivantAgeVieillesse = isFemmeArrivantAgeVieillesse;
     }
@@ -81,6 +77,10 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
 
     public final void setRenteDeVeuf(boolean isRenteDeVeuf) {
         this.isRenteDeVeuf = isRenteDeVeuf;
+    }
+
+    public final void setEcheanceEnfantRecueilliGratuitement(boolean echeanceEnfantRecueilliGratuitement) {
+        isEcheanceEnfantRecueilliGratuitement = echeanceEnfantRecueilliGratuitement;
     }
 
     @Override

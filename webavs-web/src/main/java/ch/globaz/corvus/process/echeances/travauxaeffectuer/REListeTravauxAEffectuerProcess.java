@@ -243,8 +243,8 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
                 if (getIsRenteDeVeufGED()) {
                     reEcheanceRenteOO.setRenteDeVeufGED(true);
                 }
-                if (getEcheanceEnfantRecueilliGratuitementGED()) {
-                    reEcheanceRenteOO.setEchanceEnfantRecueilliGratuitementGED(true);
+                if (getIsEcheanceEnfantRecueilliGratuitementGED()) {
+                    reEcheanceRenteOO.setEcheanceEnfantRecueilliGratuitementGED(true);
                 }
                 BProcessLauncher.start(reEcheanceRenteOO, false);
             } catch (Exception e) {
@@ -352,6 +352,18 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
 
     public final Boolean getIsRenteDeVeufGED() {
         return isRenteDeVeufGED;
+    }
+
+    public final Boolean getIsEcheanceEnfantRecueilliGratuitement() {
+        return isEcheanceEnfantRecueilliGratuitement;
+    }
+
+    public final Boolean getIsEcheanceEnfantRecueilliGratuitementDOC() {
+        return isEcheanceEnfantRecueilliGratuitementDOC;
+    }
+
+    public final Boolean getIsEcheanceEnfantRecueilliGratuitementGED() {
+        return isEcheanceEnfantRecueilliGratuitementGED;
     }
 
     @Override
@@ -464,11 +476,15 @@ public class REListeTravauxAEffectuerProcess extends REListeEcheanceProcess<RELi
         this.isRenteDeVeufGED = isRenteDeVeufGED;
     }
 
-    public Boolean getEcheanceEnfantRecueilliGratuitementGED() {
-        return isEcheanceEnfantRecueilliGratuitementGED;
+    public final void setIsEcheanceEnfantRecueilliGratuitement(Boolean echeanceEnfantRecueilliGratuitement) {
+        isEcheanceEnfantRecueilliGratuitement = echeanceEnfantRecueilliGratuitement;
     }
 
-    public void setEcheanceEnfantRecueilliGratuitementGED(Boolean echeanceEnfantRecueilliGratuitementGED) {
+    public final void setIsEcheanceEnfantRecueilliGratuitementDOC(Boolean echeanceEnfantRecueilliGratuitementDOC) {
+        isEcheanceEnfantRecueilliGratuitementDOC = echeanceEnfantRecueilliGratuitementDOC;
+    }
+
+    public final void setIsEcheanceEnfantRecueilliGratuitementGED(Boolean echeanceEnfantRecueilliGratuitementGED) {
         isEcheanceEnfantRecueilliGratuitementGED = echeanceEnfantRecueilliGratuitementGED;
     }
 }

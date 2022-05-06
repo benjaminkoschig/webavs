@@ -31,6 +31,9 @@ public class REAnalyserEcheancesAjaxViewBean extends LYProcessAjaxViewBean {
     private String isRenteDeVeuf = "";
     private String isRenteDeVeufDOC = "";
     private String isRenteDeVeufGED = "";
+    private String isEcheanceEnfantRecueilliGratuitement = "";
+    private String isEcheanceEnfantRecueilliGratuitementDOC = "";
+    private String isEcheanceEnfantRecueilliGratuitementGED = "";
 
     public REAnalyserEcheancesAjaxViewBean() {
         super();
@@ -128,6 +131,18 @@ public class REAnalyserEcheancesAjaxViewBean extends LYProcessAjaxViewBean {
         return isRenteDeVeufGED;
     }
 
+    public String getIsEcheanceEnfantRecueilliGratuitement() {
+        return isEcheanceEnfantRecueilliGratuitement;
+    }
+
+    public String getIsEcheanceEnfantRecueilliGratuitementDOC() {
+        return isEcheanceEnfantRecueilliGratuitementDOC;
+    }
+
+    public String getIsEcheanceEnfantRecueilliGratuitementGED() {
+        return isEcheanceEnfantRecueilliGratuitementGED;
+    }
+
     public void setIsAjournement(String isAjournement) {
         this.isAjournement = isAjournement;
     }
@@ -219,4 +234,17 @@ public class REAnalyserEcheancesAjaxViewBean extends LYProcessAjaxViewBean {
     public void setIsRenteDeVeufGED(String isRenteDeVeufGED) {
         this.isRenteDeVeufGED = isRenteDeVeufGED;
     }
+
+    public void setIsEcheanceEnfantRecueilliGratuitement(String isEcheanceEnfantRecueilliGratuitement) {
+        this.isEcheanceEnfantRecueilliGratuitement = isEcheanceEnfantRecueilliGratuitement;
+    }
+
+    public void setIsEcheanceEnfantRecueilliGratuitementDOC(String isEcheanceEnfantRecueilliGratuitementDOC) {
+        this.isEcheanceEnfantRecueilliGratuitementDOC = isEcheanceEnfantRecueilliGratuitementDOC;
+    }
+
+    public void setIsEcheanceEnfantRecueilliGratuitementGED(String isEcheanceEnfantRecueilliGratuitementGED) {
+        this.isEcheanceEnfantRecueilliGratuitementDOC = isEcheanceEnfantRecueilliGratuitementGED;
+    }
+
 }

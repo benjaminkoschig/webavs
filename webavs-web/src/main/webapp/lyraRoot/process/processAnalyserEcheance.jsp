@@ -1,18 +1,18 @@
-<%@page import="globaz.jade.client.util.JadeStringUtil" %>
-<%@page import="globaz.globall.db.BSessionUtil" %>
-<%@taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
-<%@page language="java" %>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@page import="globaz.globall.db.BSessionUtil"%>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="ct"%>
+<%@page language="java"%>
 <%
-    boolean isAjournementGED = Boolean.parseBoolean(request.getParameter("AjournementGED"));
-    boolean isEnfant18ansGED = Boolean.parseBoolean(request.getParameter("Enfant18ansGED"));
-    boolean isEnfant25ansGED = Boolean.parseBoolean(request.getParameter("Enfant25ansGED"));
-    boolean isEtudesGED = Boolean.parseBoolean(request.getParameter("EtudeGED"));
-    boolean isHommeVieillesseGED = Boolean.parseBoolean(request.getParameter("FemmeVieillesseGED"));
-    boolean isFemmeVieillesseGED = Boolean.parseBoolean(request.getParameter("HommeVieillesseGED"));
-    boolean isRenteVeufGED = Boolean.parseBoolean(request.getParameter("RenteVeufGED"));
-    boolean isEcheanceEnfantRecueilliGratuitementGED = Boolean.parseBoolean(request.getParameter("EcheanceEnfantReceuilliGratuitementGED"));
+	boolean isAjournementGED = Boolean.parseBoolean(request.getParameter("AjournementGED"));
+	boolean isEnfant18ansGED = Boolean.parseBoolean(request.getParameter("Enfant18ansGED"));
+	boolean isEnfant25ansGED = Boolean.parseBoolean(request.getParameter("Enfant25ansGED"));
+	boolean isEtudesGED = Boolean.parseBoolean(request.getParameter("EtudeGED"));
+	boolean isHommeVieillesseGED = Boolean.parseBoolean(request.getParameter("FemmeVieillesseGED"));
+	boolean isFemmeVieillesseGED = Boolean.parseBoolean(request.getParameter("HommeVieillesseGED"));
+	boolean isRenteVeufGED = Boolean.parseBoolean(request.getParameter("RenteVeufGED"));
+	boolean isEcheanceEnfantRecueilliGratuitementGED = Boolean.parseBoolean(request.getParameter("EcheanceEnfantRecueilliGratuitementGED"));
 
-    boolean afficherColloneGED = isAjournementGED
+	boolean afficherColloneGED = isAjournementGED
             || isEnfant18ansGED
             || isEnfant25ansGED
             || isEtudesGED
@@ -280,25 +280,25 @@
             </td>
             <td>
                 <input type="checkbox"
-                       id="listeEcheanceEnfantRecueilliGratuitement"
-                       name="isEcheanceEnfantRecueilliGratuitement"
-                       class="listeBox"
-                       checked="checked"/>
+                      id="listeEcheanceEnfantRecueilliGratuitement"
+                      name="isEcheanceEnfantRecueilliGratuitement"
+                      class="listeBox"
+                      checked="checked"/>
             </td>
             <td>
                 <input type="checkbox"
-                       id="lettreEcheanceEnfantRecueilliGratuitement"
-                       name="isEcheanceEnfantRecueilliGratuitementDOC"
-                       class="docBox"
-                       checked="checked"/>
+                      id="lettreEcheanceEnfantRecueilliGratuitement"
+                      name="isEcheanceEnfantRecueilliGratuitementDOC"
+                      class="docBox"
+                      checked="checked"/>
             </td>
             <% if (isEcheanceEnfantRecueilliGratuitementGED) { %>
             <td>
                 <input type="checkbox"
-                       id="GEDEcheanceEnfantRecueilliGratuitement"
-                       name="isEcheanceEnfantRecueilliGratuitementGED"
-                       class="gedBox"
-                       checked="checked"/>
+                      id="GEDEcheanceEnfantRecueilliGratuitement"
+                      name="isEcheanceEnfantRecueilliGratuitementGED"
+                      class="gedBox"
+                      checked="checked"/>
             </td>
             <% } else if (afficherColloneGED) { %>
             <td>

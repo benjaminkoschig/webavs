@@ -49,8 +49,8 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         isSendToGedFemmeVieillesse = false;
         isSendToGedHommeVieillesse = false;
         isSendToGedRenteVeuf = false;
-        isValidationDecisionAutorise = true;
         isSendToGedEnfantRecueilliGratuitement = false;
+        isValidationDecisionAutorise = true;
     }
 
     private void checkGED() throws Exception {
@@ -203,6 +203,10 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         return isSendToGedRenteVeuf;
     }
 
+    public boolean isSendToGedEnfantRecueilliGratuitement() {
+        return isSendToGedEnfantRecueilliGratuitement;
+    }
+
     public boolean isValidationDecisionAutorise() {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         isValidationDecisionAutorise = REPmtMensuel.isValidationDecisionAuthorise(session);
@@ -257,15 +261,12 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         this.isSendToGedRenteVeuf = isSendToGedRenteVeuf;
     }
 
+    public void setSendToGedEnfantRecueilliGratuitement(boolean isSendToGedEnfantRecueilliGratuitement) {
+        this.isSendToGedEnfantRecueilliGratuitement = isSendToGedEnfantRecueilliGratuitement;
+    }
+
     public void setValidationDecisionAuthorise(boolean isValidDecAut) {
         isValidationDecisionAutorise = isValidDecAut;
     }
 
-    public boolean isSendToGedEnfantRecueilliGratuitement() {
-        return isSendToGedEnfantRecueilliGratuitement;
-    }
-
-    public void setSendToGedEnfantRecueilliGratuitement(boolean sendToGedEnfantRecueilliGratuitement) {
-        isSendToGedEnfantRecueilliGratuitement = sendToGedEnfantRecueilliGratuitement;
-    }
 }
