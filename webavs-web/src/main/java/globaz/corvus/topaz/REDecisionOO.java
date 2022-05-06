@@ -40,6 +40,7 @@ import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.decisions.KeyPeriodeInfo;
@@ -3051,27 +3052,15 @@ public class REDecisionOO extends REAbstractJobOO {
                                     line1.addData("genreRente", getTexte(catalogeDeTexteDecision, 2, 12));
 
                                 } else {
-
-                                    FWParametersUserCode userCode = new FWParametersUserCode();
-                                    userCode.setSession(getSession());
-                                    userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST",
-                                            pourRechercheCodeSysteme));
-
-                                    if (codeIsoLangue.equals("IT")) {
-                                        userCode.setIdLangue("I");
-                                    } else if (codeIsoLangue.equals("DE")) {
-                                        userCode.setIdLangue("D");
-                                    } else {
-                                        userCode.setIdLangue("F");
-                                    }
-
-                                    userCode.retrieve();
+                                        String libelle = RENumberFormatter.codeSystemToLibelle(
+                                                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                                                codeIsoLangue, getSession());
                                     if (Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme)) {
                                         DecimalFormat df = new DecimalFormat(" #.# %");
                                         String quotite = df.format(Double.valueOf(benefs[inc].getQuotite()));
-                                        line1.addData("genreRente", userCode.getLibelle() + quotite);
+                                        line1.addData("genreRente", libelle + quotite);
                                     } else {
-                                        line1.addData("genreRente", userCode.getLibelle());
+                                        line1.addData("genreRente", libelle);
                                     }
                                 }
 

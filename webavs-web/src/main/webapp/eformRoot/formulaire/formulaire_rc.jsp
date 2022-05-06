@@ -8,7 +8,8 @@
 
 <%@ include file="/theme/find/header.jspf" %>
 <%
-	idEcran="GF0001";
+	idEcran="GFE0001";
+	bButtonNew = false;
 %>
 
 <%-- tpl:insert attribute="zoneInit" --%>

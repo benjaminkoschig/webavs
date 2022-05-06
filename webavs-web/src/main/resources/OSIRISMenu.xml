@@ -138,6 +138,14 @@
 									<parameter name="userAction" value="osiris.ebill.fichierTraitementEBill.chercher"/>"/>
 								</action>
 							</node>
+							<node>
+								<label defaultValue="Génération liste">
+									<language iso="de">DE Génération liste</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.ebill.generationListeAffiliesEBill.afficher"/>"/>
+								</action>
+							</node>
                         </nodes>
                     </node>
 				</nodes>

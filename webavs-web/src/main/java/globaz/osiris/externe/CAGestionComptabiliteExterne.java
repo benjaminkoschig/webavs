@@ -63,6 +63,9 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
     private BSession session = null;
     private BTransaction transaction = null;
 
+    private  final String methodNameCAByRole = "{getCompteAnnexeByRole}";
+
+    private final String methodNameSectionByIdExterne ="{getSectionByIdExterne}";
     /**
      * Constructeur.
      */
@@ -211,13 +214,13 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
      */
     private APICompteAnnexe createCompteAnnexe(String idTiers, String idRole, String idExterneRole) {
         if (journal.isNew() || !(journal.isOuvert() || journal.isTraitement())) {
-            log.logMessage("5001", "{getCompteAnnexeByRole}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5001", methodNameCAByRole, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
         if (JadeStringUtil.isIntegerEmpty(idRole) || JadeStringUtil.isBlank(idExterneRole)
                 || JadeStringUtil.isIntegerEmpty(idTiers)) {
-            log.logMessage("5012", "{getCompteAnnexeByRole}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5012", methodNameCAByRole, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
@@ -453,7 +456,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
 
         if (JadeStringUtil.isIntegerEmpty(idExterne) || JadeStringUtil.isIntegerEmpty(idTypeSection)
                 || JadeStringUtil.isIntegerEmpty(idCompteAnnexe)) {
-            log.logMessage("5012", "{getSectionByIdExterne}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5012", methodNameSectionByIdExterne, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
@@ -466,7 +469,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
 
         // Site c'est une section de type retours, bloquer le mode de compensation
         // Suite au BZ 7697 afin de bloquer quelques mauvaises manipulations des utilisateurs
-        if (APISection.ID_TYPE_SECTION_RETOUR.equals(idTypeSection)) {
+        if (APISection.ID_TYPE_SECTION_RETOUR.equals(idTypeSection)||APISection.ID_TYPE_SECTION_RETOUR_PTRA.equals(idTypeSection)) {
             section.setIdModeCompensation(APISection.MODE_BLOQUER_COMPENSATION);
         }
 
@@ -538,18 +541,18 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
     @Override
     public APICompteAnnexe getCompteAnnexeByRole(String idTiers, String idRole, String idExterneRole) {
         if (journal.isNew() || !(journal.isOuvert() || journal.isTraitement())) {
-            log.logMessage("5001", "{getCompteAnnexeByRole}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5001", methodNameCAByRole, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
         // Vérifier les paramètres
         if ((idRole == null) || (idExterneRole == null) || (idTiers == null)) {
-            log.logMessage("5012", "{getCompteAnnexeByRole}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5012", methodNameCAByRole, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
         if (JadeStringUtil.isIntegerEmpty(idRole) || JadeStringUtil.isBlank(idExterneRole)
                 || JadeStringUtil.isIntegerEmpty(idTiers)) {
-            log.logMessage("5012", "{getCompteAnnexeByRole}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5012", methodNameCAByRole, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
@@ -633,6 +636,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
             process.setTransaction(transaction);
         }
 
+
         process.setSession(getSession());
         return process;
     }
@@ -669,13 +673,13 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
     public APISection getSectionByIdExterne(String idCompteAnnexe, String idTypeSection, String idExterne,
             String domaine, String typeAdresse, Boolean nonImprimable, FWPKProvider pkProvider) {
         if (journal.isNew() || !(journal.isOuvert() || journal.isTraitement())) {
-            log.logMessage("5001", "{getSectionByIdExterne}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5001", methodNameSectionByIdExterne, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
         if (JadeStringUtil.isIntegerEmpty(idExterne) || JadeStringUtil.isIntegerEmpty(idTypeSection)
                 || JadeStringUtil.isIntegerEmpty(idCompteAnnexe)) {
-            log.logMessage("5012", "{getSectionByIdExterne}", FWMessage.FATAL, this.getClass().getName());
+            log.logMessage("5012", methodNameSectionByIdExterne, FWMessage.FATAL, this.getClass().getName());
             return null;
         }
 
@@ -869,7 +873,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
         }
 
         // - Etat du journal
-        if (!journal.isComptabilise()) {
+        if (journal != null && !journal.isComptabilise()) {
             log.logMessage("POG_JOURNAL_ETAT", FWMessage.FATAL, this.getClass().getName());
             continu = false;
         }
@@ -981,8 +985,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
 
     /**
      * Envois un email contenant le traitement effectué à l'adresse eMailAddress.
-     * 
-     * @see eMailAddress
+     *
      */
     private void sendFinalEmail() {
         // Déterminer l'objet du message en fonction du code erreur

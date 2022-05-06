@@ -375,8 +375,12 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEbillBillerId();
 
-        // Génère et ajoute un transactionId à l'entête
+        // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
+
+        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
+        entete.seteBillPrinted(true);
+
         entete.update();
 
         // met à jour le status eBill de la section

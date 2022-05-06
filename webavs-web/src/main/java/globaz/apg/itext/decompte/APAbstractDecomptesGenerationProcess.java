@@ -1956,10 +1956,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
                     } else {
                         // 2. les infos sur la prestation
+                        String dateFinPrestation = !JadeStringUtil.isBlank(repartition.getDateFinSaisie()) ? repartition.getDateFinSaisie() : repartition.getDateFin();
                         champs.put("FIELD_DETAIL_PERIODE",
                                 PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
                                         JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
-                                                + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
+                                                + JACalendar.format(dateFinPrestation, getCodeIsoLangue())));
 
                         // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
                         if (!isTraitementDesVentilations()) {
@@ -2989,9 +2990,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         String texteDetailJournalier = "";
 
         try {
-
             // Recupération du nombre de jours soldés
             final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
+            final int nbJoursConges = JadeStringUtil.isEmpty(repartition.getNbJoursConges()) ? 0 : Integer.parseInt(repartition.getNbJoursConges());
+            final int nbJoursSupp = JadeStringUtil.isEmpty(repartition.getNbJoursSupp()) ? 0 : Integer.parseInt(repartition.getNbJoursSupp());
+
 
             if (nbJours != 0) {
                 // Récupération du montant brut
@@ -3005,17 +3008,26 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
                         || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                     texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
-                } else {
-                    // TODO ESVE PAT 4.1.3.5.
+                } else if(nbJoursSupp>0) {
+                    texteDetailJournalier = document.getTextes(3).getTexte(52).getDescription();
+                }else{
                     texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                 }
                 // Insertion du nombre de jours dans le texte
                 if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             NB_JOURS_DECES);
+                } else if (nbJoursConges>0) {
+                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                            Integer.toString(nbJoursConges));
                 } else {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             Integer.toString(nbJours));
+                }
+                // ajout des indemnités supplémentaires
+                if(nbJoursSupp>0){
+                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{indemSupp}",
+                            String.valueOf(nbJoursSupp));
                 }
                 // Insertion du montant journalier dans le texte
                 texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",

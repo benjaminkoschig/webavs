@@ -4,12 +4,15 @@ import globaz.framework.util.FWMessageFormat;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.osiris.api.APIOperationOrdreVersement;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
+import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.ordres.exception.AucuneAdressePaiementException;
 import globaz.osiris.db.ordres.format.CAOrdreFormateur;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
+import globaz.osiris.db.ordres.sepa.exceptions.ISODataMissingXMLException;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOGConverterUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
@@ -49,6 +52,8 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.ClearingSystemMemberI
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.ContactDetails2CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CreditTransferTransactionInformation10CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CreditorReferenceInformation2;
+import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CreditorReferenceType1Choice;
+import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CreditorReferenceType2;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.Document;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.FinancialInstitutionIdentification7CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.FinancialInstitutionIdentification7CHBicOrClrId;
@@ -94,8 +99,15 @@ public class CAFormatVersementISO extends CAOrdreFormateur {
         final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
         adpf.setAdressePaiement(ov.getAdressePaiement());
 
-        final boolean isBVR = CASepaOVConverterUtils.getTypeVersement(ov, adpf).equals(
-                CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
+        final boolean isBVR = CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR.equals(
+                CASepaOVConverterUtils.getTypeVersement(ov, adpf));
+        final boolean isQR = ov instanceof CAOperationOrdreVersement
+                && APIOperationOrdreVersement.QR.equals(((CAOperationOrdreVersement) ov).getTypeVirement());
+
+        if(isQR && !isBVR){
+            throw new ISODataMissingXMLException("Aucune référence QR n´est renseignée. Ordre n°"
+                    + ((CAOperationOrdreVersement) ov).getIdOrdre());
+        }
 
         CASepaPain001GroupeOGKey key = new CASepaPain001GroupeOGKey(ov.getCodeISOMonnaieBonification(),
                 CASepaOVConverterUtils.getTypeVersement(ov, adpf), CASepaOVConverterUtils.getTypeVirement(adpf),
@@ -202,17 +214,7 @@ public class CAFormatVersementISO extends CAOrdreFormateur {
             CashAccount16CHId cdtrAcct = factory.createCashAccount16CHId();
 
             AccountIdentification4ChoiceCH id = factory.createAccountIdentification4ChoiceCH();
-            if (isBVR) {
-                try {
-                    id.setOthr(CASepaOVConverterUtils.getNumAdherentBVR(adpf));
-                } catch (SepaException e) {
-                    throw new Exception(getSession().getLabel("ISO20022_NUMERO_ADHERENT_BVR_NON_IDENTIFIE")
-                            + ov.getNumTransaction(), e);
-                }
-            } else {
-                id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
-                id.setOthr(CASepaOVConverterUtils.getCbtrNotIBAN(ov));
-            }
+            id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
             cdtrAcct.setId(id);
             cLevelData.setCdtrAcct(cdtrAcct);
         }
@@ -228,6 +230,13 @@ public class CAFormatVersementISO extends CAOrdreFormateur {
             StructuredRemittanceInformation7 strd = factory.createStructuredRemittanceInformation7();
             CreditorReferenceInformation2 cdtrRefInf = factory.createCreditorReferenceInformation2();
             cdtrRefInf.setRef(CASepaCommonUtils.limit35(ov.getReferenceBVR()));
+            if(isQR){
+                CreditorReferenceType2 type2 = factory.createCreditorReferenceType2();
+                CreditorReferenceType1Choice cdtrRefT1Choice = factory.createCreditorReferenceType1Choice();
+                cdtrRefT1Choice.setPrtry(CASepaOVConverterUtils.ExternalLocalInstrument1_QRR);
+                type2.setCdOrPrtry(cdtrRefT1Choice);
+                cdtrRefInf.setTp(type2);
+            }
             strd.setCdtrRefInf(cdtrRefInf);
             rmtInf.setStrd(strd);
             cLevelData.setRmtInf(rmtInf);

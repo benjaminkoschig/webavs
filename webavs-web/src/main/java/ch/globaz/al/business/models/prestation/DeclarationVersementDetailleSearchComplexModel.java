@@ -1,6 +1,9 @@
 package ch.globaz.al.business.models.prestation;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -47,6 +50,22 @@ public class DeclarationVersementDetailleSearchComplexModel extends JadeSearchCo
      * recherche su le tiers beneficiaire (allocataire ou autre)
      */
     String forTiers = null;
+
+    @Getter
+    @Setter
+    String forPeriodeDebut = null;
+    @Getter
+    @Setter
+    String forPeriodeFin = null;
+    @Getter
+    @Setter
+    String forMontantPositif = null;
+    @Getter
+    @Setter
+    String forNotEtatPrestation = null;
+    @Getter
+    @Setter
+    String forNss = null;
 
     /**
      * recherche sur le type de bonification de la prestation

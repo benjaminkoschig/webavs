@@ -32,6 +32,9 @@ public class CASepaCommonUtils {
     public static final String TYPE_VIREMENT_MANDAT = "mandat";
     public static final String CLEARING_POSTAL = "09000";
 
+    private static final int QR_IID_MIN = 30000;
+    private static final int QR_IID_MAX = 31999;
+
     private static TIIbanFormater formater = new TIIbanFormater();
 
     private CASepaCommonUtils() {
@@ -179,6 +182,22 @@ public class CASepaCommonUtils {
             return formater.unformat(numCmp);
         }
         return null;
+    }
+
+    /**
+     * Vérifie si l'adresse de paiement contient une adresse QR-IBAN. (IBAN avec un QR-IID)
+     * Règle : l'IID se trouve en position 5 à 8 de l'IBAN. Si l'IID est entre 30000 et 31999
+     * compris, il s'agit d'un QR IBAN.
+     * Doc : https://www.postfinance.ch/content/dam/pfch/doc/480_499/499_78_fr.pdf page 7
+     *
+     * @param adp   Adresse de paiement
+     * @return  True si c'est un QR IBAN, false l'IBAN est null, ou s'il n'a pas un QR-IID.
+     */
+    public static boolean isQRIBAN(IntAdressePaiement adp){
+        String iban = getIntAdressePaiementIBAN(adp);
+        if(iban == null || iban.length() < 9) return false;
+        int qrIid = Integer.parseInt(iban.substring(4, 9));
+        return (qrIid >= QR_IID_MIN && qrIid <= QR_IID_MAX);
     }
 
     private static boolean isXsdRegexIbanValid(String ibanStr) {

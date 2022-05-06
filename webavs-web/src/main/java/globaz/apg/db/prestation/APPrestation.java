@@ -63,6 +63,9 @@ public class APPrestation extends BEntity implements IAPPrestation {
     public static final String FIELDNAME_MONTANTALLOCEXPLOITATION = "VHMALE";
     public static final String FIELDNAME_MONTANTBRUT = "VHDMOB";
     public static final String FIELDNAME_NOMBREJOURSSOLDES = "VHNNJS";
+    public static final String FIELDNAME_NOMBREJOURSCONGES = "VHNNJC";
+    public static final String FIELDNAME_NOMBREJOURSSUPP = "VHNNJU";
+    public static final String FIELDNAME_DATEFIN_SAISIE = "VHDFIS";
     public static final String FIELDNAME_NOREVISION = "VHTREV";
     public static final String FIELDNAME_REMARQUE = "VHLREM";
     public static final String FIELDNAME_REVENUMOYENDETERMINANT = "VHMRMD";
@@ -95,6 +98,9 @@ public class APPrestation extends BEntity implements IAPPrestation {
     private String montantBrut = "";
     private String montantJournalier = "";
     private String nombreJoursSoldes = "";
+    private String nombreJoursConges = "";
+    private String nombreJoursSupp = "";
+    private String dateFinSaisie = "";
     private String noRevision = "";
     private String remarque = "";
     private String revenuMoyenDeterminant = "";
@@ -566,6 +572,9 @@ public class APPrestation extends BEntity implements IAPPrestation {
         dateDebut = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEDEBUT);
         dateFin = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN);
         nombreJoursSoldes = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSSOLDES);
+        nombreJoursConges = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSCONGES);
+        nombreJoursSupp = statement.dbReadNumeric(APPrestation.FIELDNAME_NOMBREJOURSSUPP);
+        dateFinSaisie = statement.dbReadDateAMJ(APPrestation.FIELDNAME_DATEFIN_SAISIE);
         etat = statement.dbReadNumeric(APPrestation.FIELDNAME_ETAT);
         genre = statement.dbReadNumeric(APPrestation.FIELDNAME_GENRE_PRESTATION);
         contenuAnnonce = statement.dbReadNumeric(APPrestation.FIELDNAME_CONTENUANNONCE);
@@ -620,6 +629,12 @@ public class APPrestation extends BEntity implements IAPPrestation {
                 this._dbWriteDateAMJ(statement.getTransaction(), dateFin, "dateFin"));
         statement.writeField(APPrestation.FIELDNAME_NOMBREJOURSSOLDES,
                 this._dbWriteNumeric(statement.getTransaction(), nombreJoursSoldes, "nombreJoursSoldes"));
+        statement.writeField(APPrestation.FIELDNAME_NOMBREJOURSCONGES,
+                this._dbWriteNumeric(statement.getTransaction(), nombreJoursConges, "nombreJoursConge"));
+        statement.writeField(APPrestation.FIELDNAME_NOMBREJOURSSUPP,
+                this._dbWriteNumeric(statement.getTransaction(), nombreJoursSupp, "nombreJoursSupp"));
+        statement.writeField(APPrestation.FIELDNAME_DATEFIN_SAISIE,
+                this._dbWriteDateAMJ(statement.getTransaction(), dateFinSaisie, "dateFinSaisie"));
         statement.writeField(APPrestation.FIELDNAME_ETAT,
                 this._dbWriteNumeric(statement.getTransaction(), etat, "etat"));
 
@@ -860,6 +875,33 @@ public class APPrestation extends BEntity implements IAPPrestation {
      */
     public String getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours de congés
+     *
+     * @return la valeur courante de l'attribut nombre jours de congés
+     */
+    public String getNombreJoursConges() {
+        return nombreJoursConges;
+    }
+
+    /**
+     * getter pour l'attribut nombre jours supplémentaires
+     *
+     * @return la valeur courante de l'attribut nombre jours supplémentaires
+     */
+    public String getNombreJoursSupp() {
+        return nombreJoursSupp;
+    }
+
+    /**
+     * getter pour l'attribut date fin saisie
+     *
+     * @return la valeur courante de l'attribut date fin saisie
+     */
+    public String getDateFinSaisie() {
+        return dateFinSaisie;
     }
 
     /**
@@ -1174,6 +1216,36 @@ public class APPrestation extends BEntity implements IAPPrestation {
      */
     public void setNombreJoursSoldes(String nombreJoursSoldes) {
         this.nombreJoursSoldes = nombreJoursSoldes;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours de congés
+     *
+     * @param nombreJoursConges
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursConges(String nombreJoursConges) {
+        this.nombreJoursConges = nombreJoursConges;
+    }
+
+    /**
+     * setter pour l'attribut nombre jours supplémentaires
+     *
+     * @param nombreJoursSupp
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setNombreJoursSupp(String nombreJoursSupp) {
+        this.nombreJoursSupp = nombreJoursSupp;
+    }
+
+    /**
+     * setter pour l'attribut date fin saisie
+     *
+     * @param dateFinSaisie
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinSaisie(String dateFinSaisie) {
+        this.dateFinSaisie = dateFinSaisie;
     }
 
     /**

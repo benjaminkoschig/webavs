@@ -1,4 +1,6 @@
 <%@ page import="globaz.osiris.db.ebill.enums.CAStatutEBillEnum" %>
+<%@ page import="globaz.osiris.db.ebill.CAInscriptionEBill" %>
+<%@ page import="globaz.globall.db.BSession" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -36,17 +38,18 @@
     notationManager.b_stop = true;
 </script>
 <TH colspan="2">eBillAccountID</TH>
-<TH align="left">Nom</TH>
+<TH align="left">Nom Inscription</TH>
+<TH align="left">Nom WebAVS</TH>
 <TH nowrap align="left">No affili&eacute;</TH>
 <TH align="left">Type</TH>
 <TH align="left">Statut interne</TH>
-<%	globaz.osiris.db.ebill.CAInscriptionEBill _inscriptionEBill = null ; %>
+<%	CAInscriptionEBill _inscriptionEBill = null ; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
 <%-- tpl:put name="zoneCondition" --%> <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:put name="zoneList" --%>
-<%_inscriptionEBill = (globaz.osiris.db.ebill.CAInscriptionEBill) viewBean.getEntity(i);
+<%_inscriptionEBill = (CAInscriptionEBill) viewBean.getEntity(i);
     actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "'";
 
     actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "&nom=" + nom + "&date=" + date + "&statutFichier=" + statutFichier + "'";
@@ -68,7 +71,8 @@
     </ct:menuPopup>
 </TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.geteBillAccountID()%></TD>
-<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getNomPrenomOuEntreprise()%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomPrenomOuEntrepriseInscription(_inscriptionEBill)%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomWebAVS((BSession) session.getAttribute("objSession"), _inscriptionEBill)%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getChampNumeroAffilie()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleType()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleStatut()%></TD>

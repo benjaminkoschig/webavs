@@ -6,6 +6,7 @@ import globaz.prestation.utils.PRDateUtils;
 public class PRPeriode implements Comparable<PRPeriode> {
     private String dateDeDebut;
     private String dateDeFin;
+    private String dateDeFinCalculee;
     private String nbJour = "";
     private String tauxImposition = "";
     private String cantonImposition = "";

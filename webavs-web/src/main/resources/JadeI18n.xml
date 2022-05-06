@@ -140,5 +140,10 @@
 			<filename>parambusiness.properties</filename>
 		</provider>
 
+		<!--EBILL-->
+		<provider name="eBillprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>eBill.properties</filename>
+		</provider>
+
 	</providers>
 </globaz.jade.i18n.JadeI18n>

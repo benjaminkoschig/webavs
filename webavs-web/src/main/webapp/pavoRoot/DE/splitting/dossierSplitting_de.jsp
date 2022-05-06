@@ -274,6 +274,17 @@ function resetFormConj(){
               <input type="text" name="idTiersAssure" size="17" readonly class="disabled" tabIndex='-1' size="15" 
               value='<%=!JAUtil.isStringEmpty(viewBean.getIdTiersAssure())?globaz.commons.nss.NSUtil.formatAVSUnknown(viewBean.getIdTiersAssure()):""%>'>
 			  <% } %>
+                <% if(viewBean.hasLienGedAssure()){
+                    String urlGED = servletContext + "/pavo?"
+                            + "userAction=pavo.splitting.dossierSplitting.actionAfficherDossierGed"
+                            + "&noAVSId=" + viewBean.getIdTiersAssure()
+                            + "&idTiersExtraFolder=" + viewBean.getIdTiersInterneAssure()
+                            + "&serviceNameId=" + viewBean.getGedServiceName();
+                %>
+                <a href="#" onclick="window.open('<%=urlGED%>','GED_CONSULT')">
+                    <ct:FWLabel key="JSP_LIEN_GED"/>
+                </a>
+                <%}%>
             </td>
             <td colspan="4"> 
               <input type="text" id="tiersAssureInfoNom" name="tiersAssureInfoNom" readonly tabIndex='-1' size="70" value="<%=viewBean.getTiersAssureNomComplet()%>" class="disabled">
@@ -330,7 +341,17 @@ function resetFormConj(){
 			  <% } else { %>
               <input type="text" size="17" name="idTiersConjoint" readonly class="disabled" tabIndex='-1' size="15" value='<%=!JAUtil.isStringEmpty(viewBean.getIdTiersConjoint())?globaz.commons.nss.NSUtil.formatAVSUnknown(viewBean.getIdTiersConjoint()):""%>'>
 			  <% } %>
-
+                <% if(viewBean.hasLienGedConjoint()){
+                    String urlGED = servletContext + "/pavo?"
+                            + "userAction=pavo.splitting.dossierSplitting.actionAfficherDossierGed"
+                            + "&noAVSId=" + viewBean.getIdTiersConjoint()
+                            + "&idTiersExtraFolder=" + viewBean.getIdTiersInterneConjoint()
+                            + "&serviceNameId=" + viewBean.getGedServiceName();
+                %>
+                <a href="#" onclick="window.open('<%=urlGED%>','GED_CONSULT')">
+                    <ct:FWLabel key="JSP_LIEN_GED"/>
+                </a>
+                <%}%>
             </td>
             <td colspan="4"> 
               <input type="text" id="tiersExConjointInfoNom" name="tiersExConjointInfoNom" readonly tabIndex='-1' size="70" value="<%=viewBean.getTiersConjointNomComplet()%>" class="disabled">
@@ -485,11 +506,22 @@ function resetFormConj(){
 </SCRIPT>
 <%  }  %>
 
-	<ct:menuChange displayId="options" menuId="dossierSplitting-detail" showTab="options">
-		<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdDossierSplitting()%>"/>
-		<ct:menuSetAllParams key="idDossierSplitting" value="<%=viewBean.getIdDossierSplitting()%>"/>
-		<ct:menuSetAllParams key="idTiersAssure" value="<%=viewBean.getIdTiersAssure()%>"/>
-		<ct:menuSetAllParams key="idTiersConjoint" value="<%=viewBean.getIdTiersConjoint()%>"/>
+<%
+    String menuId = "dossierSplitting-detail";
+    if(viewBean.hasLienGedAssure()) {
+        menuId = "dossierSplitting-detail-ged";
+    }
+%>
+<ct:menuChange displayId="options" menuId="<%=menuId%>" showTab="options">
+    <ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdDossierSplitting()%>"/>
+    <ct:menuSetAllParams key="idDossierSplitting" value="<%=viewBean.getIdDossierSplitting()%>"/>
+    <ct:menuSetAllParams key="idTiersAssure" value="<%=viewBean.getIdTiersAssure()%>"/>
+    <ct:menuSetAllParams key="idTiersConjoint" value="<%=viewBean.getIdTiersConjoint()%>"/>
+    <% if(viewBean.hasLienGedAssure()) { %>
+        <ct:menuSetAllParams key="noAVSId" value="<%=viewBean.getIdTiersAssure()%>"/>
+        <ct:menuSetAllParams key="idTiersExtraFolder" value="<%=viewBean.getIdTiersInterneAssure()%>"/>
+        <ct:menuSetAllParams key="serviceNameId" value="<%=viewBean.getGedServiceName()%>"/>
+    <% } %>
 	</ct:menuChange>
 
 

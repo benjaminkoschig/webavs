@@ -123,7 +123,7 @@ public class TIRoleOSI implements IntRole {
         String idExterneRoleFormatte = idExterneRole;
         idExterneRole = _unformat(idExterneRole);
         // Assuré (no. AVS)
-        if (idRole.equals(IntRole.ROLE_ASSURE) || idRole.equals(IntRole.ROLE_RENTIER)
+        if (idRole.equals(IntRole.ROLE_ASSURE) || idRole.equals(IntRole.ROLE_RENTIER) || idRole.equals(IntRole.ROLE_PTRA)
                 || idRole.equals(IntRole.ROLE_PCF)) {
             if (NSUtil.unFormatAVS(idExterneRole).length() > 11) {
                 return NSUtil.formatAVSNew(NSUtil.unFormatAVS(idExterneRole), true);
@@ -619,7 +619,7 @@ public class TIRoleOSI implements IntRole {
             // tiers.setAlternateKey(2);
             // tiers.retrieve(transaction);
             // On reçoit un numéro d'assuré
-        } else if (idRole.equals(IntRole.ROLE_ASSURE) || idRole.equals(IntRole.ROLE_RENTIER)) {
+        } else if (idRole.equals(IntRole.ROLE_ASSURE) || idRole.equals(IntRole.ROLE_RENTIER) || idRole.equals(IntRole.ROLE_PTRA)) {
             pavsMgr.setForNumAvsActuel(idExterne);
             // tiers.setNumAvsActuel(idExterne);
             // tiers.setAlternateKey(1);

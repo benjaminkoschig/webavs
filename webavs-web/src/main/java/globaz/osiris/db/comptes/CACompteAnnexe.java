@@ -24,6 +24,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.ij.application.IJApplication;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
@@ -45,10 +46,8 @@ import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.webavs.common.ICommonConstantes;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
+
 import ch.globaz.al.business.constantes.ALCSTiers;
 import org.apache.commons.lang.StringUtils;
 
@@ -110,6 +109,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     public static final String FIELD_EBILL_ID= "EBILLID";
     public static final String FIELD_EBILL_MAIL= "EBILLMAIL";
+    public static final String FIELD_EBILL_DATE_INSCRIPTION= "EBILLDATEINSCRIPTION";
 
     public static final String GENRE_COMPTE_STANDARD = "0";
     public static final String LABEL_OPERATION_AUXILIAIRE_NON_INSEREE = "OPERATION_AUXILIAIRE_NON_INSEREE";
@@ -156,6 +156,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     private String eBillAccountID = new String();
     private String eBillMail = new String();
+    private String eBillDateInscription = new String();
 
     private FWParametersUserCode ucMotifContentieuxSuspendu = null;
 
@@ -292,6 +293,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
         eBillAccountID = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_ID);
         eBillMail = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_MAIL);
+        eBillDateInscription = statement.dbReadDateAMJ(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION);
     }
 
     /**
@@ -457,6 +459,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
         statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
         statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), geteBillMail(), "eBillMail"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), geteBillDateInscription(), "eBillDateInscription"));
     }
 
     /**
@@ -1980,6 +1983,15 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
     }
 
     public void seteBillAccountID(String eBillAccountID) {
+        // on est dans le cas d'une inscription on met à jour la date d'inscription avec la date actuelle
+        if (!JadeStringUtil.isEmpty(eBillAccountID) && !eBillAccountID.equals(this.geteBillAccountID())) {
+            seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        }
+        // on est dans le cas d'une désinscription on enlève la date d'inscription
+        else if (JadeStringUtil.isEmpty(eBillAccountID) && (!JadeStringUtil.isEmpty(this.geteBillAccountID()))) {
+            seteBillDateInscription(new String());
+        }
+
         this.eBillAccountID = eBillAccountID;
     }
 
@@ -1989,5 +2001,13 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
 
     public void seteBillMail(String eBillMail) {
         this.eBillMail = eBillMail;
+    }
+
+    public String geteBillDateInscription() {
+        return eBillDateInscription;
+    }
+
+    public void seteBillDateInscription(String eBillDateInscription) {
+        this.eBillDateInscription = eBillDateInscription;
     }
 }

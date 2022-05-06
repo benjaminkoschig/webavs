@@ -1,5 +1,6 @@
 package globaz.pavo.application;
 
+import ch.globaz.common.exceptions.NotFoundException;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
@@ -36,11 +37,8 @@ import globaz.pyxis.api.ITIPersonneAvs;
 import globaz.pyxis.api.helper.ITIAdministrationHelper;
 import globaz.pyxis.api.helper.ITIPersonneAvsHelper;
 import globaz.webavs.common.CommonProperties;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.StringTokenizer;
+
+import java.util.*;
 
 /**
  * Application PAVO
@@ -103,6 +101,8 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public static final String PATH_FTP = "centrale.url";
     public static final String RACINE_NOM = "racine.fichier.centrale";
     public static final String PROPERTY_PUCS4_AUTORISE_AVS_DIFFERENT_AF = "pucs4.autorise.avs.different.af";
+    private static final String SPLITTING_WANTLIENGED = "splitting.wantLienGed";
+    private static final String SPLITTING_SERVICEGED = "splitting.serviceGed";
 
     // le format du numéro d'affilié
     private IFormatData affileFormater = null;
@@ -263,6 +263,8 @@ public class CIApplication extends globaz.globall.db.BApplication {
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.annulerDossierExecuter",
                 FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("pavo.splitting.dossierSplitting.actionAfficherDossierGed",
+                FWSecureConstants.READ);
 
         FWAction.registerLinkedAction("pavo.splitting.dossierSplitting.apercuRCI",
                 "hermes.parametrage.attenteReception.chercher");
@@ -1486,4 +1488,18 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public String getRacineNom() {
         return this.getProperty(RACINE_NOM);
     }
+
+    public boolean isSplittingWantLienGed() throws NotFoundException {
+        String wantLienGed = this.getProperty(SPLITTING_WANTLIENGED);
+        if(wantLienGed == null) {
+            throw new NotFoundException("propriété manquante :"+SPLITTING_WANTLIENGED);
+        }
+        return Boolean.parseBoolean(wantLienGed.trim());
+    }
+
+    public String getSplittingServiceGed() {
+        return this.getProperty(SPLITTING_SERVICEGED);
+    }
+
+
 }

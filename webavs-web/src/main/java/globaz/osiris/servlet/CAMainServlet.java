@@ -24,6 +24,7 @@ import globaz.osiris.servlet.action.avance.CAAvanceAction;
 import globaz.osiris.servlet.action.bvrftp.CABvrFtpAction;
 import globaz.osiris.servlet.action.compte.*;
 import globaz.osiris.servlet.action.contentieux.*;
+import globaz.osiris.servlet.action.ebill.CAGenerationListeAffiliesEBillAction;
 import globaz.osiris.servlet.action.ebill.CAInscriptionEBillAction;
 import globaz.osiris.servlet.action.ebill.CATraitementEBillAction;
 import globaz.osiris.servlet.action.historique.CAHistoriqueBulletinSoldeAction;
@@ -184,6 +185,8 @@ public class CAMainServlet extends FWServlet {
             act = new CAInscriptionEBillAction(this);
         } else if (actionSuite.toLowerCase().contains("traitementEBill".toLowerCase())) {
             act = new CATraitementEBillAction(this);
+        } else if (actionSuite.toLowerCase().contains("generationListeAffiliesEBill".toLowerCase())) {
+            act = new CAGenerationListeAffiliesEBillAction(this);
         } else {
             act = new FWDefaultServletAction(this);
         }

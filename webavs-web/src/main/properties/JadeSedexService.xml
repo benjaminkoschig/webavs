@@ -37,10 +37,9 @@
         <mapping>
             <criteria name="//message/header/messageType">2504</criteria>
             <handler>
-                <class>ch.globaz.eform.business.services.sedex.GFTraitementMessageServiceImpl</class>
-                <param key="userSedex">xX7AfUh0qvAxzfDVG0vNMA==</param>
-                <param key="passSedex">VodoAfBz+wZIR+D4weSlcw==</param>
-                <param key="currentSedexFolder">D:\sedex\backup\inbox\current\</param>
+                <class>ch.globaz.eform.businessimpl.services.sedex.GFTraitementMessageServiceImpl</class>
+                <param key="userSedex">44kvDa8DmQO0QloqIBTpdg==</param>
+                <param key="passSedex">npe/eW73EFnkf1sbh0iroQ==</param>
             </handler>
         </mapping>
     </messageMappings>

@@ -119,6 +119,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
     public static final String FIELD_REFERENCE_FACTURE = "REFERENCEFACTURE";
 
     public static final String FIELD_EBILL_TRANSACTION_ID = "EBILLTRANSACTIONID";
+    public static final String FIELD_EBILL_PRINTED = "EBILLPRINTED";
     public static final String FIELD_TOTALFACTURE = "TOTALFACTURE";
     public final static String TABLE_ADRESSE_PAYEMENT = "TIADRPP"; // AP
 
@@ -153,7 +154,8 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
             + FAEnteteFacture.FIELD_ID_DOMAINE_REMBOURSEMENT + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
             + FAEnteteFacture.FIELD_ESTRENTIERNA + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
             + FAEnteteFacture.FIELD_ID_CONTROLE + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
-            + FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID;
+            + FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
+            + FAEnteteFacture.FIELD_EBILL_PRINTED;
 
     private ITITiers _tiers = null;
     private String dateReceptionDS = "";
@@ -193,6 +195,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
     private String referenceFacture = "";
     private String remarque = "";
     private String eBillTransactionID = "";
+    private boolean eBillPrinted = false;
 
     private String tierDesignation1 = "";
 
@@ -533,6 +536,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         idCSModeImpression = statement.dbReadNumeric(FAEnteteFacture.FIELD_MODIMP);
         referenceFacture = statement.dbReadString(FAEnteteFacture.FIELD_REFERENCE_FACTURE);
         eBillTransactionID = statement.dbReadString(FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID);
+        eBillPrinted = statement.dbReadBoolean(FAEnteteFacture.FIELD_EBILL_PRINTED);
 
         if (isUseEntityForLSV()) {
             idTiAdressePaiement = statement.dbReadNumeric(FAEnteteFacture.FIELD_AAP_ADRESSE_PAYEMENT);
@@ -696,9 +700,8 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
                 this._dbWriteNumeric(statement.getTransaction(), getIdTypeCourrier(), "idTypeCourrier"));
         statement.writeField(FAEnteteFacture.FIELD_ID_DOMAINE_LVS,
                 this._dbWriteNumeric(statement.getTransaction(), getIdDomaineLSV(), "idDomaineLSV"));
-        statement
-                .writeField(FAEnteteFacture.FIELD_ID_DOMAINE_REMBOURSEMENT, this._dbWriteNumeric(
-                        statement.getTransaction(), getIdDomaineRemboursement(), "idDomaineRemboursement"));
+        statement.writeField(FAEnteteFacture.FIELD_ID_DOMAINE_REMBOURSEMENT,
+                this._dbWriteNumeric(statement.getTransaction(), getIdDomaineRemboursement(), "idDomaineRemboursement"));
         statement.writeField(FAEnteteFacture.FIELD_ESTRENTIERNA, this._dbWriteBoolean(statement.getTransaction(),
                 getEstRentierNa(), BConstants.DB_TYPE_BOOLEAN_CHAR, "estRentierNa"));
         statement.writeField(FAEnteteFacture.FIELD_ID_CONTROLE,
@@ -709,6 +712,8 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
                 this._dbWriteString(statement.getTransaction(), getReferenceFacture(), "referenceFacture"));
         statement.writeField(FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID,
                 this._dbWriteString(statement.getTransaction(), geteBillTransactionID(), "eBillTransactionID"));
+        statement.writeField(FAEnteteFacture.FIELD_EBILL_PRINTED, this._dbWriteBoolean(statement.getTransaction(),
+                iseBillPrinted(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrinted"));
 
     }
 
@@ -1710,6 +1715,14 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
 
     public String geteBillTransactionID() {
         return eBillTransactionID;
+    }
+
+    public void seteBillPrinted(boolean eBillPrinted) {
+        this.eBillPrinted = eBillPrinted;
+    }
+
+    public boolean iseBillPrinted() {
+        return eBillPrinted;
     }
 
     public void addEBillTransactionID(BTransaction transaction) throws Exception {

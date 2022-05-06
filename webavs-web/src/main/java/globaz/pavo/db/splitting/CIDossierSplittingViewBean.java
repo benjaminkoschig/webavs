@@ -2,8 +2,11 @@ package globaz.pavo.db.splitting;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.translation.FWTranslation;
+import globaz.globall.db.BSession;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.pavo.application.CIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
@@ -145,6 +148,23 @@ public class CIDossierSplittingViewBean extends CIDossierSplitting implements FW
      */
     public void setRefUniqueRCI(String refUniqueRCI) {
         this.refUniqueRCI = refUniqueRCI;
+    }
+
+    public boolean hasLienGedActif() throws Exception {
+        CIApplication application = (CIApplication) getSession().getApplication();
+        return application.isSplittingWantLienGed();
+    }
+
+    public boolean hasLienGedAssure() throws Exception {
+        return hasLienGedActif() && !JadeStringUtil.isEmpty(getIdTiersInterneAssure());
+    }
+
+    public boolean hasLienGedConjoint() throws Exception {
+        return hasLienGedActif() && !JadeStringUtil.isEmpty(getIdTiersInterneConjoint());
+    }
+
+    public String getGedServiceName() throws Exception {
+        return ((CIApplication) getSession().getApplication()).getSplittingServiceGed();
     }
 
 }

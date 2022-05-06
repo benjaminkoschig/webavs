@@ -133,7 +133,20 @@ public interface ISFSituationFamiliale {
      * @return le détail du {@link ISFMembreFamille membre de la famille}
      * @throws Exception en cas d'erreur
      */
+
     ISFMembreFamille getMembreFamille(String idMembreFamille, String date) throws Exception;
+    /**
+     * <p>
+     * Renvoie les membres de la famille pour un idTiers donné.<br/>
+     * Inclue les enfants recuillis
+     * </p>
+     *
+     * @param idTiers
+     * @return {@link ISFMembreFamille}[] de taille 0 si aucun membre n'a été trouvé, <code>null</code> en cas de tiers
+     * invalide
+     * @throws Exception
+     */
+    ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers) throws Exception;
 
     /**
      * <p>

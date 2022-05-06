@@ -1,8 +1,10 @@
 package globaz.corvus.topaz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+
 import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -15,10 +17,11 @@ import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.utils.RENumberFormatter;
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -147,31 +150,14 @@ public class REAttestationProlongationEtudeOO {
                     REAttestationProlongationEtudeOO.CDT_BENEFICIAIRE, nomBeneficiaire);
         }
 
-        String pourRechercheCodeSysteme = ra.getCodePrestation();
+        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
 
-        if (JadeStringUtil.isEmpty(ra.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + ra.getFractionRente();
-        }
-
-        // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-
-        userCode.retrieve();
+        String libelle = RENumberFormatter.codeSystemToLibelle(
+                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
+                codeIsoLangue, getSession());
 
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_GENTREPREST,
-                userCode.getLibelle());
+                libelle);
 
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_MONTANTPREST,
                 ra.getMontantPrestation());
@@ -467,6 +453,37 @@ public class REAttestationProlongationEtudeOO {
             ChargementEnTeteEtSalutationLettre();
 
         }
+    }
+
+    /**
+     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
+     *
+     * @param ra    Rente accordé
+     * @return      La chaîne permettant de chercher le code système
+     */
+    private String getRERechercheCodeSystem(RERenteAccJoinTblTiersJoinDemandeRente ra){
+        String pourRechercheCodeSysteme = ra.getCodePrestation();
+
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
+            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
+                pourRechercheCodeSysteme += "." + ra.getFractionRente();
+            } else if (!JadeStringUtil.isEmpty(ra.getQuotiteRente())) {
+                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
+                    if (Float.parseFloat(ra.getQuotiteRente()) >= 0.70) {
+                        pourRechercheCodeSysteme += ".1";
+                    } else {
+                        pourRechercheCodeSysteme += ".0";
+                    }
+                } else {
+                    pourRechercheCodeSysteme += ".1";
+                }
+            } else {
+                pourRechercheCodeSysteme += ".0";
+            }
+        } else {
+            pourRechercheCodeSysteme += ".0";
+        }
+        return pourRechercheCodeSysteme;
     }
 
     public String getDateEcheance() {

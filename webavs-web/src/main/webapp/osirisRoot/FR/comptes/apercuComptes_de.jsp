@@ -10,7 +10,8 @@
 <%@ page import="globaz.jade.client.util.*" %>
 <%
 	globaz.osiris.db.comptes.CACompteAnnexeViewBean viewBean = (globaz.osiris.db.comptes.CACompteAnnexeViewBean) session.getAttribute (globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
-	userActionValue = "osiris.comptes.apercuComptes.modifier";
+    userActionValue = "osiris.comptes.apercuComptes.modifier";
+    viewBean.updateIsNewEbill();
 	selectedIdValue = viewBean.getIdCompteAnnexe();
 	String modeBulletinNeutreParDefaut = CAApplication.getApplicationOsiris().getCAParametres().getModeParDefautBulletinNeutre();
 	String gedFolderType = "";

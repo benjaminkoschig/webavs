@@ -16,6 +16,7 @@ import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.APISynchronisable;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CAOperation;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -28,6 +29,7 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
      */
     private static final long serialVersionUID = 1L;
     public final static String BVR = "210002";
+    public final static String QR = "210003";
     public final static String CODE_ISO_MONNAIE_CHF = "CHF";
     public final static String CODE_PAYS_SUISSE = "CH";
     public static final String FIELD_CODEISOMONBON = "CODEISOMONBON";
@@ -281,11 +283,18 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
             }
 
             // Vérifier la référence BVR
-            if (JadeStringUtil.isBlank(getReferenceBVR()) && getTypeVirement().equals(CAOrdreVersement.BVR)) {
+            if (JadeStringUtil.isBlank(getReferenceBVR()) && (CAOrdreVersement.BVR.equals(getTypeVirement())
+                    || CAOrdreVersement.QR.equals(getTypeVirement()))) {
                 getMemoryLog().logMessage("5144", null, FWMessage.ERREUR, this.getClass().getName());
             }
-            if (!JadeStringUtil.isBlank(getReferenceBVR()) && !getTypeVirement().equals(CAOrdreVersement.BVR)) {
+            if (!JadeStringUtil.isBlank(getReferenceBVR()) && !(CAOrdreVersement.BVR.equals(getTypeVirement())
+                    || CAOrdreVersement.QR.equals(getTypeVirement()))) {
                 getMemoryLog().logMessage("5145", null, FWMessage.ERREUR, this.getClass().getName());
+            }
+
+            // Vérifie le QR IBAN
+            if (CAOrdreVersement.QR.equals(getTypeVirement()) && !CASepaCommonUtils.isQRIBAN(getAdressePaiement())) {
+                getMemoryLog().logMessage("NOT_QR_IBAN", null, FWMessage.ERREUR, this.getClass().getName());
             }
 
             // Vérifier l'adresse de paiement

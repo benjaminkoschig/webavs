@@ -3,16 +3,14 @@ package globaz.apg.util;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.prestation.beans.PRPeriode;
 import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.AddressInformationType;
 import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.ContentType;
 import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantDomicileType;
 import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantType;
 import seodor.ch.ech.xmlns.ech_0058._5.SendingApplicationType;
-import seodor.ws.GetServicePeriodsRequestType;
-import seodor.ws.GetServicePeriodsResponseType;
-import seodor.ws.HeaderType;
-import seodor.ws.ServicePeriodsRequestType;
+import seodor.ws.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -35,7 +33,7 @@ public class APGSeodorServiceMappingUtil {
     public static final String RECIPIENT_ID = "6-600024-1";
     public static final String SEDEX_PREFIX = "sedex://";
     public static final String DECLARATION_LOCAL_REFERENCE = "REF_SEARCH";
-    public static final String ACTION = "1";
+    public static final String ACTION = "5";
     public static final String MESSAGE_TYPE = "2017";
     public static final String MESSAGE_SUBTYPE = "000101";
 
@@ -65,8 +63,7 @@ public class APGSeodorServiceMappingUtil {
         header.setRecipientId(recipientId);
         header.setDeclarationLocalReference(DECLARATION_LOCAL_REFERENCE);
 //        header.setMessageId(JadeUUIDGenerator.createStringUUID());
-        // TODO Recup l'info sur label ou properties
-        header.setMessageId("simple-request");
+        header.setMessageId(JadeUUIDGenerator.createLongUID().toString());
         header.setMessageType(MESSAGE_TYPE);
         header.setSubMessageType(MESSAGE_SUBTYPE);
         header.setMessageDate(convertDateJJMMAAAAtoXMLDateGregorian(JACalendar.todayJJsMMsAAAA()));
@@ -117,19 +114,19 @@ public class APGSeodorServiceMappingUtil {
                 seodorDataBeanTemp.setAddressInformation(Objects.nonNull(content.getAddress()) ? content.getAddress() : new AddressInformationType());
                 seodorDataBeanTemp.setAnnotation(Objects.nonNull(content.getAnnotation()) ? content.getAnnotation() : "");
                 seodorDataBeanTemp.setControlNumber(Objects.nonNull(content.getControlNumber()) ? content.getControlNumber() : 0);
-                seodorDataBeanTemp.setDepartmentId(Objects.nonNull(content.getDepartmentId()) ? content.getDepartmentId() : "" );
-                seodorDataBeanTemp.setEmailAddress(Objects.nonNull(content.getEmailAddress()) ? content.getEmailAddress() : "" );
+                seodorDataBeanTemp.setDepartmentId(Objects.nonNull(content.getDepartmentId()) ? content.getDepartmentId() : "");
+                seodorDataBeanTemp.setEmailAddress(Objects.nonNull(content.getEmailAddress()) ? content.getEmailAddress() : "");
                 seodorDataBeanTemp.setInsurantDomicileType(Objects.nonNull(content.getInsurantDomicile()) ? content.getInsurantDomicile() : new InsurantDomicileType());
                 seodorDataBeanTemp.setInsurantType(Objects.nonNull(content.getInsurant()) ? content.getInsurant() : new InsurantType());
                 seodorDataBeanTemp.setMobilePhone(Objects.nonNull(content.getMobilePhone()) ? content.getMobilePhone() : "");
-                seodorDataBeanTemp.setNumberOfDays(Objects.nonNull(content.getNumberOfDays()) ? content.getNumberOfDays() : 0 );
-                seodorDataBeanTemp.setPersonalNumber(Objects.nonNull(content.getPersonalNumber()) ? content.getPersonalNumber() : "" );
-                seodorDataBeanTemp.setReferenceNumber(Objects.nonNull(content.getReferenceNumber()) ? content.getReferenceNumber() : "" );
+                seodorDataBeanTemp.setNumberOfDays(Objects.nonNull(content.getNumberOfDays()) ? content.getNumberOfDays() : 0);
+                seodorDataBeanTemp.setPersonalNumber(Objects.nonNull(content.getPersonalNumber()) ? content.getPersonalNumber() : "");
+                seodorDataBeanTemp.setReferenceNumber(Objects.nonNull(content.getReferenceNumber()) ? content.getReferenceNumber() : "");
                 seodorDataBeanTemp.setServiceEntryDate(Objects.nonNull(content.getServiceEntryDate()) ? content.getServiceEntryDate() : null);
                 seodorDataBeanTemp.setServiceType(Objects.nonNull(content.getServiceType()) ? content.getServiceType() : 0);
                 seodorDataBeanTemp.setStartOfPeriod(Objects.nonNull(content.getStartOfPeriod()) ? content.getStartOfPeriod() : null);
                 seodorDataBeanTemp.setEndOfPeriod(Objects.nonNull(content.getEndOfPeriod()) ? content.getEndOfPeriod() : null);
-                seodorDataBeanTemp.setUserId(Objects.nonNull(content.getUserId()) ? content.getUserId() : "" );
+                seodorDataBeanTemp.setUserId(Objects.nonNull(content.getUserId()) ? content.getUserId() : "");
                 seodorDataBeans.add(seodorDataBeanTemp);
             }
         }
