@@ -190,6 +190,16 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
             _addError(statement.getTransaction(), getSession().getLabel("ERROR_DATE_OBLIGATOIRE"));
         }
+
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(type)) {
+            _propertyMandatory(statement.getTransaction(), idRecueillant,
+                    getSession().getLabel("VALIDATE_ENFANT_RECUILLI"));
+        }
+
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)) {
+            _propertyMandatory(statement.getTransaction(), idRecueillant,
+                    getSession().getLabel("VALIDATE_ENFANT_RECUILLI_CONJOINT"));
+        }
     }
 
     @Override
