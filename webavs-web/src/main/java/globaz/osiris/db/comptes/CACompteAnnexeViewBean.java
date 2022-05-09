@@ -35,7 +35,6 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
     private Collection<String> idMotifContentieux = null;
     private Collection<String> idSectionMotif = null;
     private CAMotifContentieuxManager mgr = null;
-    private boolean isNewEbill = true;
 
     /**
      * Constructor for CACompteAnnexeViewBean.
@@ -55,14 +54,6 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
         mgr = new CAMotifContentieuxManager();
         mgr.setSession(getSession());
         mgr.changeManagerSize(0);
-    }
-
-    @Override
-    protected void _beforeUpdate(BTransaction transaction) throws Exception {
-        if(isNewEbill){
-            seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
-        }
-        updateIsNewEbill();
     }
 
     /*
@@ -127,15 +118,6 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
                 motif.delete();
             }
         }
-    }
-
-    /**
-     * Check if it the ebill informations are empty or not (ebill account id and date). a variable will memories the state
-     * and used in beforeUpdate to create the date of subscription or not.
-     */
-    public void updateIsNewEbill(){
-        isNewEbill = (JadeStringUtil.isBlankOrZero(geteBillDateInscription())
-                && JadeStringUtil.isBlankOrZero(geteBillAccountID()));
     }
 
     /**

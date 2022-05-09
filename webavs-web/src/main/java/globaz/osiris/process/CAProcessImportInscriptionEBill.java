@@ -794,9 +794,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                                     final CACompteAnnexe compteAnnexe) {
         compteAnnexe.seteBillAccountID(numeroAdherent);
         compteAnnexe.seteBillMail(email);
-        if(JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillDateInscription())){
-            compteAnnexe.seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
-        }
         try {
             compteAnnexe.update();
         } catch (Exception e) {
