@@ -23,6 +23,9 @@ import globaz.pyxis.db.tiers.TITiers;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Process to generate the eBill affiliés, the list is generated from the Compte Annexe.
+ */
 public class CAProcessGenererListeAffiliesEBill extends BProcess {
 
     public CAProcessGenererListeAffiliesEBill() throws Exception {
