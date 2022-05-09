@@ -65,12 +65,13 @@ import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
 import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class REEcheanceRenteOO extends AbstractJadeJob {
 
-    /**
-     * 
-     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(REEcheanceRenteOO.class);
+
     private static final long serialVersionUID = 1L;
     private static final String CDT_AGEAVS = "{AgeAVS}";
     private static final String CDT_ANNEESALAIRE = "{AnneeSalaire}";
@@ -335,7 +336,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Une erreur est intervenue lors du chargement en GED de la lettre d'échéance pour enfant recueilli gratuitement.", e);
         }
 
         pubInfoEnfantRecueilliGratuitement.setPublishDocument(false);
