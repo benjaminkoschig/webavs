@@ -190,11 +190,12 @@ public class SFPeriode extends BEntity implements ISFPeriode {
             _addError(statement.getTransaction(), getSession().getLabel("ERROR_DATE_OBLIGATOIRE"));
         }
         // Une date de fin obligatoire pour enfant recueilli et enfant recueilli gratuitement par conjoint
-        if(type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT)||type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT)){
-            if(JAUtil.isDateEmpty(dateFin)){
+        if(isPeriodeEnfant()&&JAUtil.isDateEmpty(dateFin)){
                 _addError(statement.getTransaction(), getSession().getLabel("ERROR_DATEFIN_OBLIGATOIRE"));
-            }
         }
+    }
+    public boolean isPeriodeEnfant(){
+        return type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT)||type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT);
     }
 
     @Override
