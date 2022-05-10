@@ -1,8 +1,10 @@
 package ch.globaz.corvus.process.echeances.travauxaeffectuer;
 
 import globaz.globall.db.BSession;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.corvus.business.models.echeances.IREEcheances;
 import ch.globaz.corvus.process.echeances.REListeEcheanceDocumentGenerator;
 import ch.globaz.corvus.process.echeances.analyseur.REAnalyseurEcheancesFactory.TypeAnalyseurEcheances;
@@ -11,7 +13,7 @@ import ch.globaz.corvus.process.echeances.analyseur.modules.REReponseModuleAnaly
 public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDocumentGenerator {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private boolean isAjournement;
@@ -23,6 +25,7 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
     private boolean isFemmeArrivantAgeVieillesse;
     private boolean isHommeArrivantAgeVieillesse;
     private boolean isRenteDeVeuf;
+    private boolean isEcheanceEnfantRecueilliGratuitement;
 
     private List<REReponseModuleAnalyseEcheance> reponsesATraiter;
 
@@ -37,7 +40,7 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
                 TypeAnalyseurEcheances.Echeance18ans, TypeAnalyseurEcheances.Echeance25ans,
                 TypeAnalyseurEcheances.EcheanceEtudes, TypeAnalyseurEcheances.FemmeArrivantAgeAvs,
                 TypeAnalyseurEcheances.HommeArrivantAgeAvs, TypeAnalyseurEcheances.RenteDeVeuf,
-                TypeAnalyseurEcheances.CertificatDeVie);
+                TypeAnalyseurEcheances.CertificatDeVie, TypeAnalyseurEcheances.EcheanceEnfantRecueilliGratuitement);
     }
 
     public final void setAjournement(boolean isAjournement) {
@@ -76,9 +79,13 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
         this.isRenteDeVeuf = isRenteDeVeuf;
     }
 
+    public final void setEcheanceEnfantRecueilliGratuitement(boolean echeanceEnfantRecueilliGratuitement) {
+        isEcheanceEnfantRecueilliGratuitement = echeanceEnfantRecueilliGratuitement;
+    }
+
     @Override
     protected List<REReponseModuleAnalyseEcheance> validerAjouterTiers(IREEcheances echeance,
-            List<REReponseModuleAnalyseEcheance> reponses) {
+                                                                       List<REReponseModuleAnalyseEcheance> reponses) {
         reponsesATraiter = new ArrayList<REReponseModuleAnalyseEcheance>();
 
         // on ne prend que les motifs qui nous intéresse pour cette liste
@@ -144,6 +151,11 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
                     }
                     break;
 
+                case EcheanceEnfantRecueilliGratuitement:
+                    if (isEcheanceEnfantRecueilliGratuitement) {
+                        reponsesATraiter.add(uneReponse);
+                    }
+                    break;
                 default:
                     break;
             }

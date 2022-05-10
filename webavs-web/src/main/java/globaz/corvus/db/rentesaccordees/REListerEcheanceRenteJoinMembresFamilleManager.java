@@ -229,6 +229,8 @@ public class REListerEcheanceRenteJoinMembresFamilleManager extends BManager {
                 .append(SFPeriode.FIELD_TYPE);
         // BZ 5195, ajout du code système pour le certificat de vie
         sql.append(IN).append("(").append(ISFPeriode.CS_TYPE_PERIODE_ETUDE).append(", ")
+                .append(ISFPeriode.CS_TYPE_PERIODE_ENFANT).append(", ")
+                .append(ISFPeriode.CS_TYPE_PERIODE_ENFANT_CONJOINT).append(", ")
                 .append(ISFPeriode.CS_TYPE_PERIODE_CERTIFICAT_DE_VIE).append("))");
 
         sql.append(LEFT_JOIN).append(_getCollection()).append(SFConjoint.TABLE_NAME);

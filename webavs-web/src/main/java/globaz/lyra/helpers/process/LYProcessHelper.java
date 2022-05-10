@@ -89,6 +89,13 @@ public class LYProcessHelper extends FWHelper {
                 processTravauxAEffectuerNew.setIsRenteDeVeufGED(Boolean.parseBoolean(analyserEcheancesViewBean
                         .getIsRenteDeVeufGED()));
 
+                processTravauxAEffectuerNew.setIsEcheanceEnfantRecueilliGratuitement(Boolean.parseBoolean(analyserEcheancesViewBean
+                        .getIsEcheanceEnfantRecueilliGratuitement()));
+                processTravauxAEffectuerNew.setIsEcheanceEnfantRecueilliGratuitementDOC(Boolean.parseBoolean(analyserEcheancesViewBean
+                        .getIsEcheanceEnfantRecueilliGratuitementDOC()));
+                processTravauxAEffectuerNew.setIsEcheanceEnfantRecueilliGratuitementGED(Boolean.parseBoolean(analyserEcheancesViewBean
+                        .getIsEcheanceEnfantRecueilliGratuitementGED()));
+
             } else if (ajaxViewBean.getProcessPath().endsWith(REDiminutionRentePourEnfantProcess.class.getName())) {
 
                 REDiminutionRenteEnfantAjaxViewBean diminutionRenteViewBean = (REDiminutionRenteEnfantAjaxViewBean) ajaxViewBean;

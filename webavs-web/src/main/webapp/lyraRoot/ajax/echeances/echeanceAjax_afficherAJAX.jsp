@@ -90,8 +90,10 @@
 						<jsp:param value="<%=viewBean.isSendToGedFemmeVieillesse()%>" name="FemmeVieillesseGED" />
 						<jsp:param value="<%=viewBean.isSendToGedHommeVieillesse()%>" name="HommeVieillesseGED" />
 						<jsp:param value="<%=viewBean.isSendToGedRenteVeuf()%>" name="RenteVeufGED" />
+						<jsp:param value="<%=viewBean.isSendToGedEnfantRecueilliGratuitement()%>" name="EnfantRecueilliGratuitementGED" />
 						<jsp:param value="<%=viewBean.isValidationDecisionAutorise()%>" name="ValidationDecisionAutorise" />
-						<jsp:param value="<%=viewBean.getMoisCourant()%>" name="MoisDernierPaiment" />					
+						<jsp:param value="<%=viewBean.getMoisCourant()%>" name="MoisDernierPaiment" />
+						<jsp:param value="<%=viewBean.isSendToGedEnfantRecueilliGratuitement()%>" name="EnfantRecueilliGratuitement" />
 					</jsp:include>
 				</div>			
 <%	} %>

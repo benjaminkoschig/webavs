@@ -33,6 +33,7 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
     private boolean isSendToGedFemmeVieillesse;
     private boolean isSendToGedHommeVieillesse;
     private boolean isSendToGedRenteVeuf;
+    private boolean isSendToGedEnfantRecueilliGratuitement;
     private transient LYSimpleEcheanceSearchModel searchModel;
     private boolean isValidationDecisionAutorise;
 
@@ -48,6 +49,7 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         isSendToGedFemmeVieillesse = false;
         isSendToGedHommeVieillesse = false;
         isSendToGedRenteVeuf = false;
+        isSendToGedEnfantRecueilliGratuitement = false;
         isValidationDecisionAutorise = true;
     }
 
@@ -80,6 +82,10 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         if (PRGedUtils.isDocumentInGed(IRENoDocumentInfoRom.ECHEANCE_RENTE_DE_VEUF,
                 BSessionUtil.getSessionFromThreadContext())) {
             setSendToGedRenteVeuf(true);
+        }
+        if (PRGedUtils.isDocumentInGed(IRENoDocumentInfoRom.ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT,
+                BSessionUtil.getSessionFromThreadContext())) {
+            setSendToGedEnfantRecueilliGratuitement(true);
         }
     }
 
@@ -197,6 +203,10 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         return isSendToGedRenteVeuf;
     }
 
+    public boolean isSendToGedEnfantRecueilliGratuitement() {
+        return isSendToGedEnfantRecueilliGratuitement;
+    }
+
     public boolean isValidationDecisionAutorise() {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         isValidationDecisionAutorise = REPmtMensuel.isValidationDecisionAuthorise(session);
@@ -251,7 +261,12 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         this.isSendToGedRenteVeuf = isSendToGedRenteVeuf;
     }
 
+    public void setSendToGedEnfantRecueilliGratuitement(boolean isSendToGedEnfantRecueilliGratuitement) {
+        this.isSendToGedEnfantRecueilliGratuitement = isSendToGedEnfantRecueilliGratuitement;
+    }
+
     public void setValidationDecisionAuthorise(boolean isValidDecAut) {
         isValidationDecisionAutorise = isValidDecAut;
     }
+
 }
