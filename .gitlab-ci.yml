@@ -4,8 +4,6 @@ include:
     file: '/mvn-gitlab-ci.yml'
 
 build-maven:
-  variables:
-    MAVEN_CLI_OPTS: ""
   before_script:
     - echo $JAVA_OPTS
     - export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=Cp1252 -Dsun.jnu.encoding=ISO-8859-1 -Duser.timezone=Europe/Zurich -Duser.country=CH"
