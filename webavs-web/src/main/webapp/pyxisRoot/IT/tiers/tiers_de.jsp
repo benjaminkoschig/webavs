@@ -75,9 +75,9 @@ FenAvs=window.open('pyxis?userAction=pyxis.tiers.historiqueTiers.lister&forIdTie
 function HistoriqueNationalite() {
 FenAvs=window.open('pyxis?userAction=pyxis.tiers.historiqueTiers.lister&forIdTiers=<%=viewBean.getIdTiers()%>&forChamp=6','MaFenetre','toolbar=no,location=no,personalbar=no,status=no,menubar=no,titlebar=no,resizable=yes,scrollbars=yes,alwaisRaised=yes,dependent=yes,Width=700,Height=100,Top=250,Left=200');
 }
-
-
-
+function HistoriqueSexe() {
+	FenAvs=window.open('pyxis?userAction=pyxis.tiers.historiqueTiers.lister&forIdTiers=<%=viewBean.getIdTiers()%>&forChamp=8','MaFenetre','toolbar=no,location=no,personalbar=no,status=no,menubar=no,titlebar=no,resizable=yes,scrollbars=yes,alwaisRaised=yes,dependent=yes,Width=700,Height=100,Top=250,Left=200');
+}
 function HistoriqueNumAvs() {
 FenAvs=window.open('pyxis?userAction=pyxis.tiers.historiqueAvs.lister&forIdTiers=<%=viewBean.getIdTiers()%>','MaFenetre','toolbar=no,location=no,personalbar=no,status=no,menubar=no,titlebar=no,resizable=yes,scrollbars=yes,alwaisRaised=yes,dependent=yes,Width=700,Height=100,Top=250,Left=200');
 }
@@ -215,10 +215,15 @@ function upd() {
 
 function checkModification() {
 
+	var sexeRaidoBtns = document.getElementsByName("sexe");
+	for(i=0;i<sexeRaidoBtns.length; i++){
+		if(sexeRaidoBtns[i].checked){
+			var sexeValue = sexeRaidoBtns[i].value;
+		}
+	}
+
     var result = true;
-	
-	
-	
+
 	    // avs
     var cspAvs = new CodeSystemPopup();
     cspAvs.setMotifElement("motifModifAvs");
@@ -250,6 +255,18 @@ function checkModification() {
       		result = showModalDialog('<%=request.getContextPath()%><%=(mainServletPath+"Root")%>/<%=languePage%>/motifmodal.jsp',cspTitre ,'dialogHeight:13;dialogWidth:20;status:no;resizable:no');
 	}	
     }
+
+	// sexe
+	if (result) {
+		var cspSexe = new CodeSystemPopup();
+		cspSexe.setMotifElement("motifModifSexe");
+		cspSexe.setDateElement("dateModifSexe");
+		cspSexe.setLibelle("Scegliete il motivo della modifica del sesso e la data di entrata in vigore");
+		var oldSexe = document.getElementsByName("oldSexe");
+		if (sexeValue != oldSexe[0].value) {
+			result = showModalDialog('<%=request.getContextPath()%><%=(mainServletPath+"Root")%>/<%=languePage%>/motifmodal.jsp',cspSexe ,'dialogHeight:13;dialogWidth:20;status:no;resizable:no');
+		}
+	}
 
     // Designation1
     if (result) {
