@@ -229,8 +229,14 @@ public enum REMotifEcheance {
 
     /**
      * Tous les bénéficiaires ayant un enfant recueilli gratuitement ou un enfant recueilli gratuitement par le conjoint, et dont
-     * la date de début de prestation est égal au mois en cours
-     * ou qu'il y a 12 mois entre la date du jour et la date de début de la dernière prestation.
+     * la date de fin de prestation est inférieur au mois en cours
+     * @see ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEchanceEnfantRecueilliGratuitement
+     */
+    EcheanceEnfantRecueilliGratuitementDepassee("MOTIF_ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT_DEPASSEE"),
+
+    /**
+     * Tous les bénéficiaires ayant un enfant recueilli gratuitement ou un enfant recueilli gratuitement par le conjoint, et dont
+     * la date de fin de prestation est égal au mois en cours
      * @see ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEchanceEnfantRecueilliGratuitement
      */
     EcheanceEnfantRecueilliGratuitement("MOTIF_ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT");
