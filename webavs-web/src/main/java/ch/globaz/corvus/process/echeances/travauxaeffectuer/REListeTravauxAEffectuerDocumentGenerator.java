@@ -150,7 +150,6 @@ public class REListeTravauxAEffectuerDocumentGenerator extends REListeEcheanceDo
                         reponsesATraiter.add(uneReponse);
                     }
                     break;
-
                 case EcheanceEnfantRecueilliGratuitement:
                     if (isEcheanceEnfantRecueilliGratuitement) {
                         reponsesATraiter.add(uneReponse);

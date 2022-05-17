@@ -24,12 +24,16 @@ public class REModuleEchanceEnfantRecueilliGratuitement extends REModuleAnalyseE
             if (ISFPeriode.CS_TYPE_PERIODE_ENFANT.equals(unePeriode.getCsTypePeriode())
                     || ISFPeriode.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(unePeriode.getCsTypePeriode())) {
 
-                // si la date de fin de période est < à la date de du mois de traitement, on remonte l'échéance
-                if (JadeDateUtil.isDateMonthYearBefore(JadeDateUtil.convertDateMonthYear(unePeriode.getDateFin()), getMoisTraitement())) {
-
-                    IRERenteEcheances rentePrincipale = REModuleAnalyseEcheanceUtils
+                IRERenteEcheances rentePrincipale = REModuleAnalyseEcheanceUtils
                             .getRentePrincipale(echeancesPourUnTiers);
 
+                // si la date de fin de période est < à la date du mois de traitement, l'échéance est dépassée et on remonte le motif
+                if (JadeDateUtil.isDateMonthYearBefore(JadeDateUtil.convertDateMonthYear(unePeriode.getDateFin()), getMoisTraitement())) {
+                    return REReponseModuleAnalyseEcheance.Vrai(rentePrincipale, REMotifEcheance.EcheanceEnfantRecueilliGratuitementDepassee,
+                            echeancesPourUnTiers.getIdTiers());
+
+                // si la date de fin de période est = à la date du mois de traitement, l'échéance est à effectuer et on remonte le motif
+                }  else if (JadeDateUtil.convertDateMonthYear(unePeriode.getDateFin()).equals(getMoisTraitement())) {
                     return REReponseModuleAnalyseEcheance.Vrai(rentePrincipale, REMotifEcheance.EcheanceEnfantRecueilliGratuitement,
                             echeancesPourUnTiers.getIdTiers());
                 }
