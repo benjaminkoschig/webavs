@@ -20,6 +20,7 @@ import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.al.impotsource.domain.TypeImposition;
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.al.properties.ALProperties;
+import ch.globaz.common.util.Dates;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.service.ParamServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
@@ -98,43 +99,32 @@ public class CalculImpotSource {
     }
 
     public static DeclarationVersementDetailleComplexModel recherchePrestationAExtourner(DossierModel dossierModel, CalculBusinessModel droitCalcule, String dateFinMoisPourPeriode) {
+        DeclarationVersementDetailleComplexModel prestFound = null;
         try {
             DeclarationVersementDetailleSearchComplexModel search = GenPrestationAbstract.searchExistingPrestNssEnfant(dossierModel.getId(), dossierModel.getDateDebutPeriode(), dateFinMoisPourPeriode, droitCalcule.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
 
             ArrayList<String> processed = new ArrayList<>();
-            String lastDate = null;
-            String lastPeriod = null;
 
             // si des prestations existent, génération d'une prestation inverse
             for (JadeAbstractModel abstractModel : search.getSearchResults()) {
                 DeclarationVersementDetailleComplexModel oldPrest = (DeclarationVersementDetailleComplexModel) abstractModel;
-
-                if (JadeStringUtil.isBlank(lastPeriod)) {
-                    lastPeriod = oldPrest.getPeriode();
-                }
-
-                if (JadeStringUtil.isBlank(lastDate)) {
-                    lastDate = oldPrest.getDateVersement();
-                }
-
-                if (!oldPrest.getPeriode().equals(lastPeriod) || !oldPrest.getDateVersement().equals(lastDate)) {
-                    lastDate = oldPrest.getDateVersement();
-                    processed.add(lastPeriod);
-                    lastPeriod = oldPrest.getPeriode();
-                }
-
-                if (!processed.contains(lastPeriod)
-                        && ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
-                        && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())) {
-                    return oldPrest;
+                if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                        && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS())
+                        && !JadeStringUtil.isEmpty(oldPrest.getDateVersement())
+                        && dateFinMoisPourPeriode.equals(oldPrest.getPeriode())
+                        && isLastPrestation(prestFound, oldPrest)) {
+                    prestFound = oldPrest;
                 }
             }
 
         } catch (JadeApplicationException | JadePersistenceException e) {
             JadeLogger.error(e, "Une erreur s'est produite pendant la recherche de prestations extournables." + e.getMessage());
         }
+        return prestFound;
+    }
 
-        return null;
+    private static boolean isLastPrestation(DeclarationVersementDetailleComplexModel prestFound, DeclarationVersementDetailleComplexModel oldPrest) {
+        return prestFound == null || Dates.toDate(oldPrest.dateVersement).isAfter(Dates.toDate(prestFound.dateVersement));
     }
 
     /**
