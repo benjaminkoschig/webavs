@@ -2158,11 +2158,10 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             JadeThread.logInfo("INFO", "Adresse domicile déjà à jour !");
                             AMProcessRepriseDecisionsTaxationsEntityHandler._adresseUpToDate++;
                         } else {
-                            JadeThread.logInfo("INFO", "Adresse domicile trouvé. Création domicile sans CP ou P/A !");
-                            traitementAdresseCreation(AMGestionTiers.CS_TYPE_DOMICILE, tiersPrincipal, adrRue, "", "",
-                                    xmlNpa, currentAdresseStandardDomicile);
-                            JadeThread.logInfo("INFO", "Adresse domicile mise à jour;");
-                            AMProcessRepriseDecisionsTaxationsEntityHandler._courrierNonDomicileOui++;
+                            // POAVS-4279 - S220506_005 Import fisc AMAL - Retirer MAJ adresse tiers
+                            // Plus de mise à jour d'adresse de domicile -> migration IGS
+                            JadeThread.logInfo("INFO", "Adresse domicile déjà renseignée.");
+                            AMProcessRepriseDecisionsTaxationsEntityHandler._adresseUpToDate++;
                         }
                     }
                 }
