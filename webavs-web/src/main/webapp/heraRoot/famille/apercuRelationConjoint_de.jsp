@@ -465,6 +465,7 @@
 							<ct:excludeCode code="<%=ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE%>"/>
 							<ct:excludeCode code="<%=ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN%>"/>
 							<ct:excludeCode code="<%=ISFSituationFamiliale.CS_REL_CONJ_MARIE%>"/>
+							<ct:excludeCode code="<%=ISFSituationFamiliale.CS_REL_CONJ_LPART%>"/>
 						</ct:optionsCodesSystems>
 					</ct:select>
 				</td>

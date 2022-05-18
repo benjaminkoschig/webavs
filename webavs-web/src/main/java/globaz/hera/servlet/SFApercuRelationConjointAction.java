@@ -941,7 +941,8 @@ public class SFApercuRelationConjointAction extends SFDefaultAction {
 
         // Si on a une relation de type divorce et si les conjoints ont des
         // enfants...il faut rajouter 2 périodes BTE aux parents
-        if (typeRelation.equals(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE)) {
+        if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(typeRelation)
+                || ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(typeRelation)) {
             SFApercuEnfantManager enfantManager = new SFApercuEnfantManager();
             enfantManager.setSession(bSession);
             enfantManager.setForIdConjoint(relationConjoint.getIdConjoints());

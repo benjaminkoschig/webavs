@@ -26,6 +26,7 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.db.famille.SFEnfant;
 import globaz.hera.db.famille.SFEnfantManager;
 import globaz.hera.db.famille.SFMembreFamille;
@@ -34,6 +35,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
+
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.lowagie.text.DocumentException;
 
 /**
@@ -51,7 +54,7 @@ import com.lowagie.text.DocumentException;
 public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -305,7 +308,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
     }
 
     protected void addRowErrorSumRetenues(final RERenteActiveJoinMembresFamille renteActJointMbFam,
-            final String montantPrestationAccordee, final String sommeRetenues) throws Exception {
+                                          final String montantPrestationAccordee, final String sommeRetenues) throws Exception {
         // Récupération du message, et surcharge des montants dans le texte
         String messageErreur = PRStringUtils.replaceString(getSession().getLabel("LISTE_ERR_ERREUR_SOMME_RETENUES"),
                 "{sommeRetenues}", sommeRetenues);
@@ -357,7 +360,8 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         // " Reprendre une décision pour cet assuré dont le degré d'invalidité et le genre de prestation ne correspondent pas"
 
         // 1a. si c'est une RO AI 50.1
-        test_1: if (infoBC.raCodePrest.equals("50") && infoBC.raFractionRente.equals("1")) {
+        test_1:
+        if (infoBC.raCodePrest.equals("50") && infoBC.raFractionRente.equals("1")) {
 
             // 1b. degré d'invalidité plus petit que 70%
             if (Integer.parseInt(infoBC.raDegreInv) < 70) {
@@ -446,7 +450,8 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         // " Reprendre une décision pour cette assurée dont le degré d'invalidité et le genre de prestation ne correspondent pas"
 
         // 2a. si c'est une RO AI 50.1
-        test_2: if (infoBC.raCodePrest.equals("50") && infoBC.raFractionRente.equals("1")) {
+        test_2:
+        if (infoBC.raCodePrest.equals("50") && infoBC.raFractionRente.equals("1")) {
 
             // 2b. degré d'invalidité plus petit que 70%
             if (Integer.parseInt(infoBC.raDegreInv) < 70) {
@@ -487,7 +492,8 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         // " Suppression de la rente de veuf pour cet assuré, car il n'est plus au bénéfice de rentes pour enfants"
 
         // 3a. si c'est une RO AVS 13.0
-        test_3: if (infoBC.raCodePrest.equals("13") && infoBC.raFractionRente.equals("0")) {
+        test_3:
+        if (infoBC.raCodePrest.equals("13") && infoBC.raFractionRente.equals("0")) {
             boolean isConjointDecede = false;
             int nbEnfantMoins18ansDontPrestationVersee = 0;
             boolean isHomme = false;
@@ -586,7 +592,8 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         // " Suppression de la rente complémentaire car cet ex-conjoint a été remarié"
 
         // 4a. si c'est une prestation 33.0 ou 53x ou 73.x
-        test_4: if ((infoBC.raCodePrest.equals("33") && infoBC.raFractionRente.equals("0"))
+        test_4:
+        if ((infoBC.raCodePrest.equals("33") && infoBC.raFractionRente.equals("0"))
                 || infoBC.raCodePrest.equals("53") || infoBC.raCodePrest.equals("73")) {
             // on retrouve le requérant avec idTiersBaseCalcul
             String idTiersRequerant = infoBC.raIdTiersBaseCalcul;
@@ -605,9 +612,10 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
             if (!JadeStringUtil.isBlankOrZero(idTiersRequerant) && idTiersRequerant.equals(conjointActuel.getIdTiers())) {
 
                 // On contrôle s'ils sont séparé/divorcé
-                if (globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relationActuelle.csTypeRelation)
-                        || globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT
-                                .equals(relationActuelle.csTypeRelation)) {
+                if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relationActuelle.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(relationActuelle.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relationActuelle.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(relationActuelle.csTypeRelation)) {
 
                     // On récupère tous les enfants du bénéficiaire de la RA et de son conjoint actuel, le requérant
                     // en l'occurence.
@@ -666,8 +674,10 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
                 RelationContainer lastRelation = getLastRelation(infoBC);
 
                 if ((lastRelation != null)
-                        && (globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(lastRelation.csTypeRelation) || globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT
-                                .equals(lastRelation.csTypeRelation))) {
+                        && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(lastRelation.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(lastRelation.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(lastRelation.csTypeRelation)
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(lastRelation.csTypeRelation))) {
 
                     // On recherche la rente en cours du conjoint...
                     SFMembreFamilleListeRecapCorvus mfConjoint = new SFMembreFamilleListeRecapCorvus();
@@ -731,9 +741,10 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
     /*
      * Titre de l'email
      */
+
     /**
      * getter pour l'attribut EMail object
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
      */
     @Override
@@ -750,7 +761,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         String idsRent = "";
 
         Set<String> keys = ibc.mapRelationsInfoContainer.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
 
             RelationInfoContainer ric = ibc.mapRelationsInfoContainer.get(key);
@@ -796,7 +807,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
             RelationContainer theMostRecentRelationStd = null;
             RelationContainer theMostRecentRelationRent = null;
-            for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+            for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
                 String key = iterator.next();
                 RelationInfoContainer ric = ibc.mapRelationsInfoContainer.get(key);
 
@@ -804,12 +815,12 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
                         || globaz.hera.api.ISFSituationFamiliale.CS_DOMAINE_STANDARD.equals(ric.csDomaine)) {
 
                     List<RelationContainer> relations = ric.relations;
-                    for (Iterator<RelationContainer> iterator2 = relations.iterator(); iterator2.hasNext();) {
+                    for (Iterator<RelationContainer> iterator2 = relations.iterator(); iterator2.hasNext(); ) {
                         RelationContainer rc = iterator2.next();
 
                         if (globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(rc.csTypeRelation)
                                 || globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE
-                                        .equals(rc.csTypeRelation)) {
+                                .equals(rc.csTypeRelation)) {
                             continue;
                         }
 
@@ -847,7 +858,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
     /**
      * Méthode qui retourne le libellé court du sexe par rapport au csSexe qui est passé en paramètre
-     * 
+     *
      * @return le libellé court du sexe (H ou F)
      */
     public String getLibelleCourtSexe(final String csSexe) {
@@ -863,7 +874,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
     /**
      * Méthode qui retourne le libellé de la nationalité par rapport au csNationalité qui est passé en paramètre
-     * 
+     *
      * @return le libellé du pays (retourne une chaîne vide si pays inconnu)
      */
     public String getLibellePays(final String csNationalite) {
@@ -877,7 +888,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
     /**
      * Return true si la rente accordee contient un code cas speciaux 38
-     * 
+     *
      * @param pRa
      * @return
      */
@@ -909,8 +920,10 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
     /*
      * Initialisation des colonnes et des groupes
      */
+
     /**
-	 */
+     *
+     */
     @Override
     protected void initializeTable() {
         // colonnes
@@ -944,7 +957,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
     /**
      * Set la jobQueue
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override

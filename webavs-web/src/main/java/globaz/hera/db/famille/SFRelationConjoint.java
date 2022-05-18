@@ -1,6 +1,6 @@
 /*
  * Créé le 8 sept. 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -14,19 +14,20 @@ import globaz.globall.util.JACalendarGregorianStandard;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.hera.api.ISFSituationFamiliale;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author jpa
- * 
- *         <p>
- *         Pour changer le modèle de ce commentaire de type généré, allez à :
- *         Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
- *         </p>
+ *
+ * <p>
+ * Pour changer le modèle de ce commentaire de type généré, allez à :
+ * Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
+ * </p>
  */
 public class SFRelationConjoint extends BEntity {
 
@@ -34,7 +35,7 @@ public class SFRelationConjoint extends BEntity {
     // -------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -42,22 +43,34 @@ public class SFRelationConjoint extends BEntity {
 
     public static final int ALT_KEY_ID_CONJOINTS = 2;
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String FIELD_DATEDEBUT = "WKDDEB";
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String FIELD_DATEFIN = "WKDFIN";
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String FIELD_IDCONJOINTS = "WKICON";
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String FIELD_IDRELATIONCONJOINT = "WKIREC";
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String FIELD_TYPERELATION = "WKTTYP";
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public static final String TABLE_NAME = "SFRELCON";
 
     // ~ Instance fields
@@ -117,12 +130,9 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * DOCUMENT ME!
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param transaction DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
@@ -142,25 +152,27 @@ public class SFRelationConjoint extends BEntity {
         if (relList.size() == 1) {
             SFRelationConjoint relation = (SFRelationConjoint) relList.get(0);
             // Si la relation est de type indéfinie et que la nouvelle est de
-            // type enfant commun ou mariage, on supprime la relation de type
+            // type enfant commun ou mariage ou LPart, on supprime la relation de type
             // inconnue
             if (ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE.equals(relation.getTypeRelation())
-                    && (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_MARIE
-                            .equals(getTypeRelation()))) {
+                    && (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(getTypeRelation())
+                    || ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation())
+                    || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(getTypeRelation()))) {
                 relation.wantCallMethodBefore(false);
                 relation.wantCallMethodAfter(false);
                 relation.delete(transaction);
                 deleted = true;
             } else
-            // Si la relation est de type enfant commun et que la nouvelle est
-            // de type mariage, on supprime la relation de type inconnue
-            if (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(relation.getTypeRelation())
-                    && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation()))) {
-                relation.wantCallMethodBefore(false);
-                relation.wantCallMethodAfter(false);
-                relation.delete(transaction);
-                deleted = true;
-            }
+                // Si la relation est de type enfant commun et que la nouvelle est
+                // de type mariage ou LPart, on supprime la relation de type inconnue
+                if (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(relation.getTypeRelation())
+                        && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(getTypeRelation()))) {
+                    relation.wantCallMethodBefore(false);
+                    relation.wantCallMethodAfter(false);
+                    relation.delete(transaction);
+                    deleted = true;
+                }
         }
 
         if (relList.size() > 0 && !deleted) {
@@ -202,7 +214,7 @@ public class SFRelationConjoint extends BEntity {
                 // courant
                 if (BSessionUtil.compareDateFirstLower(getSession(), getDateDebut(), relation.getDateDebut())
                         && (JAUtil.isDateEmpty(getDateFin()) || BSessionUtil.compareDateFirstLower(getSession(),
-                                getDateFin(), relation.getDateDebut()))) {
+                        getDateFin(), relation.getDateDebut()))) {
                     JACalendarGregorianStandard calendar = new JACalendarGregorianStandard();
                     // jaDateDebut.
                     JADate jaDateFin = calendar.addDays(new JADate(relation.getDateDebut()), -1);
@@ -219,7 +231,7 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -229,12 +241,9 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param statement DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
@@ -247,12 +256,9 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param statement DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     /*
      * Il faut s'assurer de garder cette cohérence d'une part dans relation de 2 conjoints, d'autre part entre un
@@ -291,62 +297,6 @@ public class SFRelationConjoint extends BEntity {
             }
         }
 
-        // if (hasErrors()) {
-        // return;
-        // }
-        //
-        // ON NE VERIFIE PLUS LA COHERENCE DES RELATION ENTRE LES CONJOINTS, CAR
-        // LA CREATION DES RELATIONS PEUT SE FAIRE DANS UN ORDRE CAOTIQUE
-        //
-        //
-        // /* Vérifie la cohérence de l'ordre des relations entre deux
-        // conjoints:
-        // * mariage,séparation (fait/droit),divorce, mariage ...
-        // */
-        // SFRelationConjointManager relMgr = new SFRelationConjointManager();
-        // relMgr.setSession(getSession());
-        // relMgr.setForIdDesConjoints(getIdConjoints());
-        // relMgr.setOrderByDateDebutDsc(false);
-        // relMgr.find(statement.getTransaction());
-        // List relList = new ArrayList(relMgr.getContainer());
-        //
-        // // - la première relation doit être un mariage ou enfant commun ou
-        // relation indéfinie
-        // if ((relList.size() == 0 || relList.size() == 1 && !isNew())) { //La
-        // méthode isNew() permet de savoir si on fait un add ou un upd
-        // if
-        // (!ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation())
-        // &&
-        // !ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(getTypeRelation())
-        // &&
-        // !ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE.equals(getTypeRelation()))
-        // {
-        // _addError(statement.getTransaction(),
-        // getSession().getLabel("VALIDATE_PREMIERE_RELATION"));
-        // }
-        // } else { // Il y a déjà une ou plusieurs relations,
-        // // Recherche la relation précédante et la suivante
-        // Iterator it = relList.iterator();
-        // SFRelationConjoint relPrec = null;
-        // SFRelationConjoint relSuiv = null;
-        // while (it.hasNext()) {
-        // SFRelationConjoint relation = (SFRelationConjoint) it.next();
-        // if (!isNew() && relation.getId().equals(getId())) {
-        // // Si on vient d'un update et que la la relation retournée est celle
-        // qui est mise-à-jour
-        // continue;
-        // }
-        // if (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
-        // relation.getDateDebut(), getDateDebut())) {
-        // // la relation suivante est trouvée
-        // relSuiv = relation;
-        // break;
-        // } else {
-        // relPrec = relation;
-        // }
-        // }
-        // _validateRelationAvantApres(statement, relPrec, relSuiv);
-        // }
 
         SFConjoint conjoint = new SFConjoint();
         conjoint.setSession(getSession());
@@ -390,7 +340,7 @@ public class SFRelationConjoint extends BEntity {
         // ax périodes de la relation à valider
         // a1 = getDateDebut() debut de période
         // a2 = getDateFin()) fin de période
-        for (Iterator it = relMgr.iterator(); it.hasNext();) {
+        for (Iterator it = relMgr.iterator(); it.hasNext(); ) {
             SFApercuRelationConjoint r2 = (SFApercuRelationConjoint) it.next(); // r2
             // relation
             // dont
@@ -407,13 +357,17 @@ public class SFRelationConjoint extends BEntity {
                 // b1)
                 if (JAUtil.isDateEmpty(getDateFin())// si la date de fin n'est
                         // pas renseignée
-                        // si la relation suivante n'est pas un divorce
-                        && !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
-                        // si la premiere relation est un mariage ou une
+                        // si la relation suivante n'est pas un divorce ou un lpart dissous
+                        && (!ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
+                        || !ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(r2.getTypeRelation()))
+                        // si la premiere relation est un mariage, un lpart ou une
                         // séparation
                         && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation())
-                                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT
-                                    .equals(getTypeRelation()))) {
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(getTypeRelation()))) {
                     return _addErrorChevauchement(statement.getTransaction(), r2);
                 } else if (!JAUtil.isDateEmpty(getDateDebut())
                         && BSessionUtil.compareDateFirstGreater(getSession(), getDateFin(), r2.getDateDebut()) // (a1
@@ -436,13 +390,17 @@ public class SFRelationConjoint extends BEntity {
                         // la
                         // précédante
                         // (chevauchement)
-                        // si la relation suivante n'est pas un divorce
-                        && !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
-                        // si la premiere relation est un mariage ou une
+                        // si la relation suivante n'est pas un divorce ou un lpart dissous
+                        && (!ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
+                        || !ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(r2.getTypeRelation()))
+                        // si la premiere relation est un mariage, un lpart ou une
                         // séparation
                         && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(getTypeRelation())
-                                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT
-                                    .equals(getTypeRelation()))) {
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(getTypeRelation()))) {
                     return _addErrorChevauchement(statement.getTransaction(), r2);
                 }
             } else if (BSessionUtil.compareDateFirstGreater(getSession(), getDateDebut(), r2.getDateDebut())) { // if
@@ -461,26 +419,32 @@ public class SFRelationConjoint extends BEntity {
                 if (JAUtil.isDateEmpty(r2.getDateFin()) // if (b2 == 0): si la
                         // date de fin n'est pas
                         // renseignée
-                        // si la relation suivante n'est pas un divorce
-                        && !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
-                        // si la premiere relation est un mariage ou une
-                        // séparation
+                        // si la relation suivante n'est pas un divorce ou un lpart dissous
+                        && (!ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(r2.getTypeRelation())
+                        || !ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(r2.getTypeRelation()))
+                        // si la premiere relation est un mariage, un lpart ou une séparation
                         && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(r2.getTypeRelation())
-                                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(r2.getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT
-                                    .equals(r2.getTypeRelation()))) {
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(r2.getTypeRelation()))) {
                     return _addErrorChevauchement(statement.getTransaction(), r2);
                 } else if (!JAUtil.isDateEmpty(r2.getDateFin())
                         && BSessionUtil.compareDateFirstGreater(getSession(), r2.getDateFin(), getDateDebut())
                         // if (b2 != 0 && b2 > a1): si la date de début de la
                         // relation suivante est avant la fin de la précédante
                         // (chevauchement)
-                        // si la relation suivante n'est pas un divorce
-                        && !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(getTypeRelation())
-                        // si la premiere relation est un mariage ou une
-                        // séparation
+                        // si la relation suivante n'est pas un divorce ou un lpart dissous
+                        && (!ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(getTypeRelation())
+                        || !ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(getTypeRelation()))
+                        // si la premiere relation est un mariage, lpart ou une séparation
                         && (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(r2.getTypeRelation())
-                                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(r2.getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT
-                                    .equals(r2.getTypeRelation()))) {
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(r2.getTypeRelation())
+                        || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(r2.getTypeRelation()))) {
                     return _addErrorChevauchement(statement.getTransaction(), r2);
                 }
             }
@@ -491,7 +455,7 @@ public class SFRelationConjoint extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writeAlternateKey(globaz.globall.db.BStatement , int)
      */
     @Override
@@ -513,12 +477,9 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param statement DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
@@ -528,17 +489,15 @@ public class SFRelationConjoint extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
      */
+
     /**
      * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param statement DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
@@ -554,11 +513,11 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * getter pour l'attribut date debut
-     * 
+     * <p>
      * La date de début de la relation
-     * 
-     * @see globaz.hera.db.famille.SFRelationConjoint#getDateDebut()
+     *
      * @return null en cas d'exception
+     * @see globaz.hera.db.famille.SFRelationConjoint#getDateDebut()
      */
 
     public String getDateDebut() {
@@ -567,7 +526,7 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * getter pour l'attribut date fin
-     * 
+     *
      * @return la valeur courante de l'attribut date fin
      */
     public String getDateFin() {
@@ -576,109 +535,16 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * getter pour l'attribut id conjoints
-     * 
+     *
      * @return la valeur courante de l'attribut id conjoints
      */
     public String getIdConjoints() {
         return idConjoints;
     }
 
-    // ON NE VERIFIE PLUS LA COHERENCE DES RELATION ENTRE LES CONJOINTS, CAR LA
-    // CREATION DES RELATIONS PEUT SE FAIRE DANS UN ORDRE CAOTIQUE
-    //
-    // /* on ne vérifie la cohérence de la relation courante (celle qui est
-    // ajoutée ou modifiée) par rapport
-    // * à la relation précédante et à la suivante (chronologiquement).
-    // * Ceci pour les mêmes conjoints
-    // */
-    // private boolean _validateRelationAvantApres(BStatement statement,
-    // SFRelationConjoint relPrec, SFRelationConjoint relSuiv) {
-    // // relSuiv = relation suivante, relPrec = relation précédante
-    // if
-    // (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(getTypeRelation())
-    // ) {
-    // // la relation précédante doit être mariage
-    // if (relPrec == null ||
-    // !ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relPrec.getTypeRelation()))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_PRECEDANT_SEPARE_FAIT"));
-    // return false;
-    // }
-    // // la relation suivante doit être séparé de fait, séparé de droit,
-    // divorcé ou marié
-    // if (relSuiv.getTypeRelation() != null &&
-    // (
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relSuiv.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relSuiv.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relSuiv.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relSuiv.getTypeRelation())))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_SUIVANT_SEPARE_FAIT"));
-    // return false;
-    // }
-    // } else if
-    // (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(getTypeRelation())
-    // ) {
-    // // la relation précédante doit être mariage ou séparé de fait
-    // if (relPrec == null ||
-    // (
-    // !ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relPrec.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relPrec.getTypeRelation())))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_PRECEDANT_SEPARE_DROIT"));
-    // return false;
-    // }
-    // // la relation suivante doit être séparé de droit, divorcé ou marié
-    // if (relSuiv != null &&
-    // (
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relSuiv.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relSuiv.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relSuiv.getTypeRelation())))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_SUIVANT_SEPARE_DROIT"));
-    // return false;
-    // }
-    // } else if
-    // (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(getTypeRelation()) ) {
-    // // la relation précédante doit être mariage, séparé de fait ou séparé
-    // judiciairement
-    // if (relPrec == null ||
-    // (!ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relPrec.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relPrec.getTypeRelation())
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relPrec.getTypeRelation())))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_PRECEDANT_DIVORCE"));
-    // return false;
-    // }
-    // // la relation suivante doit être marié
-    // if (relSuiv != null
-    // &&
-    // !ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relSuiv.getTypeRelation()))
-    // {
-    // _addError(statement.getTransaction(),
-    // getSession().getLabel("VALIDATE_SUIVANT_DIVORCE"));
-    // return false;
-    // }
-    // }
-    // return true;
-    // }
-
     /**
      * getter pour l'attribut id relation conjoint
-     * 
+     *
      * @return la valeur courante de l'attribut id relation conjoint
      */
     public String getIdRelationConjoint() {
@@ -687,7 +553,7 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * getter pour l'attribut type relation
-     * 
+     *
      * @return la valeur courante de l'attribut type relation
      */
     public String getTypeRelation() {
@@ -695,10 +561,9 @@ public class SFRelationConjoint extends BEntity {
     }
 
     /**
-     * 
      * Incrémentation du compteur. A n'utiliser que pour la mise à jours d'une relation avec wantCallBefore(false);
      * Méthode utilisée pour la reprise de donnée
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
@@ -708,9 +573,8 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * setter pour l'attribut date debut
-     * 
-     * @param dateDebut
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateDebut une nouvelle valeur pour cet attribut
      */
     public void setDateDebut(String dateDebut) {
         this.dateDebut = dateDebut;
@@ -718,9 +582,8 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * setter pour l'attribut date fin
-     * 
-     * @param dateFin
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateFin une nouvelle valeur pour cet attribut
      */
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
@@ -728,9 +591,8 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * setter pour l'attribut id conjoints
-     * 
-     * @param idConjoints
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param idConjoints une nouvelle valeur pour cet attribut
      */
     public void setIdConjoints(String idConjoints) {
         this.idConjoints = idConjoints;
@@ -738,9 +600,8 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * setter pour l'attribut id relation conjoint
-     * 
-     * @param idRelationConjoint
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param idRelationConjoint une nouvelle valeur pour cet attribut
      */
     public void setIdRelationConjoint(String idRelationConjoint) {
         this.idRelationConjoint = idRelationConjoint;
@@ -748,9 +609,8 @@ public class SFRelationConjoint extends BEntity {
 
     /**
      * setter pour l'attribut type relation
-     * 
-     * @param typeRelation
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param typeRelation une nouvelle valeur pour cet attribut
      */
     public void setTypeRelation(String typeRelation) {
         this.typeRelation = typeRelation;
