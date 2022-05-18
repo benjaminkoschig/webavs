@@ -15,13 +15,14 @@ import globaz.hera.tools.SFStringUtils;
 import globaz.hera.tools.nss.INSSViewBean;
 import globaz.hera.tools.nss.SFUtil;
 import globaz.jade.client.util.JadeStringUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Vector;
 
 /**
  * SFMBRFAM avec un lien sur les tables de tiers dans le cas d'une recherche sur un idTiers
- * 
+ *
  * @author MMU
  */
 public class SFMembreFamille extends BEntity implements INSSViewBean {
@@ -144,9 +145,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
                 pays = statement.dbReadNumeric(SFMembreFamille.FIELD_PAYS_DE_DOMICILE);
 
                 csNationalite = statement.dbReadNumeric(SFMembreFamille.FIELD_NATIONALITE);
-            }
-
-            else { // on va rechercher dans les tables tiers
+            } else { // on va rechercher dans les tables tiers
                 nom = statement.dbReadString(SFMembreFamille.FIELD_TI_NOM);
                 prenom = statement.dbReadString(SFMembreFamille.FIELD_TI_PRENOM);
                 nss = statement.dbReadString(SFMembreFamille.FIELD_AVS_NOAVS);
@@ -300,7 +299,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
     }
 
     public static String createFromClause(String schema, String aliasMembre, String aliasTiTiers, String aliasTiPers,
-            String aliasTiAvs) {
+                                          String aliasTiAvs) {
         String createFrom = schema + SFMembreFamille.TABLE_NAME + " AS " + aliasMembre + " LEFT JOIN " + schema
                 + SFMembreFamille.TABLE_TIERS + " AS " + aliasTiTiers + " ON (" + aliasMembre + "."
                 + SFMembreFamille.FIELD_IDTIERS + " = " + aliasTiTiers + "." + SFMembreFamille.FIELD_TI_IDTIERS + ")"
@@ -321,7 +320,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
     }
 
     public static String createJoinClause(String schema, String aliasMembre, String aliasTiTiers, String aliasTiPers,
-            String aliasTiAvs) {
+                                          String aliasTiAvs) {
         String createJoin = " LEFT JOIN " + schema + SFMembreFamille.TABLE_TIERS + " AS " + aliasTiTiers + " ON ("
                 + aliasMembre + "." + SFMembreFamille.FIELD_IDTIERS + " = " + aliasTiTiers + "."
                 + SFMembreFamille.FIELD_TI_IDTIERS + ")" + " LEFT JOIN " + schema + SFMembreFamille.TABLE_PERS + " AS "
@@ -382,9 +381,8 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Renvoie l'état civil d'une personne à une date donnée
-     * 
-     * @param date
-     *            au format "jj.mm.aaaa", peut être null et le dernier état civil sera retourné,
+     *
+     * @param date au format "jj.mm.aaaa", peut être null et le dernier état civil sera retourné,
      * @return code system: ISFSituationFamiliale.CS_ETAT_CIVIL_... ou null si non-définissable ou en cas d'erreur
      */
     public String getEtatCivil(String date) {
@@ -392,10 +390,10 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
          * L'état civil d'un membre se calcul ainsi: - On recherche toutes les relation conjugales (excepté indéfinie et
          * enfant commun) et on recupère la plus ancienne relation (si une date est donnée, on récupère la relation dont
          * la date de début et la plus ancienne avant la date)
-         * 
+         *
          * - si aucune relation n'existe et que le membre est un requérent alors il est célibataire, s'il n'est pas
          * requérant alors on ne peut rien dire sur son état civil
-         * 
+         *
          * - Si la dernière relation est divorcé alors il est divorcé (ou partenariat dissous judiciairement si
          * personnes du meme sexe) - Si la dernière relation est séparé (de droit ou de fait) alors il est séparé (ou
          * partenariat dissous judiciairement si personnes du meme sexe) - Si la dernière relation est un mariage on
@@ -403,7 +401,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
          * alors il est décédé - si le conjoint a une date de décès mais que celle-ci soit après (>)la date donnée, il
          * est marié, (ou partenariat enregistre si personnes du meme sexe) - sinon il est veuf (ou partenariat dissous
          * par deces si personnes du meme sexe)
-         * 
+         *
          * Remarque: On ne vérifie pas si le membre est mort, on retourne sa dernière relation
          */
         if (isNew()) {
@@ -430,43 +428,45 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
                 // Vérifie s'il est pas veuf
                 String dateDecesConjoint = relation.getDateDecesConjoint(getIdMembreFamille());
                 if (JAUtil.isDateEmpty(dateDecesConjoint)) {
-                    // Si le conjoint n'est pas mort, alors ils sont mariés ou
-                    // partenariat enregistre
-
-                    if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2())) {
-                        return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE;
-                    } else {
-                        return ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE;
-                    }
+                    // Si le conjoint n'est pas mort, alors ils sont mariés
+                    return ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE;
 
                 } else {
                     // il est mort
                     if (JAUtil.isDateEmpty(date)) {
-                        // et aucune date n'est fournie, il est veuf ou
-                        // partebariat dissous par deces
-                        if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2())) {
-                            return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES;
-                        } else {
-                            return ISFSituationFamiliale.CS_ETAT_CIVIL_VEUF;
-                        }
+                        // et aucune date n'est fournie, il est veuf
+                        return ISFSituationFamiliale.CS_ETAT_CIVIL_VEUF;
                     } else { // une date est donnée
                         try {
                             // mort avant la date donnée
                             if (BSessionUtil.compareDateFirstLower(getSession(), date, dateDecesConjoint)) {
-                                if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(),
-                                        relation.getIdConjoint2())) {
-                                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE;
-                                } else {
-                                    return ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE;
-                                }
+                                return ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE;
                             } else {
-
-                                if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(),
-                                        relation.getIdConjoint2())) {
-                                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES;
-                                } else {
-                                    return ISFSituationFamiliale.CS_ETAT_CIVIL_VEUF;
-                                }
+                                return ISFSituationFamiliale.CS_ETAT_CIVIL_VEUF;
+                            }
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    }
+                }
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(relation.getTypeRelation())) {
+                // Vérifie s'il est pas veuf
+                String dateDecesConjoint = relation.getDateDecesConjoint(getIdMembreFamille());
+                if (JAUtil.isDateEmpty(dateDecesConjoint)) {
+                    // Si le conjoint n'est pas mort, alors ils sont partenariat enregistre
+                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE;
+                } else {
+                    // il est mort
+                    if (JAUtil.isDateEmpty(date)) {
+                        // et aucune date n'est fournie, il est partenariat dissous par deces
+                        return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES;
+                    } else { // une date est donnée
+                        try {
+                            // mort avant la date donnée
+                            if (BSessionUtil.compareDateFirstLower(getSession(), date, dateDecesConjoint)) {
+                                return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE;
+                            } else {
+                                return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES;
                             }
                         } catch (Exception e) {
                             return null;
@@ -474,25 +474,23 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
                     }
                 }
             } else if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relation.getTypeRelation())) {
-                if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2())) {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT;
-                } else {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE;
-                }
-            }
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE;
 
-            else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
-                if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2())) {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT;
-                } else {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT;
-                }
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(relation.getTypeRelation())) {
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT;
+
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT;
+
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT;
+
             } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relation.getTypeRelation())) {
-                if (isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2())) {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_JUDICIAIREMENT;
-                } else {
-                    return ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_JUDICIAIREMENT;
-                }
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_JUDICIAIREMENT;
+
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(relation.getTypeRelation())) {
+                return ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_JUDICIAIREMENT;
+
             } else {
                 return null;
             }
@@ -565,7 +563,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Retourne le pays de domicile
-     * 
+     *
      * @return
      */
     public String getPays() {
@@ -585,7 +583,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
     /**
      * @param string
      * @return Renvoie le type de relation du membre de famille avec le requerant CodeSystem (enfant/conjoint) ou null
-     *         s'ils n'ont pas de relation ou en cas d'erreur ISFSituationFamiliale.CS_TYPE_RELATION_...
+     * s'ils n'ont pas de relation ou en cas d'erreur ISFSituationFamiliale.CS_TYPE_RELATION_...
      */
     public String getRelationAuMembre(String idMembre) {
         /* Vérifie si c'est un conjoint du membre */
@@ -609,7 +607,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
     /**
      * @param string
      * @return Renvoie le type de relation du membre de famille avec le requerant CodeSystem (enfant/conjoint) ou null
-     *         si relation indefinie ISFSituationFamiliale.CS_TYPE_RELATION_...
+     * si relation indefinie ISFSituationFamiliale.CS_TYPE_RELATION_...
      */
     public String getRelationAuRequerant(String idRequerant) {
         // Recherche l'idMembre du requerant
@@ -632,14 +630,14 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Retourne la liste de tous les pays sans la Suisse et avec un élément vide au départ
-     * 
+     *
      * @return la liste de tous les pays SANS la Suisse et avec un élément vide au départ
      * @throws Exception
      */
     public Vector getPaysDomicile() throws Exception {
         Vector<String[]> allPays = getTiPays();
         Vector<String[]> pays = new Vector<String[]>();
-        pays.add(new String[] { "", "" });
+        pays.add(new String[]{"", ""});
         for (String[] strings : allPays) {
             if (strings[0] != null && !strings[0].equals("100")) {
                 pays.add(strings);
@@ -654,9 +652,8 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Determine si le MembreFamille donné en parametre est un parent du membre (this)
-     * 
-     * @param transaction
-     *            peut être null
+     *
+     * @param transaction peut être null
      * @param conjoint
      * @return false en cas d'erreur
      */
@@ -682,9 +679,8 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Determine si le MembreFamille donné en parametre est un parent du membre (this)
-     * 
-     * @param transaction
-     *            peut être null
+     *
+     * @param transaction peut être null
      * @param parent
      * @return false en cas d'erreur
      */
@@ -807,7 +803,7 @@ public class SFMembreFamille extends BEntity implements INSSViewBean {
 
     /**
      * Set le pays de domicile
-     * 
+     *
      * @param string
      */
     public void setPays(String string) {

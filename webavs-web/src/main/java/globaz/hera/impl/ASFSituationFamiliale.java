@@ -1084,8 +1084,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                 relSup = new SFRelationFamilialeStd();
                 relSup.copyDataFromEntity(relation);
 
-                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation(),
-                        !isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2()))); // On
+                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation())); // On
                 // prend
                 // la
                 // relation
@@ -1677,8 +1676,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                 relSup = new SFRelationFamilialeStd();
                 relSup.copyDataFromEntity(relation);
 
-                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation(),
-                        !isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2()))); // On
+                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation())); // On
                 // prend
                 // la
                 // relation
@@ -1739,10 +1737,9 @@ public abstract class ASFSituationFamiliale extends BEntity {
     /**
      * Vrais si les deux partenaires donnes sont du meme sexe
      * 
-     * @param idMembreFamille1
-     * @param idMembreFamille2
+     * @param idMF1
+     * @param idMF2
      * @return
-     * @throws Exception
      */
     private boolean isPartenariatEntrePersonneDuMemeSexe(String idMF1, String idMF2) {
 

@@ -199,7 +199,7 @@ public class SFApercuEnfantsAction extends SFDefaultAction {
             SFRelationConjointManager relMgr = new SFRelationConjointManager();
             relMgr.setSession(bSession);
             relMgr.setForIdDesConjoints(idConjoints);
-            relMgr.setForTypeRelation(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE);
+            relMgr.setForTypeRelation(new String[]{ISFSituationFamiliale.CS_REL_CONJ_DIVORCE, ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS});
             relMgr.setFromDateDebut(apEnfant.getDateNaissance());
             if (!JAUtil.isDateEmpty(apEnfant.getDateDeces())) {
                 relMgr.setUntilDateDebut(apEnfant.getDateDeces());
@@ -228,6 +228,7 @@ public class SFApercuEnfantsAction extends SFDefaultAction {
                     rh.throwExceptionIfError((BTransaction) transaction, periode);
                 }
             }
+
 
             // On ajoute l'enfant à la famille du requérant
             rh.updateRelationRequerant(requerant.getIdRequerant(), membre.getIdMembreFamille(), true, bSession,
