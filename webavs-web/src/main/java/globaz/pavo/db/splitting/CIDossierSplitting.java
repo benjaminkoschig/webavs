@@ -509,10 +509,12 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
         CIApplication application = (CIApplication)getSession().getApplication();
         if(application.isSplittingWantLienGed()) {
-            if(JadeStringUtil.isEmpty(getIdTiersInterneAssure())) {
+            if(JadeStringUtil.isEmpty(idTiersInterneAssure)
+                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersAssure, null))) {
                 _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_ASSURE_EMPTY"));
             }
-            if(JadeStringUtil.isEmpty(getIdTiersInterneConjoint())) {
+            if(JadeStringUtil.isEmpty(idTiersInterneConjoint)
+                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersConjoint, null))) {
                 _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_CONJOINT_EMPTY"));
             }
         }
@@ -2717,6 +2719,13 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         }
         return rCI95Done;
 
+    }
+
+    public String retreiveIdTiersInterne(String nss, BTransaction transaction) throws Exception {
+        CIApplication application = (CIApplication)getSession().getApplication();
+        ITIPersonneAvs tiers = application.getTiersByAvs(getSession(),
+                NSUtil.formatAVSUnknown(nss), new String[] { "getIdTiers"});
+        return !JadeStringUtil.isEmpty(tiers.getIdTiers()) ? tiers.getIdTiers() : null;
     }
 
     public java.lang.String getIdArc65Assure() {
