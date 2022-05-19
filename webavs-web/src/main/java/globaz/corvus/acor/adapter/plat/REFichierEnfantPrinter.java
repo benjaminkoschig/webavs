@@ -80,24 +80,24 @@ public class REFichierEnfantPrinter extends PRAbstractFichierPlatPrinter {
         // 1. le no AVS de l'enfant
         this.writeAVS(writer, enfant.getNss());
 
-        if (adapter().requerant().getNss().equals(detail.getNoAvsMere())) {
+        if (adapter().requerant().getNss().equals(detail.getNoAvsParent2())) {
             // 2. le no AVS du pere
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME,
-                            detail.getNomPere() + detail.getPrenomPere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent1(), PRACORConst.CS_HOMME,
+                            detail.getNomParent1() + detail.getPrenomParent1(), true));
 
             // 3. le no AVS de la mere
-            this.writeAVS(writer, detail.getNoAvsMere());
+            this.writeAVS(writer, detail.getNoAvsParent2());
         } else {
             // 2. le no AVS du pere
-            this.writeAVS(writer, detail.getNoAvsPere());
+            this.writeAVS(writer, detail.getNoAvsParent1());
 
             // 3. le no AVS de la mere
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME,
-                            detail.getNomMere() + detail.getPrenomMere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent2(), PRACORConst.CS_FEMME,
+                            detail.getNomParent2() + detail.getPrenomParent2(), true));
         }
 
         // 4. enfant recueilli
@@ -125,20 +125,20 @@ public class REFichierEnfantPrinter extends PRAbstractFichierPlatPrinter {
         // 1. le no AVS de l'enfant
         this.writeAVS(writer, enfant.getNss());
 
-        if (adapter().requerant().getNss().equals(detail.getNoAvsMere())) {
+        if (adapter().requerant().getNss().equals(detail.getNoAvsParent2())) {
             // 2. le no AVS du pere
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME,
-                            detail.getNomPere() + detail.getPrenomPere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent1(), PRACORConst.CS_HOMME,
+                            detail.getNomParent1() + detail.getPrenomParent1(), true));
 
             // 3. le no AVS de la mere
             // bz-5454
             // writeAVS(writer, detail.getNoAvsMere());
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME,
-                            detail.getNomMere() + detail.getPrenomMere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent2(), PRACORConst.CS_FEMME,
+                            detail.getNomParent2() + detail.getPrenomParent2(), true));
 
         } else {
             // 2. le no AVS du pere
@@ -146,14 +146,14 @@ public class REFichierEnfantPrinter extends PRAbstractFichierPlatPrinter {
             // this.writeAVS(writer, detail.getNoAvsPere());
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME,
-                            detail.getNomPere() + detail.getPrenomPere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent1(), PRACORConst.CS_HOMME,
+                            detail.getNomParent1() + detail.getPrenomParent1(), true));
 
             // 3. le no AVS de la mere
             this.writeAVS(
                     writer,
-                    adapter().nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME,
-                            detail.getNomMere() + detail.getPrenomMere(), true));
+                    adapter().nssBidon(detail.getNoAvsParent2(), PRACORConst.CS_FEMME,
+                            detail.getNomParent2() + detail.getPrenomParent2(), true));
         }
 
         // 4. enfant recueilli

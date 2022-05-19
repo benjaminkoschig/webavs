@@ -225,6 +225,9 @@ public class REHistoriqueRentesJoinTiersHelper extends PRAbstractHelper {
                     hr.setMontantBTE(((REBasesCalculNeuviemeRevision) bc).getBonificationTacheEducative());
                 }
 
+                hr.setIdTiersComplementaire1(ra.getIdTiersComplementaire1());
+                hr.setIdTiersComplementaire2(ra.getIdTiersComplementaire2());
+
                 hr.add(transaction);
 
                 if (transaction.hasErrors()) {

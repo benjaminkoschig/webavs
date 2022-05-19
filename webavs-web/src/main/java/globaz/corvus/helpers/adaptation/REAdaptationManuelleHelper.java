@@ -54,7 +54,6 @@ import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.db.famille.SFApercuEnfant;
 import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.enums.codeprestation.type.PRCodePrestationInvalidite;
@@ -1366,22 +1365,22 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
             SFMembreFamille parentLPart1 = null;
             SFMembreFamille parentLPart2 = null;
-            if (enf.getPere() != null) {
+            if (enf.getParent1() != null) {
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getPere().getIdMembreFamille())) {
+                        .equals(enf.getParent1().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    parentLPart1 = enf.getMere();
+                    parentLPart1 = enf.getParent2();
                 }
             }
 
             // tiersComplementaire2 mere
-            if (enf.getMere() != null) {
+            if (enf.getParent2() != null) {
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getMere().getIdMembreFamille())) {
+                        .equals(enf.getParent2().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    parentLPart2 = enf.getPere();
+                    parentLPart2 = enf.getParent1();
                 }
             }
             if((parentLPart1 != null && parentLPart2 != null) && parentLPart1.getCsSexe().equals(parentLPart2.getCsSexe()) ){
@@ -1419,25 +1418,25 @@ public class REAdaptationManuelleHelper extends FWHelper {
             enf.retrieve();
 
             // tiersComplementaire1 pere (si conj. inc. 00000000000)
-            if (enf.getPere() != null) {
-                enf.getPere().getCsCantonDomicile();
+            if (enf.getParent1() != null) {
+                enf.getParent1().getCsCantonDomicile();
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getPere().getIdMembreFamille())) {
+                        .equals(enf.getParent1().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getParent1().getIdTiers());
                     nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                 }
             }
 
             // tiersComplementaire2 mere
-            if (enf.getMere() != null) {
-                enf.getMere().getCsCantonDomicile();
+            if (enf.getParent2() != null) {
+                enf.getParent2().getCsCantonDomicile();
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getMere().getIdMembreFamille())) {
+                        .equals(enf.getParent2().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getParent2().getIdTiers());
                     nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                 }
             }
@@ -1456,28 +1455,28 @@ public class REAdaptationManuelleHelper extends FWHelper {
             enf.retrieve();
 
             // tiersComplementaire1 mere
-            if (enf.getMere() != null) {
-                enf.getMere().getCsCantonDomicile();
+            if (enf.getParent2() != null) {
+                enf.getParent2().getCsCantonDomicile();
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getMere().getIdMembreFamille())) {
+                        .equals(enf.getParent2().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    if (!JadeStringUtil.isBlankOrZero(enf.getMere().getIdTiers())) {
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    if (!JadeStringUtil.isBlankOrZero(enf.getParent2().getIdTiers())) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getParent2().getIdTiers());
                         nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                     }
                 }
             }
 
             // tiersComplementaire2 pere (si conj. inc. 00000000000)
-            if (enf.getPere() != null) {
-                enf.getPere().getCsCantonDomicile();
+            if (enf.getParent1() != null) {
+                enf.getParent1().getCsCantonDomicile();
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getPere().getIdMembreFamille())) {
+                        .equals(enf.getParent1().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    if (!JadeStringUtil.isBlankOrZero(enf.getPere().getIdTiers())) {
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
+                    if (!JadeStringUtil.isBlankOrZero(enf.getParent1().getIdTiers())) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getParent1().getIdTiers());
                         nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                     }
 
