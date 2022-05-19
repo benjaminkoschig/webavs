@@ -1478,7 +1478,6 @@ public class CIApplication extends globaz.globall.db.BApplication {
 
     public String getNumFichierEnteteCI() {
         return this.getProperty(NO_CAISSE) + this.getProperty(NO_AGENCE);
-
     }
 
     public boolean isAnnonceInscriptionXML() {
@@ -1490,11 +1489,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
     }
 
     public boolean isSplittingWantLienGed() throws NotFoundException {
-        String wantLienGed = this.getProperty(SPLITTING_WANTLIENGED);
-        if(wantLienGed == null) {
-            throw new NotFoundException("propriété manquante :"+SPLITTING_WANTLIENGED);
-        }
-        return Boolean.parseBoolean(wantLienGed.trim());
+        return Boolean.parseBoolean(this.getProperty(SPLITTING_WANTLIENGED, "false").trim());
     }
 
     public String getSplittingServiceGed() {
