@@ -31,8 +31,8 @@ import globaz.osiris.db.ebill.CAInscriptionEBill;
 import globaz.osiris.db.ebill.enums.CAFichierInscriptionStatutEBillEnum;
 import globaz.osiris.db.ebill.enums.CAInscriptionTypeEBillEnum;
 import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
-import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.external.IntRole;
+import globaz.osiris.parser.IntReferenceBVRParser;
 import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
 import globaz.osiris.process.ebill.EBillMail;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
@@ -70,6 +70,8 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private int inscriptionKO = 0;
     private int resiliationOK = 0;
     private int resiliationKO = 0;
+    private int lenIdExterneRole;
+    private int posIdExterneRole;
 
     @Override
     protected void _executeCleanUp() {
@@ -86,6 +88,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             initBsession();
             initServiceFtp();
+            initIdReferenceParameter();
 
             isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
             boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
@@ -147,6 +150,16 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         if (serviceFtp != null) {
             serviceFtp.disconnectQuietly();
         }
+    }
+
+    /**
+     * Initialisation des paramètres de Id référence dans le Numéro de référence BVR
+     */
+    private void initIdReferenceParameter() {
+        lenIdExterneRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));;
+        posIdExterneRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                IntReferenceBVRParser.POS_ID_EXTERNE_ROLE));
     }
 
     /**
@@ -585,7 +598,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             boolean inscriptionParitairePersonelSucces = true;
             for (int i = 0; i < manager.getSize(); i++) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                if (!majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe)) {
+                if (!majCompteAnnexe(eachInscription, compteAnnexe)) {
                     inscriptionParitairePersonelSucces = false;
                 }
             }
@@ -616,7 +629,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             if (StringUtils.equals(idRole, AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
                 try {
-                    final String idCompteAnnexe = formatterNumeroDepuisRefBVR(inscriptionEBill);
+                    final String idCompteAnnexe = extractReferenceDepuisReferenceBVR(inscriptionEBill);
                     manager.setForIdCompteAnnexeIn(idCompteAnnexe);
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
@@ -631,7 +644,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 // Formatage du numéro d'affilié
                 String numeroAffilieFormate;
                 try {
-                    final String numeroAffilie = formatterNumeroDepuisRefBVR(inscriptionEBill);
+                    final String numeroAffilie = extractReferenceDepuisReferenceBVR(inscriptionEBill);
                     CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
                     IFormatData affilieFormater = application.getAffileFormater();
                     numeroAffilieFormate = affilieFormater.format(numeroAffilie);
@@ -651,7 +664,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
-                return majCompteAnnexe(inscriptionEBill, inscriptionEBill.geteBillAccountID(), inscriptionEBill.getEmail(), compteAnnexe);
+                return majCompteAnnexe(inscriptionEBill, compteAnnexe);
             } else {
                 String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_REF_BVR_FAILED"), inscriptionEBill.getNumRefBVR());
                 LOG.warn(erreurInterne);
@@ -686,18 +699,11 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     /**
      * Méthode permettant de formatter le numéro depuis la référence BVR : on doit supprimer les 0 devant la première valeur.
      *
-     * @param inscriptionEBill : le numéro depuis la ref BVR.
-     * @return le numéro formatté.
-     * @throws CATechnicalException : exception lancée si le formattage échoue.
+     * @param inscriptionEBill : le numéro de référence depuis la référence BVR.
+     * @return Le id référence extraite.
      */
-    private String formatterNumeroDepuisRefBVR(CAInscriptionEBill inscriptionEBill) throws CATechnicalException {
-        String numero;
-        try {
-            numero = Long.toString(new Long(inscriptionEBill.getNumRefBVR().substring(3, 15)));
-        } catch (Exception e) {
-            throw new CATechnicalException(getSession().getLabel("INSCR_EBILL_FORMAT_ID_AFFILIE_PARSE_FAILED"), e);
-        }
-        return numero;
+    private String extractReferenceDepuisReferenceBVR(CAInscriptionEBill inscriptionEBill) {
+        return inscriptionEBill.getNumRefBVR().substring(posIdExterneRole, posIdExterneRole + lenIdExterneRole - 1);
     }
 
     /**
@@ -709,7 +715,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private boolean updateCompteAnnexeTitulariseCasInscription(CAInscriptionEBill inscriptionEBill) {
         String numeroAffilie = inscriptionEBill.getNumeroAffilie();
         if (StringUtils.isNotEmpty(numeroAffilie)) {
-
             // Récupération du compte annexe.
             CACompteAnnexeManager manager = new CACompteAnnexeManager();
             manager.setSession(getSession());
@@ -735,14 +740,14 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 boolean inscriptionParitairePersonelSucces = true;
                 for (int i = 0; i < manager.getSize(); i++) {
                     CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                    if (!majCompteAnnexe(inscriptionEBill, inscriptionEBill.geteBillAccountID(), inscriptionEBill.getEmail(), compteAnnexe)) {
+                    if (!majCompteAnnexe(inscriptionEBill, compteAnnexe)) {
                         inscriptionParitairePersonelSucces = false;
                     }
                 }
                 return inscriptionParitairePersonelSucces;
             } else if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
-                return majCompteAnnexe(inscriptionEBill, inscriptionEBill.geteBillAccountID(), inscriptionEBill.getEmail(), compteAnnexe);
+                return majCompteAnnexe(inscriptionEBill, compteAnnexe);
             } else {
                 String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_ID_AFFILIE_FAILED"), numeroAffilie);
                 LOG.warn(erreurInterne);
@@ -756,44 +761,56 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe pour une inscription V1.
+     * Mise à jour du compte annexe pour une inscription.
      *
-     * @param numeroAdherent : le numéro d'adhérent (id eBill) de l'inscription --> vide dans le cas d'une résiliation.
-     * @param email          : le mail lié à l'inscription --> vide dans le cadre d'une résiliation.
      * @param compteAnnexe   : le compte annexe à mettre à jour.
      * @return vrai si l'update s'est bien passé.
      */
-    private boolean majCompteAnnexe(CAInscriptionEBill inscriptionEBill, final String numeroAdherent,
-                                    final String email,
-                                    final CACompteAnnexe compteAnnexe) {
-        compteAnnexe.seteBillAccountID(numeroAdherent);
-        compteAnnexe.seteBillMail(email);
+    private boolean majCompteAnnexe(CAInscriptionEBill inscriptionEBill, final CACompteAnnexe compteAnnexe) {
+        if (inscriptionEBill.getType().estResiliation()) {
+            compteAnnexe.seteBillAccountID(null);
+            compteAnnexe.seteBillMail(null);
+            compteAnnexe.seteBillDateInscription(null);
+        } else {
+            if (!StringUtils.isEmpty(compteAnnexe.geteBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_ALREADY_REGISTERED"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
+                LOG.error(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
+                return false;
+            }
+
+            compteAnnexe.seteBillAccountID(inscriptionEBill.geteBillAccountID());
+            compteAnnexe.seteBillMail(inscriptionEBill.getEmail());
+            compteAnnexe.seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        }
+
         try {
             compteAnnexe.update();
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
-        return sendMail(inscriptionEBill, numeroAdherent, email, compteAnnexe);
+        return sendMail(inscriptionEBill, compteAnnexe);
     }
 
-    private boolean sendMail(CAInscriptionEBill inscriptionEBill, String numeroAdherent, String email, CACompteAnnexe compteAnnexe) {
+    private boolean sendMail(CAInscriptionEBill inscriptionEBill, CACompteAnnexe compteAnnexe) {
         // envoie un mail pour les inscriptions seulement
-        if(JadeStringUtil.isEmpty(numeroAdherent)) {
-            if (JadeStringUtil.isEmpty(email)) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+        if(!inscriptionEBill.getType().estResiliation()) {
+            if (JadeStringUtil.isEmpty(inscriptionEBill.getEmail()) || JadeStringUtil.isEmpty(inscriptionEBill.geteBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
                 LOG.error(erreurInterne);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n");
                 return false;
             }
             try {
-                EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
+                EBillMail.sendMailConfirmation(inscriptionEBill.getEmail(), compteAnnexe.getTiers().getLangueISO());
             } catch (Exception e) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), inscriptionEBill.geteBillAccountID());
                 LOG.error(erreurInterne, e);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
