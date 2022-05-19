@@ -10,7 +10,7 @@
 	boolean isHommeVieillesseGED = Boolean.parseBoolean(request.getParameter("FemmeVieillesseGED"));
 	boolean isFemmeVieillesseGED = Boolean.parseBoolean(request.getParameter("HommeVieillesseGED"));
 	boolean isRenteVeufGED = Boolean.parseBoolean(request.getParameter("RenteVeufGED"));
-	boolean isEcheanceEnfantRecueilliGratuitementGED = Boolean.parseBoolean(request.getParameter("EcheanceEnfantRecueilliGratuitementGED"));
+	boolean isEcheanceEnfantRecueilliGratuitementGED = Boolean.parseBoolean(request.getParameter("EnfantRecueilliGratuitementGED"));
 
 	boolean afficherColloneGED = isAjournementGED
             || isEnfant18ansGED
