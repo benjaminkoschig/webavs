@@ -90,7 +90,9 @@ public class SFFamilleUtils {
 
         // on vérifie que la dernière relation est en cours (marié ou séparé de fait)
         if (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equalsIgnoreCase(lastRelation.getTypeRelation())
-                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equalsIgnoreCase(lastRelation.getTypeRelation())) {
+                || ISFSituationFamiliale.CS_REL_CONJ_LPART.equalsIgnoreCase(lastRelation.getTypeRelation())
+                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equalsIgnoreCase(lastRelation.getTypeRelation())
+                || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equalsIgnoreCase(lastRelation.getTypeRelation())) {
             // on récupère le conjoint du tiers (en regardant les numéro AVS de la relation
             // pour définir qui est qui dans la table, homme ou femme)
             PRTiersWrapper conjoint = null;
@@ -210,7 +212,7 @@ public class SFFamilleUtils {
         }
 
         return SFFamilleUtils.getRelationsInTypeRelation(session, csDomaine, idTiers,
-                new HashSet<String>(Arrays.asList(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE)));
+                new HashSet<>(Arrays.asList(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE, ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS)));
     }
 
     /**

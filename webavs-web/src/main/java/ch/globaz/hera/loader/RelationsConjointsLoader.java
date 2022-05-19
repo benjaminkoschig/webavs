@@ -74,10 +74,14 @@ public class RelationsConjointsLoader {
         final Map<String, TypeRelation> mapRelation = new HashMap<String, TypeRelation>();
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE, TypeRelation.INDEFINIE);
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE, TypeRelation.DIVORCE);
+        mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS, TypeRelation.LPART_DISSOUS);
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN, TypeRelation.ENFANT_COMMUN);
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_MARIE, TypeRelation.MARIE);
+        mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_LPART, TypeRelation.LPART);
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT, TypeRelation.SEPARE_DE_FAIT);
+        mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT, TypeRelation.LPART_SEPARE_DE_FAIT);
         mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT, TypeRelation.SEPARE_JUDICIAIREMENT);
+        mapRelation.put(ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT, TypeRelation.LPART_SEPARE_JUDICIAIREMENT);
 
         return new Mapper<RelationConjoint>() {
             @Override
