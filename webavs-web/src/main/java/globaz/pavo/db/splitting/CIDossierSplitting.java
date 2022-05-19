@@ -510,11 +510,11 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         CIApplication application = (CIApplication)getSession().getApplication();
         if(application.isSplittingWantLienGed()) {
             if(JadeStringUtil.isEmpty(idTiersInterneAssure)
-                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersAssure, null))) {
+                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersAssure))) {
                 _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_ASSURE_EMPTY"));
             }
             if(JadeStringUtil.isEmpty(idTiersInterneConjoint)
-                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersConjoint, null))) {
+                    && JadeStringUtil.isEmpty(retreiveIdTiersInterne(idTiersConjoint))) {
                 _addError(statement.getTransaction(), getSession().getLabel("ERREUR_GED_TIERS_CONJOINT_EMPTY"));
             }
         }
@@ -2721,7 +2721,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     }
 
-    public String retreiveIdTiersInterne(String nss, BTransaction transaction) throws Exception {
+    public String retreiveIdTiersInterne(String nss) throws Exception {
         CIApplication application = (CIApplication)getSession().getApplication();
         ITIPersonneAvs tiers = application.getTiersByAvs(getSession(),
                 NSUtil.formatAVSUnknown(nss), new String[] { "getIdTiers"});
