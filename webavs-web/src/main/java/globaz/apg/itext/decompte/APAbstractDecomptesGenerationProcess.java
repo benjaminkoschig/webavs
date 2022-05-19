@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.text.FieldPosition;
 import java.util.*;
 
+import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.prestation.IAPPrestation;
@@ -19,6 +20,7 @@ import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.babel.api.ICTListeTextes;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
+import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.util.*;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.PRTypeDemande;
@@ -1456,7 +1458,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     private Object[] completeCorpsEmployeurs(final StringBuffer buffer, final ICTListeTextes textes) throws Exception {
 
-        final Object[] arguments = new Object[11];
+        final Object[] arguments = new Object[12];
 
         APEmployeurRepartition employeurRepartition = APEmployeurRepartition.of(derniereRepartition.getIdSituationProfessionnelle(), getCSTypePrestationsLot(), getSession());
 
@@ -1516,6 +1518,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 1, 2, JANumberFormatter.SUP);
         arguments[6] = loadPrestationType().getMontantJournalier();
         arguments[7] = droit.getDroitAcquis();
+
+        FWParametersSystemCode cs = new FWParametersSystemCode();
+        cs.setSession(getSession());
+        cs.getCode(tiers().getTitre());
+        arguments[11] = cs.getCodeUtilisateur((LanguageResolver.resolveTiersLanguage(tiersTitre.getLangue()))).getLibelle();
 
         APReferenceDataAPG ref;
         final JADate dateDebut = new JADate(droit.getDateDebutDroit());
