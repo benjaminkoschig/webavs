@@ -33,6 +33,7 @@ import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
+import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.adapter.plat.REACORDemandeAdapter;
 import globaz.corvus.acorweb.business.FractionRente;
 import globaz.corvus.acorweb.business.ImplMembreFamilleRequerantWrapper;
@@ -67,6 +68,7 @@ import globaz.hera.api.ISFPeriode;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
+import globaz.hera.interfaces.tiers.SFTiersHelper;
 import globaz.hera.wrapper.SFPeriodeWrapper;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -82,6 +84,7 @@ import globaz.prestation.acor.web.mapper.PRAcorMapper;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import org.apache.commons.lang.StringUtils;
@@ -330,9 +333,7 @@ public class REExportationCalculAcor {
 
     private void addRentesAssures(AssureType assure, ISFMembreFamilleRequerant membre) {
         try {
-            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(membre.getRelationAuRequerant())) {
-                reloadHistorique(membre.getIdTiers());
-            }
+            reloadHistorique(membre.getIdTiers());
             for (REHistoriqueRentes rente : getRentesEnCours(membre.getIdTiers())) {
                 if (StringUtils.equals(IREDemandeRente.REVISION_10EME_REVISION, rente.getDroitApplique())) {
                     if (isRenteExtraordinaire(rente.getCodePrestation())) {
@@ -424,10 +425,10 @@ public class REExportationCalculAcor {
         // 3. date début du droit
         commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
         // 4. fraction
-        LocalDate dateDebutDroit = Dates.toDate("01."+rente.getDateDebutDroit());
-        LocalDate dateMaxFraction=Dates.toDate("01.01.2022");
+        LocalDate dateDebutDroit = Dates.toDate("01." + rente.getDateDebutDroit());
+        LocalDate dateMaxFraction = Dates.toDate("01.01.2022");
         // si la date de début du droit est avant le 01.01.2022 alors la fraction s'affiche
-        if(dateDebutDroit.isBefore(dateMaxFraction)){
+        if (dateDebutDroit.isBefore(dateMaxFraction)) {
             commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
         }
         // 5. date fin du droit
@@ -462,7 +463,28 @@ public class REExportationCalculAcor {
             commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs5()));
         }
 
+        String navsComplementaire1 = getTiersNSS(rente.getIdTiersComplementaire1());
+        if (StringUtils.isNotEmpty(navsComplementaire1)) {
+            commonRente.setNavsComplementaire1(Long.valueOf(NSUtil.unFormatAVS(navsComplementaire1)));
+        }
+        String navsComplementaire2 = getTiersNSS(rente.getIdTiersComplementaire2());
+        if (StringUtils.isNotEmpty(navsComplementaire2)) {
+            commonRente.setNavsComplementaire2(Long.valueOf(NSUtil.unFormatAVS(navsComplementaire2)));
+        }
+
         return commonRente;
+    }
+
+    private String getTiersNSS(String idTiersComplementaire1) {
+        if (StringUtils.isNotEmpty(idTiersComplementaire1)) {
+            try {
+                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiersComplementaire1);
+                return tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            } catch (Exception e) {
+                LOG.warn("Impossible de récupérer le tiers complémentaire. ", e);
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     private RenteOrdinaire10Type createRenteOrdinaire10(REHistoriqueRentes rente) {
@@ -472,6 +494,7 @@ public class REExportationCalculAcor {
         renteOrdinaire10.setCodeSurvivantInvalide(rente.getIsSurvivantInvalid());
         // 41. transféré
         renteOrdinaire10.setTransferee(rente.getIsTransfere());
+
         return renteOrdinaire10;
     }
 
@@ -512,6 +535,7 @@ public class REExportationCalculAcor {
         base.setDonneesAgeFlexible(createAgeFlexible10(rente));
         // 27 - 30
         base.setDonneesBonifications(createDonneesBonification10(rente));
+
         return base;
     }
 

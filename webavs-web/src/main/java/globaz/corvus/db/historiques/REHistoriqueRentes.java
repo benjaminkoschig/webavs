@@ -1,5 +1,6 @@
 package globaz.corvus.db.historiques;
 
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
@@ -73,6 +74,9 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     public static final String FIELDNAME_SUPPL_AJOURN = "WIMSAJ";
     public static final String FIELDNAME_SURV_EV_ASSURE = "WIDSEA";
     public static final String FIELDNAME_CODE_MUTATION = "WILCMU";
+    public static final String FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1 = "ID_TIERS_COMP_1";
+    public static final String FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2 = "ID_TIERS_COMP_2";
+
 
     public static final String TABLE_NAME_HISTORIQUE_RENTES = "REHISTR";
 
@@ -144,6 +148,8 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     private String supplementCarriere = "";
     private String survenanceEvenementAssure = "";
     private String codeMutation = "";
+    private String idTiersComplementaire1 = "";
+    private String idTiersComplementaire2 = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -220,6 +226,8 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
         survenanceEvenementAssure = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
                 .dbReadNumeric(REHistoriqueRentes.FIELDNAME_SURV_EV_ASSURE));
         codeMutation = statement.dbReadString(REHistoriqueRentes.FIELDNAME_CODE_MUTATION);
+        idTiersComplementaire1 = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1);
+        idTiersComplementaire2 = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2);
     }
 
     @Override
@@ -352,6 +360,11 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
                 "survenanceEvenementAssure"));
         statement.writeField(REHistoriqueRentes.FIELDNAME_CODE_MUTATION,
                 this._dbWriteString(statement.getTransaction(), codeMutation, "codeMutation"));
+        statement.writeField(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1,
+                this._dbWriteNumeric(statement.getTransaction(), idTiersComplementaire1, "idTiersComplementaire1"));
+        statement.writeField(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2,
+                this._dbWriteNumeric(statement.getTransaction(), idTiersComplementaire2, "idTiersComplementaire2"));
+
     }
 
     public String getAnneeMontantRAM() {
@@ -762,5 +775,21 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
 
     public void setCodeMutation(String codeMutation) {
         this.codeMutation = codeMutation;
+    }
+
+    public String getIdTiersComplementaire1() {
+        return idTiersComplementaire1;
+    }
+
+    public void setIdTiersComplementaire1(String idTiersComplementaire1) {
+        this.idTiersComplementaire1 = idTiersComplementaire1;
+    }
+
+    public String getIdTiersComplementaire2() {
+        return idTiersComplementaire2;
+    }
+
+    public void setIdTiersComplementaire2(String idTiersComplementaire2) {
+        this.idTiersComplementaire2 = idTiersComplementaire2;
     }
 }

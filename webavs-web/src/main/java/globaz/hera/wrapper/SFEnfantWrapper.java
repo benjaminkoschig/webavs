@@ -18,16 +18,18 @@ public class SFEnfantWrapper implements ISFEnfant {
 
     private String dateAdoption = "";
     private boolean isRecueilli = false;
-    private String noAvsMere = "";
-    private String noAvsPere = "";
-    private String nomMere = "";
-    private String nomPere = "";
+    private String noAvsParent2 = "";
+    private String noAvsParent1 = "";
+    private String nomParent2 = "";
+    private String nomParent1 = "";
     private String nss = "";
-    private String prenomMere = "";
-    private String prenomPere = "";
+    private String prenomParent2 = "";
+    private String prenomParent1 = "";
     private String dateNaissance = "";
-    private String dateNaissanceMere = "";
-    private String dateNaissancePere = "";
+    private String dateNaissanceParent2 = "";
+    private String dateNaissanceParent1 = "";
+    private String csSexeParent2 = "";
+    private String csSexeParent1 = "";
 
     /**
      * @return
@@ -41,32 +43,32 @@ public class SFEnfantWrapper implements ISFEnfant {
      * @return
      */
     @Override
-    public String getNoAvsMere() {
-        return noAvsMere;
+    public String getNoAvsParent2() {
+        return noAvsParent2;
     }
 
     /**
      * @return
      */
     @Override
-    public String getNoAvsPere() {
-        return noAvsPere;
+    public String getNoAvsParent1() {
+        return noAvsParent1;
     }
 
     /**
      * @return
      */
     @Override
-    public String getNomMere() {
-        return nomMere;
+    public String getNomParent2() {
+        return nomParent2;
     }
 
     /**
      * @return
      */
     @Override
-    public String getNomPere() {
-        return nomPere;
+    public String getNomParent1() {
+        return nomParent1;
     }
 
     /**
@@ -81,16 +83,16 @@ public class SFEnfantWrapper implements ISFEnfant {
      * @return
      */
     @Override
-    public String getPrenomMere() {
-        return prenomMere;
+    public String getPrenomParent2() {
+        return prenomParent2;
     }
 
     /**
      * @return
      */
     @Override
-    public String getPrenomPere() {
-        return prenomPere;
+    public String getPrenomParent1() {
+        return prenomParent1;
     }
 
     /**
@@ -105,14 +107,24 @@ public class SFEnfantWrapper implements ISFEnfant {
      * @return
      */
     @Override
-    public String getDateNaissancePere(){return dateNaissancePere;}
+    public String getDateNaissanceParent1(){return dateNaissanceParent1;}
 
     /**
      *
      * @return
      */
     @Override
-    public String getDateNaissanceMere(){return dateNaissanceMere;}
+    public String getDateNaissanceParent2(){return dateNaissanceParent2;}
+
+    @Override
+    public String getSexeParent1() {
+        return csSexeParent1;
+    }
+
+    @Override
+    public String getSexeParent2() {
+        return csSexeParent2;
+    }
 
     /**
      * @return
@@ -132,29 +144,29 @@ public class SFEnfantWrapper implements ISFEnfant {
     /**
      * @param string
      */
-    public void setNoAvsMere(String string) {
-        noAvsMere = string;
+    public void setNoAvsParent2(String string) {
+        noAvsParent2 = string;
     }
 
     /**
      * @param string
      */
-    public void setNoAvsPere(String string) {
-        noAvsPere = string;
+    public void setNoAvsParent1(String string) {
+        noAvsParent1 = string;
     }
 
     /**
      * @param string
      */
-    public void setNomMere(String string) {
-        nomMere = string;
+    public void setNomParent2(String string) {
+        nomParent2 = string;
     }
 
     /**
      * @param string
      */
-    public void setNomPere(String string) {
-        nomPere = string;
+    public void setNomParent1(String string) {
+        nomParent1 = string;
     }
 
     /**
@@ -167,15 +179,15 @@ public class SFEnfantWrapper implements ISFEnfant {
     /**
      * @param string
      */
-    public void setPrenomMere(String string) {
-        prenomMere = string;
+    public void setPrenomParent2(String string) {
+        prenomParent2 = string;
     }
 
     /**
      * @param string
      */
-    public void setPrenomPere(String string) {
-        prenomPere = string;
+    public void setPrenomParent1(String string) {
+        prenomParent1 = string;
     }
 
     /**
@@ -186,6 +198,18 @@ public class SFEnfantWrapper implements ISFEnfant {
     }
 
     public void setDateNaissance(String date){dateNaissance = date;}
-    public void setDateNaissanceMere(String date){dateNaissanceMere = date;}
-    public void setDateNaissancePere(String date){dateNaissancePere = date;}
+
+    public void setDateNaissanceParent2(String date){
+        dateNaissanceParent2 = date;}
+
+    public void setDateNaissanceParent1(String date){
+        dateNaissanceParent1 = date;}
+
+    public void setCsSexeParent2(String csSexeParent2) {
+        this.csSexeParent2 = csSexeParent2;
+    }
+
+    public void setCsSexeParent1(String csSexeParent1) {
+        this.csSexeParent1 = csSexeParent1;
+    }
 }

@@ -1141,7 +1141,6 @@ public class REImportationCalculAcor {
                                                     final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final FCalcul fCalcul)
             throws PRACORException, Exception {
 
-
         ReturnedValue returnedValue = REAcorMapper.doMAJPrestations(session, transaction, demande, fCalcul, noCasATraiter);
 
         rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
