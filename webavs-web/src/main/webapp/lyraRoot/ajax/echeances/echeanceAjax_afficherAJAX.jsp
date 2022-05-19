@@ -93,7 +93,6 @@
 						<jsp:param value="<%=viewBean.isSendToGedEnfantRecueilliGratuitement()%>" name="EnfantRecueilliGratuitementGED" />
 						<jsp:param value="<%=viewBean.isValidationDecisionAutorise()%>" name="ValidationDecisionAutorise" />
 						<jsp:param value="<%=viewBean.getMoisCourant()%>" name="MoisDernierPaiment" />
-						<jsp:param value="<%=viewBean.isSendToGedEnfantRecueilliGratuitement()%>" name="EnfantRecueilliGratuitement" />
 					</jsp:include>
 				</div>			
 <%	} %>
