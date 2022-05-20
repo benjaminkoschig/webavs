@@ -9,6 +9,7 @@ import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.splitting.CIDossierSplitting;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 
@@ -35,6 +36,7 @@ public class AirsFPVSynchroCISplitting extends BAbstractEntityExternalService {
 
     @Override
     public void afterUpdate(BEntity entity) throws Throwable {
+        synchronize(entity);
     }
 
     @Override
@@ -70,15 +72,18 @@ public class AirsFPVSynchroCISplitting extends BAbstractEntityExternalService {
      */
     private void synchronize(BEntity entity) throws JadeServiceLocatorException, JadeServiceActivatorException {
         try {
-            // l'entité est une demande de rentes
+            // l'entité est un dossier de splitting
             CIDossierSplitting splitting = null;
 
             if (entity instanceof CIDossierSplitting) {
                 splitting = (CIDossierSplitting) entity;
+                BSession session = splitting.getSession();
+                CIApplication application = (CIApplication) session.getApplication();
+                if(application.isSplittingWantLienGed()) {
+                    propagateTiers(splitting.getIdTiersInterneAssure(), session);
+                    propagateTiers(splitting.getIdTiersInterneConjoint(), session);
+                }
             }
-
-            propagateTiers(splitting.getIdTiersInterneAssure(), splitting.getSession());
-            propagateTiers(splitting.getIdTiersInterneConjoint(), splitting.getSession());
 
         } catch (Exception e) {
             JadeLogger.warn(this,
