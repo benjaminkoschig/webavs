@@ -32,7 +32,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * count(ch.globaz.hera.business.models.famille.MembreFamilleSearch)
      */
@@ -57,8 +57,8 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
     }
 
     /*
-	 * 
-	 */
+     *
+     */
     @Override
     public void createRequerant(String idTiersRequerant) throws MembreFamilleException {
         boolean isMFFoundDomaineStd = false;
@@ -122,11 +122,11 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /**
      * Filtre les membre de famille valable(mariée, en vie) pour la date données en paramétre
-     * 
+     *
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws MembreFamilleException
-     * 
+     *
      */
     @Override
     public MembreFamilleVO[] filtreMembreFamilleWithDate(MembreFamilleVO[] arrayMembreFamilleVO, String date)
@@ -178,8 +178,10 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
                         for (JadeAbstractModel absDonnee : search.getSearchResults()) {
                             RelationConjoint conjoint = (RelationConjoint) absDonnee;
                             isDivorce |= ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(conjoint
+                                    .getSimpleRelationConjoint().getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(conjoint
                                     .getSimpleRelationConjoint().getTypeRelation());
                             isMarie |= ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(conjoint
+                                    .getSimpleRelationConjoint().getTypeRelation()) || ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(conjoint
                                     .getSimpleRelationConjoint().getTypeRelation());
                             if (isDivorce) {
                                 break;
@@ -205,7 +207,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /**
      * Retourne la famille complète dâprès l'id tiers d'un enfant passé en paramètre, pour le domaine des rentes
-     * 
+     *
      * @param idEnfant
      *            , l'id tiers de l'enfant
      * @param withoutParents
@@ -297,7 +299,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService# read(java.lang.String)
      */
     @Override
@@ -312,7 +314,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * search(ch.globaz.hera.business.models.famille.MembreFamilleSearch)
      */
@@ -327,7 +329,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * searchMembresFamilleRequerant(java.lang.String, java.lang.String)
      */
@@ -364,8 +366,8 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
                 result.add(new MembreFamilleVO(mfr.getCsCantonDomicile(), mfr.getCsEtatCivil(), mfr.getCsNationalite(),
                         mfr.getCsSexe(), mfr.getDateDeces(), mfr.getDateNaissance(), mfr.getIdMembreFamille(), mfr
-                                .getIdTiers(), mfr.getNom(), mfr.getNss(), mfr.getPrenom(), mfr
-                                .getRelationAuRequerant()));
+                        .getIdTiers(), mfr.getNom(), mfr.getNss(), mfr.getPrenom(), mfr
+                        .getRelationAuRequerant()));
             }
         }
 
@@ -374,7 +376,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * searchMembresFamilleRequerantDomaineRentes(java.lang.String)
      */
@@ -387,7 +389,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * searchMembresFamilleRequerantDomaineRentes(java.lang.String,java.lang.String)
      */
@@ -400,7 +402,7 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
      * searchMembresFamilleRequerantDomaineRentes(java.lang.String,java.lang.String)
      */
