@@ -594,7 +594,7 @@
         var nbJourSoldeInput = $('#nbJourSolde').val();
         var jourSupplementaireInput = $('#jourSupplementaire').val();
 
-        if(nbJourSoldeInput <0|| jourSupplementaireInput<0 ){
+        if(nbJourSoldeInput < 0 || jourSupplementaireInput < 0 || nbJourSoldeInput + jourSupplementaireInput == 0){
             return false;
         }else{
             return true;
@@ -699,7 +699,7 @@
             showErrorMessage(text);
             return;
         }
-        // Contrôle que le nombre de jours de congé et l'indemnité supplémentaire sont négatifs.
+        // Contrôle que le nombre de jours de congé et l'indemnité supplémentaire sont négatifs ou zéro.
         if(!isDayPositiveNumber()){
             var text = "<%=viewBean.getSession().getLabel("ERROR_PATERNITE_JOUR_NEGATIF")%>";
             showErrorMessage(text);
