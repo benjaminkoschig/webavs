@@ -110,6 +110,7 @@ public class REEcheancesEntity extends BEntity implements IREEcheances {
                 .dbReadBoolean(REEcheancesManager.ALIAS_PRESTATION_BENEFICIAIRE_IS_PRESTATION_BLOQUEE));
         uneRenteDuTiers.setAnneeAnticipation(statement.dbReadNumeric(RERenteAccordee.FIELDNAME_ANNEE_ANTICIPATION));
         uneRenteDuTiers.setCsTypeInfoComplementaire(statement.dbReadNumeric(PRInfoCompl.FIELDNAME_TYPE_INFO_COMPL));
+        uneRenteDuTiers.setIdTiersComplementaire1(statement.dbReadString(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1));
 
         Set<String> codesCasSpeciaux = new HashSet<String>();
         String codeCasSpecial_1 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_1);
@@ -143,7 +144,7 @@ public class REEcheancesEntity extends BEntity implements IREEcheances {
         if (!JadeStringUtil.isBlankOrZero(csTypePeriode)) {
             periodes.add(new REPeriodeEcheances(statement.dbReadNumeric(SFPeriode.FIELD_IDPERIODE), statement
                     .dbReadDateAMJ(SFPeriode.FIELD_DATEDEBUT), statement.dbReadDateAMJ(SFPeriode.FIELD_DATEFIN),
-                    csTypePeriode));
+                    csTypePeriode, statement.dbReadNumeric(SFPeriode.FIELD_ID_RECUEILLANT)));
         }
 
         String dateNaissanceConjoint = statement

@@ -242,6 +242,7 @@ public class REEcheancesManager extends BManager {
                 .append(REEcheancesManager.ALIAS_PRESTATION_BENEFICIAIRE_IS_PRESTATION_BLOQUEE).append(",");
 
         sql.append(RERenteAccordee.FIELDNAME_DATE_REVOCATION_AJOURNEMENT).append(",");
+        sql.append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1).append(",");
         sql.append(RERenteAccordee.FIELDNAME_ANNEE_ANTICIPATION).append(",");
         sql.append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_1).append(",");
         sql.append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_2).append(",");
@@ -272,6 +273,7 @@ public class REEcheancesManager extends BManager {
         sql.append(SFPeriode.FIELD_TYPE).append(",");
         sql.append(SFPeriode.FIELD_DATEDEBUT).append(",");
         sql.append(SFPeriode.FIELD_DATEFIN).append(",");
+        sql.append(SFPeriode.FIELD_ID_RECUEILLANT).append(",");
 
         sql.append(SFRelationConjoint.FIELD_IDRELATIONCONJOINT).append(",");
         sql.append(SFRelationConjoint.FIELD_DATEDEBUT).append(",");

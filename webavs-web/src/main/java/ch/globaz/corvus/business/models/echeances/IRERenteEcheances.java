@@ -32,5 +32,7 @@ public interface IRERenteEcheances {
 
     public String getMontant();
 
+    public String getIdTiersComplementaire1();
+
     public boolean isPrestationBloquee();
 }
