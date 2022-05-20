@@ -621,7 +621,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      */
     private boolean updateCompteAnnexeTitulariseCasInscriptionDirect(CAInscriptionEBill inscriptionEBill) {
         if (StringUtils.isNotEmpty(inscriptionEBill.getNumRefBVR())) {
-            final String idRole = inscriptionEBill.getNumRefBVR().substring(0, 2);
+            String idRole = inscriptionEBill.getNumRefBVR().substring(0, 2);
 
             // Récupération du compte annexe.
             CACompteAnnexeManager manager = new CACompteAnnexeManager();
@@ -629,7 +629,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             if (StringUtils.equals(idRole, AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
                 try {
-                    final String idCompteAnnexe = extractReferenceDepuisReferenceBVR(inscriptionEBill);
+                    final String idCompteAnnexe = extractReferenceDepuisReferenceBVR(inscriptionEBill, idRole);
                     manager.setForIdCompteAnnexeIn(idCompteAnnexe);
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
@@ -640,11 +640,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     return false;
                 }
             } else {
+                // Formatage du id role
+                idRole = "5170" + idRole;
 
                 // Formatage du numéro d'affilié
                 String numeroAffilieFormate;
                 try {
-                    final String numeroAffilie = extractReferenceDepuisReferenceBVR(inscriptionEBill);
+                    final String numeroAffilie = extractReferenceDepuisReferenceBVR(inscriptionEBill, idRole);
                     CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
                     IFormatData affilieFormater = application.getAffileFormater();
                     numeroAffilieFormate = affilieFormater.format(numeroAffilie);
@@ -658,7 +660,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
                 manager.setForIdExterneRole(numeroAffilieFormate);
                 // On récupère l'id rôle à partir du numéro BVR. Cas d'une inscription directe on s'appuie sur le numéro BVR pour récupérer le compte annexe.
-                manager.setForIdRole("5170" + idRole);
+                manager.setForIdRole(idRole);
                 if (executeFindManager(inscriptionEBill, manager, numeroAffilieFormate)) return false;
             }
 
@@ -702,8 +704,23 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      * @param inscriptionEBill : le numéro de référence depuis la référence BVR.
      * @return Le id référence extraite.
      */
-    private String extractReferenceDepuisReferenceBVR(CAInscriptionEBill inscriptionEBill) {
-        return inscriptionEBill.getNumRefBVR().substring(posIdExterneRole, posIdExterneRole + lenIdExterneRole - 1);
+    private String extractReferenceDepuisReferenceBVR(CAInscriptionEBill inscriptionEBill, String idRole) {
+        String idExterneRole = Long.toString(Long.parseLong(inscriptionEBill.getNumRefBVR().substring(posIdExterneRole - 1, posIdExterneRole + lenIdExterneRole - 1)));
+        if (idRole.equals(IntRole.ROLE_AFFILIE_PERSONNEL)
+                || idRole.equals(IntRole.ROLE_AFFILIE_PARITAIRE)
+                || idRole.equals(IntRole.ROLE_AFFILIE)) {
+            String format = CAApplication.getApplicationOsiris().getCAParametres().getFormatAdminNumAffilie();
+            if (!JadeStringUtil.isBlank(format)) {
+                format = JadeStringUtil.removeChar(format, '.');
+                format = JadeStringUtil.removeChar(format, '-');
+                if (idExterneRole.length() < format.length()) {
+                    idExterneRole = JadeStringUtil.fillWithZeroes(idExterneRole, format.length());
+
+                }
+            }
+        }
+
+        return idExterneRole;
     }
 
     /**
