@@ -282,13 +282,13 @@
         }
     }
 
-    /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-    function isDelaiCadreDepasse(dateFin) {
+    /* Contrôle que la date fin calculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+    function isDelaiCadreDepasse(dateFinCalculee) {
         var dateNaissance = Date.toDate($('#dateDebutDroit').val());
         var paterniteMoisMaxDelaiCadre = parseInt("<%=APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE%>");
         var dateDeFinDroitMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+paterniteMoisMaxDelaiCadre));
 
-        if (dateFin > dateDeFinDroitMax) {
+        if (dateFinCalculee > dateDeFinDroitMax) {
             return true;
         } else {
             return false;
@@ -679,8 +679,8 @@
         // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
         $('#dateFinCalculee').val(resolveDateFinCalculee(nbJourSoldeTot));
 
-        /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-        if (isDelaiCadreDepasse(dateFin)) {
+        /* Contrôle que la date fin calculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+        if (isDelaiCadreDepasse(Date.toDate($('#dateFinCalculee').val()))) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI")%>";
             showErrorMessage(text);
             return;
