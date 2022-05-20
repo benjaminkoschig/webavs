@@ -131,7 +131,7 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
                         && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), getDateFin())
                         && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), date)) {
 
-                        typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES;
+                        typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_VEUF;
                 } else {
                     // sinon mariage
                     typeLien = relConjToTypeLien(typeRel);
@@ -191,10 +191,9 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
     /**
      * Vrais si les deux partenaires donnes sont du meme sexe
      *
-     * @param idMembreFamille1
-     * @param idMembreFamille2
+     * @param idMF1
+     * @param idMF2
      * @return
-     * @throws Exception
      */
     private boolean isPartenariatEntrePersonneDuMemeSexe(String idMF1, String idMF2) {
 
