@@ -1306,8 +1306,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception(msgError);
         }
 
-        /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-        if (isDelaiCadreDepasse(dateNaissance, dateDeFinDroit)) {
+        /* Contrôle que la dateDeFinCalculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+        if (isDelaiCadreDepasse(dateNaissance, viewBean.getDateFinCalculee())) {
             String msgError = session.getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI");
             throw new Exception(msgError);
         }
@@ -1452,10 +1452,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
     }
 
-    /* Contrôle que la dateDeFinDroit n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-    public boolean isDelaiCadreDepasse(String dateNaissance, String dateDeFinDroit) {
+    /* Contrôle que la dateDeFinCalculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+    public boolean isDelaiCadreDepasse(String dateNaissance, String dateFinCalculee) {
         LocalDate dateNaissanceD = Dates.toDate(dateNaissance);
-        LocalDate dateDeFinDroitD = Dates.toDate(dateDeFinDroit);
+        LocalDate dateDeFinDroitD = Dates.toDate(dateFinCalculee);
         LocalDate dateDeFinDroitMax = dateNaissanceD.plusMonths(APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE);
 
         if (dateDeFinDroitD.compareTo(dateDeFinDroitMax) > 0) {
