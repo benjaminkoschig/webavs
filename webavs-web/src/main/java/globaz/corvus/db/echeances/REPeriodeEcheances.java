@@ -13,15 +13,21 @@ public class REPeriodeEcheances implements IREPeriodeEcheances {
     private String csTypePeriode;
     private String idPeriode;
     private JadePeriodWrapper periode;
+    private String idRecueillant;
 
     public REPeriodeEcheances() {
         this("", "", "", "");
     }
 
     public REPeriodeEcheances(String idPeriode, String dateDebut, String dateFin, String csTypePeriode) {
+        this(idPeriode, dateDebut, dateFin, csTypePeriode, "");
+    }
+
+    public REPeriodeEcheances(String idPeriode, String dateDebut, String dateFin, String csTypePeriode, String idRecueillant) {
         this.idPeriode = idPeriode;
         periode = new JadePeriodWrapper(dateDebut, dateFin);
         this.csTypePeriode = csTypePeriode;
+        this.idRecueillant = idRecueillant;
     }
 
     /**
@@ -63,6 +69,11 @@ public class REPeriodeEcheances implements IREPeriodeEcheances {
     }
 
     @Override
+    public String getIdRecueillant() {
+        return idRecueillant;
+    }
+
+    @Override
     public JadePeriodWrapper getPeriode() {
         return periode;
     }
@@ -86,5 +97,9 @@ public class REPeriodeEcheances implements IREPeriodeEcheances {
 
     public void setIdPeriode(String idPeriode) {
         this.idPeriode = idPeriode;
+    }
+
+    public void setIdRecueillant(String idRecueillant) {
+        this.idRecueillant = idRecueillant;
     }
 }
