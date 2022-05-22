@@ -12,6 +12,7 @@ class PRAcorLienFamilial {
     private String dateFin;
     private String dateMariage;
     private String typeLien;
+    private String typeFin;
 
     // ~ Constructors
     // -----------------------------------------------------------------------------------------------
@@ -119,5 +120,13 @@ class PRAcorLienFamilial {
      */
     public void setTypeLien(String typeRelation) {
         typeLien = typeRelation;
+    }
+
+    public String getTypeFin() {
+        return typeFin;
+    }
+
+    public void setTypeFin(String typeFin) {
+        this.typeFin = typeFin;
     }
 }
