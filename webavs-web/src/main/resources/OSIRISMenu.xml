@@ -140,7 +140,7 @@
 							</node>
 							<node>
 								<label defaultValue="Génération liste">
-									<language iso="de">DE Génération liste</language>
+									<language iso="de">Listenerstellung</language>
 								</label>
 								<action command="/osiris" responseTarget="fr_main">
 									<parameter name="userAction" value="osiris.ebill.generationListeAffiliesEBill.afficher"/>"/>
