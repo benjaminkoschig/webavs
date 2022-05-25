@@ -1284,11 +1284,11 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
         // documentData.addData("texte_paragraphe_2", this
         // .getText("al.decision.standard.paragraphe2"));
 
-        documentData.addData("texte_paragraphe_3", this.getText("al.decision.standard.paragraphe3", langueDocument));
-
         if (ALCSDossier.ACTIVITE_SALARIE.equals(dossierComplexModel.getDossierModel().getActiviteAllocataire())) {
             documentData.addData("texte_paragraphe_4", generateParagraphe4(langueDocument, dossierComplexModel.getDossierModel()));
         }
+
+        documentData.addData("texte_paragraphe_3", this.getText("al.decision.standard.paragraphe3", langueDocument));
 
     }
 

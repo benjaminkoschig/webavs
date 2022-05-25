@@ -67,7 +67,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
         setIdPeriode(this._incCounter(transaction, "0"));
 
-        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())
+                && !ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(getType())) {
             setIdRecueillant("");
         }
     }
@@ -189,6 +190,23 @@ public class SFPeriode extends BEntity implements ISFPeriode {
 
             _addError(statement.getTransaction(), getSession().getLabel("ERROR_DATE_OBLIGATOIRE"));
         }
+
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(type)) {
+            _propertyMandatory(statement.getTransaction(), idRecueillant,
+                    getSession().getLabel("VALIDATE_ENFANT_RECUEILLI"));
+        }
+
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)) {
+            _propertyMandatory(statement.getTransaction(), idRecueillant,
+                    getSession().getLabel("VALIDATE_ENFANT_RECUEILLI_CONJOINT"));
+        }
+        // Une date de fin obligatoire pour enfant recueilli et enfant recueilli gratuitement par conjoint
+        if(isPeriodeEnfant()&&JAUtil.isDateEmpty(dateFin)){
+                _addError(statement.getTransaction(), getSession().getLabel("ERROR_DATEFIN_OBLIGATOIRE"));
+        }
+    }
+    public boolean isPeriodeEnfant(){
+        return type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT)||type.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT);
     }
 
     @Override
@@ -332,7 +350,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     }
 
     public SFTiersWrapper getTiersRecueillant() {
-        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)) {
+        if (ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(type)
+            || ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(type)) {
             if (tiersRecueillant == null) {
                 try {
                     tiersRecueillant = SFTiersHelper.getTiersParId(getSession(), getIdRecueillant());
@@ -519,7 +538,8 @@ public class SFPeriode extends BEntity implements ISFPeriode {
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         super._beforeUpdate(transaction);
-        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())) {
+        if (!ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT_CONJOINT.equals(getType())
+                && !ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT.equals(getType())) {
             setIdRecueillant("");
         }
 

@@ -108,6 +108,9 @@
 		<when attribute="idProcess" operator="eq" value="REEcheanceRenteOO">
 			<doc-id action="set">CCVD/echeanceRente</doc-id>
 		</when>
+		<when attribute="idProcess" operator="eq" value="REEcheanceRenteEnfantOO">
+            <doc-id action="set">CCVD/echeanceRenteEnfant</doc-id>
+        </when>
 		<when attribute="idProcess" operator="eq" value="RETransfertValideOO">
 			<doc-id action="set">transfertDeDossier</doc-id>
 		</when>

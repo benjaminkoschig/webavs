@@ -31,8 +31,8 @@ import globaz.osiris.db.ebill.CAInscriptionEBill;
 import globaz.osiris.db.ebill.enums.CAFichierInscriptionStatutEBillEnum;
 import globaz.osiris.db.ebill.enums.CAInscriptionTypeEBillEnum;
 import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
-import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.external.IntRole;
+import globaz.osiris.parser.IntReferenceBVRParser;
 import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
 import globaz.osiris.process.ebill.EBillMail;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
@@ -70,6 +70,8 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private int inscriptionKO = 0;
     private int resiliationOK = 0;
     private int resiliationKO = 0;
+    private int lenIdExterneRole;
+    private int posIdExterneRole;
 
     @Override
     protected void _executeCleanUp() {
@@ -86,6 +88,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             initBsession();
             initServiceFtp();
+            initIdReferenceParameter();
 
             isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
             boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
@@ -150,6 +153,16 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
+     * Initialisation des paramètres de Id référence dans le Numéro de référence BVR
+     */
+    private void initIdReferenceParameter() {
+        lenIdExterneRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));;
+        posIdExterneRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                IntReferenceBVRParser.POS_ID_EXTERNE_ROLE));
+    }
+
+    /**
      * Initialisation du service ftp.
      */
     private void initServiceFtp() throws PropertiesException {
@@ -207,7 +220,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
                     List<CAInscriptionEBill> allInscriptions = new ArrayList<>();
                     if ( CAProperties.EBILL_BASCULE.getBooleanValue()) {
-                        //Chargement de l'ordre des colonne
+                        //Chargement de l'ordre des colonnes
                         String[] csvColonnes = line.split(SEPARATOR);
 
                         Map<Integer, CAInscriptionEBillEnum> csvColonneOrder = new HashMap<>();
@@ -358,7 +371,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         line = line.trim();
 
         // Split des données
-        String[] datasTemp = line.split(SEPARATOR);
+        String[] datasTemp = line.split(SEPARATOR, -1);
 
         orderColonnes.forEach((index, col) -> {
             switch (col) {
@@ -508,15 +521,14 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private boolean saveInscriptions(List<CAInscriptionEBill> allInscriptions, CAFichierInscriptionEBill fichier) {
         boolean toutesInscriptionsSucces = true;
         for (CAInscriptionEBill eachInscription : allInscriptions) {
-            final String numeroAdherent = eachInscription.geteBillAccountID();
             final CAInscriptionTypeEBillEnum typeEBillEnum = eachInscription.getType();
 
             boolean result;
             boolean resultInscription;
-            if (StringUtils.isNotEmpty(numeroAdherent)) {
+            if (StringUtils.isNotEmpty(eachInscription.geteBillAccountID())) {
                 switch (typeEBillEnum) {
                     case INSCRIPTION:
-                        result = updateCompteAnnexeTitulariseCasInscription(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasInscription(eachInscription);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             inscriptionOK++;
@@ -526,7 +538,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         }
                         break;
                     case INSCRIPTION_DIRECTE:
-                        result = updateCompteAnnexeTitulariseCasInscriptionDirect(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasInscriptionDirect(eachInscription);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             inscriptionOK++;
@@ -536,7 +548,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         }
                         break;
                     case RESILIATION:
-                        result = updateCompteAnnexeTitulariseCasResiliation(eachInscription, numeroAdherent);
+                        result = updateCompteAnnexeTitulariseCasResiliation(eachInscription);
                         resultInscription = saveInscription(fichier, eachInscription, result);
                         if (result && resultInscription) {
                             resiliationOK++;
@@ -563,53 +575,36 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     /**
      * Mise à jour du compte annexe lors d'une résiliation V1.
      *
-     * @param numeroAdherent : le numéro d'adhérent (id eBill) lié à la résiliation.
+     * @param eachInscription l'inscription eBill à traiter.
      * @return vrai si la mise à jour du compte annexe est en succès.
      */
-    private boolean updateCompteAnnexeTitulariseCasResiliation(CAInscriptionEBill eachInscription, final String numeroAdherent) {
+    private boolean updateCompteAnnexeTitulariseCasResiliation(CAInscriptionEBill eachInscription) {
         // Récupération du compte annexe.
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(getSession());
-        manager.setForEBillAccountID(numeroAdherent);
-        if (isPlusieursTypeAffilie) {
-            if (eachInscription.getRoleParitaire() && eachInscription.getRolePersonnel()) {
-                HashSet<String> idsRole = new HashSet();
-                idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
-                idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
-                manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
-            } else if (eachInscription.getRoleParitaire()) {
-                manager.setForIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
-            } else if (eachInscription.getRolePersonnel()) {
-                manager.setForIdRole(IntRole.ROLE_AFFILIE_PERSONNEL);
-            }
-        } else {
-            manager.setForIdRole(IntRole.ROLE_AFFILIE);
-        }
+        manager.setForEBillAccountID(eachInscription.geteBillAccountID());
 
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED"), numeroAdherent);
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED"), eachInscription.geteBillAccountID());
             LOG.error(erreurInterne, e);
             eachInscription.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
 
-        if (eachInscription.getRoleParitaire() && eachInscription.getRolePersonnel() && manager.getSize() == 2) {
+        if (manager.getSize() > 0) {
             boolean inscriptionParitairePersonelSucces = true;
             for (int i = 0; i < manager.getSize(); i++) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                if (!majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe)) {
+                if (!majCompteAnnexe(eachInscription, compteAnnexe)) {
                     inscriptionParitairePersonelSucces = false;
                 }
             }
             return inscriptionParitairePersonelSucces;
-        } else if (manager.getSize() == 1) {
-            CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
-            return majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe);
         } else {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED"), numeroAdherent);
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED"), eachInscription.geteBillAccountID());
             LOG.warn(erreurInterne);
             eachInscription.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n");
@@ -622,13 +617,11 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      * Mise à jour du compte annexe lors d'une inscription directe V1.
      *
      * @param inscriptionEBill l'inscription eBill à traiter.
-     * @param numeroAdherent   le numéro d'adhérent (id eBill) lié à l'inscription.
      * @return vrai si la mise à jour du compte annexe est en succès.
      */
-    private boolean updateCompteAnnexeTitulariseCasInscriptionDirect(CAInscriptionEBill inscriptionEBill,
-                                                                     final String numeroAdherent) {
+    private boolean updateCompteAnnexeTitulariseCasInscriptionDirect(CAInscriptionEBill inscriptionEBill) {
         if (StringUtils.isNotEmpty(inscriptionEBill.getNumRefBVR())) {
-            final String idRole = inscriptionEBill.getNumRefBVR().substring(0, 2);
+            String idRole = inscriptionEBill.getNumRefBVR().substring(0, 2);
 
             // Récupération du compte annexe.
             CACompteAnnexeManager manager = new CACompteAnnexeManager();
@@ -636,7 +629,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             if (StringUtils.equals(idRole, AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
                 try {
-                    final String idCompteAnnexe = formatterNumeroDepuisRefBVR(inscriptionEBill);
+                    final String idCompteAnnexe = extractReferenceDepuisReferenceBVR(inscriptionEBill, idRole);
                     manager.setForIdCompteAnnexeIn(idCompteAnnexe);
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
@@ -647,11 +640,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     return false;
                 }
             } else {
+                // Formatage du id role
+                idRole = "5170" + idRole;
 
                 // Formatage du numéro d'affilié
                 String numeroAffilieFormate;
                 try {
-                    final String numeroAffilie = formatterNumeroDepuisRefBVR(inscriptionEBill);
+                    final String numeroAffilie = extractReferenceDepuisReferenceBVR(inscriptionEBill, idRole);
                     CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
                     IFormatData affilieFormater = application.getAffileFormater();
                     numeroAffilieFormate = affilieFormater.format(numeroAffilie);
@@ -665,22 +660,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
                 manager.setForIdExterneRole(numeroAffilieFormate);
                 // On récupère l'id rôle à partir du numéro BVR. Cas d'une inscription directe on s'appuie sur le numéro BVR pour récupérer le compte annexe.
-                StringBuilder idRoleComplet = new StringBuilder("5170").append(idRole);
-                manager.setForIdRole(idRoleComplet.toString());
-                try {
-                    manager.find(BManager.SIZE_NOLIMIT);
-                } catch (Exception e) {
-                    String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilieFormate);
-                    LOG.error(erreurInterne, e);
-                    inscriptionEBill.setTexteErreurInterne(erreurInterne);
-                    error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
-                    return false;
-                }
+                manager.setForIdRole(idRole);
+                if (executeFindManager(inscriptionEBill, manager, numeroAffilieFormate)) return false;
             }
 
             if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
-                return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+                return majCompteAnnexe(inscriptionEBill, compteAnnexe);
             } else {
                 String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_REF_BVR_FAILED"), inscriptionEBill.getNumRefBVR());
                 LOG.warn(erreurInterne);
@@ -699,42 +685,60 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         return false;
     }
 
+    private boolean executeFindManager(CAInscriptionEBill inscriptionEBill, CACompteAnnexeManager manager, String numeroAffilieFormate) {
+        try {
+            manager.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilieFormate);
+            LOG.error(erreurInterne, e);
+            inscriptionEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Méthode permettant de formatter le numéro depuis la référence BVR : on doit supprimer les 0 devant la première valeur.
      *
-     * @param inscriptionEBill : le numéro depuis la ref BVR.
-     * @return le numéro formatté.
-     * @throws CATechnicalException : exception lancée si le formattage échoue.
+     * @param inscriptionEBill : le numéro de référence depuis la référence BVR.
+     * @return Le id référence extraite.
      */
-    private String formatterNumeroDepuisRefBVR(CAInscriptionEBill inscriptionEBill) throws CATechnicalException {
-        String numero;
-        try {
-            numero = Long.toString(new Long(inscriptionEBill.getNumRefBVR().substring(3, 15)));
-        } catch (Exception e) {
-            throw new CATechnicalException(getSession().getLabel("INSCR_EBILL_FORMAT_ID_AFFILIE_PARSE_FAILED"), e);
+    private String extractReferenceDepuisReferenceBVR(CAInscriptionEBill inscriptionEBill, String idRole) {
+        String idExterneRole = Long.toString(Long.parseLong(inscriptionEBill.getNumRefBVR().substring(posIdExterneRole - 1, posIdExterneRole + lenIdExterneRole - 1)));
+        if (idRole.equals(IntRole.ROLE_AFFILIE_PERSONNEL)
+                || idRole.equals(IntRole.ROLE_AFFILIE_PARITAIRE)
+                || idRole.equals(IntRole.ROLE_AFFILIE)) {
+            String format = CAApplication.getApplicationOsiris().getCAParametres().getFormatAdminNumAffilie();
+            if (!JadeStringUtil.isBlank(format)) {
+                format = JadeStringUtil.removeChar(format, '.');
+                format = JadeStringUtil.removeChar(format, '-');
+                if (idExterneRole.length() < format.length()) {
+                    idExterneRole = JadeStringUtil.fillWithZeroes(idExterneRole, format.length());
+
+                }
+            }
         }
-        return numero;
+
+        return idExterneRole;
     }
 
     /**
      * Mise à jour du compte annexe lors d'une inscription V1.
      *
      * @param inscriptionEBill l'inscription eBill à traiter.
-     * @param numeroAdherent   le numéro d'adhérent (id eBill) lié à l'inscription.
      * @return vrai si la mise à jour du compte annexe est en succès.
      */
-    private boolean updateCompteAnnexeTitulariseCasInscription(CAInscriptionEBill inscriptionEBill,
-                                                               final String numeroAdherent) {
+    private boolean updateCompteAnnexeTitulariseCasInscription(CAInscriptionEBill inscriptionEBill) {
         String numeroAffilie = inscriptionEBill.getNumeroAffilie();
         if (StringUtils.isNotEmpty(numeroAffilie)) {
-
             // Récupération du compte annexe.
             CACompteAnnexeManager manager = new CACompteAnnexeManager();
             manager.setSession(getSession());
             manager.setForIdExterneRole(numeroAffilie);
             if (isPlusieursTypeAffilie) {
                 if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel()) {
-                    HashSet<String> idsRole = new HashSet();
+                    HashSet<String> idsRole = new HashSet<>();
                     idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
                     idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
                     manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
@@ -747,28 +751,20 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 manager.setForIdRole(IntRole.ROLE_AFFILIE);
             }
 
-            try {
-                manager.find(BManager.SIZE_NOLIMIT);
-            } catch (Exception e) {
-                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilie);
-                LOG.error(erreurInterne, e);
-                inscriptionEBill.setTexteErreurInterne(erreurInterne);
-                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
-                return false;
-            }
+            if (executeFindManager(inscriptionEBill, manager, numeroAffilie)) return false;
 
             if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel() && manager.getSize() == 2) {
                 boolean inscriptionParitairePersonelSucces = true;
                 for (int i = 0; i < manager.getSize(); i++) {
                     CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                    if (!majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe)) {
+                    if (!majCompteAnnexe(inscriptionEBill, compteAnnexe)) {
                         inscriptionParitairePersonelSucces = false;
                     }
                 }
                 return inscriptionParitairePersonelSucces;
             } else if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
-                return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+                return majCompteAnnexe(inscriptionEBill, compteAnnexe);
             } else {
                 String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_ID_AFFILIE_FAILED"), numeroAffilie);
                 LOG.warn(erreurInterne);
@@ -782,47 +778,56 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Mise à jour du compte annexe pour une inscription V1.
+     * Mise à jour du compte annexe pour une inscription.
      *
-     * @param numeroAdherent : le numéro d'adhérent (id eBill) de l'inscription --> vide dans le cas d'une résiliation.
-     * @param email          : le mail lié à l'inscription --> vide dans le cadre d'une résiliation.
      * @param compteAnnexe   : le compte annexe à mettre à jour.
      * @return vrai si l'update s'est bien passé.
      */
-    private boolean majCompteAnnexe(CAInscriptionEBill inscriptionEBill, final String numeroAdherent,
-                                    final String email,
-                                    final CACompteAnnexe compteAnnexe) {
-        compteAnnexe.seteBillAccountID(numeroAdherent);
-        compteAnnexe.seteBillMail(email);
-        if(JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillDateInscription())){
+    private boolean majCompteAnnexe(CAInscriptionEBill inscriptionEBill, final CACompteAnnexe compteAnnexe) {
+        if (inscriptionEBill.getType().estResiliation()) {
+            compteAnnexe.seteBillAccountID(null);
+            compteAnnexe.seteBillMail(null);
+            compteAnnexe.seteBillDateInscription(null);
+        } else {
+            if (!StringUtils.isEmpty(compteAnnexe.geteBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_ALREADY_REGISTERED"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
+                LOG.error(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
+                return false;
+            }
+
+            compteAnnexe.seteBillAccountID(inscriptionEBill.geteBillAccountID());
+            compteAnnexe.seteBillMail(inscriptionEBill.getEmail());
             compteAnnexe.seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
         }
+
         try {
             compteAnnexe.update();
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
-        return sendMail(inscriptionEBill, numeroAdherent, email, compteAnnexe);
+        return sendMail(inscriptionEBill, compteAnnexe);
     }
 
-    private boolean sendMail(CAInscriptionEBill inscriptionEBill, String numeroAdherent, String email, CACompteAnnexe compteAnnexe) {
+    private boolean sendMail(CAInscriptionEBill inscriptionEBill, CACompteAnnexe compteAnnexe) {
         // envoie un mail pour les inscriptions seulement
-        if(JadeStringUtil.isEmpty(numeroAdherent)) {
-            if (JadeStringUtil.isEmpty(email)) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+        if(!inscriptionEBill.getType().estResiliation()) {
+            if (JadeStringUtil.isEmpty(inscriptionEBill.getEmail()) || JadeStringUtil.isEmpty(inscriptionEBill.geteBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
                 LOG.error(erreurInterne);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n");
                 return false;
             }
             try {
-                EBillMail.sendMailConfirmation(email, compteAnnexe.getTiers().getLangueISO());
+                EBillMail.sendMailConfirmation(inscriptionEBill.getEmail(), compteAnnexe.getTiers().getLangueISO());
             } catch (Exception e) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), numeroAdherent);
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), inscriptionEBill.geteBillAccountID());
                 LOG.error(erreurInterne, e);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
@@ -876,7 +881,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS);
         eMailAddress = eMailAddress.replaceAll("\\s+", "");
         String[] eMailAddresses = new String[1];
-        if (((eMailAddress == null) || (eMailAddress.length() == 0)) && getSession() != null) {
+        if (eMailAddress.length() == 0 && getSession() != null) {
             eMailAddresses[0] = getSession().getUserEMail();
         } else {
             eMailAddresses = eMailAddress.split("[,;:]");

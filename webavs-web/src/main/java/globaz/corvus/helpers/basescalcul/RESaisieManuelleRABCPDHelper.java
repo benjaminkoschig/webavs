@@ -776,22 +776,22 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
 
             SFMembreFamille parentLPart1 = null;
             SFMembreFamille parentLPart2 = null;
-            if (enf.getPere() != null) {
+            if (enf.getParent1() != null) {
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getPere().getIdMembreFamille())) {
+                        .equals(enf.getParent1().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    parentLPart1 = enf.getMere();
+                    parentLPart1 = enf.getParent2();
                 }
             }
 
             // tiersComplementaire2 mere
-            if (enf.getMere() != null) {
+            if (enf.getParent2() != null) {
                 if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
-                        .equals(enf.getMere().getIdMembreFamille())) {
+                        .equals(enf.getParent2().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    parentLPart2 = enf.getPere();
+                    parentLPart2 = enf.getParent1();
                 }
             }
             if((parentLPart1 != null && parentLPart2 != null) && parentLPart1.getCsSexe().equals(parentLPart2.getCsSexe()) ){
@@ -837,19 +837,19 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
             enf.retrieve();
 
             // tiersComplementaire1 pere (si conj. inc. 00000000000)
-            if (enf.getPere() != null) {
-                enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
+            if (enf.getParent1() != null) {
+                enf.getParent1().getCsCantonDomicile();
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getParent1().getIdMembreFamille())) {
                     // TODO oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    ra.setIdTiersComplementaire1(enf.getPere().getIdTiers());
+                    ra.setIdTiersComplementaire1(enf.getParent1().getIdTiers());
                 }
             }
 
             // tiersComplementaire2 mere
-            if (enf.getMere() != null) {
-                enf.getMere().getCsCantonDomicile();
-                ra.setIdTiersComplementaire2(enf.getMere().getIdTiers());
+            if (enf.getParent2() != null) {
+                enf.getParent2().getCsCantonDomicile();
+                ra.setIdTiersComplementaire2(enf.getParent2().getIdTiers());
             }
 
             // Pour ayant droit enfant
@@ -879,18 +879,18 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
             enf.retrieve();
 
             // tiersComplementaire1 mere
-            if (enf.getMere() != null) {
-                enf.getMere().getCsCantonDomicile();
-                ra.setIdTiersComplementaire1(enf.getMere().getIdTiers());
+            if (enf.getParent2() != null) {
+                enf.getParent2().getCsCantonDomicile();
+                ra.setIdTiersComplementaire1(enf.getParent2().getIdTiers());
             }
 
             // tiersComplementaire2 pere (si conj. inc. 00000000000)
-            if (enf.getPere() != null) {
-                enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
+            if (enf.getParent1() != null) {
+                enf.getParent1().getCsCantonDomicile();
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getParent1().getIdMembreFamille())) {
                     // TODO oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    ra.setIdTiersComplementaire2(enf.getPere().getIdTiers());
+                    ra.setIdTiersComplementaire2(enf.getParent1().getIdTiers());
                 }
             }
 

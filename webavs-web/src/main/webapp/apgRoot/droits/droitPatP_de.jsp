@@ -282,13 +282,13 @@
         }
     }
 
-    /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-    function isDelaiCadreDepasse(dateFin) {
+    /* Contrôle que la date fin calculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+    function isDelaiCadreDepasse(dateFinCalculee) {
         var dateNaissance = Date.toDate($('#dateDebutDroit').val());
         var paterniteMoisMaxDelaiCadre = parseInt("<%=APAbstractDroitPHelper.PATERNITE_MOIS_MAX_DELAI_CADRE%>");
         var dateDeFinDroitMax = Date.toDate(dateNaissance.setMonth(dateNaissance.getMonth()+paterniteMoisMaxDelaiCadre));
 
-        if (dateFin > dateDeFinDroitMax) {
+        if (dateFinCalculee > dateDeFinDroitMax) {
             return true;
         } else {
             return false;
@@ -594,7 +594,7 @@
         var nbJourSoldeInput = $('#nbJourSolde').val();
         var jourSupplementaireInput = $('#jourSupplementaire').val();
 
-        if(nbJourSoldeInput <0|| jourSupplementaireInput<0 ){
+        if(nbJourSoldeInput < 0 || jourSupplementaireInput < 0 || nbJourSoldeInput + jourSupplementaireInput === 0){
             return false;
         }else{
             return true;
@@ -677,10 +677,10 @@
         nbJourSoldeTot += nbJourSuppTableau;
 
         // On définit dateFinCalculee avec la date la plus éloignée du tableau ou le champs "période au"
-        $('#dateFinCalculee').val(resolveDateFinCalculee(nbJourSoldeTot));
+        var dateFinCalculee = resolveDateFinCalculee(nbJourSoldeTot);
 
-        /* Contrôle que la date fin période n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
-        if (isDelaiCadreDepasse(dateFin)) {
+        /* Contrôle que la date fin calculee sur la base des périodes n'est pas éloigné de plus de 6 mois (délai cadre) de la date de naissance */
+        if (isDelaiCadreDepasse(Date.toDate(dateFinCalculee))) {
             var text = "<%=viewBean.getSession().getLabel("ERREUR_DELAI_CADRE_APRES_DATE_NAI")%>";
             showErrorMessage(text);
             return;
@@ -699,14 +699,15 @@
             showErrorMessage(text);
             return;
         }
-        // Contrôle que le nombre de jours de congé et l'indemnité supplémentaire sont négatifs.
+        // Contrôle que le nombre de jours de congé et l'indemnité supplémentaire sont négatifs ou zéro.
         if(!isDayPositiveNumber()){
             var text = "<%=viewBean.getSession().getLabel("ERROR_PATERNITE_JOUR_NEGATIF")%>";
             showErrorMessage(text);
             return;
         }
 
-        // Si on arrive jusqu'ici tous les contrôles sont passés et on peut ajouter la période
+        // Si on arrive jusqu'ici tous les contrôles sont passés et on peut ajouter la période et mettre à jour la date de fin calculée
+        $('#dateFinCalculee').val(dateFinCalculee);
         addPeriode();
     }
 

@@ -49,12 +49,12 @@ public class SFApercuEnfant extends SFMembreFamille {
     private String dateAdoption = "";
     private String idConjoint = "";
     private String idEnfant = "";
-    private SFMembreFamille mere = null;
+    private SFMembreFamille parent2 = null;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
-    private SFMembreFamille pere = null;
+    private SFMembreFamille parent1 = null;
 
     /*
      * (non-Javadoc)
@@ -147,16 +147,16 @@ public class SFApercuEnfant extends SFMembreFamille {
             SFMembreFamille parent1 = getParent(getConjoints().getIdConjoint1());
             SFMembreFamille parent2 = getParent(getConjoints().getIdConjoint2());
             if (ITIPersonne.CS_HOMME.equals(parent1.getCsSexe()) || ITIPersonne.CS_FEMME.equals(parent2.getCsSexe())) {
-                pere = parent1;
-                mere = parent2;
+                this.parent1 = parent1;
+                this.parent2 = parent2;
             } else if (ITIPersonne.CS_FEMME.equals(parent1.getCsSexe())
                     || ITIPersonne.CS_HOMME.equals(parent2.getCsSexe())) {
-                mere = parent1;
-                pere = parent2;
+                this.parent2 = parent1;
+                this.parent1 = parent2;
             } else {
                 // mis aléatoirement
-                mere = parent1;
-                pere = parent2;
+                this.parent2 = parent1;
+                this.parent1 = parent2;
             }
         } catch (RuntimeException e) {
             return;
@@ -214,56 +214,56 @@ public class SFApercuEnfant extends SFMembreFamille {
      * 
      * @return null si indeterminé ou en cas d'erreur
      */
-    public SFMembreFamille getMere() {
+    public SFMembreFamille getParent2() {
         checkParents();
-        return mere;
+        return parent2;
     }
 
     /**
      * @return le numéro AVS de la mère ou null si non determiné
      */
-    public String getNoAvsMere() {
-        SFMembreFamille mere = getMere();
-        if (mere == null) {
+    public String getNoAvsParent2() {
+        SFMembreFamille parent2 = getParent2();
+        if (parent2 == null) {
             return null;
         } else {
-            return mere.getNss();
+            return parent2.getNss();
         }
     }
 
     /**
      * @return le numéro AVS du père ou null si non determiné
      */
-    public String getNoAvsPere() {
-        SFMembreFamille pere = getPere();
-        if (pere == null) {
+    public String getNoAvsParent1() {
+        SFMembreFamille parent1 = getParent1();
+        if (parent1 == null) {
             return null;
         } else {
-            return pere.getNss();
+            return parent1.getNss();
         }
     }
 
     /**
      * @return le numéro AVS de la mère ou null si non determiné
      */
-    public String getNomMere() {
-        SFMembreFamille mere = getMere();
-        if (mere == null) {
+    public String getNomParent2() {
+        SFMembreFamille parent2 = getParent2();
+        if (parent2 == null) {
             return null;
         } else {
-            return mere.getNom();
+            return parent2.getNom();
         }
     }
 
     /**
      * @return le numéro AVS du père ou null si non determiné
      */
-    public String getNomPere() {
-        SFMembreFamille pere = getPere();
-        if (pere == null) {
+    public String getNomParent1() {
+        SFMembreFamille parent1 = getParent1();
+        if (parent1 == null) {
             return null;
         } else {
-            return pere.getNom();
+            return parent1.getNom();
         }
     }
 
@@ -287,32 +287,32 @@ public class SFApercuEnfant extends SFMembreFamille {
      * 
      * @return null si indeterminé ou en cas d'erreur
      */
-    public SFMembreFamille getPere() {
+    public SFMembreFamille getParent1() {
         checkParents();
-        return pere;
+        return parent1;
     }
 
     /**
      * @return le numéro AVS de la mère ou null si non determiné
      */
-    public String getPrenomMere() {
-        SFMembreFamille mere = getMere();
-        if (mere == null) {
+    public String getPrenomParent2() {
+        SFMembreFamille parent2 = getParent2();
+        if (parent2 == null) {
             return null;
         } else {
-            return mere.getPrenom();
+            return parent2.getPrenom();
         }
     }
 
     /**
      * @return le numéro AVS du père ou null si non determiné
      */
-    public String getPrenomPere() {
-        SFMembreFamille pere = getPere();
-        if (pere == null) {
+    public String getPrenomParent1() {
+        SFMembreFamille parent1 = getParent1();
+        if (parent1 == null) {
             return null;
         } else {
-            return pere.getPrenom();
+            return parent1.getPrenom();
         }
     }
 
@@ -339,21 +339,39 @@ public class SFApercuEnfant extends SFMembreFamille {
         return false;
     }
 
-    public String getDateNaissancePere() {
-        SFMembreFamille pere = getPere();
-        if (pere == null) {
+    public String getDateNaissanceParent1() {
+        SFMembreFamille parent1 = getParent1();
+        if (parent1 == null) {
             return null;
         } else {
-            return pere.getDateNaissance();
+            return parent1.getDateNaissance();
         }
     }
 
-    public String getDateNaissanceMere() {
-        SFMembreFamille mere = getMere();
-        if (mere == null) {
+    public String getDateNaissanceParent2() {
+        SFMembreFamille parent2 = getParent2();
+        if (parent2 == null) {
             return null;
         } else {
-            return mere.getDateNaissance();
+            return parent2.getDateNaissance();
+        }
+    }
+
+    public String getSexeParent1() {
+        SFMembreFamille parent1 = getParent1();
+        if (parent1 == null) {
+            return null;
+        } else {
+            return parent1.getCsSexe();
+        }
+    }
+
+    public String getSexeParent2() {
+        SFMembreFamille parent2 = getParent2();
+        if (parent2 == null) {
+            return null;
+        } else {
+            return parent2.getCsSexe();
         }
     }
 

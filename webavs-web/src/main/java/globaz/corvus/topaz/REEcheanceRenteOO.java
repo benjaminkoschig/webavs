@@ -65,16 +65,19 @@ import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
 import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class REEcheanceRenteOO extends AbstractJadeJob {
 
-    /**
-     * 
-     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(REEcheanceRenteOO.class);
+
     private static final long serialVersionUID = 1L;
     private static final String CDT_AGEAVS = "{AgeAVS}";
     private static final String CDT_ANNEESALAIRE = "{AnneeSalaire}";
     private static final String CDT_BENEFICIAIRE = "{beneficiaire}";
+    private static final String CDT_PRENOM_NOM_ENFANT = "{PrenomNomEnfant}";
+    private static final String CDT_NSS_PRENOM_NOM_ENFANT = "{Nss-PrenomNomEnfant}";
     private static final String CDT_DATEECHEANCE = "{DateEcheance}";
     private static final String CDT_DATENAISSANCE = "{dateNaissance}";
     private static final String CDT_DERNIERJOURSMOIS = "{DernierJoursMois}";
@@ -111,6 +114,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
     private String moisEcheance;
     private String nomBeneficiaire;
     private boolean renteDeVeufGED;
+    private boolean echeanceEnfantRecueilliGratuitementGED;
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
     private PRTiersWrapper tiersAdressePaiement;
@@ -142,6 +146,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         moisEcheance = "";
         nomBeneficiaire = "";
         renteDeVeufGED = false;
+        echeanceEnfantRecueilliGratuitementGED = false;
         tiersAdresse = null;
         tiersBeneficiaire = null;
         titre = "";
@@ -217,11 +222,141 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             chargementDonneesMotifAgeAVSConjoint();
         } else if (REMotifEcheance.RenteDeVeuf.name().equals(echeanceCourrante.getMotifLettre())) {
             chargementDonnéesMotifVeuf();
+        } else if (REMotifEcheance.EcheanceEnfantRecueilliGratuitement.name().equals(echeanceCourrante.getMotifLettre())) {
+            chargementDonneesMotifEcheanceEnfantRecueilliGratuitement();
         } else {
             // Pas de signalement de ces cas
             // String message = this.getSession().getLabel("AUCUNE_LETTRE_GENEREE_POUR_MOTIF_SUIVANT");
             // throw new Exception(message + " [" + this.echeanceCourrante.getMotifLettre() + "]");
         }
+    }
+
+    private void chargementDonneesMotifEcheanceEnfantRecueilliGratuitement() throws Exception {
+        data = new DocumentData();
+        data.addData("idProcess", "REEcheanceRenteEnfantOO");
+
+        RERenteAccordee rd = new RERenteAccordee();
+        rd.setSession(getSession());
+        rd.setId(echeanceCourrante.getIdRenteAccordee());
+        rd.retrieve();
+
+        // Traitement du titre, avec le nom/prénom de l'enfant et la date de naissance
+        String concerne = PRStringUtils.replaceString(document.getTextes(10).getTexte(1).getDescription(),
+                REEcheanceRenteOO.CDT_PRENOM_NOM_ENFANT, nomBeneficiaire);
+
+        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_DATENAISSANCE,
+                JACalendar.format(echeanceCourrante.getDateNaissance(), codeIsoLangue));
+
+        data.addData("LETTRE_CONCERNE", concerne);
+
+        // Traitement du titre, en fonction du tiers de l'adresse
+        if (codeIsoLangue.equals("DE")) {
+            data.addData("titreTiers", titre);
+        } else {
+            data.addData("titreTiers", titre + ",");
+        }
+
+        // Traitement du paragraphe 1, avec le montant de la prestation
+        String actuellement = PRStringUtils.replaceString(document.getTextes(10).getTexte(2).getDescription(),
+                REEcheanceRenteOO.CDT_MONTANTPREST,
+                echeanceCourrante.getMontantPrestation());
+        data.addData("LETTRE_PARA1", actuellement);
+
+        // Traitement du paragraphe 2
+        data.addData("LETTRE_PARA2", document.getTextes(10).getTexte(3).getDescription());
+
+        // Traitement du paragraphe 3
+        data.addData("LETTRE_PARA3", document.getTextes(10).getTexte(4).getDescription());
+
+        // Traitement du paragraphe 4, avec la valeur du dernier jour du mois de l'échéance
+        JACalendarGregorian jaCalGre = new JACalendarGregorian();
+        // Calcul du dernier jours du mois
+        JADate dernierJourMois = jaCalGre.addDays(jaCalGre.addMonths(new JADate("01." + getMoisEcheance()), 1), -1);
+        // Insertion du dernier jours du mois dans le texte
+        String paraAvecDateEcheance = PRStringUtils.replaceString(document.getTextes(10).getTexte(5).getDescription(),
+                REEcheanceRenteOO.CDT_DERNIERJOURSMOIS,
+                JACalendar.format(dernierJourMois, JACalendar.FORMAT_DDsMMsYYYY));
+        // Insertion du texte dans le doc
+        data.addData("LETTRE_PARA4", paraAvecDateEcheance);
+
+        // Traitement du paragraphe 5, avec le nom du bénéficiare
+        String vivezVous = PRStringUtils.replaceString(document.getTextes(10).getTexte(6).getDescription(),
+                REEcheanceRenteOO.CDT_NSS_PRENOM_NOM_ENFANT, echeanceCourrante.getNss() + " - " + nomBeneficiaire);
+        data.addData("LETTRE_PARA5", vivezVous);
+
+        // Traitement du paragraphe 6, case à cocher OUI / NON
+        String espaceAvant = " ";
+        String espaceApres = "                              ";
+        data.addData("LETTRE_PARA6_BOX", espaceAvant + document.getTextes(10).getTexte(19).getDescription() + espaceApres);
+        data.addData("LETTRE_PARA6", document.getTextes(10).getTexte(7).getDescription());
+        data.addData("LETTRE_PARA6_SUITE1", document.getTextes(10).getTexte(8).getDescription());
+
+        // Traitement du paragraphe 7, réponse OUI
+        data.addData("LETTRE_PARA7", document.getTextes(10).getTexte(9).getDescription());
+        data.addData("LETTRE_PARA7_SUITE1", document.getTextes(10).getTexte(11).getDescription());
+
+        // Traitement du paragraphe 8, rRéponse NON
+        data.addData("LETTRE_PARA8", document.getTextes(10).getTexte(10).getDescription());
+        data.addData("LETTRE_PARA8_SUITE1",  document.getTextes(10).getTexte(11).getDescription());
+
+        // Traitement du paragraphe 9, certifie, homme/femme en fonction du tiers de l'adresse
+        String certifie = "";
+        if (PRACORConst.CS_HOMME.equals(tiersAdressePaiement.getSexe())) {
+            certifie = document.getTextes(10).getTexte(12).getDescription();
+        } else {
+            certifie = document.getTextes(10).getTexte(13).getDescription();
+        }
+        data.addData("LETTRE_PARA9", certifie);
+
+        // Traitement paragraphe 10, Lieu date, signature
+        data.addData("LETTRE_PARA10", document.getTextes(10).getTexte(14).getDescription() + "  " + document.getTextes(10).getTexte(15).getDescription());
+
+        // Traitement paragraphe 11, Salutations
+        String salutations = PRStringUtils.replaceString(document.getTextes(10).getTexte(16).getDescription(),
+                REEcheanceRenteOO.CDT_TITRE, titre);
+        data.addData("LETTRE_PARA11", salutations);
+
+        chargementEnTeteEtSignatureLettre(data);
+
+        JadePublishDocumentInfo pubInfoEnfantRecueilliGratuitement = JadePublishDocumentInfoProvider.newInstance(this);
+        pubInfoEnfantRecueilliGratuitement.setDocumentTitle(getSession().getLabel("ECHEANCE_RENTE"));
+        pubInfoEnfantRecueilliGratuitement.setDocumentSubject(getSession().getLabel("ECHEANCE_RENTE"));
+        pubInfoEnfantRecueilliGratuitement.setOwnerEmail(getEMailAddress());
+        pubInfoEnfantRecueilliGratuitement.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, getEMailAddress());
+        pubInfoEnfantRecueilliGratuitement.setArchiveDocument(getEcheanceEnfantRecueilliGratuitementGED());
+
+        try {
+            if (getEcheanceEnfantRecueilliGratuitementGED()) {
+                // bz-5941
+                PRGedHelper h = new PRGedHelper();
+                // Traitement uniquement pour la caisse concernée (CCB)
+                if (h.isExtraNSS(getSession())) {
+                    pubInfoEnfantRecueilliGratuitement = h.setNssExtraFolderToDocInfo(getSession(), pubInfoEnfantRecueilliGratuitement,
+                            echeanceCourrante.getIdTiers());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Une erreur est intervenue lors du chargement en GED de la lettre d'échéance pour enfant recueilli gratuitement.", e);
+        }
+
+        pubInfoEnfantRecueilliGratuitement.setPublishDocument(false);
+        pubInfoEnfantRecueilliGratuitement.setDocumentType(IRENoDocumentInfoRom.ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT);
+        pubInfoEnfantRecueilliGratuitement.setDocumentTypeNumber(IRENoDocumentInfoRom.ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT);
+        pubInfoEnfantRecueilliGratuitement.setDocumentDate(JACalendar.todayJJsMMsAAAA()); // ou la date du jours, selon les cas
+
+        if (!JadeStringUtil.isBlankOrZero(rd.getCodePrestation()) && JadeNumericUtil.isInteger(rd.getCodePrestation())) {
+            Set<CodePrestation> codesPrestation = new HashSet<CodePrestation>();
+            codesPrestation.add(CodePrestation.getCodePrestation(Integer.parseInt(rd.getCodePrestation())));
+            pubInfoEnfantRecueilliGratuitement.setDocumentProperty(
+                    REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                    REGedUtils.getCleGedPourTypeRente(getSession(),
+                            REGedUtils.getTypeRentePourListeCodesPrestation(getSession(), codesPrestation)));
+        }
+
+        TIDocumentInfoHelper.fill(pubInfoEnfantRecueilliGratuitement, getEcheanceCourrante().getIdTiers(), getSession(), null, null, null);
+
+        allDoc.addDocument(data, pubInfoEnfantRecueilliGratuitement);
+
     }
 
     private void chargementDonneesMotif18ans(boolean hasDoubleRowObject) throws Exception {
@@ -1116,7 +1251,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
                 if (userDetails != null) {
                     String user = userDetails.getFirstname() + " " + userDetails.getLastname();
-                    
+
                  // Uniquement pour la FERCIAM
                     if((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
                         crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + document.getTextes(1).getTexte(2).getDescription());
@@ -1224,6 +1359,10 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
     public boolean getRenteDeVeufGED() {
         return renteDeVeufGED;
+    }
+
+    public boolean getEcheanceEnfantRecueilliGratuitementGED() {
+        return echeanceEnfantRecueilliGratuitementGED;
     }
 
     public boolean ifMotifAgeAVS(REListerEcheanceRenteJoinMembresFamille echeance) {
@@ -1616,6 +1755,10 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
     public void setRenteDeVeufGED(boolean renteDeVeufGED) {
         this.renteDeVeufGED = renteDeVeufGED;
+    }
+
+    public void setEcheanceEnfantRecueilliGratuitementGED(boolean echeanceEnfantRecueilliGratuitementGED) {
+        this.echeanceEnfantRecueilliGratuitementGED = echeanceEnfantRecueilliGratuitementGED;
     }
 
     public PRTiersWrapper getTiersAdressePaiement() {

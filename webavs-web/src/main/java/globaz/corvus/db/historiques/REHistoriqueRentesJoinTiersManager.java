@@ -172,6 +172,8 @@ public class REHistoriqueRentesJoinTiersManager extends PRAbstractManager {
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_SUPPL_AJOURN).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_SURV_EV_ASSURE).append(",");
         fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_CODE_MUTATION).append(",");
+        fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1).append(",");
+        fieldsQueryBuilder.append(REHistoriqueRentes.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2).append(",");
 
         // field pour REHistoriqueHeader
         fieldsQueryBuilder.append(REHistoriqueHeader.FIELDNAME_ID_HISTORIQUE).append(",");

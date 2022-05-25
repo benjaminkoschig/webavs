@@ -27,5 +27,6 @@ public interface ISFPeriode {
     public final static String CS_TYPE_PERIODE_NATIONALITE = "36002003";
     public final static String CS_TYPE_PERIODE_REFUS_AF = "36002011";
     public final static String CS_TYPE_PERIODE_TRAVAILLE = "36002002";
+    public final static String CS_TYPE_PERIODE_ENFANT_CONJOINT = "36002014";
 
 }

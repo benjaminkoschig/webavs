@@ -225,7 +225,21 @@ public enum REMotifEcheance {
     /**
      * Le tiers, de sexe masculin, est au bénéfice d'une rente de veuf alors qu'il n'a pas/plus d'enfants à charge
      */
-    RenteDeVeufSansEnfant("MOTIF_ECHEANCE_RENTE_DE_VEUF_SANS_ENFANTS");
+    RenteDeVeufSansEnfant("MOTIF_ECHEANCE_RENTE_DE_VEUF_SANS_ENFANTS"),
+
+    /**
+     * Tous les bénéficiaires ayant un enfant recueilli gratuitement ou un enfant recueilli gratuitement par le conjoint, et dont
+     * la date de fin de prestation est inférieur au mois en cours
+     * @see ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEchanceEnfantRecueilliGratuitement
+     */
+    EcheanceEnfantRecueilliGratuitementDepassee("MOTIF_ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT_DEPASSEE"),
+
+    /**
+     * Tous les bénéficiaires ayant un enfant recueilli gratuitement ou un enfant recueilli gratuitement par le conjoint, et dont
+     * la date de fin de prestation est égal au mois en cours
+     * @see ch.globaz.corvus.process.echeances.analyseur.modules.REModuleEchanceEnfantRecueilliGratuitement
+     */
+    EcheanceEnfantRecueilliGratuitement("MOTIF_ECHEANCE_ENFANT_RECUEILLI_GRATUITEMENT");
 
     private String idLabelMotif;
 

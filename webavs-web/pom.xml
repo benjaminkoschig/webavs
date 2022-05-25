@@ -977,7 +977,6 @@
         <dependency>
             <groupId>ch.globaz.webavs</groupId>
             <artifactId>external-xsd</artifactId>
-            <version>0.0.1</version>
         </dependency>
 
         <!--  TEST -->

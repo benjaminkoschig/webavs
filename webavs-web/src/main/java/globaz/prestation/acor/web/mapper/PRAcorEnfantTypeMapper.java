@@ -82,22 +82,23 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         enfant.setRefugie(false);
         enfant.setSexe(PRACORConst.csSexeEnfantToAcor2020(membre.getCsSexe()));
 
-        String noAvsPere = getNssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(), detail.getDateNaissancePere());
-        if (!JadeStringUtil.isBlankOrZero(noAvsPere)) {
-            enfant.setNavsPere(PRConverterUtils.formatNssToLong(noAvsPere));
+        String noAvsParent1 = getNssBidon(detail.getNoAvsParent1(), detail.getSexeParent1(), detail.getNomParent1() + detail.getPrenomParent1(), detail.getDateNaissanceParent1());
+        if (!JadeStringUtil.isBlankOrZero(noAvsParent1)) {
+            enfant.setNavsParent1(PRConverterUtils.formatNssToLong(noAvsParent1));
         } else {
-            enfant.setPereInconnu(true);
+            enfant.setParent1Inconnu(true);
         }
-        String noAvsMere = getNssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), detail.getDateNaissanceMere());
-        if (!JadeStringUtil.isBlankOrZero(noAvsMere)) {
-            enfant.setNavsMere(PRConverterUtils.formatNssToLong(noAvsMere));
+        String noAvsParent2 = getNssBidon(detail.getNoAvsParent2(), detail.getSexeParent2(), detail.getNomParent2() + detail.getPrenomParent2(), detail.getDateNaissanceParent2());
+        if (!JadeStringUtil.isBlankOrZero(noAvsParent2)) {
+            enfant.setNavsParent2(PRConverterUtils.formatNssToLong(noAvsParent2));
         } else {
-            enfant.setMereInconnue(true);
+            enfant.setParent2Inconnu(true);
         }
         // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
         enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(this.getSession(), membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
-            enfant.setDateAdoption(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
+            enfant.setDateAdoptionParent1(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
+            enfant.setDateAdoptionParent2(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
         }
 
         // EURO_FORM

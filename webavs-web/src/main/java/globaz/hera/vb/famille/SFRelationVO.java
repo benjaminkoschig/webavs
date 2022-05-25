@@ -29,32 +29,48 @@ public class SFRelationVO {
         if (size < SFVueGlobaleViewBean.MIN_RELATION_SIZE) {
             if (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(csTypeRelation)) {
                 return "M";
-            } else if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(csTypeRelation)) {
+            }else if (ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(csTypeRelation)) {
+                return "L";
+            }  else if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(csTypeRelation)) {
                 return "D";
-            } else if (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(csTypeRelation)) {
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(csTypeRelation)) {
+                return "D";
+            }else if (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(csTypeRelation)) {
                 return "E";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE.equals(csTypeRelation)) {
                 return "I";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(csTypeRelation)) {
-                return "S";
+                return "F";
+            }else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(csTypeRelation)) {
+                return "F";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(csTypeRelation)) {
                 return "S";
-            } else {
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(csTypeRelation)) {
+                return "S";
+            }else {
                 return "?";
             }
         } else {
             if (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(csTypeRelation)) {
-                return "MAR/LPa";
+                return "MARIE";
+            }else if (ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(csTypeRelation)) {
+                return "LPART";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(csTypeRelation)) {
                 return "DIVORCE";
+            }else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(csTypeRelation)) {
+                return "LP DISS";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(csTypeRelation)) {
                 return "ENFANT";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE.equals(csTypeRelation)) {
                 return "INDEFIN";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(csTypeRelation)) {
                 return "SEP FAI";
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(csTypeRelation)) {
+                return "LP SEPF";
             } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(csTypeRelation)) {
                 return "SEP JUD";
+            } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(csTypeRelation)) {
+                return "LP SEPJ";
             } else {
                 return "?????";
             }

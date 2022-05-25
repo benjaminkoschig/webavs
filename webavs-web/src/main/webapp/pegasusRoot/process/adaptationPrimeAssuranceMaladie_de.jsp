@@ -30,4 +30,11 @@
 		<input id="DATE_ADAPTATION" data-g-calendar="type:month,mandatory:true" value="" />
 		<input id="IS_ADAPTATION_PRIME_LAMAL" value="true" style="display: none"/>
 	</div>
+	<span class="stepParamsTitle"><ct:FWLabel key="PROCESS_ADAPTATION_PC_ETAPE_IMPRESSION"/> </span>
+	<hr>
+	<div class="date_doc_impression">
+		<label><ct:FWLabel key="PROCESS_ADAPTATION_PC_DATE_DOC_IMPRESSION"/></label>
+		<input id="DATE_DOCUMENT_IMPRESSION" data-g-calendar="mandatory:true" value="" />
+	</div>
+	<hr>
 </div>

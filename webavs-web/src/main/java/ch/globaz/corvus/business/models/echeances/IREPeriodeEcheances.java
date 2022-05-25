@@ -12,5 +12,7 @@ public interface IREPeriodeEcheances extends Comparable<IREPeriodeEcheances> {
 
     public abstract String getIdPeriode();
 
+    public abstract String getIdRecueillant();
+
     public JadePeriodWrapper getPeriode();
 }

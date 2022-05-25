@@ -23,7 +23,7 @@ public class REListeEcheancesDepasseesDocumentGenerator extends REListeEcheanceD
                 TypeAnalyseurEcheances.Echeance18ans, TypeAnalyseurEcheances.Echeance25ans,
                 TypeAnalyseurEcheances.EcheanceEtudes, TypeAnalyseurEcheances.FemmeArrivantAgeAvs,
                 TypeAnalyseurEcheances.HommeArrivantAgeAvs, TypeAnalyseurEcheances.EcheancesForcees,
-                TypeAnalyseurEcheances.RenteDeVeuf);
+                TypeAnalyseurEcheances.RenteDeVeuf, TypeAnalyseurEcheances.EcheanceEnfantRecueilliGratuitement);
     }
 
     @SuppressWarnings("incomplete-switch")
@@ -57,6 +57,7 @@ public class REListeEcheancesDepasseesDocumentGenerator extends REListeEcheanceD
                 case FemmeAgeAvsAnticipationDepassee:
                 case RenteDeVeuf: // OK
                 case RenteDeVeufSansEnfant: // OK
+                case EcheanceEnfantRecueilliGratuitementDepassee:
                 case EcheanceForcee:
                     reponsesATraiter.add(uneReponse);
                     break;

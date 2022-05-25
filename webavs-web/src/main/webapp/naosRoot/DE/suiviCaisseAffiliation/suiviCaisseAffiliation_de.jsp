@@ -279,7 +279,7 @@ function hideRemarqueCaf() {
 								<ct:FWCalendarTag name="dateEnvoieCAF" value="<%=viewBean.getDateEnvoieCAF()%>"/>
 							</TD>
 							<TD rowspan="5">
-								<TEXTAREA name="remarque" maxrow="5" maxlength="5000" rows="10" cols="40" onkeyup="check(this)" onblur="check(this)"><%=viewBean.getRemarque()%></TEXTAREA>
+								<TEXTAREA name="remarque" maxrow="5" maxlength="1000" rows="10" cols="40" onkeyup="check(this)" onblur="check(this)"><%=viewBean.getRemarque()%></TEXTAREA>
 							</TD>
 							<%
 								}

@@ -29,6 +29,7 @@ public class RERenteJoinDemandeEcheance implements IRERenteEcheances {
     private String idTiersBeneficiaire;
     private Boolean isPrestationBloquee;
     private String montant;
+    private String idTiersComplementaire1;
 
     public RERenteJoinDemandeEcheance() {
         super();
@@ -48,6 +49,7 @@ public class RERenteJoinDemandeEcheance implements IRERenteEcheances {
         idTiersBeneficiaire = "";
         isPrestationBloquee = Boolean.FALSE;
         montant = "";
+        idTiersComplementaire1 = "";
     }
 
     @Override
@@ -134,6 +136,11 @@ public class RERenteJoinDemandeEcheance implements IRERenteEcheances {
     }
 
     @Override
+    public String getIdTiersComplementaire1() {
+        return idTiersComplementaire1;
+    }
+
+    @Override
     public int hashCode() {
         return toString().hashCode();
     }
@@ -201,6 +208,10 @@ public class RERenteJoinDemandeEcheance implements IRERenteEcheances {
 
     public void setMontant(String montant) {
         this.montant = montant;
+    }
+
+    public void setIdTiersComplementaire1(String idTiersComplementaire1) {
+        this.idTiersComplementaire1 = idTiersComplementaire1;
     }
 
     @Override

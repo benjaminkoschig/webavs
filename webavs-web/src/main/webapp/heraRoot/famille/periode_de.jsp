@@ -79,6 +79,7 @@
             hide($tdIdDetenteurBTETitle);
             hide($tdCsTypeDeDetenteur);
             hide($tdCsTypeDeDetenteurTitle);
+            hide($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
             hide($tdRecueillant);
 
@@ -96,6 +97,7 @@
             hide($tdPaysTitle);
             hide($tdIdDetenteurBTE);
             hide($tdIdDetenteurBTETitle);
+            hide($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
             hide($tdRecueillant);
 
@@ -114,8 +116,9 @@
             hide($tdPaysTitle);
             hide($tdIdDetenteurBTE);
             hide($tdIdDetenteurBTETitle);
+            show($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
-            hide($tdRecueillant);
+            show($tdRecueillant);
             initTypeDeDetenteurForEnfant();
 
             clear($selectPays);
@@ -132,6 +135,7 @@
             hide($tdCsTypeDeDetenteurTitle);
             hide($tdIdDetenteurBTE);
             hide($tdIdDetenteurBTETitle);
+            hide($tdRecueillantTiersTitle);
             show($tdRecueillantTitle);
             show($tdRecueillant);
 
@@ -150,6 +154,7 @@
             hide($tdIdDetenteurBTETitle);
             hide($tdDateDebut);
             hide($tdDateDebutTitle);
+            hide($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
             hide($tdRecueillant);
 
@@ -170,6 +175,7 @@
             hide($tdCsTypeDeDetenteurTitle);
             hide($tdIdDetenteurBTE);
             hide($tdIdDetenteurBTETitle);
+            hide($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
             hide($tdRecueillant);
 
@@ -181,6 +187,7 @@
             hide($tdCsTypeDeDetenteurTitle);
             hide($tdIdDetenteurBTE);
             hide($tdIdDetenteurBTETitle);
+            hide($tdRecueillantTiersTitle);
             hide($tdRecueillantTitle);
             hide($tdRecueillant);
 
@@ -282,6 +289,7 @@
         $tdCsTypeDeDetenteurTitle = $("#tdCsTypeDeDetenteurTitle");
         $tdType = $("#tdType");
         $tdTypeTitle = $("#tdTypeTitle");
+        $tdRecueillantTiersTitle = $("#tdRecueillantTiersTitle");
         $tdRecueillantTitle = $("#tdRecueillantTitle");
         $tdRecueillant = $("#tdRecueillant");
 
@@ -387,6 +395,9 @@
 
     <td id="tdRecueillantTitle">
         <ct:FWLabel key="JSP_PARENT_NON_BIOLOGIQUE"/>
+    </td>
+    <td id="tdRecueillantTiersTitle">
+        <ct:FWLabel key="TYPE_DETENTEUR_TIERS"/>
     </td>
     <td id="tdRecueillant">
         <%

@@ -602,6 +602,81 @@
 			</node>
 		</nodes>
 	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option dossier Splitting navigation GED-->
+	<!-- ****************************** -->
+	<menu id="splitting-navigation-ged">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.afficher" />
+					<parameter name="selectedId"/>
+
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node id="OPTION_SPLITTING_GED">
+				<label refId="MSG_OPTION_GED" />
+				<action command="/pavo" responseTarget="_blank">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.actionAfficherDossierGed" />
+					<parameter name="noAVSId"/>
+					<parameter name="idTiersExtraFolder"/>
+					<parameter name="serviceNameId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
 	<!-- ****************************** -->
 	<!-- Menu Option mandatSplittingDetail-->
 	<!-- ****************************** -->

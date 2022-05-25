@@ -3,6 +3,8 @@ package ch.globaz.corvus.process.echeances.analyseur.modules;
 import globaz.globall.api.BISession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+
+import java.util.Iterator;
 import java.util.SortedSet;
 import ch.globaz.corvus.business.models.echeances.IREEcheances;
 import ch.globaz.corvus.business.models.echeances.IREPeriodeEcheances;
@@ -146,9 +148,11 @@ public class REModuleEcheance25Ans extends REModuleAnalyseEcheance {
      */
     private SortedSet<IREPeriodeEcheances> sortByCSEtude(SortedSet<IREPeriodeEcheances> periodesEtudes) {
         if (!periodesEtudes.isEmpty()) {
-            for (IREPeriodeEcheances periodeEcheance : periodesEtudes) {
+            Iterator<IREPeriodeEcheances> iteratorDesPeriodes = periodesEtudes.iterator();
+            while (iteratorDesPeriodes.hasNext()) { // for (IREPeriodeEcheances periodeEcheance : periodesEtudes) { cause des ConcurrentModificationException depuis ajout période EnfantReceuilliGratuitement
+                IREPeriodeEcheances periodeEcheance = iteratorDesPeriodes.next();
                 if (!ISFPeriode.CS_TYPE_PERIODE_ETUDE.equals(periodeEcheance.getCsTypePeriode())) {
-                    periodesEtudes.remove(periodeEcheance);
+                    iteratorDesPeriodes.remove();
                 }
             }
         }

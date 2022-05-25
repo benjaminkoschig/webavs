@@ -5,26 +5,8 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
 import globaz.globall.util.JAUtil;
-import globaz.hera.api.ISFEnfant;
-import globaz.hera.api.ISFMembreFamille;
-import globaz.hera.api.ISFMembreFamilleRequerant;
-import globaz.hera.api.ISFPeriode;
-import globaz.hera.api.ISFRelationFamiliale;
-import globaz.hera.api.ISFSituationFamiliale;
-import globaz.hera.db.famille.SFApercuEnfant;
-import globaz.hera.db.famille.SFApercuEnfantManager;
-import globaz.hera.db.famille.SFApercuRequerant;
-import globaz.hera.db.famille.SFApercuRequerantManager;
-import globaz.hera.db.famille.SFConjoint;
-import globaz.hera.db.famille.SFConjointManager;
-import globaz.hera.db.famille.SFEnfant;
-import globaz.hera.db.famille.SFEnfantManager;
-import globaz.hera.db.famille.SFMembreFamille;
-import globaz.hera.db.famille.SFPeriode;
-import globaz.hera.db.famille.SFPeriodeManager;
-import globaz.hera.db.famille.SFRelationConjoint;
-import globaz.hera.db.famille.SFRelationConjointManager;
-import globaz.hera.db.famille.SFRequerant;
+import globaz.hera.api.*;
+import globaz.hera.db.famille.*;
 import globaz.hera.helpers.famille.SFRequerantHelper;
 import globaz.hera.impl.standard.SFMembreFamilleStd;
 import globaz.hera.impl.standard.SFRelationFamilialeManagerStd;
@@ -33,22 +15,13 @@ import globaz.hera.interfaces.tiers.SFTiersHelper;
 import globaz.hera.interfaces.tiers.SFTiersWrapper;
 import globaz.hera.vb.famille.SFApercuRelationConjointListViewBean;
 import globaz.hera.vb.famille.SFApercuRelationConjointViewBean;
-import globaz.hera.wrapper.SFEnfantWrapper;
-import globaz.hera.wrapper.SFMembreFamilleRequerantWrapper;
-import globaz.hera.wrapper.SFMembreFamilleWrapper;
-import globaz.hera.wrapper.SFPeriodeWrapper;
-import globaz.hera.wrapper.SFRelationFamilialeWrapper;
+import globaz.hera.wrapper.*;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeException;
 import globaz.prestation.tools.PRAssert;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * @author mmu, scr
@@ -179,6 +152,49 @@ public abstract class ASFSituationFamiliale extends BEntity {
      * 
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
+    protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers, String csDomaine) throws Exception {
+        ISFMembreFamilleRequerant[] membres = _getMembresFamille(idTiers, csDomaine);
+        SFPeriodeManager periodeMgr = new SFPeriodeManager();
+        List<ISFMembreFamilleRequerant> membreList = new ArrayList<>();
+        periodeMgr.setSession(getSession());
+        periodeMgr.setForIdRecueillant(idTiers);
+        periodeMgr.find(BManager.SIZE_NOLIMIT);
+
+        for(SFPeriode periode: periodeMgr.<SFPeriode>toList()) {
+            SFMembreFamille mbrFam = new SFMembreFamille();
+            mbrFam.setSession(getSession());
+            mbrFam.setIdMembreFamille(periode.getIdMembreFamille());
+            mbrFam.retrieve();
+
+            if (mbrFam.isNew()) {
+                throw new JadeException(getSession().getLabel("ERROR_MEMBRE_FAMILLE_INTROUVABLE")
+                        + periode.getIdMembreFamille());
+            }
+            membreList.add(wrapperFromMembreFamille(mbrFam));
+        }
+        if(!membreList.isEmpty()) {
+            membres = Stream.concat(Arrays.stream(membres), membreList.stream()).toArray(ISFMembreFamilleRequerant[]::new);
+        }
+
+        return membres;
+    }
+    private SFMembreFamilleRequerantWrapper wrapperFromMembreFamille(SFMembreFamille mbrFam1) {
+        SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
+        wrapper.setCsCantonDomicile(mbrFam1.getCsCantonDomicile());
+        wrapper.setCsEtatCivil(mbrFam1.getCsEtatCivil());
+        wrapper.setCsNationalite(mbrFam1.getCsNationalite());
+        wrapper.setCsSexe(mbrFam1.getCsSexe());
+        wrapper.setDateDeces(mbrFam1.getDateDeces());
+        wrapper.setDateNaissance(mbrFam1.getDateNaissance());
+        wrapper.setIdMembreFamille(mbrFam1.getIdMembreFamille());
+        wrapper.setNom(mbrFam1.getNom());
+        wrapper.setNss(mbrFam1.getNss());
+        wrapper.setPrenom(mbrFam1.getPrenom());
+        wrapper.setRelationAuRequerant(mbrFam1.getRelationAuRequerant());
+        wrapper.setIdTiers(mbrFam1.getIdTiers());
+        return wrapper;
+    }
+
     protected ISFMembreFamilleRequerant[] _getMembresFamille(String idTiers, String csDomaine) throws Exception {
 
         // Pour rechercher tous les membres de la famille, même l'idTiers passé en paramètre
@@ -200,19 +216,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
             throw new Exception(getSession().getLabel("ERROR_MEMBRE_FAMILLE_INTROUVABLE") + idTiers);
         }
 
-        SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
-        wrapper.setCsCantonDomicile(mbrFam.getCsCantonDomicile());
-        wrapper.setCsEtatCivil(mbrFam.getCsEtatCivil());
-        wrapper.setCsNationalite(mbrFam.getCsNationalite());
-        wrapper.setCsSexe(mbrFam.getCsSexe());
-        wrapper.setDateDeces(mbrFam.getDateDeces());
-        wrapper.setDateNaissance(mbrFam.getDateNaissance());
-        wrapper.setIdMembreFamille(mbrFam.getIdMembreFamille());
-        wrapper.setNom(mbrFam.getNom());
-        wrapper.setNss(mbrFam.getNss());
-        wrapper.setPrenom(mbrFam.getPrenom());
-        wrapper.setRelationAuRequerant(mbrFam.getRelationAuRequerant());
-        wrapper.setIdTiers(mbrFam.getIdTiers());
+        SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(mbrFam);
         wrapper.setPays(mbrFam.getPays());
         membreList.add(wrapper);
 
@@ -247,19 +251,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                         + mbrFam.getIdMembreFamille());
             }
 
-            SFMembreFamilleRequerantWrapper wrapper1 = new SFMembreFamilleRequerantWrapper();
-            wrapper1.setCsCantonDomicile(mbrFam1.getCsCantonDomicile());
-            wrapper1.setCsEtatCivil(mbrFam1.getCsEtatCivil());
-            wrapper1.setCsNationalite(mbrFam1.getCsNationalite());
-            wrapper1.setCsSexe(mbrFam1.getCsSexe());
-            wrapper1.setDateDeces(mbrFam1.getDateDeces());
-            wrapper1.setDateNaissance(mbrFam1.getDateNaissance());
-            wrapper1.setIdMembreFamille(mbrFam1.getIdMembreFamille());
-            wrapper1.setNom(mbrFam1.getNom());
-            wrapper1.setNss(mbrFam1.getNss());
-            wrapper1.setPrenom(mbrFam1.getPrenom());
-            wrapper1.setRelationAuRequerant(mbrFam1.getRelationAuRequerant());
-            wrapper1.setIdTiers(mbrFam1.getIdTiers());
+            SFMembreFamilleRequerantWrapper wrapper1 = wrapperFromMembreFamille(mbrFam1);
 
             membreList.add(wrapper1);
 
@@ -294,19 +286,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                             + enfant.getIdMembreFamille());
                 }
 
-                SFMembreFamilleRequerantWrapper wrapper1 = new SFMembreFamilleRequerantWrapper();
-                wrapper1.setCsCantonDomicile(mbrFam1.getCsCantonDomicile());
-                wrapper1.setCsEtatCivil(mbrFam1.getCsEtatCivil());
-                wrapper1.setCsNationalite(mbrFam1.getCsNationalite());
-                wrapper1.setCsSexe(mbrFam1.getCsSexe());
-                wrapper1.setDateDeces(mbrFam1.getDateDeces());
-                wrapper1.setDateNaissance(mbrFam1.getDateNaissance());
-                wrapper1.setIdMembreFamille(mbrFam1.getIdMembreFamille());
-                wrapper1.setNom(mbrFam1.getNom());
-                wrapper1.setNss(mbrFam1.getNss());
-                wrapper1.setPrenom(mbrFam1.getPrenom());
-                wrapper1.setRelationAuRequerant(mbrFam1.getRelationAuRequerant());
-                wrapper1.setIdTiers(mbrFam1.getIdTiers());
+                SFMembreFamilleRequerantWrapper wrapper1 = wrapperFromMembreFamille(mbrFam1);
 
                 membreList.add(wrapper1);
 
@@ -446,19 +426,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                 continue;
             }
 
-            SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
-            wrapper.setCsCantonDomicile(membre.getCsCantonDomicile());
-            wrapper.setCsEtatCivil(membre.getCsEtatCivil());
-            wrapper.setCsNationalite(membre.getCsNationalite());
-            wrapper.setCsSexe(membre.getCsSexe());
-            wrapper.setDateDeces(membre.getDateDeces());
-            wrapper.setDateNaissance(membre.getDateNaissance());
-            wrapper.setIdMembreFamille(membre.getIdMembreFamille());
-            wrapper.setNom(membre.getNom());
-            wrapper.setNss(membre.getNss());
-            wrapper.setPrenom(membre.getPrenom());
-            wrapper.setRelationAuRequerant(membre.getRelationAuRequerant());
-            wrapper.setIdTiers(membre.getIdTiers());
+            SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(membre);
             wrapper.setPays(membre.getPays());
 
             // Si la date n'est pas renseignée, on prend le conjoint
@@ -616,19 +584,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                     continue;
                 }
 
-                SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
-                wrapper.setCsCantonDomicile(membre.getCsCantonDomicile());
-                wrapper.setCsEtatCivil(membre.getCsEtatCivil());
-                wrapper.setCsNationalite(membre.getCsNationalite());
-                wrapper.setCsSexe(membre.getCsSexe());
-                wrapper.setDateDeces(membre.getDateDeces());
-                wrapper.setDateNaissance(membre.getDateNaissance());
-                wrapper.setIdMembreFamille(membre.getIdMembreFamille());
-                wrapper.setNom(membre.getNom());
-                wrapper.setNss(membre.getNss());
-                wrapper.setPrenom(membre.getPrenom());
-                wrapper.setRelationAuRequerant(membre.getRelationAuRequerant());
-                wrapper.setIdTiers(membre.getIdTiers());
+                SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(membre);
 
                 // Si la date n'est pas renseignée, on prend le conjoint
                 if (JAUtil.isDateEmpty(null)) {
@@ -756,19 +712,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                     continue;
                 }
 
-                SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
-                wrapper.setCsCantonDomicile(membre.getCsCantonDomicile());
-                wrapper.setCsEtatCivil(membre.getCsEtatCivil());
-                wrapper.setCsNationalite(membre.getCsNationalite());
-                wrapper.setCsSexe(membre.getCsSexe());
-                wrapper.setDateDeces(membre.getDateDeces());
-                wrapper.setDateNaissance(membre.getDateNaissance());
-                wrapper.setIdMembreFamille(membre.getIdMembreFamille());
-                wrapper.setNom(membre.getNom());
-                wrapper.setNss(membre.getNss());
-                wrapper.setPrenom(membre.getPrenom());
-                wrapper.setRelationAuRequerant(membre.getRelationAuRequerant());
-                wrapper.setIdTiers(membre.getIdTiers());
+                SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(membre);
 
                 // Si la date n'est pas renseignée, on prend le conjoint
                 if (JAUtil.isDateEmpty(null)) {
@@ -820,42 +764,42 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
         SFMembreFamilleWrapper wrapperMere = new SFMembreFamilleWrapper();
 
-        if (enf.getMere() != null) {
+        if (enf.getParent2() != null) {
 
-            wrapperMere.setCsCantonDomicile(enf.getMere().getCsCantonDomicile());
-            wrapperMere.setCsEtatCivil(enf.getMere().getCsEtatCivil());
-            wrapperMere.setCsNationalite(enf.getMere().getCsNationalite());
-            wrapperMere.setCsSexe(enf.getMere().getCsSexe());
-            wrapperMere.setDateDeces(enf.getMere().getDateDeces());
-            wrapperMere.setDateNaissance(enf.getMere().getDateNaissance());
-            wrapperMere.setIdTiers(enf.getMere().getIdTiers());
-            wrapperMere.setNom(enf.getMere().getNom());
-            wrapperMere.setNss(enf.getMere().getNss());
-            wrapperMere.setPrenom(enf.getMere().getPrenom());
-            wrapperMere.setPays(enf.getMere().getPays());
+            wrapperMere.setCsCantonDomicile(enf.getParent2().getCsCantonDomicile());
+            wrapperMere.setCsEtatCivil(enf.getParent2().getCsEtatCivil());
+            wrapperMere.setCsNationalite(enf.getParent2().getCsNationalite());
+            wrapperMere.setCsSexe(enf.getParent2().getCsSexe());
+            wrapperMere.setDateDeces(enf.getParent2().getDateDeces());
+            wrapperMere.setDateNaissance(enf.getParent2().getDateNaissance());
+            wrapperMere.setIdTiers(enf.getParent2().getIdTiers());
+            wrapperMere.setNom(enf.getParent2().getNom());
+            wrapperMere.setNss(enf.getParent2().getNss());
+            wrapperMere.setPrenom(enf.getParent2().getPrenom());
+            wrapperMere.setPays(enf.getParent2().getPays());
             parentList.add(wrapperMere);
 
         }
 
-        if (enf.getPere() != null) {
+        if (enf.getParent1() != null) {
 
             SFMembreFamilleWrapper wrapperPere = new SFMembreFamilleWrapper();
-            wrapperPere.setCsCantonDomicile(enf.getPere().getCsCantonDomicile());
-            wrapperPere.setCsEtatCivil(enf.getPere().getCsEtatCivil());
-            wrapperPere.setCsNationalite(enf.getPere().getCsNationalite());
-            wrapperPere.setCsSexe(enf.getPere().getCsSexe());
-            wrapperPere.setDateDeces(enf.getPere().getDateDeces());
-            wrapperPere.setDateNaissance(enf.getPere().getDateNaissance());
-            wrapperPere.setIdTiers(enf.getPere().getIdTiers());
-            wrapperPere.setNom(enf.getPere().getNom());
-            wrapperPere.setNss(enf.getPere().getNss());
-            wrapperPere.setPrenom(enf.getPere().getPrenom());
+            wrapperPere.setCsCantonDomicile(enf.getParent1().getCsCantonDomicile());
+            wrapperPere.setCsEtatCivil(enf.getParent1().getCsEtatCivil());
+            wrapperPere.setCsNationalite(enf.getParent1().getCsNationalite());
+            wrapperPere.setCsSexe(enf.getParent1().getCsSexe());
+            wrapperPere.setDateDeces(enf.getParent1().getDateDeces());
+            wrapperPere.setDateNaissance(enf.getParent1().getDateNaissance());
+            wrapperPere.setIdTiers(enf.getParent1().getIdTiers());
+            wrapperPere.setNom(enf.getParent1().getNom());
+            wrapperPere.setNss(enf.getParent1().getNss());
+            wrapperPere.setPrenom(enf.getParent1().getPrenom());
 
             parentList.add(wrapperPere);
 
         }
 
-        if ((enf.getPere() == null) && (enf.getMere() == null)) {
+        if ((enf.getParent1() == null) && (enf.getParent2() == null)) {
 
             ISFMembreFamille[] iParents = new ISFMembreFamille[0];
             return iParents;
@@ -1084,8 +1028,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                 relSup = new SFRelationFamilialeStd();
                 relSup.copyDataFromEntity(relation);
 
-                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation(),
-                        !isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2()))); // On
+                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation())); // On
                 // prend
                 // la
                 // relation
@@ -1181,19 +1124,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
         requerant.retrieve();
         requerant.setRelationAuRequerant(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT);
 
-        SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
-        wrapper.setCsCantonDomicile(requerant.getCsCantonDomicile());
-        wrapper.setCsEtatCivil(requerant.getCsEtatCivil());
-        wrapper.setCsNationalite(requerant.getCsNationalite());
-        wrapper.setCsSexe(requerant.getCsSexe());
-        wrapper.setDateDeces(requerant.getDateDeces());
-        wrapper.setDateNaissance(requerant.getDateNaissance());
-        wrapper.setIdMembreFamille(requerant.getIdMembreFamille());
-        wrapper.setNom(requerant.getNom());
-        wrapper.setNss(requerant.getNss());
-        wrapper.setPrenom(requerant.getPrenom());
-        wrapper.setRelationAuRequerant(requerant.getRelationAuRequerant());
-        wrapper.setIdTiers(requerant.getIdTiers());
+        SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(requerant);
         wrapper.setPays(requerant.getPays());
         iMembres[iMembres.length - 1] = wrapper;
     }
@@ -1211,18 +1142,19 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
         SFEnfantWrapper enfantW = new SFEnfantWrapper();
         enfantW.setDateAdoption(enfant.getDateAdoption());
-        enfantW.setNoAvsMere(enfant.getNoAvsMere());
-        enfantW.setNoAvsPere(enfant.getNoAvsPere());
-        enfantW.setNomMere(enfant.getNomMere());
-        enfantW.setNomPere(enfant.getNomPere());
+        enfantW.setNoAvsParent2(enfant.getNoAvsParent2());
+        enfantW.setNoAvsParent1(enfant.getNoAvsParent1());
+        enfantW.setNomParent2(enfant.getNomParent2());
+        enfantW.setNomParent1(enfant.getNomParent1());
         enfantW.setNss(enfant.getNss());
-        enfantW.setPrenomMere(enfant.getPrenomMere());
-        enfantW.setPrenomPere(enfant.getPrenomPere());
+        enfantW.setPrenomParent2(enfant.getPrenomParent2());
+        enfantW.setPrenomParent1(enfant.getPrenomParent1());
         enfantW.setRecueilli(enfant.isRecueilli());
         enfantW.setDateNaissance(enfant.getDateNaissance());
-        enfantW.setDateNaissancePere(enfant.getDateNaissancePere());
-        enfantW.setDateNaissanceMere(enfant.getDateNaissanceMere());
-
+        enfantW.setDateNaissanceParent1(enfant.getDateNaissanceParent1());
+        enfantW.setDateNaissanceParent2(enfant.getDateNaissanceParent2());
+        enfantW.setCsSexeParent1(enfant.getSexeParent1());
+        enfantW.setCsSexeParent2(enfant.getSexeParent2());
         return enfantW;
     }
 
@@ -1493,43 +1425,43 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
         SFMembreFamilleWrapper wrapperMere = new SFMembreFamilleWrapper();
 
-        if (enf.getMere() != null) {
+        if (enf.getParent2() != null) {
 
-            wrapperMere.setCsCantonDomicile(enf.getMere().getCsCantonDomicile());
-            wrapperMere.setCsEtatCivil(enf.getMere().getCsEtatCivil());
-            wrapperMere.setCsNationalite(enf.getMere().getCsNationalite());
-            wrapperMere.setCsSexe(enf.getMere().getCsSexe());
-            wrapperMere.setDateDeces(enf.getMere().getDateDeces());
-            wrapperMere.setDateNaissance(enf.getMere().getDateNaissance());
-            wrapperMere.setIdTiers(enf.getMere().getIdTiers());
-            wrapperMere.setNom(enf.getMere().getNom());
-            wrapperMere.setNss(enf.getMere().getNss());
-            wrapperMere.setPrenom(enf.getMere().getPrenom());
-            wrapperMere.setPays(enf.getMere().getPays());
+            wrapperMere.setCsCantonDomicile(enf.getParent2().getCsCantonDomicile());
+            wrapperMere.setCsEtatCivil(enf.getParent2().getCsEtatCivil());
+            wrapperMere.setCsNationalite(enf.getParent2().getCsNationalite());
+            wrapperMere.setCsSexe(enf.getParent2().getCsSexe());
+            wrapperMere.setDateDeces(enf.getParent2().getDateDeces());
+            wrapperMere.setDateNaissance(enf.getParent2().getDateNaissance());
+            wrapperMere.setIdTiers(enf.getParent2().getIdTiers());
+            wrapperMere.setNom(enf.getParent2().getNom());
+            wrapperMere.setNss(enf.getParent2().getNss());
+            wrapperMere.setPrenom(enf.getParent2().getPrenom());
+            wrapperMere.setPays(enf.getParent2().getPays());
 
             parentList.add(wrapperMere);
 
         }
 
-        if (enf.getPere() != null) {
+        if (enf.getParent1() != null) {
 
             SFMembreFamilleWrapper wrapperPere = new SFMembreFamilleWrapper();
-            wrapperPere.setCsCantonDomicile(enf.getPere().getCsCantonDomicile());
-            wrapperPere.setCsEtatCivil(enf.getPere().getCsEtatCivil());
-            wrapperPere.setCsNationalite(enf.getPere().getCsNationalite());
-            wrapperPere.setCsSexe(enf.getPere().getCsSexe());
-            wrapperPere.setDateDeces(enf.getPere().getDateDeces());
-            wrapperPere.setDateNaissance(enf.getPere().getDateNaissance());
-            wrapperPere.setIdTiers(enf.getPere().getIdTiers());
-            wrapperPere.setNom(enf.getPere().getNom());
-            wrapperPere.setNss(enf.getPere().getNss());
-            wrapperPere.setPrenom(enf.getPere().getPrenom());
+            wrapperPere.setCsCantonDomicile(enf.getParent1().getCsCantonDomicile());
+            wrapperPere.setCsEtatCivil(enf.getParent1().getCsEtatCivil());
+            wrapperPere.setCsNationalite(enf.getParent1().getCsNationalite());
+            wrapperPere.setCsSexe(enf.getParent1().getCsSexe());
+            wrapperPere.setDateDeces(enf.getParent1().getDateDeces());
+            wrapperPere.setDateNaissance(enf.getParent1().getDateNaissance());
+            wrapperPere.setIdTiers(enf.getParent1().getIdTiers());
+            wrapperPere.setNom(enf.getParent1().getNom());
+            wrapperPere.setNss(enf.getParent1().getNss());
+            wrapperPere.setPrenom(enf.getParent1().getPrenom());
 
             parentList.add(wrapperPere);
 
         }
 
-        if ((enf.getPere() == null) && (enf.getMere() == null)) {
+        if ((enf.getParent1() == null) && (enf.getParent2() == null)) {
 
             ISFMembreFamille[] iParents = new ISFMembreFamille[0];
             return iParents;
@@ -1677,8 +1609,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                 relSup = new SFRelationFamilialeStd();
                 relSup.copyDataFromEntity(relation);
 
-                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation(),
-                        !isPartenariatEntrePersonneDuMemeSexe(relation.getIdConjoint1(), relation.getIdConjoint2()))); // On
+                relSup.setTypeLien(relation.relConjToTypeLien(relation.getTypeRelation())); // On
                 // prend
                 // la
                 // relation
@@ -1739,10 +1670,9 @@ public abstract class ASFSituationFamiliale extends BEntity {
     /**
      * Vrais si les deux partenaires donnes sont du meme sexe
      * 
-     * @param idMembreFamille1
-     * @param idMembreFamille2
+     * @param idMF1
+     * @param idMF2
      * @return
-     * @throws Exception
      */
     private boolean isPartenariatEntrePersonneDuMemeSexe(String idMF1, String idMF2) {
 

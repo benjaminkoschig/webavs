@@ -13,13 +13,13 @@ import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * @author mmu
- * 
- *         17 oct. 05
+ * <p>
+ * 17 oct. 05
  */
 public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String date = null;
@@ -34,9 +34,9 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
 
     /**
      * La date de début du type de relation
-     * 
-     * @see globaz.hera.db.famille.SFRelationConjoint#getDateDebut()
+     *
      * @return null en cas d'exception
+     * @see globaz.hera.db.famille.SFRelationConjoint#getDateDebut()
      */
     @Override
     public String getDateDebut() {
@@ -60,9 +60,9 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
     /**
      * Renvoie la date de début effective de la relation (pas du type de lien). En effet, une relation mariage peut
      * générer deux liens: marié et veuf, avec comme date de début de veuvage la date de début de la relation.
-     * 
+     * <p>
      * Pour un lien veuf retourn la date de début de mariage
-     * 
+     *
      * @return
      */
     public String getDateDebutRelation() {
@@ -71,7 +71,7 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.db.famille.SFRelationConjoint#getDateFin()
      */
     @Override
@@ -85,7 +85,7 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
 
     /**
      * Donne le type de lien à une date donnée
-     * 
+     *
      * @return Code System de ISFRelationFamiliale.CS_TYPE_LIEN ou null pour les autres types ou en cas d'erreur
      */
     /*
@@ -100,12 +100,9 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
         // divorcé
 
         if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(typeRel)) {
-
-            if (isPartenariatEntrePersonneDuMemeSexe(getIdConjoint1(), getIdConjoint2())) {
-                typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT;
-            } else {
-                typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE;
-            }
+            typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE;
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(typeRel)) {
+            typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT;
 
             // marié, séparé ou veuf
             // si un décès intervient pendant un mariage ou une séparation la
@@ -123,11 +120,39 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
                 datePourTraitement = date;
             }
 
-            // ||
-            // ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(typeRel)
-            // ||
-            // ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(typeRel))
-            // {
+            // un des conjoints meurt avant la date --> veuf
+            try {
+                // Si un décès intervient avant la fin de mariage et avant la
+                // date donnée --> veuf
+                if (!JadeStringUtil.isBlankOrZero(getDateDeces1())
+                        && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces1(), getDateFin())
+                        && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces1(), date)
+                        || !JadeStringUtil.isBlankOrZero(getDateDeces2())
+                        && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), getDateFin())
+                        && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), date)) {
+
+                        typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_VEUF;
+                } else {
+                    // sinon mariage
+                    typeLien = relConjToTypeLien(typeRel);
+                }
+            } catch (Exception e) {
+                return null; // ne devraient pas arriver à ce point, sauf si la
+                // date est effectivement mal formatee
+            }
+
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(typeRel)) {
+
+            String dateFinMariage = "31.12.2999";
+            String datePourTraitement = "31.12.2999";
+
+            if (!JadeStringUtil.isBlankOrZero(getDateFin())) {
+                dateFinMariage = getDateFin();
+            }
+
+            if (!JadeStringUtil.isBlankOrZero(date)) {
+                datePourTraitement = date;
+            }
 
             // un des conjoints meurt avant la date --> veuf
             try {
@@ -140,15 +165,10 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
                         && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), getDateFin())
                         && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), getDateDeces2(), date)) {
 
-                    if (isPartenariatEntrePersonneDuMemeSexe(getIdConjoint1(), getIdConjoint2())) {
                         typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES;
-                    } else {
-                        typeLien = ISFSituationFamiliale.CS_TYPE_LIEN_VEUF;
-                    }
                 } else {
                     // sinon mariage
-                    typeLien = relConjToTypeLien(typeRel,
-                            !isPartenariatEntrePersonneDuMemeSexe(getIdConjoint1(), getIdConjoint2()));
+                    typeLien = relConjToTypeLien(typeRel);
                 }
             } catch (Exception e) {
                 return null; // ne devraient pas arriver à ce point, sauf si la
@@ -156,9 +176,10 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
             }
 
         } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(typeRel)
-                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(typeRel)) {
-            typeLien = relConjToTypeLien(typeRel,
-                    !isPartenariatEntrePersonneDuMemeSexe(getIdConjoint1(), getIdConjoint2()));
+                || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(typeRel)
+                || ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(typeRel)
+                || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(typeRel)) {
+            typeLien = relConjToTypeLien(typeRel);
         }
         // autre
         else {
@@ -169,11 +190,10 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
 
     /**
      * Vrais si les deux partenaires donnes sont du meme sexe
-     * 
-     * @param idMembreFamille1
-     * @param idMembreFamille2
+     *
+     * @param idMF1
+     * @param idMF2
      * @return
-     * @throws Exception
      */
     private boolean isPartenariatEntrePersonneDuMemeSexe(String idMF1, String idMF2) {
 
@@ -209,32 +229,32 @@ public class SFRelationFamilialeStd extends SFApercuRelationConjoint {
     /*
      * Traduit les Relations Conjugale en Type de Lien
      */
-    public String relConjToTypeLien(String relationConjugale, boolean isHeterosexuel) {
+    public String relConjToTypeLien(String relationConjugale) {
 
         if (ISFSituationFamiliale.CS_REL_CONJ_MARIE.equals(relationConjugale)) {
-            if (!isHeterosexuel) {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE;
-            } else {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_MARIE;
-            }
+            return ISFSituationFamiliale.CS_TYPE_LIEN_MARIE;
+
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART.equals(relationConjugale)) {
+            return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE;
+
         } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relationConjugale)) {
-            if (!isHeterosexuel) {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE;
-            } else {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE;
-            }
+            return ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE;
+
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(relationConjugale)) {
+            return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE;
+
         } else if (ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relationConjugale)) {
-            if (!isHeterosexuel) {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE;
-            } else {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE;
-            }
+            return ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE;
+
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_JUDICIAIREMENT.equals(relationConjugale)) {
+            return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE;
+
         } else if (ISFSituationFamiliale.CS_REL_CONJ_DIVORCE.equals(relationConjugale)) {
-            if (!isHeterosexuel) {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT;
-            } else {
-                return ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE;
-            }
+            return ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE;
+
+        } else if (ISFSituationFamiliale.CS_REL_CONJ_LPART_DISSOUS.equals(relationConjugale)) {
+            return ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT;
+
         } else {
             return null;
         }

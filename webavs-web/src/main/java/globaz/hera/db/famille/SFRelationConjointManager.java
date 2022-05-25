@@ -12,6 +12,8 @@ import globaz.globall.db.BStatement;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.util.Objects;
+
 /**
  * <H1>Description</H1>
  * 
@@ -32,7 +34,7 @@ public class SFRelationConjointManager extends BManager {
     private static final long serialVersionUID = 1L;
     public String[] forIdConjoints = new String[2];
     private String forIdDesConjoints = "";
-    private String forTypeRelation = "";
+    private String[] forTypeRelation;
     private String fromDateDebut = "";
     private boolean orderByDateDebutDsc = false;
     private String untilDateDebut = "";
@@ -109,12 +111,21 @@ public class SFRelationConjointManager extends BManager {
                     + _dbWriteDateAMJ(statement.getTransaction(), fromDateDebut) + " AND "
                     + SFRelationConjoint.FIELD_DATEDEBUT + "  > 0 ";
         }
-        if (!JadeStringUtil.isEmpty(forTypeRelation)) {
+        if (Objects.nonNull(forTypeRelation)) {
             if (sqlWhere.length() > 0) {
                 sqlWhere += " AND ";
             }
-            sqlWhere += SFRelationConjoint.FIELD_TYPERELATION + " = "
-                    + _dbWriteNumeric(statement.getTransaction(), forTypeRelation);
+                StringBuilder request = new StringBuilder("(");
+            for (int i = 0 ; i < forTypeRelation.length ; i++) {
+                request.append(_dbWriteNumeric(statement.getTransaction(), forTypeRelation[i]));
+                if (i == forTypeRelation.length - 1) {
+                    request.append(")");
+                } else {
+                    request.append(",");
+                }
+            }
+            sqlWhere += SFRelationConjoint.FIELD_TYPERELATION + " in "
+                    + request.toString();
         }
         return sqlWhere;
     }
@@ -142,7 +153,7 @@ public class SFRelationConjointManager extends BManager {
     /**
      * @return
      */
-    public String getForTypeRelation() {
+    public String[] getForTypeRelation() {
         return forTypeRelation;
     }
 
@@ -175,10 +186,10 @@ public class SFRelationConjointManager extends BManager {
     }
 
     /**
-     * @param string
+     * @param strings
      */
-    public void setForTypeRelation(String string) {
-        forTypeRelation = string;
+    public void setForTypeRelation(String[] strings) {
+        forTypeRelation = strings;
     }
 
     /**

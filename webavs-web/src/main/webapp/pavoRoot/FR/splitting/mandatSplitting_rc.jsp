@@ -25,12 +25,23 @@ timeWaiting = 1;
 
 
 </SCRIPT>
-	<ct:menuChange displayId="options" menuId="splitting-navigation" showTab="options">
-		<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdDossierSplitting()%>"/>
-		<ct:menuSetAllParams key="idDossierSplitting" value="<%=viewBean.getIdDossierSplitting()%>"/>
-		<ct:menuSetAllParams key="idTiersAssure" value="<%=viewBean.getIdTiersAssure()%>"/>
-		<ct:menuSetAllParams key="idTiersConjoint" value="<%=viewBean.getIdTiersConjoint()%>"/>
-	</ct:menuChange>
+<%
+	String menuId = "splitting-navigation";
+	if(viewBean.hasLienGedActif()) {
+		menuId = "splitting-navigation-ged";
+	}
+%>
+<ct:menuChange displayId="options" menuId="<%=menuId%>" showTab="options">
+	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdDossierSplitting()%>"/>
+	<ct:menuSetAllParams key="idDossierSplitting" value="<%=viewBean.getIdDossierSplitting()%>"/>
+	<ct:menuSetAllParams key="idTiersAssure" value="<%=viewBean.getIdTiersAssure()%>"/>
+	<ct:menuSetAllParams key="idTiersConjoint" value="<%=viewBean.getIdTiersConjoint()%>"/>
+	<% if(viewBean.hasLienGedActif()) { %>
+		<ct:menuSetAllParams key="noAVSId" value="<%=viewBean.getIdTiers()%>"/>
+		<ct:menuSetAllParams key="idTiersExtraFolder" value="<%=viewBean.getIdTiersInterne()%>"/>
+		<ct:menuSetAllParams key="serviceNameId" value="<%=viewBean.getGedServiceName()%>"/>
+	<% } %>
+</ct:menuChange>
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart.jspf" %>
 				<%-- tpl:put name="zoneTitle" --%>Mandats de splitting<%-- /tpl:put --%>
