@@ -1,6 +1,6 @@
 include:
   - project: 'ci-cd/product-currents-gitlab-ci'
-    ref: 'fix/release_globaz_properties/mvn-package-update'
+    ref: 'fix/release_globaz_properties'
     file: '/mvn-gitlab-ci.yml'
 
 build-maven:
