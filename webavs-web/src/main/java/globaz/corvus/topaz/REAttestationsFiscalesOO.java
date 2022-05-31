@@ -1,8 +1,5 @@
 package globaz.corvus.topaz;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.domaine.constantes.DegreImpotenceAPI;
@@ -14,8 +11,8 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.prestation.domaine.CodePrestation;
-import ch.globaz.topaz.datajuicer.*;
 import ch.globaz.topaz.datajuicer.Collection;
+import ch.globaz.topaz.datajuicer.*;
 import ch.globaz.topaz.mixer.postprocessor.PostProcessor;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -27,6 +24,7 @@ import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
+import globaz.corvus.utils.RECodesPrestationsUtils;
 import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.utils.RERentesToCompare;
 import globaz.docinfo.TIDocumentInfoHelper;
@@ -47,6 +45,9 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
 import org.apache.commons.lang.StringUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
@@ -306,8 +307,10 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                         // rente
                         traductionCodePrestation = getTexte(catalogueTextesDecision, 2, 12);
                     } else {
-                        traductionCodePrestation = getTraductionGenreRente(csCodePrestation.toString(),
+                        String pourRechercheCodeSysteme = RECodesPrestationsUtils.getRechercheCodeSystem(uneRenteDuBeneficiaire);
+                        traductionCodePrestation = getTraductionGenreRente(pourRechercheCodeSysteme,
                                 tiersCorrespondance.getCodeIsoLangue());
+                        traductionCodePrestation = RECodesPrestationsUtils.concatQuotite(uneRenteDuBeneficiaire, traductionCodePrestation, pourRechercheCodeSysteme);
                     }
 
                     if (traductionCodePrestation == null) {
