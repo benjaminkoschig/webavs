@@ -288,14 +288,6 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     DataList ligneInfoRente = new DataList("ligneInfoRente");
 
                     String traductionCodePrestation = null;
-                    StringBuilder csCodePrestation = new StringBuilder();
-                    csCodePrestation.append("52821").append(codePrestation);
-                    if (JadeStringUtil.isBlankOrZero(uneRenteDuBeneficiaire.getFractionRente())) {
-                        csCodePrestation.append("0");
-                    } else {
-                        csCodePrestation.append(uneRenteDuBeneficiaire.getFractionRente());
-                    }
-
                     // cas particulier des rentes de veuf (pour la description de la rente)
                     if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
                             && (codePrestation.getCodePrestation() == 13)) {
@@ -308,14 +300,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                         traductionCodePrestation = getTexte(catalogueTextesDecision, 2, 12);
                     } else {
                         String pourRechercheCodeSysteme = RECodesPrestationsUtils.getRechercheCodeSystem(uneRenteDuBeneficiaire);
-                        traductionCodePrestation = getTraductionGenreRente(pourRechercheCodeSysteme,
+                        String traductionCodePrestationSansQuotite = getTraductionGenreRente(pourRechercheCodeSysteme,
                                 tiersCorrespondance.getCodeIsoLangue());
-                        traductionCodePrestation = RECodesPrestationsUtils.concatQuotite(uneRenteDuBeneficiaire, traductionCodePrestation, pourRechercheCodeSysteme);
+                        traductionCodePrestation = RECodesPrestationsUtils.concatQuotite(uneRenteDuBeneficiaire, traductionCodePrestationSansQuotite, pourRechercheCodeSysteme);
                     }
 
                     if (traductionCodePrestation == null) {
                         throw new Exception("Unable to find a translation for the code prestation : "
-                                + csCodePrestation.toString());
+                                + uneRenteDuBeneficiaire.getCodePrestation());
                     } else {
                         ligneInfoRente.addData("genre_rente", traductionCodePrestation);
                     }
