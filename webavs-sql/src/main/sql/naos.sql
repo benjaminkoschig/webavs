@@ -4,5 +4,5 @@ ALTER TABLE SCHEMA.AFSUAFP
     ADD COLUMN EXCEPTION_DATE CHARACTER(1) DEFAULT '2';
 
 reorg table SCHEMA.AFSUAFP;
--- call sysproc.admin_cmd('REORG AFSUAFP');
+-- call sysproc.admin_cmd('REORG TABLE AFSUAFP');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('naos.gestion.dossier.caf','false',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
