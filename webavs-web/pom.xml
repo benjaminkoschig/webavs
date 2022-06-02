@@ -285,16 +285,16 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
-                            <execution>
-                                <id>copy-dependency-jars-to-tattletale-directory</id>
-                                <phase>pre-site</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${tattletale.src}</outputDirectory>
-                                </configuration>
-                            </execution>
+<!--                            <execution>-->
+<!--                                <id>copy-dependency-jars-to-tattletale-directory</id>-->
+<!--                                <phase>pre-site</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>copy-dependencies</goal>-->
+<!--                                </goals>-->
+<!--                                <configuration>-->
+<!--                                    <outputDirectory>${tattletale.src}</outputDirectory>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
                             <execution>
                                 <id>refactor-copy-globaz-properties</id>
                                 <phase>prepare-package</phase>
@@ -360,41 +360,41 @@
                         </executions>
                     </plugin>
 
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-project-jar-and-java-rt-jar-to-tattletale-source-directory</id>
-                                <phase>pre-site</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${tattletale.src}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.build.directory}</directory>
-                                            <filtering>false</filtering>
-                                            <includes>
-                                                <include>${project.build.finalName}.jar</include>
-                                            </includes>
-                                        </resource>
-                                        <resource>
-                                            <directory>${java.home}/lib</directory>
-                                            <filtering>false</filtering>
-                                            <includes>
-                                                <include>rt.jar</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jboss.tattletale</groupId>
-                        <artifactId>tattletale-maven</artifactId>
-                    </plugin>
+<!--                    <plugin>-->
+<!--                        <artifactId>maven-resources-plugin</artifactId>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>copy-project-jar-and-java-rt-jar-to-tattletale-source-directory</id>-->
+<!--                                <phase>pre-site</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>copy-resources</goal>-->
+<!--                                </goals>-->
+<!--                                <configuration>-->
+<!--                                    <outputDirectory>${tattletale.src}</outputDirectory>-->
+<!--                                    <resources>-->
+<!--                                        <resource>-->
+<!--                                            <directory>${project.build.directory}</directory>-->
+<!--                                            <filtering>false</filtering>-->
+<!--                                            <includes>-->
+<!--                                                <include>${project.build.finalName}.jar</include>-->
+<!--                                            </includes>-->
+<!--                                        </resource>-->
+<!--                                        <resource>-->
+<!--                                            <directory>${java.home}/lib</directory>-->
+<!--                                            <filtering>false</filtering>-->
+<!--                                            <includes>-->
+<!--                                                <include>rt.jar</include>-->
+<!--                                            </includes>-->
+<!--                                        </resource>-->
+<!--                                    </resources>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.jboss.tattletale</groupId>-->
+<!--                        <artifactId>tattletale-maven</artifactId>-->
+<!--                    </plugin>-->
                 </plugins>
             </build>
         </profile>
