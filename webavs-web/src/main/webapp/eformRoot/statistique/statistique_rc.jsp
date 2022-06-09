@@ -8,7 +8,7 @@
 
 <%@ include file="/theme/find/header.jspf" %>
 <%
-	idEcran="GFE0001";
+	idEcran="GFE0003";
 	bButtonNew = false;
 %>
 
