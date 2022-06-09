@@ -64,7 +64,6 @@ import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -86,6 +85,8 @@ public class REImportationCalculAcor {
 
     private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
+
+    private List<File> listOfSwapFiles = new ArrayList<>();
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
                                          final BSession session) throws Exception {
@@ -405,53 +406,72 @@ public class REImportationCalculAcor {
         generationFormulaireSwap(fCalcul,session);
     }
     public void generationFormulaireSwap(FCalcul fCalcul,BSession session) throws Exception {
-        if(isSwap(fCalcul)){
-            Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
-            String xmlFromAcor= getSwapXmlFromAcor(messageFromFcalcul);
-            sendSwapFormulaireMail(xmlFromAcor,fCalcul,session);
+        if(messagesAreNotEmpty(fCalcul)) {
+            List<String> xmlFromAcor = getSwapXmlFromAcor(fCalcul);
+            sendSwapFormulaireMail(xmlFromAcor, fCalcul, session);
         }
     }
-
-    public boolean isSwap(FCalcul fCalcul){
+    public boolean isSwap(FCalcul fCalcul,int index){
         boolean response=false;
-        if(fCalcul.getAnnexes()!=null && fCalcul.getAnnexes().getMessage().size()!=0){
-            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId())){
+            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(index).getSwapId())){
                 response=true;
             }
-        }
+
         return response;
     }
-    public String getSwapXmlFromAcor(Message message) throws PRACORException {
-        return REAcorSwapService.getInstance().getSwap(message);
+    public boolean messagesAreNotEmpty(FCalcul fCalcul){
+        return fCalcul.getAnnexes()!=null && !fCalcul.getAnnexes().getMessage().isEmpty();
     }
-    private void sendSwapFormulaireMail(String xmlAcor, FCalcul fCalcul,BSession session) throws Exception {
-        String nss = RpcUtil.formatNss(fCalcul.getAssure().get(0).getId().getValue());
-        String userMail= session.getUserEMail();
-        String filePath=Jade.getInstance().getHomeDir() + "work/"+"p["+nss+"].xml";
-        String subject=session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT")+ "["+nss+"]";
-        String body=session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
-        File swapXmlFile= createSwapXmlFile(filePath,xmlAcor);
+    public List<String> getSwapXmlFromAcor(FCalcul fCalcul) throws PRACORException {
+        List<Message> messages = fCalcul.getAnnexes().getMessage();
+        List<String> xmlFromAcorList=new ArrayList<>();
 
-        JadeSmtpClient.getInstance().sendMail(userMail,subject,body,new String[]{filePath});
-
-        deleteSwapXmlFile(swapXmlFile);
-
+        for(int i=0; i<messages.size();i++){
+            if(isSwap(fCalcul,i)) {
+                xmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(messages.get(i)));
+            }
+        }
+        return xmlFromAcorList;
     }
-    public File createSwapXmlFile(String filePath,String xmlAcor) throws IOException {
-        File file = new File(filePath);
-        FileWriter writer= new FileWriter(file);
-        writer.write(xmlAcor);
-        writer.close();
-        return file;
+    private void sendSwapFormulaireMail(List<String> xmlAcor, FCalcul fCalcul, BSession session) throws Exception {
+            List<String> allNss = getAllNss(fCalcul,xmlAcor.size());
+            List<String> files = createSwapXmlFile(allNss,xmlAcor);
+            sendMail(files,session,allNss);
+            deleteSwapXmlFile();
     }
-    public void deleteSwapXmlFile(File file) throws IOException {
-        FileUtils.forceDelete(file);
+    public List<String> getAllNss(FCalcul fCalcul,int numberOfSwap){
+        List<String> nssList=new ArrayList<>();
+        for(int i=0; i<numberOfSwap;i++){
+            nssList.add(RpcUtil.formatNss(fCalcul.getAssure().get(i).getId().getValue()));
+        }
+        return nssList;
     }
-
+    private void sendMail(List<String>files, BSession session, List<String> nss) throws Exception {
+        String userMail = session.getUserEMail();
+        String subject = session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT") + "[" + nss.get(0) + "]";
+        String body = session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
+        JadeSmtpClient.getInstance().sendMail(userMail, subject, body,files.toArray(new String[0]));
+    }
+    public List<String> createSwapXmlFile(List<String> nss , List<String> xmlAcor) throws IOException {
+        List<String>files= new ArrayList<>();
+        FileWriter writer = null;
+        for(int i=0;i<xmlAcor.size();i++) {
+            String filePath = Jade.getInstance().getHomeDir() + "work/" + "p[" + nss.get(i) + "].xml";
+            File file = new File(filePath);
+            listOfSwapFiles.add(file);
+            writer= new FileWriter(file);
+            writer.write(xmlAcor.get(i));
+            files.add(filePath);
+            writer.close();
+        }
+        return files;
+    }
+    public void deleteSwapXmlFile(){
+        listOfSwapFiles.stream().forEach(e->e.delete());
+    }
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
-
     public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
         Long idCopieDemande = null;
         BITransaction transaction = null;
