@@ -403,43 +403,38 @@ public class REImportationCalculAcor {
             sendMailWarn(session, object, content);
         }
         //swap
-        generationFormulaireSwap(fCalcul,session);
+        generateFormulaireSwap(fCalcul,session);
     }
-    public void generationFormulaireSwap(FCalcul fCalcul,BSession session) throws Exception {
+    public void generateFormulaireSwap(FCalcul fCalcul, BSession session) throws Exception {
         if(messagesAreNotEmpty(fCalcul)) {
-            List<String> xmlFromAcor = getSwapXmlFromAcor(fCalcul);
-            sendSwapFormulaireMail(xmlFromAcor, fCalcul, session);
+            List<String> listOfSwapXmlFromAcor = getSwapXmlFromAcor(fCalcul);
+            sendSwapFormulaireByMail(listOfSwapXmlFromAcor, fCalcul, session);
         }
     }
     public boolean isSwap(FCalcul fCalcul,int index){
-        boolean response=false;
-            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(index).getSwapId())){
-                response=true;
-            }
-
-        return response;
+        return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(index).getSwapId());
     }
     public boolean messagesAreNotEmpty(FCalcul fCalcul){
         return fCalcul.getAnnexes()!=null && !fCalcul.getAnnexes().getMessage().isEmpty();
     }
     public List<String> getSwapXmlFromAcor(FCalcul fCalcul) throws PRACORException {
-        List<Message> messages = fCalcul.getAnnexes().getMessage();
-        List<String> xmlFromAcorList=new ArrayList<>();
+        List<Message> listOfMessagesFromFcalcul = fCalcul.getAnnexes().getMessage();
+        List<String> swapXmlFromAcorList=new ArrayList<>();
 
-        for(int i=0; i<messages.size();i++){
+        for(int i=0; i<listOfMessagesFromFcalcul.size();i++){
             if(isSwap(fCalcul,i)) {
-                xmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(messages.get(i)));
+                swapXmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(listOfMessagesFromFcalcul.get(i)));
             }
         }
-        return xmlFromAcorList;
+        return swapXmlFromAcorList;
     }
-    private void sendSwapFormulaireMail(List<String> xmlAcor, FCalcul fCalcul, BSession session) throws Exception {
-            List<String> allNss = getAllNss(fCalcul,xmlAcor.size());
-            List<String> files = createSwapXmlFile(allNss,xmlAcor);
-            sendMail(files,session,allNss);
+    private void sendSwapFormulaireByMail(List<String> listOfSwapXmlFromAcor, FCalcul fCalcul, BSession session) throws Exception {
+            List<String> nssList = getAllNss(fCalcul,listOfSwapXmlFromAcor.size());
+            List<String> files = createSwapXmlFile(nssList,listOfSwapXmlFromAcor);
+            sendMail(files,session,nssList);
             deleteSwapXmlFile();
     }
-    public List<String> getAllNss(FCalcul fCalcul,int numberOfSwap){
+    public List<String> getAllNss(FCalcul fCalcul, int numberOfSwap){
         List<String> nssList=new ArrayList<>();
         for(int i=0; i<numberOfSwap;i++){
             nssList.add(RpcUtil.formatNss(fCalcul.getAssure().get(i).getId().getValue()));
@@ -454,20 +449,19 @@ public class REImportationCalculAcor {
     }
     public List<String> createSwapXmlFile(List<String> nss , List<String> xmlAcor) throws IOException {
         List<String>files= new ArrayList<>();
-        FileWriter writer = null;
         for(int i=0;i<xmlAcor.size();i++) {
             String filePath = Jade.getInstance().getHomeDir() + "work/" + "p[" + nss.get(i) + "].xml";
             File file = new File(filePath);
             listOfSwapFiles.add(file);
-            writer= new FileWriter(file);
-            writer.write(xmlAcor.get(i));
+            try(FileWriter writer = new FileWriter(file)) {
+                writer.write(xmlAcor.get(i));
+            }
             files.add(filePath);
-            writer.close();
         }
         return files;
     }
     public void deleteSwapXmlFile(){
-        listOfSwapFiles.stream().forEach(e->e.delete());
+        listOfSwapFiles.stream().forEach(File::delete);
     }
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
