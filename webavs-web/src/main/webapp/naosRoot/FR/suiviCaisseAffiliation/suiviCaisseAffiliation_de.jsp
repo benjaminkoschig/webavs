@@ -125,6 +125,12 @@ function onChangeGenre(){
 		<%if (showGestionDossierCAF) {%>
 		showRemarqueCaf();
 		<%}%>
+	} else if ("19190040".equals(newGenreValeur)){
+		document.forms[0].elements('attestationIp').checked = false;
+		document.all('attestationIPTable').style.display = 'none';
+		<%if (showGestionDossierCAF) {%>
+		showRemarqueCaf();
+		<%}%>
 	}
 }
 
@@ -154,7 +160,7 @@ function onChangeMotif(){
 		}
 	}
 	<%if (showGestionDossierCAF) {%>
-	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>) {
+	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%> || "19190040".equals(newGenreValeur)) {
 		showRemarqueCaf();
 	} else {
 		hideRemarqueCaf();
