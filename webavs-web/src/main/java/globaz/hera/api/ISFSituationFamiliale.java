@@ -153,6 +153,8 @@ public interface ISFSituationFamiliale {
      */
     ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers) throws Exception;
 
+    ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecuilli(String idMembreFamille, Boolean inclureParents) throws Exception;
+
     /**
      * <p>
      * Renvoie les membres de la famille pour un idTiers donné.<br/>

@@ -52,6 +52,11 @@ public class SFSituationFamiliale extends ASFSituationFamiliale implements ISFSi
         return _getMembresFamilleRequerant(idTiers, domaine, null);
     }
 
+    @Override
+    public ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecuilli(String idMembreFamille, Boolean inclureParents) throws Exception {
+        return super.getMembresFamilleEtendueAvecEnfantRecuilli(idMembreFamille, inclureParents);
+    }
+
     /*
      * (non-Javadoc)
      * 

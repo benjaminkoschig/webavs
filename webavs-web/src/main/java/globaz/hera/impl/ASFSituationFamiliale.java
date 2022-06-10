@@ -147,9 +147,30 @@ public abstract class ASFSituationFamiliale extends BEntity {
         return false;
     }
 
+    protected ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecuilli(String idMembreFamille, Boolean inclureParents) throws Exception {
+        ISFMembreFamille[] membres = getMembresFamilleEtendue(idMembreFamille, inclureParents);
+        SFPeriodeManager periodeMgr = new SFPeriodeManager();
+        periodeMgr.setSession(getSession());
+        periodeMgr.setForIdMembreFamille(idMembreFamille);
+        periodeMgr.setForCsTypePeriodeIn(Arrays.asList(ch.globaz.hera.business.constantes.ISFPeriode.CS_TYPE_PERIODE_ENFANT_CONJOINT));
+        periodeMgr.find(BManager.SIZE_NOLIMIT);
+
+        List<ISFMembreFamille> recueillant = new ArrayList<>();
+        for(SFPeriode periode: periodeMgr.<SFPeriode>toList()) {
+            SFMembreFamilleWrapper membreWrapper = new SFMembreFamilleWrapper();
+            membreWrapper.setIdTiers(periode.getIdRecueillant());
+            recueillant.add(membreWrapper);
+        }
+        if(!recueillant.isEmpty()) {
+            membres = Stream.concat(Arrays.stream(membres), recueillant.stream()).toArray(ISFMembreFamille[]::new);
+        }
+
+        return membres;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
     protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers, String csDomaine) throws Exception {
