@@ -411,8 +411,8 @@ public class REImportationCalculAcor {
             sendSwapFormulaireByMail(listOfSwapXmlFromAcor, fCalcul, session);
         }
     }
-    public boolean isSwap(FCalcul fCalcul,int index){
-        return !StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(index).getSwapId());
+    public boolean isSwap(Message message){
+        return !StringUtils.isBlank(message.getSwapId());
     }
     public boolean messagesAreNotEmpty(FCalcul fCalcul){
         return fCalcul.getAnnexes()!=null && !fCalcul.getAnnexes().getMessage().isEmpty();
@@ -421,9 +421,9 @@ public class REImportationCalculAcor {
         List<Message> listOfMessagesFromFcalcul = fCalcul.getAnnexes().getMessage();
         List<String> swapXmlFromAcorList=new ArrayList<>();
 
-        for(int i=0; i<listOfMessagesFromFcalcul.size();i++){
-            if(isSwap(fCalcul,i)) {
-                swapXmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(listOfMessagesFromFcalcul.get(i)));
+        for(Message messages : listOfMessagesFromFcalcul){
+            if(isSwap(messages)){
+                swapXmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(messages));
             }
         }
         return swapXmlFromAcorList;
