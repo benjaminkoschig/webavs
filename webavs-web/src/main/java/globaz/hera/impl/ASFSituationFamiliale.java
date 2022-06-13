@@ -147,7 +147,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
         return false;
     }
 
-    protected ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecuilli(String idMembreFamille, Boolean inclureParents) throws Exception {
+    protected ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecueilli(String idMembreFamille, Boolean inclureParents) throws Exception {
         ISFMembreFamille[] membres = getMembresFamilleEtendue(idMembreFamille, inclureParents);
         SFPeriodeManager periodeMgr = new SFPeriodeManager();
         periodeMgr.setSession(getSession());
@@ -173,7 +173,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
      *
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
-    protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers, String csDomaine) throws Exception {
+    protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecueilli(String idTiers, String csDomaine) throws Exception {
         ISFMembreFamilleRequerant[] membres = _getMembresFamille(idTiers, csDomaine);
         SFPeriodeManager periodeMgr = new SFPeriodeManager();
         List<ISFMembreFamilleRequerant> membreList = new ArrayList<>();
