@@ -159,8 +159,14 @@ public class ISFSituationFamilialeHelper extends GlobazHelper implements ISFSitu
     }
 
     @Override
-    public ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers) throws Exception {
-        Object result = _getObject("getMembresFamilleAvecEnfantRecuilli", new Object[] { idTiers });
+    public ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecueilli(String idMembreFamille, Boolean inclureParents) throws Exception {
+        return (ISFMembreFamille[]) _getObject("getMembresFamilleEtendueAvecEnfantRecueilli", new Object[] { idMembreFamille, inclureParents });
+    }
+
+
+    @Override
+    public ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecueilli(String idTiers) throws Exception {
+        Object result = _getObject("getMembresFamilleAvecEnfantRecueilli", new Object[] { idTiers });
         ISFMembreFamilleRequerant[] fam = (ISFMembreFamilleRequerant[]) result;
         return fam;
     }
