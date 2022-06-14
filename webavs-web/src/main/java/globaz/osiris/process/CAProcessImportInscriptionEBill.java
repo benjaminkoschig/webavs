@@ -400,7 +400,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     inscriptionEBill.setAdresse1(datasTemp[index]);
                     break;
                 case ZIP:
-                    inscriptionEBill.setNpa(datasTemp[index]);
+                    if (StringUtils.isNumeric(datasTemp[index])) {
+                        inscriptionEBill.setNpa(Integer.parseInt(datasTemp[index]));
+                    }
                     break;
                 case CITY:
                     inscriptionEBill.setLocalite(datasTemp[index]);
@@ -474,7 +476,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         inscriptionEBill.setAdresse2(datasTemp[i]);
                         break;
                     case ZIP:
-                        inscriptionEBill.setNpa(datasTemp[i]);
+                        if (StringUtils.isNumeric(datasTemp[i])) {
+                            inscriptionEBill.setNpa(Integer.parseInt(datasTemp[i]));
+                        }
                         break;
                     case CITY:
                         inscriptionEBill.setLocalite(datasTemp[i]);

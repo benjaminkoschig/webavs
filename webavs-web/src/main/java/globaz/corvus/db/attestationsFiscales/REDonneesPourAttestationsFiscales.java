@@ -88,6 +88,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
     private String numeroAvsTiersBeneficiaire;
     private String prenomTiersBaseCalcul;
     private String prenomTiersBeneficiaire;
+    private String quotite;
 
     public REDonneesPourAttestationsFiscales() {
         super();
@@ -117,6 +118,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         nomTiersBaseCalcul = "";
         numeroAvsTiersBaseCalcul = "";
         prenomTiersBaseCalcul = "";
+        quotite = "";
     }
 
     @Override
@@ -145,6 +147,9 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
                 .append(",");
 
         sql.append(tableDecision).append(".").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(",");
+
+        sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE)
+                .append(",");
 
         sql.append(REDonneesPourAttestationsFiscales.ALIAS_TABLE_TIERS_BASE_CALCUL).append(".")
                 .append(ITITiersDefTable.ID_TIERS).append(" AS ")
@@ -388,6 +393,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
                 .dbReadString(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_AVS_BENEFICIAIRE_NO_AVS);
         prenomTiersBeneficiaire = statement
                 .dbReadString(REDonneesPourAttestationsFiscales.ALIAS_TIERS_BENEFICIAIRE_PRENOM);
+        quotite = statement.dbReadString(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE);
     }
 
     @Override
@@ -522,6 +528,10 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         return prenomTiersBeneficiaire;
     }
 
+    public String getQuotite() {
+        return quotite;
+    }
+
     public void setCodePrestation(String codePrestation) {
         this.codePrestation = codePrestation;
     }
@@ -636,5 +646,9 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
 
     public void setPrenomTiersBeneficiaire(String prenomTiersBeneficiaire) {
         this.prenomTiersBeneficiaire = prenomTiersBeneficiaire;
+    }
+
+    public void setQuotite(String quotite) {
+        this.quotite = quotite;
     }
 }

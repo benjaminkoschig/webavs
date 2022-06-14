@@ -17,7 +17,7 @@
 		<url>${scm.weburl}</url>
 		<connection>${scmConnection}</connection>
 		<developerConnection>${scmConnection}</developerConnection>
-		<tag>HEAD</tag>
+		<tag>1.28.0-RC1</tag>
 	</scm>
 
 	<properties>
@@ -50,7 +50,7 @@
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-		<external-xsd.version>1.0.0-RC1</external-xsd.version>
+		<external-xsd.version>1.0.0-SNAPSHOT</external-xsd.version>
     <jackson.version>2.12.4</jackson.version>
     <jjwt.version>0.11.2 </jjwt.version>
 
@@ -75,6 +75,15 @@
 
     <!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
+
+		<dependency.version>3.3.0</dependency.version>
+		<!-- Afin de pouvoir copier les globaz properties dans un jar dans le war nous ne pouvons pas utiliser
+		 	 la version 3.3.0, 3.3.1 et 3.3.2 du war plugin. C'est pour cela que nous downgradons la version en 3.2.3.
+		 	 Voici le message d'erreur générer par les versions 3.3.0, 3.3.1 et 3.3.2 :
+		 	 deleting outdated resource //path
+		 -->
+		<war.version>3.2.3</war.version>
+
 	</properties>
 
 	<modules>

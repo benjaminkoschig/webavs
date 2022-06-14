@@ -7,8 +7,8 @@ INSERT INTO schema.FWCOUP (PCOSID,PLAIDE,PCOUID,PCOLUT,PSPY) VALUES (36002014,'I
 
 ALTER TABLE SCHEMA.SFPERIOD
     ADD COLUMN ID_RECUEILLANT decimal(15);
--- reorg table SCHEMA.SFPERIOD;
-call sysproc.admin_cmd('REORG TABLE SFPERIOD');
+reorg table SCHEMA.SFPERIOD;
+-- call sysproc.admin_cmd('REORG TABLE SFPERIOD');
 
 
 -- Création des nouveaux codes systèmes pour l'état civil dans la situation familiale

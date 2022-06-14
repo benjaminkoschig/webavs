@@ -24,6 +24,8 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
     private String montantPrestation;
     private Map<String, RERetenuePourAttestationsFiscales> retenues;
 
+    private String quotite;
+
     public RERentePourAttestationsFiscales() {
         super();
 
@@ -38,6 +40,7 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
         isRenteBloquee = Boolean.FALSE;
         montantPrestation = "";
         retenues = new HashMap<String, RERetenuePourAttestationsFiscales>();
+        quotite = "";
     }
 
     @Override
@@ -112,6 +115,10 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
         return isRenteBloquee.booleanValue();
     }
 
+    public String getQuotite() {
+        return quotite;
+    }
+
     void setCodePrestation(String codePrestation) {
         this.codePrestation = codePrestation;
     }
@@ -150,5 +157,9 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
 
     void setMontantPrestation(String montantPrestation) {
         this.montantPrestation = montantPrestation;
+    }
+
+    void setQuotite(String quotite) {
+        this.quotite = quotite;
     }
 }

@@ -234,12 +234,12 @@
 			</band>
 		</background>
 		<title>
-			<band height="301"  isSplitAllowed="true" >
+			<band height="280"  isSplitAllowed="true" >
 				<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue()==1)]]></printWhenExpression>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="288"
+						y="267"
 						width="510"
 						height="12"
 						forecolor="#000000"
@@ -259,7 +259,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="259"
+						y="240"
 						width="510"
 						height="20"
 						forecolor="#000000"
@@ -284,7 +284,7 @@
 						x="-58"
 						y="0"
 						width="592"
-						height="225"
+						height="196"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-5"
@@ -301,7 +301,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="258"
+						y="239"
 						width="510"
 						height="22"
 						forecolor="#000000"
@@ -320,7 +320,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="1"
-						y="231"
+						y="219"
 						width="126"
 						height="18"
 						forecolor="#000000"
@@ -342,12 +342,12 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="58"  isSplitAllowed="true" >
+			<band height="56"  isSplitAllowed="true" >
 				<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue()>1)]]></printWhenExpression>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="1"
-						y="10"
+						y="9"
 						width="252"
 						height="16"
 						forecolor="#000000"
@@ -369,7 +369,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="2"
-						y="33"
+						y="32"
 						width="212"
 						height="16"
 						forecolor="#000000"
@@ -391,7 +391,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="2"
-						y="33"
+						y="32"
 						width="213"
 						height="16"
 						forecolor="#000000"
@@ -413,7 +413,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="404"
-						y="10"
+						y="9"
 						width="105"
 						height="16"
 						forecolor="#000000"
@@ -433,7 +433,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="219"
-						y="33"
+						y="32"
 						width="290"
 						height="16"
 						forecolor="#000000"
@@ -455,7 +455,7 @@
 			</band>
 		</pageHeader>
 		<columnHeader>
-			<band height="34"  isSplitAllowed="true" >
+			<band height="32"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
@@ -762,11 +762,11 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="50"  isSplitAllowed="false" >
+			<band height="35"  isSplitAllowed="false" >
 			</band>
 		</pageFooter>
 		<lastPageFooter>
-			<band height="50"  isSplitAllowed="false" >
+			<band height="35"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="2"
