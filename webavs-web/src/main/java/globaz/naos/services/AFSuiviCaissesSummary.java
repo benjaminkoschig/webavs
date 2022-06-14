@@ -91,8 +91,8 @@ public class AFSuiviCaissesSummary implements ITISummarizable {
 
                 if (!IAFSuiviCaisseAffiliation.GENRE_CAISSE_AVS.equals(affiliation.getGenreCaisse())
                         && !IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF.equals(affiliation.getGenreCaisse())
-                        && !"19190040".equals(affiliation.getGenreCaisse())) {
-                    // TODO Type 19190040 == AF (Personnel), uniquement à la CCVS?
+                        && !IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF_PERSONNEL.equals(affiliation.getGenreCaisse())) {
+                    //Type 19190040 == AF (Personnel), uniquement à la CCVS?
                     continue;
                 }
 
@@ -102,7 +102,7 @@ public class AFSuiviCaissesSummary implements ITISummarizable {
                         intituleCaisse = userSession.getLabel("VG_SUIVI_TYPE_CAISSE_AVS");// "Caisse AVS";
                     } else if (IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF.equals(affiliation.getGenreCaisse())) {
                         intituleCaisse = userSession.getLabel("VG_SUIVI_TYPE_CAISSE_AF");// "Caisse AF";
-                    } else if ("19190040".equals(affiliation.getGenreCaisse())) {
+                    } else if (IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF_PERSONNEL.equals(affiliation.getGenreCaisse())) {
                         intituleCaisse = userSession.getLabel("VG_SUIVI_TYPE_CAISSE_AF_PERSONNELLE");
                     }
                     nbItems++;
