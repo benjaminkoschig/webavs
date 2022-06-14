@@ -64,6 +64,7 @@ import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -85,8 +86,6 @@ public class REImportationCalculAcor {
 
     private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
-
-    private List<File> listOfSwapFiles = new ArrayList<>();
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
                                          final BSession session) throws Exception {
@@ -403,69 +402,56 @@ public class REImportationCalculAcor {
             sendMailWarn(session, object, content);
         }
         //swap
-        generateFormulaireSwap(fCalcul,session);
+        generationFormulaireSwap(fCalcul,session);
     }
-    public void generateFormulaireSwap(FCalcul fCalcul, BSession session) throws Exception {
-        if(messagesAreNotEmpty(fCalcul)) {
-            List<String> listOfSwapXmlFromAcor = getSwapXmlFromAcor(fCalcul);
-            sendSwapFormulaireByMail(listOfSwapXmlFromAcor, fCalcul, session);
+    public void generationFormulaireSwap(FCalcul fCalcul,BSession session) throws Exception {
+        if(isSwap(fCalcul)){
+            Message messageFromFcalcul=fCalcul.getAnnexes().getMessage().get(0);
+            String xmlFromAcor= getSwapXmlFromAcor(messageFromFcalcul);
+            sendSwapFormulaireMail(xmlFromAcor,fCalcul,session);
         }
     }
-    public boolean isSwap(Message message){
-        return !StringUtils.isBlank(message.getSwapId());
-    }
-    public boolean messagesAreNotEmpty(FCalcul fCalcul){
-        return fCalcul.getAnnexes()!=null && !fCalcul.getAnnexes().getMessage().isEmpty();
-    }
-    public List<String> getSwapXmlFromAcor(FCalcul fCalcul) throws PRACORException {
-        List<Message> listOfMessagesFromFcalcul = fCalcul.getAnnexes().getMessage();
-        List<String> swapXmlFromAcorList=new ArrayList<>();
 
-        for(Message messages : listOfMessagesFromFcalcul){
-            if(isSwap(messages)){
-                swapXmlFromAcorList.add(REAcorSwapService.getInstance().getSwap(messages));
+    public boolean isSwap(FCalcul fCalcul){
+        boolean response=false;
+        if(fCalcul.getAnnexes()!=null && fCalcul.getAnnexes().getMessage().size()!=0){
+            if(!StringUtils.isBlank(fCalcul.getAnnexes().getMessage().get(0).getSwapId())){
+                response=true;
             }
         }
-        return swapXmlFromAcorList;
+        return response;
     }
-    private void sendSwapFormulaireByMail(List<String> listOfSwapXmlFromAcor, FCalcul fCalcul, BSession session) throws Exception {
-            List<String> nssList = getAllNss(fCalcul,listOfSwapXmlFromAcor.size());
-            List<String> files = createSwapXmlFile(nssList,listOfSwapXmlFromAcor);
-            sendMail(files,session,nssList);
-            deleteSwapXmlFile();
+    public String getSwapXmlFromAcor(Message message) throws PRACORException {
+        return REAcorSwapService.getInstance().getSwap(message);
     }
-    public List<String> getAllNss(FCalcul fCalcul, int numberOfSwap){
-        List<String> nssList=new ArrayList<>();
-        for(int i=0; i<numberOfSwap;i++){
-            nssList.add(RpcUtil.formatNss(fCalcul.getAssure().get(i).getId().getValue()));
-        }
-        return nssList;
+    private void sendSwapFormulaireMail(String xmlAcor, FCalcul fCalcul,BSession session) throws Exception {
+        String nss = RpcUtil.formatNss(fCalcul.getAssure().get(0).getId().getValue());
+        String userMail= session.getUserEMail();
+        String filePath=Jade.getInstance().getHomeDir() + "work/"+"p["+nss+"].xml";
+        String subject=session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT")+ "["+nss+"]";
+        String body=session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
+        File swapXmlFile= createSwapXmlFile(filePath,xmlAcor);
+
+        JadeSmtpClient.getInstance().sendMail(userMail,subject,body,new String[]{filePath});
+
+        deleteSwapXmlFile(swapXmlFile);
+
     }
-    private void sendMail(List<String>files, BSession session, List<String> nss) throws Exception {
-        String userMail = session.getUserEMail();
-        String subject = session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT") + "[" + nss.get(0) + "]";
-        String body = session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
-        JadeSmtpClient.getInstance().sendMail(userMail, subject, body,files.toArray(new String[0]));
+    public File createSwapXmlFile(String filePath,String xmlAcor) throws IOException {
+        File file = new File(filePath);
+        FileWriter writer= new FileWriter(file);
+        writer.write(xmlAcor);
+        writer.close();
+        return file;
     }
-    public List<String> createSwapXmlFile(List<String> nss , List<String> xmlAcor) throws IOException {
-        List<String>files= new ArrayList<>();
-        for(int i=0;i<xmlAcor.size();i++) {
-            String filePath = Jade.getInstance().getHomeDir() + "work/" + "p[" + nss.get(i) + "].xml";
-            File file = new File(filePath);
-            listOfSwapFiles.add(file);
-            try(FileWriter writer = new FileWriter(file)) {
-                writer.write(xmlAcor.get(i));
-            }
-            files.add(filePath);
-        }
-        return files;
+    public void deleteSwapXmlFile(File file) throws IOException {
+        FileUtils.forceDelete(file);
     }
-    public void deleteSwapXmlFile(){
-        listOfSwapFiles.stream().forEach(File::delete);
-    }
+
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
+
     public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
         Long idCopieDemande = null;
         BITransaction transaction = null;

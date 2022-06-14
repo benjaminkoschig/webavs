@@ -20,7 +20,6 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDue
 import globaz.corvus.excel.REListeExcelAttestationsFiscalesNonSorties;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.topaz.REAttestationsFiscalesOO;
-import globaz.corvus.utils.RECodesPrestationsUtils;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
@@ -507,7 +506,6 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         rente.setIdTiersAdressePaiement(uneDonnee.getIdTiersAdressePaiement());
         rente.setIdTiersBeneficiaire(uneDonnee.getIdTiersBeneficiaire());
         rente.setIsRenteBloquee(uneDonnee.getIsPrestationBloquee());
-        rente.setQuotite(uneDonnee.getQuotite());
 
         REPrestationsDuesManager mgr = new REPrestationsDuesManager();
         mgr.setSession(getSession());
@@ -710,11 +708,17 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         // Test que les codes rentes avec la fraction soit valides
         for (int i = 0; i < manager.size(); i++) {
             REDonneesPourAttestationsFiscales attestation = (REDonneesPourAttestationsFiscales) manager.get(i);
-            String csCodePrestation = RECodesPrestationsUtils.getRechercheCodeSystem(attestation);
+            StringBuilder csCodePrestation = new StringBuilder();
+            csCodePrestation.append("52821").append(attestation.getCodePrestation());
+            if (JadeStringUtil.isBlankOrZero(attestation.getFractionRente())) {
+                csCodePrestation.append("0");
+            } else {
+                csCodePrestation.append(attestation.getFractionRente());
+            }
             // Le code ISO de la langue est en dure...
             // C'est n'est pas le sommet mais dans notre cas, on veut simplement tester le fait que le code system
             // existe. Ce test ne doit pas être tributaire de la langue.
-            if (getTraductionGenreRente(csCodePrestation, "fr") == null) {
+            if (getTraductionGenreRente(csCodePrestation.toString(), "fr") == null) {
                 attestationInvalides.add(attestation);
             } else {
                 attestationValides.add(attestation);

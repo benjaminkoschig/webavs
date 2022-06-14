@@ -171,7 +171,6 @@ public class REAgregateurDonneesPourAttestationsFiscales {
         rente.setIdTiersBeneficiaire(uneDonnee.getIdTiersBeneficiaire());
         rente.setIsRenteBloquee(uneDonnee.getIsPrestationBloquee());
         rente.setMontantPrestation(uneDonnee.getMontantPrestation());
-        rente.setQuotite(uneDonnee.getQuotite());
 
         return rente;
     }

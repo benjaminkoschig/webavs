@@ -225,7 +225,7 @@ public final class PRConverterUtils {
      */
     public static String formatMMtoAxMM(Integer mois) {
         if (Objects.nonNull(mois)) {
-            LocalDate now = LocalDate.now().withDayOfMonth(1);
+            LocalDate now = LocalDate.now();
             LocalDate delay = now.plusMonths(mois);
             Period period = Period.between(now, delay);
             return String.format(FORMAT_S_S, period.getYears(), formatIntToStringWithTwoChar(period.getMonths()));
