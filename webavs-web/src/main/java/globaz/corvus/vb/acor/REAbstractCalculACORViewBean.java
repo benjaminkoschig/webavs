@@ -173,6 +173,12 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
         }
     }
 
+    /**
+     * Méthode permettant de récupérer le navigateur à utiliser pour ACOR.
+     *
+     * @param session
+     * @return
+     */
     public String getStartNavigateurAcor(BSession session) {
         try {
             return PRACORConst.navigateurACOR(session);
@@ -182,6 +188,13 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
         }
     }
 
+    /**
+     * Méthode permettant de récupérer l'URL ACOR.
+     *
+     * @param askAction
+     * @param token
+     * @return
+     */
     public String getAdresseWebACOR(String askAction, String token) {
         try {
             return Slashs.addLastSlash(CommonProperties.ACOR_ADRESSE_WEB.getValue()) + askAction + "/" + token;
