@@ -1,3 +1,7 @@
+---------------------------------------------------------------
+-----   AL.SQL
+---------------------------------------------------------------
+
 INSERT INTO SCHEMA.FWPARP (PPARAP, PPACDI, PPARIA, PPADDE, PPARPD, PCOSID, PPARPF, PPARVA, PPRAVN, PPRADE, CSTYUN, PCOITC, PSPY) VALUES ('AL', 'SALBMINMO', 0, 20220101, 0.000000, 1, 0.000000, '', 597, 'Salaire du bénéficiaire minimum par mois', 0, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
 
 INSERT INTO SCHEMA.FWPARP (PPARAP, PPACDI, PPARIA, PPADDE, PPARPD, PCOSID, PPARPF, PPARVA, PPRAVN, PPRADE, CSTYUN, PCOITC, PSPY) VALUES ('AL', 'SALBMINAN', 0, 20220101, 0.000000, 1, 0.000000, '', 7170, 'Salaire du bénéficiaire minimum par année', 0, 0, VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');

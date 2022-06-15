@@ -42,35 +42,20 @@ class FusionSql {
 
     public make() {
         
-        File scriptDmlFile = initFile(distributionDir + "/webavs-" + version + ".sql")
-
-        new File(sqlFilePath).eachFileRecurse(FILES) {
-
-            if(it.name.endsWith('.sql')) {
-                
-                printHeader(scriptDmlFile, it.name.toUpperCase())
-                def instruction = ""
-                it.eachLine { line ->
-                    instruction = instruction + line
-                    instruction = instruction.replaceAll("schema.", "SCHEMA.")
-                    scriptDmlFile << instruction + "\n"
-                    instruction = ""
-                }
-            }
-        }
+        File scriptDmlFile = initFile(distributionDir + "version.sql")
         
         // After script concatenation we add the WebAVS version SQL instruction
        	def sqlVersion = 'insert into SCHEMA.JADEDBVE (verlab, applab, reldat) values(\'@@@\', \'WEBAVS\', yyyymmdd);'
         sqlVersion = sqlVersion.replaceAll("@@@", version)
         sqlVersion = sqlVersion.replaceAll("yyyymmdd", String.valueOf(new Date().format( 'yyyyMMdd' )))
-        
-        scriptDmlFile << "\n" 
+
+        printHeader(scriptDmlFile, "WebAVS Version")
+
         scriptDmlFile << sqlVersion
 
     }
 
     private File printHeader(File file, String text) {
-        file << "\n"
         file << "---------------------------------------------------------------" + "\n"
         file << "-----   " + text + "\n"
         file << "---------------------------------------------------------------" + "\n"
@@ -78,6 +63,7 @@ class FusionSql {
     }
 
     private File initFile(String path) {
+
         File file = new File(path)
         file.delete()
 

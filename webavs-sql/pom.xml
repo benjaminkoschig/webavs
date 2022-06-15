@@ -12,8 +12,45 @@
 	<packaging>pom</packaging>
 
 
+
 	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.bekioui.maven.plugin</groupId>
+					<artifactId>merge-maven-plugin</artifactId>
+					<version>1.2.0</version>
+					<configuration>
+						<merges>
+							<merge>
+								<target>${project.build.directory}/antrun/webavs-${project.version}.sql</target>
+								<searchDir>src/main/sql</searchDir>
+								<pattern>.*.sql</pattern>
+								<override>true</override>
+							</merge>
+							<merge>
+								<target>${project.build.directory}/webavs-${project.version}.sql</target>
+								<sources>
+									<source>${project.build.directory}/antrun/webavs-${project.version}.sql</source>
+									<source>${project.build.directory}/antrun/version.sql</source>
+								</sources>
+								<override>true</override>
+							</merge>
+						</merges>
+					</configuration>
+					<executions>
+						<execution>
+							<id>merge</id>
+							<phase>package</phase>
+							<goals>
+								<goal>merge</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<!-- call de Ant puis Groovy pour la concaténation des scripts -->
 			<plugin>
@@ -25,8 +62,8 @@
 						<configuration>
 							<target>
 								<property name="currentVersion" value="${project.version}" />
-								<property name="sourceSqlDir" value="${basedir}/src/main/sql" />
-								<property name="targetSqlDir" value="${project.build.directory}" />
+								<property name="sourceSqlDir" value="${project.build.directory}/antrun/" />
+								<property name="targetSqlDir" value="${project.build.directory}/antrun/" />
 
 								<ant antfile="${basedir}/src/ant/build.xml">
 									<target name="main" />
@@ -49,8 +86,12 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
-			<!-- création de l'assembly contenant le fichier SQL agrégé -->
+<!--		<plugins>-->
+			<plugin>
+				<groupId>com.bekioui.maven.plugin</groupId>
+				<artifactId>merge-maven-plugin</artifactId>
+			</plugin>
+<!--			 création de l'assembly contenant le fichier SQL agrégé-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>

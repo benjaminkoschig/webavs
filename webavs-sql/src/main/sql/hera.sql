@@ -1,3 +1,7 @@
+---------------------------------------------------------------
+-----   HERA.SQL
+---------------------------------------------------------------
+
 -- Création du nouveau type de périodes "Enfant recueilli gratuitement par le conjoint"
 INSERT INTO schema.FWCOSP (PCOSID,PPTYGR,PCONCS,PPTYCN,PPTYCL,PPTYSA,PCOSLI,PCOSDF,PCOSDM,PCOSDP,PCOIAN,PCOIDE,PCODFI,PCOITC,PCOISE,PSPY)
 VALUES (36002014,'SFTYPPER  ',1,1,0,0,'ENFANT_CONJOINT',2,1,2,2,2,2,35000002,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');

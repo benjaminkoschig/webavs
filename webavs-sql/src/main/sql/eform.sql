@@ -1,3 +1,7 @@
+---------------------------------------------------------------
+-----   EFORM.SQL
+---------------------------------------------------------------
+
 -- ajout des propriété jade pour module eFormulaire P14
 -- Application class name
 insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('eform.applicationClassName', 'ch.globaz.eform.web.application.GFApplication', VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz',VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
