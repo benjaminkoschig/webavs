@@ -62,8 +62,8 @@
 						<configuration>
 							<target>
 								<property name="currentVersion" value="${project.version}" />
-								<property name="sourceSqlDir" value="${project.build.directory}\antrun\" />
-								<property name="targetSqlDir" value="${project.build.directory}\antrun\" />
+								<property name="sourceSqlDir" value="${project.build.directory}/antrun/" />
+								<property name="targetSqlDir" value="${project.build.directory}/antrun/" />
 
 								<ant antfile="${basedir}/src/ant/build.xml">
 									<target name="main" />
