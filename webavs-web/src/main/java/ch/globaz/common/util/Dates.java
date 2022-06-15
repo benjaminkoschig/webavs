@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -27,6 +28,8 @@ import java.util.Locale;
  */
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    private static final DateTimeFormatter DATE_MONTH_SWISS_FORMATTER = DateTimeFormatter.ofPattern("MM.yyyy");
     private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
     public static final Integer AGE_18ANS = 18;
 
@@ -78,6 +81,43 @@ public class Dates {
             return null;
         }
         return LocalDate.parse(date, DATE_TIME_SWISS_FORMATTER);
+    }
+
+    /**
+     * Permet de convertir une date au format suivant: MM.yyyy en YearMonth
+     *
+     * @param date La date à convertir(02.2021).
+     *
+     * @return l'object yearMonth
+     */
+    public static YearMonth toYearMonth(String date) {
+        if (date == null || date.trim().isEmpty()) {
+            return null;
+        }
+        return YearMonth.parse(date, DATE_MONTH_SWISS_FORMATTER);
+    }
+
+    /**
+     * Obtient une LocalDate à la fin du mois depuis le format suivant: MM.yyyy
+     *
+     * @param date La date/mois à convertir(02.2021).
+     *
+     * @return une localDate au dernier jour du mois
+     */
+    public static LocalDate lastDayOfMonth(String date) {
+        YearMonth yearMonth = toYearMonth(date);
+        return yearMonth == null ? null : yearMonth.atEndOfMonth();
+    }
+    /**
+     * Obtient une LocalDate au début du mois depuis le format suivant: MM.yyyy
+     *
+     * @param date La date/mois à convertir(02.2021).
+     *
+     * @return une localDate au début du mois
+     */
+    public static LocalDate firstDayOfMonth(String date) {
+        YearMonth yearMonth = toYearMonth(date);
+        return yearMonth == null ? null : yearMonth.atDay(1);
     }
 
     /**
