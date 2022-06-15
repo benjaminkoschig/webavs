@@ -127,7 +127,7 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                 } else if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
                         || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
                     if (ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(csTypeLienNextElem)) {
-                        l.setTypeFin(10);
+                        l.setTypeFin("10");
                     }
                     l.setDateFin(relation.getDateFin());
                 } else {
@@ -211,10 +211,10 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
             } else {
                 FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
                 donnesFin.setFin(Dates.toXMLGregorianCalendar(prAcorLienFamilial.getDateFin()));
-                if (prAcorLienFamilial.getTypeFin() != 0) {
+                if (!JadeStringUtil.isBlankOrZero(prAcorLienFamilial.getTypeFin())) {
                     donnesFin.setType(prAcorLienFamilial.getTypeFin());
                 } else {
-                    donnesFin.setType(PRConverterUtils.formatRequiredInteger(PRACORConst.csTypeLienToACOR(getSession(), prAcorLienFamilial.getTypeLien())));
+                    donnesFin.setType(PRACORConst.csTypeLienToACOR(getSession(), prAcorLienFamilial.getTypeLien()));
                 }
                 famille.setDonneesFin(donnesFin);
             }

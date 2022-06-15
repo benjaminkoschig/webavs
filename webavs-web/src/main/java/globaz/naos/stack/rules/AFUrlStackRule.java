@@ -58,18 +58,6 @@ public class AFUrlStackRule implements FWUrlsStackRule {
                     aStack.pop();
                     aStack.push(lastUrl);
                     // gestion globale sur le module [chercher-afficher] (+ exceptions dues aux trigger)
-                } else if (usrAction.endsWith("naos.releve.apercuReleve.supprimer")) { // Correction lorsque la stack essaie de réafficher un relevé supprimé
-                    aStack.pop(); // Pop le "supprimer"
-                    // Tant que la dernière URL de la stack se termine par "naos.releve.apercuReleve.afficher" --> pop
-                    // (cliquer plusieurs fois sur le bouton d'affichage des détails provoque plusieurs push) 
-                    while (aStack.peek().getParam(PARAM_USER_ACTION).toString().endsWith("naos.releve.apercuReleve.afficher")) {
-                        aStack.pop(); // Pop les "afficher"
-                    }
-                    // Si la prochaine action est le "chercher" --> pop
-                    usrAction = (String) aStack.peek().getParam(PARAM_USER_ACTION).getValue();
-                    if (usrAction.endsWith("naos.releve.apercuReleve.chercher")) {
-                        aStack.pop(); // Pop le "chercher"
-                    }
                 } else if (!usrAction.endsWith(FWAction.ACTION_CHERCHER)
                         && !usrAction.endsWith(FWAction.ACTION_AFFICHER) && !actionToKeep.containsValue(usrAction)
                         && !usrAction.endsWith(".imprimer")) {

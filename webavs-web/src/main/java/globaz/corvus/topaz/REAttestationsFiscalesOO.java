@@ -1,5 +1,8 @@
 package globaz.corvus.topaz;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.domaine.constantes.DegreImpotenceAPI;
@@ -11,8 +14,8 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.prestation.domaine.CodePrestation;
-import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.*;
+import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.mixer.postprocessor.PostProcessor;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -24,7 +27,6 @@ import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
-import globaz.corvus.utils.RECodesPrestationsUtils;
 import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.utils.RERentesToCompare;
 import globaz.docinfo.TIDocumentInfoHelper;
@@ -45,9 +47,6 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
 import org.apache.commons.lang.StringUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
@@ -288,6 +287,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     DataList ligneInfoRente = new DataList("ligneInfoRente");
 
                     String traductionCodePrestation = null;
+                    StringBuilder csCodePrestation = new StringBuilder();
+                    csCodePrestation.append("52821").append(codePrestation);
+                    if (JadeStringUtil.isBlankOrZero(uneRenteDuBeneficiaire.getFractionRente())) {
+                        csCodePrestation.append("0");
+                    } else {
+                        csCodePrestation.append(uneRenteDuBeneficiaire.getFractionRente());
+                    }
+
                     // cas particulier des rentes de veuf (pour la description de la rente)
                     if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
                             && (codePrestation.getCodePrestation() == 13)) {
@@ -299,15 +306,13 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                         // rente
                         traductionCodePrestation = getTexte(catalogueTextesDecision, 2, 12);
                     } else {
-                        String pourRechercheCodeSysteme = RECodesPrestationsUtils.getRechercheCodeSystem(uneRenteDuBeneficiaire);
-                        String traductionCodePrestationSansQuotite = getTraductionGenreRente(pourRechercheCodeSysteme,
+                        traductionCodePrestation = getTraductionGenreRente(csCodePrestation.toString(),
                                 tiersCorrespondance.getCodeIsoLangue());
-                        traductionCodePrestation = RECodesPrestationsUtils.concatQuotite(uneRenteDuBeneficiaire, traductionCodePrestationSansQuotite, pourRechercheCodeSysteme);
                     }
 
                     if (traductionCodePrestation == null) {
                         throw new Exception("Unable to find a translation for the code prestation : "
-                                + uneRenteDuBeneficiaire.getCodePrestation());
+                                + csCodePrestation.toString());
                     } else {
                         ligneInfoRente.addData("genre_rente", traductionCodePrestation);
                     }
