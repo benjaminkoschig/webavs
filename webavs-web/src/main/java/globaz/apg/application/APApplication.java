@@ -382,6 +382,15 @@ public class APApplication extends PRAbstractApplication {
         // FWAction.registerActionCustom(IAPActions.ACTION_TEXTE_JOINT_CATALOGUE_SAISIE,
         // FWSecureConstants.UPDATE);
 
+        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".afficher",
+                FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionExporterScriptACOR",
+                FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionCallACORWeb",
+                FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionImporterApg",
+                FWSecureConstants.ADD);
+
         FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionCalculerACOR", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionTelechargerFichier2",
                 FWSecureConstants.UPDATE);
