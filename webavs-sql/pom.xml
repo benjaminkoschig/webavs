@@ -24,9 +24,17 @@
 					<configuration>
 						<merges>
 							<merge>
-								<target>${project.build.directory}/webavs-${project.version}.sql</target>
+								<target>${project.build.directory}/antrun/webavs-${project.version}.sql</target>
 								<searchDir>src/main/sql</searchDir>
 								<pattern>.*.sql</pattern>
+								<override>true</override>
+							</merge>
+							<merge>
+								<target>${project.build.directory}/webavs-${project.version}.sql</target>
+								<sources>
+									<source>${project.build.directory}/antrun/webavs-${project.version}.sql</source>
+									<source>${project.build.directory}/antrun/version.sql</source>
+								</sources>
 								<override>true</override>
 							</merge>
 						</merges>
@@ -45,39 +53,39 @@
 		</pluginManagement>
 		<plugins>
 			<!-- call de Ant puis Groovy pour la concaténation des scripts -->
-<!--			<plugin>-->
-<!--				<artifactId>maven-antrun-plugin</artifactId>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>sql-scripts-agregation</id>-->
-<!--						<phase>package</phase>-->
-<!--						<configuration>-->
-<!--							<target>-->
-<!--								<property name="currentVersion" value="${project.version}" />-->
-<!--								<property name="sourceSqlDir" value="${basedir}/src/main/sql" />-->
-<!--								<property name="targetSqlDir" value="${project.build.directory}" />-->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sql-scripts-agregation</id>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<property name="currentVersion" value="${project.version}" />
+								<property name="sourceSqlDir" value="${project.build.directory}\antrun\" />
+								<property name="targetSqlDir" value="${project.build.directory}\antrun\" />
 
-<!--								<ant antfile="${basedir}/src/ant/build.xml">-->
-<!--									<target name="main" />-->
-<!--								</ant>-->
+								<ant antfile="${basedir}/src/ant/build.xml">
+									<target name="main" />
+								</ant>
 
-<!--							</target>-->
-<!--						</configuration>-->
-<!--						<goals>-->
-<!--							<goal>run</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 
-<!--				&lt;!&ndash; Besoin de la dépendance sur Groovy &ndash;&gt;-->
-<!--				<dependencies>-->
-<!--					<dependency>-->
-<!--						<groupId>org.codehaus.groovy</groupId>-->
-<!--						<artifactId>groovy-ant</artifactId>-->
-<!--						<version>2.4.5</version>-->
-<!--					</dependency>-->
-<!--				</dependencies>-->
-<!--			</plugin>-->
+				<!-- Besoin de la dépendance sur Groovy -->
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-ant</artifactId>
+						<version>2.4.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 <!--		<plugins>-->
 			<plugin>
 				<groupId>com.bekioui.maven.plugin</groupId>
