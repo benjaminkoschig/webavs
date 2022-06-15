@@ -10,7 +10,6 @@ import globaz.globall.db.BSpy;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.tools.PRImagesConstants;
-import globaz.prestation.vb.PRAbstractViewBeanSupport;
 import java.util.Map;
 
 /**
@@ -18,7 +17,7 @@ import java.util.Map;
  * 
  * @author vre
  */
-public class APCalculACORViewBean extends PRAbstractViewBeanSupport implements FWViewBeanInterface {
+public class APCalculACORViewBean extends APAbstractCalculACORViewBean implements FWViewBeanInterface {
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -36,6 +35,7 @@ public class APCalculACORViewBean extends PRAbstractViewBeanSupport implements F
 
     private String idDroit = "";
     private boolean isFileContent = false;
+    private boolean isAcorV4Web = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -197,6 +197,10 @@ public class APCalculACORViewBean extends PRAbstractViewBeanSupport implements F
         return isFileContent;
     }
 
+    public boolean isAcorV4Web() {
+        return isAcorV4Web;
+    }
+
     /**
      * DOCUMENT ME!
      * 
@@ -270,6 +274,10 @@ public class APCalculACORViewBean extends PRAbstractViewBeanSupport implements F
 
     public void setIsFileContent(boolean isFileContent) {
         this.isFileContent = isFileContent;
+    }
+
+    public void setAcorV4Web(boolean acorV4Web) {
+        isAcorV4Web = acorV4Web;
     }
 
     /**

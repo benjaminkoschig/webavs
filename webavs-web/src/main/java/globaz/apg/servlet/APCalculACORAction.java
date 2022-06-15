@@ -4,6 +4,7 @@ import globaz.apg.acor.APACORBatchFilePrinter;
 import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.vb.prestation.APCalculACORViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
@@ -106,6 +107,43 @@ public class APCalculACORAction extends PRDefaultAction {
 
             return FWDefaultServletAction.ERROR_PAGE;
         }
+    }
+
+    /**
+     * Méthode qui appelle le service Web ACOR v4
+     *
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @param viewBean
+     * @return
+     * @throws Exception
+     */
+    public String actionCallACORWeb(HttpSession session, HttpServletRequest request,
+                                           HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
+
+        try {
+
+            APCalculACORViewBean caViewBean = (APCalculACORViewBean) viewBean;
+
+            if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+                caViewBean.setAcorV4Web(true);
+            }
+
+            // TODO WS ACOR APG Implémenter HELPER du style RECalculACORDemandeRenteHelper ou IJCalculACORDecompteHelper ou IJCalculACORIJHelper ou trouver un HELPER existant pour APG
+            // l'ecriture se fait depuis le helper
+            //mainDispatcher.dispatch(viewBean, getAction());
+
+        } catch (Exception e) {
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(e.getMessage());
+        }
+        this.saveViewBean(viewBean, session);
+
+        FWAction action = FWAction.newInstance(IAPActions.ACTION_CALCUL_ACOR + "." + FWAction.ACTION_REAFFICHER);
+
+        return this.getUserActionURL(request, action.toString());
     }
 
     /**

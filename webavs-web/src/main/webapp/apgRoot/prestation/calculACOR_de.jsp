@@ -1,4 +1,6 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.apg.acorweb.ws.token.APAcorTokenServiceImpl" %>
+<%@ page import="globaz.apg.servlet.IAPActions" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -31,7 +33,40 @@ selectedIdValue = viewBean.getIdDroit();
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
+<script language="vbscript">
+<% if (viewBean.isAcorV4Web()) { %>
+<%
+	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor((globaz.globall.db.BSession)controller.getSession());
+	String token = APAcorTokenServiceImpl.createTokenAPG(viewBean, (globaz.globall.db.BSession)controller.getSession());
+	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
+%>
+        Set shell = CreateObject ("Shell.Application")
+        Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
+        if fileSystemObj.FileExists("<%=startNavigateurAcorCmd%>") Then
+            shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+        Else
+            shell.Open "<%=adresseWebAcor%>"
+        End If
+<%}%>
+</script>
+
 <script language="JavaScript">
+
+  function callACORWeb() {
+  	document.forms[0].elements('userAction').value = "<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionCallACORWeb";
+	document.forms[0].submit();
+  }
+
+  $(document).ready(function () {
+
+		$('#lienAcorWeb').one('click', function () {
+			ajaxUtils.addOverlay($('html'));
+			// window.location.href =  "apg?userAction=<%=IAPActions.ACTION_DROIT_LAPG%>.actionAfficherLAPG&selectedId=<%=viewBean.getIdDroit()%>"; // TODO WS ACOR APG Un lien direct vers le droit
+			// document.forms("mainForm").userAction.value = "<%=globaz.apg.servlet.IAPActions.ACTION_PRESTATIONS%>.actionImporterPrestationsDepuisACOR" // TODO WS ACOR APG Le lien actuel sur la page qui passe dans des action ACOR puis dans la méthode controllerLesPrestation
+			window.location.href =  "apg?userAction=<%=IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT%>.chercher&forIdDroit=<%=viewBean.getIdDroit()%>&checkRepartitionsDroit=true"; // TODO WS ACOR APG A Corriger, lien qui passe tout droit vers le detail prestaions sans controllerLesPrestations
+		});
+  });
+
   function add() {}
   
   function upd() {}
@@ -138,6 +173,37 @@ selectedIdValue = viewBean.getIdDroit();
 							</TD>
 						</TR>
 						<TR><TD colspan="2"><HR></TD></TR>
+
+						<tr>
+							<td colspan="4">
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_1"/>
+								</h6>
+								<p>
+									<a href="#" onclick="callACORWeb()">
+										<ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/>
+									</a>
+								</p>
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_2"/>
+								</h6>
+								<p>
+									<ct:FWLabel key="JSP_CADR_CALCULER_ACOR"/>
+								</p>
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_3"/>
+								</h6>
+								<p>
+									<ct:ifhasright element="<%=IAPActions.ACTION_CALCUL_ACOR %>" crud="u">
+										<a id="lienAcorWeb" href="#" name="lienAcorWeb">
+											<ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+										</a>
+									</ct:ifhasright>
+								</p>
+							</td>
+						</tr>
+						<TR><TD colspan="2"><HR></TD></TR>
+
 						<TR>
 							<TD colspan="2">
 								<H4>

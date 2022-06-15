@@ -87,8 +87,8 @@ public class REImportationCalculAcor {
     private Set<String> rentesWithoutBte = new HashSet<>();
     private List<String> remarquesParticulieres = new ArrayList<>();
 
-    public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
-                                         final BSession session) throws Exception {
+    public void importCalculAcor(String idDemande, String idTiers, FCalcul fCalcul,
+                                 final BSession session) throws Exception {
         LOG.info("Importation des données calculées.");
         Long idCopieDemande = null;
         BITransaction transaction = null;
@@ -452,7 +452,7 @@ public class REImportationCalculAcor {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
 
-    public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
+    public void importCalculAcor9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
         Long idCopieDemande = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();

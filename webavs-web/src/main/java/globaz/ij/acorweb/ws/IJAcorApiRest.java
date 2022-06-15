@@ -34,6 +34,7 @@ public class IJAcorApiRest {
     @GET
     @Path(value = "/calcul/{idPrononce}/import")
     public Response importDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce) {
+        LOG.info("Importation du dossier depuis WebAVS vers Acor.");
         return Response.ok(this.ijAcorService.createInHostCalcul(idPrononce)).build();
     }
 
@@ -45,6 +46,7 @@ public class IJAcorApiRest {
     @GET
     @Path(value = "/decompte/{idIJCalculee}/{idBaseIndemnisation}/import")
     public Response importDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idIJCalculee") String idIJCalculee,  @PathParam("idBaseIndemnisation") String idBaseIndemnisation) {
+        LOG.info("Importation du dossier depuis WebAVS vers Acor.");
         return Response.ok(this.ijAcorService.createInHostDecompte(idIJCalculee,idBaseIndemnisation)).build();
     }
 
@@ -60,7 +62,7 @@ public class IJAcorApiRest {
     @POST
     @Path("/calcul/{idPrononce}/export")
     public Response exportDossierCalcul(@HeaderParam("authorization") String token, @PathParam("idPrononce") String idPrononce, FCalcul fCalcul) {
-        LOG.info("Exportation du dossier.");
+        LOG.info("Exportation du dossier depuis Acor vers WebAVS.");
         ijAcorService.importCalculAcor(idPrononce, fCalcul);
         return Response.ok("{}").build();
     }
@@ -68,7 +70,7 @@ public class IJAcorApiRest {
     @POST
     @Path(value = "/decompte/{idIJCalculee}/{idBaseIndemnisation}/export")
     public Response exportDossierDecompte(@HeaderParam("authorization") String token, @PathParam("idIJCalculee") String idIJCalculee, @PathParam("idBaseIndemnisation") String idBaseIndemnisation, FCalcul fCalcul){
-        LOG.info("Exportation du dossier.");
+        LOG.info("Exportation du dossier depuis Acor vers WebAVS.");
         ijAcorService.importDecompteAcor(idIJCalculee, idBaseIndemnisation, fCalcul);
         return Response.ok("{}").build();
     }
