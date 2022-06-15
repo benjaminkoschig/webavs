@@ -217,8 +217,6 @@ public class REExportationCalculAcor {
         PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(this.session, tiersRequerant);
         DemandeType demandeType = demandeTypeAcorMapper.map();
 
-        // Ajout du nom du gestionnaire
-        demandeType.setVisa(session.getUserName());
         // DONNEES FICHIER DEMANDES
         demandeType.setNavs(getNumAvsFromDemande(demandeRente, tiersRequerant, session));
         demandeType.setTypeDemande(formatTypeDemande(demandeRente.getCsTypeDemandeRente()));
