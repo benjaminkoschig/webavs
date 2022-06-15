@@ -12,45 +12,78 @@
 	<packaging>pom</packaging>
 
 
+
 	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.bekioui.maven.plugin</groupId>
+					<artifactId>merge-maven-plugin</artifactId>
+					<version>1.2.0</version>
+					<configuration>
+						<merges>
+							<merge>
+								<target>${project.build.directory}/webavs-${project.version}.sql</target>
+								<searchDir>src/main/sql</searchDir>
+								<pattern>.*.sql</pattern>
+								<override>true</override>
+							</merge>
+						</merges>
+					</configuration>
+					<executions>
+						<execution>
+							<id>merge</id>
+							<phase>package</phase>
+							<goals>
+								<goal>merge</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<!-- call de Ant puis Groovy pour la concaténation des scripts -->
+<!--			<plugin>-->
+<!--				<artifactId>maven-antrun-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>sql-scripts-agregation</id>-->
+<!--						<phase>package</phase>-->
+<!--						<configuration>-->
+<!--							<target>-->
+<!--								<property name="currentVersion" value="${project.version}" />-->
+<!--								<property name="sourceSqlDir" value="${basedir}/src/main/sql" />-->
+<!--								<property name="targetSqlDir" value="${project.build.directory}" />-->
+
+<!--								<ant antfile="${basedir}/src/ant/build.xml">-->
+<!--									<target name="main" />-->
+<!--								</ant>-->
+
+<!--							</target>-->
+<!--						</configuration>-->
+<!--						<goals>-->
+<!--							<goal>run</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+
+<!--				&lt;!&ndash; Besoin de la dépendance sur Groovy &ndash;&gt;-->
+<!--				<dependencies>-->
+<!--					<dependency>-->
+<!--						<groupId>org.codehaus.groovy</groupId>-->
+<!--						<artifactId>groovy-ant</artifactId>-->
+<!--						<version>2.4.5</version>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
+<!--			</plugin>-->
+<!--		<plugins>-->
 			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>sql-scripts-agregation</id>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<property name="currentVersion" value="${project.version}" />
-								<property name="sourceSqlDir" value="${basedir}/src/main/sql" />
-								<property name="targetSqlDir" value="${project.build.directory}" />
-
-								<ant antfile="${basedir}/src/ant/build.xml">
-									<target name="main" />
-								</ant>
-
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-
-				<!-- Besoin de la dépendance sur Groovy -->
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-ant</artifactId>
-						<version>2.4.5</version>
-					</dependency>
-				</dependencies>
+				<groupId>com.bekioui.maven.plugin</groupId>
+				<artifactId>merge-maven-plugin</artifactId>
 			</plugin>
-
-			<!-- création de l'assembly contenant le fichier SQL agrégé -->
+<!--			 création de l'assembly contenant le fichier SQL agrégé-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>

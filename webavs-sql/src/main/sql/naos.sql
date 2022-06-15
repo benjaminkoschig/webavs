@@ -1,3 +1,7 @@
+---------------------------------------------------------------
+-----   NAOS.SQL
+---------------------------------------------------------------
+
 ALTER TABLE SCHEMA.AFSUAFP
     ADD COLUMN DATE_ENVOIE_CAF DECIMAL(8)
     ADD COLUMN REMARQUE VARCHAR(5000)

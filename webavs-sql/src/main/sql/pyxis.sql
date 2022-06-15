@@ -1,3 +1,7 @@
+---------------------------------------------------------------
+-----   PYXIS.SQL
+---------------------------------------------------------------
+
 -- Création d'un nouveau motif dans l'historique des tiers
 INSERT INTO schema.FWCOSP (PCOSID,PPTYGR,PCONCS,PPTYCN,PPTYCL,PPTYSA,PCOSLI,PCOSDF,PCOSDM,PCOSDP,PCOIAN,PCOIDE,PCODFI,PCOITC,PCOISE,PSPY)
 VALUES (506008,'PYMOTIFHIS',1,1,0,0,'SEXE',2,1,2,2,2,2,10500006,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat 'globaz');
