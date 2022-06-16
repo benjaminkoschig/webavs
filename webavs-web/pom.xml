@@ -207,6 +207,45 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                   <execution>
+                        <id>refactor-copy-globaz-properties</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>webavs-configuration</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>globaz-properties</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>
+                                        ${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/lib/
+                                    </outputDirectory>
+                                    <destFileName>globaz_properties.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-dependency-jars-to-tattletale-directory</id>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${tattletale.src}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -279,124 +318,6 @@
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-<!--                            <execution>-->
-<!--                                <id>copy-dependency-jars-to-tattletale-directory</id>-->
-<!--                                <phase>pre-site</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>copy-dependencies</goal>-->
-<!--                                </goals>-->
-<!--                                <configuration>-->
-<!--                                    <outputDirectory>${tattletale.src}</outputDirectory>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-                            <execution>
-                                <id>refactor-copy-globaz-properties</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>webavs-configuration</artifactId>
-                                            <version>${project.version}</version>
-                                            <classifier>globaz-properties</classifier>
-                                            <type>jar</type>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>
-                                                ${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/lib/
-                                            </outputDirectory>
-                                            <destFileName>globaz_properties.jar</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-dependency-jars-to-tattletale-directory</id>
-                                <phase>pre-site</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${tattletale.src}</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>refactor-copy-globaz-properties</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>webavs-configuration</artifactId>
-                                            <version>${project.version}</version>
-                                            <classifier>globaz-properties</classifier>
-                                            <type>jar</type>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>
-                                                ${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/lib/
-                                            </outputDirectory>
-                                            <destFileName>globaz_properties.jar</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-<!--                    <plugin>-->
-<!--                        <artifactId>maven-resources-plugin</artifactId>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>copy-project-jar-and-java-rt-jar-to-tattletale-source-directory</id>-->
-<!--                                <phase>pre-site</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>copy-resources</goal>-->
-<!--                                </goals>-->
-<!--                                <configuration>-->
-<!--                                    <outputDirectory>${tattletale.src}</outputDirectory>-->
-<!--                                    <resources>-->
-<!--                                        <resource>-->
-<!--                                            <directory>${project.build.directory}</directory>-->
-<!--                                            <filtering>false</filtering>-->
-<!--                                            <includes>-->
-<!--                                                <include>${project.build.finalName}.jar</include>-->
-<!--                                            </includes>-->
-<!--                                        </resource>-->
-<!--                                        <resource>-->
-<!--                                            <directory>${java.home}/lib</directory>-->
-<!--                                            <filtering>false</filtering>-->
-<!--                                            <includes>-->
-<!--                                                <include>rt.jar</include>-->
-<!--                                            </includes>-->
-<!--                                        </resource>-->
-<!--                                    </resources>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.jboss.tattletale</groupId>-->
-<!--                        <artifactId>tattletale-maven</artifactId>-->
-<!--                    </plugin>-->
-                </plugins>
-            </build>
         </profile>
 
         <!-- JSP Validation is in a separate profile, since there are DOZENS of
@@ -483,9 +404,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalparam />
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
