@@ -16,11 +16,11 @@ class FusionSql {
 
     public FusionSql(currentVersion, sourceSqlDir, targetSqlDir) {
         super()
-       /* System.setProperty("file.encoding","Cp1252")
+        System.setProperty("file.encoding","Cp1252")
         System.setProperty("sun.jnu.encoding","Cp1252")
         System.setProperty("user.timezone","Europe/Zurich")
         System.setProperty("user.country","CH")
-        */
+
         println '     Groovy args : '
         println '     -> currentVersion' + currentVersion
         println '     -> sourceSqlDir=' + sourceSqlDir
