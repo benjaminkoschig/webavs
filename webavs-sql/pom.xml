@@ -97,7 +97,7 @@
 							<override>true</override>
 						</merge>
 						<merge>
-							<target>${project.build.directory}/webavs-${project.version}.sql</target>
+							<target>${project.build.directory}/sql/webavs-${project.version}-DB2.sql</target>
 							<sources>
 								<source>${project.build.directory}/antrun/webavs-${project.version}.sql</source>
 								<source>${project.build.directory}/antrun/version.sql</source>
@@ -113,6 +113,24 @@
 						<goals>
 							<goal>merge</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>copy-file</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/sql/webavs-${project.version}-DB2.sql</sourceFile>
+							<destinationFile>${project.build.directory}/sql/webavs-${project.version}-AS400-ToModify.sql</destinationFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
