@@ -214,15 +214,15 @@ public class CAFormatVersementISO extends CAOrdreFormateur {
             CashAccount16CHId cdtrAcct = factory.createCashAccount16CHId();
 
             AccountIdentification4ChoiceCH id = factory.createAccountIdentification4ChoiceCH();
-            if (isBVR) {
+            if(isQR){
+                id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
+            } else if (isBVR) {
                 try {
                     id.setOthr(CASepaOVConverterUtils.getNumAdherentBVR(adpf));
                 } catch (SepaException e) {
                     throw new Exception(getSession().getLabel("ISO20022_NUMERO_ADHERENT_BVR_NON_IDENTIFIE")
                             + ov.getNumTransaction(), e);
                 }
-            } else if (isQR) {
-                id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
             } else {
                 id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
                 id.setOthr(CASepaOVConverterUtils.getCbtrNotIBAN(ov));
