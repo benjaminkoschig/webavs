@@ -10,7 +10,10 @@
 	<artifactId>webavs-sql</artifactId>
 	<name>The SQL scripts</name>
 	<packaging>pom</packaging>
-
+	<properties>
+		<project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>windows-1252</project.reporting.outputEncoding>
+	</properties>
 	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
 		<plugins>
