@@ -3,19 +3,13 @@
  */
 package globaz.corvus.vb.annonces;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.prestation.domaine.CodePrestation;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
@@ -24,6 +18,7 @@ import globaz.corvus.db.basescalcul.REBasesCalculNeuviemeRevision;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteAPI;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.utils.REAnnonceUtils;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.demandes.RESaisieDemandeRenteViewBean;
 import globaz.globall.db.BSession;
@@ -45,11 +40,14 @@ import globaz.prestation.vb.PRAbstractViewBeanSupport;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.pyxis.db.tiers.TIHistoriqueAvsManager;
 
+import java.util.*;
+
 /**
  * @author scr
  */
 public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
 
+    public static final String CODE_CAS_SPECIAL_60 = "60";
     private String ancienNSS = "";
     private boolean besoinAnnonceRentesLieesSiModification = false;
     private String canton = "";
@@ -490,8 +488,22 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
     private void majTiersComplementaires(BSession session, BTransaction transaction, RERenteAccordee ra,
             String idMembreFamille) throws Exception {
 
+        if(REAnnonceUtils.enfantRecueilli(getSession(), ra, idMembreFamille) || ra.contientCodeCasSpecial(CODE_CAS_SPECIAL_60)) {
+            if(!JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())){
+                idTiersComplementaire1 = ra.getIdTiersComplementaire1();
+                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiersComplementaire1);
+                nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            }
+            if(!JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())) {
+                idTiersComplementaire2 = ra.getIdTiersComplementaire2();
+                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiersComplementaire2);
+                nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            }
+            return;
+        }
+
         // Voir dans la situation familiale pour setter le NSS des champs complémentaire 1 et 2
-        if(ra.contientCodeCasSpecial("60")){
+        if(ra.contientCodeCasSpecial(CODE_CAS_SPECIAL_60)){
             SFMembreFamille mbr = new SFMembreFamille();
             mbr.setSession(session);
             mbr.setAlternateKey(SFMembreFamille.ALTERNATE_KEY_IDTIERS);
@@ -740,7 +752,6 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
         }
 
     }
-
     public void setAncienNSS(String ancienNSS) {
         this.ancienNSS = ancienNSS;
     }
@@ -926,4 +937,5 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
     public void setCsEtatCivilSF(String csEtatCivilSF) {
         this.csEtatCivilSF = csEtatCivilSF;
     }
+
 }
