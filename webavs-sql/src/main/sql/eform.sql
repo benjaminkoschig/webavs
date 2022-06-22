@@ -32,21 +32,6 @@ CREATE TABLE SCHEMA.GF_FORMULAIRE
     ATTACHEMENT_NAME    VARCHAR(255),
     PRIMARY KEY(ID)
 );
--- COMMENT ON TABLE SCHEMA.GF_FORMULAIRE is 'contient les données saisies par l''utilisateur selon l''attestation reçue';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.ID is 'Id technique du formulaire fournis';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.DATE is 'Date d''émission du formulaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.BENEFICIAIRE_NSS is 'Numéro AVS du bénificiaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.BENEFICIAIRE_PRENOM is 'Prénom du bénificiaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.SUBJECT is 'Numéro du formulaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.MESSAGE_ID is 'Id du formulaire fournis par la central';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.CSPY is 'spy - Champ espion, défini quand et qui a créé l''entité';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.BENEFICIAIRE_DATE_NAISSANCE is 'Date de naissance du bénéficiaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.TYPE is 'Type du formulaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.BENEFICIAIRE_NOM is 'Nom du bénificiaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.PSPY is 'spy - Champ espion, défini quand et qui a effectué la dernière modification de l''entité';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.STATUS is 'Status du formulaire';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.USER_GESTIONNAIRE is 'Gestionnaire attitré';
--- COMMENT ON COLUMN SCHEMA.GF_FORMULAIRE.ATTACHEMENT_NAME is 'Nom du fichier attaché';
 
 -- création des droits et autorisations
 INSERT INTO SCHEMA.FWSROLP (KROLE, FCOMMENT, PSPY) VALUES ('rGFAdmin', 'eform', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
