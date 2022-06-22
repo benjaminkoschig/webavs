@@ -55,6 +55,8 @@ public class CAExtraitCompteListViewBean extends BAccessBean implements FWListVi
     private String msgType = new String();
     private String printLanguage;
 
+    private String fromDate = new String();
+
     private String untilDate = new String();
 
     private String untilSection = new String();
@@ -456,6 +458,13 @@ public class CAExtraitCompteListViewBean extends BAccessBean implements FWListVi
     /**
      * @return
      */
+    public String getFromDate() {
+        return fromDate;
+    }
+
+    /**
+     * @return
+     */
     public String getUntilDate() {
         return untilDate;
     }
@@ -492,6 +501,10 @@ public class CAExtraitCompteListViewBean extends BAccessBean implements FWListVi
                 || getForSelectionTri().equalsIgnoreCase(CAExtraitCompteManager.ORDER_BY_DATE_VALEUR)) {
             if (!JadeStringUtil.isBlank(getFromPositionnement())) {
                 manager.setFromDate(getFromPositionnement());
+            }
+
+            if (!JadeStringUtil.isBlank(getFromDate())) {
+                manager.setFromDate(getFromDate());
             }
 
             if (!JadeStringUtil.isBlank(getUntilDate())) {
@@ -717,6 +730,13 @@ public class CAExtraitCompteListViewBean extends BAccessBean implements FWListVi
      */
     public void setPrintLanguage(String s) {
         printLanguage = s;
+    }
+
+    /**
+     * @param s
+     */
+    public void setFromDate(String s) {
+        fromDate = s;
     }
 
     /**
