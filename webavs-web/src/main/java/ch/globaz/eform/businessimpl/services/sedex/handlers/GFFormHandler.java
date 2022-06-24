@@ -1,19 +1,23 @@
 package ch.globaz.eform.businessimpl.services.sedex.handlers;
 
 import ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
+import ch.globaz.common.sftp.exception.SFtpOperationException;
 import ch.globaz.common.util.Dates;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
 import ch.globaz.eform.constant.GFStatusEForm;
+import ch.globaz.eform.hosting.EFormFileService;
+import ch.globaz.eform.utils.GFFileUtils;
 import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.time.LocalDate;
+
+import static ch.globaz.eform.businessimpl.services.sedex.GFTraitementMessageServiceImpl.ZipFile;
 
 @Slf4j
 public abstract class GFFormHandler {
@@ -21,13 +25,12 @@ public abstract class GFFormHandler {
     protected GFSedexModel model;
     protected Object message;
 
-    public void setDataFromFile(String userGestionnaire, String zipName, byte[] zipByte) throws RuntimeException {
+    public void setDataFromFile(String userGestionnaire, String zipName) throws RuntimeException {
         if(message != null){
             try {
                 extractData();
                 model.setUserGestionnaire(userGestionnaire);
                 model.setAttachementName(zipName);
-                model.setZipFile(zipByte);
             }catch(ClassCastException e){
                 LOG.error("GFFormHandler#setDataFromFile - Erreur de type de message.", e);
                 throw new JadeApplicationRuntimeException(e);
@@ -55,14 +58,24 @@ public abstract class GFFormHandler {
         }
     }
 
-    public void saveDataInDb(ValidationResult result) throws RuntimeException {
+    public void saveData(ValidationResult result, ZipFile zipFile) throws RuntimeException {
+        EFormFileService fileService = EFormFileService.instance();
         try {
+            fileService.send(zipFile.getFile().getAbsolutePath(), GFFileUtils.generateFilePath(model));
             setFormulaireData(result);
-        } catch (FileNotFoundException e) {
-            LOG.error("GFFormHandler#saveDataInDb - Fichier non trouvé : " + model.getMessageId(), e);
+        } catch (SFtpOperationException e) {
+            LOG.error("GFFormHandler#saveDataInDb - Erreur lors de l'envoie du fichier sur le server FTP : {}", model.getMessageId(), e);
             throw new JadeApplicationRuntimeException(e);
         } catch (Exception e) {
             LOG.error("GFFormHandler#saveDataInDb - Erreur lors de l'ajout du formulaire en DB  : {}", model.getMessageId(), e);
+
+            //Nétoyage du fichier si l'enregistrement en db c'est mal passé.
+            try {
+                fileService.remove(GFFileUtils.generateFilePath(model) + File.separator + zipFile.getName());
+            }catch (Exception ex) {
+                LOG.error("GFFormHandler#saveDataInDb - Le nétoyage du fichier a échoué", ex);
+            }
+
             throw new JadeApplicationRuntimeException(e);
         }
     }
@@ -80,19 +93,8 @@ public abstract class GFFormHandler {
             dbModel.setBeneficiaireDateNaissance(Dates.formatSwiss(model.getNaissanceBeneficiaire()));
             dbModel.setUserGestionnaire(model.getUserGestionnaire());
             dbModel.setAttachementName(model.getAttachementName());
-            dbModel.setAttachement(model.getZipFile());
 
             GFEFormServiceLocator.getGFEFormService().create(dbModel, result);
-    }
-
-    /**
-     *
-     * @param session: la session en cours
-     * @param transaction: la transaction en cours
-     * @return True si le traitement à une erreur.
-     */
-    private boolean hasError(BSession session, BTransaction transaction) {
-        return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
     }
 
     public void setMessage(Object message){

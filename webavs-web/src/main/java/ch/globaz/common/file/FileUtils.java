@@ -10,15 +10,15 @@ public abstract class FileUtils {
     public static String GIGA_OCTECTS = "Go";
     public static String TERA_OCTECTS = "To";
 
-    public static String formatTaille(File file, boolean round) {
-        return formatTaille(file.length(), round);
+    public static String formatLenght(File file, boolean round) {
+        return formatLenght(file.length(), round);
     }
 
-    public static String formatTaille(byte[] file, boolean round) {
-        return formatTaille(file.length / 8, round);
+    public static String formatLenght(byte[] file, boolean round) {
+        return formatLenght(file.length / 8, round);
     }
 
-    private static String formatTaille(long octectSizefile, boolean round) {
+    private static String formatLenght(long octectSizefile, boolean round) {
         StringBuilder formatSizeFile = new StringBuilder();
         int index = 0;
         double sizeFile = octectSizefile;

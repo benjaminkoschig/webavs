@@ -3,21 +3,20 @@ package ch.globaz.eform.businessimpl.services;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.services.GFEFormFileService;
-import globaz.jade.common.Jade;
+import ch.globaz.eform.hosting.EFormFileService;
+import ch.globaz.eform.utils.GFFileUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
-import java.io.FileOutputStream;
+import java.io.File;
+import java.nio.file.Files;
 
 public class GFEFormFileServiceImpl implements GFEFormFileService {
     @Override
     public String getZipFormulaire(String id) throws Exception {
-        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormService().readWithBlobs(id);
+        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormService().read(id);
 
-        String pathName = Jade.getInstance().getPersistenceDir() + model.getAttachementName();
-        try (FileOutputStream fos = new FileOutputStream(pathName)) {
-            fos.write(model.getAttachement());
-            //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
-        }
-
-        return pathName;
+        //Chargement du zip
+        EFormFileService fileService = EFormFileService.instance();
+        return fileService.retrieve(GFFileUtils.generateFilePath(model), model.getAttachementName()).getAbsolutePath().replaceAll(StringEscapeUtils.escapeJava(File.separator), "/");
     }
 }
