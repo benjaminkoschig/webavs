@@ -1,6 +1,7 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ page import="globaz.apg.acorweb.ws.token.APAcorTokenServiceImpl" %>
 <%@ page import="globaz.apg.servlet.IAPActions" %>
+<%@ page import="globaz.apg.properties.APProperties" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -173,7 +174,7 @@ selectedIdValue = viewBean.getIdDroit();
 							</TD>
 						</TR>
 						<TR><TD colspan="2"><HR></TD></TR>
-
+						<% if (APProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>
 						<tr>
 							<td colspan="4">
 								<h6>
@@ -203,9 +204,12 @@ selectedIdValue = viewBean.getIdDroit();
 							</td>
 						</tr>
 						<TR><TD colspan="2"><HR></TD></TR>
-
+						<% }%>
 						<TR>
 							<TD colspan="2">
+								<p>---------------------------------------------------------------------------------------------</p>
+								<p>ANCIEN ACOR</p>
+								<p>---------------------------------------------------------------------------------------------</p>
 								<H4>
 									<a style="color:black;" href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
 										<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_0"/>										
@@ -270,10 +274,13 @@ selectedIdValue = viewBean.getIdDroit();
 								</DIV>
 							</TD>
 						</TR>
+						<tr><td>
+							<INPUT type="button" name="btnImporter" class="btnCtrl" value="<%=viewBean.getLibelleBoutonValidate()%>">
+						</td></tr>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
-				<INPUT type="button" name="btnImporter" class="btnCtrl" value="<%=viewBean.getLibelleBoutonValidate()%>">
+
 				<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%><%-- /tpl:put --%>
