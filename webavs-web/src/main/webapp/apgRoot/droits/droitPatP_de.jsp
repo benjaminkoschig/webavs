@@ -709,6 +709,8 @@
         // Si on arrive jusqu'ici tous les contrôles sont passés et on peut ajouter la période et mettre à jour la date de fin calculée
         $('#dateFinCalculee').val(dateFinCalculee);
         addPeriode();
+
+        $('#dateDebutPeriode').focus();
     }
 
 
