@@ -97,8 +97,8 @@ public class PRAcorEnfantTypeMapper extends PRAcorMapper {
         // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
         enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(this.getSession(), membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
-            enfant.setDateAdoptionParent1(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
-            enfant.setDateAdoptionParent2(Dates.toXMLGregorianCalendar(detail.getDateAdoption(), YYYY_MM_DD_FORMAT));
+            enfant.setDateAdoptionParent1(Dates.toXMLGregorianCalendar(detail.getDateAdoption()));
+            enfant.setDateAdoptionParent2(Dates.toXMLGregorianCalendar(detail.getDateAdoption()));
         }
 
         // EURO_FORM
