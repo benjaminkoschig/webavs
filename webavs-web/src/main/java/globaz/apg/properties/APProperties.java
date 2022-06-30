@@ -234,8 +234,14 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
         }
-    }
-    ;
+    },
+
+    ACOR_UTILISER_VERSION_WEB("acor.utiliser.version.web","Boolean, si true, utilisation de la version Web d'ACOR"){
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    };
 
     private String description;
     private String propertyName;
