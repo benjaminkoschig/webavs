@@ -17,6 +17,7 @@ import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
 import ch.globaz.pyxis.domaine.PersonneAVS;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
+import globaz.corvus.acorweb.mapper.InfoSwap;
 import globaz.corvus.acorweb.mapper.REAcorMapper;
 import globaz.corvus.acorweb.mapper.ReturnedValue;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -88,12 +89,6 @@ public class REImportationCalculAcor {
     private List<String> remarquesParticulieres = new ArrayList<>();
 
     private List<File> listOfSwapFiles = new ArrayList<>();
-
-    @AllArgsConstructor
-    class InfoSwap {
-        private String nss;
-        private String xml;
-    }
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
                                          final BSession session) throws Exception {
@@ -451,18 +446,18 @@ public class REImportationCalculAcor {
     }
     private void sendMail(List<String>files, BSession session, List<InfoSwap> infoSwaps) throws Exception {
         String userMail = session.getUserEMail();
-        String subject = session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT") + "[" + infoSwaps.get(0).nss + "]";
+        String subject = session.getLabel("ACOR_FORMULAIRE_SWAP_SUBJECT") + "[" + infoSwaps.get(0).getNss() + "]";
         String body = session.getLabel("ACOR_FORMULAIRE_SWAP_BODY");
         JadeSmtpClient.getInstance().sendMail(userMail, subject, body,files.toArray(new String[0]));
     }
     public List<String> createSwapXmlFile(List<InfoSwap> infoSwaps) throws IOException {
         List<String>files= new ArrayList<>();
         for(InfoSwap infoSwap : infoSwaps) {
-            String filePath = Jade.getInstance().getHomeDir() + "work/" + "p[" + infoSwap.nss + "].xml";
+            String filePath = Jade.getInstance().getHomeDir() + "work/" + "p[" + infoSwap.getNss() + "].xml";
             File file = new File(filePath);
             listOfSwapFiles.add(file);
             try(FileWriter writer = new FileWriter(file)) {
-                writer.write(infoSwap.xml);
+                writer.write(infoSwap.getXml());
             }
             files.add(filePath);
         }
