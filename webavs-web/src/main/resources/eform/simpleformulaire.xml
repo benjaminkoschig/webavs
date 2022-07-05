@@ -16,7 +16,6 @@
             <field comment="Date de naissance du bénéficiaire" name="beneficiaireDateNaissance" column="BENEFICIAIRE_DATE_NAISSANCE" type="DATE" mandatory="true"/>
             <field comment="Gestionnaire attitré" name="userGestionnaire" column="USER_GESTIONNAIRE" type="STRING" mandatory="false"/>
             <field comment="Nom de l'attachement" name="attachementName" column="ATTACHEMENT_NAME" type="STRING" mandatory="false"/>
-            <field comment="identifiant du fichier zip attaché" name="attachement" column="ATTACHEMENT" type="BLOB" mandatory="false"/>
         </fields>
 
         <search-definition name="default">

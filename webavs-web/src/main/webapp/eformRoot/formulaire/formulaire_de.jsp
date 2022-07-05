@@ -19,7 +19,7 @@
     JadeUser currentUser = objSession.getUserInfo();
 
     GFFormulaireViewBean viewBean = (GFFormulaireViewBean) session.getAttribute("viewBean");
-    viewBean.retrieveWithBlob();
+    viewBean.retrieve();
     selectedIdValue = viewBean.getId();
 
     boolean manager = objSession.hasRight("eform.formulaire.formulaire.manager", "UPDATE");

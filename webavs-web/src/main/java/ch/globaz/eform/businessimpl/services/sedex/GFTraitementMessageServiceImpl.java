@@ -8,7 +8,6 @@ import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandlersFactor
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFEFormValidator;
 import ch.globaz.eform.web.application.GFApplication;
-import globaz.common.util.CommonBlobUtils;
 import globaz.framework.security.FWSecurityLoginException;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
@@ -180,8 +179,8 @@ public class GFTraitementMessageServiceImpl {
             if (!result.hasError()) {
                 GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
                 if (formHandler != null) {
-                    formHandler.setDataFromFile(userGestionnaire, zipFile.getName(), zipFile.getFileToByte());
-                    formHandler.saveDataInDb(result);
+                    formHandler.setDataFromFile(userGestionnaire, zipFile.getName());
+                    formHandler.saveData(result, zipFile);
 
                     LOG.info("GFTraitementMessageServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
@@ -266,7 +265,6 @@ public class GFTraitementMessageServiceImpl {
 
     public static class ZipFile {
         private final File file;
-        private byte[] byteFile;
 
         public ZipFile(String path) {
             file = new File(path);
@@ -280,12 +278,8 @@ public class GFTraitementMessageServiceImpl {
             return file.getName();
         }
 
-        public byte[] getFileToByte() throws Exception {
-            if (Objects.isNull(byteFile)) {
-                byteFile = CommonBlobUtils.fileToByteArray(file.getPath());
-            }
-
-            return byteFile;
+        public File getFile() {
+            return file;
         }
     }
 }

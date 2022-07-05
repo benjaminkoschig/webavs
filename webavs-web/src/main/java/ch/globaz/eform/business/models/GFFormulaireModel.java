@@ -30,7 +30,6 @@ public class GFFormulaireModel extends JadeSimpleModel {
     private String beneficiaireDateNaissance;
     private String userGestionnaire;
     private String attachementName;
-    private byte[] attachement;
 
     @Override
     public String getId() {
