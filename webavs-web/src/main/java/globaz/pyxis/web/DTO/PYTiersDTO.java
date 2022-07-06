@@ -3,6 +3,7 @@ package globaz.pyxis.web.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
+import org.apache.xpath.operations.Bool;
 
 import java.util.stream.Stream;
 
@@ -19,7 +20,7 @@ public class PYTiersDTO {
     private String locality;
 
     // Physical person's mandatory fields
-    private boolean isPhysicalPerson = false;
+    private Boolean isPhysicalPerson = false;
     private String title = "";
     private String surname = "";
 
@@ -63,6 +64,8 @@ public class PYTiersDTO {
     @JsonIgnore
     public Boolean isValid() {
         //TODO: add validation for other fields
-        return (Stream.of(name, language, street, streetNumber, postalCode, locality).noneMatch(JadeStringUtil::isEmpty));
+        return (Stream.of(name, language, street, streetNumber, postalCode, locality).noneMatch(JadeStringUtil::isEmpty)                // Mandatory fields
+                && isPhysicalPerson ? Stream.of(title, surname, nss, birthDate, civilStatus).noneMatch(JadeStringUtil::isEmpty): true)  // Mandatory for a physical person
+                && PYValidateDTO.isValid(language);
     }
 }
