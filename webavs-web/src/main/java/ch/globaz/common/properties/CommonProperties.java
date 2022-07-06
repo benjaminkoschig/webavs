@@ -79,7 +79,8 @@ public enum CommonProperties implements IProperties {
     ACOR_BACKEND_PATH("acor.backend.path","Path de l'api utilisé pour ACOR Web"),
     ACOR_NAVIGATEUR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web"),
     ACOR_TOKEN_DURATION("acor.token.duration", "Indique la duré en heure de validité du token"),
-    ES_TOKEN_DURATION("es.token.duration", "Indique la duré en heure de validité du token");
+    ES_TOKEN_DURATION("es.token.duration", "Indique la duré en heure de validité du token"),
+    PY_TOKEN_DURATION("py.token.duration", "Indique la duré en heure de validité du token");
 
     private String description;
     private String propertyName;
