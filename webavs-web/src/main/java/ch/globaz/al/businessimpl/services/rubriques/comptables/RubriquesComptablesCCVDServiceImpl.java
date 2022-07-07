@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import ch.globaz.al.business.constantes.ALCSCantons;
@@ -112,6 +113,38 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
         } else {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_RESTITUTION);
         }
+    }
+
+    @Override
+    public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
+        AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+        String rubriqueAffiliation = assurance.getLibelleCourt();
+        if (JadeStringUtil.isBlankOrZero("cantonImposition") &&
+                ALCSTarif.CATEGORIE_VS.equals(ALImplServiceLocator.getCalculService().getTarifForCanton(
+                cantonImposition))) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_VS_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_H.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_H_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RA.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RA_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RB.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RB_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RC.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RC_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RD.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RD_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RE.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RE_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RF.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RF_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RL.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RL_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_S.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_S_IS);
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_TSE.equals(rubriqueAffiliation)) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_TSE_IS);
+        }
+        return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_IS);
     }
 
     @Override

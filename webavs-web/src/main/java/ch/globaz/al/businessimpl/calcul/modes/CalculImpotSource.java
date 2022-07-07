@@ -90,7 +90,7 @@ public class CalculImpotSource {
             }
             droitCalcule.setCalculResultMontantIS(montantIS);
         } catch (TauxImpositionNotFoundException e) {
-            throw new ALCalculException(e.getMessage());
+            throw new ALCalculException(e.getMessage(), e);
         }
     }
     private static Montant rechercheImpot(String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String date) throws TauxImpositionNotFoundException {

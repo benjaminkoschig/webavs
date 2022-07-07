@@ -10,6 +10,7 @@ public interface ALConstRubriques {
 
     String RUBRIQUE_CAISSE_AGRICOLE = "rubrique.caisse.agricole";
     String RUBRIQUE_CAISSE_AGRICOLE_ADI = "rubrique.caisse.agricole.adi";
+    String RUBRIQUE_CAISSE_AGRICOLE_IS = "rubrique.caisse.agricole.is";
 
     String RUBRIQUE_CAISSE_AGRICULTEUR = "rubrique.caisse.agriculteur";
 
@@ -40,28 +41,39 @@ public interface ALConstRubriques {
     String RUBRIQUE_CAISSE_SALARIE = "rubrique.caisse.salarie";
     String RUBRIQUE_CAISSE_SALARIE_H_NAISSANCE = "rubrique.caisse.salarie.h.naissance";
     String RUBRIQUE_CAISSE_SALARIE_H_STANDARD = "rubrique.caisse.salarie.h.standard";
+    String RUBRIQUE_CAISSE_SALARIE_H_IS = "rubrique.caisse.salarie.h.is";
     String RUBRIQUE_CAISSE_SALARIE_RA_NAISSANCE = "rubrique.caisse.salarie.ra.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RA_STANDARD = "rubrique.caisse.salarie.ra.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RA_IS = "rubrique.caisse.salarie.ra.is";
     String RUBRIQUE_CAISSE_SALARIE_RB_NAISSANCE = "rubrique.caisse.salarie.rb.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RB_STANDARD = "rubrique.caisse.salarie.rb.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RB_IS = "rubrique.caisse.salarie.rb.is";
     String RUBRIQUE_CAISSE_SALARIE_RC_NAISSANCE = "rubrique.caisse.salarie.rc.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RC_STANDARD = "rubrique.caisse.salarie.rc.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RC_IS = "rubrique.caisse.salarie.rc.is";
     String RUBRIQUE_CAISSE_SALARIE_RD_NAISSANCE = "rubrique.caisse.salarie.rd.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RD_STANDARD = "rubrique.caisse.salarie.rd.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RD_IS = "rubrique.caisse.salarie.rd.is";
     String RUBRIQUE_CAISSE_SALARIE_RE_NAISSANCE = "rubrique.caisse.salarie.re.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RE_STANDARD = "rubrique.caisse.salarie.re.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RE_IS = "rubrique.caisse.salarie.re.is";
     String RUBRIQUE_CAISSE_SALARIE_RF_NAISSANCE = "rubrique.caisse.salarie.rf.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RF_STANDARD = "rubrique.caisse.salarie.rf.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RF_IS = "rubrique.caisse.salarie.rf.is";
     String RUBRIQUE_CAISSE_SALARIE_RL_NAISSANCE = "rubrique.caisse.salarie.rl.naissance";
     String RUBRIQUE_CAISSE_SALARIE_RL_STANDARD = "rubrique.caisse.salarie.rl.standard";
+    String RUBRIQUE_CAISSE_SALARIE_RL_IS = "rubrique.caisse.salarie.rl.is";
     String RUBRIQUE_CAISSE_SALARIE_S_NAISSANCE = "rubrique.caisse.salarie.s.naissance";
     String RUBRIQUE_CAISSE_SALARIE_S_STANDARD = "rubrique.caisse.salarie.s.standard";
+    String RUBRIQUE_CAISSE_SALARIE_S_IS = "rubrique.caisse.salarie.s.is";
     String RUBRIQUE_CAISSE_SALARIE_TSE_NAISSANCE = "rubrique.caisse.salarie.tse.naissance";
     String RUBRIQUE_CAISSE_SALARIE_TSE_STANDARD = "rubrique.caisse.salarie.tse.standard";
+    String RUBRIQUE_CAISSE_SALARIE_TSE_IS = "rubrique.caisse.salarie.tse.is";
 
     String RUBRIQUE_CAISSE_SALARIE_VS_NAISSANCE = "rubrique.caisse.salarie.vs.naissance";
 
     String RUBRIQUE_CAISSE_SALARIE_VS_STANDARD = "rubrique.caisse.salarie.vs.standard";
+    String RUBRIQUE_CAISSE_SALARIE_VS_IS = "rubrique.caisse.salarie.vs.is";
     String RUBRIQUE_CAISSE_TRAVAILLEUR_AGRICOLE_ADI = "rubrique.caisse.travailleur.agricole.adi";
     String RUBRIQUE_CAISSE_TRAVAILLEUR_AGRICOLE_MENAGE_LJU = "rubrique.caisse.travailleur.agricole.menage.lju";
     String RUBRIQUE_CAISSE_TRAVAILLEUR_AGRICOLE_MENAGE_MONTAGNE = "rubrique.caisse.travailleur.agricole.menage.montagne";
@@ -103,15 +115,19 @@ public interface ALConstRubriques {
     String RUBRIQUE_STANDARD_COLLABORATEUR_AGRICOLE = "rubrique.standard.collaborateur";
     String RUBRIQUE_STANDARD_INDEPENDANT = "rubrique.standard.independant";
     String RUBRIQUE_STANDARD_INDEPENDANT_ADI = "rubrique.standard.independant.adi";
+    String RUBRIQUE_STANDARD_INDEPENDANT_IS = "rubrique.standard.independant.is";
     String RUBRIQUE_STANDARD_NON_ACTIF = "rubrique.standard.non.actif";
     String RUBRIQUE_STANDARD_NON_ACTIF_ADI = "rubrique.standard.non.actif.adi";
+    String RUBRIQUE_STANDARD_NON_ACTIF_IS = "rubrique.standard.non.actif.is";
     String RUBRIQUE_STANDARD_PECHEUR = "rubrique.standard.pecheur";
     String RUBRIQUE_STANDARD_RESTITUTION = "rubrique.standard.restitution";
     String RUBRIQUE_STANDARD_RESTITUTION_INDEPENDANT = "rubrique.standard.restitution.independant";
     String RUBRIQUE_STANDARD_RESTITUTION_SALARIE = "rubrique.standard.restitution.salarie";
     String RUBRIQUE_STANDARD_SALARIE = "rubrique.standard.salarie";
     String RUBRIQUE_STANDARD_SALARIE_NAISSANCE = "rubrique.standard.salarie.naissance";
+    String RUBRIQUE_STANDARD_IS = "rubrique.standard.is";
     String RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE = "rubrique.standard.travailleur.agricole";
+    String RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS = "rubrique.standard.travailleur.agricole.is";
 
     String RUBRIQUE_CAISSE_INDEPENDANT_IMPOT_SOURCE = "rubrique.multicaisse." +RUBRIQUE_MULTICAISSE_CODE_PATTERN + ".independant.is";
     String RUBRIQUE_CAISSE_SALARIE_IMPOT_SOURCE = "rubrique.multicaisse." + RUBRIQUE_MULTICAISSE_CODE_PATTERN +  ".salarie.is";
