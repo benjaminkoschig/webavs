@@ -3,7 +3,6 @@ package globaz.pyxis.web.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
-import org.apache.xpath.operations.Bool;
 
 import java.util.stream.Stream;
 
@@ -56,6 +55,26 @@ public class PYTiersDTO {
     private String meansOfCommunicationType = "";
     private String value = "";
     private String applicationDomain = "";
+
+    // CCVS-only fields
+    // Optional fields
+    private String tiersName = "";
+    private String tiersSurname = "";
+
+    // Mandatory for a physical person, optional for a legal person
+    private String relationshipWithTiers = "";
+    private String relationshipType = "";
+    private String validFrom = "";
+    private String validTo = "";
+
+    // Mandatory for a physical person, impossible for a legal person
+    private String partnerNSS = "";
+    private String partnershipCivilStatus = "";
+
+    // Optional for a physical person, impossible for a legal person
+    private String partnershipFrom = "";
+    private String partnershipTo = "";
+
 
     public PYTiersDTO() {
 
