@@ -1,6 +1,6 @@
 include:
   - project: 'ci-cd/product-currents-gitlab-ci'
-    ref: 'fix/release_globaz_properties'
+    ref: 'master'
     file: '/mvn-gitlab-ci.yml'
 
 .vars_set: &before_script_avs  # This is an anchor
