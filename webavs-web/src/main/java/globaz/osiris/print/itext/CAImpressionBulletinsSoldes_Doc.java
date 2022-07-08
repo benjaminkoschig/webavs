@@ -9,6 +9,7 @@ import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
+import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -187,8 +188,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             IFormatData affilieFormater = ((TIApplication) GlobazServer.getCurrentSystem().getApplication(
                     TIApplication.DEFAULT_APPLICATION_PYXIS)).getAffileFormater();
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", affilieFormater.unformat(numAff));
+
             TIDocumentInfoHelper.fill(getDocumentInfo(), idTiers, getSession(), compteAnnexe.getIdRole(), numAff,
                     affilieFormater.unformat(numAff));
+
             getDocumentInfo().setDocumentProperty("annee", getAnneeFromSection(section));
 
             if (getPassage() != null) {
@@ -217,7 +220,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
             getDocumentInfo().setDocumentType(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE);
 
-            getDocumentInfo().setDocumentProperty("osiris.section.idExterne", afact.getIdExterneFactureCompensation());
+            getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE, section.getIdExterne());
+
+            getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_TYPE, section.getIdTypeSection());
 
             if ((afact != null) && !JadeStringUtil.isBlankOrZero(afact.getIdEnteteFacture())) {
                 FAEnteteFacture entete = new FAEnteteFacture();
@@ -230,8 +235,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     }
                 }
             }
-            String test = getDocumentInfo().getOriginalFileName();
-            String test2 = getDocumentInfo().getCurrentFileName();
+
         } catch (Exception e) {
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAff);
         }
