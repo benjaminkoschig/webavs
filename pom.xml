@@ -7,7 +7,7 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.28.1-SNAPSHOT</version>
+	<version>1.28.0</version>
 	<packaging>pom</packaging>
 	<name>WebAVS Parent</name>
 	<description>WebAVS system</description>
@@ -17,7 +17,7 @@
 		<url>${scm.weburl}</url>
 		<connection>${scmConnection}</connection>
 		<developerConnection>${scmConnection}</developerConnection>
-		<tag>1.28.0-RC1</tag>
+		<tag>1.28.0</tag>
 	</scm>
 
 	<properties>
