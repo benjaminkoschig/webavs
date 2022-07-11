@@ -1,13 +1,28 @@
 include:
   - project: 'ci-cd/product-currents-gitlab-ci'
-    ref: 'bugfix/mvn-package-update'
+    ref: 'master'
     file: '/mvn-gitlab-ci.yml'
 
-build-maven:
+.vars_set: &before_script_avs  # This is an anchor
   before_script:
     - echo $JAVA_OPTS
-    - export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=Cp1252 -Dsun.jnu.encoding=ISO-8859-1 -Duser.timezone=Europe/Zurich -Duser.country=CH"
+    - export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=cp1252 -Dsun.jnu.encoding=ISO-8859-1 -Duser.timezone=Europe/Zurich -Duser.country=CH -Duser.language=fr"
     - echo $JAVA_OPTS
     - echo $MAVEN_OPTS
-    - export MAVEN_OPTS="$MAVEN_OPTS -Dfile.encoding=Cp1252 -Dsun.jnu.encoding=ISO-8859-1 -Duser.timezone=Europe/Zurich -Duser.country=CH"
+    - export MAVEN_OPTS="$MAVEN_OPTS -Dfile.encoding=cp1252 -Dsun.jnu.encoding=ISO-8859-1 -Duser.timezone=Europe/Zurich -Duser.country=CH -Duser.language=fr"
     - mvn -v
+
+build-maven:
+  <<: *before_script_avs
+
+build-maven-release:
+  <<: *before_script_avs
+
+deploy-maven:
+  <<: *before_script_avs
+
+deploy-maven-release:
+  <<: *before_script_avs
+
+unit-test-maven:
+  <<: *before_script_avs
