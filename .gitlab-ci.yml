@@ -15,11 +15,14 @@ include:
 build-maven:
   <<: *before_script_avs
 
+build-maven-release:
+  <<: *before_script_avs
+
 deploy-maven:
   <<: *before_script_avs
 
-unit-test-maven:
+deploy-maven-release:
   <<: *before_script_avs
 
-it-test-maven:
+unit-test-maven:
   <<: *before_script_avs
