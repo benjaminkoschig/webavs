@@ -37,7 +37,7 @@
                 <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
                 <search-field name="byLastName" field-ref="beneficiaireNom" operation="LIKE"/>
                 <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="LIKE"/>
-                <search-field name="likeNss" field-ref="beneficiaireNss" operation="EQUALS"/>
+                <search-field name="likeNss" field-ref="beneficiaireNss" operation="LIKE"/>
             </search-group>
         </search-definition>
         <search-definition name="statistiqueBetween">

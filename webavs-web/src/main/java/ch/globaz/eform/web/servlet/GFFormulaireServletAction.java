@@ -4,6 +4,7 @@ import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
+import globaz.eform.vb.formulaire.GFFormulaireListViewBean;
 import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -46,6 +47,15 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
         }
 
         super.actionChercher(session, request, response, mainDispatcher);
+    }
+
+    @Override
+    protected void actionLister(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
+        super.actionLister(session, request, response, mainDispatcher);
+        Object listViewBean = session.getAttribute("listViewBean");
+        if (listViewBean instanceof GFFormulaireListViewBean) {
+            ((GFFormulaireListViewBean)listViewBean).putSearchModelOnSession(session);
+        }
     }
 
     @Override

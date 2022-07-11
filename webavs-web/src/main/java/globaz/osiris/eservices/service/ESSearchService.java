@@ -55,14 +55,12 @@ public class ESSearchService {
         return compteAnnexeManager;
     }
 
-    public CASectionManager searchSections(CACompteAnnexe compteAnnexe, String selectionSections, String startPeriod, String endPeriod, BSession session) throws ESInternalException {
+    public CASectionManager searchSections(CACompteAnnexe compteAnnexe, String selectionSections, BSession session) throws ESInternalException {
         CASectionManager sectionManager = new CASectionManager();
         sectionManager.setSession(session);
         sectionManager.setForIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
         sectionManager.setForSelectionTri(CASectionManager.ORDER_DATE_DESCEND); // SelectionTri set par défault par Date DESC
         sectionManager.setForSelectionSections(mapToSelectionSections(selectionSections));
-        sectionManager.setFromDate(startPeriod);
-        sectionManager.setUntilDate(endPeriod);
 
         try {
             sectionManager.find(BManager.SIZE_NOLIMIT);
@@ -77,7 +75,7 @@ public class ESSearchService {
         return sectionManager;
     }
 
-    public CAExtraitCompteListViewBean searchLignesExtraitComptes(CASection section, String selectionTris, String selectionSections, String operation, String langue, BSession session) {
+    public CAExtraitCompteListViewBean searchLignesExtraitComptes(CASection section, String selectionTris, String selectionSections, String operation, String langue, String startPeriod, String endPeriod, BSession session) {
         CAExtraitCompteListViewBean vb = new CAExtraitCompteListViewBean();
         vb.setIdCompteAnnexe(section.getIdCompteAnnexe());
         vb.setSession(session);
@@ -86,6 +84,8 @@ public class ESSearchService {
         vb.setForIdTypeOperation(operation);
         vb.setForIdSection(section.getIdSection());
         vb.setPrintLanguage(langue);
+        vb.setFromDate(startPeriod);
+        vb.setUntilDate(endPeriod);
         vb.find();
 
         if (vb.getSize() == 0) {

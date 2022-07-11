@@ -285,9 +285,6 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         data.addData("LETTRE_PARA5", vivezVous);
 
         // Traitement du paragraphe 6, case à cocher OUI / NON
-        String espaceAvant = " ";
-        String espaceApres = "                              ";
-        data.addData("LETTRE_PARA6_BOX", espaceAvant + document.getTextes(10).getTexte(19).getDescription() + espaceApres);
         data.addData("LETTRE_PARA6", document.getTextes(10).getTexte(7).getDescription());
         data.addData("LETTRE_PARA6_SUITE1", document.getTextes(10).getTexte(8).getDescription());
 

@@ -444,9 +444,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalparam />
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
