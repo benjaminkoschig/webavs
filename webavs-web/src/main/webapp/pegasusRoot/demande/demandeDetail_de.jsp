@@ -555,11 +555,23 @@ function postInit(){
 				</tr>
 				<tr id="forDisplayDateReto">
 					<td><label class="standardLabel" for="forDateDebut"><ct:FWLabel key="JSP_PC_DEM_R_DATE_DEBUT"/></label></td>
-					<td><input calss="clear" value="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateDebut())%>" type="text" data-g-calendar="mandatory:true,type:month" name="demande.simpleDemande.dateDebut" id="forDateDebut" ></td>
+					<td><input calss="clear" value="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateDebut())%>"
+							   type="text"
+							   data-g-calendar="mandatory:true,type:month"
+							   name="demande.simpleDemande.dateDebut"
+							   id="forDateDebut"
+						<%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" readOnly  ":"" %>
+						<%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" disabled='disabled' ":"" %>></td>
 					<td><label class="standardLabel " for="forDateFin"><ct:FWLabel key="JSP_PC_DEM_R_DATE_FIN"/></label></td>
-					<td><input calss="clear" value="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFin())%>" type="text" data-g-calendar="mandatory:true,type:month" name="demande.simpleDemande.dateFin" id="forDateFin" ></td>
+					<td><input calss="clear" value="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFin())%>"
+							   type="text"
+							   data-g-calendar="mandatory:true,type:month"
+							   name="demande.simpleDemande.dateFin"
+							   id="forDateFin"
+						<%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" readOnly  ":"" %>
+						<%=(viewBean.getIsOnlyRetro() && !viewBean.isDemandePurRetro())?" disabled='disabled' ":"" %>></td>
 					<td colspan="2"></td>
-				</tr> 
+				</tr>
 
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DOS_D_PERIODE"/></td>

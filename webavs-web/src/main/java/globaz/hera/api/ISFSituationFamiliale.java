@@ -151,7 +151,9 @@ public interface ISFSituationFamiliale {
      * invalide
      * @throws Exception
      */
-    ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecuilli(String idTiers) throws Exception;
+    ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecueilli(String idTiers) throws Exception;
+
+    ISFMembreFamille[] getMembresFamilleEtendueAvecEnfantRecueilli(String idMembreFamille, Boolean inclureParents) throws Exception;
 
     /**
      * <p>

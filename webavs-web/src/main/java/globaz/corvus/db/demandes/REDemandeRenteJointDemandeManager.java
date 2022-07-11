@@ -113,7 +113,7 @@ public class REDemandeRenteJointDemandeManager extends PRAbstractManager {
                     // fait, et on est certain d'en obtenir une.
                     ISFSituationFamiliale sitFam = SFSituationFamilialeFactory.getSituationFamiliale(getSession(),
                             ISFSituationFamiliale.CS_DOMAINE_RENTES, null);
-                    ISFMembreFamille[] membresFamille = sitFam.getMembresFamilleEtendue(mf.getIdMembreFamille(),
+                    ISFMembreFamille[] membresFamille = sitFam.getMembresFamilleEtendueAvecEnfantRecueilli(mf.getIdMembreFamille(),
                             Boolean.TRUE);
 
                     for (int i = 0; i < membresFamille.length; i++) {

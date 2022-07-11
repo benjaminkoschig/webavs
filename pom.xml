@@ -41,7 +41,7 @@
 		<ch.globaz.mercato.notification.version>1.0.6</ch.globaz.mercato.notification.version>
 		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.7.5</jade.version>
-		<pyxis.version>1.23.9-RC1</pyxis.version>
+		<pyxis.version>1.23.9</pyxis.version>
 		<simple-output-list.version>1.3.2</simple-output-list.version>
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
@@ -50,7 +50,7 @@
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-		<external-xsd.version>1.0.0-SNAPSHOT</external-xsd.version>
+		<external-xsd.version>1.0.0</external-xsd.version>
     <jackson.version>2.12.4</jackson.version>
     <jjwt.version>0.11.2 </jjwt.version>
 
@@ -85,13 +85,13 @@
 		 	 deleting outdated resource //path
 		 -->
 		<war.version>3.2.3</war.version>
-
+		<versions.version>2.11.0</versions.version>
 	</properties>
 
 	<modules>
+		<module>webavs-configuration</module>
 		<module>webavs-web</module>
 		<module>webavs-ear</module>
-		<module>webavs-configuration</module>
 		<module>webavs-sql</module>
 	</modules>
 
