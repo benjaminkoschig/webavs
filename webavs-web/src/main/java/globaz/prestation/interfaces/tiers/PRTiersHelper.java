@@ -4,11 +4,11 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import globaz.apg.properties.APProperties;
 import globaz.corvus.properties.REProperties;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdresseResolver;
+import globaz.pyxis.web.DTO.PYTiersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -204,7 +204,6 @@ public class PRTiersHelper {
 
         return personneAvs.getIdTiers();
     }
-
     public static final String addTiers(BISession session, String noAVS, String nom, String prenom, String sexe,
                                         String dateNaissance, String dateDeces, String pays, String canton, String langue, String etatCivil)
             throws Exception {
@@ -263,6 +262,147 @@ public class PRTiersHelper {
         }
 
         return personneAvs.getIdTiers();
+    }
+
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (page 1)
+     *
+     * @param session
+     * @param dto
+     * @return le
+     * @throws Exception
+     */
+    public static final String addTiersPage1(BISession session, PYTiersDTO dto) throws Exception {
+        ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
+
+        System.out.println(session);
+
+        // Fields in TITIERP
+        avsPerson.setTypeTiers(ITITiers.CS_TIERS);
+        avsPerson.setTitreTiers(getTitleAsSystemCode(dto.getTitle()));
+        avsPerson.setDesignation1(dto.getName());
+        avsPerson.setDesignation2(dto.getSurname());
+        avsPerson.setDesignation3(dto.getName1());
+        avsPerson.setDesignation4(dto.getName2());
+        avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
+        avsPerson.setIdPays(dto.getCountry());
+        avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
+        avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
+        avsPerson.setInactif(dto.getIsPhysicalPerson());
+
+        //TODO: Add missing fields for the first page
+        // Fields in TIPERSP
+
+        // Fields in TIPAVSP
+
+        avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
+
+        if (((BSession) session).getCurrentThreadTransaction() != null) {
+            avsPerson.add(((BSession) session).getCurrentThreadTransaction());
+        } else {
+            // HACK: creating a transaction to insert a "tiers"
+            BITransaction transaction = ((BSession) session).newTransaction();
+
+            try {
+                avsPerson.add(transaction);
+                PRTiersHelper.addRole(session, transaction, avsPerson.getIdTiers());
+
+            } catch (Exception e) {
+                transaction.setRollbackOnly();
+            } finally {
+                if (transaction.isRollbackOnly()) {
+                    transaction.closeTransaction();
+                } else {
+                    transaction.commit();
+                }
+            }
+        }
+
+        return avsPerson.getIdTiers();
+    }
+
+    /**
+     * Lis title pour retourner le code système associé. Si title est un code système custom,
+     *
+     * @param code
+     * @return Un code système pour le titre
+     */
+    private static final String getTitleAsSystemCode(String title) {
+        String result;
+        switch (title) {
+            case "Monsieur":
+            case "M":
+                result = ITITiers.CS_MONSIEUR;
+                break;
+            case "Madame":
+            case "Mme":
+                result = ITITiers.CS_MADAME;
+                break;
+            case "Madame, Monsieur":
+                result = ITITiers.CS_ADMINISTRATION;
+                break;
+            default: // If the title isn't anything standard, check that it's a valid system code and pass it on as is
+                if (isSystemCode(title)) {
+                    result = title;
+                }
+                else { // Otherwise, set it to 0
+                    result = "0";
+                }
+        }
+        return result;
+    }
+
+    /**
+     * Lis language pour retourner le code système associé. Si title est un code système custom,
+     *
+     * @param code
+     * @return Un code système pour le titre
+     */
+    private static final String getLanguageAsSystemCode(String language) {
+        String result;
+        switch (language) {
+            case "FR":
+            case "Français":
+                result = ITITiers.CS_FRANCAIS;
+                break;
+            case "DE":
+            case "Deutsch":
+                result = ITITiers.CS_ALLEMAND;
+                break;
+            case "IT":
+            case "Italiano":
+                result = ITITiers.CS_ITALIEN;
+                break;
+            default: // If the language isn't anything standard, check that it's a valid system code and pass it on as is
+                if (isSystemCode(language)) {
+                    result = language;
+                }
+                else { // Otherwise, set it to 0
+                    result = "0";
+                }
+        }
+        return result;
+    }
+
+    /**
+     * Méthode pour vérifier que code ressemble à un code système
+     *
+     * @param code
+     * @return true si ça ressemble à un code système
+     */
+    private static final boolean isSystemCode(String code) {
+        int codeAsInt;
+        try {
+            codeAsInt = Integer.parseInt(code);
+            if(codeAsInt < 0){
+                return false;
+            }
+            // TODO: It'd be nice to check if the system code actually exists (custom or generic)
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)

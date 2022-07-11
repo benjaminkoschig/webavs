@@ -11,11 +11,14 @@ public class PYExecuteService {
      * @return dto JSON contenant l'id du tiers créé
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
-        //TODO: Implement "tiers" creation
+        String idTiers = null;
 
+        //TODO: check that token is valid
+
+        //TODO: Call addTiersPage1
         System.out.println(dto.getName());
 
-        //TODO: Return created "tiers"'s ID (HTITIE) instead of the whole dto
+        //TODO: return dto with tiers' id
         return dto;
     }
 }
