@@ -95,8 +95,8 @@ public class CAApplication extends globaz.globall.db.BApplication implements Ser
 
     // propriétés eBill
     public static final String PROPERTY_AQUILA_EBILL_ACTIVE = "aquila.eBill.activer";
-    public static final String PROPERTY_OSIRIS_EBILL_ACTIVE = "eBill.activer";
-    public static final String PROPERTY_EBILL_ACTIVE = "eBill.activer";
+    public static final String PROPERTY_OSIRIS_EBILL_ACTIVE = "osiris.eBill.activer";
+    public static final String PROPERTY_EBILL_ACTIVE = "common.eBill.activer";
     public static final String PROPERTY_OSIRIS_EBILL_BILLER_ID = "eBill.numero.BillerID";
     public static final String PROPERTY_OSIRIS_EBILL_EMAILS = "osiris.eBill.email.traitements";
     public static final String PROPERTY_OSIRIS_PLAGE_VALEURS_EBILL = "EBILLACNT";

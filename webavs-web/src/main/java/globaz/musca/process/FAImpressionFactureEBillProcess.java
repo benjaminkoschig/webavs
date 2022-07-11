@@ -371,7 +371,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, String reference, JadePublishDocument attachedDocument) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, String reference, JadePublishDocument attachedDocument) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -531,12 +531,12 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 myMod.print();
 
                 if (myMod.get_document() instanceof FAImpressionFacture_BVR_Doc) {
-                    lignesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesParPaireIdExterne());
-                    referencesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
+                    lignesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesFactureParPaireIdExterne());
+                    referencesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferencesFactureParPaireIdExterne());
                 }
                 if (myMod.get_document() instanceof CAImpressionBulletinsSoldes_Doc) {
-                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesParPaireIdExterne());
-                    referencesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
+                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesSoldeParPaireIdExterne());
+                    referencesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferencesSoldeParPaireIdExterne());
                 }
             }
             return true;
@@ -783,8 +783,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             if (eBillActif && !forcerImpression && !impressionPapierUniquement) {
                 try {
                     initServiceFtp();
-                    traiterFacturesEBill();
-                    traiterBulletinDeSoldesEBill();
+                    traiterFacturesEBillMusca();
+                    traiterBulletinDeSoldesEBillMusca();
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -893,7 +893,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
             CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
-                removeAndReturnAttachedDocument(entete);
+                removeAndReturnAttachedDocument(entete, getAttachedDocuments());
                 nbImprimer--;
             }
 
@@ -982,19 +982,19 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * Méthode permettant de traiter les factures eBill
      * en attente d'être envoyé dans le processus actuel.
      */
-    private void traiterFacturesEBill() throws Exception {
+    private void traiterFacturesEBillMusca() throws Exception {
 
-        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne : lignesFactureParPaireIdExterne.entrySet()) {
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneFactureParPaireIdExterne : lignesFactureParPaireIdExterne.entrySet()) {
 
-            Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFactureEBill = getAfactParEnteteFactureEBill(lignesParPaireIdExterne.getKey());
-            if (afactParEnteteFactureEBill != null) {
-                FAEnteteFacture entete = afactParEnteteFactureEBill.getKey();
+            Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFacture = getAfactParEnteteFacture(ligneFactureParPaireIdExterne.getKey());
+            if (afactParEnteteFacture != null) {
+                FAEnteteFacture entete = afactParEnteteFacture.getKey();
 
-                String reference = referencesFactureParPaireIdExterne.get(lignesParPaireIdExterne.getKey());
+                String reference = referencesFactureParPaireIdExterne.get(ligneFactureParPaireIdExterne.getKey());
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
-                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete);
-                    creerFichierEBill(compteAnnexe, entete, null, null, lignesParPaireIdExterne.getValue(), reference, attachedDocument);
+                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
+                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument);
                     factureEBill++;
                 }
             }
@@ -1005,22 +1005,22 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * Méthode permettant de traiter les bulletins de soldes eBill
      * en attente d'être envoyé dans le processus actuel.
      */
-    public void traiterBulletinDeSoldesEBill() throws Exception {
+    private void traiterBulletinDeSoldesEBillMusca() throws Exception {
 
-        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill : lignesSoldeParPaireIdExterne.entrySet()) {
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneSoldeParPaireIdExterne : lignesSoldeParPaireIdExterne.entrySet()) {
 
-            FAEnteteFacture entete = getAfactParEnteteFactureEBill(lignesParPaireIdExterneEBill.getKey(), getIdPassage());
-            FAEnteteFacture enteteReference = getEnteteFactureReference(lignesParPaireIdExterneEBill.getKey());
+            FAEnteteFacture entete = getEnteteFacture(ligneSoldeParPaireIdExterne.getKey(), getIdPassage());
+            FAEnteteFacture enteteReference = getEnteteFactureReference(ligneSoldeParPaireIdExterne.getKey());
 
             if (entete != null && enteteReference != null) {
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
-                String reference = referencesSoldeParPaireIdExterne.get(lignesParPaireIdExterneEBill.getKey());
+                String reference = referencesSoldeParPaireIdExterne.get(ligneSoldeParPaireIdExterne.getKey());
                 if (compteAnnexe != null && compteAnnexeReference != null
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
-                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
-                    creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
+                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference, getAttachedDocuments());
+                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument);
                     factureEBill++;
                 }
             }
@@ -1035,9 +1035,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param enteteFacture : l'entete qui permet d'identifier le fichier à retourner
      * @return le fichier généré durant l'impression
      */
-    private JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture enteteFacture) {
+    public JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture enteteFacture, List attachedDocuments) {
         JadePublishDocument attachedDocument = null;
-        Iterator<JadePublishDocument> iter = getAttachedDocuments().iterator();
+        Iterator<JadePublishDocument> iter = attachedDocuments.iterator();
         while (iter.hasNext()) {
             final JadePublishDocument doc = iter.next();
             if (enteteFacture.getIdExterneFacture().equals(doc.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("osiris.section.idExterne"))
@@ -1057,7 +1057,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param paireIdExterneEBill : pair d'idExterneRole et d'idExterneFacture
      * @return l'entête ou null
      */
-    private Map.Entry<FAEnteteFacture, FAAfactManager> getAfactParEnteteFactureEBill(PaireIdExterneEBill paireIdExterneEBill) {
+    private Map.Entry<FAEnteteFacture, FAAfactManager> getAfactParEnteteFacture(PaireIdExterneEBill paireIdExterneEBill) {
         for (Map.Entry<FAEnteteFacture, FAAfactManager> entry : afactParEnteteFactureEBill.entrySet()) {
             FAEnteteFacture enteteFacture = entry.getKey();
             if (paireIdExterneEBill.getIdExterneRole().equals(enteteFacture.getIdExterneRole()) && paireIdExterneEBill.getIdExterneFactureCompensation().equals(enteteFacture.getIdExterneFacture())) {
@@ -1092,7 +1092,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param idPassage           : l'id de passage
      * @return l'entête
      */
-    private FAEnteteFacture getAfactParEnteteFactureEBill(PaireIdExterneEBill paireIdExterneEBill, String idPassage) throws Exception {
+    private FAEnteteFacture getEnteteFacture(PaireIdExterneEBill paireIdExterneEBill, String idPassage) throws Exception {
         FAEnteteFactureManager manager = new FAEnteteFactureManager();
         manager.setSession(getSession());
         manager.setForIdExterneRole(paireIdExterneEBill.getIdExterneRole());

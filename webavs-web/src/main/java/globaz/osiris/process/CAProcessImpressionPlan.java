@@ -179,7 +179,7 @@ public class CAProcessImpressionPlan extends BProcess {
         if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
             JadePublishDocument attachedDocument = (JadePublishDocument) getAttachedDocuments().get(0);
 
-            // Init spécifique aux sursis au paiement
+            // Init spécifique aux sursis au paiement compta auxiliaire
             FAEnteteFacture entete = new FAEnteteFacture();
             entete.seteBillTransactionID("");
             entete.setIdModeRecouvrement("");
@@ -188,7 +188,7 @@ public class CAProcessImpressionPlan extends BProcess {
             entete.setIdTypeCourrier("");
             entete.setIdDomaineCourrier("");
             entete.setIdExterneRole("");
-            entete.getISOLangueTiers(); // SETTER?
+            entete.setIdExterneFacture("");
 
             creerFichierEBill(compteAnnexe,  entete, null, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesParPaireIdEcheanceIdPlanRecouvrement(), documentBVR.getReferenceParIdEcheanceIdPlanRecouvrement(), attachedDocument);
         }

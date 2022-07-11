@@ -4,6 +4,7 @@ import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.webavs.common.CommonProperties;
 
@@ -455,18 +456,15 @@ public class CAParametres {
     }
 
     public boolean iseBillAquilaActif(){
-        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE, "false"))
-                .booleanValue();
+        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE));
     }
 
     public boolean iseBillOsirisActif(){
-        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE, "false"))
-                .booleanValue();
+        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE));
     }
 
     public boolean iseBillActif(){
-        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_EBILL_ACTIVE, "false"))
-                .booleanValue();
+        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_EBILL_ACTIVE));
     }
 
     public String geteBillBillerId(){
