@@ -2,6 +2,7 @@ package globaz.pyxis.web.service;
 
 import globaz.globall.db.BSession;
 import globaz.jade.context.JadeThreadActivator;
+import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.web.DTO.PYTokenDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYUnauthorizedException;
@@ -17,7 +18,7 @@ public class PYLoginService {
     private BSession tryConnect(String username, String password) {
         BSession session = null;
         try {
-            session = new BSession("PYXIS");
+            session = new BSession(TIApplication.DEFAULT_APPLICATION_PYXIS);
             session.connect(username, password);
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération du token : ", e);
