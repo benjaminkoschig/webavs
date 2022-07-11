@@ -11,7 +11,6 @@
 	<name>The SQL scripts</name>
 	<packaging>pom</packaging>
 
-
 	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
 		<plugins>
@@ -25,8 +24,8 @@
 						<configuration>
 							<target>
 								<property name="currentVersion" value="${project.version}" />
-								<property name="sourceSqlDir" value="${basedir}/src/main/sql" />
-								<property name="targetSqlDir" value="${project.build.directory}" />
+								<property name="sourceSqlDir" value="${project.build.directory}/antrun/" />
+								<property name="targetSqlDir" value="${project.build.directory}/antrun/" />
 
 								<ant antfile="${basedir}/src/ant/build.xml">
 									<target name="main" />
@@ -49,8 +48,95 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
-			<!-- création de l'assembly contenant le fichier SQL agrégé -->
+			<plugin>
+				<groupId>com.bekioui.maven.plugin</groupId>
+				<artifactId>merge-maven-plugin</artifactId>
+				<version>1.2.0</version>
+				<configuration>
+					<merges>
+						<merge>
+							<target>${project.build.directory}/antrun/webavs-${project.version}.sql</target>
+<!--							<searchDir>src/main/sql/</searchDir>-->
+<!--							<pattern>.*.sql</pattern>-->
+							<sources>
+								<source>src/main/sql/al.sql</source>
+								<source>src/main/sql/amal.sql</source>
+								<source>src/main/sql/apg.sql</source>
+								<source>src/main/sql/aquila.sql</source>
+								<source>src/main/sql/aries.sql</source>
+								<source>src/main/sql/auriga.sql</source>
+								<source>src/main/sql/babel.sql</source>
+								<source>src/main/sql/campus.sql</source>
+								<source>src/main/sql/cepheus.sql</source>
+								<source>src/main/sql/corvus.sql</source>
+								<source>src/main/sql/cygnus.sql</source>
+								<source>src/main/sql/draco.sql</source>
+								<source>src/main/sql/eform.sql</source>
+								<source>src/main/sql/framework.sql</source>
+								<source>src/main/sql/helios.sql</source>
+								<source>src/main/sql/hera.sql</source>
+								<source>src/main/sql/hercule.sql</source>
+								<source>src/main/sql/hermes.sql</source>
+								<source>src/main/sql/ij.sql</source>
+								<source>src/main/sql/lacerta.sql</source>
+								<source>src/main/sql/leo.sql</source>
+								<source>src/main/sql/libra.sql</source>
+								<source>src/main/sql/lupus.sql</source>
+								<source>src/main/sql/lynx.sql</source>
+								<source>src/main/sql/lyra.sql</source>
+								<source>src/main/sql/musca.sql</source>
+								<source>src/main/sql/naos.sql</source>
+								<source>src/main/sql/orion.sql</source>
+								<source>src/main/sql/osiris.sql</source>
+								<source>src/main/sql/pavo.sql</source>
+								<source>src/main/sql/pegasus.sql</source>
+								<source>src/main/sql/perseus.sql</source>
+								<source>src/main/sql/phenix.sql</source>
+								<source>src/main/sql/pyxis.sql</source>
+								<source>src/main/sql/tucana.sql</source>
+								<source>src/main/sql/vulpecula.sql</source>
+							</sources>
+							<override>true</override>
+						</merge>
+						<merge>
+							<target>${project.build.directory}/sql/webavs-${project.version}-DB2.sql</target>
+							<sources>
+								<source>${project.build.directory}/antrun/webavs-${project.version}.sql</source>
+								<source>${project.build.directory}/antrun/version.sql</source>
+							</sources>
+							<override>true</override>
+						</merge>
+					</merges>
+				</configuration>
+				<executions>
+					<execution>
+						<id>merge</id>
+						<phase>package</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>copy-file</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/sql/webavs-${project.version}-DB2.sql</sourceFile>
+							<destinationFile>${project.build.directory}/sql/webavs-${project.version}-AS400-ToModify.sql</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!--			 création de l'assembly contenant le fichier SQL agrégé-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
