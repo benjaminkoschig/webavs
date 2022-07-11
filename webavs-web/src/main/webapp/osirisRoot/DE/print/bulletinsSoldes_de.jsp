@@ -57,6 +57,15 @@ top.document.title = "Generierung der Saldi-ESR - " + top.location.href;
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
+          <tr>
+            <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+            <td nowrap>
+              <input type="checkbox" name="eBillPrintable" id="eBillPrintable"> <label for="eBillPrintable"></label>
+            </td>
+            <td>&nbsp;</td>
+            <td nowrap>&nbsp;</td>
+            <td nowrap>&nbsp;</td>
+          </tr>
           <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>

@@ -77,6 +77,7 @@ public class ReferenceEBill extends AbstractReference {
     private String creRueAdresse;
     private String creNumMaisonAdresse;
 
+    private boolean isSursis;
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
     private boolean isBulletinsDeSoldesAvecFactureEBill;
@@ -411,5 +412,13 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsLSV(boolean LSV) {
         isLSV = LSV;
+    }
+
+    public boolean isSursis() {
+        return isSursis;
+    }
+
+    public void setIsSursis(boolean sursis) {
+        isSursis = sursis;
     }
 }

@@ -2,11 +2,8 @@ package globaz.osiris.application;
 
 import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.log.JadeLoggerUtil;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.webavs.common.CommonProperties;
 
@@ -419,36 +416,36 @@ public class CAParametres {
     /// Proprieté à utiliser pour la validation de la chaine complete
     /// eBill = ACTIVE
     /// Caisse avec droits d'utiliser eBill
-    public boolean isEbill(BSession session){
+    public boolean iseBillActifEtDansListeCaisses(BSession session){
         // Flag générale eBill (ON/OFF)
-        boolean isEbill = getPropertyEbillActive();
-        if(isEbill){
+        boolean eBillActif = iseBillActif();
+        if(eBillActif){
             // Vérifier que la caisse avs est dans la liste crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
             String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
-            List<String> getListCaisses = null;
+            List<String> listeCaisseeBill = null;
             try {
-                getListCaisses = getListCaissesEBill(session);
+                listeCaisseeBill = getListeCaisseeBill(session);
             } catch (Exception e) {
                 JadeLogger.warn(this, e.getMessage());
             }
-            isEbill = getListCaisses.contains(noCaisse);
+            eBillActif = listeCaisseeBill.contains(noCaisse);
         }
-        return isEbill;
+        return eBillActif;
     }
 
-    private List<String> getListCaissesEBill(BSession session) throws Exception {
-        List<String> listCaissesEbill = new ArrayList<>();
-        FWFindParameterManager mgr = getPlageValeurEbill(session);
+    private List<String> getListeCaisseeBill(BSession session) throws Exception {
+        List<String> listeCaisseeBill = new ArrayList<>();
+        FWFindParameterManager mgr = getPlageValeureBill(session);
         for(int idx = 0; idx < mgr.size(); idx++){
             FWFindParameter param = (FWFindParameter) mgr.get(idx);
             if(!JadeStringUtil.isBlank(param.getValeurAlphaParametre())){
-                listCaissesEbill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
+                listeCaisseeBill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
             }
         }
-        return listCaissesEbill;
+        return listeCaisseeBill;
     }
 
-    private FWFindParameterManager getPlageValeurEbill(BSession session) throws Exception {
+    private FWFindParameterManager getPlageValeureBill(BSession session) throws Exception {
         FWFindParameterManager mgr = new FWFindParameterManager();
         mgr.setSession(session);
         mgr.setIdApplParametre(caApplication.getName());
@@ -457,16 +454,26 @@ public class CAParametres {
         return mgr;
     }
 
-    public boolean getPropertyEbillActive(){
+    public boolean iseBillAquilaActif(){
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE, "false"))
+                .booleanValue();
+    }
+
+    public boolean iseBillOsirisActif(){
         return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE, "false"))
                 .booleanValue();
     }
 
-    public String getEbillBillerId(){
+    public boolean iseBillActif(){
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_EBILL_ACTIVE, "false"))
+                .booleanValue();
+    }
+
+    public String geteBillBillerId(){
         return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_BILLER_ID, "");
     }
 
-    public List<String> getEbillNotificationEmails(){
+    public List<String> geteBillNotificationEmails(){
         List<String> emailList = new ArrayList<>();
         String emails = caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS, "");
         String sep = ";";

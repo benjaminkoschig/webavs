@@ -481,9 +481,9 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
      * @param sec        : section
      */
     private void updateSectionEtatEtTransactionID(FAEnteteFacture entFacture, APISection sec) throws Exception {
-        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
 
-        if (isEBillActive && StringUtils.isNotEmpty(entFacture.geteBillTransactionID())) {
+        if (eBillActif && StringUtils.isNotEmpty(entFacture.geteBillTransactionID())) {
             CASection sect = new CASection();
             sect.setSession(getSession());
             sect.setIdSection(sec.getIdSection());

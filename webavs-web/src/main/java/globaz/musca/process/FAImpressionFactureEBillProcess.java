@@ -172,13 +172,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             System.in.read();
             System.out.println("Arrêt du programme lancé !");
         } catch (Exception e) {
-            LOGGER.error("Erreur lors de l'impression des factures Ebill. "+e.getMessage());
+            LOGGER.error("Erreur lors de l'impression des factures eBill. "+e.getMessage());
         } finally {
             if ((process != null) && (process.getTransaction() != null)) {
                 try {
                     process.getTransaction().closeTransaction();
                 } catch (Exception e) {
-                    LOGGER.error("Erreur lors de la fermeture de la transaction dans l'impression des factures Ebill. "+e.getMessage());
+                    LOGGER.error("Erreur lors de la fermeture de la transaction dans l'impression des factures eBill. "+e.getMessage());
                 }
             }
             System.exit(0);
@@ -294,7 +294,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
         BStatement statement = null;
         try {
-            boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
             FAEnteteFacture entete = null;
 
             statement = manager.cursorOpen(getTransaction());
@@ -325,7 +325,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
                         // Garde en mémoire les entêtes/afact à envoyer sous forme de facture eBill en fin de processus
                         CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
-                        if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID()) && isEBillActive) {
+                        if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID()) && eBillActif) {
                             afactParEnteteFactureEBill.put(entete, afact);
                         }
 
@@ -373,10 +373,10 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      */
     private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, String reference, JadePublishDocument attachedDocument) throws Exception {
 
-        String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEbillBillerId();
+        String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
+        entete.addeBillTransactionID(getTransaction());
 
         // Met à jour le flag eBillPrinted dans l'entête de facture eBill
         entete.seteBillPrinted(true);
@@ -535,7 +535,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                     referencesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
                 }
                 if (myMod.get_document() instanceof CAImpressionBulletinsSoldes_Doc) {
-                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesParPaireIdExterneEBill());
+                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesParPaireIdExterne());
                     referencesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
                 }
             }
@@ -616,7 +616,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES))
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL))
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_LETTRE_TAXE_CO2))) {
-            executeRemboursementLSV(); // TODO ESVE TEMP REMOVE FOR SPEED
+            executeRemboursementLSV();
         }
 
         // état du process
@@ -773,14 +773,14 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             }
 
             // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-            boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
             boolean impressionPapierUniquement = StringUtils.equals(FACTURES_TYPE_PAPIER, typeFacture);
 
             // On imprime les factures eBill si :
             //  - eBill est actif
             //  - l'impression papier pour un cas eBil n'est pas forcé
             //  - le mode impression papier uniquement n'est pas sélectionné
-            if (isEBillActive && !forcerImpression && !impressionPapierUniquement) {
+            if (eBillActif && !forcerImpression && !impressionPapierUniquement) {
                 try {
                     initServiceFtp();
                     traiterFacturesEBill();
@@ -1005,7 +1005,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * Méthode permettant de traiter les bulletins de soldes eBill
      * en attente d'être envoyé dans le processus actuel.
      */
-    private void traiterBulletinDeSoldesEBill() throws Exception {
+    public void traiterBulletinDeSoldesEBill() throws Exception {
 
         for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill : lignesSoldeParPaireIdExterne.entrySet()) {
 
@@ -1116,5 +1116,37 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
     public void setTypeFacture(String typeFacture) {
         this.typeFacture = typeFacture;
+    }
+
+    public Map<PaireIdExterneEBill, List<Map>> getLignesFactureParPaireIdExterne() {
+        return lignesFactureParPaireIdExterne;
+    }
+
+    public void setLignesFactureParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesFactureParPaireIdExterne) {
+        this.lignesFactureParPaireIdExterne = lignesFactureParPaireIdExterne;
+    }
+
+    public Map<PaireIdExterneEBill, String> getReferencesFactureParPaireIdExterne() {
+        return referencesFactureParPaireIdExterne;
+    }
+
+    public void setReferencesFactureParPaireIdExterne(Map<PaireIdExterneEBill, String> referencesFactureParPaireIdExterne) {
+        this.referencesFactureParPaireIdExterne = referencesFactureParPaireIdExterne;
+    }
+
+    public Map<PaireIdExterneEBill, List<Map>> getLignesSoldeParPaireIdExterne() {
+        return lignesSoldeParPaireIdExterne;
+    }
+
+    public void setLignesSoldeParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesSoldeParPaireIdExterne) {
+        this.lignesSoldeParPaireIdExterne = lignesSoldeParPaireIdExterne;
+    }
+
+    public Map<PaireIdExterneEBill, String> getReferencesSoldeParPaireIdExterne() {
+        return referencesSoldeParPaireIdExterne;
+    }
+
+    public void setReferencesSoldeParPaireIdExterne(Map<PaireIdExterneEBill, String> referencesSoldeParPaireIdExterne) {
+        this.referencesSoldeParPaireIdExterne = referencesSoldeParPaireIdExterne;
     }
 }

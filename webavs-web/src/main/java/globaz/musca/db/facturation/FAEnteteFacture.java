@@ -1725,7 +1725,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         return eBillPrinted;
     }
 
-    public void addEBillTransactionID(BTransaction transaction) throws Exception {
+    public void addeBillTransactionID(BTransaction transaction) throws Exception {
         seteBillTransactionID(this._incCounter(transaction, "", FIELD_EBILL_TRANSACTION_ID));
     }
 

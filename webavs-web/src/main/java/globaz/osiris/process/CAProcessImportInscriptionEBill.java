@@ -91,9 +91,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             initIdReferenceParameter();
 
             isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
-            boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
 
-            if (isActive) {
+            if (eBillActif) {
                 importFiles();
                 generationProtocol();
             }

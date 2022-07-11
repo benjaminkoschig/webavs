@@ -185,12 +185,17 @@
 		<td nowrap>
               <input type="checkbox" name="partPenale" <%=(viewBean.getPartPenale().booleanValue()) ? "checked" : "unchecked"%> >
         </td>
-		<td></td>
 		<td>
 			<input type="hidden" name="selectedIds" value="<%=viewBean.getSelectedIds()%>">
 			<input type="hidden" name="idCompteAnnexe" value="<%=viewBean.getIdCompteAnnexe()%>">
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
+	</tr>
+	<tr>
+		<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+		<td nowrap>
+              <input type="checkbox" name="eBillPrintable" <%=(viewBean.geteBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+        </td>
 	</tr>
 	<tr>
 		<td class="label">Montant maximum à recouvrir</td>

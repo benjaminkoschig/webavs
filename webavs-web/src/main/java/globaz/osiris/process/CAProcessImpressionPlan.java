@@ -2,27 +2,38 @@ package globaz.osiris.process;
 
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.exception.FWIException;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
+import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.musca.api.musca.FAImpressionFactureEBillXml;
+import globaz.musca.api.musca.PaireIdEcheanceIdPlanRecouvrementEBill;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAPassage;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
+import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
+import globaz.osiris.process.ebill.EBillSftpProcessor;
 import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import ch.globaz.common.properties.PropertiesException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author kurkus, 27 mai 05
@@ -36,6 +47,9 @@ public class CAProcessImpressionPlan extends BProcess {
 
     private String dateRef = "";
 
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesFactureParPaireIdEcheanceIdPlanRecouvrement = new LinkedHashMap();
+    private EBillSftpProcessor serviceFtp;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
     private CAILettrePlanRecouvDecision document = null;
     private String idDocument = "";
     private String idPlanRecouvrement = "";
@@ -133,7 +147,119 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.setEMailAddress(getEMailAddress());
         documentBVR.executeProcess();
 
+        // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillOsirisActif();
+
+        // On imprime les factures eBill si :
+        //  - eBill est actif
+        //  - eBillOsiris est actif
+        //  - eBillPrintable est sélectioné sur le plan
+        if (eBillActif && eBillOsirisActif && plan.geteBillPrintable()) {
+            try {
+                initServiceFtp();
+                traiterFacturesEBill(documentBVR);
+            } catch (Exception exception) {
+                LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+            } finally {
+                closeServiceFtp();
+            }
+        }
+
         return documentBVR;
+    }
+
+    /**
+     * Méthode permettant de traiter les factures eBill
+     * en attente d'être envoyé dans le processus actuel.
+     */
+    private void traiterFacturesEBill(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
+        CACompteAnnexe compteAnnexe = documentBVR.getPlanRecouvrement().getCompteAnnexe();
+        if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+            JadePublishDocument attachedDocument = (JadePublishDocument) getAttachedDocuments().get(0);
+
+            // Init spécifique aux sursis au paiement
+            FAEnteteFacture entete = new FAEnteteFacture();
+            entete.seteBillTransactionID("");
+            entete.setIdModeRecouvrement("");
+            entete.setIdTiers("");
+            entete.setIdTypeFacture("");
+            entete.setIdTypeCourrier("");
+            entete.setIdDomaineCourrier("");
+            entete.setIdExterneRole("");
+            entete.getISOLangueTiers(); // SETTER?
+
+            creerFichierEBill(compteAnnexe,  entete, null, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesParPaireIdEcheanceIdPlanRecouvrement(), documentBVR.getReferenceParIdEcheanceIdPlanRecouvrement(), attachedDocument);
+        }
+    }
+
+    private String getCumulSoldeFormatee(double cumulSolde) {
+        FWCurrency montant = new FWCurrency(cumulSolde);
+        return JANumberFormatter.fmt(JANumberFormatter.deQuote(montant.toStringFormat()), false, true, false, 2);
+    }
+
+    /**
+     * Méthode permettant de créer la facture eBill ou le bulletin de soldes eBill,
+     * de générer et remplir le fichier puis de l'envoyer sur le ftp.
+     *
+     * @param compteAnnexe            : le compte annexe
+     * @param lignesParPaireIdEcheanceIdPlanRecouvrement : contient les lignes de factures et de bulletins de soldes
+     * @param reference               : la référence BVR ou QR.
+     * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @throws Exception
+     */
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, String montantSursis, Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesParPaireIdEcheanceIdPlanRecouvrement, Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> reference, JadePublishDocument attachedDocument) throws Exception {
+
+        String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
+
+        // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
+        //entete.addEBillTransactionID(getTransaction());
+
+        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
+        //entete.setEBillPrinted(true);
+
+        //entete.update();
+
+        // met à jour le status eBill de la section
+        //updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.getEBillTransactionID());
+
+        // Init spécifique aux sursis au paiement
+        FAPassage passage = new FAPassage();
+        passage.setDateFacturation("2022.01.02");
+
+        // Initialisation de l'objet à marshaller dans la facture eBill
+        FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
+        factureEBill.setEntete(entete);
+        factureEBill.setEnteteReference(enteteReference);
+        factureEBill.setPassage(passage);
+        factureEBill.setReference(reference.values().iterator().next());
+        factureEBill.setLignesParPaireIdExterne(lignesParPaireIdEcheanceIdPlanRecouvrement.values().iterator().next());
+        factureEBill.setBillerId(billerId);
+        factureEBill.setSession(getSession());
+        factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
+        factureEBill.setMontantSursis(montantSursis);
+        factureEBill.setAttachedDocument(attachedDocument);
+        factureEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+
+    }
+
+    /**
+     * Fermeture du service ftp.
+     */
+    private void closeServiceFtp() {
+        if (serviceFtp != null) {
+            serviceFtp.disconnectQuietly();
+        }
+    }
+
+    /**
+     * Initialisation du service ftp.
+     */
+    private void initServiceFtp() throws PropertiesException {
+        if (serviceFtp == null) {
+            serviceFtp = new EBillSftpProcessor();
+        }
     }
 
     /**
@@ -326,5 +452,13 @@ public class CAProcessImpressionPlan extends BProcess {
      */
     public void setObservation(String observation) {
         this.observation = observation;
+    }
+
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> getLignesFactureParPaireIdEcheanceIdPlanRecouvrement() {
+        return lignesFactureParPaireIdEcheanceIdPlanRecouvrement;
+    }
+
+    public void setLignesFactureParPaireIdEcheanceIdPlanRecouvrement(Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesFactureParPaireIdEcheanceIdPlanRecouvrement) {
+        this.lignesFactureParPaireIdEcheanceIdPlanRecouvrement = lignesFactureParPaireIdEcheanceIdPlanRecouvrement;
     }
 }

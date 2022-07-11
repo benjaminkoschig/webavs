@@ -193,6 +193,12 @@
 		</td>
 	</tr>
 	<tr>
+		<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+		<td nowrap>
+              <input type="checkbox" name="eBillPrintable" <%=(viewBean.geteBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+        </td>
+	</tr>
+	<tr>
 		<td class="label">Höchstbetrag zu erheben</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>
 		<td class="label">Restsaldo</td>

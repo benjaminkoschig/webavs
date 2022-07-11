@@ -36,6 +36,7 @@ import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.*;
 import globaz.musca.external.ServicesFacturation;
 import globaz.musca.itext.FAImpressionFacture_Param;
+import globaz.musca.process.FAImpressionFactureEBillProcess;
 import globaz.musca.process.FAImpressionFactureProcess;
 import globaz.musca.util.FAUtil;
 import globaz.osiris.api.APIEtape;
@@ -84,6 +85,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private int factureImpressionNo = 0;
     private boolean factureMontantReport = false;
     private Boolean forcerBV = false;
+    private Boolean eBillPrintable = false;
     private String idModule = "";
     private String idSection = "";
     private boolean isMuscaSource = false;
@@ -92,7 +94,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimeNeg = null;
     private String montantMinimePos = null;
     private String montantSansCentime;
-    public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referenceParPaireIdExterne = new LinkedHashMap();
 
     private FAPassage passage;
@@ -511,20 +513,44 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         if (((afact != null) && (compteAnnexe != null) && (sectionCourante.getSection() != null)) || !isMuscaSource) {
             try {
                 //Extrait les lignes dans une liste
-                List data = _buildLignes();
+                List data = _buildLignes(); // lignes Bulletins de soldes
 
+                // Pour les Bulletins de soldes imprimés depuis la facturation
                 if (isMuscaSource) {
+
                     // Prepare la map des lignes de bulletins de soldes eBill si propriété eBill est active et compte annexe de la facture inscrit à eBill
-                    boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
-                    if (isEBillActive) {
+                    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+                    if (eBillActif) {
                         if (!JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                             // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-                            lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
+                            lignesParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
                         }
                     }
                     if (JadeStringUtil.isEmpty(getIdSection())) {
                         setIdSection(sectionCourante.getSection().getIdSection());
                         loadSection();
+                    }
+                // Pour les Bulletins de soldes imprimés depuis la compta auxiliaire
+                } else if ((compteAnnexe != null) && (sectionCourante.getSection() != null)) {
+
+                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBill est active et compte annexe de la facture inscrit à eBill
+                    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+                    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillOsirisActif();
+
+                    // On imprime les factures eBill si :
+                    //  - eBill est actif
+                    //  - eBillOsiris est actif
+                    //  - eBillPrintable est sélectioné sur le l'écran d'impression
+                    if (eBillActif && eBillOsirisActif && eBillPrintable) {
+                        if (!JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+                            // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+                            lignesParPaireIdExterne.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), data);
+                        }
+                        FAImpressionFactureEBillProcess process = new FAImpressionFactureEBillProcess();
+                        process.setSession(getSession());
+                        process.getLignesSoldeParPaireIdExterne().putAll(lignesParPaireIdExterne);
+                        process.getReferencesSoldeParPaireIdExterne().putAll((referenceParPaireIdExterne));
+                        process.traiterBulletinDeSoldesEBill();
                     }
                 }
 
@@ -567,11 +593,15 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     qrFacture.initQR(this, qrFactures);
                     if (isMuscaSource) {
                         referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
+                    } else {
+                        referenceParPaireIdExterne.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), qrFacture.getReference());
                     }
                 } else {
                     fillBVR();
                     if (isMuscaSource) {
                         referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
+                    } else {
+                        referenceParPaireIdExterne.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
                     }
                 }
                 if (!computePageActive) {
@@ -835,6 +865,13 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      */
     public Boolean getForcerBV() {
         return forcerBV;
+    }
+
+    /**
+     * @return the eBillPrintable
+     */
+    public Boolean geteBillPrintable() {
+        return eBillPrintable;
     }
 
     /**
@@ -1207,6 +1244,13 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         this.forcerBV = forcerBV;
     }
 
+    /**
+     * @param eBillPrintable the eBillPrintable to set
+     */
+    public void seteBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
+    }
+
     public void setIdSection(String idSection) {
         this.idSection = idSection;
     }
@@ -1388,11 +1432,19 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         return headerOnEachPage;
     }
 
-    public Map<PaireIdExterneEBill, List<Map>> getLignesParPaireIdExterneEBill() {
-        return lignesParPaireIdExterneEBill;
+    public Map<PaireIdExterneEBill, List<Map>> getLignesParPaireIdExterne() {
+        return lignesParPaireIdExterne;
+    }
+
+    public void setLignesParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne) {
+        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
     }
 
     public Map<PaireIdExterneEBill, String> getReferenceParPaireIdExterne() {
         return referenceParPaireIdExterne;
+    }
+
+    public void setReferenceParPaireIdExterne(Map<PaireIdExterneEBill, String> referenceParPaireIdExterne) {
+        this.referenceParPaireIdExterne = referenceParPaireIdExterne;
     }
 }

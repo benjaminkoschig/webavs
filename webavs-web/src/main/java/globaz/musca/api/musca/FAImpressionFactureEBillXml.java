@@ -4,6 +4,7 @@ import ch.globaz.common.document.reference.ReferenceEBill;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAAfact;
@@ -54,6 +55,7 @@ public class FAImpressionFactureEBillXml {
 
     private JadePublishDocument attachedDocument;
     private String montantBulletinSoldes;
+    private String montantSursis;
     private ReferenceEBill eBillFacture;
     private FAEnteteFacture entete;
     private FAEnteteFacture enteteReference;
@@ -109,6 +111,10 @@ public class FAImpressionFactureEBillXml {
         if (enteteReference != null) {
             eBillFacture.setIsBulletinsDeSoldes(true);
         }
+        if (!JadeStringUtil.isBlankOrZero(montantSursis)) {
+            eBillFacture.setIsSursis(true);
+        }
+
         // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
         if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.geteBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
@@ -469,13 +475,15 @@ public class FAImpressionFactureEBillXml {
             paymentInformation.setIBAN(iban);
         }
 
-        //TODO : voir comment on peut gérer les accomptes.
-//        BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
-//        InstalmentType instalment = of.createInstalmentType();
-//        instalment.setAmount(new BigDecimal(""));
-//        instalment.setPaymentDueDate("");
-//        instalments.getInstalment().add(instalment);
-//        paymentInformation.set(instalments);
+        if (eBillFacture.isSursis()) {
+            XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+            BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
+            InstalmentType instalment = of.createInstalmentType();
+            instalment.setAmount(new FWCurrency(montantSursis).getBigDecimalValue());
+            instalment.setPaymentDueDate(documentDate);
+            instalments.getInstalment().add(instalment);
+            paymentInformation.getInstalments().add(instalments);
+        }
 
         return paymentInformation;
     }
@@ -714,6 +722,14 @@ public class FAImpressionFactureEBillXml {
 
     public void setMontantBulletinSoldes(String montantBulletinSoldes) {
         this.montantBulletinSoldes = montantBulletinSoldes;
+    }
+
+    public String getMontantSursis() {
+        return montantSursis;
+    }
+
+    public void setMontantSursis(String montantSursis) {
+        this.montantSursis = montantSursis;
     }
 
     public List<Map> getLignesParPaireIdExterne() {

@@ -22,7 +22,7 @@
 	} catch (Exception e){
 		// Le reste de la page doit tout de même fonctionner
 	}
-    boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(viewBean.getSession());
+    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(viewBean.getSession());
   %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -117,7 +117,7 @@ top.document.title = "Comptes - détail d'un compte annexe - " + top.location.hre
             <TD>
               <TEXTAREA cols="40" rows="6" class="libelleLongDisabled" readonly><%=viewBean.getTitulaireEntete()%></TEXTAREA>
             </TD>
-    <% if (isEBillActive) {%>
+    <% if (eBillActif) {%>
     <TD colspan="2" align="Left" valign="top">&nbsp;
         <TABLE>
             <TR>

@@ -87,9 +87,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             initBsession();
             initServiceFtp();
 
-            boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
 
-            if (isActive) {
+            if (eBillActif) {
                 importFiles();
                 generationProtocol();
             }

@@ -184,6 +184,12 @@ idEcran="GCA60007";
 		<TD class="control"><ct:FWCodeSelectTag codeType="OSIPLRVEN" defaut="<%=viewBean.getIdModeVentilation()%>" name="idModeVentilation" except="<%=exceptVen%>" /></TD>
 	</tr>
 	<tr>
+		<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+		<td nowrap>
+              <input type="checkbox" name="eBillPrintable" <%=(viewBean.geteBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+        </td>
+	</tr>
+	<tr>
 		<td class="label">Montant maximum à recouvrir</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>
 		<td class="label">Solde résiduel</td>
