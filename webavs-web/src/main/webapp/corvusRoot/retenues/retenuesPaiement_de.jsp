@@ -151,7 +151,7 @@
 									<ct:optionsCodesSystems csFamille="<%=IRERetenues.CS_GROUPE_TYPE_RETENUE%>" />
 								</ct:select>
 							</td>
-							<td width="50%" colspan="2" rowspan="4">
+							<td width="50%" colspan="2" rowspan="3">
 								<pre><span class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></pre>
 								<pre><span class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></pre>
 							</td>
@@ -176,6 +176,16 @@
 										class="valeursCommunes modifiable nonModifiableApresPaiement" 
 										value="<%=new FWCurrency(viewBean.getMontantRetenuMensuel()).toStringFormat()%>" 
 										data-g-amount="mandatory:true,unsigned:true" />
+							</td>
+							<td class="trOptionnels <%=IRERetenues.CS_TYPE_IMPOT_SOURCE%>">
+								<ct:FWLabel key="JSP_CRE_D_REVENU_ANNUEL_DETERMINANT" />
+							</td>
+							<td class="trOptionnels <%=IRERetenues.CS_TYPE_IMPOT_SOURCE%>">
+								<input	type="text"
+										  name="revenuAnnuelDeterminant"
+										  class="valeursSpecifiques modifiable nonModifiableApresPaiement"
+										  value="<%=new FWCurrency(viewBean.getRevenuAnnuelDeterminant()).toStringFormat()%>"
+										  data-g-amount="mandatory:true,unsigned:true" />
 							</td>
 						</tr>
 						<tr>
