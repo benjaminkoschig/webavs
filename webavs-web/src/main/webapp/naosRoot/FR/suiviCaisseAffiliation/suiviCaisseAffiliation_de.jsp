@@ -2,6 +2,7 @@
 <%@ page import="globaz.naos.properties.AFProperties" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
 <%@ page import="globaz.naos.translation.CodeSystem" %>
+<%@ page import="globaz.naos.api.IAFSuiviCaisseAffiliation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%> 
@@ -125,6 +126,12 @@ function onChangeGenre(){
 		<%if (showGestionDossierCAF) {%>
 		showRemarqueCaf();
 		<%}%>
+	} else if (newGenreValeur == <%=IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF_PERSONNEL%>){
+		document.forms[0].elements('attestationIp').checked = false;
+		document.all('attestationIPTable').style.display = 'none';
+		<%if (showGestionDossierCAF) {%>
+		showRemarqueCaf();
+		<%}%>
 	}
 }
 
@@ -154,7 +161,7 @@ function onChangeMotif(){
 		}
 	}
 	<%if (showGestionDossierCAF) {%>
-	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%>) {
+	if (newGenreValeur == <%=CodeSystem.GENRE_CAISSE_AF%> || newGenreValeur == <%=IAFSuiviCaisseAffiliation.GENRE_CAISSE_AF_PERSONNEL%>) {
 		showRemarqueCaf();
 	} else {
 		hideRemarqueCaf();

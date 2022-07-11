@@ -46,8 +46,9 @@ public class AFActionParticulariteAffiliationAjax extends AFDefaultActionCherche
             viewBean.setId(request.getParameter("id"));
             viewBean.setSession(bSession);
             viewBean.retrieve();
-
-            JSPUtils.setBeanProperties(request, viewBean);
+            viewBean.setChampAlphanumerique(JSPUtils.getParameter(request, "champAlphanumerique"));
+            viewBean.setDateDebut(JSPUtils.getParameter(request, "dateDebut"));
+            viewBean.setDateFin(JSPUtils.getParameter(request, "dateFin"));
             viewBean = (AFParticulariteAffiliation) beforeModifier(session, request, response, viewBean);
             mainDispatcher.dispatch(viewBean, getAction());
 
@@ -60,18 +61,14 @@ public class AFActionParticulariteAffiliationAjax extends AFDefaultActionCherche
     @Override
     protected void actionSupprimerAJAX(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
         try {
-            String idAffiliation = request.getParameter("affiliationId");
+
+            AFParticulariteAffiliation viewBean = new AFParticulariteAffiliation();
             BSession bSession = (BSession) CodeSystem.getSession(session);
 
-            AFParticulariteAffiliationManager particulariteManager = new AFParticulariteAffiliationManager();
-            particulariteManager.setInAffiliationIds(Arrays.asList(idAffiliation));
-            particulariteManager.setInParticularites(Arrays.asList(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL, CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE));
-            particulariteManager.setSession(bSession);
-            particulariteManager.find(BManager.SIZE_NOLIMIT);
-
-            List<AFParticulariteAffiliation> entities = particulariteManager.toList();
-            for (AFParticulariteAffiliation par : entities) par.delete();
-
+            viewBean.setId(request.getParameter("id"));
+            viewBean.setSession(bSession);
+            viewBean.retrieve();
+            viewBean.delete();
             retrieveViewBeanAndForward(session, request, response, mainDispatcher, bSession);
         } catch (Exception e) {
             forwardException(request, response, e);

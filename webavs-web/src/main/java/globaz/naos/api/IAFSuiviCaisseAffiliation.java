@@ -27,6 +27,11 @@ public interface IAFSuiviCaisseAffiliation extends BIEntity {
     public static final String GENRE_CAISSE_AF = "830002";
 
     /**
+     * Genre suivi AF Peronnel code spécifique CCVS
+     */
+    public static final String GENRE_CAISSE_AF_PERSONNEL = "19190040";
+
+    /**
      * Genre suivi AVS
      */
     public static final String GENRE_CAISSE_AVS = "830001";
