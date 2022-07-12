@@ -3,7 +3,7 @@ package globaz.pyxis.web.ws;
 import globaz.pyxis.web.service.PYLoginService;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,7 +27,7 @@ public class PYApiRestLogin {
      * @param authorization HTTP Basic Authentification qui contient le username:password pour lequel on veut générer un token
      * @return token d'identification
      */
-    @GET
+    @POST
     @Path(value="/get_token")
     public Response getToken(@HeaderParam("authorization") String authorization) {
         LOG.info("get_token");

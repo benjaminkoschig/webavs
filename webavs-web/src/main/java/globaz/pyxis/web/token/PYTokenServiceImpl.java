@@ -20,7 +20,7 @@ public class PYTokenServiceImpl extends TokenServiceAbstract<PYTokenImpl> {
     private static Integer TOKEN_DURATION = CommonProperties.PY_TOKEN_DURATION.getIntegerWithDefaultValue(1);
     private static final String LOGIN_URL = API_PATH + "/get_token";
 
-    public PYTokenServiceImpl getInstance() {
+    public static PYTokenServiceImpl getInstance() {
         return INSTANCE;
     }
 
@@ -33,7 +33,6 @@ public class PYTokenServiceImpl extends TokenServiceAbstract<PYTokenImpl> {
         String day = JadeDateUtil.getDMYDate(actualDate);
         claims.put("dateDemande", day);
         claims.put("timeDemande", JadeDateUtil.getHMTime(actualDate));
-        claims.put("timeStampGedo", day);
         claims.put(USER_ID, encrypt(bSession.getUserId()));
 
         return createToken(TOKEN_DURATION, claims, bSession);
@@ -44,9 +43,6 @@ public class PYTokenServiceImpl extends TokenServiceAbstract<PYTokenImpl> {
         PYTokenImpl token = new PYTokenImpl();
 
         if (jws != null && jws.getBody() != null) {
-            token.setDateDemande(jws.getBody().get("dateDemande").toString());
-            token.setTimeDemande(jws.getBody().get("timeDemande").toString());
-            token.setTimeStampGedo(jws.getBody().get("timeStampGedo").toString());
             token.setUserId(decrypt(jws.getBody().get(USER_ID).toString()));
             return token;
         }

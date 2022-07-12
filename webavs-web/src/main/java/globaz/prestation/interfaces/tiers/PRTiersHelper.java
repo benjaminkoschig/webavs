@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import globaz.corvus.properties.REProperties;
+import globaz.globall.db.*;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdresseResolver;
@@ -19,11 +20,6 @@ import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BPreparedStatement;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -276,8 +272,6 @@ public class PRTiersHelper {
     public static final String addTiersPage1(BISession session, PYTiersDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
-        System.out.println(session);
-
         // Fields in TITIERP
         avsPerson.setTypeTiers(ITITiers.CS_TIERS);
         avsPerson.setTitreTiers(getTitleAsSystemCode(dto.getTitle()));
@@ -289,11 +283,10 @@ public class PRTiersHelper {
         avsPerson.setIdPays(dto.getCountry());
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
-        avsPerson.setInactif(dto.getIsPhysicalPerson());
+        avsPerson.setInactif(dto.getIsInactive());
 
         //TODO: Add missing fields for the first page
         // Fields in TIPERSP
-
         // Fields in TIPAVSP
 
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));

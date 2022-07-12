@@ -1,8 +1,11 @@
 package globaz.pyxis.web.service;
 
+import globaz.globall.db.BProcess;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 
-public class PYExecuteService {
+public class PYExecuteService extends BProcess {
     /**
      * Création de tiers
      *
@@ -11,14 +14,38 @@ public class PYExecuteService {
      * @return dto JSON contenant l'id du tiers créé
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
-        String idTiers = null;
-
         //TODO: check that token is valid
 
         //TODO: Call addTiersPage1
-        System.out.println(dto.getName());
+        try {
+            System.out.println(dto.getName());
+            PRTiersHelper.addTiersPage1(getSession(), dto);
+        }
+        catch (Exception e) {
+            System.err.println(e);
+        }
 
         //TODO: return dto with tiers' id
         return dto;
+    }
+
+    @Override
+    protected void _executeCleanUp() {
+
+    }
+
+    @Override
+    protected boolean _executeProcess() throws Exception {
+        return false;
+    }
+
+    @Override
+    protected String getEMailObject() {
+        return null;
+    }
+
+    @Override
+    public GlobazJobQueue jobQueue() {
+        return null;
     }
 }
