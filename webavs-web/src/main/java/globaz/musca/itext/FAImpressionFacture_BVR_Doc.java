@@ -81,8 +81,8 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL_QR"; // Template
     private static String TEMPLATE_NAME = "MUSCA_BVR_NEUTRE_QR"; // Par défaut
     private Boolean isEbusiness = false;
-    public Map<PaireIdExterneEBill, List<Map>> lignesFactureParPaireIdExterne = new LinkedHashMap();
-    public Map<PaireIdExterneEBill, String> referencesFactureParPaireIdExterne = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, List<Map>> lignesFacture = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referencesFacture = new LinkedHashMap();
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
         if (FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE13.equalsIgnoreCase(entFacture.getIdExterneFacture()
@@ -696,15 +696,15 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             return;
         }
 
-        // Prepare la map des lignes de factures eBill si propriété eBill est active et compte annexe de la facture inscrit à eBill
+        // Prepare la map des lignes de factures eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill
         boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
         if (eBillActif) {
             CACompteAnnexe compteAnnexe = FAGenericProcess.getCompteAnnexe(currentDataSource.getEnteteFacture(), getSession(), getTransaction());
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                 //Extrait les lignes dans une liste
                 List data = buildLignes(); // lignes Factures
-                // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-                lignesFactureParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);
+                // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'id
+                lignesFacture.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);
             }
         }
 
@@ -759,12 +759,11 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
             // Génération du document QR
             qrFacture.initQR(this, qrFactures);
-
-            referencesFactureParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), qrFacture.getReference());
+            referencesFacture.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), qrFacture.getReference());
         } else {
             // BVR
             _bvrText();
-            referencesFactureParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), getBvr().getRefNoSpace());
+            referencesFacture.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), getBvr().getRefNoSpace());
         }
 
         caisseReportHelper.addHeaderParameters(this, headerBean);
@@ -1247,11 +1246,11 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         TEMPLATE_NAME = templateName;
     }
 
-    public Map<PaireIdExterneEBill, List<Map>> getLignesFactureParPaireIdExterne() {
-        return lignesFactureParPaireIdExterne;
+    public Map<PaireIdExterneEBill, List<Map>> getLignesFacture() {
+        return lignesFacture;
     }
 
-    public Map<PaireIdExterneEBill, String> getReferencesFactureParPaireIdExterne() {
-        return referencesFactureParPaireIdExterne;
+    public Map<PaireIdExterneEBill, String> getReferencesFacture() {
+        return referencesFacture;
     }
 }

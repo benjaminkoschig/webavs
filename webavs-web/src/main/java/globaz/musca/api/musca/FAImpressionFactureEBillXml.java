@@ -60,7 +60,7 @@ public class FAImpressionFactureEBillXml {
     private FAEnteteFacture entete;
     private FAEnteteFacture enteteReference;
     private FAAfact afact;
-    private List<Map> lignesParPaireIdExterne;
+    private List<Map> lignes;
     private FAPassage passage;
     private String billerId;
     private BSession session;
@@ -498,15 +498,15 @@ public class FAImpressionFactureEBillXml {
         InvoiceBillType.LineItems lineItems = of.createInvoiceBillTypeLineItems();
 
         // Création des LineItems pour les bulletins de soldes
-        if(eBillFacture.isBulletinsDeSoldes() && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemBulletinsDeSoldes(lignesParPaireIdExterne.get(i));
+        if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
+            for (int i = 0; i < lignes.size(); i++) {
+                LineItemType lineItemType = createLineItemBulletinsDeSoldes(lignes.get(i));
                 lineItems.getLineItem().add(lineItemType);
             }
         // Création des LineItems pour les factures
-        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemFactures(lignesParPaireIdExterne.get(i));
+        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
+            for (int i = 0; i < lignes.size(); i++) {
+                LineItemType lineItemType = createLineItemFactures(lignes.get(i));
                 lineItems.getLineItem().add(lineItemType);
             }
         }
@@ -591,7 +591,6 @@ public class FAImpressionFactureEBillXml {
 
         summaryType.setTax(createTaxType());
 
-        // TODO : mettre en place montant déjà payé (bulletin de solde ??)
         summaryType.setTotalAmountPaid(BigDecimal.valueOf(0.00));
 
         if (eBillFacture.isBulletinsDeSoldes()) {
@@ -732,12 +731,12 @@ public class FAImpressionFactureEBillXml {
         this.montantSursis = montantSursis;
     }
 
-    public List<Map> getLignesParPaireIdExterne() {
-        return lignesParPaireIdExterne;
+    public List<Map> getLignes() {
+        return lignes;
     }
 
-    public void setLignesParPaireIdExterne(List<Map> lignesParPaireIdExterne) {
-        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
+    public void setLignes(List<Map> lignes) {
+        this.lignes = lignes;
     }
 
     public void setReference(String reference) {

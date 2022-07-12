@@ -18,6 +18,7 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.musca.api.musca.PaireIdEcheanceIdPlanRecouvrementEBill;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.application.CAParametres;
 import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
@@ -40,8 +41,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME = "CAIEcheancierBVR4_QR";
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesParPaireIdEcheanceIdPlanRecouvrement = new LinkedHashMap();
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referenceParIdEcheanceIdPlanRecouvrement = new LinkedHashMap();
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesSursis = new LinkedHashMap();
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referencesSursis = new LinkedHashMap();
     private ReferenceBVR bvr = null;
     private String centimes;
     private double cumulSolde = 0;
@@ -161,11 +162,10 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
 
                 // Génération du document QR
                 qrFacture.initQR(this, qrFactures);
-
-                referenceParIdEcheanceIdPlanRecouvrement.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), qrFacture.getReference());
+                referencesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), qrFacture.getReference());
             } else {
                 fillBVR();
-                referenceParIdEcheanceIdPlanRecouvrement.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), getBvr().getRefNoSpace());
+                referencesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), getBvr().getRefNoSpace());
             }
 
             setColumnHeader(1, _getProperty(CADocumentManager.JASP_PROP_BODY_CACLIBELLE, ""));
@@ -187,7 +187,16 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             ArrayList lignes = new ArrayList(); // Lignes factures
             lignes.add(newMap(CADocumentManager.JASP_PROP_BODY_COL_LIBELLE_CACPAIEMENT, new Double(new FWCurrency(
                     echeance.getMontant()).doubleValue())));
-            lignesParPaireIdEcheanceIdPlanRecouvrement.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
+
+            // Prepare la map des lignes de sursis au paiement eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur le plan
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+            boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillOsirisActif();
+            if (eBillActif && eBillOsirisActif && plan.geteBillPrintable()) {
+                if (!JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+                    lignesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
+                }
+            }
+
             this.setDataSource(lignes);
             this.setParametres(CAILettrePlanRecouvParam.P_TOTAL, new Double(echeance.getMontant()));
         }
@@ -408,19 +417,19 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         plan = planRecouvrement;
     }
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> getLignesParPaireIdEcheanceIdPlanRecouvrement() {
-        return lignesParPaireIdEcheanceIdPlanRecouvrement;
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> getLignesSursis() {
+        return lignesSursis;
     }
 
-    public void setLignesParPaireIdEcheanceIdPlanRecouvrement(Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesParPaireIdEcheanceIdPlanRecouvrement) {
-        this.lignesParPaireIdEcheanceIdPlanRecouvrement = lignesParPaireIdEcheanceIdPlanRecouvrement;
+    public void setLignesSursis(Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesSursis) {
+        this.lignesSursis = lignesSursis;
     }
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> getReferenceParIdEcheanceIdPlanRecouvrement() {
-        return referenceParIdEcheanceIdPlanRecouvrement;
+    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> getReferencesSursis() {
+        return referencesSursis;
     }
 
-    public void setReferenceParIdEcheanceIdPlanRecouvrement(Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referenceParIdEcheanceIdPlanRecouvrement) {
-        this.referenceParIdEcheanceIdPlanRecouvrement = referenceParIdEcheanceIdPlanRecouvrement;
+    public void setReferencesSursis(Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referencesSursis) {
+        this.referencesSursis = referencesSursis;
     }
 }

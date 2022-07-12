@@ -58,10 +58,10 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private int facturePapier = 0;
     private int factureEBill = 0;
 
-    private Map<PaireIdExterneEBill, List<Map>> lignesFactureParPaireIdExterne = new LinkedHashMap();
-    private Map<PaireIdExterneEBill, String> referencesFactureParPaireIdExterne = new LinkedHashMap();
-    private Map<PaireIdExterneEBill, List<Map>> lignesSoldeParPaireIdExterne = new LinkedHashMap();
-    private Map<PaireIdExterneEBill, String> referencesSoldeParPaireIdExterne = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, List<Map>> lignesFacture = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, String> referencesFacture = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, List<Map>> lignesSolde = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, String> referencesSolde = new LinkedHashMap();
 
     /**
      * Lancement de l'impression en mode batch Date de création : (05.05.2003 15:53:19)
@@ -366,12 +366,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param entete                  : l'entête de la facture
      * @param enteteReference         : l'entête de référence pour les bulletin de soldes (vide dans le cas d'une facture bvr)
      * @param montantBulletinSoldes   : contient le montant total de la factures (seulement rempli dans le case d'un bulletin de soldes)
-     * @param lignesParPaireIdExterne : contient les lignes de factures et de bulletins de soldes
+     * @param lignes                  : contient les lignes de factures et de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param _passage                : le passage
      * @throws Exception
      */
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, String reference, JadePublishDocument attachedDocument) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignes, String reference, JadePublishDocument attachedDocument, FAPassage _passage) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -390,9 +391,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setPassage(passage);
+        factureEBill.setPassage(_passage);
         factureEBill.setReference(reference);
-        factureEBill.setLignesParPaireIdExterne(lignesParPaireIdExterne);
+        factureEBill.setLignes(lignes);
         factureEBill.setBillerId(billerId);
         factureEBill.setSession(getSession());
         factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
@@ -531,12 +532,12 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 myMod.print();
 
                 if (myMod.get_document() instanceof FAImpressionFacture_BVR_Doc) {
-                    lignesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesFactureParPaireIdExterne());
-                    referencesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferencesFactureParPaireIdExterne());
+                    lignesFacture.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesFacture());
+                    referencesFacture.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferencesFacture());
                 }
                 if (myMod.get_document() instanceof CAImpressionBulletinsSoldes_Doc) {
-                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesSoldeParPaireIdExterne());
-                    referencesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferencesSoldeParPaireIdExterne());
+                    lignesSolde.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesSolde());
+                    referencesSolde.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferencesSolde());
                 }
             }
             return true;
@@ -984,17 +985,17 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      */
     private void traiterFacturesEBillMusca() throws Exception {
 
-        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneFactureParPaireIdExterne : lignesFactureParPaireIdExterne.entrySet()) {
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneFactureParPaireIdExterne : lignesFacture.entrySet()) {
 
             Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFacture = getAfactParEnteteFacture(ligneFactureParPaireIdExterne.getKey());
             if (afactParEnteteFacture != null) {
                 FAEnteteFacture entete = afactParEnteteFacture.getKey();
 
-                String reference = referencesFactureParPaireIdExterne.get(ligneFactureParPaireIdExterne.getKey());
+                String reference = referencesFacture.get(ligneFactureParPaireIdExterne.getKey());
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument);
+                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage);
                     factureEBill++;
                 }
             }
@@ -1007,7 +1008,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      */
     private void traiterBulletinDeSoldesEBillMusca() throws Exception {
 
-        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneSoldeParPaireIdExterne : lignesSoldeParPaireIdExterne.entrySet()) {
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> ligneSoldeParPaireIdExterne : lignesSolde.entrySet()) {
 
             FAEnteteFacture entete = getEnteteFacture(ligneSoldeParPaireIdExterne.getKey(), getIdPassage());
             FAEnteteFacture enteteReference = getEnteteFactureReference(ligneSoldeParPaireIdExterne.getKey());
@@ -1015,12 +1016,12 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             if (entete != null && enteteReference != null) {
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
-                String reference = referencesSoldeParPaireIdExterne.get(ligneSoldeParPaireIdExterne.getKey());
+                String reference = referencesSolde.get(ligneSoldeParPaireIdExterne.getKey());
                 if (compteAnnexe != null && compteAnnexeReference != null
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument);
+                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument, passage);
                     factureEBill++;
                 }
             }
@@ -1118,35 +1119,35 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         this.typeFacture = typeFacture;
     }
 
-    public Map<PaireIdExterneEBill, List<Map>> getLignesFactureParPaireIdExterne() {
-        return lignesFactureParPaireIdExterne;
+    public Map<PaireIdExterneEBill, List<Map>> getLignesFacture() {
+        return lignesFacture;
     }
 
-    public void setLignesFactureParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesFactureParPaireIdExterne) {
-        this.lignesFactureParPaireIdExterne = lignesFactureParPaireIdExterne;
+    public void setLignesFacture(Map<PaireIdExterneEBill, List<Map>> lignesFacture) {
+        this.lignesFacture = lignesFacture;
     }
 
-    public Map<PaireIdExterneEBill, String> getReferencesFactureParPaireIdExterne() {
-        return referencesFactureParPaireIdExterne;
+    public Map<PaireIdExterneEBill, String> getReferencesFacture() {
+        return referencesFacture;
     }
 
-    public void setReferencesFactureParPaireIdExterne(Map<PaireIdExterneEBill, String> referencesFactureParPaireIdExterne) {
-        this.referencesFactureParPaireIdExterne = referencesFactureParPaireIdExterne;
+    public void setReferencesFacture(Map<PaireIdExterneEBill, String> referencesFacture) {
+        this.referencesFacture = referencesFacture;
     }
 
-    public Map<PaireIdExterneEBill, List<Map>> getLignesSoldeParPaireIdExterne() {
-        return lignesSoldeParPaireIdExterne;
+    public Map<PaireIdExterneEBill, List<Map>> getLignesSolde() {
+        return lignesSolde;
     }
 
-    public void setLignesSoldeParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesSoldeParPaireIdExterne) {
-        this.lignesSoldeParPaireIdExterne = lignesSoldeParPaireIdExterne;
+    public void setLignesSolde(Map<PaireIdExterneEBill, List<Map>> lignesSolde) {
+        this.lignesSolde = lignesSolde;
     }
 
-    public Map<PaireIdExterneEBill, String> getReferencesSoldeParPaireIdExterne() {
-        return referencesSoldeParPaireIdExterne;
+    public Map<PaireIdExterneEBill, String> getReferencesSolde() {
+        return referencesSolde;
     }
 
-    public void setReferencesSoldeParPaireIdExterne(Map<PaireIdExterneEBill, String> referencesSoldeParPaireIdExterne) {
-        this.referencesSoldeParPaireIdExterne = referencesSoldeParPaireIdExterne;
+    public void setReferencesSolde(Map<PaireIdExterneEBill, String> referencesSolde) {
+        this.referencesSolde = referencesSolde;
     }
 }
