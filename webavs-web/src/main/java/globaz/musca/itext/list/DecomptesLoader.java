@@ -97,9 +97,9 @@ class DecomptesLoader {
         boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(session);
         if (isEBillActive && entity.iseBillPrinted()) {
             // marquer d'un "e" si la facture à été imprimé avec eBill
-            return "P";
+            return "e";
         } else {
-            // marquer d'un "X" si la facture est non imprimable
+            // marquer d'un "X" si la facture est en mode impression séparée
             if (!entity.isNonImprimable()
                     && !FAEnteteFacture.CS_MODE_IMP_PASIMPZERO.equalsIgnoreCase(entity.getIdCSModeImpression())) {
                 return "X";

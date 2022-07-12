@@ -56,7 +56,7 @@ public class RERenteLieeJointPrestationAccordeeManager extends PRAbstractManager
             // Rechercher les membres de la famille (Enfants & Conjoints)
             globaz.hera.api.ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(getSession(),
                     ISFSituationFamiliale.CS_DOMAINE_RENTES, forIdTiersLiant);
-            ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleAvecEnfantRecuilli(forIdTiersLiant);
+            ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleAvecEnfantRecueilli(forIdTiersLiant);
 
             boolean isPremierPassage = true;
 
