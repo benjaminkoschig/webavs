@@ -50,7 +50,7 @@
 	</td>
 	<td>
 		<div id="byPeriod">
-			<input id="byStartDate" name="byStartDate" class="clearable" value="<%= Dates.getFirstDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
+			<input id="byStartDate" name="byStartDate" class="clearable" value="" data-g-calendar="mandatory:false"/>
 			<ct:FWLabel key="AU"/>
 			<input id="byEndDate" name="byEndDate" class="clearable" value="<%= Dates.getLastDayOfMonth(LocalDate.now()) %>" data-g-calendar="mandatory:false"/>
 		</div>

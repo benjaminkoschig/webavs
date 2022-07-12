@@ -102,8 +102,7 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                         l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                 relation.getTypeLien(), dateMariage);
                     }
-                }
-                if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE.equals(relation.getTypeLien())) {
+                } else if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_SEPARE.equals(relation.getTypeLien())) {
                     if (ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
                         l = new PRAcorLienFamilial(conjoint, conjoint.getIdMembreFamille() == relation.getIdMembreFamilleHomme(),
                                 ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE, dateMariage);
@@ -127,7 +126,7 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
                 } else if (ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
                         || ISFSituationFamiliale.CS_REL_CONJ_LPART_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
                     if (ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(csTypeLienNextElem)) {
-                        l.setTypeFin("10");
+                        l.setTypeFin(10);
                     }
                     l.setDateFin(relation.getDateFin());
                 } else {
@@ -211,10 +210,10 @@ public class PRAcorFamilleTypeMapper extends PRAcorMapper {
             } else {
                 FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
                 donnesFin.setFin(Dates.toXMLGregorianCalendar(prAcorLienFamilial.getDateFin()));
-                if (!JadeStringUtil.isBlankOrZero(prAcorLienFamilial.getTypeFin())) {
+                if (prAcorLienFamilial.getTypeFin() != 0) {
                     donnesFin.setType(prAcorLienFamilial.getTypeFin());
                 } else {
-                    donnesFin.setType(PRACORConst.csTypeLienToACOR(getSession(), prAcorLienFamilial.getTypeLien()));
+                    donnesFin.setType(PRConverterUtils.formatRequiredInteger(PRACORConst.csTypeLienToACOR(getSession(), prAcorLienFamilial.getTypeLien())));
                 }
                 famille.setDonneesFin(donnesFin);
             }
