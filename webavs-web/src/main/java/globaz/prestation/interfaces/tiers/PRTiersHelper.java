@@ -9,6 +9,7 @@ import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -322,7 +323,7 @@ public class PRTiersHelper {
     }
 
     /**
-     * Lis title pour retourner le code système associé. Si title est un code système custom,
+     * Lis title pour retourner le code système associé.
      *
      * @param code
      * @return Un code système pour le titre
@@ -353,7 +354,7 @@ public class PRTiersHelper {
     }
 
     /**
-     * Lis language pour retourner le code système associé. Si title est un code système custom,
+     * Lis language pour retourner le code système associé.
      *
      * @param code
      * @return Un code système pour le titre
@@ -377,8 +378,8 @@ public class PRTiersHelper {
                 if (isSystemCode(language)) {
                     result = language;
                 }
-                else { // Otherwise, set it to 0
-                    result = "0";
+                else { // Otherwise, throw an error
+                    throw new PYBadRequestException("Erreur lors de l'assignation de la langue du tiers.");
                 }
         }
         return result;
