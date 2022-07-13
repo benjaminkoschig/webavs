@@ -10,7 +10,6 @@ import globaz.globall.db.*;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
 import globaz.jade.job.client.JadeJobServerFacade;
 import globaz.jade.job.message.JadeJobInfo;
 import globaz.jade.log.JadeLogger;
@@ -19,12 +18,13 @@ import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.IFAPassage;
 import globaz.musca.api.musca.FAImpressionFactureEBill;
-import globaz.musca.api.musca.FAImpressionFactureEBillXml;
 import globaz.musca.api.musca.PaireIdExterneEBill;
+import globaz.musca.application.FAApplication;
 import globaz.musca.constantes.EFAProperties;
 import globaz.musca.db.facturation.*;
 import globaz.musca.external.IntModuleImpression;
 import globaz.musca.itext.FAImpressionFacture_BVR_Doc;
+import globaz.osiris.api.APISectionDescriptor;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
@@ -33,13 +33,11 @@ import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.db.interets.CAInteretMoratoireManager;
 import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_Doc;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
+import globaz.osiris.process.ebill.EBillFichier;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import osiris.ch.ebill.send.invoice.InvoiceEnvelope;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 
 
@@ -372,7 +370,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param dateFacturation         : la date de facturation
      * @throws Exception
      */
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
+    public void creerFichierEBillMusca(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -387,39 +385,14 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         // met à jour le status eBill de la section
         updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
 
-        // Initialisation de l'objet à marshaller dans la facture eBill
-        FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
-        factureEBill.setEntete(entete);
-        factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setDateFacturation(dateFacturation);
-        factureEBill.setReference(reference);
-        factureEBill.setLignes(lignes);
-        factureEBill.setBillerId(billerId);
-        factureEBill.setSession(getSession());
-        factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
-        factureEBill.setAttachedDocument(attachedDocument);
-        factureEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+        String dateEcheance = getDateEcheanceFromEntete(entete, dateFacturation);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantBulletinSoldes, null, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession(), serviceFtp);
+    }
 
-        // Init de la facture eBill
-        factureEBill.initFactureEBill();
-
-        // Rempli l'objet qui sera marshallé dans la facture eBill
-        InvoiceEnvelope content = factureEBill.createFileContent();
-
-        // Creation du fichier XML
-        String filename = billerId + "_" + entete.geteBillTransactionID() + ".xml";
-        String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderOutName() + filename;
-        File localFile = new File(localPath);
-        LOGGER.info("Création du fichier xml eBill : " + localFile.getAbsoluteFile() + "...");
-
-        // Marshall de l'objet dans le fichier XML
-        factureEBill.marshallDansFichier(content, localFile);
-
-        // Upload du fichier XML sur le sftp
-        try (FileInputStream retrievedFile = new FileInputStream(localFile)) {
-            serviceFtp.sendFile(retrievedFile, filename);
-            LOGGER.info("Fichier eBill envoyé sur le ftp : " + localFile.getAbsoluteFile() + "...");
-        }
+    private String getDateEcheanceFromEntete(FAEnteteFacture entete, String dateFacturation) throws Exception {
+        APISectionDescriptor sectionDescriptor = ((FAApplication) getSession().getApplication()).getSectionDescriptor(getSession());
+        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), dateFacturation, "", "");
+        return sectionDescriptor.getDateEcheanceFacturation();
     }
 
     /**
@@ -995,7 +968,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
+                    creerFichierEBillMusca(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
                     factureEBill++;
                 }
             }
@@ -1021,7 +994,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
+                    creerFichierEBillMusca(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
                     factureEBill++;
                 }
             }

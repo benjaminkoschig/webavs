@@ -1,6 +1,7 @@
 package globaz.osiris.process;
 
 import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
@@ -12,14 +13,15 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.musca.api.musca.FAImpressionFactureEBillXml;
 import globaz.musca.api.musca.PaireIdEcheanceIdPlanRecouvrementEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.osiris.process.ebill.EBillFichier;
 import globaz.naos.translation.CodeSystem;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
@@ -48,7 +50,7 @@ public class CAProcessImpressionPlan extends BProcess {
     private String dateRef = "";
 
     private EBillSftpProcessor serviceFtp;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAProcessImpressionPlan.class);
     private CAILettrePlanRecouvDecision document = null;
     private String idDocument = "";
     private String idPlanRecouvrement = "";
@@ -157,7 +159,7 @@ public class CAProcessImpressionPlan extends BProcess {
         if (eBillActif && eBillOsirisActif && plan.geteBillPrintable()) {
             try {
                 initServiceFtp();
-                traiterFacturesEBillOsiris(documentBVR);
+                traiterSursisEBillOsiris(documentBVR);
             } catch (Exception exception) {
                 LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                 getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -170,10 +172,10 @@ public class CAProcessImpressionPlan extends BProcess {
     }
 
     /**
-     * Méthode permettant de traiter les factures eBill
+     * Méthode permettant de traiter les sursis eBill
      * en attente d'être envoyé dans le processus actuel.
      */
-    private void traiterFacturesEBillOsiris(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
+    private void traiterSursisEBillOsiris(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
 
         for (Map.Entry<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignes : documentBVR.getLignesSursis().entrySet()) {
 
@@ -187,7 +189,7 @@ public class CAProcessImpressionPlan extends BProcess {
                 section.retrieve();
 
                 FAEnteteFacture entete = new FAEnteteFacture();
-                entete.seteBillTransactionID("");
+                entete.setSession(getSession());
                 entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
                 entete.setIdTiers(section.getCompteAnnexe().getIdTiers());
                 entete.setIdTypeCourrier(section.getTypeAdresse());
@@ -197,7 +199,7 @@ public class CAProcessImpressionPlan extends BProcess {
 
                 String reference = documentBVR.getReferencesSursis().get(lignes.getKey());
                 JadePublishDocument attachedDocument = findAndReturnAttachedDocument();
-                creerFichierEBill(compteAnnexe, entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(section));
+                creerFichierEBillOsiris(compteAnnexe, entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(section), section);
             }
         }
     }
@@ -240,36 +242,42 @@ public class CAProcessImpressionPlan extends BProcess {
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateFacturation         : la date de facturation
+     * @param section                 : la section
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
+    private void creerFichierEBillOsiris(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation, CASection section) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        //entete.addEBillTransactionID(getTransaction());
+        entete.addeBillTransactionID(getTransaction());
 
         // Met à jour le flag eBillPrinted dans l'entête de facture eBill
-        //entete.setEBillPrinted(true);
-
-        //entete.update();
+        entete.seteBillPrinted(true);
 
         // met à jour le status eBill de la section
-        //updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.getEBillTransactionID());
+        updateSectionEtatEtTransactionID(section, entete.geteBillTransactionID());
 
-        // Initialisation de l'objet à marshaller dans la facture eBill
-        FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
-        factureEBill.setEntete(entete);
-        factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setDateFacturation(dateFacturation);
-        factureEBill.setReference(reference);
-        factureEBill.setLignes(lignes);
-        factureEBill.setBillerId(billerId);
-        factureEBill.setSession(getSession());
-        factureEBill.setMontantSursis(montantSursis);
-        factureEBill.setAttachedDocument(attachedDocument);
-        factureEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+        String dateEcheance = dateFacturation;
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, null, montantSursis, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession(), serviceFtp);
+    }
 
+    /**
+     * Mise à jour du statut eBill de la section et de son transactionID eBill
+     * passe l'état à pending.
+     *
+     * @param section  la section à mettre à jour.
+     * @param transactionId l'id de transaction lié au traitement.
+     */
+    public void updateSectionEtatEtTransactionID(final CASection section, final String transactionId) {
+        try {
+            section.seteBillEtat(CATraitementEtatEBillEnum.NUMERO_ETAT_REJECTED_OR_PENDING);
+            section.seteBillErreur("");
+            section.seteBillTransactionID(transactionId);
+            section.update();
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Impossible de mettre à jour la section avec l'id : " + section.getIdSection() + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
+        }
     }
 
     /**

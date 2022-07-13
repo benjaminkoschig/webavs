@@ -6,13 +6,10 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.client.JadePublishDocument;
-import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAModuleImpression;
-import globaz.musca.db.facturation.FAPassage;
 import globaz.osiris.api.APISection;
-import globaz.osiris.api.APISectionDescriptor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +59,7 @@ public class FAImpressionFactureEBillXml {
     private FAAfact afact;
     private List<Map> lignes;
     private String dateFacturation;
+    private String dateEcheance;
     private String billerId;
     private BSession session;
     private String eBillAccountID;
@@ -683,10 +681,12 @@ public class FAImpressionFactureEBillXml {
         this.session = session;
     }
 
-    public String getDateEcheance() throws Exception {
-        APISectionDescriptor sectionDescriptor = ((FAApplication) getSession().getApplication()).getSectionDescriptor(getSession());
-        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), dateFacturation, "", "");
-        return sectionDescriptor.getDateEcheanceFacturation();
+    public String getDateEcheance() {
+        return dateEcheance;
+    }
+
+    public void setDateEcheance(String dateEcheance) {
+        this.dateEcheance = dateEcheance;
     }
 
     public FAAfact getAfact() {
