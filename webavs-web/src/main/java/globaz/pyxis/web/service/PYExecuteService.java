@@ -16,16 +16,16 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         //TODO: check that token is valid
 
-        //TODO: Call addTiersPage1
+        String idTiers;
         try {
             System.out.println(dto.getName());
-            PRTiersHelper.addTiersPage1(getSession(), dto);
+            idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
+            dto.setId(idTiers);
         }
         catch (Exception e) {
             System.err.println(e);
         }
 
-        //TODO: return dto with tiers' id
         return dto;
     }
 
