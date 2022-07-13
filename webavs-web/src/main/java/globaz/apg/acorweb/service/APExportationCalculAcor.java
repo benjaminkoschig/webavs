@@ -1,9 +1,6 @@
 package globaz.apg.acorweb.service;
 
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.admin.zas.xmlns.in_apg._0.AllocationPerteGainAPG;
 import ch.admin.zas.xmlns.in_apg._0.BasesCalculAMat;
 import ch.admin.zas.xmlns.in_apg._0.BasesCalculAPG;
@@ -12,9 +9,7 @@ import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import globaz.apg.ApgServiceLocator;
-import globaz.apg.acorweb.mapper.APAssureMapper;
-import globaz.apg.acorweb.mapper.APPeriodeMapper;
-import globaz.apg.acorweb.mapper.APRevenuMapper;
+import globaz.apg.acorweb.mapper.*;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.*;
 import globaz.apg.module.calcul.APBaseCalcul;
@@ -49,14 +44,14 @@ public class APExportationCalculAcor {
     private String genreService = "";
     private BTransaction transaction;
     private APDroitLAPG droit;
-    private EntityService entityService;
+
+    private PRTiersWrapper tiersRequerant;
 
     public APExportationCalculAcor(String idDroit, String genreService) {
         this.session = BSessionUtil.getSessionFromThreadContext();;
         this.idDroit = idDroit;
         this.genreService = genreService;
         this.transaction = session.getCurrentThreadTransaction();
-        this.entityService = EntityService.of(session);
     }
 
     public InHostType createInHost() {
@@ -67,12 +62,12 @@ public class APExportationCalculAcor {
             droit = loadDroit();
             PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(session, transaction,
                     droit.getIdDroit());
-            PRTiersWrapper tiersRequerant = demande.loadTiers();
+            tiersRequerant = demande.loadTiers();
 
             PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE, tiersRequerant, APGUtils.getCSDomaineFromTypeDemande(droit.getGenreService()), session);
             AssureType assureType = new APAssureMapper(prAcorMapper, session).createAssureType();
-            inHost.getAssure().add(completeMappingAssure(droit, assureType, session));
-            inHost.setDemande(toDemande(tiersRequerant, droit.getDateDebutDroit(), session));
+            inHost.getAssure().add(completeMappingAssure(inHost, assureType));
+            inHost.setDemande(toDemande());
             inHost.setVersionSchema("6.0");
         } catch (Exception e) {
             LOG.error("Erreur lors de la construction du inHost.", e);
@@ -82,123 +77,24 @@ public class APExportationCalculAcor {
         return inHost;
     }
 
-    private AssureType completeMappingAssure(final APDroitLAPG droit,
-                                             final AssureType assureType,
-                                             final BSession session) {
+    private AssureType completeMappingAssure(final InHostType inHost,
+                                             final AssureType assureType) {
 
             AllocationPerteGainAPG allocationPerteGainAPG = new AllocationPerteGainAPG();
-            List<APSituationProfessionnelle> situationsProfessionnelles = loadSituationsProfessionnelles();
+            List<APSituationProfessionnelle> situationsProfessionnelles = APLoader.loadSituationsProfessionnelles(idDroit, session);
             if (droit instanceof APDroitAPG) {
-                allocationPerteGainAPG.setBasesCalculAPG(mapToBaseCalculAPG((APDroitAPG) droit, situationsProfessionnelles, session));
+                allocationPerteGainAPG.setBasesCalculAPG(new APBaseCalculAPGMapper((APDroitAPG) droit, situationsProfessionnelles).map(session));
             } else if(droit instanceof APDroitMaternite) {
-                allocationPerteGainAPG.setBasesCalculAMat(mapToBaseCalculAPG((APDroitMaternite) droit, situationsProfessionnelles, session));
+                allocationPerteGainAPG.setBasesCalculAMat(new APBaseCalculAmatMapper((APDroitMaternite) droit).map(session));
+                inHost.getEnfant().addAll(new APEnfantMapper(tiersRequerant, APLoader.loadSituationFamillialeMat(idDroit, session)).map());
+//                inHost.getFamille().addAll();
             }
             allocationPerteGainAPG.getRevenu().addAll(new APRevenuMapper(situationsProfessionnelles, droit).map(session));
             assureType.setAllocationPerteGain(allocationPerteGainAPG);
         return assureType;
     }
 
-    private BasesCalculAPG mapToBaseCalculAPG(final APDroitAPG droit, List<APSituationProfessionnelle> situationsProfessionnelles, final BSession session) {
-            BasesCalculAPG basesCalcul = new BasesCalculAPG();
-
-        basesCalcul.setGenreCarte(1);
-//        basesCalcul.setCantonImpot();
-//        basesCalcul.setTauxImpot();
-//        basesCalcul.setAFac();
-//        basesCalcul.setExemptionCotisation();
-        if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
-            GarantieIJ garantie = new GarantieIJ();
-            garantie.setMontant(Double.valueOf(droit.getDroitAcquis()));
-            garantie.setSource(Integer.valueOf(session.getCode(droit.getCsProvenanceDroitAcquis())));
-//  TODO            garantie.setNumeroReference(); --> obligatoire !
-            basesCalcul.setGarantieIJ(garantie);
-        }
-        try {
-            basesCalcul.setLimiteTransfert(Double.valueOf(session.getApplication().getProperty(
-                    APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE)));
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE, e);
-            throw new CommonTechnicalException("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE , e);
-        }
-
-        basesCalcul.setGenreService(Integer.valueOf(session.getCode(droit.getGenreService())));
-
-        if(!JadeStringUtil.isEmpty(droit.getNoCompte())) {
-            basesCalcul.setNumeroReference(Integer.valueOf(droit.getNoCompte()));
-        }
-        if(!JadeStringUtil.isEmpty(droit.getNoControlePers())) {
-            basesCalcul.setNumeroControle(Integer.valueOf(droit.getNoControlePers()));
-        }
-
-        try {
-            APSituationFamilialeAPG situationFamilialeAPG = droit.loadSituationFamilliale();
-            basesCalcul.setFraisGarde(Double.valueOf(situationFamilialeAPG.getFraisGarde()));
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer la situation familliale.", e);
-            throw new CommonTechnicalException("Impossible de récupérer la situation familliale" , e);
-        }
-
-        ;
-
-        List<APBaseCalcul> apBases = loadBasesCalcul();
-        for(APBaseCalcul apBase : apBases) {
-            basesCalcul.getPeriode().add(new APPeriodeMapper(apBase, situationsProfessionnelles).map());
-        }
-
-        return basesCalcul;
-    }
-
-    private BasesCalculAMat mapToBaseCalculAPG(final APDroitMaternite droit, List<APSituationProfessionnelle> situationsProfessionnelles, final BSession session) {
-        BasesCalculAMat basesCalcul = new BasesCalculAMat();
-
-        basesCalcul.setGenreCarte(1);
-//        basesCalcul.setCantonImpot();
-//        basesCalcul.setTauxImpot();
-//        basesCalcul.setAFac();
-//        basesCalcul.setExemptionCotisation();
-        if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
-            GarantieIJ garantie = new GarantieIJ();
-            garantie.setMontant(Double.valueOf(droit.getDroitAcquis()));
-            garantie.setSource(Integer.valueOf(session.getCode(droit.getCsProvenanceDroitAcquis())));
-//  TODO            garantie.setNumeroReference(); --> obligatoire !
-            basesCalcul.setGarantieIJ(garantie);
-        }
-        try {
-            basesCalcul.setLimiteTransfert(Double.valueOf(session.getApplication().getProperty(
-                    APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE)));
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE, e);
-            throw new CommonTechnicalException("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE , e);
-        }
-
-//        basesCalcul.setGenreService(Integer.valueOf(session.getCode(droit.getGenreService())));
-//
-//        if(!JadeStringUtil.isEmpty(droit.getNoCompte())) {
-//            basesCalcul.setNumeroReference(Integer.valueOf(droit.getNoCompte()));
-//        }
-//        if(!JadeStringUtil.isEmpty(droit.getNoControlePers())) {
-//            basesCalcul.setNumeroControle(Integer.valueOf(droit.getNoControlePers()));
-//        }
-//
-//        try {
-//            APSituationFamilialeAPG situationFamilialeAPG = droit.loadSituationFamilliale();
-//            basesCalcul.setFraisGarde(Double.valueOf(situationFamilialeAPG.getFraisGarde()));
-//        } catch (Exception e) {
-//            LOG.error("Impossible de récupérer la situation familliale.", e);
-//            throw new CommonTechnicalException("Impossible de récupérer la situation familliale" , e);
-//        }
-//
-//        ;
-//
-//        List<APBaseCalcul> apBases = loadBasesCalcul();
-//        for(APBaseCalcul apBase : apBases) {
-//            basesCalcul.getPeriode().add(new APPeriodeMapper(apBase, situationsProfessionnelles).map());
-//        }
-
-        return basesCalcul;
-    }
-
-    private DemandeType toDemande(PRTiersWrapper tiersRequerant, String date, BSession session) {
+    private DemandeType toDemande() {
         PRAcorDemandeTypeMapper demandeTypeAcorMapper = new PRAcorDemandeTypeMapper(session, tiersRequerant);
         DemandeType demandeType = demandeTypeAcorMapper.map();
 
@@ -206,7 +102,7 @@ public class APExportationCalculAcor {
         demandeType.setNavs(PRConverterUtils.formatNssToLong(tiersRequerant.getNSS()));
         demandeType.setTypeDemande(TypeDemandeEnum.A);
         demandeType.setDateTraitement(Dates.toXMLGregorianCalendar(LocalDate.now()));
-        demandeType.setDateDepot(Dates.toXMLGregorianCalendar(date));
+        demandeType.setDateDepot(Dates.toXMLGregorianCalendar(droit.getDateDebutDroit()));
         demandeType.setTypeCalcul(Integer.parseInt(PRACORConst.CA_TYPE_CALCUL_STANDARD));
 
         return demandeType;
@@ -223,29 +119,5 @@ public class APExportationCalculAcor {
         }
         return droit;
     }
-
-    public List<APBaseCalcul> loadBasesCalcul() {
-        try {
-            return APBasesCalculBuilder.of(session, droit).createBasesCalcul();
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer les bases de Calcul.", e);
-            throw new CommonTechnicalException("Impossible de récupérer les bases de Calcul.", e);
-        }
-    }
-
-    public List<APSituationProfessionnelle> loadSituationsProfessionnelles()  {
-        APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
-        mgr.setSession(session);
-        mgr.setForIdDroit(droit.getIdDroit());
-
-        try {
-            mgr.find(BManager.SIZE_NOLIMIT);
-        } catch (Exception e) {
-            LOG.error(session.getLabel("ERREUR_CHARGEMENT_SITUATION_PROFESSIONNELLE"), e);
-            throw new CommonTechnicalException(session.getLabel("ERREUR_CHARGEMENT_SITUATION_PROFESSIONNELLE"), e);
-        }
-        return mgr.getContainer();
-    }
-
 
 }

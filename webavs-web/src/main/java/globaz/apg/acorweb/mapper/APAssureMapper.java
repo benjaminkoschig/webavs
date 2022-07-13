@@ -7,6 +7,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.web.mapper.PRAcorMapper;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 
 public class APAssureMapper extends PRAcorMapper {
@@ -26,7 +27,7 @@ public class APAssureMapper extends PRAcorMapper {
             assure.setDateDeces(Dates.toXMLGregorianCalendar(getTiersRequerant().getDateDeces()));
         }
         assure.setNationalite(getCodePays(getTiersRequerant().getIdPays()));
-        assure.setDomicile(getDomicile("", "", getTiersRequerant()));
+        assure.setDomicile(getDomicile("", getTiersRequerant().getIdPays(), getTiersRequerant()));
         assure.setSexe(PRACORConst.csSexeToAcor2020(getTiersRequerant().getSexe()));
         assure.setDonneesPostales(createDonneesPostales());
         return assure;
