@@ -143,6 +143,14 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_S_IS);
         } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_TSE.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_TSE_IS);
+        } else if (ALCSDossier.ACTIVITE_NONACTIF.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_NON_ACTIF_IS);
+        } else if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_INDEPENDANT_IS);
+        } else if (ALCSDossier.ACTIVITE_AGRICULTEUR.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_IS);
+        } else if (ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS);
         }
         return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_IS);
     }
