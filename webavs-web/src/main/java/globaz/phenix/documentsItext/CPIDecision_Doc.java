@@ -27,6 +27,8 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.application.FAApplication;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAEnteteFactureManager;
 import globaz.musca.db.facturation.FAModuleFacturation;
 import globaz.musca.db.facturation.FAPassage;
 import globaz.musca.external.ServicesFacturation;
@@ -2080,7 +2082,19 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
     /*
      * Insertion des infos pour la publication (GED)
      */
-    public void setDocumentInfo() {
+    public void setDocumentInfo() throws Exception {
+        FAEnteteFactureManager entFactureManager = new FAEnteteFactureManager();
+        entFactureManager.setSession(getSession());
+        entFactureManager.setForIdTiers(decision.getIdTiers());
+        entFactureManager.setForIdPassage(decision.getIdPassage());
+        entFactureManager.setForIdExterneRole(getAffiliation().getAffilieNumero());
+        entFactureManager.setForIdRole(CaisseHelperFactory.getInstance().getRoleForAffiliePersonnel(getSession().getApplication()));
+        entFactureManager.find(1);
+        FAEnteteFacture entete = null;
+
+        if (entFactureManager.size() > 0) {
+            entete = (FAEnteteFacture) entFactureManager.getFirstEntity();
+        }
         try {
             getDocumentInfo().setDocumentProperty(CTDocumentInfoHelper.TYPE_DOCUMENT_ID,
                     ((CPApplication) getSession().getApplication()).getGedTypeDossier());
@@ -2105,6 +2119,9 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_GENRE, decision.getGenreAffilie());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_PERIODE,
                 decision.getDebutDecision() + "-" + decision.getFinDecision());
+        getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.ROLE_TIERS_DOCUMENT,entete.getIdRole());
+        getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE,entete.getIdExterneFacture());
+        getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_TYPE,entete.getIdTypeFacture());
         try {
             getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_LIB_TYPE,
                     CodeSystem.getLibelleIso(getSession(), getDecision().getTypeDecision(), langueDoc));
