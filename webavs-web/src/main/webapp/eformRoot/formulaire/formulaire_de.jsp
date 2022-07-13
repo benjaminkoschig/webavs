@@ -285,7 +285,7 @@
                                 <strong>${viewBean.formulaire.attachementName}</strong>
                             </div>
                             <div style="display: table-cell;">
-                                <strong>${viewBean.tailleAttachement}</strong>
+                                <strong>${viewBean.lenghtAttachement}</strong>
                             </div>
                             <div style="display: table-cell;">
                                 <a data-g-download="docType:zip,
