@@ -6,6 +6,7 @@ import java.util.*;
 
 import globaz.corvus.properties.REProperties;
 import globaz.globall.db.*;
+import globaz.prestation.acor.PRACORConst;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdresseResolver;
@@ -280,14 +281,20 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
-        avsPerson.setIdPays(dto.getCountry());
+        avsPerson.setIdPays(dto.getCountry()); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
 
-        //TODO: Add missing fields for the first page
         // Fields in TIPERSP
+        avsPerson.setDateNaissance(dto.getBirthDate()); //TODO: Check if it's a date and if it's in the past ?
+        avsPerson.setDateDeces(dto.getDeathDate()); //TODO: Check if it's a date and if it's in the past ?
+        avsPerson.setSexe(getSexAsSystemCode(dto.getSex()));
+        avsPerson.setEtatCivil(dto.getCivilStatus()); //TODO: These should also be system codes I guess ?
+
         // Fields in TIPAVSP
+        avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Check the NSS is valid
+        avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
 
@@ -323,19 +330,19 @@ public class PRTiersHelper {
      */
     private static final String getTitleAsSystemCode(String title) {
         String result;
-        switch (title) {
-            case "Monsieur":
-            case "M":
+        switch (JadeStringUtil.toLowerCase(title)) {
+            case "monsieur":
+            case "m":
                 result = ITITiers.CS_MONSIEUR;
                 break;
-            case "Madame":
-            case "Mme":
+            case "madame":
+            case "mme":
                 result = ITITiers.CS_MADAME;
                 break;
-            case "Madame, Monsieur":
+            case "madame, monsieur":
                 result = ITITiers.CS_ADMINISTRATION;
                 break;
-            default: // If the title isn't anything standard, check that it's a valid system code and pass it on as is
+            default: // If the title isn't anything standard, check that it's a valid system code
                 if (isSystemCode(title)) {
                     result = title;
                 }
@@ -354,25 +361,55 @@ public class PRTiersHelper {
      */
     private static final String getLanguageAsSystemCode(String language) {
         String result;
-        switch (language) {
-            case "FR":
-            case "Français":
+        switch (JadeStringUtil.toLowerCase(language)) {
+            case "fr":
+            case "français":
                 result = ITITiers.CS_FRANCAIS;
                 break;
-            case "DE":
-            case "Deutsch":
+            case "de":
+            case "deutsch":
                 result = ITITiers.CS_ALLEMAND;
                 break;
-            case "IT":
-            case "Italiano":
+            case "it":
+            case "italiano":
                 result = ITITiers.CS_ITALIEN;
                 break;
-            default: // If the language isn't anything standard, check that it's a valid system code and pass it on as is
+            default: // If the language isn't anything standard, check that it's a valid system code
                 if (isSystemCode(language)) {
                     result = language;
                 }
                 else { // Otherwise, throw an error
                     throw new PYBadRequestException("Erreur lors de l'assignation de la langue du tiers.");
+                }
+        }
+        return result;
+    }
+
+    /**
+     * Lis sex pour retourner le code système associé.
+     *
+     * @param code
+     * @return Un code système pour le titre
+     */
+    private static final String getSexAsSystemCode(String sex) {
+        String result;
+        switch (JadeStringUtil.toLowerCase(sex)) {
+            case "m":
+            case "homme":
+            case "male":
+                result = PRACORConst.CS_HOMME;
+                break;
+            case "f":
+            case "femme":
+            case "female":
+                result = PRACORConst.CS_FEMME;
+                break;
+            default: // If the sex isn't anything standard, check that it's a valid system code
+                if (isSystemCode(sex)) {
+                    result = sex;
+                }
+                else { // Otherwise, throw an error
+                    throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.");
                 }
         }
         return result;
@@ -388,10 +425,9 @@ public class PRTiersHelper {
         int codeAsInt;
         try {
             codeAsInt = Integer.parseInt(code);
-            if(codeAsInt < 0){
+            if (codeAsInt < 0){ // TODO: This if is bad. We to check if the system code actually exists (custom or generic)
                 return false;
             }
-            // TODO: It'd be nice to check if the system code actually exists (custom or generic)
         }
         catch (NumberFormatException e) {
             return false;
