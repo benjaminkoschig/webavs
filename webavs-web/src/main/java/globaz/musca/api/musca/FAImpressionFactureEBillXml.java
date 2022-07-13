@@ -61,7 +61,7 @@ public class FAImpressionFactureEBillXml {
     private FAEnteteFacture enteteReference;
     private FAAfact afact;
     private List<Map> lignes;
-    private FAPassage passage;
+    private String dateFacturation;
     private String billerId;
     private BSession session;
     private String eBillAccountID;
@@ -130,7 +130,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // init de la référence eBill
-        eBillFacture.initReferenceEBill(entete, passage.getDateFacturation());
+        eBillFacture.initReferenceEBill(entete, dateFacturation);
     }
 
     /**
@@ -231,7 +231,7 @@ public class FAImpressionFactureEBillXml {
             deliveryInfo.setBillerID(Long.parseLong(billerId));
         }
         deliveryInfo.setEBillAccountID(Long.parseLong(eBillAccountID));
-        XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+        XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(dateFacturation);
         deliveryInfo.setDeliveryDate(deliveryDate);
         deliveryInfo.setTransactionID(entete.geteBillTransactionID());
 
@@ -296,14 +296,13 @@ public class FAImpressionFactureEBillXml {
         header.setDocumentType(eBillFacture.getDocumentType());
         header.setDocumentID(entete.geteBillTransactionID());
 
-        XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+        XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(dateFacturation);
         header.setDocumentDate(documentDate);
 
         header.setSenderParty(createSenderParty());
         header.setReceiverParty(createReceiverParty());
 
-        // TODO : determiner les dates dans le header.
-        header.setAchievementDate(createAchievementDate(passage.getDateFacturation(), passage.getDateFacturation()));
+        header.setAchievementDate(createAchievementDate(dateFacturation, dateFacturation));
         header.setCurrency(eBillFacture.getDevise());
         // header.setAccountAssignment(createAccountAssignment());
 
@@ -476,7 +475,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         if (eBillFacture.isSursis()) {
-            XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+            XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(dateFacturation);
             BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
             InstalmentType instalment = of.createInstalmentType();
             instalment.setAmount(new FWCurrency(montantSursis).getBigDecimalValue());
@@ -660,12 +659,12 @@ public class FAImpressionFactureEBillXml {
         this.enteteReference = enteteReference;
     }
 
-    public FAPassage getPassage() {
-        return passage;
+    public String getDateFacturation() {
+        return dateFacturation;
     }
 
-    public void setPassage(FAPassage passage) {
-        this.passage = passage;
+    public void setDateFacturation(String dateFacturation) {
+        this.dateFacturation = dateFacturation;
     }
 
     public String getBillerId() {
@@ -686,8 +685,7 @@ public class FAImpressionFactureEBillXml {
 
     public String getDateEcheance() throws Exception {
         APISectionDescriptor sectionDescriptor = ((FAApplication) getSession().getApplication()).getSectionDescriptor(getSession());
-        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), passage
-                .getDateFacturation(), "", "");
+        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), dateFacturation, "", "");
         return sectionDescriptor.getDateEcheanceFacturation();
     }
 

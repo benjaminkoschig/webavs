@@ -19,11 +19,7 @@ import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JANumberFormatter;
-import globaz.globall.util.JAUtil;
+import globaz.globall.util.*;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
@@ -37,6 +33,7 @@ import globaz.musca.external.ServicesFacturation;
 import globaz.musca.itext.FAImpressionFacture_Param;
 import globaz.musca.process.FAImpressionFactureProcess;
 import globaz.musca.util.FAUtil;
+import globaz.naos.translation.CodeSystem;
 import globaz.osiris.api.APIEtape;
 import globaz.osiris.api.APISection;
 import globaz.osiris.application.CAApplication;
@@ -559,7 +556,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     if (eBillActif && eBillOsirisActif && geteBillPrintable()) {
                         if (!JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                             // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'id
-                            lignesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), data);
+                            lignesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole(), sectionCourante.getSection().getIdExterne(), _getMontantApresCompensation()), data);
                         }
                     }
                 }
@@ -604,14 +601,14 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     if (isMuscaSource) {
                         referencesSolde.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
                     } else {
-                        referencesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), qrFacture.getReference());
+                        referencesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole(), sectionCourante.getSection().getIdExterne(), _getMontantApresCompensation()), qrFacture.getReference());
                     }
                 } else {
                     fillBVR();
                     if (isMuscaSource) {
                         referencesSolde.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
                     } else {
-                        referencesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getIdExterne(), sectionCourante.getSection().getIdSection(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
+                        referencesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole(), sectionCourante.getSection().getIdExterne(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
                     }
                 }
                 if (!computePageActive) {
@@ -637,34 +634,40 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                     && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
 
-                // Init spécifique aux bulletins de soldes compta auxiliare
+                // Init spécifique aux Bulletins de soldes
                 FAEnteteFacture entete = new FAEnteteFacture();
                 entete.seteBillTransactionID("");
-                entete.setIdModeRecouvrement("");
-                entete.setIdTiers("");
-                entete.setIdTypeFacture("");
-                entete.setIdTypeCourrier("");
-                entete.setIdDomaineCourrier("");
-                entete.setIdExterneRole("");
-                entete.setIdExterneFacture("");
+                entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
+                entete.setIdTiers(sectionCourante.getSection().getCompteAnnexe().getIdTiers());
+                entete.setIdTypeCourrier(sectionCourante.getSection().getTypeAdresse());
+                entete.setIdDomaineCourrier(sectionCourante.getSection().getDomaine());
+                entete.setIdExterneRole(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole());
+                entete.setIdExterneFacture(sectionCourante.getSection().getIdExterne());
 
                 FAEnteteFacture enteteReference = new FAEnteteFacture();
                 enteteReference.seteBillTransactionID("");
                 enteteReference.setIdModeRecouvrement("");
                 enteteReference.setIdTiers("");
-                enteteReference.setIdTypeFacture("");
                 enteteReference.setIdTypeCourrier("");
                 enteteReference.setIdDomaineCourrier("");
                 enteteReference.setIdExterneRole("");
                 enteteReference.setIdExterneFacture("");
 
-                FAPassage passage = new FAPassage();
-                passage.setDateFacturation("");
-
                 String reference = referencesSolde.get(lignes.getKey());
                 JadePublishDocument attachedDocument = ((JadePublishDocument) getAttachedDocuments().get(0));
-                creerFichierEBill(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocument, passage);
+                creerFichierEBill(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(sectionCourante.getSection()));
             }
+        }
+    }
+
+    private String getDateFacturationFromSection(CASection section) throws JAException {
+        JACalendarGregorian calendar = new JACalendarGregorian();
+        JADate dateFacturation = JACalendar.today();
+        JADate dateEcheanceSection = new JADate(section.getDateEcheance());
+        if (calendar.compare(dateFacturation, dateEcheanceSection) == JACalendar.COMPARE_FIRSTUPPER) {
+             return dateFacturation.toStr(".");
+        } else {
+             return dateEcheanceSection.toStr(".");
         }
     }
 
@@ -679,10 +682,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * @param ligneSolde              : contient les lignes de bulletins de soldes
      * @param referenceSolde          : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param _passage                : le passage
+     * @param dateFacturation         : la date de facturation
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> ligneSolde, String referenceSolde, JadePublishDocument attachedDocument, FAPassage _passage) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> ligneSolde, String referenceSolde, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -701,7 +704,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setPassage(_passage);
+        factureEBill.setDateFacturation(dateFacturation);
         factureEBill.setReference(referenceSolde);
         factureEBill.setLignes(ligneSolde);
         factureEBill.setBillerId(billerId);

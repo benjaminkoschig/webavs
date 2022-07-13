@@ -90,7 +90,7 @@ public class ReferenceEBill extends AbstractReference {
      * Initialisation de la référence eBill.
      *
      * @param enteteFacture   : en-tête de facture.
-     * @param dateFacturation : la date de facturation du passage.
+     * @param dateFacturation : la date de facturation.
      * @throws PropertiesException
      */
     public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {

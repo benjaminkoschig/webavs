@@ -6,7 +6,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
@@ -15,10 +15,11 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.musca.FAImpressionFactureEBillXml;
 import globaz.musca.api.musca.PaireIdEcheanceIdPlanRecouvrementEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAPassage;
+import globaz.naos.translation.CodeSystem;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
@@ -179,24 +180,36 @@ public class CAProcessImpressionPlan extends BProcess {
             CACompteAnnexe compteAnnexe = documentBVR.getPlanRecouvrement().getCompteAnnexe();
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
 
-                // Init spécifique aux sursis au paiement compta auxiliaire
+                // Init spécifique aux Sursis au paiement
+                CASection section = new CASection();
+                section.setSession(getSession());
+                section.setIdSection(documentBVR.getPlanRecouvrement().getIdSection());
+                section.retrieve();
+
                 FAEnteteFacture entete = new FAEnteteFacture();
                 entete.seteBillTransactionID("");
-                entete.setIdModeRecouvrement("");
-                entete.setIdTiers("");
-                entete.setIdTypeFacture("");
-                entete.setIdTypeCourrier("");
-                entete.setIdDomaineCourrier("");
-                entete.setIdExterneRole("");
-                entete.setIdExterneFacture("");
-
-                FAPassage passage = new FAPassage();
-                passage.setDateFacturation("");
+                entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
+                entete.setIdTiers(section.getCompteAnnexe().getIdTiers());
+                entete.setIdTypeCourrier(section.getTypeAdresse());
+                entete.setIdDomaineCourrier(section.getDomaine());
+                entete.setIdExterneRole(section.getCompteAnnexe().getIdExterneRole());
+                entete.setIdExterneFacture(section.getIdExterne());
 
                 String reference = documentBVR.getReferencesSursis().get(lignes.getKey());
                 JadePublishDocument attachedDocument = findAndReturnAttachedDocument();
-                creerFichierEBill(compteAnnexe, entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, passage);
+                creerFichierEBill(compteAnnexe, entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(section));
             }
+        }
+    }
+
+    private String getDateFacturationFromSection(CASection section) throws Exception {
+        JACalendarGregorian calendar = new JACalendarGregorian();
+        JADate dateFacturation = JACalendar.today();
+        JADate dateEcheanceSection = new JADate(section.getDateEcheance());
+        if (calendar.compare(dateFacturation, dateEcheanceSection) == JACalendar.COMPARE_FIRSTUPPER) {
+             return dateFacturation.toStr(".");
+        } else {
+             return dateEcheanceSection.toStr(".");
         }
     }
 
@@ -226,10 +239,10 @@ public class CAProcessImpressionPlan extends BProcess {
      * @param lignes                  : contient les lignes de sursis au paiement
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param _passage                : le passage
+     * @param dateFacturation         : la date de facturation
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, FAPassage _passage) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -248,7 +261,7 @@ public class CAProcessImpressionPlan extends BProcess {
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setPassage(_passage);
+        factureEBill.setDateFacturation(dateFacturation);
         factureEBill.setReference(reference);
         factureEBill.setLignes(lignes);
         factureEBill.setBillerId(billerId);

@@ -369,10 +369,10 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param lignes                  : contient les lignes de factures et de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param _passage                : le passage
+     * @param dateFacturation         : la date de facturation
      * @throws Exception
      */
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignes, String reference, JadePublishDocument attachedDocument, FAPassage _passage) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().geteBillBillerId();
 
@@ -391,7 +391,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
-        factureEBill.setPassage(_passage);
+        factureEBill.setDateFacturation(dateFacturation);
         factureEBill.setReference(reference);
         factureEBill.setLignes(lignes);
         factureEBill.setBillerId(billerId);
@@ -995,7 +995,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage);
+                    creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
                     factureEBill++;
                 }
             }
@@ -1021,7 +1021,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
                     JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference, getAttachedDocuments());
-                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument, passage);
+                    creerFichierEBill(compteAnnexe, entete, enteteReference, ligneSoldeParPaireIdExterne.getKey().getMontant(), ligneSoldeParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
                     factureEBill++;
                 }
             }
