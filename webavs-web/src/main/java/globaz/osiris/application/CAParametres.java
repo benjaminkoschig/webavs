@@ -417,33 +417,33 @@ public class CAParametres {
     /// Proprieté à utiliser pour la validation de la chaine complete
     /// eBill = ACTIVE
     /// Caisse avec droits d'utiliser eBill
-    public boolean iseBillActifEtDansListeCaisses(BSession session){
+    public boolean isEBillActifEtDansListeCaisses(BSession session){
         // Flag générale eBill (ON/OFF)
-        boolean eBillActif = iseBillActif();
+        boolean eBillActif = isEBillActif();
         if(eBillActif){
             // Vérifier que la caisse avs est dans la liste crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
             String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
-            List<String> listeCaisseeBill = null;
+            List<String> listeCaisseEBill = null;
             try {
-                listeCaisseeBill = getListeCaisseeBill(session);
+                listeCaisseEBill = getListeCaisseEBill(session);
             } catch (Exception e) {
                 JadeLogger.warn(this, e.getMessage());
             }
-            eBillActif = listeCaisseeBill.contains(noCaisse);
+            eBillActif = listeCaisseEBill.contains(noCaisse);
         }
         return eBillActif;
     }
 
-    private List<String> getListeCaisseeBill(BSession session) throws Exception {
-        List<String> listeCaisseeBill = new ArrayList<>();
+    private List<String> getListeCaisseEBill(BSession session) throws Exception {
+        List<String> listeCaisseEBill = new ArrayList<>();
         FWFindParameterManager mgr = getPlageValeureBill(session);
         for(int idx = 0; idx < mgr.size(); idx++){
             FWFindParameter param = (FWFindParameter) mgr.get(idx);
             if(!JadeStringUtil.isBlank(param.getValeurAlphaParametre())){
-                listeCaisseeBill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
+                listeCaisseEBill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
             }
         }
-        return listeCaisseeBill;
+        return listeCaisseEBill;
     }
 
     private FWFindParameterManager getPlageValeureBill(BSession session) throws Exception {
@@ -455,23 +455,23 @@ public class CAParametres {
         return mgr;
     }
 
-    public boolean iseBillAquilaActif(){
+    public boolean isEBillAquilaActif(){
         return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE));
     }
 
-    public boolean iseBillOsirisActif(){
+    public boolean isEBillOsirisActif(){
         return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE));
     }
 
-    public boolean iseBillActif(){
+    public boolean isEBillActif(){
         return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_EBILL_ACTIVE));
     }
 
-    public String geteBillBillerId(){
+    public String getEBillBillerId(){
         return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_BILLER_ID, "");
     }
 
-    public List<String> geteBillNotificationEmails(){
+    public List<String> getEBillNotificationEmails(){
         List<String> emailList = new ArrayList<>();
         String emails = caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS, "");
         String sep = ";";

@@ -121,13 +121,13 @@ top.document.title = "Konti - Detail eines Abrechnungskontos - " + top.location.
 					<TR>
 						<TD width="125">eBill AccountID</TD>
 						<TD>
-							<INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.geteBillAccountID()%>">
+							<INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.getEBillAccountID()%>">
 						</TD>
 					</TR>
 					<TR>
 						<td width="125">eBill E-Mail</td>
 						<TD>
-							<INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.geteBillMail()%>">
+							<INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.getEBillMail()%>">
 						</TD>
 					</TR>
 				</TABLE>

@@ -86,7 +86,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
             initBsession();
             EBillSftpProcessor.getInstance();
 
-            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
 
             if (eBillActif) {
                 importFiles();
@@ -263,7 +263,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
             }
             eachTraitement.add(getTransaction());
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_ENREGISTRE_FAILED"), eachTraitement.getNumeroAffilie(), eachTraitement.geteBillAccountID(), eachTraitement.getTransactionID());
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_ENREGISTRE_FAILED"), eachTraitement.getNumeroAffilie(), eachTraitement.getEBillAccountID(), eachTraitement.getTransactionID());
             LOG.error(erreurInterne, e);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
@@ -346,7 +346,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
 
     private CATraitementEBill mappingTraitement(CATraitementEBill traitementEBill, ProtocolBillType protocolBillType) {
         traitementEBill.setTransactionID(protocolBillType.getTransactionID());
-        traitementEBill.seteBillAccountID(protocolBillType.getEBillAccountID());
+        traitementEBill.setEBillAccountID(protocolBillType.getEBillAccountID());
         traitementEBill.setNumRefBVR(protocolBillType.getESRReference());
         traitementEBill.setMontantTotal(protocolBillType.getTotalAmount());
         String codeErreurSansPrefixe = StringUtils.stripStart(protocolBillType.getReasonCode(), "0");
@@ -376,7 +376,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 if (updatedSection != null) {
                     CACompteAnnexe compteAnnexe = getCompteAnnexe(traitementEBill, updatedSection.getIdCompteAnnexe());
                     if (compteAnnexe != null) {
-                        traitementEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+                        traitementEBill.setEBillAccountID(compteAnnexe.getEBillAccountID());
                         traitementEBill.setNumeroAffilie(compteAnnexe.getIdExterneRole());
                         traitementEBill.setNom(compteAnnexe.getDescription());
                         updatedTraitement = true;
@@ -448,8 +448,8 @@ public class CAProcessImportTraitementEBill extends BProcess {
             // Met à jour l'état eBill de la section et le message d'erreur
             if (manager.size() == 1) {
                 CASection section = (CASection) manager.get(0);
-                section.seteBillEtat(traitementEBill.getEtat().getNumeroEtat());
-                section.seteBillErreur(concatErreurInterneEtExterne(traitementEBill));
+                section.setEBillEtat(traitementEBill.getEtat().getNumeroEtat());
+                section.setEBillErreur(concatErreurInterneEtExterne(traitementEBill));
                 section.update();
                 return section;
             } else {

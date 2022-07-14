@@ -22,7 +22,7 @@
 	} catch (Exception e){
 		// Le reste de la page doit tout de même fonctionner
 	}
-    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
   %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -123,13 +123,13 @@ top.document.title = "Comptes - détail d'un compte annexe - " + top.location.hre
             <TR>
                 <TD width="125">eBill AccountID</TD>
                 <TD>
-                    <INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.geteBillAccountID()%>">
+                    <INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.getEBillAccountID()%>">
                 </TD>
             </TR>
             <TR>
                 <td width="125">eBill E-Mail</td>
                 <TD>
-                    <INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.geteBillMail()%>">
+                    <INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.getEBillMail()%>">
                 </TD>
             </TR>
         </TABLE>

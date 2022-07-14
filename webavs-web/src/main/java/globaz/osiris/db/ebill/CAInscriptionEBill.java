@@ -112,7 +112,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
                 this._dbWriteString(bStatement.getTransaction(), getTexteErreurInterne(), "texteErreurInterne"));
 
         bStatement.writeField(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql(),
-                this._dbWriteString(bStatement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
+                this._dbWriteString(bStatement.getTransaction(), getEBillAccountID(), "eBillAccountID"));
         bStatement.writeField(CAInscriptionEBillEnum.CUSTOMER_NBR.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumeroAffilie(), "numeroAffilie"));
         bStatement.writeField(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getColNameSql(),
@@ -163,11 +163,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.idFichier = idFichier;
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         this.eBillAccountID = eBillAccountID;
     }
 
@@ -350,11 +350,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.idInscription = idInscription;
     }
 
-    public String geteBillAccountType() {
+    public String getEBillAccountType() {
         return eBillAccountType;
     }
 
-    public void seteBillAccountType(String eBillAccountType) {
+    public void setEBillAccountType(String eBillAccountType) {
         this.eBillAccountType = eBillAccountType;
     }
 

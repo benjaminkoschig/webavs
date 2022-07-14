@@ -114,7 +114,7 @@ public class CACompteAnnexePourListeAffiliesEBill extends BEntity {
 
     @Column(name = "ebill_account_id", order = 9)
     @ColumnStyle(align = Align.LEFT)
-    public String geteBillAccountId() {
+    public String getEBillAccountId() {
         return eBillAccountId;
     }
 
@@ -156,7 +156,7 @@ public class CACompteAnnexePourListeAffiliesEBill extends BEntity {
         this.dateInscriptionEBill = dateInscriptionEBill;
     }
 
-    public void seteBillAccountId(String eBillAccountId) {
+    public void setEBillAccountId(String eBillAccountId) {
         this.eBillAccountId = eBillAccountId;
     }
 

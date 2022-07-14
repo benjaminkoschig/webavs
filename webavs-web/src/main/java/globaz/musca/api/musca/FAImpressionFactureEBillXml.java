@@ -114,7 +114,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
-        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.geteBillTransactionID())) {
+        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.getEBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
         }
         if(entete.getTotalFactureCurrency().getBigDecimalValue().compareTo(BigDecimal.valueOf(0)) < 0) {
@@ -231,7 +231,7 @@ public class FAImpressionFactureEBillXml {
         deliveryInfo.setEBillAccountID(Long.parseLong(eBillAccountID));
         XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(dateFacturation);
         deliveryInfo.setDeliveryDate(deliveryDate);
-        deliveryInfo.setTransactionID(entete.geteBillTransactionID());
+        deliveryInfo.setTransactionID(entete.getEBillTransactionID());
 
         // Dans notre cas, on génère systématiquement une facture PDF Appendix : on ajoute le pdf en Base64 en annexe.
         deliveryInfo.setBillDetailsType(BILL_DETAILS_TYPE);
@@ -292,7 +292,7 @@ public class FAImpressionFactureEBillXml {
         InvoiceBillType.Header header = of.createInvoiceBillTypeHeader();
 
         header.setDocumentType(eBillFacture.getDocumentType());
-        header.setDocumentID(entete.geteBillTransactionID());
+        header.setDocumentID(entete.getEBillTransactionID());
 
         XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(dateFacturation);
         header.setDocumentDate(documentDate);
@@ -306,10 +306,10 @@ public class FAImpressionFactureEBillXml {
 
         // Dans le cas d'un bulletin de soldes avec factures eBill, ajoute le transactionID de l'entete de reference dans une balise de type FixedReference
         if (eBillFacture.isBulletinsDeSoldesAvecFactureEBill()) {
-            header.getFixedReference().add(createFixedReference(of, enteteReference.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, enteteReference.getEBillTransactionID()));
         // Dans le cas d'une notes de crédit, ajoute le transactionID de l'entete dans une balise de type FixedReference
         } else if (eBillFacture.isNotesCredit()) {
-            header.getFixedReference().add(createFixedReference(of, entete.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, entete.getEBillTransactionID()));
         }
 
         header.setLanguage(entete.getISOLangueTiers().toLowerCase(Locale.ROOT));
@@ -705,11 +705,11 @@ public class FAImpressionFactureEBillXml {
         this.attachedDocument = attachedDocument;
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         this.eBillAccountID = eBillAccountID;
     }
 

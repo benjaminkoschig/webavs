@@ -697,10 +697,10 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         }
 
         // Prepare la map des lignes de factures eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill
-        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(getSession());
+        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
         if (eBillActif) {
             CACompteAnnexe compteAnnexe = FAGenericProcess.getCompteAnnexe(currentDataSource.getEnteteFacture(), getSession(), getTransaction());
-            if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+            if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                 //Extrait les lignes dans une liste
                 List data = buildLignes(); // lignes Factures
                 // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'id

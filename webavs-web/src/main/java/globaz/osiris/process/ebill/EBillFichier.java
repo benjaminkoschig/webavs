@@ -34,7 +34,7 @@ public class EBillFichier {
         factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
         factureEBill.setMontantSursis(montantSursis);
         factureEBill.setAttachedDocument(attachedDocument);
-        factureEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+        factureEBill.setEBillAccountID(compteAnnexe.getEBillAccountID());
 
         // Init de la facture eBill
         factureEBill.initFactureEBill();
@@ -43,7 +43,7 @@ public class EBillFichier {
         InvoiceEnvelope content = factureEBill.createFileContent();
 
         // Creation du fichier XML
-        String filename = billerId + "_" + entete.geteBillTransactionID() + ".xml";
+        String filename = billerId + "_" + entete.getEBillTransactionID() + ".xml";
         String localPath = Jade.getInstance().getPersistenceDir() + EBillSftpProcessor.getFolderOutName() + filename;
         File localFile = new File(localPath);
         LOGGER.info("Création du fichier xml eBill : " + localFile.getAbsoluteFile() + "...");

@@ -73,7 +73,7 @@
     <TD nowrap width="200">
         <INPUT type="hidden" name="idFichier" value="<%=viewBean.getIdFichier()%>">
         <input type="text" name="eBillAccountID" tabindex="1" class="libelleLong"
-               value="<%=viewBean.geteBillAccountID()%>">
+               value="<%=viewBean.getEBillAccountID()%>">
     </TD>
     <TD width="110">Type</TD>
     <TD nowrap width="200">

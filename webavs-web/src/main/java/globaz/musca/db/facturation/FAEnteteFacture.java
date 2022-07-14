@@ -711,9 +711,9 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         statement.writeField(FAEnteteFacture.FIELD_REFERENCE_FACTURE,
                 this._dbWriteString(statement.getTransaction(), getReferenceFacture(), "referenceFacture"));
         statement.writeField(FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID,
-                this._dbWriteString(statement.getTransaction(), geteBillTransactionID(), "eBillTransactionID"));
+                this._dbWriteString(statement.getTransaction(), getEBillTransactionID(), "eBillTransactionID"));
         statement.writeField(FAEnteteFacture.FIELD_EBILL_PRINTED, this._dbWriteBoolean(statement.getTransaction(),
-                iseBillPrinted(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrinted"));
+                isEBillPrinted(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrinted"));
 
     }
 
@@ -1709,24 +1709,24 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         }
     }
 
-    public void seteBillTransactionID(String eBillTransactionID) {
+    public void setEBillTransactionID(String eBillTransactionID) {
         this.eBillTransactionID = eBillTransactionID;
     }
 
-    public String geteBillTransactionID() {
+    public String getEBillTransactionID() {
         return eBillTransactionID;
     }
 
-    public void seteBillPrinted(boolean eBillPrinted) {
+    public void setEBillPrinted(boolean eBillPrinted) {
         this.eBillPrinted = eBillPrinted;
     }
 
-    public boolean iseBillPrinted() {
+    public boolean isEBillPrinted() {
         return eBillPrinted;
     }
 
-    public void addeBillTransactionID(BTransaction transaction) throws Exception {
-        seteBillTransactionID(this._incCounter(transaction, "", FIELD_EBILL_TRANSACTION_ID));
+    public void addEBillTransactionID(BTransaction transaction) throws Exception {
+        setEBillTransactionID(this._incCounter(transaction, "", FIELD_EBILL_TRANSACTION_ID));
     }
 
     @Override

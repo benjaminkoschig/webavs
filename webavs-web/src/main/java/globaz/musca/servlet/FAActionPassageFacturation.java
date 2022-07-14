@@ -285,7 +285,7 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
             transaction.openTransaction();
 
             // Contrôle si eBill est actif
-            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().iseBillActifEtDansListeCaisses(viewBean.getSession());
+            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
             if (eBillActif) {
                 FAModulePassageListViewBean vBean = new FAModulePassageListViewBean();
                 vBean.setSession((BSession) globaz.musca.translation.CodeSystem.getSession(session));

@@ -727,7 +727,7 @@ public class CAPlanRecouvrement extends CABEntity {
         statement.writeField(CAPlanRecouvrement.FIELD_PARTPENALE, this._dbWriteBoolean(statement.getTransaction(),
                 getPartPenale(), BConstants.DB_TYPE_BOOLEAN_CHAR, "partPenale"));
         statement.writeField(CAPlanRecouvrement.FIELD_EBILL_PRINTABLE, this._dbWriteBoolean(statement.getTransaction(),
-                geteBillPrintable(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrintable"));
+                getEBillPrintable(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrintable"));
     }
 
     /**
@@ -992,7 +992,7 @@ public class CAPlanRecouvrement extends CABEntity {
      *
      * @return Boolean eBill
      */
-    public Boolean geteBillPrintable() {
+    public Boolean getEBillPrintable() {
         return eBillPrintable;
     }
 
@@ -1247,7 +1247,7 @@ public class CAPlanRecouvrement extends CABEntity {
      *
      * @param eBillPrintable
      */
-    public void seteBillPrintable(Boolean eBillPrintable) {
+    public void setEBillPrintable(Boolean eBillPrintable) {
         this.eBillPrintable = eBillPrintable;
     }
 
