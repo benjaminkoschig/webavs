@@ -1,15 +1,27 @@
 package globaz.prestation.interfaces.tiers;
 
 import ch.globaz.common.util.NSSUtils;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import ch.globaz.pyxis.domaine.EtatCivil;
+import globaz.corvus.properties.REProperties;
+import globaz.globall.db.*;
+import globaz.prestation.acor.PRACORConst;
+import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.util.TIAdresseResolver;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
-import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -21,7 +33,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
-import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -38,18 +49,8 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
-import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
-import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -263,7 +264,7 @@ public class PRTiersHelper {
      * @return le
      * @throws Exception
      */
-    public static final String addTiersPage1(BISession session, PYTiersDTO dto) throws Exception {
+    public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
@@ -283,7 +284,7 @@ public class PRTiersHelper {
         avsPerson.setDateNaissance(dto.getBirthDate()); //TODO: Check if it's a date and if it's in the past ?
         avsPerson.setDateDeces(dto.getDeathDate()); //TODO: Check if it's a date and if it's in the past ?
         avsPerson.setSexe(getSexAsSystemCode(dto.getSex()));
-        avsPerson.setEtatCivil(dto.getCivilStatus()); //TODO: These should also be system codes I guess ?
+        avsPerson.setEtatCivil(getCivilStatusAsSystemCode(dto.getCivilStatus()));
 
         // Fields in TIPAVSP
         if (checkNSS(dto.getNss()))
@@ -293,11 +294,11 @@ public class PRTiersHelper {
 
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
 
-        if (((BSession) session).getCurrentThreadTransaction() != null) {
-            avsPerson.add(((BSession) session).getCurrentThreadTransaction());
+        if (session.getCurrentThreadTransaction() != null) {
+            avsPerson.add((session).getCurrentThreadTransaction());
         } else {
             // HACK: creating a transaction to insert a "tiers"
-            BITransaction transaction = ((BSession) session).newTransaction();
+            BITransaction transaction = (session).newTransaction();
 
             try {
                 avsPerson.add(transaction);
@@ -320,7 +321,7 @@ public class PRTiersHelper {
     /**
      * Lis title pour retourner le code système associé.
      *
-     * @param code
+     * @param title
      * @return Un code système pour le titre
      */
     private static final String getTitleAsSystemCode(String title) {
@@ -335,7 +336,7 @@ public class PRTiersHelper {
                 result = ITITiers.CS_MADAME;
                 break;
             case "madame, monsieur":
-                result = ITITiers.CS_ADMINISTRATION;
+                result = ITITiers.CS_HORIE;
                 break;
             default: // If the title isn't anything standard, check that it's a valid system code
                 if (isSystemCode(title)) {
@@ -351,8 +352,8 @@ public class PRTiersHelper {
     /**
      * Lis language pour retourner le code système associé.
      *
-     * @param code
-     * @return Un code système pour le titre
+     * @param language
+     * @return Un code système pour la langue
      */
     private static final String getLanguageAsSystemCode(String language) {
         String result;
@@ -383,8 +384,8 @@ public class PRTiersHelper {
     /**
      * Lis sex pour retourner le code système associé.
      *
-     * @param code
-     * @return Un code système pour le titre
+     * @param sex
+     * @return Un code système pour le sexe
      */
     private static final String getSexAsSystemCode(String sex) {
         String result;
@@ -411,16 +412,27 @@ public class PRTiersHelper {
     }
 
     /**
+     * Méthode pour vérifier que civilStatus ressemble à un code système
+     *
+     * @param civilStatus le code système de la requête
+     * @return la string contenant le code système si un état civil correspond à un état civil
+     */
+    private static final String getCivilStatusAsSystemCode(String civilStatus) {
+        EtatCivil.parse(civilStatus); // If this goes through without error, civilStatus is a valid civil status
+        return civilStatus;
+    }
+
+    /**
      * Méthode pour vérifier que code ressemble à un code système
      *
-     * @param code
+     * @param code le code système de la requête
      * @return true si ça ressemble à un code système
      */
     private static final boolean isSystemCode(String code) {
         int codeAsInt;
         try {
             codeAsInt = Integer.parseInt(code);
-            if (codeAsInt < 0) { // TODO: This if is bad. We to check if the system code actually exists (custom or generic)
+            if (codeAsInt < 0){ // TODO: This if is bad. We need to check if the system code actually exists (custom or generic)
                 return false;
             }
         } catch (NumberFormatException e) {
