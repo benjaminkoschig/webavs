@@ -65,7 +65,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private final StringBuilder error = new StringBuilder();
     private final List<String> filesToSend = new ArrayList<>();
     private boolean isPlusieursTypeAffilie;
-    private EBillSftpProcessor serviceFtp;
     private int inscriptionOK = 0;
     private int inscriptionKO = 0;
     private int resiliationOK = 0;
@@ -87,7 +86,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             this.setSendMailOnError(false);
 
             initBsession();
-            initServiceFtp();
+            EBillSftpProcessor.getInstance();
             initIdReferenceParameter();
 
             isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
@@ -106,7 +105,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         } finally {
             closeBsession();
-            closeServiceFtp();
+            EBillSftpProcessor.closeServiceFtp();
         }
 
         return true;
@@ -144,15 +143,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
-
-    /**
      * Initialisation des paramètres de Id référence dans le Numéro de référence BVR
      */
     private void initIdReferenceParameter() {
@@ -163,15 +153,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
-        }
-    }
-
-    /**
      * Récupération et traitement des fichiers d'inscription eBill
      */
     private void importFiles() {
@@ -179,7 +160,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             LOG.info("Importation des fichiers d'inscription...");
 
             // Nous recherchons tous les fichiers d'inscriptions déposés sur le serveur FTP PostFinance
-            List<String> files = serviceFtp.getListFiles(CAProcessImportInscriptionEBill.CSV_EXTENSION);
+            List<String> files = EBillSftpProcessor.getInstance().getListFiles(CAProcessImportInscriptionEBill.CSV_EXTENSION);
 
             for (final String nomFichierDistant : files) {
                 importFile(nomFichierDistant);
@@ -203,14 +184,14 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite pas et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichierInscription)) {
 
-            String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
+            String localPath = Jade.getInstance().getPersistenceDir() + EBillSftpProcessor.getFolderInName() + nomFichierDistant;
             File localFile = new File(localPath);
             try {
 
                 // Download du fichier CSV
                 try (FileOutputStream retrievedFile = new FileOutputStream(localFile)) {
-                    serviceFtp.retrieveFile(nomFichierDistant, retrievedFile);
-                    serviceFtp.deleteFile(nomFichierDistant);
+                    EBillSftpProcessor.getInstance().retrieveFile(nomFichierDistant, retrievedFile);
+                    EBillSftpProcessor.getInstance().deleteFile(nomFichierDistant);
                 }
 
                 // Traitement du fichier CSV

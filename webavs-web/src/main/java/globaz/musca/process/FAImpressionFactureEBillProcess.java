@@ -49,7 +49,6 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private final static String FACTURES_TYPE_AUTOMATIQUE = "automatique";
     private final static String FACTURES_TYPE_PAPIER = "papier";
 
-    private EBillSftpProcessor serviceFtp;
     private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
     private boolean forcerImpression;
     private String typeFacture;
@@ -197,23 +196,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         super(session);
     }
 
-    /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
 
-    /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
-        }
-    }
 
     @Override
     public boolean _createDocument(BIContainer container, IntModuleImpression interface_moduleImpression,
@@ -386,7 +369,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
 
         String dateEcheance = getDateEcheanceFromEntete(entete, dateFacturation);
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantBulletinSoldes, null, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession(), serviceFtp);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantBulletinSoldes, null, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession());
     }
 
     private String getDateEcheanceFromEntete(FAEnteteFacture entete, String dateFacturation) throws Exception {
@@ -756,14 +739,14 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             //  - le mode impression papier uniquement n'est pas sélectionné
             if (eBillActif && !forcerImpression && !impressionPapierUniquement) {
                 try {
-                    initServiceFtp();
+                    EBillSftpProcessor.getInstance();
                     traiterFacturesEBillMusca();
                     traiterBulletinDeSoldesEBillMusca();
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 } finally {
-                    closeServiceFtp();
+                    EBillSftpProcessor.closeServiceFtp();
                 }
             }
 

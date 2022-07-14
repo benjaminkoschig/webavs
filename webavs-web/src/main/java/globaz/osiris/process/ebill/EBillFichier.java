@@ -19,7 +19,7 @@ public class EBillFichier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EBillFichier.class);
 
-    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation, String dateEcheance, String billerId, BSession session, EBillSftpProcessor serviceFtp) throws Exception {
+    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation, String dateEcheance, String billerId, BSession session) throws Exception {
 
         // Initialisation de l'objet à marshaller dans la facture eBill
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
@@ -44,7 +44,7 @@ public class EBillFichier {
 
         // Creation du fichier XML
         String filename = billerId + "_" + entete.geteBillTransactionID() + ".xml";
-        String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderOutName() + filename;
+        String localPath = Jade.getInstance().getPersistenceDir() + EBillSftpProcessor.getFolderOutName() + filename;
         File localFile = new File(localPath);
         LOGGER.info("Création du fichier xml eBill : " + localFile.getAbsoluteFile() + "...");
 
@@ -53,7 +53,7 @@ public class EBillFichier {
 
         // Upload du fichier XML sur le sftp
         try (FileInputStream retrievedFile = new FileInputStream(localFile)) {
-            serviceFtp.sendFile(retrievedFile, filename);
+            EBillSftpProcessor.getInstance().sendFile(retrievedFile, filename);
             LOGGER.info("Fichier eBill envoyé sur le ftp : " + localFile.getAbsoluteFile() + "...");
         }
     }

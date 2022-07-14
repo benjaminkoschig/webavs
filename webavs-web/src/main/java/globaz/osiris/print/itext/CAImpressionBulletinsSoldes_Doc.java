@@ -97,7 +97,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantSansCentime;
     public Map<PaireIdExterneEBill, List<Map>> lignesSolde = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesSolde = new LinkedHashMap();
-    private EBillSftpProcessor serviceFtp;
     private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
 
     private FAPassage passage;
@@ -456,13 +455,13 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             //  - eBillPrintable est sélectioné sur l'écran d'impression
             if (eBillActif && eBillOsirisActif && geteBillPrintable()) {
                 try {
-                    initServiceFtp();
+                    EBillSftpProcessor.getInstance();
                     traiterBulletinDeSoldesEBillOsiris();
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 } finally {
-                    closeServiceFtp();
+                    EBillSftpProcessor.closeServiceFtp();
                 }
             }
         }
@@ -706,7 +705,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         updateSectionEtatEtTransactionID(section, entete.geteBillTransactionID());
 
         String dateEcheance = dateFacturation;
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantBulletinSoldes, null, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession(), serviceFtp);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantBulletinSoldes, null, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession());
     }
 
     /**
@@ -724,24 +723,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             section.update();
         } catch (Exception e) {
             getMemoryLog().logMessage("Impossible de mettre à jour la section avec l'id : " + section.getIdSection() + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
-        }
-    }
-
-    /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
-
-    /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
         }
     }
 

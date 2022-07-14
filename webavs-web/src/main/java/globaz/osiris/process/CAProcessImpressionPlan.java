@@ -49,14 +49,13 @@ public class CAProcessImpressionPlan extends BProcess {
 
     private String dateRef = "";
 
-    private EBillSftpProcessor serviceFtp;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAProcessImpressionPlan.class);
     private CAILettrePlanRecouvDecision document = null;
     private String idDocument = "";
     private String idPlanRecouvrement = "";
     private Boolean impAvecBVR = new Boolean(false);
     private String modele = "";
     private String observation = "";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAProcessImpressionPlan.class);
 
     /**
      * Constructor for CAProcessImpressionPlan.
@@ -158,13 +157,13 @@ public class CAProcessImpressionPlan extends BProcess {
         //  - eBillPrintable est sélectioné sur le plan
         if (eBillActif && eBillOsirisActif && plan.geteBillPrintable()) {
             try {
-                initServiceFtp();
+                EBillSftpProcessor.getInstance();
                 traiterSursisEBillOsiris(documentBVR);
             } catch (Exception exception) {
                 LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                 getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
             } finally {
-                closeServiceFtp();
+                EBillSftpProcessor.closeServiceFtp();
             }
         }
 
@@ -259,7 +258,7 @@ public class CAProcessImpressionPlan extends BProcess {
         updateSectionEtatEtTransactionID(section, entete.geteBillTransactionID());
 
         String dateEcheance = dateFacturation;
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, null, montantSursis, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession(), serviceFtp);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, null, montantSursis, lignes, reference, attachedDocument, dateFacturation, dateEcheance, billerId, getSession());
     }
 
     /**
@@ -277,24 +276,6 @@ public class CAProcessImpressionPlan extends BProcess {
             section.update();
         } catch (Exception e) {
             getMemoryLog().logMessage("Impossible de mettre à jour la section avec l'id : " + section.getIdSection() + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
-        }
-    }
-
-    /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
-
-    /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
         }
     }
 
