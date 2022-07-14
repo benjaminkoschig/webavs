@@ -51,6 +51,7 @@ public class EBillSftpProcessor extends AbstractSepa {
     public static void closeServiceFtp() {
          if (singletonServiceFtp != null) {
             singletonServiceFtp.disconnectQuietly();
+            singletonServiceFtp = null;
         }
     }
 

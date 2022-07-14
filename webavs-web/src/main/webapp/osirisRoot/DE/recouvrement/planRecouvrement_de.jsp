@@ -5,9 +5,9 @@
 <%@ page import="globaz.osiris.db.recouvrement.*,globaz.globall.util.*,globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
-<%@ page import="globaz.osiris.db.access.recouvrement.CAPlanRecouvrement" %>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <%
-idEcran="GCA60007";
+	idEcran="GCA60007";
 	CAPlanRecouvrementViewBean viewBean = (globaz.osiris.db.recouvrement.CAPlanRecouvrementViewBean)session.getAttribute("viewBean");
 	selectedIdValue = viewBean.getIdPlanRecouvrement();
 	String collaborateur = viewBean.getCollaborateur();
@@ -19,6 +19,10 @@ idEcran="GCA60007";
 		compteAnnexeIdExterneRole = viewBean.getCompteAnnexe().getTitulaireEnteteForCompteAnnexeParSection();
 	} catch (Exception e) {
 	}
+%>
+<%
+	boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
+	boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif();
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -184,12 +188,16 @@ idEcran="GCA60007";
 	    %>
 		<TD class="control"><ct:FWCodeSelectTag codeType="OSIPLRVEN" defaut="<%=viewBean.getIdModeVentilation()%>" name="idModeVentilation" except="<%=exceptVen%>" /></TD>
 	</tr>
-	<tr>
-		<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-		<td nowrap>
-              <input type="checkbox" name="eBillPrintable" <%=(viewBean.geteBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
-        </td>
-	</tr>
+	<% if (eBillActif && eBillOsirisActif) {%>
+		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+			<tr>
+				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+				<td nowrap>
+					  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+				</td>
+			</tr>
+		<%}%>
+	<%}%>
 	<tr>
 		<td class="label">Höchstbetrag zu decken</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>

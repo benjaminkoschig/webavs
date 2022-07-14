@@ -8,10 +8,14 @@
 <%@ page import="globaz.globall.util.*" %>
 <%@ page import="globaz.osiris.db.ordres.*" %>
 <%@ page import="globaz.osiris.servlet.action.CADefaultServletAction" %>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <%
-globaz.osiris.db.print.CABulletinsSoldesViewBean viewBean
-  = (globaz.osiris.db.print.CABulletinsSoldesViewBean) session.getAttribute(globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
+globaz.osiris.db.print.CABulletinsSoldesViewBean viewBean = (globaz.osiris.db.print.CABulletinsSoldesViewBean) session.getAttribute(globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
 userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + ".print.bulletinsSoldes.executer";
+%>
+<%
+    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif();
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%> <%-- /tpl:put --%>
@@ -21,6 +25,15 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 <SCRIPT language="JavaScript">
 <!--hide this script from non-javascript-enabled browsers
 top.document.title = "Génération des bulletins de soldes - " + top.location.href;
+
+function clearEBillInputs() {
+    $("#eBillPrintable").attr("checked",false);
+}
+
+function postInit(){
+    clearEBillInputs();
+}
+
 // stop hiding -->
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -57,15 +70,19 @@ top.document.title = "Génération des bulletins de soldes - " + top.location.href
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <tr>
-            <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-            <td nowrap>
-              <input type="checkbox" name="eBillPrintable" id="eBillPrintable"> <label for="eBillPrintable"></label>
-            </td>
-            <td>&nbsp;</td>
-            <td nowrap>&nbsp;</td>
-            <td nowrap>&nbsp;</td>
-          </tr>
+          <% if (eBillActif && eBillOsirisActif) {%>
+            <% if (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
+              <tr>
+                <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+                <td nowrap>
+                  <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+                </td>
+                <td>&nbsp;</td>
+                <td nowrap>&nbsp;</td>
+                <td nowrap>&nbsp;</td>
+              </tr>
+            <%}%>
+          <%}%>
           <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>

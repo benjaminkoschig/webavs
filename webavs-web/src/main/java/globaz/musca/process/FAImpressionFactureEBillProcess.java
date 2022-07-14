@@ -987,7 +987,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     }
 
     /**
-     * Méthode permetant de rechercher le fichier généré durant l'impression
+     * Méthode permettant de rechercher le fichier généré durant l'impression
      * de le retourner pour être ajouter à la facture eBill et de le supprimer
      * de la listes de fichiers à merger dans l'impression actuelle
      *
