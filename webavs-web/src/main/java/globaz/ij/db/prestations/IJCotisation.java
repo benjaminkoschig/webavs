@@ -127,7 +127,7 @@ public class IJCotisation extends BEntity implements IPRCloneable {
                 mgr.find();
 
                 if (!mgr.isEmpty()) {
-                    taux = ((PRTauxImposition) mgr.get(0)).getTaux();
+                    taux ="0.00";
                 }
             }
         } else {

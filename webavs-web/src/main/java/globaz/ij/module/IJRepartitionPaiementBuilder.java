@@ -804,7 +804,7 @@ public class IJRepartitionPaiementBuilder {
         }
 
         // creation des cotisation
-        if (!JadeStringUtil.isDecimalEmpty(tauxImposition)) {
+        if ((!JadeStringUtil.isDecimalEmpty(tauxImposition))||tauxImposition.equals("0.00")) {
             // le taux d'imposition a ete redefini, on utilise que celui-ci et
             // l'id du taux imposition trouve
             IJCotisation cotisation = new IJCotisation();
