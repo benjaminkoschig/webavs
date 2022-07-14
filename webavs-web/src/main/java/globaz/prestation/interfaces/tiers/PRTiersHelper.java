@@ -1,26 +1,15 @@
 package globaz.prestation.interfaces.tiers;
 
-import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import globaz.corvus.properties.REProperties;
-import globaz.globall.db.*;
-import globaz.prestation.acor.PRACORConst;
-import globaz.pyxis.db.adressecourrier.*;
-import globaz.pyxis.db.tiers.*;
-import globaz.pyxis.util.TIAdresseResolver;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ch.globaz.common.util.NSSUtils;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -32,6 +21,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -39,24 +29,27 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
-import globaz.pyxis.api.ITIAbstractAdresseData;
-import globaz.pyxis.api.ITIAdministration;
-import globaz.pyxis.api.ITIApplication;
-import globaz.pyxis.api.ITIAvoirAdresse;
-import globaz.pyxis.api.ITILocalite;
-import globaz.pyxis.api.ITIPays;
-import globaz.pyxis.api.ITIPersonne;
-import globaz.pyxis.api.ITIPersonneAvs;
-import globaz.pyxis.api.ITIPersonneAvsAdresse;
-import globaz.pyxis.api.ITIRole;
-import globaz.pyxis.api.ITITiers;
-import globaz.pyxis.api.ITITiersAdresse;
+import globaz.pyxis.api.*;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
+import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import globaz.pyxis.db.adressecourrier.TIPays;
+import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
+import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
+import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -293,7 +286,9 @@ public class PRTiersHelper {
         avsPerson.setEtatCivil(dto.getCivilStatus()); //TODO: These should also be system codes I guess ?
 
         // Fields in TIPAVSP
-        avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Check the NSS is valid
+        if (checkNSS(dto.getNss()))
+            avsPerson.setNumAvsActuel(dto.getNss());
+
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
@@ -425,14 +420,28 @@ public class PRTiersHelper {
         int codeAsInt;
         try {
             codeAsInt = Integer.parseInt(code);
-            if (codeAsInt < 0){ // TODO: This if is bad. We to check if the system code actually exists (custom or generic)
+            if (codeAsInt < 0) { // TODO: This if is bad. We to check if the system code actually exists (custom or generic)
                 return false;
             }
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
         return true;
+    }
+
+
+    /**
+     * Méthode pour vérifier le format du NSS
+     *
+     * @param nss
+     * @return true si le format NSS est valide
+     */
+    private static final boolean checkNSS(String nss) {
+        if (NSSUtils.checkNSS(nss)) {
+            return true;
+        } else {
+            throw new PYBadRequestException("Erreur dans le format du NSS");
+        }
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
