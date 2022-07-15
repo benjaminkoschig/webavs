@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import ch.globaz.pyxis.domaine.EtatCivil;
+import ch.globaz.pyxis.domaine.Sexe;
 import globaz.corvus.properties.REProperties;
 import globaz.globall.db.*;
 import globaz.prestation.acor.PRACORConst;
@@ -393,33 +394,40 @@ public class PRTiersHelper {
             case "m":
             case "homme":
             case "male":
-                result = PRACORConst.CS_HOMME;
-                break;
+                return PRACORConst.CS_HOMME;
             case "f":
             case "femme":
             case "female":
-                result = PRACORConst.CS_FEMME;
-                break;
+                return PRACORConst.CS_FEMME;
             default: // If the sex isn't anything standard, check that it's a valid system code
-                if (isSystemCode(sex)) {
-                    result = sex;
+                try {
+                    if (EtatCivil.parse(sex) != null){ // If this goes through without error, sex is a valid sex
+                        return sex;
+                    }
                 }
-                else { // Otherwise, throw an error
-                    throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.");
+                catch (IllegalArgumentException e) {
+                    throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.", e);
                 }
+                return Sexe.UNDEFINDED.getCodeSysteme().toString();
         }
-        return result;
     }
 
     /**
-     * Méthode pour vérifier que civilStatus ressemble à un code système
+     * Méthode pour vérifier que civilStatus est un code système
      *
      * @param civilStatus le code système de la requête
-     * @return la string contenant le code système si un état civil correspond à un état civil
+     * @return la string contenant le code système si civilStatus correspond à un état civil, UNDIFINED(0) si civilStatus == null
      */
     private static final String getCivilStatusAsSystemCode(String civilStatus) {
-        EtatCivil.parse(civilStatus); // If this goes through without error, civilStatus is a valid civil status
-        return civilStatus;
+        try {
+            if (EtatCivil.parse(civilStatus) != null){ // If this goes through without error, civilStatus is a valid civil status
+                return civilStatus;
+            }
+        }
+        catch (IllegalArgumentException e) {
+            throw new PYBadRequestException("Erreur lors de l'assignation de l'état civil du tiers.", e);
+        }
+        return EtatCivil.UNDEFINED.getCodeSysteme().toString();
     }
 
     /**
