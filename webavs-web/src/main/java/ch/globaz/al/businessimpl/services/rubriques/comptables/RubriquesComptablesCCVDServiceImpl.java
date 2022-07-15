@@ -1,14 +1,6 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import ch.globaz.al.business.constantes.ALCSCantons;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.al.business.constantes.ALConstRubriques;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
@@ -17,6 +9,12 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesCCVDService;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.naos.business.data.AssuranceInfo;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implémentation du service spécifique permettant de récupérer une rubrique comptable pour la CCVD
@@ -276,5 +274,29 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
         } else {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE);
         }
+    }
+
+    @Override
+    public List<String> getAllRubriquesForIS(String caisse, String date) throws JadeApplicationException, JadePersistenceException {
+        List<String> rubriques = new ArrayList<>();
+
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_VS_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_H_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RA_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RB_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RC_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RD_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RE_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RF_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RL_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_S_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_TSE_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_NON_ACTIF_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_INDEPENDANT_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_IS);
+
+        return rubriques;
     }
 }
