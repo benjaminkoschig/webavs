@@ -16,7 +16,7 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 <%
     boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
-    boolean eBillAccountID = (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionAndCompteAnnexe().getEBillAccountID()));
+    boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.loadSectionAndCompteAnnexe().getEBillAccountID());
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%> <%-- /tpl:put --%>
