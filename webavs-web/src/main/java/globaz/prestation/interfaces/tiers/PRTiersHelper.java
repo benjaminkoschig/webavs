@@ -1,28 +1,18 @@
 package globaz.prestation.interfaces.tiers;
 
 import ch.globaz.common.util.NSSUtils;
-import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
-import globaz.corvus.properties.REProperties;
-import globaz.globall.db.*;
-import globaz.prestation.acor.PRACORConst;
-import globaz.pyxis.db.tiers.*;
-import globaz.pyxis.util.TIAdresseResolver;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -34,6 +24,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -50,8 +41,18 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
+import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
+import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -276,7 +277,7 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
-        avsPerson.setIdPays(dto.getCountry()); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
+        avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
@@ -420,14 +421,29 @@ public class PRTiersHelper {
      */
     private static final String getCivilStatusAsSystemCode(String civilStatus) {
         try {
-            if (EtatCivil.parse(civilStatus) != null){ // If this goes through without error, civilStatus is a valid civil status
+            if (EtatCivil.parse(civilStatus) != null) { // If this goes through without error, civilStatus is a valid civil status
                 return civilStatus;
             }
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new PYBadRequestException("Erreur lors de l'assignation de l'état civil du tiers.", e);
         }
         return EtatCivil.UNDEFINED.getCodeSysteme().toString();
+    }
+
+    /**
+     * Méthode pour vérifier que country ressemble à un code système
+     *
+     * @param country le code système de la requête
+     * @return la string contenant le code système si un country correspond à un country
+     */
+    private static final String getCountryAsSystemCode(String country) {
+        CodeIsoPays codeIsoPays = CodeIsoPays.parse(country);
+        if (codeIsoPays != CodeIsoPays.INCONNU) {
+            System.out.println("Pays : " + country);
+            return country;
+        } else {
+            throw new PYBadRequestException("Erreur lors de l'assignation du pays");
+        }
     }
 
     /**
