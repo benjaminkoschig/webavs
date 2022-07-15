@@ -91,6 +91,13 @@ public class GFEFormValidator {
                 result.addError("subject", ValidationError.MANDATORY);
             }
 
+            //Validation de la présence du Business Process Id
+            Node nodeBusinessProcessId = (Node) xPath.compile("/message/header/businessProcessId").evaluate(xmlDocument, XPathConstants.NODE);
+            String businessProcessId = nodeBusinessProcessId.getFirstChild().getNodeValue();
+            if (StringUtils.isEmpty(businessProcessId)) {
+                result.addError("businessProcessId", ValidationError.MANDATORY);
+            }
+
             //Validation de la présence de message Date
             Node nodeMessageDate = (Node) xPath.compile("/message/header/messageDate").evaluate(xmlDocument, XPathConstants.NODE);
             String messageDate = nodeMessageDate.getFirstChild().getNodeValue();

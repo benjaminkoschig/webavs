@@ -161,6 +161,9 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
     }
 
     public String getLenghtAttachement() {
+        if (this.attachement == null || !this.attachement.exists()) {
+            return "N/A";
+        }
         return FileUtils.formatLenght(this.attachement, false);
     }
 }

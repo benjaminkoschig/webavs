@@ -234,8 +234,8 @@
                                 <dd><%=viewBean.getCompleteSubject(objSession)%></dd>
                                 <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_DATE"/></strong></dt>
                                 <dd>${viewBean.formulaire.date}</dd>
-                                <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_ID"/></strong></dt>
-                                <dd>${viewBean.formulaire.messageId}</dd>
+                                <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_BUSINESS_PROCESS_ID"/></strong></dt>
+                                <dd>${viewBean.formulaire.businessProcessId}</dd>
                             </dl>
                         </div>
                     </div>
