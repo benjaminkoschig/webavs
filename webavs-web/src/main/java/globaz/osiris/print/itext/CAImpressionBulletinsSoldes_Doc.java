@@ -641,7 +641,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         for (Map.Entry<PaireIdExterneEBill, List<Map>> lignes : lignesSolde.entrySet()) {
 
             FAEnteteFacture entete = generateEnteteFacture();
-            FAEnteteFacture enteteReference = generateEnteteFactureReference(compteAnnexe.getIdCompteAnnexe(), sectionCourante.getSection().getIdExterne());
+            FAEnteteFacture enteteReference = getEnteteFactureReference(lignes.getKey());
 
             String reference = referencesSolde.get(lignes.getKey());
             JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(getAttachedDocuments());
@@ -662,22 +662,20 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         return entete;
     }
 
-    private FAEnteteFacture generateEnteteFactureReference(String idCompteAnnexe, String idExterne) throws Exception {
-        FAEnteteFacture enteteReference = new FAEnteteFacture();
-        enteteReference.setSession(getSession());
-
-        // Récupération de la section
-        CASectionManager manager = new CASectionManager();
+    /**
+     * Méthode permetant de rechercher une entête eBill par le biais d'une paire d'idExterneRole et d'idExterneFactureCompensation
+     * cette méthode est utilisé dans le processus d'impression des bulletins de soldes eBill.
+     *
+     * @param paireIdExterneEBill : pair d'idExterneRole et d'idExterneFactureCompensation
+     * @return l'entête ou null
+     */
+    private FAEnteteFacture getEnteteFactureReference(PaireIdExterneEBill paireIdExterneEBill) throws Exception {
+        FAEnteteFactureManager manager = new FAEnteteFactureManager();
         manager.setSession(getSession());
-        manager.setForIdCompteAnnexe(idCompteAnnexe);
-        manager.setForIdExterne(idExterne);
+        manager.setForIdExterneRole(paireIdExterneEBill.getIdExterneRole());
+        manager.setForIdExterneFacture(paireIdExterneEBill.getIdExterneFactureCompensation());
         manager.find(BManager.SIZE_NOLIMIT);
-
-        // Ajoute le eBillTransactionID dans l'entête si la section à été trouvé
-        if (manager.size() == 1) {
-            enteteReference.setEBillTransactionID(((CASection) manager.get(0)).getEBillTransactionID());
-        }
-        return enteteReference;
+        return (FAEnteteFacture) manager.getFirstEntity();
     }
 
     /**
