@@ -431,7 +431,7 @@ public class CAParametres {
     /// Caisse avec droits d'utiliser eBill
     public boolean isEBillOsirisActifEtDansListeCaisses(BSession session){
         // Flag osiris eBill (ON/OFF)
-        boolean eBillOsirisActifEtDansListeCaisses = isEBillMuscaActif();
+        boolean eBillOsirisActifEtDansListeCaisses = isEBillOsirisActif();
         if(eBillOsirisActifEtDansListeCaisses){
             eBillOsirisActifEtDansListeCaisses = isDansListeCaisse(session);
         }
