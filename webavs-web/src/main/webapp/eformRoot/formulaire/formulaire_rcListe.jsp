@@ -37,7 +37,7 @@
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_TYPE"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_NOM_FORMULAIRE"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_DATE"/></TH>
-    <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_ID"/></TH>
+    <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_BUSINESS_PROCESS_ID"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_NSS"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_NOM"/></TH>
     <TH><ct:FWLabel key="JSP_EFORM_FORMULAIRE_PRENOM"/></TH>
@@ -71,7 +71,7 @@
 <TD class="mtd dec<%=line.getFormulaire().getSubject() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getSubject() %> </TD>
 <TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>"><%= line.getSubject()%> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getDate() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getDate() %> </TD>
-<TD class="mtd dec<%=line.getFormulaire().getMessageId() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getMessageId() %> </TD>
+<TD class="mtd dec<%=line.getFormulaire().getBusinessProcessId() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBusinessProcessId() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNss() %>" nowrap onclick="<%=detailUrl%>"><%= NSUtil.formatAVSUnknown(line.getFormulaire().getBeneficiaireNss()) %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNom() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBeneficiaireNom() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiairePrenom() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBeneficiairePrenom()%> </TD>

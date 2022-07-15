@@ -39,7 +39,7 @@
 		document.getElementsByName("byStatus")[0].value = "";
 		document.getElementsByName("byType")[0].value = "";
 		document.getElementsByName("byDate")[0].value = "";
-		document.getElementsByName("byMessageId")[0].value = "";
+		document.getElementsByName("byBusinessProcessId")[0].value = "";
 		document.getElementsByName("likeNss")[0].value = "";
 		document.getElementsByName("byLastName")[0].value = "";
 		document.getElementsByName("byFirstName")[0].value = "";
@@ -118,12 +118,12 @@
 	<td>
 	</td>
 	<td>
-		<LABEL for="byMessageId">
+		<LABEL for="byBusinessProcessId">
 			<ct:FWLabel key="ID_FORMULAIRE"/>
 		</LABEL>
 	</td>
 	<td>
-		<ct:inputText name="byMessageId" id="byMessageId" defaultValue='<%=gfFormulaireSearch != null ? gfFormulaireSearch.getByMessageId() : ""%>'/>
+		<ct:inputText name="byBusinessProcessId" id="byBusinessProcessId" defaultValue='<%=gfFormulaireSearch != null ? gfFormulaireSearch.getByBusinessProcessId() : ""%>'/>
 	</td>
 	<td></td>
 </tr>

@@ -20,6 +20,7 @@ public class GFFormulaireModel extends JadeSimpleModel {
 
     private String id;
     private String messageId;
+    private String businessProcessId;
     private String type;
     private String subject;
     private String date;
@@ -52,6 +53,10 @@ public class GFFormulaireModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(messageId)) {
             result.addError("messageId", ValidationError.MANDATORY);
+        }
+
+        if (JadeStringUtil.isBlank(businessProcessId)) {
+            result.addError("businessProcessId", ValidationError.MANDATORY);
         }
 
         if (JadeStringUtil.isBlank(type)) {
