@@ -304,8 +304,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                     if (afact.size() > 0) {
 
                         // Garde en mémoire les entêtes/afact à envoyer sous forme de facture eBill en fin de processus
-                        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
-                        if (eBillActif) {
+                        boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
+                        if (eBillMuscaActif) {
                             CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                                 afactParEnteteFactureEBill.put(entete, afact);
@@ -732,14 +732,14 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             }
 
             // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
+            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
             boolean impressionPapierUniquement = StringUtils.equals(FACTURES_TYPE_PAPIER, typeFacture);
 
             // On imprime les factures eBill si :
             //  - eBill est actif
             //  - l'impression papier pour un cas eBil n'est pas forcé
             //  - le mode impression papier uniquement n'est pas sélectionné
-            if (eBillActif && !forcerImpressionPapier && !impressionPapierUniquement) {
+            if (eBillMuscaActif && !forcerImpressionPapier && !impressionPapierUniquement) {
                 try {
                     EBillSftpProcessor.getInstance();
                     traiterFacturesEBillMusca();
@@ -947,6 +947,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
             Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFacture = getAfactParEnteteFacture(ligneFactureParPaireIdExterne.getKey());
             if (afactParEnteteFacture != null) {
+
                 FAEnteteFacture entete = afactParEnteteFacture.getKey();
 
                 String reference = referencesFacture.get(ligneFactureParPaireIdExterne.getKey());
@@ -1040,8 +1041,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         manager.setForIdExterneRole(paireIdExterneEBill.getIdExterneRole());
         manager.setForIdExterneFacture(paireIdExterneEBill.getIdExterneFactureCompensation());
         manager.find(BManager.SIZE_NOLIMIT);
-        FAEnteteFacture entete = (FAEnteteFacture) manager.getFirstEntity();
-        return entete;
+        return (FAEnteteFacture) manager.getFirstEntity();
     }
 
     /**
@@ -1058,8 +1058,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         manager.setForIdExterneRole(paireIdExterneEBill.getIdExterneRole());
         manager.setForIdPassage(idPassage);
         manager.find(BManager.SIZE_NOLIMIT);
-        FAEnteteFacture entete = (FAEnteteFacture) manager.getFirstEntity();
-        return entete;
+        return (FAEnteteFacture) manager.getFirstEntity();
     }
 
     public boolean getForcerImpressionPapier() {

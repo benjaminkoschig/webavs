@@ -414,24 +414,52 @@ public class CAParametres {
                 .booleanValue();
     }
 
-    /// Proprieté à utiliser pour la validation de la chaine complete
-    /// eBill = ACTIVE
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour la facturation
+    /// musca.eBill.activer = true
     /// Caisse avec droits d'utiliser eBill
-    public boolean isEBillActifEtDansListeCaisses(BSession session){
-        // Flag générale eBill (ON/OFF)
-        boolean eBillActif = isEBillActif();
-        if(eBillActif){
-            // Vérifier que la caisse avs est dans la liste crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
-            String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
-            List<String> listeCaisseEBill = null;
-            try {
-                listeCaisseEBill = getListeCaisseEBill(session);
-            } catch (Exception e) {
-                JadeLogger.warn(this, e.getMessage());
-            }
-            eBillActif = listeCaisseEBill.contains(noCaisse);
+    public boolean isEBillMuscaActifEtDansListeCaisses(BSession session){
+        // Flag musca eBill (ON/OFF)
+        boolean eBillMuscaActif = isEBillMuscaActif();
+        if(eBillMuscaActif){
+            eBillMuscaActif = isDansListeCaisse(session);
         }
-        return eBillActif;
+        return eBillMuscaActif;
+    }
+
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour la comptabilité auxiliaire
+    /// osiris.eBill.activer = true
+    /// Caisse avec droits d'utiliser eBill
+    public boolean isEBillOsirisActifEtDansListeCaisses(BSession session){
+        // Flag osiris eBill (ON/OFF)
+        boolean eBillOsirisActifEtDansListeCaisses = isEBillMuscaActif();
+        if(eBillOsirisActifEtDansListeCaisses){
+            eBillOsirisActifEtDansListeCaisses = isDansListeCaisse(session);
+        }
+        return eBillOsirisActifEtDansListeCaisses;
+    }
+
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour les contentieux
+    /// aquila.eBill.activer = true
+    /// Caisse avec droits d'utiliser eBill
+    public boolean isEBillAquilaActifEtDansListeCaisses(BSession session){
+        // Flag aquila eBill (ON/OFF)
+        boolean eBillAquilaActifEtDansListeCaisses = isEBillAquilaActif();
+        if(eBillAquilaActifEtDansListeCaisses){
+            eBillAquilaActifEtDansListeCaisses = isDansListeCaisse(session);
+        }
+        return eBillAquilaActifEtDansListeCaisses;
+    }
+
+    private boolean isDansListeCaisse(BSession session) {
+        // Vérifier que la caisse avs est dans la liste eBill crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
+        String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
+        List<String> listeCaisseEBill = null;
+        try {
+            listeCaisseEBill = getListeCaisseEBill(session);
+        } catch (Exception e) {
+            JadeLogger.warn(this, e.getMessage());
+        }
+        return listeCaisseEBill.contains(noCaisse);
     }
 
     private List<String> getListeCaisseEBill(BSession session) throws Exception {
@@ -463,8 +491,8 @@ public class CAParametres {
         return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE));
     }
 
-    public boolean isEBillActif(){
-        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_EBILL_ACTIVE));
+    public boolean isEBillMuscaActif(){
+        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_MUSCA_EBILL_ACTIVE));
     }
 
     public String getEBillBillerId(){

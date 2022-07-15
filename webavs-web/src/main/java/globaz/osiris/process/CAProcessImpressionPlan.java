@@ -56,6 +56,7 @@ public class CAProcessImpressionPlan extends BProcess {
     private Boolean impAvecBVR = new Boolean(false);
     private String modele = "";
     private String observation = "";
+    private int factureEBill = 0;
     private static final Logger LOGGER = LoggerFactory.getLogger(CAProcessImpressionPlan.class);
 
     /**
@@ -149,19 +150,19 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.executeProcess();
 
         // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
-        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif();
+        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
         CACompteAnnexe compteAnnexe = documentBVR.getPlanRecouvrement().getCompteAnnexe();
 
         // On imprime les factures eBill si :
         //  - eBill est actif
         //  - eBillOsiris est actif
         //  - eBillPrintable est sélectioné sur le plan
-        if (eBillActif && eBillOsirisActif && plan.getEBillPrintable()) {
+        if (eBillOsirisActif && plan.getEBillPrintable()) {
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                 try {
                     EBillSftpProcessor.getInstance();
                     traiterSursisEBillOsiris(documentBVR);
+                    getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -182,25 +183,30 @@ public class CAProcessImpressionPlan extends BProcess {
 
         for (Map.Entry<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignes : documentBVR.getLignesSursis().entrySet()) {
 
-                // Init spécifique aux Sursis au paiement
-                CASection section = new CASection();
-                section.setSession(getSession());
-                section.setIdSection(documentBVR.getPlanRecouvrement().getIdSection());
-                section.retrieve();
+            CASection section = new CASection();
+            section.setSession(getSession());
+            section.setIdSection(documentBVR.getPlanRecouvrement().getIdSection());
+            section.retrieve();
 
-                FAEnteteFacture entete = new FAEnteteFacture();
-                entete.setSession(getSession());
-                entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
-                entete.setIdTiers(section.getCompteAnnexe().getIdTiers());
-                entete.setIdTypeCourrier(section.getTypeAdresse());
-                entete.setIdDomaineCourrier(section.getDomaine());
-                entete.setIdExterneRole(section.getCompteAnnexe().getIdExterneRole());
-                entete.setIdExterneFacture(section.getIdExterne());
+            FAEnteteFacture entete = generateEnteteFacture(section);
 
-                String reference = documentBVR.getReferencesSursis().get(lignes.getKey());
-                JadePublishDocument attachedDocument = findAndReturnAttachedDocument(getAttachedDocuments());
-                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement().getCompteAnnexe(), entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(section), section);
+            String reference = documentBVR.getReferencesSursis().get(lignes.getKey());
+            JadePublishDocument attachedDocument = findAndReturnAttachedDocument(getAttachedDocuments());
+            creerFichierEBillOsiris(documentBVR.getPlanRecouvrement().getCompteAnnexe(), entete, null, getCumulSoldeFormatee(documentBVR.getCumulSolde()), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(section), section);
+            factureEBill++;
         }
+    }
+
+    private FAEnteteFacture generateEnteteFacture(CASection section) {
+        FAEnteteFacture entete = new FAEnteteFacture();
+        entete.setSession(getSession());
+        entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
+        entete.setIdTiers(section.getCompteAnnexe().getIdTiers());
+        entete.setIdTypeCourrier(section.getTypeAdresse());
+        entete.setIdDomaineCourrier(section.getDomaine());
+        entete.setIdExterneRole(section.getCompteAnnexe().getIdExterneRole());
+        entete.setIdExterneFacture(section.getIdExterne());
+        return entete;
     }
 
     /**

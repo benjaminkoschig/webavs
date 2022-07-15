@@ -30,8 +30,8 @@
 	}
 %>
 <%
-    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
-    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif();
+	boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -197,7 +197,7 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillActif && eBillOsirisActif) {%>
+	<% if (eBillMuscaActif && eBillOsirisActif) {%>
 		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
 			<tr>
 				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>

@@ -86,9 +86,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             initBsession();
             EBillSftpProcessor.getInstance();
 
-            boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(getSession());
+            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
 
-            if (eBillActif) {
+            if (eBillMuscaActif) {
                 importFiles();
                 generationProtocol();
             }

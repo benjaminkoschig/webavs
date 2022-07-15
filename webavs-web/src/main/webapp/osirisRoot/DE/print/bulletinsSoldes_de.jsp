@@ -14,8 +14,8 @@ globaz.osiris.db.print.CABulletinsSoldesViewBean viewBean = (globaz.osiris.db.pr
 userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + ".print.bulletinsSoldes.executer";
 %>
 <%
-    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
-    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif();
+    boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%> <%-- /tpl:put --%>
@@ -70,7 +70,7 @@ function postInit(){
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <% if (eBillActif && eBillOsirisActif) {%>
+          <% if (eBillMuscaActif && eBillOsirisActif) {%>
             <% if (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
               <tr>
                 <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>

@@ -22,7 +22,7 @@
 	} catch (Exception e){
 		// Le reste de la page doit tout de même fonctionner
 	}
-    boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
   %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -117,24 +117,24 @@ top.document.title = "Comptes - détail d'un compte annexe - " + top.location.hre
             <TD>
               <TEXTAREA cols="40" rows="6" class="libelleLongDisabled" readonly><%=viewBean.getTitulaireEntete()%></TEXTAREA>
             </TD>
-    <% if (eBillActif) {%>
-    <TD colspan="2" align="Left" valign="top">&nbsp;
-        <TABLE>
-            <TR>
-                <TD width="125">eBill AccountID</TD>
-                <TD>
-                    <INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.getEBillAccountID()%>">
-                </TD>
-            </TR>
-            <TR>
-                <td width="125">eBill E-Mail</td>
-                <TD>
-                    <INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.getEBillMail()%>">
-                </TD>
-            </TR>
-        </TABLE>
-    </TD>
-    <%}%>
+            <% if (eBillMuscaActif) {%>
+            <TD colspan="2" align="Left" valign="top">&nbsp;
+                <TABLE>
+                    <TR>
+                        <TD width="125">eBill AccountID</TD>
+                        <TD>
+                            <INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.getEBillAccountID()%>">
+                        </TD>
+                    </TR>
+                    <TR>
+                        <td width="125">eBill E-Mail</td>
+                        <TD>
+                            <INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.getEBillMail()%>">
+                        </TD>
+                    </TR>
+                </TABLE>
+            </TD>
+            <%}%>
           </TR>
           <TR>
             <TD width="125">Depuis-jusqu'au </TD>

@@ -94,8 +94,8 @@ class DecomptesLoader {
      * @return java.lang.String
      */
     private String resolveIsImprimableOrIsEBillPrinted(FAEnteteFacture entity) {
-        boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillActifEtDansListeCaisses(session);
-        if (eBillActif && entity.isEBillPrinted()) {
+        boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(session);
+        if (eBillMuscaActif && entity.isEBillPrinted()) {
             // marquer d'un "e" si la facture à été imprimé avec eBill
             return "e";
         } else {
