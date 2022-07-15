@@ -16,6 +16,7 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 <%
     boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
+    boolean eBillAccountID = (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionAndCompteAnnexe().getEBillAccountID()));
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%> <%-- /tpl:put --%>
@@ -27,7 +28,11 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 top.document.title = "Generierung der Saldi-ESR - " + top.location.href;
 
 function clearEBillInputs() {
-    $("#eBillPrintable").attr("checked",false);
+    <% if (eBillMuscaActif && eBillOsirisActif && eBillAccountID) {%>
+        $("#eBillPrintable").attr("checked", true);
+    <%} else{%>
+        $("#eBillPrintable").attr("checked", false);
+    <%}%>
 }
 
 function postInit(){

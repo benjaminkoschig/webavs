@@ -32,6 +32,7 @@
 <%
 	boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
+	boolean eBillAccountID = (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID()));
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -73,6 +74,17 @@
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
 	}
 
+	function clearEBillInputs() {
+		<% if (eBillMuscaActif && eBillOsirisActif && eBillAccountID) {%>
+			$("#eBillPrintable").attr("checked", true);
+		<%} else{%>
+			$("#eBillPrintable").attr("checked", false);
+		<%}%>
+	}
+
+	function postInit(){
+		clearEBillInputs();
+	}
 
 // stop hiding -->
 </SCRIPT>

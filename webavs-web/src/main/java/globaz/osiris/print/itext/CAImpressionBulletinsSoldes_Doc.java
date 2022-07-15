@@ -1294,6 +1294,22 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     }
 
     /**
+     * Charge le compte annexe liée et la section.
+     *
+     * @throws Exception
+     */
+    public CACompteAnnexe loadSectionAndCompteAnnexe() throws Exception {
+        if (section == null) {
+            loadSection();
+        }
+        if (compteAnnexe == null) {
+            loadSectionCompteAnnexe();
+        }
+
+        return compteAnnexe;
+    }
+
+    /**
      * Charge le compte annexe liée à la section.
      *
      * @throws Exception
