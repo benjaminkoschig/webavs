@@ -117,18 +117,7 @@ public class IJCotisation extends BEntity implements IPRCloneable {
             nomExterne = getSession().getLabel("IMPOT_SOURCE");
 
             if (JadeStringUtil.isDecimalEmpty(taux)) {
-                // le taux d'imposition est stocke dans la table des taux par
-                // canton
-                PRTauxImpositionManager mgr = new PRTauxImpositionManager();
-
-                mgr.setSession(getSession());
-                mgr.setForIdTauxImposition(idExterne);
-                mgr.setForPeriode(dateDebut, dateFin);
-                mgr.find();
-
-                if (!mgr.isEmpty()) {
-                    taux ="0.00";
-                }
+                taux = "0.00";
             }
         } else {
             // il s'agit d'une assurance, on va charger son nom et son taux
