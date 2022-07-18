@@ -842,7 +842,7 @@ public class REListeRetenuesBlocages extends FWIAbstractDocumentList {
         if (IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(retenue.getCsTypeRetenue())) {
 
             // pour l'imposition a la source, le taux peut être donne de plusieurs manières
-            if (!JadeStringUtil.isDecimalEmpty(retenue.getTauxImposition())) {
+            if (!JadeStringUtil.isDecimalEmpty(retenue.getTauxImposition()) || retenue.getTauxImposition().equals("0.00")) {
 
                 // donne par un taux fixe
                 String montantRA = retenue.getRenteAccordee().getMontantPrestation();
