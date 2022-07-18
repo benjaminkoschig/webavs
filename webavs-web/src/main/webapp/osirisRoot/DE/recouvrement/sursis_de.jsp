@@ -30,7 +30,6 @@
 	}
 %>
 <%
-	boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
 	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
 %>
@@ -75,7 +74,7 @@
 	}
 
 	function clearEBillInputs() {
-		<% if (eBillMuscaActif && eBillOsirisActif && eBillAccountID) {%>
+		<% if (eBillOsirisActif && eBillAccountID) {%>
 			$("#eBillPrintable").attr("checked", true);
 		<%} else{%>
 			$("#eBillPrintable").attr("checked", false);
@@ -209,7 +208,7 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillMuscaActif && eBillOsirisActif) {%>
+	<% if (eBillOsirisActif) {%>
 		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
 			<tr>
 				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>

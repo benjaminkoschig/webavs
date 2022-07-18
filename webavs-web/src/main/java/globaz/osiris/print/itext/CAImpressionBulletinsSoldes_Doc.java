@@ -444,14 +444,12 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     public void afterExecuteReport() {
         if (!isMuscaSource && compteAnnexe != null && sectionCourante.getSection() != null) {
 
-            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
             // On imprime les factures eBill si :
-            //  - eBill est actif
             //  - eBillOsiris est actif
             //  - eBillPrintable est sélectioné sur l'écran d'impression
-            if (eBillMuscaActif && eBillOsirisActif && getEBillPrintable()) {
+            if (eBillOsirisActif && getEBillPrintable()) {
                  if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                     try {
                         EBillSftpProcessor.getInstance();
@@ -546,7 +544,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 // Pour les Bulletins de soldes imprimés depuis la facturation
                 if (isMuscaSource) {
 
-                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill
+                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBillMusca est active et si compte annexe de la facture inscrit à eBill
                     boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
                     if (eBillMuscaActif) {
                         if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
@@ -559,12 +557,11 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                         loadSection();
                     }
                 // Pour les Bulletins de soldes imprimés depuis la compta auxiliaire
-                } else if (sectionCourante.getSection() != null) {
+                } else if (sectionCourante.getSection() != null && !isMuscaSource) {
 
-                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
-                    boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
+                    // Prepare la map des lignes de bulletins de soldes eBill si propriété eBillOsiris est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
                     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
-                    if (eBillMuscaActif && eBillOsirisActif && getEBillPrintable()) {
+                    if (eBillOsirisActif && getEBillPrintable()) {
                         if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                             // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'id
                             lignesSolde.put(new PaireIdExterneEBill(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole(), sectionCourante.getSection().getIdExterne(), _getMontantApresCompensation()), data);

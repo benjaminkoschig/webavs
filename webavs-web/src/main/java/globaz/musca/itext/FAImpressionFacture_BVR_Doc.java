@@ -696,7 +696,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             return;
         }
 
-        // Prepare la map des lignes de factures eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill
+        // Prepare la map des lignes de factures eBill si propriété eBillMusca est active et si compte annexe de la facture inscrit à eBill
         boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
         if (eBillMuscaActif) {
             CACompteAnnexe compteAnnexe = FAGenericProcess.getCompteAnnexe(currentDataSource.getEnteteFacture(), getSession(), getTransaction());

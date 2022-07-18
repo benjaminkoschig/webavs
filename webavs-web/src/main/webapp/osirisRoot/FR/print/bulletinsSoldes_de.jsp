@@ -14,7 +14,6 @@ globaz.osiris.db.print.CABulletinsSoldesViewBean viewBean = (globaz.osiris.db.pr
 userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + ".print.bulletinsSoldes.executer";
 %>
 <%
-    boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
     boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.loadSectionAndCompteAnnexe().getEBillAccountID());
 %>
@@ -28,7 +27,7 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 top.document.title = "Génération des bulletins de soldes - " + top.location.href;
 
 function clearEBillInputs() {
-    <% if (eBillMuscaActif && eBillOsirisActif && eBillAccountID) {%>
+    <% if (eBillOsirisActif && eBillAccountID) {%>
         $("#eBillPrintable").attr("checked", true);
     <%} else{%>
         $("#eBillPrintable").attr("checked", false);
@@ -75,7 +74,7 @@ function postInit(){
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <% if (eBillMuscaActif && eBillOsirisActif) {%>
+          <% if (eBillOsirisActif) {%>
             <% if (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
               <tr>
                 <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>

@@ -188,10 +188,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             lignes.add(newMap(CADocumentManager.JASP_PROP_BODY_COL_LIBELLE_CACPAIEMENT, new Double(new FWCurrency(
                     echeance.getMontant()).doubleValue())));
 
-            // Prepare la map des lignes de sursis au paiement eBill si propriété eBill est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur le plan
-            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
+            // Prepare la map des lignes de sursis au paiement eBill si propriété eBillOsiris est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur le plan
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
-            if (eBillMuscaActif && eBillOsirisActif && plan.getEBillPrintable()) {
+            if (eBillOsirisActif && plan.getEBillPrintable()) {
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                     lignesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
                 }

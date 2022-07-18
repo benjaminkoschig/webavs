@@ -154,7 +154,6 @@ public class CAProcessImpressionPlan extends BProcess {
         CACompteAnnexe compteAnnexe = documentBVR.getPlanRecouvrement().getCompteAnnexe();
 
         // On imprime les factures eBill si :
-        //  - eBill est actif
         //  - eBillOsiris est actif
         //  - eBillPrintable est sélectioné sur le plan
         if (eBillOsirisActif && plan.getEBillPrintable()) {
