@@ -4,15 +4,22 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
+import globaz.corvus.properties.REProperties;
+import globaz.globall.db.*;
+import globaz.prestation.acor.PRACORConst;
+import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.util.TIAdresseResolver;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
-import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -24,7 +31,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
-import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -41,18 +47,13 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
-import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
-import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -277,14 +278,14 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
-        avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
+        //avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
 
         // Fields in TIPERSP
-        avsPerson.setDateNaissance(dto.getBirthDate()); //TODO: Check if it's a date and if it's in the past ?
-        avsPerson.setDateDeces(dto.getDeathDate()); //TODO: Check if it's a date and if it's in the past ?
+        avsPerson.setDateNaissance(checkDate(dto.getBirthDate()));
+        avsPerson.setDateDeces(checkDate(dto.getDeathDate()));
         avsPerson.setSexe(getSexAsSystemCode(dto.getSex()));
         avsPerson.setEtatCivil(getCivilStatusAsSystemCode(dto.getCivilStatus()));
 
@@ -390,7 +391,6 @@ public class PRTiersHelper {
      * @return Un code système pour le sexe
      */
     private static final String getSexAsSystemCode(String sex) {
-        String result;
         switch (JadeStringUtil.toLowerCase(sex)) {
             case "m":
             case "homme":
@@ -400,9 +400,9 @@ public class PRTiersHelper {
             case "femme":
             case "female":
                 return PRACORConst.CS_FEMME;
-            default: // If the sex isn't anything standard, check that it's a valid system code
+            default: // If sex isn't anything standard, check that it's a valid system code
                 try {
-                    if (EtatCivil.parse(sex) != null){ // If this goes through without error, sex is a valid sex
+                    if (Sexe.parse(sex) != null){ // If this goes through without error, sex is a valid sex
                         return sex;
                     }
                 }
@@ -410,6 +410,25 @@ public class PRTiersHelper {
                     throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.", e);
                 }
                 return Sexe.UNDEFINDED.getCodeSysteme().toString();
+        }
+    }
+
+    /**
+     * Vérifie si date est au format dd.mm.aaaa retourne
+     *
+     * @param date la date à valider
+     * @return 0 si date est vide ou 0, la date si valide, lève une erreur autrement
+     */
+    private static final String checkDate(String date) {
+        if (date == "0" || date == null || date == ""){
+            return "0";
+        }
+        String pattern = "[0-3]\\d\\.[0-1]\\d\\.\\d{4}";
+        if (Pattern.matches(pattern, date)) {
+            return date;
+        }
+        else {
+            throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers.");
         }
     }
 
@@ -465,7 +484,6 @@ public class PRTiersHelper {
         return true;
     }
 
-
     /**
      * Méthode pour vérifier le format du NSS
      *
@@ -473,7 +491,7 @@ public class PRTiersHelper {
      * @return true si le format NSS est valide
      */
     private static final boolean checkNSS(String nss) {
-        if (NSSUtils.checkNSS(nss)) {
+        if (NSSUtils.checkNSS(nss) || nss.isEmpty() || nss == null) {
             return true;
         } else {
             throw new PYBadRequestException("Erreur dans le format du NSS");
