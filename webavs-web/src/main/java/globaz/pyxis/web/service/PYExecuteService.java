@@ -16,10 +16,8 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         //TODO: check that token is valid
 
-        String idTiers;
         try {
-            System.out.println(dto.getName());
-            idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
+            String idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
             dto.setId(idTiers);
         }
         catch (Exception e) {

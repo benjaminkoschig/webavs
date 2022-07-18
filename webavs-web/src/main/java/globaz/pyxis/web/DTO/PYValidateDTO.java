@@ -8,10 +8,16 @@ import java.util.List;
 public class PYValidateDTO {
 
     // TODO: Implement "validators" for other fields in PYTiersDTO
-    public static final List<String> validLanguage = Arrays.asList(CodeLangue.FR.getCodeIsoLangue(), CodeLangue.DE.getCodeIsoLangue(), CodeLangue.IT.getCodeIsoLangue(), CodeLangue.RM.getCodeIsoLangue(), CodeLangue.EN.getCodeIsoLangue());
+    private static final List<String> validLanguage = Arrays.asList(
+            CodeLangue.FR.getCodeIsoLangue(),
+            CodeLangue.DE.getCodeIsoLangue(),
+            CodeLangue.IT.getCodeIsoLangue(),
+            CodeLangue.RM.getCodeIsoLangue(),
+            CodeLangue.EN.getCodeIsoLangue()
+    );
 
     public static Boolean isValid(String language){
-        // TODO: Implement validation on PYTiersDTO's fields
+        // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
         return PYValidateDTO.validLanguage.contains(language.toLowerCase());
     }
 }

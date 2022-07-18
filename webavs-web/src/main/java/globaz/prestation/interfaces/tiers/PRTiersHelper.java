@@ -6,7 +6,6 @@ import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 import globaz.corvus.properties.REProperties;
 import globaz.globall.db.*;
-import globaz.prestation.acor.PRACORConst;
 import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.web.DTO.PYTiersDTO;
@@ -291,7 +290,7 @@ public class PRTiersHelper {
 
         // Fields in TIPAVSP
         if (checkNSS(dto.getNss()))
-            avsPerson.setNumAvsActuel(dto.getNss());
+            avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Manage what happens if the NSS is empty/null/0
 
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
@@ -391,15 +390,17 @@ public class PRTiersHelper {
      * @return Un code système pour le sexe
      */
     private static final String getSexAsSystemCode(String sex) {
-        switch (JadeStringUtil.toLowerCase(sex)) {
+        switch ((sex != null) ? JadeStringUtil.toLowerCase(sex) : "") {
             case "m":
             case "homme":
             case "male":
-                return PRACORConst.CS_HOMME;
+                return Sexe.HOMME.getCodeSysteme().toString();
             case "f":
             case "femme":
             case "female":
-                return PRACORConst.CS_FEMME;
+                return Sexe.FEMME.getCodeSysteme().toString();
+            case "":
+                return Sexe.UNDEFINDED.getCodeSysteme().toString();
             default: // If sex isn't anything standard, check that it's a valid system code
                 try {
                     if (Sexe.parse(sex) != null){ // If this goes through without error, sex is a valid sex
