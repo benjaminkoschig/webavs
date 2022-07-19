@@ -9,6 +9,7 @@ import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
+import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.FWIDocumentManager;
@@ -636,14 +637,17 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     public void traiterBulletinDeSoldesEBillOsiris() throws Exception {
 
         for (Map.Entry<PaireIdExterneEBill, List<Map>> lignes : lignesSolde.entrySet()) {
+            if (sectionCourante.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
+                    && sectionCourante.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-            FAEnteteFacture entete = generateEnteteFacture();
-            FAEnteteFacture enteteReference = getEnteteFactureReference(lignes.getKey());
+                FAEnteteFacture entete = generateEnteteFacture();
+                FAEnteteFacture enteteReference = getEnteteFactureReference(lignes.getKey());
 
-            String reference = referencesSolde.get(lignes.getKey());
-            JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(getAttachedDocuments());
-            creerFichierEBillOsiris(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection());
-            factureEBill++;
+                String reference = referencesSolde.get(lignes.getKey());
+                JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
+                creerFichierEBillOsiris(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection());
+                factureEBill++;
+            }
         }
     }
 
@@ -680,15 +684,18 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * de le retourner pour être ajouter à la facture eBill et de le supprimer
      * de la listes de fichiers à merger dans l'impression actuelle
      *
+     * @param entete : l'entete qui permet d'identifier le fichier à retourner
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @return le fichier généré durant l'impression
      */
-    public JadePublishDocument removeAndReturnAttachedDocument(List<JadePublishDocument> attachedDocuments) {
+    public JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
         JadePublishDocument attachedDocument = null;
         Iterator<JadePublishDocument> jadePublishDocumentIterator = attachedDocuments.iterator();
         while (jadePublishDocumentIterator.hasNext()) {
             final JadePublishDocument jadePublishDocument = jadePublishDocumentIterator.next();
-            if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE)) {
+            if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
+                    && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))
+                    && jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE)) {
                 attachedDocument = jadePublishDocument;
                 jadePublishDocumentIterator.remove();
                 break;

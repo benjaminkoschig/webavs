@@ -2,6 +2,7 @@ package globaz.musca.process;
 
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.skirnir.client.SkirnirUtils;
+import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.FADocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
@@ -992,17 +993,17 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * de le retourner pour être ajouter à la facture eBill et de le supprimer
      * de la listes de fichiers à merger dans l'impression actuelle
      *
-     * @param enteteFacture : l'entete qui permet d'identifier le fichier à retourner
+     * @param entete : l'entete qui permet d'identifier le fichier à retourner
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @return le fichier généré durant l'impression
      */
-    public JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture enteteFacture, List<JadePublishDocument> attachedDocuments) {
+    public JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
         JadePublishDocument attachedDocument = null;
         Iterator<JadePublishDocument> jadePublishDocumentIterator = attachedDocuments.iterator();
         while (jadePublishDocumentIterator.hasNext()) {
             final JadePublishDocument jadePublishDocument = jadePublishDocumentIterator.next();
-            if (enteteFacture.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("osiris.section.idExterne"))
-                    && enteteFacture.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))) {
+            if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
+                    && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))) {
                 attachedDocument = jadePublishDocument;
                 jadePublishDocumentIterator.remove();
                 break;

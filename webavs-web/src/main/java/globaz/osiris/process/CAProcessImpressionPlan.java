@@ -29,10 +29,8 @@ import globaz.osiris.process.ebill.EBillSftpProcessor;
 import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 import ch.globaz.common.properties.PropertiesException;
 import org.slf4j.Logger;
