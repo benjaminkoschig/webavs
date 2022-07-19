@@ -4,6 +4,7 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
+import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.corvus.properties.REProperties;
 import globaz.globall.db.*;
 import globaz.pyxis.db.tiers.*;
@@ -362,17 +363,28 @@ public class PRTiersHelper {
         switch (JadeStringUtil.toLowerCase(language)) {
             case "fr":
             case "français":
-                result = ITITiers.CS_FRANCAIS;
+                result = CodeLangue.FR.getValue();
                 break;
             case "de":
             case "deutsch":
-                result = ITITiers.CS_ALLEMAND;
+                result = CodeLangue.DE.getValue();
+                break;
+            case "en":
+            case "english":
+                result = CodeLangue.EN.getValue();
                 break;
             case "it":
             case "italiano":
-                result = ITITiers.CS_ITALIEN;
+                result = CodeLangue.IT.getValue();
                 break;
-            default: // If the language isn't anything standard, check that it's a valid system code
+            case "rm":
+            case "rumantsch":
+                result = CodeLangue.RM.getValue();
+                break;
+            default: // If the language isn't one of those, check if it's a system code. Otherwise throw an error
+                // TODO: Should we reuse that already implemented method that gives a default to a mandatory field...
+                //result = CodeLangue.fromValue(language).getValue();
+                // TODO: ... Or that kinda ugly code that does what the specifications want us to do ?
                 if (isSystemCode(language)) {
                     result = language;
                 }

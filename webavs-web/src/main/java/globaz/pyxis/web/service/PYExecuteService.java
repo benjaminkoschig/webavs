@@ -21,7 +21,7 @@ public class PYExecuteService extends BProcess {
             dto.setId(idTiers);
         }
         catch (Exception e) {
-            System.err.println(e);
+            System.err.println("Problème lors de l'ajout du tiers: " + e);
         }
 
         return dto;

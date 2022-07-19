@@ -13,7 +13,12 @@ public class PYValidateDTO {
             CodeLangue.DE.getCodeIsoLangue(),
             CodeLangue.IT.getCodeIsoLangue(),
             CodeLangue.RM.getCodeIsoLangue(),
-            CodeLangue.EN.getCodeIsoLangue()
+            CodeLangue.EN.getCodeIsoLangue(),
+            CodeLangue.FR.getValue(),
+            CodeLangue.DE.getValue(),
+            CodeLangue.IT.getValue(),
+            CodeLangue.RM.getValue(),
+            CodeLangue.EN.getValue()
     );
 
     public static Boolean isValid(String language){
