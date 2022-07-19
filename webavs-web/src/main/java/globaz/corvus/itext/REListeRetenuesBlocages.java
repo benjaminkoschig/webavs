@@ -840,47 +840,16 @@ public class REListeRetenuesBlocages extends FWIAbstractDocumentList {
         FWCurrency prochaineRetenue = null;
 
         if (IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(retenue.getCsTypeRetenue())) {
+            // impot source
+            String montantRA = retenue.getRenteAccordee().getMontantPrestation();
 
-            // pour l'imposition a la source, le taux peut être donne de plusieurs manières
-            if (!JadeStringUtil.isDecimalEmpty(retenue.getTauxImposition()) || retenue.getTauxImposition().equals("0.00")) {
-
-                // donne par un taux fixe
-                String montantRA = retenue.getRenteAccordee().getMontantPrestation();
-
-                montantRetenuMensuel = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
-                        * (new FWCurrency(retenue.getTauxImposition())).floatValue());
-                montantRetenuMensuel.round(FWCurrency.ROUND_ENTIER);
-
-            } else if (!JadeStringUtil.isDecimalEmpty(retenue.getMontantRetenuMensuel())) {
-
-                // un montant fixe
-                montantRetenuMensuel = new FWCurrency(retenue.getMontantRetenuMensuel());
-
-            } else {
-
-                // donne par un canton
-                String montantRA = retenue.getRenteAccordee().getMontantPrestation();
-
-                // recherche du taux
-                PRTauxImpositionManager tManager = new PRTauxImpositionManager();
-                tManager.setSession(getSession());
-                tManager.setForCsCanton(retenue.getCantonImposition());
-                tManager.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-                tManager.find();
-
-                PRTauxImposition t = (PRTauxImposition) tManager.getFirstEntity();
-                String taux = "0.0";
-                if (t != null) {
-                    taux = t.getTaux();
-                }
-
-                montantRetenuMensuel = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
-                        * (new FWCurrency(taux)).floatValue());
-                montantRetenuMensuel.round(FWCurrency.ROUND_ENTIER);
-            }
+            montantRetenuMensuel = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
+                    * (new FWCurrency(retenue.getTauxImposition())).floatValue());
+            montantRetenuMensuel.round(FWCurrency.ROUND_ENTIER);
 
             prochaineRetenue = montantRetenuMensuel;
             montantTotalRetenue = montantRetenuMensuel;
+
         } else {
             FWCurrency tmp = new FWCurrency(retenue.getMontantTotalARetenir());
             tmp.sub(montantDejaRetenu);
