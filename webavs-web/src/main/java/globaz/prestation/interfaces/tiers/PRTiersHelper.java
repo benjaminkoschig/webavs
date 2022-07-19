@@ -290,8 +290,13 @@ public class PRTiersHelper {
         avsPerson.setEtatCivil(getCivilStatusAsSystemCode(dto.getCivilStatus()));
 
         // Fields in TIPAVSP
-        if (checkNSS(dto.getNss()))
-            avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Manage what happens if the NSS is empty/null/0
+        if (dto.getIsPhysicalPerson()) {
+            if (checkNSS(dto.getNss()))
+                avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Manage what happens if the NSS is empty/null/0
+        }
+        else {
+            avsPerson.setNumContribuableActuel("");
+        }
 
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
@@ -329,7 +334,7 @@ public class PRTiersHelper {
      */
     private static final String getTitleAsSystemCode(String title) {
         String result;
-        switch (JadeStringUtil.toLowerCase(title)) {
+        switch ((title != null) ? JadeStringUtil.toLowerCase(title) : "") {
             case "monsieur":
             case "m":
                 result = ITITiers.CS_MONSIEUR;
@@ -360,7 +365,7 @@ public class PRTiersHelper {
      */
     private static final String getLanguageAsSystemCode(String language) {
         String result;
-        switch (JadeStringUtil.toLowerCase(language)) {
+        switch ((language != null) ? JadeStringUtil.toLowerCase(language) : "") {
             case "fr":
             case "français":
                 result = CodeLangue.FR.getValue();
@@ -453,7 +458,7 @@ public class PRTiersHelper {
      */
     private static final String getCivilStatusAsSystemCode(String civilStatus) {
         try {
-            if (EtatCivil.parse(civilStatus) != null) { // If this goes through without error, civilStatus is a valid civil status
+            if (civilStatus != null && EtatCivil.parse(civilStatus) != null) { // If this goes through without error, civilStatus is a valid civil status
                 return civilStatus;
             }
         } catch (IllegalArgumentException e) {
