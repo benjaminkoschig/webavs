@@ -117,7 +117,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
     public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
         AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
         String rubriqueAffiliation = assurance.getLibelleCourt();
-        if (JadeStringUtil.isBlankOrZero("cantonImposition") &&
+        if (!JadeStringUtil.isBlankOrZero(cantonImposition) &&
                 ALCSTarif.CATEGORIE_VS.equals(ALImplServiceLocator.getCalculService().getTarifForCanton(
                 cantonImposition))) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_VS_IS);
