@@ -83,10 +83,18 @@ public class PYTiersDTO {
     @JsonIgnore
     public Boolean isValid() {
         // TODO: Decide how we're doing it for page 2 and other fields
-        return (Stream.of(name, language).noneMatch(JadeStringUtil::isEmpty)                // Mandatory fields
-                && isPhysicalPerson != null
-                && isPhysicalPerson ? (Stream.of(title, surname, nss, birthDate, civilStatus).noneMatch(JadeStringUtil::isEmpty)): true  // Mandatory for a physical person
+
+        if (!isPhysicalPerson) {
+            return (
+                Stream.of(name, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValid(language)
-        );
+            );
+        } else {
+            return (
+                Stream.of(title, name, surname, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValid(language)
+            );
+        }
     }
 }

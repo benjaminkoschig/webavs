@@ -4,7 +4,11 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import globaz.pyxis.web.exceptions.PYInternalException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PYExecuteService extends BProcess {
     /**
      * Création de tiers
@@ -20,8 +24,17 @@ public class PYExecuteService extends BProcess {
             String idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
             dto.setId(idTiers);
         }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la création du tiers: " + e);
+            throw e;
+        }
         catch (Exception e) {
-            System.err.println("Problème lors de l'ajout du tiers: " + e);
+            LOG.error("Une erreur est survenue lors de la création du tiers: " + e);
+            throw new PYInternalException(e);
         }
 
         return dto;
