@@ -4,21 +4,15 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
-import globaz.corvus.properties.REProperties;
-import globaz.globall.db.*;
-import globaz.pyxis.db.tiers.*;
-import globaz.pyxis.util.TIAdresseResolver;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -46,8 +40,14 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
+import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
+import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -266,8 +266,10 @@ public class PRTiersHelper {
      * @return le
      * @throws Exception
      */
+    private static ITIPersonneAvs avsPerson;
     public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
-        ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
+        /*ITIPersonneAvs*/
+        avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
         avsPerson.setTypeTiers(ITITiers.CS_TIERS);
@@ -277,7 +279,7 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
-        //avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
+        avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
@@ -289,8 +291,7 @@ public class PRTiersHelper {
         avsPerson.setEtatCivil(getCivilStatusAsSystemCode(dto.getCivilStatus()));
 
         // Fields in TIPAVSP
-        if (checkNSS(dto.getNss()))
-            avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Manage what happens if the NSS is empty/null/0
+        avsPerson.setNumAvsActuel(checkNSS(dto.getNss())); //TODO: Throw exception if NSS already existing
 
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
@@ -457,10 +458,11 @@ public class PRTiersHelper {
      * @return la string contenant le code système si un country correspond à un country
      */
     private static final String getCountryAsSystemCode(String country) {
+        //TODO get codeSystem from enum
         CodeIsoPays codeIsoPays = CodeIsoPays.parse(country);
         if (codeIsoPays != CodeIsoPays.INCONNU) {
-            System.out.println("Pays : " + country);
-            return country;
+            return "100";
+//            return country;
         } else {
             throw new PYBadRequestException("Erreur lors de l'assignation du pays");
         }
@@ -486,17 +488,18 @@ public class PRTiersHelper {
     }
 
     /**
-     * Méthode pour vérifier le format du NSS
+     * Méthode d'assignation du NSS selon pers. morale ou physique et vérifie le format du NSS
      *
      * @param nss
-     * @return true si le format NSS est valide
+     * @return String vide ou nss si pers physique et NSS est valide
      */
-    private static final boolean checkNSS(String nss) {
-        if (NSSUtils.checkNSS(nss) || nss.isEmpty() || nss == null) {
-            return true;
-        } else {
+    private static final String checkNSS(String nss) {
+        if (avsPerson.getPersonneMorale()) {
+            return "";
+        } else if (NSSUtils.checkNSS(nss) && avsPerson.getPersonnePhysique()) {
+            return nss;
+        } else
             throw new PYBadRequestException("Erreur dans le format du NSS");
-        }
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
