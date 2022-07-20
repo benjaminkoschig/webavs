@@ -3,16 +3,9 @@ package globaz.prestation.interfaces.tiers;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
+import ch.globaz.pyxis.domaine.Titre;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
-import globaz.corvus.properties.REProperties;
-import globaz.globall.db.*;
-import globaz.pyxis.db.tiers.*;
-import globaz.pyxis.util.TIAdresseResolver;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.properties.REProperties;
@@ -352,13 +345,14 @@ public class PRTiersHelper {
                 break;
             default: // If the title isn't anything standard, check that it's a valid system code
                 if (isSystemCode(title)) {
-                    result = title;
+                    try {
+                        Titre.parse(title);
+                    } catch (IllegalArgumentException e) {
+                        throw new PYBadRequestException("Erreur lors de l'assignation du titre du tiers.", e);
+                    }
                 }
-                else { // Otherwise, set it to 0
-                    result = "0";
-                }
+                result = title;
         }
-        System.out.println(result);
         return result;
     }
 
