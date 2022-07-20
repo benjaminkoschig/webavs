@@ -3,6 +3,7 @@ package globaz.pyxis.web.DTO;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
+import ch.globaz.pyxis.domaine.Titre;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -44,7 +45,10 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getTitleAsSystemCode(PYTiersDTO dto) {
-        String result;
+        if (dto.getTitle() == null) {
+            dto.setTitle(Titre.UNDEFINED.getCodeSysteme().toString());
+        }
+
         switch ((dto.getTitle() != null) ? JadeStringUtil.toLowerCase(dto.getTitle()) : "") {
             case "monsieur":
             case "m":
@@ -58,8 +62,10 @@ public class PYValidateDTO {
                 dto.setTitle(ITITiers.CS_HORIE);
                 break;
             default: // If the title isn't anything standard, check that it's a valid system code
-                if (!isSystemCode(dto.getTitle())) {
-                    dto.setTitle("0");
+                try {
+                    Titre.parse(dto.getTitle());
+                } catch (IllegalArgumentException e) {
+                    throw new PYBadRequestException("Erreur lors de l'assignation du titre du tiers.", e);
                 }
         }
     }
