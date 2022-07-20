@@ -804,9 +804,7 @@ public class IJRepartitionPaiementBuilder {
         }
 
         // creation des cotisation
-        if ((!JadeStringUtil.isDecimalEmpty(tauxImposition))||tauxImposition.equals("0.00")) {
-            // le taux d'imposition a ete redefini, on utilise que celui-ci et
-            // l'id du taux imposition trouve
+
             IJCotisation cotisation = new IJCotisation();
 
             cotisation.setIdRepartitionPaiement(idRepartitionPaiement);
@@ -824,46 +822,6 @@ public class IJRepartitionPaiementBuilder {
 
             // sauver dans la base
             addCotisation(session, transaction, cotisation);
-        } else {
-            // sinon on cree une cotisation pour chacun des taux retournes
-            int idMontant = 0;
-
-            retValue = new double[tauxManager.size()];
-
-            for (Iterator iter = tauxManager.iterator(); iter.hasNext(); ++idMontant) {
-                PRTauxImposition taux = (PRTauxImposition) iter.next();
-                IJCotisation cotisation = new IJCotisation();
-
-                // date debut
-                if (IJRepartitionPaiementBuilder.CALENDAR.compare(taux.getDateDebut(), dateDebut) == JACalendar.COMPARE_FIRSTLOWER) {
-                    cotisation.setDateDebut(dateDebut);
-                } else {
-                    cotisation.setDateDebut(taux.getDateDebut());
-                }
-
-                // date fin
-                if (!JAUtil.isDateEmpty(taux.getDateFin())
-                        && (IJRepartitionPaiementBuilder.CALENDAR.compare(taux.getDateFin(), dateFin) == JACalendar.COMPARE_FIRSTLOWER)) {
-                    cotisation.setDateFin(taux.getDateFin());
-                } else {
-                    cotisation.setDateFin(dateFin);
-                }
-
-                cotisation.setIdRepartitionPaiement(idRepartitionPaiement);
-                cotisation.setIdExterne(taux.getIdTauxImposition());
-                cotisation.setIsImpotSource(Boolean.TRUE);
-                cotisation.setTaux(taux.getTaux());
-
-                setMontantsCotisation(cotisation, montant, taux.getTaux(), nbJoursPeriode);
-                retValue[idMontant] = JadeStringUtil.toDouble("-" + cotisation.getMontant());
-
-                // changer le signe (toujours des soustractions)
-                cotisation.setMontant("-" + cotisation.getMontant());
-
-                // sauver dans la base
-                addCotisation(session, transaction, cotisation);
-            }
-        }
 
         return retValue;
     }
