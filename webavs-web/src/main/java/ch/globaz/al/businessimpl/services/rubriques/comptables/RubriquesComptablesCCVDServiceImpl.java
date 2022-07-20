@@ -18,16 +18,15 @@ import java.util.List;
 
 /**
  * Implémentation du service spécifique permettant de récupérer une rubrique comptable pour la CCVD
- * 
+ *
  * @author jts
- * 
  */
 public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServiceImpl implements
         RubriquesComptablesCCVDService {
 
     @Override
     protected String getRubriqueADI(DossierModel dossier, EntetePrestationModel entete, DetailPrestationModel detail,
-            String date) throws JadeApplicationException, JadePersistenceException {
+                                    String date) throws JadeApplicationException, JadePersistenceException {
 
         if (ALCSDossier.ACTIVITE_NONACTIF.equals(dossier.getActiviteAllocataire())) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_NON_ACTIF_ADI);
@@ -41,7 +40,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
 
     @Override
     protected String getRubriqueAgriculteur(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (ALCSPrestation.STATUT_ADI.equals(entete.getStatut())) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_ADI);
@@ -52,7 +51,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
 
     @Override
     protected String getRubriqueCollaborateurAgricole(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                                      DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (ALCSPrestation.STATUT_ADI.equals(entete.getStatut())) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_ADI);
@@ -63,13 +62,13 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
 
     @Override
     protected String getRubriquePecheur(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                        DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
         return getRubriqueAgriculteur(dossier, entete, detail, date);
     }
 
     @Override
     protected String getRubriqueRestitution(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
         CategorieTarifComplexModel categorieTarif = getCategorieTarif(detail.getCategorieTarif());
@@ -117,9 +116,19 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
     public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
         AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
         String rubriqueAffiliation = assurance.getLibelleCourt();
-        if (!JadeStringUtil.isBlankOrZero(cantonImposition) &&
-                ALCSTarif.CATEGORIE_VS.equals(ALImplServiceLocator.getCalculService().getTarifForCanton(
-                cantonImposition))) {
+
+        if (ALCSDossier.ACTIVITE_COLLAB_AGRICOLE.equals(dossier.getActiviteAllocataire())
+                || ALCSDossier.ACTIVITE_AGRICULTEUR.equals(dossier.getActiviteAllocataire())
+                || ALCSDossier.ACTIVITE_PECHEUR.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_IS);
+        } else if (ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS);
+        } else if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_INDEPENDANT_IS);
+        } else if (ALCSDossier.ACTIVITE_NONACTIF.equals(dossier.getActiviteAllocataire())) {
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_NON_ACTIF_IS);
+        } else if (ALCSCantons.VS.equals(ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(
+                assurance.getCanton()))) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_VS_IS);
         } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_H.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_H_IS);
@@ -135,27 +144,19 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RE_IS);
         } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RF.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RF_IS);
-        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RL.equals(rubriqueAffiliation)) {
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_RL.equals(rubriqueAffiliation) || RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_EGLISE.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_RL_IS);
         } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_S.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_S_IS);
-        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_TSE.equals(rubriqueAffiliation)) {
+        } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_TSE.equals(rubriqueAffiliation) || RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_LAVS.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_TSE_IS);
-        } else if (ALCSDossier.ACTIVITE_NONACTIF.equals(dossier.getActiviteAllocataire())) {
-            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_NON_ACTIF_IS);
-        } else if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
-            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_INDEPENDANT_IS);
-        } else if (ALCSDossier.ACTIVITE_AGRICULTEUR.equals(dossier.getActiviteAllocataire())) {
-            return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_IS);
-        } else if (ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE.equals(dossier.getActiviteAllocataire())) {
-            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS);
         }
-        return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_IS);
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_IS);
     }
 
     @Override
     protected String getRubriqueSalarie(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                        DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
         String rubriqueAffiliation = assurance.getLibelleCourt();
@@ -265,7 +266,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
 
     @Override
     protected String getRubriqueTravailleurAgricole(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                                    DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (ALCSPrestation.STATUT_ADI.equals(entete.getStatut())) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_ADI);
