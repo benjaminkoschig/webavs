@@ -67,9 +67,15 @@
             <ct:menuExcludeNode nodeId="VISU_TIERS"/>
          <% } %>
      </ct:menuPopup>
+    <%
+        String subjectLine= line.getSubject();
+        if(subjectLine.length()>60){
+           subjectLine=subjectLine.substring(0,60);
+        }
+    %>
 </TD>
 <TD class="mtd dec<%=line.getFormulaire().getSubject() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getSubject() %> </TD>
-<TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>"><%= line.getSubject()%> </TD>
+<TD class="mtd dec<%=line.getSubject() %>" nowrap onclick="<%=detailUrl%>"><%=subjectLine%> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getDate() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getDate() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBusinessProcessId() %>" nowrap onclick="<%=detailUrl%>"><%= line.getFormulaire().getBusinessProcessId() %> </TD>
 <TD class="mtd dec<%=line.getFormulaire().getBeneficiaireNss() %>" nowrap onclick="<%=detailUrl%>"><%= NSUtil.formatAVSUnknown(line.getFormulaire().getBeneficiaireNss()) %> </TD>
