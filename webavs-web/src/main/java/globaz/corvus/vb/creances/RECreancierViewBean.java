@@ -68,7 +68,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
     @Override
     protected void _validate(BStatement statement) throws Exception {
         if (IRECreancier.CS_IMPOT_SOURCE.equals(getCsType())) {
-            if (JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getRevenuAnnuelDeterminant())) || JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getTauxImposition()))) {
+            if (JadeStringUtil.isBlank(JANumberFormatter.deQuote(getRevenuAnnuelDeterminant()))||JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(getTauxImposition()))) {
                 _addError(statement.getTransaction(), getSession().getLabel("JSP_CRE_D_ERREUR_CREANCIER_TAUX_IMPOSITION_REVENU_ANNUEL_DETERMINANT"));
             }
         }
