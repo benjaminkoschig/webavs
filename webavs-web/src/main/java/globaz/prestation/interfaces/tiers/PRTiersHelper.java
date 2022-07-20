@@ -282,25 +282,25 @@ public class PRTiersHelper {
 
         // Fields in TITIERP
         avsPerson.setTypeTiers(ITITiers.CS_TIERS);
-        avsPerson.setTitreTiers(getTitleAsSystemCode(dto.getTitle()));
+        avsPerson.setTitreTiers(dto.getTitle());
         avsPerson.setDesignation1(dto.getName());
         avsPerson.setDesignation2(dto.getSurname());
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
-        avsPerson.setLangue(getLanguageAsSystemCode(dto.getLanguage()));
-        avsPerson.setIdPays(getCountryAsSystemCode(dto.getCountry())); //TODO: These should be system codes, find a list of codes (ID_PAYS_BIDON doesn't sound like a good idea)
+        avsPerson.setLangue(dto.getLanguage());
+        avsPerson.setIdPays(dto.getCountry());
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
 
         // Fields in TIPERSP
-        avsPerson.setDateNaissance(checkDate(dto.getBirthDate()));
-        avsPerson.setDateDeces(checkDate(dto.getDeathDate()));
-        avsPerson.setSexe(getSexAsSystemCode(dto.getSex()));
-        avsPerson.setEtatCivil(getCivilStatusAsSystemCode(dto.getCivilStatus()));
+        avsPerson.setDateNaissance(dto.getBirthDate());
+        avsPerson.setDateDeces(dto.getDeathDate());
+        avsPerson.setSexe(dto.getSex());
+        avsPerson.setEtatCivil(dto.getCivilStatus());
 
         // Fields in TIPAVSP
-        avsPerson.setNumAvsActuel(checkNSS(dto.getNss())); //TODO: Throw exception if NSS already exists
+        avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Throw exception if NSS already exists
 
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
@@ -328,199 +328,6 @@ public class PRTiersHelper {
         }
 
         return avsPerson.getIdTiers();
-    }
-
-    /**
-     * Lis title pour retourner le code système associé.
-     *
-     * @param title
-     * @return Un code système pour le titre
-     */
-    private static final String getTitleAsSystemCode(String title) {
-        String result;
-        switch ((title != null) ? JadeStringUtil.toLowerCase(title) : "") {
-            case "monsieur":
-            case "m":
-                result = ITITiers.CS_MONSIEUR;
-                break;
-            case "madame":
-            case "mme":
-                result = ITITiers.CS_MADAME;
-                break;
-            case "madame, monsieur":
-                result = ITITiers.CS_HORIE;
-                break;
-            default: // If the title isn't anything standard, check that it's a valid system code
-                if (isSystemCode(title)) {
-                    result = title;
-                }
-                else { // Otherwise, set it to 0
-                    result = "0";
-                }
-        }
-        System.out.println(result);
-        return result;
-    }
-
-    /**
-     * Lis language pour retourner le code système associé.
-     *
-     * @param language
-     * @return Un code système pour la langue
-     */
-    private static final String getLanguageAsSystemCode(String language) {
-        String result;
-        switch ((language != null) ? JadeStringUtil.toLowerCase(language) : "") {
-            case "fr":
-            case "français":
-                result = CodeLangue.FR.getValue();
-                break;
-            case "de":
-            case "deutsch":
-                result = CodeLangue.DE.getValue();
-                break;
-            case "en":
-            case "english":
-                result = CodeLangue.EN.getValue();
-                break;
-            case "it":
-            case "italiano":
-                result = CodeLangue.IT.getValue();
-                break;
-            case "rm":
-            case "rumantsch":
-                result = CodeLangue.RM.getValue();
-                break;
-            default: // If the language isn't one of those, check if it's a system code. Otherwise throw an error
-                // TODO: Should we reuse that already implemented method that gives a default to a mandatory field...
-                //result = CodeLangue.fromValue(language).getValue();
-                // TODO: ... Or that kinda ugly code that does what the specifications want us to do ?
-                if (isSystemCode(language)) {
-                    result = language;
-                }
-                else { // Otherwise, throw an error
-                    throw new PYBadRequestException("Erreur lors de l'assignation de la langue du tiers.");
-                }
-        }
-        return result;
-    }
-
-    /**
-     * Lis sex pour retourner le code système associé.
-     *
-     * @param sex
-     * @return Un code système pour le sexe
-     */
-    private static final String getSexAsSystemCode(String sex) {
-        switch ((sex != null) ? JadeStringUtil.toLowerCase(sex) : "") {
-            case "m":
-            case "homme":
-            case "male":
-                return Sexe.HOMME.getCodeSysteme().toString();
-            case "f":
-            case "femme":
-            case "female":
-                return Sexe.FEMME.getCodeSysteme().toString();
-            case "":
-                return Sexe.UNDEFINDED.getCodeSysteme().toString();
-            default: // If sex isn't anything standard, check that it's a valid system code
-                try {
-                    if (Sexe.parse(sex) != null){ // If this goes through without error, sex is a valid sex
-                        return sex;
-                    }
-                }
-                catch (IllegalArgumentException e) {
-                    throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.", e);
-                }
-                return Sexe.UNDEFINDED.getCodeSysteme().toString();
-        }
-    }
-
-    /**
-     * Vérifie si date est au format dd.mm.aaaa retourne
-     *
-     * @param date la date à valider
-     * @return 0 si date est vide ou 0, la date si valide, lève une erreur autrement
-     */
-    private static final String checkDate(String date) {
-        if (date == "0" || date == null || date == ""){
-            return "0";
-        }
-        String pattern = "[0-3]\\d\\.[0-1]\\d\\.\\d{4}";
-        if (Pattern.matches(pattern, date)) {
-            return date;
-        }
-        else {
-            throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers.");
-        }
-    }
-
-    /**
-     * Méthode pour vérifier que civilStatus est un code système
-     *
-     * @param civilStatus le code système de la requête
-     * @return la string contenant le code système si civilStatus correspond à un état civil, UNDIFINED(0) si civilStatus == null
-     */
-    private static final String getCivilStatusAsSystemCode(String civilStatus) {
-        try {
-            if (civilStatus != null && EtatCivil.parse(civilStatus) != null) { // If this goes through without error, civilStatus is a valid civil status
-                return civilStatus;
-            }
-        } catch (IllegalArgumentException e) {
-            throw new PYBadRequestException("Erreur lors de l'assignation de l'état civil du tiers.", e);
-        }
-        return EtatCivil.UNDEFINED.getCodeSysteme().toString();
-    }
-
-    /**
-     * Méthode pour vérifier que country ressemble à un code système
-     *
-     * @param country le code système de la requête
-     * @return la string contenant le code système si un country correspond à un country
-     */
-    private static final String getCountryAsSystemCode(String country) {
-        //TODO get codeSystem from enum
-        CodeIsoPays codeIsoPays = CodeIsoPays.parse(country);
-        if (codeIsoPays != CodeIsoPays.INCONNU) {
-            return "100";
-//            return country;
-        } else {
-            throw new PYBadRequestException("Erreur lors de l'assignation du pays");
-        }
-    }
-
-    /**
-     * Méthode pour vérifier que code ressemble à un code système
-     *
-     * @param code le code système de la requête
-     * @return true si ça ressemble à un code système
-     */
-    private static final boolean isSystemCode(String code) {
-        int codeAsInt;
-        try {
-            codeAsInt = Integer.parseInt(code);
-            if (codeAsInt < 0){ // TODO: This if is bad. We need to check if the system code actually exists (custom or generic)
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Méthode d'assignation du NSS selon pers. morale ou physique et vérifie le format du NSS
-     *
-     * @param nss
-     * @return String vide ou nss si pers physique et NSS est valide
-     */
-    private static final String checkNSS(String nss) {
-        if (avsPerson.getPersonneMorale()) {
-            return "";
-        } else if (NSSUtils.checkNSS(nss) && avsPerson.getPersonnePhysique()) {
-            return nss;
-        } else
-            throw new PYBadRequestException("Erreur dans le format du NSS");
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
