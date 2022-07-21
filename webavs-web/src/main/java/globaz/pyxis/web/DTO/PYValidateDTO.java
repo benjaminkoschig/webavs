@@ -1,10 +1,10 @@
 package globaz.pyxis.web.DTO;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.pyxis.domaine.CodesSysPays;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.Titre;
-import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITITiers;
@@ -208,11 +208,10 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getCountryAsSystemCode(PYTiersDTO dto) {
-        //TODO get codeSystem from enum
         if (dto.getCountry() != null && dto.getCountry() != "") {
-            CodeIsoPays codeIsoPays = CodeIsoPays.parse(dto.getCountry());
-            if (codeIsoPays != CodeIsoPays.INCONNU) {
-                dto.setCountry("100");
+            CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
+            if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
+                dto.setCountry(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
             } else {
                 System.err.println("Erreur lors de l'assignation du pays");
                 throw new PYBadRequestException("Erreur lors de l'assignation du pays");
