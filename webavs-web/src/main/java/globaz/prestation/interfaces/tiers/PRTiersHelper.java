@@ -1,11 +1,5 @@
 package globaz.prestation.interfaces.tiers;
 
-import ch.globaz.common.util.NSSUtils;
-import ch.globaz.pyxis.domaine.EtatCivil;
-import ch.globaz.pyxis.domaine.Sexe;
-import ch.globaz.pyxis.domaine.Titre;
-import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
-import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.properties.REProperties;
@@ -47,14 +41,12 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -276,8 +268,8 @@ public class PRTiersHelper {
         // Fields in TITIERP
         avsPerson.setTypeTiers(ITITiers.CS_TIERS);
         avsPerson.setTitreTiers(dto.getTitle());
-        avsPerson.setDesignation1(dto.getName());
-        avsPerson.setDesignation2(dto.getSurname());
+        avsPerson.setDesignation1(dto.getSurname());
+        avsPerson.setDesignation2(dto.getName());
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(dto.getLanguage());
