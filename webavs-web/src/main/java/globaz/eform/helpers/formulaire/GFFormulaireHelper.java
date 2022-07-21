@@ -117,7 +117,7 @@ public class GFFormulaireHelper extends FWHelper {
                     EFormFileService fileService =EFormFileService.instance();
 
                     bean.retrieve();
-                    if(!fileService.exist(GFFileUtils.generateFilePath(bean.getFormulaire()) + File.separator + bean.getFormulaire().getAttachementName())) {
+                    if(!bean.getAttachement().exists()) {
                         viewBean.setMessage("Pas de fichier trouvé pour ce formulaire : "+((GFFormulaireViewBean) viewBean).getId());
                         viewBean.setMsgType(FWViewBeanInterface.ERROR);
                     }

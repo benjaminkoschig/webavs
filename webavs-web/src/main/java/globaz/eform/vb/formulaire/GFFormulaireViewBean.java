@@ -58,12 +58,6 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         super();
         this.formulaire = formulaire;
         try {
-            EFormFileService fileService = EFormFileService.instance();
-            this.attachement = fileService.retrieve(GFFileUtils.generateFilePath(formulaire), formulaire.getAttachementName());
-        } catch (Exception e) {
-            LOG.error("Un problème est survenu lors de la récupération du fichier attaché " + formulaire.getAttachementName(), e);
-        }
-        try {
             idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
         } catch (Exception e) {
             LOG.error("Un problème est survenu lors de la récupération du Tiers "+formulaire.getBeneficiaireNss(), e);
