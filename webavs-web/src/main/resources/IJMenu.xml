@@ -124,12 +124,6 @@
 							<parameter name="csGroupeTypesDocuments" value="IJTYPES" />
 						</action>
 					</node>
-<!--					<node>-->
-<!--						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />-->
-<!--						<action command="/cepheus" responseTarget="fr_main">-->
-<!--							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />-->
-<!--						</action>-->
-<!--					</node>-->
 				</nodes>
 			</node>
 		</nodes>
