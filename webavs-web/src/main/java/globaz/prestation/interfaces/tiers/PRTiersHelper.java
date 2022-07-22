@@ -41,6 +41,7 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,10 +261,9 @@ public class PRTiersHelper {
      * @return le
      * @throws Exception
      */
-    private static ITIPersonneAvs avsPerson;
     public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
         /*ITIPersonneAvs*/
-        avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
+        ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
         avsPerson.setTypeTiers(ITITiers.CS_TIERS);
@@ -285,13 +285,18 @@ public class PRTiersHelper {
         avsPerson.setEtatCivil(dto.getCivilStatus());
 
         // Fields in TIPAVSP
-        avsPerson.setNumAvsActuel(dto.getNss()); //TODO: Throw exception if NSS already exists
+        avsPerson.setNumAvsActuel(dto.getNss());
         avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
 
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
 
+
         if (session.getCurrentThreadTransaction() != null) {
             avsPerson.add((session).getCurrentThreadTransaction());
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                throw new PYBadRequestException("Erreur lors de l'assignation de tiers, " + session.getCurrentThreadTransaction().getErrors().toString());
+            }
+
         } else {
             // HACK: creating a transaction to insert a "tiers"
             BITransaction transaction = (session).newTransaction();
@@ -303,14 +308,13 @@ public class PRTiersHelper {
             } catch (Exception e) {
                 transaction.setRollbackOnly();
             } finally {
+                transaction.closeTransaction();
                 if (transaction.isRollbackOnly()) {
-                    transaction.closeTransaction();
                 } else {
                     transaction.commit();
                 }
             }
         }
-
         return avsPerson.getIdTiers();
     }
 
