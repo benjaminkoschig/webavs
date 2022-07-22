@@ -77,6 +77,7 @@ public class ReferenceEBill extends AbstractReference {
     private String creRueAdresse;
     private String creNumMaisonAdresse;
 
+    private boolean isSursis;
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
     private boolean isBulletinsDeSoldesAvecFactureEBill;
@@ -89,7 +90,7 @@ public class ReferenceEBill extends AbstractReference {
      * Initialisation de la référence eBill.
      *
      * @param enteteFacture   : en-tête de facture.
-     * @param dateFacturation : la date de facturation du passage.
+     * @param dateFacturation : la date de facturation.
      * @throws PropertiesException
      */
     public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
@@ -411,5 +412,13 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsLSV(boolean LSV) {
         isLSV = LSV;
+    }
+
+    public boolean isSursis() {
+        return isSursis;
+    }
+
+    public void setIsSursis(boolean sursis) {
+        isSursis = sursis;
     }
 }

@@ -70,7 +70,7 @@
         <% } %>
     </ct:menuPopup>
 </TD>
-<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.geteBillAccountID()%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getEBillAccountID()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomPrenomOuEntrepriseInscription(_inscriptionEBill)%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNomWebAVS((BSession) session.getAttribute("objSession"), _inscriptionEBill)%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getChampNumeroAffilie()%></TD>

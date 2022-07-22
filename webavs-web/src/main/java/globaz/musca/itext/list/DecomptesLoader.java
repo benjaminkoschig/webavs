@@ -71,7 +71,7 @@ class DecomptesLoader {
         bean.setMontant(new Montant(entity.getTotalFacture()));
         boolean isAdressePaimentEmpty = JadeStringUtil.isBlankOrZero(bean.getAddressPaiement());
         bean.setRecRem(generateRemarque(entity, isAdressePaimentEmpty));
-        bean.setImprimable(resolveIsImprimableOrIsEbillPrinted(entity));
+        bean.setImprimable(resolveIsImprimableOrIsEBillPrinted(entity));
         return bean;
     }
 
@@ -93,9 +93,9 @@ class DecomptesLoader {
      * 
      * @return java.lang.String
      */
-    private String resolveIsImprimableOrIsEbillPrinted(FAEnteteFacture entity) {
-        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(session);
-        if (isEBillActive && entity.iseBillPrinted()) {
+    private String resolveIsImprimableOrIsEBillPrinted(FAEnteteFacture entity) {
+        boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(session);
+        if (eBillMuscaActif && entity.isEBillPrinted()) {
             // marquer d'un "e" si la facture à été imprimé avec eBill
             return "e";
         } else {

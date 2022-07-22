@@ -32,7 +32,7 @@
     }
 
     function clearEBillInputs() {
-        $("#forcerImpression").attr("checked",false);
+        $("#forcerImpressionPapier").attr("checked",false);
         $("#typeFacture").val("automatique");
     }
 
@@ -208,7 +208,7 @@ window.alert('Le passage choisi est verrouillé, si vous continuez, vous recevrez
 </TR>
 <TR id="impressionPapier">
     <TD>Forcer impression papier</TD>
-    <TD><input type="checkbox" id="forcerImpression" name="forcerImpression">
+    <TD><input type="checkbox" id="forcerImpressionPapier" name="forcerImpressionPapier">
 </TR>
 <tr>
     <TD>&nbsp;</TD>

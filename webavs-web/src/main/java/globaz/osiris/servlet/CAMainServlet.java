@@ -93,7 +93,7 @@ public class CAMainServlet extends FWServlet {
         // Idéalement, cette action doit être faite dans le customize mais nous avons besoin de la session.
         try {
             if (!((CAApplication) GlobazSystem
-                    .getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS)).getCAParametres().isEbill((BSession) session)) {
+                    .getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS)).getCAParametres().isEBillMuscaActifEtDansListeCaisses((BSession) session)) {
                 FWMenuBlackBox.ensureNodeDoesntExist("eBill", "CA-MenuPrincipal");
             }
         } catch (Exception e) {

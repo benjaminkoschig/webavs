@@ -57,7 +57,6 @@ public class CAProcessImportTraitementEBill extends BProcess {
     private static final String SIG_EXTENSION = "_sig.xml";
     private final StringBuilder error = new StringBuilder();
     List<String> filesToSend = new ArrayList<>();
-    private EBillSftpProcessor serviceFtp;
 
     private int nbElements = 0;
     private int nbElementsTraites = 0;
@@ -85,11 +84,11 @@ public class CAProcessImportTraitementEBill extends BProcess {
             this.setSendMailOnError(false);
 
             initBsession();
-            initServiceFtp();
+            EBillSftpProcessor.getInstance();
 
-            boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
 
-            if (isActive) {
+            if (eBillMuscaActif) {
                 importFiles();
                 generationProtocol();
             }
@@ -102,7 +101,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         } finally {
             closeBsession();
-            closeServiceFtp();
+            EBillSftpProcessor.closeServiceFtp();
         }
 
         return true;
@@ -142,24 +141,6 @@ public class CAProcessImportTraitementEBill extends BProcess {
     }
 
     /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
-
-    /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
-        }
-    }
-
-    /**
      * Récupération et traitement des fichiers de traitement eBill
      */
     private void importFiles() {
@@ -167,7 +148,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
             LOG.info("Importation des fichiers de traitement...");
 
             // Nous recherchons tous les fichiers de traitements déposés sur le serveur FTP PostFinance
-            List<String> files = serviceFtp.getListFiles(CAProcessImportTraitementEBill.XML_EXTENSION)
+            List<String> files = EBillSftpProcessor.getInstance().getListFiles(CAProcessImportTraitementEBill.XML_EXTENSION)
                     .stream().filter(fileName -> !fileName.endsWith(SIG_EXTENSION))
                     .collect(Collectors.toList());
 
@@ -196,14 +177,14 @@ public class CAProcessImportTraitementEBill extends BProcess {
         // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichier)) {
 
-            String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
+            String localPath = Jade.getInstance().getPersistenceDir() + EBillSftpProcessor.getFolderInName() + nomFichierDistant;
             File localFile = new File(localPath);
             try {
 
                 // Download du fichier XML
                 try (FileOutputStream retrievedFile = new FileOutputStream(localFile)) {
-                    serviceFtp.retrieveFile(nomFichierDistant, retrievedFile);
-                    serviceFtp.deleteFile(nomFichierDistant);
+                    EBillSftpProcessor.getInstance().retrieveFile(nomFichierDistant, retrievedFile);
+                    EBillSftpProcessor.getInstance().deleteFile(nomFichierDistant);
                 }
 
                 // Traitement du fichier XML
@@ -282,7 +263,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
             }
             eachTraitement.add(getTransaction());
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_ENREGISTRE_FAILED"), eachTraitement.getNumeroAffilie(), eachTraitement.geteBillAccountID(), eachTraitement.getTransactionID());
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_ENREGISTRE_FAILED"), eachTraitement.getNumeroAffilie(), eachTraitement.getEBillAccountID(), eachTraitement.getTransactionID());
             LOG.error(erreurInterne, e);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
@@ -365,7 +346,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
 
     private CATraitementEBill mappingTraitement(CATraitementEBill traitementEBill, ProtocolBillType protocolBillType) {
         traitementEBill.setTransactionID(protocolBillType.getTransactionID());
-        traitementEBill.seteBillAccountID(protocolBillType.getEBillAccountID());
+        traitementEBill.setEBillAccountID(protocolBillType.getEBillAccountID());
         traitementEBill.setNumRefBVR(protocolBillType.getESRReference());
         traitementEBill.setMontantTotal(protocolBillType.getTotalAmount());
         String codeErreurSansPrefixe = StringUtils.stripStart(protocolBillType.getReasonCode(), "0");
@@ -395,7 +376,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 if (updatedSection != null) {
                     CACompteAnnexe compteAnnexe = getCompteAnnexe(traitementEBill, updatedSection.getIdCompteAnnexe());
                     if (compteAnnexe != null) {
-                        traitementEBill.seteBillAccountID(compteAnnexe.geteBillAccountID());
+                        traitementEBill.setEBillAccountID(compteAnnexe.getEBillAccountID());
                         traitementEBill.setNumeroAffilie(compteAnnexe.getIdExterneRole());
                         traitementEBill.setNom(compteAnnexe.getDescription());
                         updatedTraitement = true;
@@ -467,8 +448,8 @@ public class CAProcessImportTraitementEBill extends BProcess {
             // Met à jour l'état eBill de la section et le message d'erreur
             if (manager.size() == 1) {
                 CASection section = (CASection) manager.get(0);
-                section.seteBillEtat(traitementEBill.getEtat().getNumeroEtat());
-                section.seteBillErreur(concatErreurInterneEtExterne(traitementEBill));
+                section.setEBillEtat(traitementEBill.getEtat().getNumeroEtat());
+                section.setEBillErreur(concatErreurInterneEtExterne(traitementEBill));
                 section.update();
                 return section;
             } else {

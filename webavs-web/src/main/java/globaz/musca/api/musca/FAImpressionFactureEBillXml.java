@@ -4,14 +4,12 @@ import ch.globaz.common.document.reference.ReferenceEBill;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.client.JadePublishDocument;
-import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAModuleImpression;
-import globaz.musca.db.facturation.FAPassage;
 import globaz.osiris.api.APISection;
-import globaz.osiris.api.APISectionDescriptor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,12 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Classe permettant de générer la facture eBill au format xml.
@@ -54,12 +57,14 @@ public class FAImpressionFactureEBillXml {
 
     private JadePublishDocument attachedDocument;
     private String montantBulletinSoldes;
+    private String montantSursis;
     private ReferenceEBill eBillFacture;
     private FAEnteteFacture entete;
     private FAEnteteFacture enteteReference;
     private FAAfact afact;
-    private List<Map> lignesParPaireIdExterne;
-    private FAPassage passage;
+    private List<Map> lignes;
+    private String dateFacturation;
+    private String dateEcheance;
     private String billerId;
     private BSession session;
     private String eBillAccountID;
@@ -109,8 +114,12 @@ public class FAImpressionFactureEBillXml {
         if (enteteReference != null) {
             eBillFacture.setIsBulletinsDeSoldes(true);
         }
+        if (!JadeStringUtil.isBlankOrZero(montantSursis)) {
+            eBillFacture.setIsSursis(true);
+        }
+
         // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
-        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.geteBillTransactionID())) {
+        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.getEBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
         }
         if(entete.getTotalFactureCurrency().getBigDecimalValue().compareTo(BigDecimal.valueOf(0)) < 0) {
@@ -124,7 +133,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // init de la référence eBill
-        eBillFacture.initReferenceEBill(entete, passage.getDateFacturation());
+        eBillFacture.initReferenceEBill(entete, dateFacturation);
     }
 
     /**
@@ -225,9 +234,9 @@ public class FAImpressionFactureEBillXml {
             deliveryInfo.setBillerID(Long.parseLong(billerId));
         }
         deliveryInfo.setEBillAccountID(Long.parseLong(eBillAccountID));
-        XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+        XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(dateFacturation);
         deliveryInfo.setDeliveryDate(deliveryDate);
-        deliveryInfo.setTransactionID(entete.geteBillTransactionID());
+        deliveryInfo.setTransactionID(entete.getEBillTransactionID());
 
         // Dans notre cas, on génère systématiquement une facture PDF Appendix : on ajoute le pdf en Base64 en annexe.
         deliveryInfo.setBillDetailsType(BILL_DETAILS_TYPE);
@@ -288,25 +297,24 @@ public class FAImpressionFactureEBillXml {
         InvoiceBillType.Header header = of.createInvoiceBillTypeHeader();
 
         header.setDocumentType(eBillFacture.getDocumentType());
-        header.setDocumentID(entete.geteBillTransactionID());
+        header.setDocumentID(entete.getEBillTransactionID());
 
-        XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
+        XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(dateFacturation);
         header.setDocumentDate(documentDate);
 
         header.setSenderParty(createSenderParty());
         header.setReceiverParty(createReceiverParty());
 
-        // TODO : determiner les dates dans le header.
-        header.setAchievementDate(createAchievementDate(passage.getDateFacturation(), passage.getDateFacturation()));
+        header.setAchievementDate(createAchievementDate(dateFacturation, dateFacturation));
         header.setCurrency(eBillFacture.getDevise());
         // header.setAccountAssignment(createAccountAssignment());
 
         // Dans le cas d'un bulletin de soldes avec factures eBill, ajoute le transactionID de l'entete de reference dans une balise de type FixedReference
         if (eBillFacture.isBulletinsDeSoldesAvecFactureEBill()) {
-            header.getFixedReference().add(createFixedReference(of, enteteReference.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, enteteReference.getEBillTransactionID()));
         // Dans le cas d'une notes de crédit, ajoute le transactionID de l'entete dans une balise de type FixedReference
         } else if (eBillFacture.isNotesCredit()) {
-            header.getFixedReference().add(createFixedReference(of, entete.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, entete.getEBillTransactionID()));
         }
 
         header.setLanguage(entete.getISOLangueTiers().toLowerCase(Locale.ROOT));
@@ -469,13 +477,15 @@ public class FAImpressionFactureEBillXml {
             paymentInformation.setIBAN(iban);
         }
 
-        //TODO : voir comment on peut gérer les accomptes.
-//        BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
-//        InstalmentType instalment = of.createInstalmentType();
-//        instalment.setAmount(new BigDecimal(""));
-//        instalment.setPaymentDueDate("");
-//        instalments.getInstalment().add(instalment);
-//        paymentInformation.set(instalments);
+        if (eBillFacture.isSursis()) {
+            XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(dateFacturation);
+            BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
+            InstalmentType instalment = of.createInstalmentType();
+            instalment.setAmount(new FWCurrency(montantSursis).getBigDecimalValue());
+            instalment.setPaymentDueDate(documentDate);
+            instalments.getInstalment().add(instalment);
+            paymentInformation.getInstalments().add(instalments);
+        }
 
         return paymentInformation;
     }
@@ -490,15 +500,15 @@ public class FAImpressionFactureEBillXml {
         InvoiceBillType.LineItems lineItems = of.createInvoiceBillTypeLineItems();
 
         // Création des LineItems pour les bulletins de soldes
-        if(eBillFacture.isBulletinsDeSoldes() && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemBulletinsDeSoldes(lignesParPaireIdExterne.get(i));
+        if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
+            for (int i = 0; i < lignes.size(); i++) {
+                LineItemType lineItemType = createLineItemBulletinsDeSoldes(lignes.get(i));
                 lineItems.getLineItem().add(lineItemType);
             }
         // Création des LineItems pour les factures
-        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemFactures(lignesParPaireIdExterne.get(i));
+        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
+            for (int i = 0; i < lignes.size(); i++) {
+                LineItemType lineItemType = createLineItemFactures(lignes.get(i));
                 lineItems.getLineItem().add(lineItemType);
             }
         }
@@ -583,7 +593,6 @@ public class FAImpressionFactureEBillXml {
 
         summaryType.setTax(createTaxType());
 
-        // TODO : mettre en place montant déjà payé (bulletin de solde ??)
         summaryType.setTotalAmountPaid(BigDecimal.valueOf(0.00));
 
         if (eBillFacture.isBulletinsDeSoldes()) {
@@ -653,12 +662,12 @@ public class FAImpressionFactureEBillXml {
         this.enteteReference = enteteReference;
     }
 
-    public FAPassage getPassage() {
-        return passage;
+    public String getDateFacturation() {
+        return dateFacturation;
     }
 
-    public void setPassage(FAPassage passage) {
-        this.passage = passage;
+    public void setDateFacturation(String dateFacturation) {
+        this.dateFacturation = dateFacturation;
     }
 
     public String getBillerId() {
@@ -677,11 +686,12 @@ public class FAImpressionFactureEBillXml {
         this.session = session;
     }
 
-    public String getDateEcheance() throws Exception {
-        APISectionDescriptor sectionDescriptor = ((FAApplication) getSession().getApplication()).getSectionDescriptor(getSession());
-        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), passage
-                .getDateFacturation(), "", "");
-        return sectionDescriptor.getDateEcheanceFacturation();
+    public String getDateEcheance() {
+        return dateEcheance;
+    }
+
+    public void setDateEcheance(String dateEcheance) {
+        this.dateEcheance = dateEcheance;
     }
 
     public FAAfact getAfact() {
@@ -700,11 +710,11 @@ public class FAImpressionFactureEBillXml {
         this.attachedDocument = attachedDocument;
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         this.eBillAccountID = eBillAccountID;
     }
 
@@ -716,12 +726,20 @@ public class FAImpressionFactureEBillXml {
         this.montantBulletinSoldes = montantBulletinSoldes;
     }
 
-    public List<Map> getLignesParPaireIdExterne() {
-        return lignesParPaireIdExterne;
+    public String getMontantSursis() {
+        return montantSursis;
     }
 
-    public void setLignesParPaireIdExterne(List<Map> lignesParPaireIdExterne) {
-        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
+    public void setMontantSursis(String montantSursis) {
+        this.montantSursis = montantSursis;
+    }
+
+    public List<Map> getLignes() {
+        return lignes;
+    }
+
+    public void setLignes(List<Map> lignes) {
+        this.lignes = lignes;
     }
 
     public void setReference(String reference) {

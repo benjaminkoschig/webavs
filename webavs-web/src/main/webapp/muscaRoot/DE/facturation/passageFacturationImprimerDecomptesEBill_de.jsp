@@ -30,7 +30,7 @@
     }
 
     function clearEBillInputs() {
-        $("#forcerImpression").attr("checked",false);
+        $("#forcerImpressionPapier").attr("checked",false);
         $("#typeFacture").val("automatique");
     }
 
@@ -94,7 +94,7 @@
     }
 
     function clearEBillInputs() {
-        $("#forcerImpression").attr("checked",false);
+        $("#forcerImpressionPapier").attr("checked",false);
         $("#typeFacture").val("automatique");
     }
 
@@ -220,7 +220,7 @@
 </TR>
 <TR id="impressionPapier">
     <TD>Papierdruck forcieren</TD>
-    <TD><input type="checkbox" id="forcerImpression" name="forcerImpression">
+    <TD><input type="checkbox" id="forcerImpressionPapier" name="forcerImpressionPapier">
 </TR>
 <tr ><TD>&nbsp;</TD></tr><tr ><TD>&nbsp;</TD></tr>
 <%-- /tpl:put --%>

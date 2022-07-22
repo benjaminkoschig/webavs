@@ -94,10 +94,10 @@
 </TD>
 <TD class="mtd" nowrap onClick="<%=actionDetail%>" width="200" align="left"><%=_ligne.getResumeContentieux()%>
 </TD>
-<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="50" align="left"><% if (_ligne.geteBillEtat() != null) {%>
-    <IMG src="<%= servletContext %>/images/<%=viewBean.geteBillEtatTraitementImage(_ligne.geteBillEtat())%>"
-         title="TransactionID : <%=_ligne.geteBillTransactionID()%>"> <%} else { %> &nbsp; <% } %></TD>
-<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="200" align="left"><%=_ligne.geteBillErreur()%>
+<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="50" align="left"><% if (_ligne.getEBillEtat() != null) {%>
+    <IMG src="<%= servletContext %>/images/<%=viewBean.getEBillEtatTraitementImage(_ligne.getEBillEtat())%>"
+         title="TransactionID : <%=_ligne.getEBillTransactionID()%>"> <%} else { %> &nbsp; <% } %></TD>
+<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="200" align="left"><%=_ligne.getEBillErreur()%>
 </TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
