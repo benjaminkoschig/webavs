@@ -291,7 +291,7 @@ public class PRTiersHelper {
         avsPerson.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
 
         if (session.getCurrentThreadTransaction() != null) {
-            avsPerson.add((session).getCurrentThreadTransaction());
+            avsPerson.add(session.getCurrentThreadTransaction());
         } else {
             // HACK: creating a transaction to insert a "tiers"
             BITransaction transaction = (session).newTransaction();

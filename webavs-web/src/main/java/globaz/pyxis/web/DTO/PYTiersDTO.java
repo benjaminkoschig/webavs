@@ -11,7 +11,7 @@ public class PYTiersDTO {
     private String id = "";
 
     // Mandatory fields
-    private String name;
+    private String surname;
     private String language;
     private String street;
     private String streetNumber;
@@ -21,7 +21,7 @@ public class PYTiersDTO {
     // Physical person's mandatory fields
     private Boolean isPhysicalPerson;
     private String title;
-    private String surname;
+    private String name;
 
     // Mandatory for a physical person, impossible for a legal person
     private String nss;
@@ -86,13 +86,13 @@ public class PYTiersDTO {
 
         if (!isPhysicalPerson) {
             return (
-                Stream.of(name, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
                 && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValid(this)
             );
         } else {
             return (
-                Stream.of(title, name, surname, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValid(this)
             );
         }
