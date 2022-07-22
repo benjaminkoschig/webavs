@@ -16,7 +16,7 @@ public class REAcorService {
             BSession session = BSessionUtil.getSessionFromThreadContext();
             REExportationCalculAcor inHostService = new REExportationCalculAcor(session, idDemande);
             InHostType inHost = inHostService.createInHost();
-            inHost.setVersionSchema("6.0");
+            inHost.setVersionSchema("7.0");
             return inHost;
         } catch (Exception e) {
             throw new RETechnicalException(e);
