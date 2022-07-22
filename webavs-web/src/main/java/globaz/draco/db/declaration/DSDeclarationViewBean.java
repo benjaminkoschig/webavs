@@ -496,7 +496,9 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             particulariteMana.setSession(getSession());
             particulariteMana.setForAffiliationId(getAffiliationId());
             particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
-            particulariteMana.setDateDebutLessOrEqual("31.12." + annee);
+            if(!JadeStringUtil.isBlankOrZero(annee)){
+                particulariteMana.setDateDebutLessOrEqual("31.12." + annee);
+            }
             particulariteMana.find(BManager.SIZE_USEDEFAULT);
             if (particulariteMana.size() > 0) {
                 String numAffilie = getNumeroAffilie();
