@@ -19,9 +19,18 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.*;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.JAUtil;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
@@ -60,9 +69,15 @@ import globaz.osiris.utils.CADateUtil;
 import globaz.pyxis.application.TIApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
