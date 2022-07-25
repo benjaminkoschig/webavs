@@ -18,8 +18,6 @@ public class PYExecuteService extends BProcess {
      * @return dto JSON contenant l'id du tiers créé
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
-        //TODO: check that token is valid
-
         try {
             String idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
             dto.setId(idTiers);
@@ -37,6 +35,18 @@ public class PYExecuteService extends BProcess {
             throw new PYInternalException(e);
         }
 
+        return dto;
+    }
+
+    /**
+     * Modification de tiers
+     *
+     * @param dto JSON mappé en objet qui contient des informations sur les tiers
+     * @param token header d'authentification
+     * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
+     */
+    public PYTiersDTO updateTiers(PYTiersDTO dto, String token) {
+        // TODO: do the updating
         return dto;
     }
 

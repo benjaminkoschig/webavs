@@ -30,12 +30,18 @@ public class PYApiRestExecute {
      */
     @POST
     @Path(value = "create_tiers")
-    public Response createTiers(@HeaderParam("authorization") String token, PYTiersDTO dto){
+    public Response createTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
         LOG.info("create_tiers");
         return execute(token, dto, service::createTiers, dto::isValid);
     }
 
-    // TODO: Add update endpoint
+    // TODO: Update endpoint
+    @PUT
+    @Path(value = "update_tiers")
+    public Response updateTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
+        LOG.info("update_tiers");
+        return execute(token, dto, service::updateTiers, dto::isValidUpdate);
+    }
 
     /**
      * Execution de l'action du web service, exécution de la validation et création de la réponse.

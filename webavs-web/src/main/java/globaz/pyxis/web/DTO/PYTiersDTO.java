@@ -97,4 +97,9 @@ public class PYTiersDTO {
             );
         }
     }
+
+    @JsonIgnore
+    public Boolean isValidUpdate() {
+        return Stream.of(id).noneMatch(JadeStringUtil::isEmpty);
+    }
 }
