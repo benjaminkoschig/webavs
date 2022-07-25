@@ -88,18 +88,21 @@ public class PYTiersDTO {
             return (
                 Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
                 && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValid(this)
+                && PYValidateDTO.isValidForCreation(this)
             );
         } else {
             return (
                 Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValid(this)
+                && PYValidateDTO.isValidForCreation(this)
             );
         }
     }
 
     @JsonIgnore
     public Boolean isValidUpdate() {
-        return Stream.of(id).noneMatch(JadeStringUtil::isEmpty);
+        return (
+            Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
+            && PYValidateDTO.isValidForUpdate(this)
+        );
     }
 }

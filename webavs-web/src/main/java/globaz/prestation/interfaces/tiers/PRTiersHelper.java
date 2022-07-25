@@ -45,6 +45,7 @@ import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -330,10 +331,22 @@ public class PRTiersHelper {
         avsPerson.setDateModifDesignation1(date);
         avsPerson.setMotifModifDesignation2(TIHistoriqueContribuable.CS_CREATION);
         avsPerson.setDateModifDesignation2(date);
+        avsPerson.setMotifModifDesignation3(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifDesignation3(date);
+        avsPerson.setMotifModifDesignation4(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifDesignation4(date);
 
         // TODO: update all the fields
-        avsPerson.setDesignation1(dto.getSurname());
-        avsPerson.setDesignation2(dto.getName());
+        if(dto.getSurname() != null)
+            avsPerson.setDesignation1(dto.getSurname());
+        if(dto.getName() != null)
+            avsPerson.setDesignation2(dto.getName());
+        if(dto.getName1() != null)
+            avsPerson.setDesignation3(dto.getName1());
+        if(dto.getName2() != null)
+            avsPerson.setDesignation4(dto.getName2());
+//        if(dto.getLanguage() != null)
+//            avsPerson.setLangue(dto.getLanguage());
 
         if (session.getCurrentThreadTransaction() != null) {
             avsPerson.update(session.getCurrentThreadTransaction());
