@@ -51,8 +51,8 @@
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema> -->
+ 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl>
+ 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema>
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 
