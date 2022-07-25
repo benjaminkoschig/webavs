@@ -37,6 +37,7 @@ import globaz.corvus.db.ordresversements.RESoldePourRestitutionManager;
 import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.db.retenues.RERetenuesPaiement;
@@ -2403,6 +2404,13 @@ public class REDecisionOO extends REAbstractJobOO {
 
     private void ajouteTexteImpotSource(StringBuffer buffer, REDemandeRente demandeRente) throws Exception {
         // récupérer les créancier et vérifier si un des créanciers est de type impôt source
+        if(!ajouteCreancierImpotSourceTexte(buffer, demandeRente)) {
+            // s'il n'y a pas de créancier, récupérer les retenue et vérifier si une des retenue est de type impôt source
+            ajouteRetenueImpotSourceTexte(buffer, demandeRente);
+        }
+    }
+
+    private boolean ajouteCreancierImpotSourceTexte(StringBuffer buffer, REDemandeRente demandeRente) throws Exception{
         RECreancierManager creMgr = new RECreancierManager();
         creMgr.setSession(getSession());
         creMgr.setForCsType(IRECreancier.CS_IMPOT_SOURCE);
@@ -2418,11 +2426,21 @@ public class REDecisionOO extends REAbstractJobOO {
                         JANumberFormatter.format(creancierImpotSource.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
                         JANumberFormatter.format(creancierImpotSource.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
             }
-        } else {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ajouteRetenueImpotSourceTexte(StringBuffer buffer, REDemandeRente demandeRente) throws Exception{
+        RERenteAccJoinTblTiersJoinDemRenteManager renteManager = new RERenteAccJoinTblTiersJoinDemRenteManager();
+        renteManager.setSession(getSession());
+        renteManager.setForNoDemandeRente(demandeRente.getIdDemandeRente());
+        renteManager.find(BManager.SIZE_USEDEFAULT);
+        for(int i = 0; i < renteManager.size(); i++){
             // Retenue
             RERetenuesPaiementManager retenueManager = new RERetenuesPaiementManager();
             retenueManager.setSession(getSession());
-            retenueManager.setForIdRenteAccordee(demandeRente.getIdDemandeRente());
+            retenueManager.setForIdRenteAccordee(renteManager.getEntity(i).getId());
             retenueManager.find(getSession().getCurrentThreadTransaction());
 
             RERetenuesPaiement retenue = (RERetenuesPaiement) retenueManager.getFirstEntity();
@@ -2432,7 +2450,9 @@ public class REDecisionOO extends REAbstractJobOO {
                         JANumberFormatter.format(retenue.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
                         JANumberFormatter.format(retenue.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
             }
+            return true;
         }
+        return false;
     }
 
     private void ajouteTexteImpotSource(StringBuffer buffer, String revenuAnnuelDeterminant, String tauxImposition) {
