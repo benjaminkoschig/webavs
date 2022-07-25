@@ -1412,6 +1412,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
                 FWCurrency totalMontantCotisation = new FWCurrency(0);
                 FWCurrency totalMontantImpotSource = new FWCurrency(0);
+                FWCurrency tauxImpotSource = new FWCurrency(0);
 
                 String libelleCot = document.getTextes(3).getTexte(15).getDescription();
                 String libelleAVS = "";
@@ -1423,6 +1424,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
                     if (ijCot.getIsImpotSource().booleanValue() == true) {
                         totalMontantImpotSource.add(ijCot.getMontant());
+                        tauxImpotSource.add(ijCot.getTaux());
                     }
 
                     else {
@@ -1491,7 +1493,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
                 // Affichage de l'impôt à la source
                 if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
-                    champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
+                    champs.put("FIELD_DETAIL_IMPOT",PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),"{tauxImpotSource}",tauxImpotSource.toString()+"%"));
 
                     champs.put("FIELD_MONTANT_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(22)
                             .getDescription(), "{montantImpot}",
