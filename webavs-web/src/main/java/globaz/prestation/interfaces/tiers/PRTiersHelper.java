@@ -262,7 +262,6 @@ public class PRTiersHelper {
      * @throws Exception
      */
     public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
-        /*ITIPersonneAvs*/
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
@@ -294,7 +293,7 @@ public class PRTiersHelper {
         if (session.getCurrentThreadTransaction() != null) {
             avsPerson.add(session.getCurrentThreadTransaction());
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-                throw new PYBadRequestException("Erreur lors de l'assignation de tiers, " + session.getCurrentThreadTransaction().getErrors().toString());
+                throw new PYBadRequestException("Erreur DB lors de la création de tiers: " + session.getCurrentThreadTransaction().getErrors().toString());
             }
         } else {
             // HACK: creating a transaction to insert a "tiers"
@@ -315,6 +314,53 @@ public class PRTiersHelper {
             }
         }
         return avsPerson.getIdTiers();
+    }
+
+    public static final String updateTiers(BSession session, PYTiersDTO dto) throws Exception {
+        ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
+
+        String date = "20121231"; // TODO: This should be given by the user, maybe extend the DTO to add this/these dates
+
+        // Get the tiers from database
+        avsPerson.setIdTiers(dto.getId());
+        avsPerson.retrieve(session.getCurrentThreadTransaction());
+
+        // We need to set a date and a reason for the update(s)
+        avsPerson.setMotifModifDesignation1(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifDesignation1(date);
+        avsPerson.setMotifModifDesignation2(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifDesignation2(date);
+
+        // TODO: update all the fields
+        avsPerson.setDesignation1(dto.getSurname());
+        avsPerson.setDesignation2(dto.getName());
+
+        if (session.getCurrentThreadTransaction() != null) {
+            avsPerson.update(session.getCurrentThreadTransaction());
+            System.err.println(session.getCurrentThreadTransaction().getErrors());
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                throw new PYBadRequestException("Erreur DB lors de la mise à jour du tiers: " + session.getCurrentThreadTransaction().getErrors().toString());
+            }
+        } else {
+            // HACK: creating a transaction to insert a "tiers"
+            BITransaction transaction = (session).newTransaction();
+
+            try {
+                avsPerson.update(transaction);
+                PRTiersHelper.addRole(session, transaction, avsPerson.getIdTiers());
+
+            } catch (Exception e) {
+                transaction.setRollbackOnly();
+            } finally {
+                transaction.closeTransaction();
+                if (transaction.isRollbackOnly()) {
+                } else {
+                    transaction.commit();
+                }
+            }
+        }
+
+        return "TODO: return update date";
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)

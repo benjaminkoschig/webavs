@@ -46,7 +46,23 @@ public class PYExecuteService extends BProcess {
      * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
     public PYTiersDTO updateTiers(PYTiersDTO dto, String token) {
-        // TODO: do the updating
+        // TODO: upgrade the updating
+        try {
+            String date = PRTiersHelper.updateTiers(getSession(), dto);
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la modification du tiers: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la modification du tiers: " + e);
+            throw new PYInternalException(e);
+        }
+
         return dto;
     }
 
