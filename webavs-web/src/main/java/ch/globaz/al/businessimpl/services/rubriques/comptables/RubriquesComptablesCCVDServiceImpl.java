@@ -9,7 +9,6 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesCCVDService;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.naos.business.data.AssuranceInfo;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 
@@ -151,7 +150,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
         } else if (RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_TSE.equals(rubriqueAffiliation) || RubriquesComptablesCCVDService.COTIS_ALLOC_FAM_LAVS.equals(rubriqueAffiliation)) {
             return getRubrique(date, ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_TSE_IS);
         }
-            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_IS);
+            return getRubrique(date, ALConstRubriques.RUBRIQUE_STANDARD_SALARIE_IS);
     }
 
     @Override
@@ -296,7 +295,7 @@ public class RubriquesComptablesCCVDServiceImpl extends RubriquesComptablesServi
         rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_INDEPENDANT_IS);
         rubriques.add(ALConstRubriques.RUBRIQUE_CAISSE_AGRICOLE_IS);
         rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS);
-        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_IS);
+        rubriques.add(ALConstRubriques.RUBRIQUE_STANDARD_SALARIE_IS);
 
         return rubriques;
     }
