@@ -124,26 +124,6 @@ public class APCotisation extends BEntity {
                 nomExterne = ((AFTauxAssurance) tauxList.get(0)).getAssurance().getAssuranceLibelleCourt();
                 taux = ((AFTauxAssurance) tauxList.get(0)).getValeurEmployeur();
             }
-        } else if (APCotisation.TYPE_IMPOT.equals(type)) {
-            // il s'agit d'un impot a la source, on donne le nom par defaut et
-            // on verifie le taux
-            nomExterne = getSession().getLabel("IMPOT_SOURCE");
-
-            // mise à jour du taux impot source seulement si taux non défini
-            if (JadeStringUtil.isDecimalEmpty(taux)) {
-                // le taux d'imposition est stocke dans la table des taux par
-                // canton
-                PRTauxImpositionManager mgr = new PRTauxImpositionManager();
-
-                mgr.setSession(getSession());
-                mgr.setForIdTauxImposition(idExterne);
-                mgr.setForPeriode(dateDebut, dateFin);
-                mgr.find();
-
-                if (!mgr.isEmpty()) {
-                    taux = ((PRTauxImposition) mgr.get(0)).getTaux();
-                }
-            }
         }
     }
 
