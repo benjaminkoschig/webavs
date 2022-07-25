@@ -4,7 +4,9 @@ import globaz.globall.db.BSession;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.musca.api.musca.FAImpressionFactureEBillXml;
+import globaz.musca.api.musca.PaireIdEcheanceParDateExigibilite;
 import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,22 +21,26 @@ public class EBillFichier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EBillFichier.class);
 
-    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, String montantSursis, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation, String dateEcheance, String billerId, BSession session) throws Exception {
+    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, JadePublishDocument attachedDocument, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis) throws Exception {
+
+        String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEBillBillerId();
 
         // Initialisation de l'objet à marshaller dans la facture eBill
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
+        factureEBill.setEBillAccountID(compteAnnexe.getEBillAccountID());
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
+        factureEBill.setMontantFacture(montantFacture);
+        factureEBill.setLignes(lignes);
+        factureEBill.setLignesSursis(lignesSursis);
+        factureEBill.setReference(reference);
+        factureEBill.setAttachedDocument(attachedDocument);
         factureEBill.setDateFacturation(dateFacturation);
         factureEBill.setDateEcheance(dateEcheance);
-        factureEBill.setReference(reference);
-        factureEBill.setLignes(lignes);
-        factureEBill.setBillerId(billerId);
+        factureEBill.setDateOctroi(dateOctroi);
         factureEBill.setSession(session);
-        factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
-        factureEBill.setMontantSursis(montantSursis);
-        factureEBill.setAttachedDocument(attachedDocument);
-        factureEBill.setEBillAccountID(compteAnnexe.getEBillAccountID());
+        factureEBill.setTitreSursis(titreSursis);
+        factureEBill.setBillerId(billerId);
 
         // Init de la facture eBill
         factureEBill.initFactureEBill();

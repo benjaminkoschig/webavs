@@ -484,15 +484,18 @@ public class CAParametres {
     }
 
     public boolean isEBillAquilaActif(){
-        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE));
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
     }
 
     public boolean isEBillOsirisActif(){
-        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE));
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
     }
 
     public boolean isEBillMuscaActif(){
-        return Boolean.valueOf(JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_MUSCA_EBILL_ACTIVE));
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_MUSCA_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
     }
 
     public String getEBillBillerId(){

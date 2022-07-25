@@ -17,7 +17,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
-import globaz.musca.api.musca.PaireIdEcheanceIdPlanRecouvrementEBill;
+import globaz.musca.api.musca.PaireIdEcheanceParDateExigibilite;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.application.CAParametres;
 import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
@@ -47,8 +47,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME = "CAIEcheancierBVR4_QR";
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesSursis = new LinkedHashMap();
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referencesSursis = new LinkedHashMap();
+    public Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis = new LinkedHashMap();
+    public Map<PaireIdEcheanceParDateExigibilite, String> referencesSursis = new LinkedHashMap();
     private ReferenceBVR bvr = null;
     private String centimes;
     private double cumulSolde = 0;
@@ -168,10 +168,10 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
 
                 // Génération du document QR
                 qrFacture.initQR(this, qrFactures);
-                referencesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), qrFacture.getReference());
+                referencesSursis.put(new PaireIdEcheanceParDateExigibilite(echeance.getIdEcheancePlan(), echeance.getDateExigibilite()), qrFacture.getReference());
             } else {
                 fillBVR();
-                referencesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), getBvr().getRefNoSpace());
+                referencesSursis.put(new PaireIdEcheanceParDateExigibilite(echeance.getIdEcheancePlan(), echeance.getDateExigibilite()), getBvr().getRefNoSpace());
             }
 
             setColumnHeader(1, _getProperty(CADocumentManager.JASP_PROP_BODY_CACLIBELLE, ""));
@@ -198,7 +198,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
             if (eBillOsirisActif && plan.getEBillPrintable()) {
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                    lignesSursis.put(new PaireIdEcheanceIdPlanRecouvrementEBill(echeance.getIdEcheancePlan(), echeance.getIdPlanRecouvrement()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
+                    lignesSursis.put(new PaireIdEcheanceParDateExigibilite(echeance.getIdEcheancePlan(), echeance.getDateExigibilite()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
                 }
             }
 
@@ -422,19 +422,19 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         plan = planRecouvrement;
     }
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> getLignesSursis() {
+    public Map<PaireIdEcheanceParDateExigibilite, List<Map>> getLignesSursis() {
         return lignesSursis;
     }
 
-    public void setLignesSursis(Map<PaireIdEcheanceIdPlanRecouvrementEBill, List<Map>> lignesSursis) {
+    public void setLignesSursis(Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis) {
         this.lignesSursis = lignesSursis;
     }
 
-    public Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> getReferencesSursis() {
+    public Map<PaireIdEcheanceParDateExigibilite, String> getReferencesSursis() {
         return referencesSursis;
     }
 
-    public void setReferencesSursis(Map<PaireIdEcheanceIdPlanRecouvrementEBill, String> referencesSursis) {
+    public void setReferencesSursis(Map<PaireIdEcheanceParDateExigibilite, String> referencesSursis) {
         this.referencesSursis = referencesSursis;
     }
 }
