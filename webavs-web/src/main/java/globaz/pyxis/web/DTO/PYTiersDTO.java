@@ -100,9 +100,19 @@ public class PYTiersDTO {
 
     @JsonIgnore
     public Boolean isValidUpdate() {
-        return (
-            Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
-            && PYValidateDTO.isValidForUpdate(this)
-        );
+        // TODO: Decide how we're doing it for page 2 and other fields
+
+        if (Boolean.TRUE.equals(isPhysicalPerson)){
+            return (
+                Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValidForUpdate(this)
+            );
+        } else {
+            return (
+                Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
+                    && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
+                    && PYValidateDTO.isValidForUpdate(this)
+            );
+        }
     }
 }

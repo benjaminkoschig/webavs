@@ -62,7 +62,7 @@ public class PYValidateDTO {
             getTitleAsSystemCode(dto);
         if (dto.getLanguage() != null)
             checkAndSetLanguageAsSystemCode(dto);
-        if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) {
+        if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) { // TODO: This is bad since that if lets unvalidated data through...
             if (dto.getNss() != null)
                 checkNSS(dto);
             if (dto.getBirthDate() != null)
@@ -86,10 +86,6 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getTitleAsSystemCode(PYTiersDTO dto) {
-        if (dto.getTitle() == null) {
-            dto.setTitle(Titre.UNDEFINED.getCodeSysteme().toString());
-        }
-
         switch ((dto.getTitle() != null) ? JadeStringUtil.toLowerCase(dto.getTitle()) : "") {
             case "monsieur":
             case "m":
@@ -101,6 +97,9 @@ public class PYValidateDTO {
                 break;
             case "madame, monsieur":
                 dto.setTitle(ITITiers.CS_HORIE);
+                break;
+            case "":
+                dto.setTitle(Titre.UNDEFINED.getCodeSysteme().toString());
                 break;
             default: // If the title isn't anything standard, check that it's a valid system code
                 try {

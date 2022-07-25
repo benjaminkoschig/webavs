@@ -35,7 +35,6 @@ public class PYApiRestExecute {
         return execute(token, dto, service::createTiers, dto::isValid);
     }
 
-    // TODO: Update endpoint
     @PUT
     @Path(value = "update_tiers")
     public Response updateTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {

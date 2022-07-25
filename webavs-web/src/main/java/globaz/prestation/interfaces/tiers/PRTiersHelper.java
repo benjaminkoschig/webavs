@@ -259,7 +259,7 @@ public class PRTiersHelper {
      *
      * @param session
      * @param dto
-     * @return le
+     * @return le dto avec l'id du tiers
      * @throws Exception
      */
     public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
@@ -317,7 +317,15 @@ public class PRTiersHelper {
         return avsPerson.getIdTiers();
     }
 
-    public static final String updateTiers(BSession session, PYTiersDTO dto) throws Exception {
+    /**
+     * Méthode pour mettre à jour un tiers (page 1)
+     *
+     * @param session
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public static final String updateTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         String date = "20121231"; // TODO: This should be given by the user, maybe extend the DTO to add this/these dates
@@ -327,6 +335,8 @@ public class PRTiersHelper {
         avsPerson.retrieve(session.getCurrentThreadTransaction());
 
         // We need to set a date and a reason for the update(s)
+        avsPerson.setMotifModifTitre(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifTitre(date);
         avsPerson.setMotifModifDesignation1(TIHistoriqueContribuable.CS_CREATION);
         avsPerson.setDateModifDesignation1(date);
         avsPerson.setMotifModifDesignation2(TIHistoriqueContribuable.CS_CREATION);
@@ -335,19 +345,44 @@ public class PRTiersHelper {
         avsPerson.setDateModifDesignation3(date);
         avsPerson.setMotifModifDesignation4(TIHistoriqueContribuable.CS_CREATION);
         avsPerson.setDateModifDesignation4(date);
+        avsPerson.setMotifModifAvs(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifAvs(date);
 
-        // TODO: update all the fields
-        if(dto.getSurname() != null)
+        // Update avsPerson with all the new values as long as they aren't null
+        if (dto.getTitle() != null)
+            avsPerson.setTitreTiers(dto.getTitle());
+        if (dto.getSurname() != null)
             avsPerson.setDesignation1(dto.getSurname());
-        if(dto.getName() != null)
+        if (dto.getName() != null)
             avsPerson.setDesignation2(dto.getName());
-        if(dto.getName1() != null)
+        if (dto.getName1() != null)
             avsPerson.setDesignation3(dto.getName1());
-        if(dto.getName2() != null)
+        if (dto.getName2() != null)
             avsPerson.setDesignation4(dto.getName2());
-//        if(dto.getLanguage() != null)
-//            avsPerson.setLangue(dto.getLanguage());
+        if (dto.getNss() != null)
+            avsPerson.setNumAvsActuel(dto.getNss());
+        if (dto.getBirthDate() != null)
+            avsPerson.setDateNaissance(dto.getBirthDate());
+        if (dto.getDeathDate() != null)
+            avsPerson.setDateDeces(dto.getDeathDate());
+        if (dto.getSex() != null)
+            avsPerson.setSexe(dto.getSex());
+        if (dto.getCivilStatus() != null)
+            avsPerson.setEtatCivil(dto.getCivilStatus());
+        if(dto.getLanguage() != null)
+            avsPerson.setLangue(dto.getLanguage());
+        if (dto.getCountry() != null)
+            avsPerson.setIdPays(dto.getCountry());
+        if (dto.getTaxpayerNumber() != null)
+            avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
+        if (dto.getIsPhysicalPerson() != null) {
+            avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
+            avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
+        }
+        if (dto.getIsInactive() != null)
+            avsPerson.setInactif(dto.getIsInactive());
 
+        // Make the actual transaction with the database in order to update the tiers
         if (session.getCurrentThreadTransaction() != null) {
             avsPerson.update(session.getCurrentThreadTransaction());
             System.err.println(session.getCurrentThreadTransaction().getErrors());
@@ -373,7 +408,7 @@ public class PRTiersHelper {
             }
         }
 
-        return "TODO: return update date";
+        return "TODO: return update date"; // TODO: Return an updated dto of sorts
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)

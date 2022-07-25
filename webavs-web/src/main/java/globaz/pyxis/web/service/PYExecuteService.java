@@ -48,7 +48,7 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO updateTiers(PYTiersDTO dto, String token) {
         // TODO: upgrade the updating
         try {
-            String date = PRTiersHelper.updateTiers(getSession(), dto);
+            String date = PRTiersHelper.updateTiersPage1(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);
