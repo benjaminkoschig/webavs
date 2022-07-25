@@ -476,7 +476,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     try {
                         EBillSftpProcessor.getInstance();
                         traiterBulletinDeSoldesEBillOsiris();
-                        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
+                        ajouteInfoEBillToEmail();
                     } catch (Exception exception) {
                         LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                         getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -486,6 +486,11 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 }
             }
         }
+    }
+
+    private void ajouteInfoEBillToEmail() {
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
+        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
 
     /**
@@ -665,9 +670,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 FAEnteteFacture enteteReference = getEnteteFactureReference(lignes.getKey());
 
                 String reference = referencesSolde.get(lignes.getKey());
-                JadePublishDocument attachedDocument = findAndReturnAttachedDocument(entete, getAttachedDocuments());
-                creerFichierEBillOsiris(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocument, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection());
-                factureEBill++;
+                List<JadePublishDocument> attachedDocuments = findAndReturnAttachedDocument(entete, getAttachedDocuments());
+                if (!attachedDocuments.isEmpty()) {
+                    creerFichierEBillOsiris(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection());
+                }
             }
         }
     }
@@ -702,26 +708,25 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Méthode permettant de rechercher le fichier généré durant l'impression
-     * de le retourner pour être ajouter à la facture eBill et de le supprimer
-     * de la listes de fichiers à merger dans l'impression actuelle
+     * de le retourner pour être ajouter à la facture eBill
      *
      * @param entete : l'entete qui permet d'identifier le fichier à retourner
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @return le fichier généré durant l'impression
      */
-    public JadePublishDocument findAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
-        JadePublishDocument attachedDocument = null;
-        Iterator<JadePublishDocument> jadePublishDocumentIterator = attachedDocuments.iterator();
-        while (jadePublishDocumentIterator.hasNext()) {
-            final JadePublishDocument jadePublishDocument = jadePublishDocumentIterator.next();
+    public List<JadePublishDocument> findAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
+        List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
+        Iterator<JadePublishDocument> it = attachedDocuments.iterator();
+        while (it.hasNext()) {
+            final JadePublishDocument jadePublishDocument = it.next();
             if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
                     && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))
                     && jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE)) {
-                attachedDocument = jadePublishDocument;
+                filteredAttachedDocuments.add(jadePublishDocument);
                 break;
             }
         }
-        return attachedDocument;
+        return filteredAttachedDocuments;
     }
 
     private String getDateFacturationFromSection(CASection section) throws JAException {
@@ -745,12 +750,12 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
      * @param lignes                  : contient les lignes de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
-     * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateFacturation         : la date de facturation
      * @param section                 : la section
      * @throws Exception
      */
-    private void creerFichierEBillOsiris(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation, CASection section) throws Exception {
+    private void creerFichierEBillOsiris(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -762,7 +767,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID());
 
         String dateEcheance = dateFacturation;
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocument, dateFacturation, dateEcheance, null, getSession(), null);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
+
+        factureEBill++;
     }
 
     /**

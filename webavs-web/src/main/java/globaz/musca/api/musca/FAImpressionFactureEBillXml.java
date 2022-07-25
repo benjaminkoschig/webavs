@@ -60,7 +60,7 @@ public class FAImpressionFactureEBillXml {
     private List<Map> lignes;
     private Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis;
     private String reference;
-    private JadePublishDocument attachedDocument;
+    private List<JadePublishDocument> attachedDocuments;
     private String dateFacturation;
     private String dateEcheance;
     private String dateOctroi;
@@ -207,25 +207,28 @@ public class FAImpressionFactureEBillXml {
     }
 
     /**
-     * Création de la balise qui vas contenir le fichier original généré
-     * par le processus d'impression classique encodé en base64.
+     * Création de la balise qui vas contenir le ou les fichiers originaux générés
+     * par le processus d'impression classique encodés en base64.
      *
      * @return l'objet de type AppendixType contenant le fichier encodé en base 64
      */
     private AppendixType createAppendix() throws IOException {
-        if (getAttachedDocument() != null) {
-            ObjectFactory of = new ObjectFactory();
-            String pathFile = getAttachedDocument().getDocumentLocation();
+        ObjectFactory of = new ObjectFactory();
+        AppendixType appendixType = of.createAppendixType();
+        for (JadePublishDocument  attachedDocument : getAttachedDocuments()) {
+            String pathFile = attachedDocument.getDocumentLocation();
             byte[] inFileBytes = Files.readAllBytes(Paths.get(pathFile));
             String encoded = Base64.getEncoder().encodeToString(inFileBytes);
-            AppendixType appendixType = of.createAppendixType();
             AppendixType.Document appendixTypeDocument = of.createAppendixTypeDocument();
             appendixTypeDocument.setMimeType(APPLICATION_PDF);
             appendixTypeDocument.setValue(encoded);
             appendixType.getDocument().add(appendixTypeDocument);
-            return appendixType;
         }
-        return null;
+        if (!appendixType.getDocument().isEmpty()) {
+            return appendixType;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -511,7 +514,7 @@ public class FAImpressionFactureEBillXml {
      */
     private InstalmentType createInstalment(ObjectFactory of, BillHeaderType.PaymentInformation.Instalments instalments, Map.Entry<PaireIdEcheanceParDateExigibilite, List<Map>> ligneSursis, int counter) {
         InstalmentType instalment = of.createInstalmentType();
-        instalment.setDescription(ligneSursis.getValue().get(0).get("COL_1") != null ? String.valueOf((Integer) ligneSursis.getValue().get(0).get("COL_1")) : String.valueOf(counter));
+        instalment.setDescription(ligneSursis.getValue().get(0).get("COL_1") != null ? String.valueOf(ligneSursis.getValue().get(0).get("COL_1")) : String.valueOf(counter));
         instalment.setAmount(ligneSursis.getValue().get(0).get("COL_6") != null ? BigDecimal.valueOf((Double) ligneSursis.getValue().get(0).get("COL_6")) : null);
         instalment.setPaymentDueDate(convertStringDateToXmlCalendarDate(ligneSursis.getKey().getDateExigibilite()));
         instalment.setESRReferenceNr(reference.replaceAll("\\s", ""));
@@ -757,12 +760,12 @@ public class FAImpressionFactureEBillXml {
         this.dateOctroi = dateOctroi;
     }
 
-    public JadePublishDocument getAttachedDocument() {
-        return attachedDocument;
+    public List<JadePublishDocument> getAttachedDocuments() {
+        return attachedDocuments;
     }
 
-    public void setAttachedDocument(JadePublishDocument attachedDocument) {
-        this.attachedDocument = attachedDocument;
+    public void setAttachedDocuments(List<JadePublishDocument> attachedDocuments) {
+        this.attachedDocuments = attachedDocuments;
     }
 
     public String getEBillAccountID() {

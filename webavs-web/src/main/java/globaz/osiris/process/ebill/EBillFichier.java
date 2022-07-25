@@ -21,7 +21,7 @@ public class EBillFichier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EBillFichier.class);
 
-    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, JadePublishDocument attachedDocument, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis) throws Exception {
+    public static void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEBillBillerId();
 
@@ -34,7 +34,7 @@ public class EBillFichier {
         factureEBill.setLignes(lignes);
         factureEBill.setLignesSursis(lignesSursis);
         factureEBill.setReference(reference);
-        factureEBill.setAttachedDocument(attachedDocument);
+        factureEBill.setAttachedDocuments(attachedDocuments);
         factureEBill.setDateFacturation(dateFacturation);
         factureEBill.setDateEcheance(dateEcheance);
         factureEBill.setDateOctroi(dateOctroi);

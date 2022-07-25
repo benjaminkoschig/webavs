@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -356,11 +357,11 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param montant                 : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
      * @param lignes                  : contient les lignes de factures et de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
-     * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateFacturation         : la date de facturation
      * @throws Exception
      */
-    public void creerFichierEBillMusca(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montant, List<Map> lignes, String reference, JadePublishDocument attachedDocument, String dateFacturation) throws Exception {
+    public void creerFichierEBillMusca(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montant, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -374,7 +375,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.getEBillTransactionID());
 
         String dateEcheance = getDateEcheanceFromEntete(entete, dateFacturation);
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montant, lignes, null, reference, attachedDocument, dateFacturation, dateEcheance, null, getSession(), null);
+        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montant, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
+
+        factureEBill++;
     }
 
     private String getDateEcheanceFromEntete(FAEnteteFacture entete, String dateFacturation) throws Exception {
@@ -774,11 +777,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             docinfo.setDocumentSubject(objetMail);
 
             // on ajoute les logs au docInfo sinon ils ne sont plus récupérer.
-            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAPAPIER") + facturePapier,
-                    FWMessage.INFORMATION, this.getClass().getName());
-            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
-                    FWMessage.INFORMATION, this.getClass().getName());
-            docinfo.setDocumentNotes(getMemoryLog().getMessagesInString());
+            ajouteInfoEBillToEmail(docinfo);
 
             if (!getEnvoyerGed().booleanValue()) {
                 try {
@@ -837,6 +836,14 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
     }
 
+    private void ajouteInfoEBillToEmail(JadePublishDocumentInfo docinfo) {
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAPAPIER") + facturePapier,
+                FWMessage.INFORMATION, this.getClass().getName());
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
+                FWMessage.INFORMATION, this.getClass().getName());
+        docinfo.setDocumentNotes(getMemoryLog().getMessagesInString());
+    }
+
     /**
      * Méthode permettant de retirer toutes les factures des documents à imprimer.
      */
@@ -855,7 +862,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
             CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                removeAndReturnAttachedDocument(entete, getAttachedDocuments());
+                removeAndReturnAttachedDocuments(entete, getAttachedDocuments());
                 nbImprimer--;
             }
 
@@ -956,9 +963,10 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 String reference = referencesFacture.get(ligneFactureParPaireIdExterne.getKey());
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete, getAttachedDocuments());
-                    creerFichierEBillMusca(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocument, passage.getDateFacturation());
-                    factureEBill++;
+                    List<JadePublishDocument> attachedDocuments = removeAndReturnAttachedDocuments(entete, getAttachedDocuments());
+                    if (!attachedDocuments.isEmpty()) {
+                        creerFichierEBillMusca(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocuments, passage.getDateFacturation());
+                    }
                 }
             }
         }
@@ -982,9 +990,10 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 if (compteAnnexe != null && compteAnnexeReference != null
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.getEBillAccountID())) {
-                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference, getAttachedDocuments());
-                    creerFichierEBillMusca(compteAnnexe, entete, enteteReference, ligneBulletinDeSoldes.getKey().getMontant(), ligneBulletinDeSoldes.getValue(), reference, attachedDocument, passage.getDateFacturation());
-                    factureEBill++;
+                    List<JadePublishDocument> attachedDocument = removeAndReturnAttachedDocuments(enteteReference, getAttachedDocuments());
+                    if (attachedDocument != null) {
+                        creerFichierEBillMusca(compteAnnexe, entete, enteteReference, ligneBulletinDeSoldes.getKey().getMontant(), ligneBulletinDeSoldes.getValue(), reference, attachedDocument, passage.getDateFacturation());
+                    }
                 }
             }
         }
@@ -999,19 +1008,18 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @return le fichier généré durant l'impression
      */
-    public JadePublishDocument removeAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
-        JadePublishDocument attachedDocument = null;
-        Iterator<JadePublishDocument> jadePublishDocumentIterator = attachedDocuments.iterator();
-        while (jadePublishDocumentIterator.hasNext()) {
-            final JadePublishDocument jadePublishDocument = jadePublishDocumentIterator.next();
+    public List<JadePublishDocument> removeAndReturnAttachedDocuments(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
+        List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
+        Iterator<JadePublishDocument> it = attachedDocuments.iterator();
+        while (it.hasNext()) {
+            final JadePublishDocument jadePublishDocument = it.next();
             if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
                     && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))) {
-                attachedDocument = jadePublishDocument;
-                jadePublishDocumentIterator.remove();
-                break;
+                filteredAttachedDocuments.add(jadePublishDocument);
+                it.remove();
             }
         }
-        return attachedDocument;
+        return filteredAttachedDocuments;
     }
 
     /**
