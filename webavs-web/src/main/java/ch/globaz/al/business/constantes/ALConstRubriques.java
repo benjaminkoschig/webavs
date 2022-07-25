@@ -125,7 +125,7 @@ public interface ALConstRubriques {
     String RUBRIQUE_STANDARD_RESTITUTION_SALARIE = "rubrique.standard.restitution.salarie";
     String RUBRIQUE_STANDARD_SALARIE = "rubrique.standard.salarie";
     String RUBRIQUE_STANDARD_SALARIE_NAISSANCE = "rubrique.standard.salarie.naissance";
-    String RUBRIQUE_STANDARD_IS = "rubrique.standard.is";
+    String RUBRIQUE_STANDARD_SALARIE_IS = "rubrique.standard.salarie.is";
     String RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE = "rubrique.standard.travailleur.agricole";
     String RUBRIQUE_STANDARD_TRAVAILLEUR_AGRICOLE_IS = "rubrique.standard.travailleur.agricole.is";
 
