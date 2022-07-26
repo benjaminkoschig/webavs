@@ -6,7 +6,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.contentieux.CAMotifContentieux;
@@ -174,10 +173,10 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
      * @param statement
      */
     private void validateEBill(BStatement statement) {
-        if(StringUtils.isNotEmpty(geteBillAccountID())) {
+        if(StringUtils.isNotEmpty(getEBillAccountID())) {
             CACompteAnnexeManager manager = new CACompteAnnexeManager();
             manager.setSession(getSession());
-            manager.setForEBillAccountID(geteBillAccountID());
+            manager.setForEBillAccountID(getEBillAccountID());
             try {
                 manager.find(BManager.SIZE_USEDEFAULT);
             } catch (Exception e) {
@@ -191,8 +190,8 @@ public class CACompteAnnexeViewBean extends CACompteAnnexe implements FWViewBean
                 }
             }
         }
-        if(StringUtils.isNotEmpty(geteBillMail()) && !EBillMail.isMailValid(geteBillMail())) {
-            _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("EBILL_MAIL_FORMAT"), geteBillMail()));
+        if(StringUtils.isNotEmpty(getEBillMail()) && !EBillMail.isMailValid(getEBillMail())) {
+            _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("EBILL_MAIL_FORMAT"), getEBillMail()));
         }
     }
 

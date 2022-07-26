@@ -317,7 +317,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         }
 
         // on contrôle le eBill Account ID = 17
-        if (!StringUtils.isNumeric(geteBillAccountID()) || !geteBillAccountID().isEmpty() && geteBillAccountID().length() != EBILL_ACCOUNT_ID_LENGTH) {
+        if (!StringUtils.isNumeric(getEBillAccountID()) || !getEBillAccountID().isEmpty() && getEBillAccountID().length() != EBILL_ACCOUNT_ID_LENGTH) {
             _addError(statement.getTransaction(), getSession().getLabel("7373"));
         }
 
@@ -457,9 +457,9 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         statement.writeField(CACompteAnnexe.FIELD_MODEBULLETINNEUTRE,
                 this._dbWriteNumeric(statement.getTransaction(), getModeBulletinNeutre(), "modeBulletinNeutre"));
 
-        statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
-        statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), geteBillMail(), "eBillMail"));
-        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), geteBillDateInscription(), "eBillDateInscription"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), getEBillAccountID(), "eBillAccountID"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), getEBillMail(), "eBillMail"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_DATE_INSCRIPTION, this._dbWriteDateAMJ(statement.getTransaction(), getEBillDateInscription(), "eBillDateInscription"));
     }
 
     /**
@@ -1975,39 +1975,39 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         }
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         if (JadeStringUtil.isBlankOrZero(eBillAccountID)) {
             eBillAccountID = StringUtils.EMPTY;
         }
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         // on est dans le cas d'une inscription on met à jour la date d'inscription avec la date actuelle
-        if (!JadeStringUtil.isEmpty(eBillAccountID) && !eBillAccountID.equals(this.geteBillAccountID())) {
-            seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        if (!JadeStringUtil.isEmpty(eBillAccountID) && !eBillAccountID.equals(this.getEBillAccountID())) {
+            setEBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
         }
         // on est dans le cas d'une désinscription on enlève la date d'inscription
-        else if (JadeStringUtil.isEmpty(eBillAccountID) && (!JadeStringUtil.isEmpty(this.geteBillAccountID()))) {
-            seteBillDateInscription(new String());
+        else if (JadeStringUtil.isEmpty(eBillAccountID) && (!JadeStringUtil.isEmpty(this.getEBillAccountID()))) {
+            setEBillDateInscription(new String());
         }
 
         this.eBillAccountID = eBillAccountID;
     }
 
-    public String geteBillMail() {
+    public String getEBillMail() {
         return eBillMail;
     }
 
-    public void seteBillMail(String eBillMail) {
+    public void setEBillMail(String eBillMail) {
         this.eBillMail = eBillMail;
     }
 
-    public String geteBillDateInscription() {
+    public String getEBillDateInscription() {
         return eBillDateInscription;
     }
 
-    public void seteBillDateInscription(String eBillDateInscription) {
+    public void setEBillDateInscription(String eBillDateInscription) {
         this.eBillDateInscription = eBillDateInscription;
     }
 }

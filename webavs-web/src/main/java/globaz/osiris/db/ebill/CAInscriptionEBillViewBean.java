@@ -65,26 +65,26 @@ public class CAInscriptionEBillViewBean extends CAInscriptionEBill implements FW
     public boolean envoieMailConfirmation() throws Exception {
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(getSession());
-        manager.setForEBillAccountID(geteBillAccountID());
+        manager.setForEBillAccountID(getEBillAccountID());
         try {
             manager.find(BManager.SIZE_USEDEFAULT);
             if(manager.isEmpty()) {
                 throw new Exception("Pas de lien eBill trouvé dans les comptes annexes");
             }
         } catch (Exception e) {
-            return addError("EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED", geteBillAccountID());
+            return addError("EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED", getEBillAccountID());
         }
         if(!controleCompteAnnexePourMemeEBillAccountID(manager)) {
-            return addError("EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED", geteBillAccountID());
+            return addError("EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED", getEBillAccountID());
         }
 
         CACompteAnnexe ca = (CACompteAnnexe) manager.getFirstEntity();
         List<CACompteAnnexe> list = manager.getContainer();
-        Optional<CACompteAnnexe> sansAdresseMail = list.stream().filter(c -> c.geteBillMail().isEmpty()).findFirst();
+        Optional<CACompteAnnexe> sansAdresseMail = list.stream().filter(c -> c.getEBillMail().isEmpty()).findFirst();
         if(sansAdresseMail.isPresent()) {
             return addError("EBILL_COMPTE_ANNEXE_EMAIL_COMPTE_ANNEXE_MANQUANTE", sansAdresseMail.get().getIdExterneRole());
         }
-        String email = ca.geteBillMail();
+        String email = ca.getEBillMail();
         String codeIso = ca.getTiers().getLangueISO();
         if(codeIso.isEmpty()) {
             return addError("EBILL_COMPTE_ANNEXE_LANGUE_FAILED", ca.getIdTiers());

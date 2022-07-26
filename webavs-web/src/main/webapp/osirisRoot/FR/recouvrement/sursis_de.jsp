@@ -5,6 +5,7 @@
 <%@ page import="globaz.osiris.db.recouvrement.*,globaz.globall.util.*,globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <%
 	idEcran = "GCA60015";
 	CASursisViewBean viewBean = (globaz.osiris.db.recouvrement.CASursisViewBean) session.getAttribute("viewBean");
@@ -27,6 +28,10 @@
 		compteAnnexeDescription = viewBean.getCompteAnnexe().getTitulaireEnteteForCompteAnnexeParSection();
 	} catch (Exception e) {
 	}
+%>
+<%
+    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
+	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -68,6 +73,17 @@
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
 	}
 
+	function clearEBillInputs() {
+		<% if (eBillOsirisActif && eBillAccountID) {%>
+			$("#eBillPrintable").attr("checked", true);
+		<%} else{%>
+			$("#eBillPrintable").attr("checked", false);
+		<%}%>
+	}
+
+	function postInit(){
+		clearEBillInputs();
+	}
 
 // stop hiding -->
 </SCRIPT>
@@ -185,13 +201,22 @@
 		<td nowrap>
               <input type="checkbox" name="partPenale" <%=(viewBean.getPartPenale().booleanValue()) ? "checked" : "unchecked"%> >
         </td>
-		<td></td>
 		<td>
 			<input type="hidden" name="selectedIds" value="<%=viewBean.getSelectedIds()%>">
 			<input type="hidden" name="idCompteAnnexe" value="<%=viewBean.getIdCompteAnnexe()%>">
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
+	<% if (eBillOsirisActif) {%>
+		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+			<tr>
+				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+				<td nowrap>
+					  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+				</td>
+			</tr>
+		<%}%>
+	<%}%>
 	<tr>
 		<td class="label">Montant maximum à recouvrir</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>

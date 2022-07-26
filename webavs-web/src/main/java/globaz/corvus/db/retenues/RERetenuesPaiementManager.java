@@ -18,6 +18,7 @@ public class RERetenuesPaiementManager extends PRAbstractManager implements BIGe
     private String forDate = "";
     private boolean seulementEnCours = false;
     private String forIdRenteAccordee = "";
+    private String forCsType = "";
     private String forIdTiersBeneficiaire = "";
     private String montantRenteAccordee = "";
 
@@ -32,6 +33,15 @@ public class RERetenuesPaiementManager extends PRAbstractManager implements BIGe
 
             sqlWhere += RERetenuesPaiement.FIELDNAME_ID_RENTE_ACCORDEE + "="
                     + _dbWriteNumeric(statement.getTransaction(), forIdRenteAccordee);
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(forCsType)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += RERetenuesPaiement.FIELDNAME_TYPE_RETENU + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forCsType);
         }
 
         if (isSeulementEnCours()) {
@@ -136,6 +146,14 @@ public class RERetenuesPaiementManager extends PRAbstractManager implements BIGe
 
     public final void setForIdRenteAccordee(String forIdRenteAccordee) {
         this.forIdRenteAccordee = forIdRenteAccordee;
+    }
+
+    public final String getForCsType(){
+        return forCsType;
+    }
+
+    public final void setForCsType(String csType) {
+        this.forCsType = csType;
     }
 
     public final String getForIdTiersBeneficiaire() {

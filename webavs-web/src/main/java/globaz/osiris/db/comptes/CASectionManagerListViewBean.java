@@ -10,7 +10,7 @@ public class CASectionManagerListViewBean extends CASectionManager implements FW
      */
     private static final long serialVersionUID = 1L;
 
-    public String geteBillEtatTraitementImage(CATraitementEtatEBillEnum statutEBill) {
+    public String getEBillEtatTraitementImage(CATraitementEtatEBillEnum statutEBill) {
         if (statutEBill != null) {
             switch (statutEBill.getNumeroEtat()) {
                 case CATraitementEtatEBillEnum.NUMERO_ETAT_EN_ERREUR:

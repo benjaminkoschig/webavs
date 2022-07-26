@@ -726,8 +726,8 @@ public class CASectionManager extends BManager implements Serializable {
         forIdCompteAnnexe = newForIdCompteAnnexe;
     }
 
-    public void setForEBillTransactionID(String newForEbillTransactionId) {
-        forEBillTransactionID = newForEbillTransactionId;
+    public void setForEBillTransactionID(String newForEBillTransactionId) {
+        forEBillTransactionID = newForEBillTransactionId;
     }
 
     public void setForIdExterne(String newForIdExterne) {
