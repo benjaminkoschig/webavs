@@ -124,6 +124,8 @@ public class APCotisation extends BEntity {
                 nomExterne = ((AFTauxAssurance) tauxList.get(0)).getAssurance().getAssuranceLibelleCourt();
                 taux = ((AFTauxAssurance) tauxList.get(0)).getValeurEmployeur();
             }
+        } else if (APCotisation.TYPE_IMPOT.equals(type)) {
+            nomExterne = getSession().getLabel("IMPOT_SOURCE");
         }
     }
 
