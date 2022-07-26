@@ -1413,6 +1413,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 FWCurrency totalMontantCotisation = new FWCurrency(0);
                 FWCurrency totalMontantImpotSource = new FWCurrency(0);
                 FWCurrency tauxImpotSource = new FWCurrency(0);
+                boolean isImpotSource=false;
 
                 String libelleCot = document.getTextes(3).getTexte(15).getDescription();
                 String libelleAVS = "";
@@ -1425,6 +1426,7 @@ public class IJDecomptes extends FWIDocumentManager {
                     if (ijCot.getIsImpotSource().booleanValue() == true) {
                         totalMontantImpotSource.add(ijCot.getMontant());
                         tauxImpotSource.add(ijCot.getTaux());
+                        isImpotSource=true;
                     }
 
                     else {
@@ -1490,16 +1492,16 @@ public class IJDecomptes extends FWIDocumentManager {
 
                     totalCotisations.add(totalMontantCotisation.toString());
                 }
-
-                // Affichage de l'impôt à la source
-                    champs.put("FIELD_DETAIL_IMPOT",PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),"{tauxImpotSource}",tauxImpotSource.toString()+"%"));
+                if (isImpotSource){
+                    // Affichage de l'impôt à la source
+                    champs.put("FIELD_DETAIL_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(), "{tauxImpotSource}", tauxImpotSource.toString() + "%"));
 
                     champs.put("FIELD_MONTANT_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(22)
-                            .getDescription(), "{montantImpot}",
+                                    .getDescription(), "{montantImpot}",
                             JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
 
                     totalImpotSource.add(totalMontantImpotSource.toString());
-
+                }
                 if (state == IJDecomptes.STATE_VENTILATION) {
                     total.add(repartition.getMontantVentile());
                 } else {
