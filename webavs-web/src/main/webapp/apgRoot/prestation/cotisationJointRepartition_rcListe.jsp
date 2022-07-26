@@ -30,19 +30,12 @@ menuDetailLabel = viewBean.getSession().getLabel("MENU_OPTION_DETAIL");
 globaz.apg.vb.prestation.APCotisationJointRepartitionViewBean courant = (globaz.apg.vb.prestation.APCotisationJointRepartitionViewBean) viewBean.get(i);
 String detailUrl = "parent.fr_detail.location.href='" + detailLink + courant.getIdCotisation() + "'";
 %>
-<% String montantCotisation;
-	if (courant.getMontant().equals("")) {
-		montantCotisation = "0.00";
-	} else {
-		montantCotisation = courant.getMontant();
-	}%>
-
 	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getNomExterne()%></TD>
 	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getDateDebut()%></TD>
 	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getDateFin()%></TD>
 	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getTaux()%></TD>
 	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getMontantBrutCotisation()%></TD>
-	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=montantCotisation%></TD>
+	    <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getMontant()%></TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 	<%-- tpl:put name="zoneTableFooter" --%>
