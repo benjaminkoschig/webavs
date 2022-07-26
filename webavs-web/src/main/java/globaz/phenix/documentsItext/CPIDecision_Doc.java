@@ -2119,9 +2119,11 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_GENRE, decision.getGenreAffilie());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_PERIODE,
                 decision.getDebutDecision() + "-" + decision.getFinDecision());
-        getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.ROLE_TIERS_DOCUMENT,entete.getIdRole());
-        getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE,entete.getIdExterneFacture());
-        getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_TYPE,entete.getIdTypeFacture());
+        if(entete!=null) {
+            getDocumentInfo().setDocumentProperty(TIDocumentInfoHelper.ROLE_TIERS_DOCUMENT, entete.getIdRole());
+            getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE, entete.getIdExterneFacture());
+            getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_TYPE, entete.getIdTypeFacture());
+        }
         try {
             getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_LIB_TYPE,
                     CodeSystem.getLibelleIso(getSession(), getDecision().getTypeDecision(), langueDoc));
