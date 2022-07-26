@@ -1492,7 +1492,6 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
 
                 // Affichage de l'impôt à la source
-                if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
                     champs.put("FIELD_DETAIL_IMPOT",PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),"{tauxImpotSource}",tauxImpotSource.toString()+"%"));
 
                     champs.put("FIELD_MONTANT_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(22)
@@ -1500,7 +1499,6 @@ public class IJDecomptes extends FWIDocumentManager {
                             JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
 
                     totalImpotSource.add(totalMontantImpotSource.toString());
-                }
 
                 if (state == IJDecomptes.STATE_VENTILATION) {
                     total.add(repartition.getMontantVentile());
