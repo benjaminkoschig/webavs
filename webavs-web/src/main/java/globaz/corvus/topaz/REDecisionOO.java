@@ -2421,7 +2421,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
         if (creancierImpotSource != null) {
 
-            if (!JadeStringUtil.isBlankOrZero(creancierImpotSource.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlankOrZero(creancierImpotSource.getTauxImposition())) {
+            if (!JadeStringUtil.isBlankOrZero(creancierImpotSource.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlank(creancierImpotSource.getTauxImposition())) {
                 ajouteTexteImpotSource(buffer,
                         JANumberFormatter.format(creancierImpotSource.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
                         JANumberFormatter.format(creancierImpotSource.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
@@ -2445,7 +2445,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
             RERetenuesPaiement retenue = (RERetenuesPaiement) retenueManager.getFirstEntity();
 
-            if (retenue != null && !JadeStringUtil.isBlankOrZero(retenue.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlankOrZero(retenue.getTauxImposition())) {
+            if (retenue != null && !JadeStringUtil.isBlankOrZero(retenue.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlank(retenue.getTauxImposition())) {
                 ajouteTexteImpotSource(buffer,
                         JANumberFormatter.format(retenue.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
                         JANumberFormatter.format(retenue.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
