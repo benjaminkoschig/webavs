@@ -1,6 +1,7 @@
 package globaz.pyxis.web.ws;
 
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.service.PYExecuteService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +33,14 @@ public class PYApiRestExecute {
     @Path(value = "create_tiers")
     public Response createTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
         LOG.info("create_tiers");
-        return execute(token, dto, service::createTiers, dto::isValidCreation);
+        return execute(token, dto, service::createTiers, dto::isValid);
     }
 
     @PUT
     @Path(value = "update_tiers")
-    public Response updateTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
+    public Response updateTiers(@HeaderParam("authorization") String token, PYTiersUpdateDTO dto) {
         LOG.info("update_tiers");
-        return execute(token, dto, service::updateTiers, dto::isValidUpdate);
+        return execute(token, dto, service::updateTiers, dto::isValid);
     }
 
     /**
@@ -54,8 +55,8 @@ public class PYApiRestExecute {
     private <T, U, R> Response execute(U token, T dto, BiFunction<T, U, R> function, Supplier<Boolean> isValid) {
 
         if (!isValid.get()) {
-            LOG.error("Une erreur de paramètres s'est produite lors de la validation de la requête.");
-            throw new PYBadRequestException("Une erreur de paramètres s'est produite lors de la validation de la requête.");
+            LOG.error("Une erreur de paramètres s'est produite lors de la validation de la requête. Un paramètre obligatoire est manquant ?");
+            throw new PYBadRequestException("Une erreur de paramètre s'est produite lors de la validation de la requête. Un paramètre obligatoire est manquant ?");
         }
 
         return Response.ok(function.apply(dto, token)).header("authorization", token).build();

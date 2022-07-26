@@ -81,59 +81,25 @@ public class PYTiersDTO {
     }
 
     /**
-     * Méthode pour valider la présence/absence de champs dans le DTO dans un premier temps,
-     * et appeler la méthode de validation des données dans un second temps
+     * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
      *
-     * isValidForCreation est appelée avant la vérification d'absence des champs car elle permet une gestion des erreurs plus fine.
-     * Elle ne fait toutefois rien de plus qui n'aie déjà été fait.
+     * isValidForUpdate vérifie l'absence des champs et lance une erreur en cas de problème.
      *
      * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
      */
     @JsonIgnore
-    public Boolean isValidCreation(){
+    public Boolean isValid(){
         // TODO: Decide how we're doing it for page 2 and other fields
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
                 Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValidForCreation(this)
-                // The third test is just a safety net, it doesn't check anything more that hasn't been tested yet
-                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty) // This comes after isValidForCreation because that method allows for finner error handling
             );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)){
             return (
                 Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValidForCreation(this)
-            );
-        }
-        return false;
-    }
-
-
-    /**
-     * Méthode pour valider la présence/absence de champs dans le DTO dans un premier temps,
-     * et appeler la méthode de validation des données dans un second temps.
-     *
-     * isValidForUpdate est appelée avant la vérification d'absence des champs car elle permet une gestion des erreurs plus fine.
-     * Elle ne fait toutefois rien de plus qui n'aie déjà été fait.
-     *
-     * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour un update
-     */
-    @JsonIgnore
-    public Boolean isValidUpdate() {
-        // TODO: Decide how we're doing it for page 2 and other fields
-
-        if (Boolean.FALSE.equals(isPhysicalPerson)) {
-            return (
-                Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForUpdate(this)
-                // The third test is just a safety net, it doesn't check anything more that hasn't been tested yet
-                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty) // This comes after isValidForCreation because that method allows for finner error handling
-            );
-        } else if (Boolean.TRUE.equals(isPhysicalPerson)){
-            return (
-                Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForUpdate(this)
             );
         }
         return false;

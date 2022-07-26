@@ -45,10 +45,13 @@ public class PYValidateDTO {
      * @param dto
      * @return true si toutes les vérifications passent sans encombres
      */
-    public static Boolean isValidForUpdate(PYTiersDTO dto) throws PYBadRequestException {
+    public static Boolean isValidForUpdate(PYTiersUpdateDTO dto) throws PYBadRequestException {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
         checkValidity(dto);
+        if (dto.getModificationDate() != null) {
+            checkModificationDate(dto.getModificationDate());
+        }
 
         if (!dto.getIsPhysicalPerson()) {
             // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
@@ -193,15 +196,28 @@ public class PYValidateDTO {
     }
 
     /**
-     * Méthode qui vérifie si date est au format dd.mm.aaaa et lance une exception si besoin
+     * Méthode qui vérifie si date est au format dd.mm.yyyy et lance une exception si besoin
      *
      * @param date
      */
     private static final void checkDate(String date) throws PYBadRequestException{
-        String pattern = "[0-3]\\d\\.[0-1]\\d\\.\\d{4}";
+        String pattern = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
         if (!Pattern.matches(pattern, date)) {
-            System.err.println("Erreur lors de la validation d'une date du tiers.");
-            throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers.");
+            System.err.println("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
+            throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
+        }
+    }
+
+    /**
+     * Méthode qui vérifie si date est au format ddmmyyyy et lance une exception si besoin
+     *
+     * @param date
+     */
+    private static final void checkModificationDate(String date) throws PYBadRequestException{
+        String pattern = "(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}";
+        if (!Pattern.matches(pattern, date)) {
+            System.err.println("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
+            throw new PYBadRequestException("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
         }
     }
 

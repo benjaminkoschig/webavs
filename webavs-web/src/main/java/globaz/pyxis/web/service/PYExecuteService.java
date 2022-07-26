@@ -4,6 +4,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +46,11 @@ public class PYExecuteService extends BProcess {
      * @param token header d'authentification
      * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
-    public PYTiersDTO updateTiers(PYTiersDTO dto, String token) {
+    public PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
         // TODO: upgrade the updating
         try {
             String date = PRTiersHelper.updateTiersPage1(getSession(), dto);
+            dto.setModificationDate(date);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);

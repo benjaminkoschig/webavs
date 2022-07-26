@@ -41,6 +41,7 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -324,32 +325,32 @@ public class PRTiersHelper {
      * @return
      * @throws Exception
      */
-    public static final String updateTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
+    public static final String updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
-        String date = "20121231"; // TODO: This should be given by the user, maybe extend the DTO to add this/these dates
+        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should be given by the user, maybe extend the DTO to add this
 
         // Get the tiers from database
         avsPerson.setIdTiers(dto.getId());
         avsPerson.retrieve(session.getCurrentThreadTransaction());
 
         // We need to set a date and a reason for the update(s)
-        avsPerson.setMotifModifTitre(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifTitre(date);
-        avsPerson.setMotifModifDesignation1(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifDesignation1(date);
-        avsPerson.setMotifModifDesignation2(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifDesignation2(date);
-        avsPerson.setMotifModifDesignation3(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifDesignation3(date);
-        avsPerson.setMotifModifDesignation4(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifDesignation4(date);
-        avsPerson.setMotifModifAvs(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifAvs(date);
-        avsPerson.setMotifModifContribuable(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifContribuable(date);
-        avsPerson.setMotifModifPays(TIHistoriqueContribuable.CS_CREATION);
-        avsPerson.setDateModifPays(date);
+        avsPerson.setMotifModifTitre(reason);
+        avsPerson.setDateModifTitre(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation1(reason);
+        avsPerson.setDateModifDesignation1(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation2(reason);
+        avsPerson.setDateModifDesignation2(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation3(reason);
+        avsPerson.setDateModifDesignation3(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation4(reason);
+        avsPerson.setDateModifDesignation4(dto.getModificationDate());
+        avsPerson.setMotifModifAvs(reason);
+        avsPerson.setDateModifAvs(dto.getModificationDate());
+        avsPerson.setMotifModifContribuable(reason);
+        avsPerson.setDateModifContribuable(dto.getModificationDate());
+        avsPerson.setMotifModifPays(reason);
+        avsPerson.setDateModifPays(dto.getModificationDate());
 
         // Update avsPerson with all the new values as long as they aren't null
         if (dto.getTitle() != null)
@@ -411,7 +412,7 @@ public class PRTiersHelper {
             }
         }
 
-        return "TODO: return update date"; // TODO: Return an updated dto of sorts
+        return dto.getModificationDate(); // TODO: Return an updated dto of sorts
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
