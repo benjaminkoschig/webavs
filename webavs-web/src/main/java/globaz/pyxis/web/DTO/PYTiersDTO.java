@@ -2,7 +2,6 @@ package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
 import lombok.Data;
 
 import java.util.stream.Stream;
@@ -81,51 +80,62 @@ public class PYTiersDTO {
 
     }
 
+    /**
+     * Méthode pour valider la présence/absence de champs dans le DTO dans un premier temps,
+     * et appeler la méthode de validation des données dans un second temps
+     *
+     * isValidForCreation est appelée avant la vérification d'absence des champs car elle permet une gestion des erreurs plus fine.
+     * Elle ne fait toutefois rien de plus qui n'aie déjà été fait.
+     *
+     * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
+     */
     @JsonIgnore
     public Boolean isValidCreation(){
         // TODO: Decide how we're doing it for page 2 and other fields
-        boolean correctFields = false;
-        boolean correctValues = false;
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
-            correctFields = Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty);
-            if (!correctFields) {
-                throw new PYBadRequestException("Des champs obligatoires sont manquants ou des champs impossibles pour une personne morale ont été renseignés.");
-            }
-            correctValues = PYValidateDTO.isValidForCreation(this);
+            return (
+                Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValidForCreation(this)
+                // The third test is just a safety net, it doesn't check anything more that hasn't been tested yet
+                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty) // This comes after isValidForCreation because that method allows for finner error handling
+            );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)){
-            correctFields = Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty);
-            if (!correctFields) {
-                throw new PYBadRequestException("Des champs obligatoires d'une personne physique sont manquants.");
-            }
-            correctValues = PYValidateDTO.isValidForCreation(this);
+            return (
+                Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValidForCreation(this)
+            );
         }
-
-        return correctFields && correctValues;
+        return false;
     }
 
+
+    /**
+     * Méthode pour valider la présence/absence de champs dans le DTO dans un premier temps,
+     * et appeler la méthode de validation des données dans un second temps.
+     *
+     * isValidForUpdate est appelée avant la vérification d'absence des champs car elle permet une gestion des erreurs plus fine.
+     * Elle ne fait toutefois rien de plus qui n'aie déjà été fait.
+     *
+     * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour un update
+     */
     @JsonIgnore
     public Boolean isValidUpdate() {
         // TODO: Decide how we're doing it for page 2 and other fields
-        boolean correctFields = false;
-        boolean correctValues = false;
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
-            correctFields = Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                    && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty);
-            if (!correctFields) {
-                throw new PYBadRequestException("Des champs obligatoires sont manquants ou des champs impossibles pour une personne morale ont été renseignés.");
-            }
-            correctValues = PYValidateDTO.isValidForUpdate(this);
+            return (
+                Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValidForUpdate(this)
+                // The third test is just a safety net, it doesn't check anything more that hasn't been tested yet
+                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty) // This comes after isValidForCreation because that method allows for finner error handling
+            );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)){
-            correctFields = Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty);
-            if (!correctFields) {
-                throw new PYBadRequestException("Des champs obligatoires d'une personne physique sont manquants.");
-            }
-            correctValues = PYValidateDTO.isValidForUpdate(this);
+            return (
+                Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && PYValidateDTO.isValidForUpdate(this)
+            );
         }
-
-        return correctFields && correctValues;
+        return false;
     }
 }

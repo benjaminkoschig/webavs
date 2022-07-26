@@ -26,8 +26,7 @@ public class PYValidateDTO {
     );
 
     /**
-     * Méthode pour s'assurer de la validité des données du DTO de création.
-     * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
+     * Méthode pour s'assurer de la validité des données du DTO pour création.
      *
      * @param dto
      * @return true si toutes les vérifications passent sans encombres
@@ -35,22 +34,13 @@ public class PYValidateDTO {
     public static Boolean isValidForCreation(PYTiersDTO dto) {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
-        getTitleAsSystemCode(dto);
-        checkNSS(dto);
-        checkBirthdate(dto);
-        checkDeathdate(dto);
-        checkAndSetSexAsSystemCode(dto);
-        checkAndSetCivilStatusAsSystemCode(dto);
-        checkAndSetLanguageAsSystemCode(dto);
-        getCountryAsSystemCode(dto);
+        checkValidity(dto);
 
         return true;
     }
 
     /**
      * Méthode pour s'assurer de la validité des données du DTO pour modification.
-     * Comme un field à null indique l'absence de modification (et pas la modification pour mettre à la valeur null),
-     * on vérifie que les fields ne soient pas à null avant d'appeller les méthodes de check.
      *
      * @param dto
      * @return true si toutes les vérifications passent sans encombres
@@ -58,6 +48,31 @@ public class PYValidateDTO {
     public static Boolean isValidForUpdate(PYTiersDTO dto) throws PYBadRequestException {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
+        checkValidity(dto);
+
+        if (!dto.getIsPhysicalPerson()) {
+            // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
+            dto.setNss("");
+            dto.setBirthDate("");
+            dto.setDeathDate("");
+            dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString()); // This one needs to be reseted directly to "0"
+            dto.setCivilStatus("");
+            dto.setCountry("");
+        }
+
+        return true;
+    }
+
+    /**
+     * Méthode pour s'assurer de la validité des données du DTO.
+     * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
+     *
+     * Comme un field à null indique l'absence de modification (et pas la modification pour mettre à la valeur null),
+     * on vérifie que les fields ne soient pas à null avant d'appeller les méthodes de check.
+     *
+     * @param dto
+     */
+    private static void checkValidity(PYTiersDTO dto) {
         if (dto.getTitle() != null)
             getTitleAsSystemCode(dto);
         if (dto.getLanguage() != null)
@@ -88,17 +103,7 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
             if (dto.getCountry() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
-
-            // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
-            dto.setNss("");
-            dto.setBirthDate("");
-            dto.setDeathDate("");
-            dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString()); // This one needs to be reseted directly to "0"
-            dto.setCivilStatus("");
-            dto.setCountry("");
         }
-
-        return true;
     }
 
     /**
