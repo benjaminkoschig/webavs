@@ -32,7 +32,7 @@ public class PYApiRestExecute {
     @Path(value = "create_tiers")
     public Response createTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
         LOG.info("create_tiers");
-        return execute(token, dto, service::createTiers, dto::isValid);
+        return execute(token, dto, service::createTiers, dto::isValidCreation);
     }
 
     @PUT

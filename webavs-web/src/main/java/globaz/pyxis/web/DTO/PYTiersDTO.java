@@ -2,6 +2,7 @@ package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
 import lombok.Data;
 
 import java.util.stream.Stream;
@@ -81,38 +82,50 @@ public class PYTiersDTO {
     }
 
     @JsonIgnore
-    public Boolean isValid() {
+    public Boolean isValidCreation(){
         // TODO: Decide how we're doing it for page 2 and other fields
+        boolean correctFields = false;
+        boolean correctValues = false;
 
-        if (!isPhysicalPerson) {
-            return (
-                Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForCreation(this)
-            );
-        } else {
-            return (
-                Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForCreation(this)
-            );
+        if (Boolean.FALSE.equals(isPhysicalPerson)) {
+            correctFields = Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty);
+            if (!correctFields) {
+                throw new PYBadRequestException("Des champs obligatoires sont manquants ou des champs impossibles pour une personne morale ont été renseignés.");
+            }
+            correctValues = PYValidateDTO.isValidForCreation(this);
+        } else if (Boolean.TRUE.equals(isPhysicalPerson)){
+            correctFields = Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty);
+            if (!correctFields) {
+                throw new PYBadRequestException("Des champs obligatoires d'une personne physique sont manquants.");
+            }
+            correctValues = PYValidateDTO.isValidForCreation(this);
         }
+
+        return correctFields && correctValues;
     }
 
     @JsonIgnore
     public Boolean isValidUpdate() {
         // TODO: Decide how we're doing it for page 2 and other fields
+        boolean correctFields = false;
+        boolean correctValues = false;
 
-        if (Boolean.TRUE.equals(isPhysicalPerson)){
-            return (
-                Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForUpdate(this)
-            );
-        } else {
-            return (
-                Stream.of(id).noneMatch(JadeStringUtil::isEmpty)
-                    && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
-                    && PYValidateDTO.isValidForUpdate(this)
-            );
+        if (Boolean.FALSE.equals(isPhysicalPerson)) {
+            correctFields = Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                    && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty);
+            if (!correctFields) {
+                throw new PYBadRequestException("Des champs obligatoires sont manquants ou des champs impossibles pour une personne morale ont été renseignés.");
+            }
+            correctValues = PYValidateDTO.isValidForUpdate(this);
+        } else if (Boolean.TRUE.equals(isPhysicalPerson)){
+            correctFields = Stream.of(id, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty);
+            if (!correctFields) {
+                throw new PYBadRequestException("Des champs obligatoires d'une personne physique sont manquants.");
+            }
+            correctValues = PYValidateDTO.isValidForUpdate(this);
         }
+
+        return correctFields && correctValues;
     }
 }

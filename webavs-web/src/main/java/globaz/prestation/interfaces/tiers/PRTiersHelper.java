@@ -347,6 +347,10 @@ public class PRTiersHelper {
         avsPerson.setDateModifDesignation4(date);
         avsPerson.setMotifModifAvs(TIHistoriqueContribuable.CS_CREATION);
         avsPerson.setDateModifAvs(date);
+        avsPerson.setMotifModifContribuable(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifContribuable(date);
+        avsPerson.setMotifModifPays(TIHistoriqueContribuable.CS_CREATION);
+        avsPerson.setDateModifPays(date);
 
         // Update avsPerson with all the new values as long as they aren't null
         if (dto.getTitle() != null)

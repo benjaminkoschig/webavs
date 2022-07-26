@@ -55,14 +55,14 @@ public class PYValidateDTO {
      * @param dto
      * @return true si toutes les vérifications passent sans encombres
      */
-    public static Boolean isValidForUpdate(PYTiersDTO dto) {
+    public static Boolean isValidForUpdate(PYTiersDTO dto) throws PYBadRequestException {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
         if (dto.getTitle() != null)
             getTitleAsSystemCode(dto);
         if (dto.getLanguage() != null)
             checkAndSetLanguageAsSystemCode(dto);
-        if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) { // TODO: This is bad since that if lets unvalidated data through...
+        if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) {
             if (dto.getNss() != null)
                 checkNSS(dto);
             if (dto.getBirthDate() != null)
@@ -75,6 +75,27 @@ public class PYValidateDTO {
                 checkAndSetCivilStatusAsSystemCode(dto);
             if (dto.getCountry() != null)
                 getCountryAsSystemCode(dto);
+        } else if (Boolean.FALSE.equals(dto.getIsPhysicalPerson())) { // If it's a legal person, make sure the user knows what they're doing by making sure they're not modifying impossible fields
+            if (dto.getNss() != null)
+                throw new PYBadRequestException("Le NSS ne doit pas être renseigné pour une personne morale.");
+            if (dto.getBirthDate() != null)
+                throw new PYBadRequestException("La date de naissance ne doit pas être renseignée pour une personne morale.");
+            if (dto.getDeathDate() != null)
+                throw new PYBadRequestException("La date de décès ne doit pas être renseignée pour une personne morale.");
+            if (dto.getSex() != null)
+                throw new PYBadRequestException("Le sexe ne doit pas être renseigné pour une personne morale.");
+            if (dto.getCivilStatus() != null)
+                throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
+            if (dto.getCountry() != null)
+                throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
+
+            // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
+            dto.setNss("");
+            dto.setBirthDate("");
+            dto.setDeathDate("");
+            dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString()); // This one needs to be reseted directly to "0"
+            dto.setCivilStatus("");
+            dto.setCountry("");
         }
 
         return true;
@@ -85,7 +106,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getTitleAsSystemCode(PYTiersDTO dto) {
+    private static final void getTitleAsSystemCode(PYTiersDTO dto) throws PYBadRequestException {
         switch ((dto.getTitle() != null) ? JadeStringUtil.toLowerCase(dto.getTitle()) : "") {
             case "monsieur":
             case "m":
