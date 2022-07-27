@@ -1,49 +1,29 @@
 package globaz.osiris.process;
 
 import globaz.docinfo.TIDocumentInfoHelper;
-import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
-import globaz.framework.util.FWCurrency;
-import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.musca.api.musca.PaireIdEcheanceParDateExigibilite;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.osiris.db.access.recouvrement.CACouvertureSection;
-import globaz.osiris.db.access.recouvrement.CACouvertureSectionManager;
-import globaz.osiris.process.ebill.EBillFichier;
-import globaz.naos.translation.CodeSystem;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
-import globaz.osiris.db.comptes.CACompteAnnexe;
-import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
-import globaz.osiris.process.ebill.EBillSftpProcessor;
 import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 import ch.globaz.common.properties.PropertiesException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author kurkus, 27 mai 05

@@ -11,7 +11,6 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.docinfo.CADocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
-import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -19,7 +18,6 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
@@ -41,10 +39,9 @@ import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.*;
 import globaz.musca.external.ServicesFacturation;
 import globaz.musca.itext.FAImpressionFacture_Param;
-import globaz.osiris.process.ebill.EBillFichier;
+import globaz.osiris.process.ebill.EBillHelper;
 import globaz.musca.process.FAImpressionFactureProcess;
 import globaz.musca.util.FAUtil;
-import globaz.naos.translation.CodeSystem;
 import globaz.osiris.api.APIEtape;
 import globaz.osiris.api.APISection;
 import globaz.osiris.application.CAApplication;
@@ -55,7 +52,6 @@ import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.contentieux.CAExtraitCompteListViewBean;
 import globaz.osiris.db.contentieux.CALigneExtraitCompte;
-import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSolde;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSoldeManager;
 import ch.globaz.common.document.reference.ReferenceBVR;
@@ -110,9 +106,12 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimeNeg = null;
     private String montantMinimePos = null;
     private String montantSansCentime;
+
+    /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesSolde = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesSolde = new LinkedHashMap();
     private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
+    private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 
     private FAPassage passage;
@@ -463,7 +462,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     @Override
     public void afterExecuteReport() {
-        if (!isMuscaSource && compteAnnexe != null && sectionCourante.getSection() != null) {
+        if (!isMuscaSource && sectionCourante.getSection() != null) {
 
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
@@ -666,67 +665,16 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             if (sectionCourante.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
                     && sectionCourante.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-                FAEnteteFacture entete = generateEnteteFacture();
-                FAEnteteFacture enteteReference = getEnteteFactureReference(lignes.getKey());
+                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCourante.getSection(), getSession());
+                FAEnteteFacture enteteReference = eBillHelper.getEnteteFactureReference(lignes.getKey(), getSession());
 
                 String reference = referencesSolde.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = findAndReturnAttachedDocument(entete, getAttachedDocuments());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findRemoveAndReturnAttachedDocuments(entete, getAttachedDocuments(), CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, false);
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBillOsiris(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection());
                 }
             }
         }
-    }
-
-    private FAEnteteFacture generateEnteteFacture() {
-        FAEnteteFacture entete = new FAEnteteFacture();
-        entete.setSession(getSession());
-        entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
-        entete.setIdTiers(sectionCourante.getSection().getCompteAnnexe().getIdTiers());
-        entete.setIdTypeCourrier(sectionCourante.getSection().getTypeAdresse());
-        entete.setIdDomaineCourrier(sectionCourante.getSection().getDomaine());
-        entete.setIdExterneRole(sectionCourante.getSection().getCompteAnnexe().getIdExterneRole());
-        entete.setIdExterneFacture(sectionCourante.getSection().getIdExterne());
-        return entete;
-    }
-
-    /**
-     * Méthode permetant de rechercher une entête eBill par le biais d'une paire d'idExterneRole et d'idExterneFactureCompensation
-     * cette méthode est utilisé dans le processus d'impression des bulletins de soldes eBill.
-     *
-     * @param paireIdExterneEBill : pair d'idExterneRole et d'idExterneFactureCompensation
-     * @return l'entête ou null
-     */
-    private FAEnteteFacture getEnteteFactureReference(PaireIdExterneEBill paireIdExterneEBill) throws Exception {
-        FAEnteteFactureManager manager = new FAEnteteFactureManager();
-        manager.setSession(getSession());
-        manager.setForIdExterneRole(paireIdExterneEBill.getIdExterneRole());
-        manager.setForIdExterneFacture(paireIdExterneEBill.getIdExterneFactureCompensation());
-        manager.find(BManager.SIZE_NOLIMIT);
-        return (FAEnteteFacture) manager.getFirstEntity();
-    }
-
-    /**
-     * Méthode permettant de rechercher le fichier généré durant l'impression
-     * de le retourner pour être ajouter à la facture eBill
-     *
-     * @param entete : l'entete qui permet d'identifier le fichier à retourner
-     * @param attachedDocuments : les fichiers généré durant l'impression
-     * @return le fichier généré durant l'impression
-     */
-    public List<JadePublishDocument> findAndReturnAttachedDocument(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments) {
-        List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
-        Iterator<JadePublishDocument> it = attachedDocuments.iterator();
-        while (it.hasNext()) {
-            final JadePublishDocument jadePublishDocument = it.next();
-            if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
-                    && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))
-                    && jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE)) {
-                filteredAttachedDocuments.add(jadePublishDocument);
-                break;
-            }
-        }
-        return filteredAttachedDocuments;
     }
 
     private String getDateFacturationFromSection(CASection section) throws JAException {
@@ -764,30 +712,12 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         entete.setEBillPrinted(true);
 
         // Met à jour le status eBill de la section
-        updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID());
+        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
 
         String dateEcheance = dateFacturation;
-        EBillFichier.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
 
         factureEBill++;
-    }
-
-    /**
-     * Mise à jour du statut eBill de la section et de son transactionID eBill
-     * passe l'état à pending.
-     *
-     * @param section  la section à mettre à jour.
-     * @param transactionId l'id de transaction lié au traitement.
-     */
-    public void updateSectionEtatEtTransactionID(final CASection section, final String transactionId) {
-        try {
-            section.setEBillEtat(CATraitementEtatEBillEnum.NUMERO_ETAT_REJECTED_OR_PENDING);
-            section.setEBillErreur("");
-            section.setEBillTransactionID(transactionId);
-            section.update();
-        } catch (Exception e) {
-            getMemoryLog().logMessage("Impossible de mettre à jour la section avec l'id : " + section.getIdSection() + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
-        }
     }
 
     /**
