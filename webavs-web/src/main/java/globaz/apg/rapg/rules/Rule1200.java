@@ -31,21 +31,11 @@ public class Rule1200 extends Rule{
             droit.setSession(getSession());
             droit.setIdDroit(champsAnnonce.getIdDroit());
             droit.retrieve();
-            if(Boolean.FALSE.equals(droit.getIsSoumisImpotSource())){
-                TITiers tiers = new TITiers();
-                tiers.setSession(getSession());
-                tiers.setIdTiers(droit.loadDemande().getIdTiers());
-                tiers.retrieve();
-
-                TIPays paysNationalite = new TIPays();
-                paysNationalite.setSession(getSession());
-                paysNationalite.setIdPays(tiers.getIdPays());
-                paysNationalite.retrieve();
-                if(!CodeIsoPays.SUISSE.getCodeIso().equals(paysNationalite.getCodeIso())
-                        && !IConstantes.ID_PAYS_SUISSE.equals(droit.getPays())
-                        && hasEmployeAsEmployeurAdressePaiement(champsAnnonce.getIdDroit())){
-                    return false;
-                }
+            if(Boolean.FALSE.equals(droit.getIsSoumisImpotSource())
+                    && checkTiersEtranger(droit.loadDemande().getIdTiers())
+                    && !IConstantes.ID_PAYS_SUISSE.equals(droit.getPays())
+                    && checkAdressePaiementSetToAffilieForAnySituationProfessionnelle(champsAnnonce.getIdDroit())){
+                return false;
             }
         } catch (Exception e) {
             throwRuleExecutionException(e);
@@ -53,7 +43,20 @@ public class Rule1200 extends Rule{
         return true;
     }
 
-    private boolean hasEmployeAsEmployeurAdressePaiement(String idDroit) throws Exception {
+    private boolean checkTiersEtranger(String idTiers) throws Exception {
+        TITiers tiers = new TITiers();
+        tiers.setSession(getSession());
+        tiers.setIdTiers(idTiers);
+        tiers.retrieve();
+
+        TIPays paysNationalite = new TIPays();
+        paysNationalite.setSession(getSession());
+        paysNationalite.setIdPays(tiers.getIdPays());
+        paysNationalite.retrieve();
+        return !CodeIsoPays.SUISSE.getCodeIso().equals(paysNationalite.getCodeIso());
+    }
+
+    private boolean checkAdressePaiementSetToAffilieForAnySituationProfessionnelle(String idDroit) throws Exception {
         APSituationProfessionnelleManager situationProfessionnelleManager = new APSituationProfessionnelleManager();
         situationProfessionnelleManager.setSession(getSession());
         situationProfessionnelleManager.setForIdDroit(idDroit);
