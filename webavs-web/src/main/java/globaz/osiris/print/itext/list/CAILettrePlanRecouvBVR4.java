@@ -407,6 +407,21 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      */
     private void traiterSursisEBillOsiris(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
 
+        List<CASection> sectionsCouvertes = getSectionsCouvertes(documentBVR);
+        if (!sectionsCouvertes.isEmpty()) {
+            CASection sectionCouvertes = sectionsCouvertes.get(0); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
+            FAEnteteFacture entete = generateEnteteFacture(sectionCouvertes);
+
+                String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
+                String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
+                List<JadePublishDocument> attachedDocuments = findAndReturnAttachedDocuments(getAttachedDocuments());
+                if (!attachedDocuments.isEmpty()) {
+                    creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouvertes), sectionCouvertes, titreSursis);
+                }
+        }
+    }
+
+    private List<CASection> getSectionsCouvertes(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
         // les couvertures
         CACouvertureSectionManager couvertures = documentBVR.getPlanRecouvrement().fetchSectionsCouvertes();
 
@@ -424,17 +439,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             }
         }
 
-        if (!sections.isEmpty()) {
-            CASection section = sections.get(0);
-            FAEnteteFacture entete = generateEnteteFacture(section);
-
-            String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
-            String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
-            List<JadePublishDocument> attachedDocuments = findAndReturnAttachedDocuments(getAttachedDocuments());
-            if (!attachedDocuments.isEmpty()) {
-                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(section), section, titreSursis);
-            }
-        }
+        return sections;
     }
 
     private String getCumulSoldeFormatee(double cumulSolde) {
