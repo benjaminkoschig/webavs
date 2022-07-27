@@ -64,6 +64,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME = "CAIEcheancierBVR4_QR";
 
+    private static final int NUMBER_MAX_OF_ECHEANCE = 100;
+
     public Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis = new LinkedHashMap();
     public Map<PaireIdEcheanceParDateExigibilite, String> referencesSursis = new LinkedHashMap();
     private ReferenceBVR bvr = null;
@@ -373,27 +375,36 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
 
     @Override
     public void afterExecuteReport() {
-        // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
+        if(checkNumberEcheance()) {
+            // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+            boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
-        // On imprime les factures eBill si :
-        //  - eBillOsiris est actif
-        //  - le compte annexe possède un eBillAccountID
-        //  - eBillPrintable est sélectioné sur le plan
-        if (eBillOsirisActif && plan.getEBillPrintable()) {
-            if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID())) {
-                try {
-                    EBillSftpProcessor.getInstance();
-                    traiterSursisEBillOsiris(this);
-                    ajouteInfoEBillToEmail();
-                } catch (Exception exception) {
-                    LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
-                } finally {
-                    EBillSftpProcessor.closeServiceFtp();
+            // On imprime les factures eBill si :
+            //  - eBillOsiris est actif
+            //  - le compte annexe possède un eBillAccountID
+            //  - eBillPrintable est sélectioné sur le plan
+            if (eBillOsirisActif && plan.getEBillPrintable()) {
+                if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID())) {
+                    try {
+                        EBillSftpProcessor.getInstance();
+                        traiterSursisEBillOsiris(this);
+                        ajouteInfoEBillToEmail();
+                    } catch (Exception exception) {
+                        LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                    } finally {
+                        EBillSftpProcessor.closeServiceFtp();
+                    }
                 }
             }
+        }else{
+            getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
+            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
+            getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
         }
+    }
+    private boolean checkNumberEcheance(){
+        return this.getLignesSursis().size()<NUMBER_MAX_OF_ECHEANCE;
     }
 
     private void ajouteInfoEBillToEmail() {
