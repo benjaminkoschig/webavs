@@ -84,18 +84,18 @@ public class GFEFormValidator {
                 result.addError("messageId", ValidationError.MANDATORY);
             }
 
-            //Validation de la présence de message ID
-            Node nodeSubject = (Node) xPath.compile("/message/header/subject").evaluate(xmlDocument, XPathConstants.NODE);
-            String subject = nodeSubject.getFirstChild().getNodeValue();
-            if (StringUtils.isEmpty(subject)) {
-                result.addError("subject", ValidationError.MANDATORY);
-            }
-
             //Validation de la présence du Business Process Id
             Node nodeBusinessProcessId = (Node) xPath.compile("/message/header/businessProcessId").evaluate(xmlDocument, XPathConstants.NODE);
             String businessProcessId = nodeBusinessProcessId.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(businessProcessId)) {
                 result.addError("businessProcessId", ValidationError.MANDATORY);
+            }
+
+            //Validation de la présence de subject
+            Node nodeSubject = (Node) xPath.compile("/message/header/subject").evaluate(xmlDocument, XPathConstants.NODE);
+            String subject = nodeSubject.getFirstChild().getNodeValue();
+            if (StringUtils.isEmpty(subject)) {
+                result.addError("subject", ValidationError.MANDATORY);
             }
 
             //Validation de la présence de message Date
