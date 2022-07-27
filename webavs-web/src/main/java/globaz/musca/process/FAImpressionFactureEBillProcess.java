@@ -742,7 +742,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
             boolean impressionPapierUniquement = StringUtils.equals(FACTURES_TYPE_PAPIER, typeFacture);
 
-            // On imprime les factures eBill si :
+            // On imprime eBill si :
             //  - eBillMusca est actif
             //  - l'impression papier pour un cas eBil n'est pas forcé
             //  - le mode impression papier uniquement n'est pas sélectionné

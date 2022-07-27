@@ -376,7 +376,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
         boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
-        // On imprime les factures eBill si :
+        // On imprime eBill si :
         //  - eBillOsiris est actif
         //  - le compte annexe possède un eBillAccountID
         //  - eBillPrintable est sélectioné sur le plan

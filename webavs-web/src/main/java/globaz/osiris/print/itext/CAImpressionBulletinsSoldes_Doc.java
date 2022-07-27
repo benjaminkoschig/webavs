@@ -466,7 +466,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
-            // On imprime les factures eBill si :
+            // On imprime eBill si :
             //  - eBillOsiris est actif
             //  - le compte annexe possède un eBillAccountID
             //  - eBillPrintable est sélectioné sur l'écran d'impression
