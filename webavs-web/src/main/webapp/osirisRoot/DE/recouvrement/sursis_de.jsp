@@ -208,15 +208,13 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillOsirisActif) {%>
-		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
-			<tr>
-				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-				<td nowrap>
-					  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
-				</td>
-			</tr>
-		<%}%>
+	<% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+		<tr>
+			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+			<td nowrap>
+				  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+			</td>
+		</tr>
 	<%}%>
 	<tr>
 		<td class="label">Höchstbetrag zu erheben</td>

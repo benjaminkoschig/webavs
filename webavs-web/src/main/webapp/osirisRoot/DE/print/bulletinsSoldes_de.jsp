@@ -74,8 +74,7 @@ function postInit(){
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <% if (eBillOsirisActif) {%>
-            <% if (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
+          <% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
               <tr>
                 <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
                 <td nowrap>
@@ -85,7 +84,6 @@ function postInit(){
                 <td nowrap>&nbsp;</td>
                 <td nowrap>&nbsp;</td>
               </tr>
-            <%}%>
           <%}%>
           <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>

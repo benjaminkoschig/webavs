@@ -105,7 +105,8 @@ public class CAProcessImpressionPlan extends BProcess {
             fusionneDocuments(plan);
 
             List echeances = (ArrayList) documentE.currentEntity();
-            if (!JadeStringUtil.isBlank(documentE.getPlanRecouvrement().getId()) && getImpAvecBVR().booleanValue()
+            if (!JadeStringUtil.isBlank(documentE.getPlanRecouvrement().getId())
+                    && getImpAvecBVR().booleanValue()
                     && (echeances != null)) {
                 createBVR(plan, echeances, documentE);
             }
@@ -146,7 +147,7 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.addAllEntities(echeances);
         documentBVR.setPlanRecouvrement(plan);
         documentBVR.setCumulSolde(echeancier.getCumulSolde());
-        documentBVR.setDecisionFusionee((JadePublishDocument) getAttachedDocuments().get(0));
+        documentBVR.setDecisionFusionee((JadePublishDocument) getAttachedDocuments().get(3)); // TODO ESVE EBILL TROUVER METHODE DE RECHERCHE PLUS FIABLE
         documentBVR.setImpressionParLot(true);
         documentBVR.setTailleLot(500);
 
