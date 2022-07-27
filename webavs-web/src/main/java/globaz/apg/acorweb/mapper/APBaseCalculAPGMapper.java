@@ -11,6 +11,8 @@ import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.acor.PRACORConst;
+import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ public class APBaseCalculAPGMapper {
         BasesCalculAPG basesCalcul = new BasesCalculAPG();
 
         basesCalcul.setGenreCarte(1);
-//        basesCalcul.setCantonImpot();
+        basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
 //        basesCalcul.setTauxImpot();
 //        basesCalcul.setAFac();
 //        basesCalcul.setExemptionCotisation();

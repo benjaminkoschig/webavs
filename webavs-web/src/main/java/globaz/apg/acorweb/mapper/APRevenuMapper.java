@@ -49,18 +49,76 @@ public class APRevenuMapper {
     APDroitLAPG droit;
 
     public List<RevenuAPG> map(final BSession session) {
-//        return situationProfessionnelle.stream().map(s -> mapRevenu(s, session)).collect(Collectors.toList());
+        // return situationProfessionnelle.stream().map(s -> mapRevenu(s, session)).collect(Collectors.toList());
         List<RevenuAPG> revenus = new ArrayList<>();
         int etat = ETAT_NORMAL;
         for(APSituationProfessionnelle sitPro : situationProfessionnelles) {
-            do {
-                String dateDebut = PRACORConst.CA_DATE_VIDE;
-                String dateFin = PRACORConst.CA_DATE_VIDE;
-                boolean forcer100Pourcent = false;
+            String dateDebut = PRACORConst.CA_DATE_VIDE;
+            String dateFin = PRACORConst.CA_DATE_VIDE;
+            boolean forcer100Pourcent = false;
+            switch (etat) {
+                case ETAT_NORMAL:
+                    if (!JAUtil.isDateEmpty(sitPro.getDateDebut())) {
+                        dateFin = Dates.formatSwiss(Dates.toDate(sitPro.getDateDebut()).minusDays(1));;
+                        forcer100Pourcent = true;
+                        etat = ETAT_PENDANT_MONTANT_VERSE;
+                    } else if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
+                        dateFin = sitPro.getDateFin();
+                        etat = ETAT_APRES_MONTANT_VERSE;
+                    } else if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
+                        dateFin = sitPro.getDateFinContrat();
+                    }
+                    break;
+                case ETAT_PENDANT_MONTANT_VERSE:
+                    dateDebut = sitPro.getDateDebut();
+                    if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
+                        dateFin = sitPro.getDateFin();
+                        etat = ETAT_APRES_MONTANT_VERSE;
+                    } else {
+                        if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
+                            dateFin = sitPro.getDateFinContrat();
+                        }
+
+                        etat = ETAT_NORMAL;
+                    }
+                    break;
+                case ETAT_APRES_MONTANT_VERSE:
+                    dateDebut = Dates.formatSwiss(Dates.toDate(sitPro.getDateFin()).plusDays(1));;
+                    if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
+                        dateFin = sitPro.getDateFinContrat();
+                    }
+                    forcer100Pourcent = true;
+                    etat = ETAT_NORMAL;
+                    break;
+                default:
+                    throw new CommonTechnicalException("nous sommes tombés dans un état inconnu");
+
+            }
+            RevenuAPG revenu = mapRevenu(sitPro, forcer100Pourcent, session);
+            if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
+                FWCurrency sal = new FWCurrency();
+                // on ajoute le salaire de base
+                sal.add(revenu.getSalaire());
+
+                // si pourcent, on calcule ce qu'on doit ajouter au salaire de base
+                FWCurrency autreRem = new FWCurrency(sitPro.getAutreRemuneration());
+
+                sal.add((sal.doubleValue() / 100) * autreRem.doubleValue());
+                revenu.setSalaire(sal.doubleValue());
+            }
+
+            revenu.setDebutContrat(Dates.toXMLGregorianCalendar(dateDebut));
+            revenu.setFinContrat(Dates.toXMLGregorianCalendar(dateFin));
+            revenus.add(revenu);
+            while (etat != ETAT_NORMAL) {
+                dateDebut = PRACORConst.CA_DATE_VIDE;
+                dateFin = PRACORConst.CA_DATE_VIDE;
+                forcer100Pourcent = false;
                 switch (etat) {
                     case ETAT_NORMAL:
                         if (!JAUtil.isDateEmpty(sitPro.getDateDebut())) {
-                            dateFin = Dates.formatSwiss(Dates.toDate(sitPro.getDateDebut()).minusDays(1));;
+                            dateFin = Dates.formatSwiss(Dates.toDate(sitPro.getDateDebut()).minusDays(1));
+                            ;
                             forcer100Pourcent = true;
                             etat = ETAT_PENDANT_MONTANT_VERSE;
                         } else if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
@@ -84,7 +142,8 @@ public class APRevenuMapper {
                         }
                         break;
                     case ETAT_APRES_MONTANT_VERSE:
-                        dateDebut = Dates.formatSwiss(Dates.toDate(sitPro.getDateFin()).plusDays(1));;
+                        dateDebut = Dates.formatSwiss(Dates.toDate(sitPro.getDateFin()).plusDays(1));
+                        ;
                         if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
                             dateFin = sitPro.getDateFinContrat();
                         }
@@ -95,7 +154,7 @@ public class APRevenuMapper {
                         throw new CommonTechnicalException("nous sommes tombés dans un état inconnu");
 
                 }
-                RevenuAPG revenu = mapRevenu(sitPro, forcer100Pourcent, session);
+                revenu = mapRevenu(sitPro, forcer100Pourcent, session);
                 if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
                     FWCurrency sal = new FWCurrency();
                     // on ajoute le salaire de base
@@ -111,7 +170,7 @@ public class APRevenuMapper {
                 revenu.setDebutContrat(Dates.toXMLGregorianCalendar(dateDebut));
                 revenu.setFinContrat(Dates.toXMLGregorianCalendar(dateFin));
                 revenus.add(revenu);
-            } while(etat != ETAT_NORMAL);
+            }
         }
         return revenus;
     }
@@ -183,11 +242,6 @@ public class APRevenuMapper {
                 revenu.setTypeSalaireVerse(Integer.valueOf(PRACORConst.csPeriodiciteSalaireToAcor(adapter.salairePrincipal().getCsPeriodiciteSalaire())));
                 revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_POURCENTAGE));
             }
-            revenu.setPourcentSalaireVerse(POURCENT_TOTAL_VERSE);
-            revenu.setMontantSalaireVerse(Double.valueOf(sitPro.getRevenuIndependant()));
-            revenu.setTypeSalaireVerse(Integer.valueOf(PRACORConst.CA_TYPE_SALAIRE_ANNUEL));
-            revenu.setStatut(Integer.valueOf(PRACORConst.CA_STATUT_INDEPENDANT));
-            revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_POURCENTAGE));
         }
         if (!sitPro.getIsVersementEmployeur().booleanValue()) {
             // écraser le type de paiement si la prestation doit etre versée à

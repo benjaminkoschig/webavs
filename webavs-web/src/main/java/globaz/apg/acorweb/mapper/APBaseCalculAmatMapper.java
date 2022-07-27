@@ -1,17 +1,13 @@
 package globaz.apg.acorweb.mapper;
 
 import ch.admin.zas.xmlns.in_apg._0.BasesCalculAMat;
-import ch.admin.zas.xmlns.in_apg._0.BasesCalculAPG;
 import ch.admin.zas.xmlns.in_apg._0.GarantieIJ;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.*;
-import globaz.apg.module.calcul.APBaseCalcul;
-import globaz.apg.module.calcul.APBasesCalculBuilder;
-import globaz.globall.db.BManager;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;

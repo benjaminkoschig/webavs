@@ -1,10 +1,8 @@
 package globaz.apg.acorweb.mapper;
 
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.APSituationFamilialeMat;
-import globaz.prestation.acor.PRACORConst;
 
 import java.util.List;
 import java.util.stream.Collectors;

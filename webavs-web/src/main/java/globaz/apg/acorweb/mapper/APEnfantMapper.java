@@ -2,21 +2,17 @@ package globaz.apg.acorweb.mapper;
 
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.FamilleType;
 import ch.globaz.common.util.Dates;
-import ch.globaz.common.util.NSSUtils;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.commons.nss.NSUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
-import globaz.prestation.acor.PRACORException;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.tools.impl.PRNSS13ChiffresUtils;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -37,16 +33,13 @@ public class APEnfantMapper {
         enfant.setPrenom(situationFamiliale.getPrenom());
         enfant.setNavs(Long.valueOf(NSUtil.unFormatAVS(situationFamiliale.getNoAVS())));
         enfant.setNavsParent1(Long.valueOf(NSUtil.unFormatAVS(tiers.getNSS())));
+        enfant.setParent1Inconnu(false);
         enfant.setEtatCivil(Short.valueOf(PRACORConst.CA_CELIBATAIRE));
         enfant.setSexe(EnfantSexType.UNKNOWN);
-        Optional<APSituationFamilialeMat> parent2 = situationsFamiliale.stream()
-                .filter(s -> IAPDroitMaternite.CS_TYPE_PERE.equals(s.getType()) || IAPDroitMaternite.CS_TYPE_CONJOINT.equals(s.getType()))
-                .findFirst();
-        if(parent2.isPresent()) {
-            enfant.setNavsParent2(Long.valueOf(NSUtil.unFormatAVS(parent2.get().getNoAVS())));
-        }
+        enfant.setNavsParent2(PRConverterUtils.formatNssToLong(PRNSS13ChiffresUtils.getNSSErrone(0)));
+        enfant.setParent2Inconnu(true);
         enfant.setDateNaissance(Dates.toXMLGregorianCalendar(situationFamiliale.getDateNaissance()));
-        return  enfant;
+        return enfant;
     }
 
 }

@@ -29,6 +29,7 @@ import globaz.prestation.acor.web.mapper.PRAcorMapper;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.tools.impl.PRNSS13ChiffresUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public class APExportationCalculAcor {
             tiersRequerant = demande.loadTiers();
 
             PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE, tiersRequerant, APGUtils.getCSDomaineFromTypeDemande(droit.getGenreService()), session);
-            AssureType assureType = new APAssureMapper(prAcorMapper, session).createAssureType();
+            AssureType assureType = new APAssureMapper(prAcorMapper, droit, session).createAssureType();
             inHost.getAssure().add(completeMappingAssure(inHost, assureType));
             inHost.setDemande(toDemande());
             inHost.setVersionSchema("6.0");
@@ -87,11 +88,18 @@ public class APExportationCalculAcor {
             } else if(droit instanceof APDroitMaternite) {
                 allocationPerteGainAPG.setBasesCalculAMat(new APBaseCalculAmatMapper((APDroitMaternite) droit).map(session));
                 inHost.getEnfant().addAll(new APEnfantMapper(tiersRequerant, APLoader.loadSituationFamillialeMat(idDroit, session)).map());
-//                inHost.getFamille().addAll();
+                inHost.getAssure().add(createPereInconnu());
             }
             allocationPerteGainAPG.getRevenu().addAll(new APRevenuMapper(situationsProfessionnelles, droit).map(session));
             assureType.setAllocationPerteGain(allocationPerteGainAPG);
         return assureType;
+    }
+
+    private AssureType createPereInconnu(){
+        AssureType assure = new AssureType();
+        assure.setNavs(PRConverterUtils.formatNssToLong(PRNSS13ChiffresUtils.getNSSErrone(0)));
+        assure.setSexe(SexType.MALE);
+        return assure;
     }
 
     private DemandeType toDemande() {

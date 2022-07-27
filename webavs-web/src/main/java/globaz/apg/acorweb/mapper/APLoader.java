@@ -1,7 +1,6 @@
 package globaz.apg.acorweb.mapper;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
-import globaz.apg.acorweb.service.APExportationCalculAcor;
 import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.apg.db.droits.APSituationFamilialeMatManager;
 import globaz.apg.db.droits.APSituationProfessionnelle;
@@ -10,7 +9,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 
 import java.util.List;
 
