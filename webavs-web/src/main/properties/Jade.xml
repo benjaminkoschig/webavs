@@ -45,26 +45,26 @@
 <!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
 <!-- BASES DE QUALITE -->
 
-<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl>-->
-<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema>-->
+ 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl>
+ 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema>
 	
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl>-->
-<!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema>-->
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema> -->
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 
 
- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl>
- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema>
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl>-->
-<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema>-->
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
  
 <!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
