@@ -17,7 +17,7 @@
 		<url>${scm.weburl}</url>
 		<connection>${scmConnection}</connection>
 		<developerConnection>${scmConnection}</developerConnection>
-		<tag>1.28.0-RC1</tag>
+		<tag>1.28.1</tag>
 	</scm>
 
 	<properties>
@@ -50,7 +50,7 @@
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-		<external-xsd.version>1.0.0</external-xsd.version>
+		<external-xsd.version>1.0.1</external-xsd.version>
     <jackson.version>2.12.4</jackson.version>
     <jjwt.version>0.11.2 </jjwt.version>
 
