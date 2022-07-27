@@ -7,13 +7,12 @@ import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 public class APLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(APLoader.class);
 
     public static List<APSituationProfessionnelle> loadSituationsProfessionnelles(String idDroit, BSession session)  {
         APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();

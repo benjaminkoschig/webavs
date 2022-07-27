@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class APEnfantMapper {
+public class APAcorEnfantTypeMapper {
 
-    PRTiersWrapper tiers;
-    List<APSituationFamilialeMat> situationsFamiliale;
+    private final PRTiersWrapper tiers;
+    private final List<APSituationFamilialeMat> situationsFamiliale;
 
     public List<EnfantType> map() {
         return situationsFamiliale.stream()

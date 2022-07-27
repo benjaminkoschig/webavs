@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @AllArgsConstructor
-public class APPeriodeMapper {
+public class APAcorPeriodeMapper {
     private final APBaseCalcul baseCalcul;
     private final List<APSituationProfessionnelle> situationProfessionnelles;
 

@@ -14,15 +14,14 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
-public class APBaseCalculAPGMapper {
+@Slf4j
+public class APAcorBaseCalculMapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(APBaseCalculAPGMapper.class);
     private final APDroitAPG droit;
     private final List<APSituationProfessionnelle> situationsProfessionnelles;
 
@@ -68,7 +67,7 @@ public class APBaseCalculAPGMapper {
 
         List<APBaseCalcul> apBases = loadBasesCalcul(session);
         for(APBaseCalcul apBase : apBases) {
-            basesCalcul.getPeriode().add(new APPeriodeMapper(apBase, situationsProfessionnelles).map());
+            basesCalcul.getPeriode().add(new APAcorPeriodeMapper(apBase, situationsProfessionnelles).map());
         }
 
         return basesCalcul;

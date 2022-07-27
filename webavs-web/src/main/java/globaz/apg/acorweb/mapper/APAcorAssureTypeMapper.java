@@ -11,10 +11,11 @@ import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 
 
-public class APAssureMapper extends PRAcorMapper {
+public class APAcorAssureTypeMapper extends PRAcorMapper {
 
-    APDroitLAPG droit;
-    public APAssureMapper(PRAcorMapper prAcorMapper, APDroitLAPG droit, BSession session) {
+    private final APDroitLAPG droit;
+
+    public APAcorAssureTypeMapper(PRAcorMapper prAcorMapper, APDroitLAPG droit, BSession session) {
         super(prAcorMapper.getTypeAdressePourRequerant(), prAcorMapper.getTiersRequerant(), prAcorMapper.getDomaineAdresse(), session);
         this.droit = droit;
     }

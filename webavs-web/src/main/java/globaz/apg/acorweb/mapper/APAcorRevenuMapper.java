@@ -4,17 +4,17 @@ import ch.admin.zas.xmlns.in_apg._0.EmployeurAPG;
 import ch.admin.zas.xmlns.in_apg._0.RevenuAPG;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
-import globaz.apg.acor.adapter.plat.APFichierEmployeurPrinter;
 import globaz.apg.acor.parser.APACORPrestationsParser;
-import globaz.apg.acorweb.service.APExportationCalculAcor;
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APEmployeur;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.salaire.APSalaire;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -23,97 +23,35 @@ import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
-import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.tools.PRSession;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class APRevenuMapper {
+@Slf4j
+public class APAcorRevenuMapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(APRevenuMapper.class);
     public static final double POURCENT_TOTAL_VERSE = 100D;
 
     private static final int ETAT_NORMAL = 1;
     private static final int ETAT_PENDANT_MONTANT_VERSE = 2;
     private static final int ETAT_APRES_MONTANT_VERSE = 3;
 
-    List<APSituationProfessionnelle> situationProfessionnelles;
-    APDroitLAPG droit;
+    private List<APSituationProfessionnelle> situationProfessionnelles;
+    private APDroitLAPG droit;
 
     public List<RevenuAPG> map(final BSession session) {
-        // return situationProfessionnelle.stream().map(s -> mapRevenu(s, session)).collect(Collectors.toList());
         List<RevenuAPG> revenus = new ArrayList<>();
         int etat = ETAT_NORMAL;
-        for(APSituationProfessionnelle sitPro : situationProfessionnelles) {
-            String dateDebut = PRACORConst.CA_DATE_VIDE;
-            String dateFin = PRACORConst.CA_DATE_VIDE;
-            boolean forcer100Pourcent = false;
-            switch (etat) {
-                case ETAT_NORMAL:
-                    if (!JAUtil.isDateEmpty(sitPro.getDateDebut())) {
-                        dateFin = Dates.formatSwiss(Dates.toDate(sitPro.getDateDebut()).minusDays(1));;
-                        forcer100Pourcent = true;
-                        etat = ETAT_PENDANT_MONTANT_VERSE;
-                    } else if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
-                        dateFin = sitPro.getDateFin();
-                        etat = ETAT_APRES_MONTANT_VERSE;
-                    } else if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
-                        dateFin = sitPro.getDateFinContrat();
-                    }
-                    break;
-                case ETAT_PENDANT_MONTANT_VERSE:
-                    dateDebut = sitPro.getDateDebut();
-                    if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
-                        dateFin = sitPro.getDateFin();
-                        etat = ETAT_APRES_MONTANT_VERSE;
-                    } else {
-                        if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
-                            dateFin = sitPro.getDateFinContrat();
-                        }
-
-                        etat = ETAT_NORMAL;
-                    }
-                    break;
-                case ETAT_APRES_MONTANT_VERSE:
-                    dateDebut = Dates.formatSwiss(Dates.toDate(sitPro.getDateFin()).plusDays(1));;
-                    if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
-                        dateFin = sitPro.getDateFinContrat();
-                    }
-                    forcer100Pourcent = true;
-                    etat = ETAT_NORMAL;
-                    break;
-                default:
-                    throw new CommonTechnicalException("nous sommes tombés dans un état inconnu");
-
-            }
-            RevenuAPG revenu = mapRevenu(sitPro, forcer100Pourcent, session);
-            if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
-                FWCurrency sal = new FWCurrency();
-                // on ajoute le salaire de base
-                sal.add(revenu.getSalaire());
-
-                // si pourcent, on calcule ce qu'on doit ajouter au salaire de base
-                FWCurrency autreRem = new FWCurrency(sitPro.getAutreRemuneration());
-
-                sal.add((sal.doubleValue() / 100) * autreRem.doubleValue());
-                revenu.setSalaire(sal.doubleValue());
-            }
-
-            revenu.setDebutContrat(Dates.toXMLGregorianCalendar(dateDebut));
-            revenu.setFinContrat(Dates.toXMLGregorianCalendar(dateFin));
-            revenus.add(revenu);
-            while (etat != ETAT_NORMAL) {
-                dateDebut = PRACORConst.CA_DATE_VIDE;
-                dateFin = PRACORConst.CA_DATE_VIDE;
-                forcer100Pourcent = false;
+        for (APSituationProfessionnelle sitPro : situationProfessionnelles) {
+            do {
+                String dateDebut = PRACORConst.CA_DATE_VIDE;
+                String dateFin = PRACORConst.CA_DATE_VIDE;
+                boolean forcer100Pourcent = false;
                 switch (etat) {
                     case ETAT_NORMAL:
                         if (!JAUtil.isDateEmpty(sitPro.getDateDebut())) {
@@ -143,7 +81,6 @@ public class APRevenuMapper {
                         break;
                     case ETAT_APRES_MONTANT_VERSE:
                         dateDebut = Dates.formatSwiss(Dates.toDate(sitPro.getDateFin()).plusDays(1));
-                        ;
                         if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
                             dateFin = sitPro.getDateFinContrat();
                         }
@@ -154,8 +91,8 @@ public class APRevenuMapper {
                         throw new CommonTechnicalException("nous sommes tombés dans un état inconnu");
 
                 }
-                revenu = mapRevenu(sitPro, forcer100Pourcent, session);
-                if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
+                RevenuAPG revenu = mapRevenu(sitPro, forcer100Pourcent, session);
+                if (sitPro.getIsPourcentAutreRemun()) {
                     FWCurrency sal = new FWCurrency();
                     // on ajoute le salaire de base
                     sal.add(revenu.getSalaire());
@@ -170,7 +107,7 @@ public class APRevenuMapper {
                 revenu.setDebutContrat(Dates.toXMLGregorianCalendar(dateDebut));
                 revenu.setFinContrat(Dates.toXMLGregorianCalendar(dateFin));
                 revenus.add(revenu);
-            }
+            } while (etat != ETAT_NORMAL);
         }
         return revenus;
     }
@@ -180,8 +117,8 @@ public class APRevenuMapper {
         try {
             employeur = sitPro.loadEmployeur();
         } catch (Exception e) {
-            LOG.error(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR")+sitPro.getIdEmployeur(), e);
-            throw new CommonTechnicalException(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR")+sitPro.getIdEmployeur(), e);
+            LOG.error(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + sitPro.getIdEmployeur(), e);
+            throw new CommonTechnicalException(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + sitPro.getIdEmployeur(), e);
         }
 
 
@@ -189,8 +126,8 @@ public class APRevenuMapper {
         try {
             employeurAPG.setNumeroAffilie(employeur.loadNumero());
         } catch (Exception e) {
-            LOG.error("Impossible de récupérer le numéro d'affilié' "+employeur.getIdAffilie(), e);
-            throw new CommonTechnicalException("Impossible de récupérer le numéro d'affilié' "+employeur.getIdAffilie(), e);
+            LOG.error("Impossible de récupérer le numéro d'affilié' " + employeur.getIdAffilie(), e);
+            throw new CommonTechnicalException("Impossible de récupérer le numéro d'affilié' " + employeur.getIdAffilie(), e);
         }
 
         employeurAPG.setRaisonSociale(buildNomAffilie(employeur, session));
@@ -211,7 +148,7 @@ public class APRevenuMapper {
         return revenu;
     }
 
-    private RevenuAPG buildRevenu(APSituationProfessionnelle sitPro, boolean forcer100Pourcent,BSession session) {
+    private RevenuAPG buildRevenu(APSituationProfessionnelle sitPro, boolean forcer100Pourcent, BSession session) {
         APSalaireAdapter adapter = new APSalaireAdapter(sitPro);
         RevenuAPG revenu = new RevenuAPG();
         if (sitPro.getIsIndependant().booleanValue()) {
@@ -286,7 +223,7 @@ public class APRevenuMapper {
         if (heureSemaine.lastIndexOf(".") == -1) {
             return JANumberFormatter.round(Double.valueOf(heureSemaine), 1, 0, JANumberFormatter.NEAR);
         } else {
-            return  JANumberFormatter.round(Double.valueOf(heureSemaine), 0.1, 1, JANumberFormatter.NEAR);
+            return JANumberFormatter.round(Double.valueOf(heureSemaine), 0.1, 1, JANumberFormatter.NEAR);
         }
     }
 
@@ -296,8 +233,8 @@ public class APRevenuMapper {
         try {
             nomAffilie = employeur.loadNom();
         } catch (Exception e) {
-            LOG.error("Impossible de récupérer le nom employeur' "+employeur.getIdAffilie(), e);
-            throw new CommonTechnicalException("Impossible de récupérer le nom employeur' "+employeur.getIdAffilie(), e);
+            LOG.error("Impossible de récupérer le nom employeur' " + employeur.getIdAffilie(), e);
+            throw new CommonTechnicalException("Impossible de récupérer le nom employeur' " + employeur.getIdAffilie(), e);
         }
         if (!JadeStringUtil.isBlankOrZero(employeur.getIdAffilie())) {
             AFAffiliation af = new AFAffiliation();
@@ -333,7 +270,7 @@ public class APRevenuMapper {
     }
 
     public long nbContrats(String noAffilie, BSession session) throws PRACORException {
-            return situationProfessionnelles.stream().filter(s -> loadNumeroWithRunTimeException(s, session).equals(noAffilie)).count();
+        return situationProfessionnelles.stream().filter(s -> loadNumeroWithRunTimeException(s, session).equals(noAffilie)).count();
     }
 
     private APEmployeur loadEmployeurWithRunTimeException(APSituationProfessionnelle situationProfessionnelle, BSession session) {

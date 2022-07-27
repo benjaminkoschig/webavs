@@ -10,21 +10,21 @@ import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
-public class APBaseCalculAmatMapper {
+@Slf4j
+public class APAcorBaseCalculAmatMapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(APBaseCalculAmatMapper.class);
     private final APDroitMaternite droit;
 
     public BasesCalculAMat map(final BSession session) {
         BasesCalculAMat basesCalcul = new BasesCalculAMat();
 
         basesCalcul.setGenreCarte(1);
+        // TODO : récupérer canton impot
 //        basesCalcul.setCantonImpot();
 //        basesCalcul.setTauxImpot();
 //        basesCalcul.setAFac();
@@ -33,7 +33,8 @@ public class APBaseCalculAmatMapper {
             GarantieIJ garantie = new GarantieIJ();
             garantie.setMontant(Double.valueOf(droit.getDroitAcquis()));
             garantie.setSource(Integer.valueOf(session.getCode(droit.getCsProvenanceDroitAcquis())));
-//  TODO            garantie.setNumeroReference(); --> obligatoire !
+//          TODO : a voir si le champ est nécessaire (ou obligatoire)
+//          garantie.setNumeroReference();
             basesCalcul.setGarantieIJ(garantie);
         }
         try {
