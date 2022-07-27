@@ -80,21 +80,28 @@ public class PYTiersDTO {
 
     }
 
+    /**
+     * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
+     *
+     * isValidForUpdate vérifie l'absence des champs et lance une erreur en cas de problème.
+     *
+     * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
+     */
     @JsonIgnore
-    public Boolean isValid() {
+    public Boolean isValid(){
         // TODO: Decide how we're doing it for page 2 and other fields
 
-        if (!isPhysicalPerson) {
+        if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
                 Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && Stream.of(nss, birthDate, deathDate, sex, civilStatus, country).allMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValid(this)
+                && PYValidateDTO.isValidForCreation(this)
             );
-        } else {
+        } else if (Boolean.TRUE.equals(isPhysicalPerson)){
             return (
                 Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValid(this)
+                && PYValidateDTO.isValidForCreation(this)
             );
         }
+        return false;
     }
 }

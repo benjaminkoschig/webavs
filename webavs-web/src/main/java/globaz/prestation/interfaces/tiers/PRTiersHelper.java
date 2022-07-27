@@ -41,6 +41,7 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,11 +259,10 @@ public class PRTiersHelper {
      *
      * @param session
      * @param dto
-     * @return le
+     * @return le dto avec l'id du tiers
      * @throws Exception
      */
     public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
-        /*ITIPersonneAvs*/
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
@@ -294,7 +294,7 @@ public class PRTiersHelper {
         if (session.getCurrentThreadTransaction() != null) {
             avsPerson.add(session.getCurrentThreadTransaction());
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-                throw new PYBadRequestException("Erreur lors de l'assignation de tiers, " + session.getCurrentThreadTransaction().getErrors().toString());
+                throw new PYBadRequestException("Erreur DB lors de la création de tiers: " + session.getCurrentThreadTransaction().getErrors().toString());
             }
         } else {
             // HACK: creating a transaction to insert a "tiers"
@@ -315,6 +315,104 @@ public class PRTiersHelper {
             }
         }
         return avsPerson.getIdTiers();
+    }
+
+    /**
+     * Méthode pour mettre à jour un tiers (page 1)
+     *
+     * @param session
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public static final String updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
+        ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
+
+        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should be given by the user, maybe extend the DTO to add this
+
+        // Get the tiers from database
+        avsPerson.setIdTiers(dto.getId());
+        avsPerson.retrieve(session.getCurrentThreadTransaction());
+
+        // We need to set a date and a reason for the update(s)
+        avsPerson.setMotifModifTitre(reason);
+        avsPerson.setDateModifTitre(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation1(reason);
+        avsPerson.setDateModifDesignation1(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation2(reason);
+        avsPerson.setDateModifDesignation2(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation3(reason);
+        avsPerson.setDateModifDesignation3(dto.getModificationDate());
+        avsPerson.setMotifModifDesignation4(reason);
+        avsPerson.setDateModifDesignation4(dto.getModificationDate());
+        avsPerson.setMotifModifAvs(reason);
+        avsPerson.setDateModifAvs(dto.getModificationDate());
+        avsPerson.setMotifModifContribuable(reason);
+        avsPerson.setDateModifContribuable(dto.getModificationDate());
+        avsPerson.setMotifModifPays(reason);
+        avsPerson.setDateModifPays(dto.getModificationDate());
+
+        // Update avsPerson with all the new values as long as they aren't null
+        if (dto.getTitle() != null)
+            avsPerson.setTitreTiers(dto.getTitle());
+        if (dto.getSurname() != null)
+            avsPerson.setDesignation1(dto.getSurname());
+        if (dto.getName() != null)
+            avsPerson.setDesignation2(dto.getName());
+        if (dto.getName1() != null)
+            avsPerson.setDesignation3(dto.getName1());
+        if (dto.getName2() != null)
+            avsPerson.setDesignation4(dto.getName2());
+        if (dto.getNss() != null)
+            avsPerson.setNumAvsActuel(dto.getNss());
+        if (dto.getBirthDate() != null)
+            avsPerson.setDateNaissance(dto.getBirthDate());
+        if (dto.getDeathDate() != null)
+            avsPerson.setDateDeces(dto.getDeathDate());
+        if (dto.getSex() != null)
+            avsPerson.setSexe(dto.getSex());
+        if (dto.getCivilStatus() != null)
+            avsPerson.setEtatCivil(dto.getCivilStatus());
+        if(dto.getLanguage() != null)
+            avsPerson.setLangue(dto.getLanguage());
+        if (dto.getCountry() != null)
+            avsPerson.setIdPays(dto.getCountry());
+        if (dto.getTaxpayerNumber() != null)
+            avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
+        if (dto.getIsPhysicalPerson() != null) {
+            avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
+            avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
+        }
+        if (dto.getIsInactive() != null)
+            avsPerson.setInactif(dto.getIsInactive());
+
+        // Make the actual transaction with the database in order to update the tiers
+        if (session.getCurrentThreadTransaction() != null) {
+            avsPerson.update(session.getCurrentThreadTransaction());
+            System.err.println(session.getCurrentThreadTransaction().getErrors());
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                throw new PYBadRequestException("Erreur DB lors de la mise à jour du tiers: " + session.getCurrentThreadTransaction().getErrors().toString());
+            }
+        } else {
+            // HACK: creating a transaction to insert a "tiers"
+            BITransaction transaction = (session).newTransaction();
+
+            try {
+                avsPerson.update(transaction);
+                PRTiersHelper.addRole(session, transaction, avsPerson.getIdTiers());
+
+            } catch (Exception e) {
+                transaction.setRollbackOnly();
+            } finally {
+                transaction.closeTransaction();
+                if (transaction.isRollbackOnly()) {
+                } else {
+                    transaction.commit();
+                }
+            }
+        }
+
+        return dto.getModificationDate(); // TODO: Return an updated dto of sorts
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)

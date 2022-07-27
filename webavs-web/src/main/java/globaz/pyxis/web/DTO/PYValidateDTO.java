@@ -9,6 +9,7 @@ import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
+import globaz.pyxis.web.exceptions.PYInternalException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class PYValidateDTO {
 
-    // TODO: Implement "validators" for other fields in PYTiersDTO
     private static final List<String> validLanguage = Arrays.asList(
         CodeLangue.FR.getValue(),
         CodeLangue.DE.getValue(),
@@ -25,18 +25,88 @@ public class PYValidateDTO {
         CodeLangue.EN.getValue()
     );
 
-    public static Boolean isValid(PYTiersDTO dto) {
+    /**
+     * Méthode pour s'assurer de la validité des données du DTO pour création.
+     *
+     * @param dto
+     * @return true si toutes les vérifications passent sans encombres
+     */
+    public static Boolean isValidForCreation(PYTiersDTO dto) {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
-        getTitleAsSystemCode(dto); // TODO: Check title better than that
-        checkNSS(dto);
-        checkDates(dto);
-        checkAndSetSexAsSystemCode(dto);
-        checkAndSetCivilStatusAsSystemCode(dto);
-        checkAndSetLanguageAsSystemCode(dto);
-        getCountryAsSystemCode(dto); // TODO: Check country better than that
+        checkValidity(dto);
 
         return true;
+    }
+
+    /**
+     * Méthode pour s'assurer de la validité des données du DTO pour modification.
+     *
+     * @param dto
+     * @return true si toutes les vérifications passent sans encombres
+     */
+    public static Boolean isValidForUpdate(PYTiersUpdateDTO dto) throws PYBadRequestException {
+        // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
+
+        checkValidity(dto);
+        if (dto.getModificationDate() != null) {
+            checkModificationDate(dto.getModificationDate());
+        }
+
+        if (!dto.getIsPhysicalPerson()) {
+            // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
+            dto.setNss("");
+            dto.setBirthDate("");
+            dto.setDeathDate("");
+            dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString()); // This one needs to be reseted directly to "0"
+            dto.setCivilStatus("");
+            dto.setCountry("");
+        }
+
+        return true;
+    }
+
+    /**
+     * Méthode pour s'assurer de la validité des données du DTO.
+     * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
+     *
+     * Comme un field à null indique l'absence de modification (et pas la modification pour mettre à la valeur null),
+     * on vérifie que les fields ne soient pas à null avant d'appeller les méthodes de check.
+     *
+     * @param dto
+     */
+    private static void checkValidity(PYTiersDTO dto) {
+        if (dto.getTitle() != null)
+            getTitleAsSystemCode(dto);
+        if (dto.getLanguage() != null)
+            checkAndSetLanguageAsSystemCode(dto);
+        if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) {
+            if (dto.getNss() != null)
+                checkNSS(dto);
+            if (dto.getBirthDate() != null)
+                checkBirthdate(dto);
+            if (dto.getDeathDate() != null)
+                checkDeathdate(dto);
+            if (dto.getSex() != null)
+                checkAndSetSexAsSystemCode(dto);
+            if (dto.getCivilStatus() != null)
+                checkAndSetCivilStatusAsSystemCode(dto);
+            if (dto.getCountry() != null)
+                getCountryAsSystemCode(dto);
+        } else if (Boolean.FALSE.equals(dto.getIsPhysicalPerson())) { // If it's a legal person, make sure the user knows what they're doing by making sure they're not modifying impossible fields
+            if (dto.getNss() != null)
+                throw new PYBadRequestException("Le NSS ne doit pas être renseigné pour une personne morale.");
+            if (dto.getBirthDate() != null)
+                throw new PYBadRequestException("La date de naissance ne doit pas être renseignée pour une personne morale.");
+            if (dto.getDeathDate() != null)
+                throw new PYBadRequestException("La date de décès ne doit pas être renseignée pour une personne morale.");
+            if (dto.getSex() != null)
+                throw new PYBadRequestException("Le sexe ne doit pas être renseigné pour une personne morale.");
+            if (dto.getCivilStatus() != null)
+                throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
+            if (dto.getCountry() != null)
+                throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
+        }
     }
 
     /**
@@ -44,11 +114,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getTitleAsSystemCode(PYTiersDTO dto) {
-        if (dto.getTitle() == null) {
-            dto.setTitle(Titre.UNDEFINED.getCodeSysteme().toString());
-        }
-
+    private static final void getTitleAsSystemCode(PYTiersDTO dto) throws PYBadRequestException {
         switch ((dto.getTitle() != null) ? JadeStringUtil.toLowerCase(dto.getTitle()) : "") {
             case "monsieur":
             case "m":
@@ -60,6 +126,9 @@ public class PYValidateDTO {
                 break;
             case "madame, monsieur":
                 dto.setTitle(ITITiers.CS_HORIE);
+                break;
+            case "":
+                dto.setTitle(Titre.UNDEFINED.getCodeSysteme().toString());
                 break;
             default: // If the title isn't anything standard, check that it's a valid system code
                 try {
@@ -87,31 +156,68 @@ public class PYValidateDTO {
     }
 
     /**
-     * Si les dates ne sont pas renseignées ou mises à 0, on les set à 0. Sinon, on vérifie si les dates sont au format dd.mm.aaaa et on lance une exception si besoin
+     * Méthode vérifiant le format de birthdate.
+     * Si birthdate n'est pas renseignée ou mis à 0, on la set à 0.
      *
      * @param dto
      */
-    private static final void checkDates(PYTiersDTO dto) {
-        String pattern = "[0-3]\\d\\.[0-1]\\d\\.\\d{4}";
-
+    private static final void checkBirthdate(PYTiersDTO dto) {
         String birthDate = dto.getBirthDate();
         if (birthDate == "0" || birthDate == null || birthDate == ""){
             dto.setBirthDate("0");
         } else {
-            if (!Pattern.matches(pattern, birthDate)) {
-                System.err.println("Erreur lors de la validation de la date de naissance du tiers.");
-                throw new PYBadRequestException("Erreur lors de la validation de la date de naissance du tiers.");
+            try {
+                checkDate(birthDate);
+            }
+            catch (PYInternalException e) {
+                throw new PYInternalException("Erreur lors de la validation de la date de naissance du tiers.", e);
             }
         }
+    }
 
+    /**
+     * Méthode vérifiant le format de deathDate.
+     * Si deathDate n'est pas renseignée ou mis à 0, on la set à 0.
+     *
+     * @param dto
+     */
+    private static final void checkDeathdate(PYTiersDTO dto) {
         String deathDate = dto.getDeathDate();
         if (deathDate == "0" || deathDate == null || deathDate == ""){
             dto.setDeathDate("0");
         } else {
-            if (!Pattern.matches(pattern, deathDate)) {
-                System.err.println("Erreur lors de la validation de la date de décès du tiers.");
-                throw new PYBadRequestException("Erreur lors de la validation de la date de décès du tiers.");
+            try {
+                checkDate(deathDate);
             }
+            catch (PYInternalException e) {
+                throw new PYInternalException("Erreur lors de la validation de la date de décès du tiers.", e);
+            }
+        }
+    }
+
+    /**
+     * Méthode qui vérifie si date est au format dd.mm.yyyy et lance une exception si besoin
+     *
+     * @param date
+     */
+    private static final void checkDate(String date) throws PYBadRequestException{
+        String pattern = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
+        if (!Pattern.matches(pattern, date)) {
+            System.err.println("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
+            throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
+        }
+    }
+
+    /**
+     * Méthode qui vérifie si date est au format ddmmyyyy et lance une exception si besoin
+     *
+     * @param date
+     */
+    private static final void checkModificationDate(String date) throws PYBadRequestException{
+        String pattern = "(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}";
+        if (!Pattern.matches(pattern, date)) {
+            System.err.println("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
+            throw new PYBadRequestException("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
         }
     }
 
@@ -196,9 +302,10 @@ public class PYValidateDTO {
                 dto.setLanguage(CodeLangue.RM.getValue());
                 break;
             default: // If the language isn't one of those, check if it's a valid system code and throw an error if needed
-                if (!PYValidateDTO.validLanguage.contains(dto.getLanguage()))
+                if (!PYValidateDTO.validLanguage.contains(dto.getLanguage())) {
                     System.err.println("Erreur lors de l'assignation de la langue du tiers.");
                     throw new PYBadRequestException("Erreur lors de l'assignation de la langue du tiers.");
+                }
         }
     }
 
@@ -217,24 +324,5 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("Erreur lors de l'assignation du pays");
             }
         }
-    }
-
-    /**
-     * Méthode pour vérifier que code ressemble à un code système
-     *
-     * @param code le code système de la requête
-     * @return true si ça ressemble à un code système
-     */
-    private static final boolean isSystemCode(String code) {
-        int codeAsInt;
-        try {
-            codeAsInt = Integer.parseInt(code);
-            if (codeAsInt < 0){ // TODO: This if is bad. We need to check if the system code actually exists (custom or generic)
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
     }
 }
