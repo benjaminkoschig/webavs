@@ -34,7 +34,7 @@ public class Rule1200 extends Rule{
                 droit.setSession(getSession());
                 droit.setIdDroit(champsAnnonce.getIdDroit());
                 droit.retrieve();
-                if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())){
+                if(Boolean.FALSE.equals(droit.getIsSoumisImpotSource())){
                     APDroitMaterniteJointTiers droitJoinTiers = new APDroitMaterniteJointTiers();
                     droitJoinTiers.setSession(getSession());
                     droitJoinTiers.setIdDroit(champsAnnonce.getIdDroit());
