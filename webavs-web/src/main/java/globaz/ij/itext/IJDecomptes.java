@@ -240,6 +240,8 @@ public class IJDecomptes extends FWIDocumentManager {
     protected boolean isEntete = false;
     protected PRTiersWrapper tierAdresse;
 
+    private boolean impotSource =false;
+
 
     public IJDecomptes() throws FWIException {
         super();
@@ -539,292 +541,6 @@ public class IJDecomptes extends FWIDocumentManager {
                             IJProperties.NUMERO_AFFILIE_POUR_LA_GED_FORCES_A_ZERO_SI_VIDE.getPropertyName()));
         }
         return proprieteNumeroAffilieForceAZeroSiVide;
-    }
-
-    @Override
-    public void beforeBuildReport() throws FWIException {
-        try {
-            Map<String, String> parametres = getImporter().getParametre();
-
-            if (parametres == null) {
-                parametres = new HashMap<String, String>();
-                getImporter().setParametre(parametres);
-            } else {
-                parametres.clear();
-            }
-
-            parametres.put(
-                    "PARAM_IJ_DECOMPTE_DETAIL",
-                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
-                            + IJApplication.APPLICATION_IJ_REP, '\\', '/')
-                            + "/" + "model" + "/" + "IJ_DECOMPTE_DETAIL.jasper");
-
-            parametres.put(
-                    "PARAM_IJ_DECOMPTE_DETAIL2",
-                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
-                            + IJApplication.APPLICATION_IJ_REP, '\\', '/')
-                            + "/" + "model" + "/" + "IJ_DECOMPTE_DETAIL2.jasper");
-
-            // remplissage de l'entête
-            CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
-
-            if (JadeStringUtil.isIntegerEmpty(decompteCourant.getIdAffilie())) {
-                PRTiersWrapper tiers;
-                String adresse;
-
-                noAffilie = "";
-
-                try {
-                    tiers = PRTiersHelper.getTiersParId(getISession(), decompteCourant.getIdTiers());
-
-                    if (tiers == null) {
-                        tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
-                    }
-
-                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
-                            decompteCourant.getIdAffilie(), IJApplication.CS_DOMAINE_ADRESSE_IJAI);
-                } catch (Exception e) {
-                    throw new FWIException("impossible de charger le tiers", e);
-                }
-
-                crBean.setDate(JACalendar.format(JACalendar.format(getDate()), codeIsoLangue));
-
-                if (state != IJDecomptes.STATE_VENTILATION) {
-                    crBean.setNoAvs(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
-                }
-                crBean.setAdresse(adresse);
-
-                // nom du document
-                setDocumentTitle(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " - "
-                        + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM).toUpperCase() + " "
-                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-            } else {
-                IPRAffilie affilie;
-                String adresse;
-
-                try {
-                    affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getISession(), getSession()
-                            .getCurrentThreadTransaction(), decompteCourant.getIdAffilie(), decompteCourant
-                            .getIdTiers());
-                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
-                            decompteCourant.getIdAffilie(), IJApplication.CS_DOMAINE_ADRESSE_IJAI);
-
-                    noAffilie = affilie.getNumAffilie();
-
-                    // Renseignement de l'IDE
-                    AFIDEUtil.addNumeroIDEInDoc(crBean, affilie.getNumeroIDE(), affilie.getIdeStatut());
-
-                } catch (Exception e) {
-                    throw new FWIException("impossible de charger le tiers", e);
-                }
-
-                if (state != IJDecomptes.STATE_VENTILATION) {
-                    crBean.setNoAffilie(affilie.getNumAffilie());
-                }
-                crBean.setDate(JACalendar.format(JACalendar.format(getDate()), codeIsoLangue));
-                crBean.setAdresse(adresse);
-
-                // nom du document
-                setDocumentTitle(affilie.getNumAffilie() + " - " + affilie.getNom());
-            }
-            if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_NOMCOLABO))) {
-                // nom du collaborateur
-                crBean.setNomCollaborateur(getSession().getUserFullName());
-            }
-            // création des paramètres pour l'en-tête
-            try {
-                // Ajoute le libellé CONFIDENTIEL dans l'adresse de l'entête du document
-                if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_CONFIDENTIEL))) {
-
-                    crBean.setConfidentiel(true);
-                }
-
-                if (caisseHelper == null) {
-                    caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(getDocumentInfo(),
-                            getSession().getApplication(), codeIsoLangue);
-                }
-
-                caisseHelper.addHeaderParameters(getImporter(), crBean);
-            } catch (Exception e) {
-                throw new FWIException("Impossible de renseigner l'en-tete", e);
-            }
-
-            // ajout du nom du département si nécessaire
-            if (decompteCourant.getDepartement() != null) {
-                parametres.put("P_HEADER_DEPARTEMENT", decompteCourant.getDepartement().getDepartement());
-            }
-
-            // S'il s'agit d'une copie
-            if(getIsCopie()){
-                parametres.put("P_COPIE",  document.getTextes(1).getTexte(2).getDescription());
-            }
-
-            // le titre
-            parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
-
-            String type_decompte = "";
-
-            switch (state) {
-
-                case STATE_NORMAL:
-                    type_decompte = document.getTextes(5).getTexte(6).getDescription();
-                    break;
-
-                case STATE_VENTILATION:
-                    type_decompte = document.getTextes(5).getTexte(7).getDescription();
-                    break;
-            }
-
-            String texteTitre2 = PRStringUtils.replaceString(document.getTextes(5).getTexte(1).getDescription(),
-                    "{type}", type_decompte);
-
-            texteTitre2 = PRStringUtils.replaceString(texteTitre2, "{dateDec}", JACalendar.format(getDate()));
-
-            parametres.put("PARAM_TITRE2", texteTitre2);
-
-            PRTiersWrapper tiers;
-            tiers = PRTiersHelper.getTiersParId(getISession(), decompteCourant.getIdTiers());
-
-            if (tiers == null) {
-                tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
-            }
-
-            parametres.put("P_HEADER_NOM_PAGE2", PRStringUtils.replaceString(
-                    document.getTextes(5).getTexte(4).getDescription(),
-                    "{nomPrenom}",
-                    tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                            + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
-
-            if (JadeStringUtil.isEmpty((noAffilie))) {
-
-                String nAvs = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                String idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
-
-                if (!JadeStringUtil.isEmpty(nAvs)) {
-                    parametres.put("P_HEADER_NO_AVS_PAGE2", PRStringUtils.replaceString(
-                            document.getTextes(5).getTexte(3).getDescription(), "{noAVS}", nAvs));
-                }
-
-                if (!JadeStringUtil.isBlankOrZero(idTiers)) {
-                    if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DISPLAY_NIP))) {
-                        parametres.put("P_HEADER_NIP_LIB", getSession().getLabel("NIP") + " :");
-                        parametres.put("P_HEADER_NIP", idTiers);
-                    }
-                }
-            } else {
-
-                parametres.put("P_HEADER_NO_AFFILIE_PAGE2", PRStringUtils.replaceString(
-                        document.getTextes(5).getTexte(2).getDescription(), "{noAffilie}", noAffilie));
-            }
-
-            parametres.put("PARAM_PAGE", document.getTextes(5).getTexte(5).getDescription());
-
-            // le corps du document
-            StringBuffer buffer = new StringBuffer();
-
-            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-            Hashtable<String, String> params = new Hashtable<String, String>();
-            params.put(ITITiers.FIND_FOR_IDTIERS, tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
-            ITITiers[] t = tiersTitre.findTiers(params);
-            if ((t != null) && (t.length > 0)) {
-                tiersTitre = t[0];
-            }
-            String titre = tiersTitre.getFormulePolitesse(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-
-            for (Iterator<ICTTexte> textes = document.getTextes(2).iterator(); textes.hasNext();) {
-                ICTTexte texte = textes.next();
-
-                // ne pas traiter le contenu optionnel
-                if (Integer.parseInt(texte.getPosition()) > 100) {
-                    break;
-                }
-
-                if (buffer.length() > 0) {
-                    buffer.append("\n\n");
-                }
-                buffer.append(texte.getDescription());
-            }
-            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
-
-            buffer.append("\n\n");
-
-            // cette méthode est exécutée après createDataSource donc nous connaissons le total des prestations, et donc
-            // nous savons s'il s'agit d'un document de restitution.
-            if (restitution) {
-                buffer.append(document.getTextes(2).getTexte(102).getDescription());
-            } else {
-                buffer.append(document.getTextes(2).getTexte(101).getDescription());
-            }
-
-            parametres.put("PARAM_CORPS", buffer.toString());
-
-            // le détail
-            parametres.put("PARAM_ASSURE", document.getTextes(3).getTexte(1).getDescription());
-            parametres.put("PARAM_DETAIL", document.getTextes(3).getTexte(2).getDescription());
-            parametres.put("PARAM_MONTANT", document.getTextes(3).getTexte(3).getDescription());
-            parametres.put("PARAM_DEVISE", document.getTextes(3).getTexte(4).getDescription());
-
-            // le pied de page
-            buffer.setLength(0);
-
-            for (Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext();) {
-                ICTTexte texte = textes.next();
-
-                // ne pas traiter le contenu optionnel
-                if (Integer.parseInt(texte.getPosition()) > 100) {
-                    break;
-                }
-
-                if (Integer.parseInt(texte.getPosition()) == 1) {
-                    if (buffer.length() > 0) {
-                        buffer.append("\n");
-                    }
-                    buffer.append(texte.getDescription());
-                }
-
-            }
-
-            parametres.put("PARAM_PIED", buffer.toString());
-
-            // ajouter les signatures
-            buffer.setLength(0);
-
-            buffer.append(document.getTextes(6).getTexte(1).getDescription());
-
-            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
-            buffer.append("\n");
-            parametres.put("PARAM_SALUTATIONS", buffer.toString());
-
-            try {
-                caisseHelper.addSignatureParameters(getImporter());
-            } catch (Exception e) {
-                throw new FWIException("Impossible de charger le pied de page", e);
-            }
-
-            if(IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ()) && state != IJDecomptes.STATE_VENTILATION) {
-                if (!decompteCourant.getDemande().getIdTiers().equals(decompteCourant.getIdTiers())) {
-
-                    parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
-
-                    TITiers tiTierCopie = new TITiers();
-                    tiTierCopie.setSession(getSession());
-                    tiTierCopie.setIdTiers(decompteCourant.getDemande().getIdTiers());
-                    tiTierCopie.retrieve();
-
-                    String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
-                            IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
-                            new PRTiersAdresseCopyFormater04());
-
-                    copie += "\n";
-                    parametres.put("P_COPIE_A2", copie);
-                } else {
-                    findCopieEmployeur(parametres);
-                }
-            }
-        } catch (Exception e) {
-            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, IJDecomptes.class.getSimpleName());
-            abort();
-        }
     }
 
     protected List<String> findEmployeur() throws Exception {
@@ -1413,7 +1129,6 @@ public class IJDecomptes extends FWIDocumentManager {
                 FWCurrency totalMontantCotisation = new FWCurrency(0);
                 FWCurrency totalMontantImpotSource = new FWCurrency(0);
                 FWCurrency tauxImpotSource = new FWCurrency(0);
-                boolean isImpotSource=false;
 
                 String libelleCot = document.getTextes(3).getTexte(15).getDescription();
                 String libelleAVS = "";
@@ -1426,7 +1141,7 @@ public class IJDecomptes extends FWIDocumentManager {
                     if (ijCot.getIsImpotSource().booleanValue() == true) {
                         totalMontantImpotSource.add(ijCot.getMontant());
                         tauxImpotSource.add(ijCot.getTaux());
-                        isImpotSource=true;
+                        setImpotSource(true);
                     }
 
                     else {
@@ -1492,7 +1207,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
                     totalCotisations.add(totalMontantCotisation.toString());
                 }
-                if (isImpotSource){
+                if (isImpotSource()){
                     // Affichage de l'impôt à la source
                     champs.put("FIELD_DETAIL_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(), "{tauxImpotSource}", tauxImpotSource.toString() + "%"));
 
@@ -2409,6 +2124,278 @@ public class IJDecomptes extends FWIDocumentManager {
 
         return docInfoUnitaire;
     }
+    public void beforeBuildReport() throws FWIException {
+        try {
+            Map<String, String> parametres = getImporter().getParametre();
+
+            if (parametres == null) {
+                parametres = new HashMap<String, String>();
+                getImporter().setParametre(parametres);
+            } else {
+                parametres.clear();
+            }
+
+            parametres.put(
+                    "PARAM_IJ_DECOMPTE_DETAIL",
+                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
+                            + IJApplication.APPLICATION_IJ_REP, '\\', '/')
+                            + "/" + "model" + "/" + "IJ_DECOMPTE_DETAIL.jasper");
+
+            parametres.put(
+                    "PARAM_IJ_DECOMPTE_DETAIL2",
+                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
+                            + IJApplication.APPLICATION_IJ_REP, '\\', '/')
+                            + "/" + "model" + "/" + "IJ_DECOMPTE_DETAIL2.jasper");
+
+            // remplissage de l'entête
+            CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
+
+            if (JadeStringUtil.isIntegerEmpty(decompteCourant.getIdAffilie())) {
+                PRTiersWrapper tiers;
+                String adresse;
+
+                noAffilie = "";
+
+                try {
+                    tiers = PRTiersHelper.getTiersParId(getISession(), decompteCourant.getIdTiers());
+
+                    if (tiers == null) {
+                        tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
+                    }
+
+                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
+                            decompteCourant.getIdAffilie(), IJApplication.CS_DOMAINE_ADRESSE_IJAI);
+                } catch (Exception e) {
+                    throw new FWIException("impossible de charger le tiers", e);
+                }
+
+                crBean.setDate(JACalendar.format(JACalendar.format(getDate()), codeIsoLangue));
+
+                if (state != IJDecomptes.STATE_VENTILATION) {
+                    crBean.setNoAvs(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                }
+                crBean.setAdresse(adresse);
+
+                // nom du document
+                setDocumentTitle(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " - "
+                        + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM).toUpperCase() + " "
+                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+            } else {
+                IPRAffilie affilie;
+                String adresse;
+
+                try {
+                    affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getISession(), getSession()
+                            .getCurrentThreadTransaction(), decompteCourant.getIdAffilie(), decompteCourant
+                            .getIdTiers());
+                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
+                            decompteCourant.getIdAffilie(), IJApplication.CS_DOMAINE_ADRESSE_IJAI);
+
+                    noAffilie = affilie.getNumAffilie();
+
+                    // Renseignement de l'IDE
+                    AFIDEUtil.addNumeroIDEInDoc(crBean, affilie.getNumeroIDE(), affilie.getIdeStatut());
+
+                } catch (Exception e) {
+                    throw new FWIException("impossible de charger le tiers", e);
+                }
+
+                if (state != IJDecomptes.STATE_VENTILATION) {
+                    crBean.setNoAffilie(affilie.getNumAffilie());
+                }
+                crBean.setDate(JACalendar.format(JACalendar.format(getDate()), codeIsoLangue));
+                crBean.setAdresse(adresse);
+
+                // nom du document
+                setDocumentTitle(affilie.getNumAffilie() + " - " + affilie.getNom());
+            }
+            if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_NOMCOLABO))) {
+                // nom du collaborateur
+                crBean.setNomCollaborateur(getSession().getUserFullName());
+            }
+            // création des paramètres pour l'en-tête
+            try {
+                // Ajoute le libellé CONFIDENTIEL dans l'adresse de l'entête du document
+                if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_CONFIDENTIEL))) {
+
+                    crBean.setConfidentiel(true);
+                }
+
+                if (caisseHelper == null) {
+                    caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(getDocumentInfo(),
+                            getSession().getApplication(), codeIsoLangue);
+                }
+
+                caisseHelper.addHeaderParameters(getImporter(), crBean);
+            } catch (Exception e) {
+                throw new FWIException("Impossible de renseigner l'en-tete", e);
+            }
+
+            // ajout du nom du département si nécessaire
+            if (decompteCourant.getDepartement() != null) {
+                parametres.put("P_HEADER_DEPARTEMENT", decompteCourant.getDepartement().getDepartement());
+            }
+
+            // S'il s'agit d'une copie
+            if(getIsCopie()){
+                parametres.put("P_COPIE",  document.getTextes(1).getTexte(2).getDescription());
+            }
+
+            // le titre
+            parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+
+            String type_decompte = "";
+
+            switch (state) {
+
+                case STATE_NORMAL:
+                    type_decompte = document.getTextes(5).getTexte(6).getDescription();
+                    break;
+
+                case STATE_VENTILATION:
+                    type_decompte = document.getTextes(5).getTexte(7).getDescription();
+                    break;
+            }
+
+            String texteTitre2 = PRStringUtils.replaceString(document.getTextes(5).getTexte(1).getDescription(),
+                    "{type}", type_decompte);
+
+            texteTitre2 = PRStringUtils.replaceString(texteTitre2, "{dateDec}", JACalendar.format(getDate()));
+
+            parametres.put("PARAM_TITRE2", texteTitre2);
+
+            PRTiersWrapper tiers;
+            tiers = PRTiersHelper.getTiersParId(getISession(), decompteCourant.getIdTiers());
+
+            if (tiers == null) {
+                tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
+            }
+
+            parametres.put("P_HEADER_NOM_PAGE2", PRStringUtils.replaceString(
+                    document.getTextes(5).getTexte(4).getDescription(),
+                    "{nomPrenom}",
+                    tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                            + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
+
+            if (JadeStringUtil.isEmpty((noAffilie))) {
+
+                String nAvs = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                String idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+
+                if (!JadeStringUtil.isEmpty(nAvs)) {
+                    parametres.put("P_HEADER_NO_AVS_PAGE2", PRStringUtils.replaceString(
+                            document.getTextes(5).getTexte(3).getDescription(), "{noAVS}", nAvs));
+                }
+
+                if (!JadeStringUtil.isBlankOrZero(idTiers)) {
+                    if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DISPLAY_NIP))) {
+                        parametres.put("P_HEADER_NIP_LIB", getSession().getLabel("NIP") + " :");
+                        parametres.put("P_HEADER_NIP", idTiers);
+                    }
+                }
+            } else {
+
+                parametres.put("P_HEADER_NO_AFFILIE_PAGE2", PRStringUtils.replaceString(
+                        document.getTextes(5).getTexte(2).getDescription(), "{noAffilie}", noAffilie));
+            }
+
+            parametres.put("PARAM_PAGE", document.getTextes(5).getTexte(5).getDescription());
+
+            // le corps du document
+            StringBuffer buffer = new StringBuffer();
+
+            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+            Hashtable<String, String> params = new Hashtable<String, String>();
+            params.put(ITITiers.FIND_FOR_IDTIERS, tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            ITITiers[] t = tiersTitre.findTiers(params);
+            if ((t != null) && (t.length > 0)) {
+                tiersTitre = t[0];
+            }
+            String titre = tiersTitre.getFormulePolitesse(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+
+            for (Iterator<ICTTexte> textes = document.getTextes(2).iterator(); textes.hasNext();) {
+                ICTTexte texte = textes.next();
+
+                // ne pas traiter le contenu optionnel
+                if (Integer.parseInt(texte.getPosition()) > 100) {
+                    break;
+                }
+
+                if (buffer.length() > 0) {
+                    buffer.append("\n\n");
+                }
+                buffer.append(texte.getDescription());
+            }
+            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
+
+            buffer.append("\n\n");
+
+            // cette méthode est exécutée après createDataSource donc nous connaissons le total des prestations, et donc
+            // nous savons s'il s'agit d'un document de restitution.
+            if (restitution) {
+                buffer.append(document.getTextes(2).getTexte(102).getDescription());
+            } else {
+                buffer.append(document.getTextes(2).getTexte(101).getDescription());
+            }
+
+            parametres.put("PARAM_CORPS", buffer.toString());
+
+            // le détail
+            parametres.put("PARAM_ASSURE", document.getTextes(3).getTexte(1).getDescription());
+            parametres.put("PARAM_DETAIL", document.getTextes(3).getTexte(2).getDescription());
+            parametres.put("PARAM_MONTANT", document.getTextes(3).getTexte(3).getDescription());
+            parametres.put("PARAM_DEVISE", document.getTextes(3).getTexte(4).getDescription());
+
+            // le pied de page
+            buffer.setLength(0);
+            buffer.append( document.getTextes(4).getTexte(1).getDescription());
+            buffer.append("\n");
+            if(isImpotSource()) {
+                buffer.append(document.getTextes(4).getTexte(101).getDescription());
+            }
+
+            parametres.put("PARAM_PIED", buffer.toString());
+
+            // ajouter les signatures
+            buffer.setLength(0);
+
+            buffer.append(document.getTextes(6).getTexte(1).getDescription());
+
+            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
+            buffer.append("\n");
+            parametres.put("PARAM_SALUTATIONS", buffer.toString());
+
+            try {
+                caisseHelper.addSignatureParameters(getImporter());
+            } catch (Exception e) {
+                throw new FWIException("Impossible de charger le pied de page", e);
+            }
+
+            if(IIJPrononce.CS_FPI.equals(decompteCourant.getTypeIJ()) && state != IJDecomptes.STATE_VENTILATION) {
+                if (!decompteCourant.getDemande().getIdTiers().equals(decompteCourant.getIdTiers())) {
+
+                    parametres.put("P_COPIE_A", document.getTextes(7).getTexte(1).getDescription());
+
+                    TITiers tiTierCopie = new TITiers();
+                    tiTierCopie.setSession(getSession());
+                    tiTierCopie.setIdTiers(decompteCourant.getDemande().getIdTiers());
+                    tiTierCopie.retrieve();
+
+                    String copie = tiTierCopie.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
+                            IJApplication.CS_DOMAINE_ADRESSE_IJAI, JACalendar.todayJJsMMsAAAA(),
+                            new PRTiersAdresseCopyFormater04());
+
+                    copie += "\n";
+                    parametres.put("P_COPIE_A2", copie);
+                } else {
+                    findCopieEmployeur(parametres);
+                }
+            }
+        } catch (Exception e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, IJDecomptes.class.getSimpleName());
+            abort();
+        }
+    }
 
     public void setDate(JADate date) {
         this.date = date;
@@ -2436,5 +2423,13 @@ public class IJDecomptes extends FWIDocumentManager {
 
     public final void setIsCopie(final boolean copie){
         isCopie = copie;
+    }
+
+    public boolean isImpotSource() {
+        return impotSource;
+    }
+
+    public void setImpotSource(boolean impotSource) {
+        this.impotSource = impotSource;
     }
 }
