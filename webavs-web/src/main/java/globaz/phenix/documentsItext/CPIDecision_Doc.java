@@ -2112,7 +2112,7 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
 
         getDocumentInfo().setDocumentType(decision.getTypeDecision());
         getDocumentInfo().setDocumentDate(getDateImpression());
-        getDocumentInfo().setDocumentProperty(CADocumentInfoHelper.SECTION_ID_EXTERNE, decision.getAnneeDecision());
+        getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_ANNEE, decision.getAnneeDecision());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_DEBUT, decision.getDebutDecision());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_FIN, decision.getFinDecision());
         getDocumentInfo().setDocumentProperty(DocumentInfoPhenix.DECISION_TYPE, decision.getTypeDecision());
