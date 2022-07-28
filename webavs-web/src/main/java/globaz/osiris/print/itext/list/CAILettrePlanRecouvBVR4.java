@@ -420,7 +420,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             ajouteDecisionFusionee(attachedDocuments);
 
             if (!attachedDocuments.isEmpty()) {
-                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouvertes), sectionCouvertes, titreSursis);
+                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouvertes), sectionsCouvertes, titreSursis);
             }
         }
     }
@@ -495,7 +495,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      * @param titreSursis             : le titre de LineItem pour les sursis au paiement
      * @throws Exception
      */
-    private void creerFichierEBillOsiris(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section, String titreSursis) throws Exception {
+    private void creerFichierEBillOsiris(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, List<CASection> section, String titreSursis) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -504,7 +504,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         entete.setEBillPrinted(true);
 
         // Met à jour le status eBill de la section
-        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
+        for (int i = 0; i < section.size(); i++) {
+            eBillHelper.updateSectionEtatEtTransactionID(section.get(i), entete.getEBillTransactionID(), getMemoryLog());
+        }
 
         String dateEcheance = planRecouvrement.getDateEcheance();
         String dateOctroi = planRecouvrement.getDate();
