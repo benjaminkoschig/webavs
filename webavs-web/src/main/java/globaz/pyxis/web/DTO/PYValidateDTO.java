@@ -91,8 +91,8 @@ public class PYValidateDTO {
                 checkAndSetSexAsSystemCode(dto);
             if (dto.getCivilStatus() != null)
                 checkAndSetCivilStatusAsSystemCode(dto);
-            if (dto.getCountry() != null)
-                getCountryAsSystemCode(dto);
+            if (dto.getNationality() != null)
+                getNationalityAsSystemCode(dto);
         } else if (Boolean.FALSE.equals(dto.getIsPhysicalPerson())) { // If it's a legal person, make sure the user knows what they're doing by making sure they're not modifying impossible fields
             if (dto.getNss() != null)
                 throw new PYBadRequestException("Le NSS ne doit pas être renseigné pour une personne morale.");
@@ -104,7 +104,7 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("Le sexe ne doit pas être renseigné pour une personne morale.");
             if (dto.getCivilStatus() != null)
                 throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
-            if (dto.getCountry() != null)
+            if (dto.getNationality() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
         }
     }
@@ -200,7 +200,7 @@ public class PYValidateDTO {
      *
      * @param date
      */
-    private static final void checkDate(String date) throws PYBadRequestException{
+    private static final void checkDate(String date) throws PYBadRequestException {
         String pattern = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
         if (!Pattern.matches(pattern, date)) {
             System.err.println("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
@@ -213,7 +213,7 @@ public class PYValidateDTO {
      *
      * @param date
      */
-    private static final void checkModificationDate(String date) throws PYBadRequestException{
+    private static final void checkModificationDate(String date) throws PYBadRequestException {
         String pattern = "(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}";
         if (!Pattern.matches(pattern, date)) {
             System.err.println("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
@@ -310,11 +310,11 @@ public class PYValidateDTO {
     }
 
     /**
-     * Méthode pour vérifier que country ressemble à un code système
+     * Méthode pour vérifier que country soit un code système valide désignant un pays
      *
      * @param dto
      */
-    private static final void getCountryAsSystemCode(PYTiersDTO dto) {
+    private static final void getNationalityAsSystemCode(PYTiersDTO dto) {
         if (dto.getCountry() != null && dto.getCountry() != "") {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
