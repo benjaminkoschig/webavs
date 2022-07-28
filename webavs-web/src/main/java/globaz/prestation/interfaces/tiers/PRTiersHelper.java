@@ -1,5 +1,12 @@
 package globaz.prestation.interfaces.tiers;
 
+import apg.amatapat.AddressType;
+import ch.globaz.common.util.JadeLogs;
+import ch.globaz.pyxis.business.model.AdresseComplexModel;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.properties.REProperties;
@@ -17,6 +24,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
@@ -49,6 +57,9 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static ch.globaz.pyxis.business.services.AdresseService.CS_DOMAINE_DEFAUT;
+import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -262,7 +273,7 @@ public class PRTiersHelper {
      * @return le dto avec l'id du tiers
      * @throws Exception
      */
-    public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
+    public static final void addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
@@ -273,10 +284,11 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(dto.getLanguage());
-        avsPerson.setIdPays(dto.getCountry());
+        avsPerson.setIdPays(dto.getNationality());
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
+        // TODO: add maidenName once PYXIS' ITITier is updated to support it
 
         // Fields in TIPERSP
         avsPerson.setDateNaissance(dto.getBirthDate());
@@ -314,7 +326,74 @@ public class PRTiersHelper {
                 }
             }
         }
-        return avsPerson.getIdTiers();
+        dto.setId(avsPerson.getIdTiers());
+    }
+
+    public static final void addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
+        AddressType address = new AddressType();
+        address.setCountry(dto.getCountry());
+        address.setCountryIso2Code("CH"); // TODO: get the iso 2 code
+        address.setStreetWithNr(dto.getStreet() + " " + dto.getStreetNumber());
+        address.setZipCodeTown(dto.getPostalCode() + " " + dto.getLocality());
+
+        AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, "");
+        AdresseComplexModel homeAddress;
+        PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
+        searchTiers.setForIdTiers(tiers.getIdTiers());
+        PersonneEtendueSearchComplexModel personneEtendueSearch = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
+
+        if (personneEtendueSearch.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
+            PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) personneEtendueSearch.getSearchResults()[0];
+            homeAddress = createAdresseCourrier(personneEtendueComplexModel, address, CS_DOMAINE_DEFAUT, dto.getPostalCode());
+        }
+
+        // TODO: Maybe use homeAddress to add a payment address
+    }
+
+    private static AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AddressType address, String domain, String npa) {
+        try {
+            personneEtendueComplexModel.getTiers();
+            AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+            adresseComplexModel.setTiers(personneEtendueComplexModel);
+            adresseComplexModel.getAvoirAdresse().setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
+            adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+            adresseComplexModel.getPays().setIdPays(address.getCountryIso2Code());
+            adresseComplexModel.getLocalite().setNumPostal(npa);
+            adresseComplexModel.getAdresse().setRue(address.getStreetWithNr());
+
+            // Bug Fix - Cette correction permet de corriger un bug lorsque la LigneAdresse est laissé à null
+            // Le risque de réutiliser une adresse identique avec un complément d'adresse qui n'a rien à voir
+            // une correction sera effectuée sur Pyxis par la suite.
+            // Mise à chaine vide des champs ligneAdresse
+            adresseComplexModel.getAdresse().setLigneAdresse1("");
+            adresseComplexModel.getAdresse().setLigneAdresse2("");
+            adresseComplexModel.getAdresse().setLigneAdresse3("");
+            adresseComplexModel.getAdresse().setLigneAdresse4("");
+            adresseComplexModel = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domain, CS_TYPE_COURRIER, false);
+            if(!isJadeThreadError()) {
+//                fileStatus.addInformation("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
+                return adresseComplexModel;
+            }else{
+//                fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
+                LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans la création des périodes
+                JadeLogs.logAndClear("createAdresseCourrier", LOG);
+                return null;
+            }
+        } catch (Exception e) {
+//            fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
+            LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
+            JadeLogs.logAndClear("createAdresseCourrier", LOG);
+            return null;
+        }
+    }
+
+    private static boolean isJadeThreadError(){
+        if(JadeThread.logMessages() != null) {
+            return JadeThread.logMessages().length > 0;
+        }
+        return false;
     }
 
     /**
@@ -325,10 +404,10 @@ public class PRTiersHelper {
      * @return
      * @throws Exception
      */
-    public static final String updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
+    public static final void updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
-        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should be given by the user, maybe extend the DTO to add this
+        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should probably be given by the user, maybe extend the DTO to add this
 
         // Get the tiers from database
         avsPerson.setIdTiers(dto.getId());
@@ -412,7 +491,7 @@ public class PRTiersHelper {
             }
         }
 
-        return dto.getModificationDate(); // TODO: Return an updated dto of sorts
+        dto.setModificationDate(dto.getModificationDate());
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
