@@ -1,7 +1,7 @@
 package globaz.apg.acorweb.service;
 
+import acor.apg.xsd.apg.out.FCalcul;
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import acor.rentes.xsd.fcalcul.FCalcul;
 import globaz.apg.exceptions.APTechnicalRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
