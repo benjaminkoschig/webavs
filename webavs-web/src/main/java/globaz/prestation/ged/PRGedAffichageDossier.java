@@ -193,7 +193,7 @@ public class PRGedAffichageDossier {
 
             gedCallProps.setProperty(
                     TIDocumentInfoHelper.TIERS_NOM_PRENOM,
-                    tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + ","
+                    tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + "%2C"
                             + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
         } catch (Exception e) {
             JadeLogger.warn(PRGedAffichageDossier.class, "Failed to find tiers: " + noAVS);
