@@ -6,7 +6,7 @@ package globaz.phenix.util;
  * @author: ado
  */
 public interface DocumentInfoPhenix {
-    public final static String DECISION_ANNEE = "phenix.decision.annee";
+    public final static String DECISION_ANNEE = "annee";
     public final static String DECISION_DEBUT = "phenix.decision.debut";
     public final static String DECISION_FIN = "phenix.decision.fin";
     public final static String DECISION_GENRE = "phenix.decision.genre";
