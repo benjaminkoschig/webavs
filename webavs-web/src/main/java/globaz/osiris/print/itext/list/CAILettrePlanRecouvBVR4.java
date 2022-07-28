@@ -375,32 +375,28 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
 
     @Override
     public void afterExecuteReport() {
-        if (checkNumberEcheance()) {
-            // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-            boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
+        // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
-            // On imprime eBill si :
-            //  - eBillOsiris est actif
-            //  - le compte annexe possède un eBillAccountID
-            //  - eBillPrintable est sélectioné sur le plan
-            if (eBillOsirisActif && plan.getEBillPrintable()) {
-                if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID())) {
-                    try {
-                        EBillSftpProcessor.getInstance();
-                        traiterSursisEBillOsiris(this);
-                        ajouteInfoEBillToEmail();
-                    } catch (Exception exception) {
-                        LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
-                    } finally {
-                        EBillSftpProcessor.closeServiceFtp();
-                    }
+        // On imprime eBill si :
+        //  - eBillOsiris est actif
+        //  - le compte annexe possède un eBillAccountID
+        //  - eBillPrintable est sélectioné sur le plan
+        if (eBillOsirisActif && plan.getEBillPrintable()) {
+            if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID()) && checkNumberEcheance()) {
+                try {
+                    EBillSftpProcessor.getInstance();
+                    traiterSursisEBillOsiris(this);
+                    ajouteInfoEBillToEmail();
+                } catch (Exception exception) {
+                    LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                } finally {
+                    EBillSftpProcessor.closeServiceFtp();
                 }
+            } else {
+                ajouteInfoEBillErrorMail();
             }
-        }else{
-            getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
-            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
-            getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
         }
     }
     private boolean checkNumberEcheance(){
@@ -439,6 +435,14 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
+
+    private void ajouteInfoEBillErrorMail() {
+        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
+        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    }
+
+
 
     private List<CASection> getSectionsCouvertes(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
         // les couvertures
