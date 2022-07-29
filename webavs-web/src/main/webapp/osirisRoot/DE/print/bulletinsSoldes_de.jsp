@@ -26,7 +26,7 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 <!--hide this script from non-javascript-enabled browsers
 top.document.title = "Generierung der Saldi-ESR - " + top.location.href;
 
-function clearEBillInputs() {
+function refreshEBillInputs() {
     <% if (eBillOsirisActif && eBillAccountID) {%>
         $("#eBillPrintable").attr("checked", true);
     <%} else{%>
@@ -35,7 +35,7 @@ function clearEBillInputs() {
 }
 
 function postInit(){
-    clearEBillInputs();
+    refreshEBillInputs();
 }
 
 // stop hiding -->

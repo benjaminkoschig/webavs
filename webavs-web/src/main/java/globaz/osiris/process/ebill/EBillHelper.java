@@ -83,7 +83,7 @@ public class EBillHelper {
      *
      * @param section : une section
      * @param session : une session
-     * @return une entête de facture partiellement initialisé
+     * @return une entête de facture partiellement initialisée
      */
     public FAEnteteFacture generateEnteteFacture(CASection section, BSession session) {
         FAEnteteFacture entete = new FAEnteteFacture();

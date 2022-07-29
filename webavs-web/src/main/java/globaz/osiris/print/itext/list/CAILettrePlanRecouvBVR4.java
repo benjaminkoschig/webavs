@@ -412,15 +412,15 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         List<CASection> sectionsCouvertes = getSectionsCouvertes(documentBVR);
         if (!sectionsCouvertes.isEmpty()) {
 
-            CASection sectionCouvertes = sectionsCouvertes.get(0); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
-            FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCouvertes, getSession());
+            CASection sectionCouverte = sectionsCouvertes.get(0); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
+            FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCouverte, getSession());
             String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
             String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
             List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName());
             ajouteDecisionFusionee(attachedDocuments);
 
             if (!attachedDocuments.isEmpty()) {
-                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouvertes), sectionsCouvertes, titreSursis);
+                creerFichierEBillOsiris(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouverte), sectionsCouvertes, titreSursis);
             }
         }
     }
