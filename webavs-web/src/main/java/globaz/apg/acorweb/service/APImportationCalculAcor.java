@@ -1,7 +1,8 @@
 package globaz.apg.acorweb.service;
 
-import acor.apg.xsd.apg.out.FCalcul;
+import acor.apg.xsd.apg.out.*;
 import ch.globaz.common.persistence.EntityService;
+import ch.globaz.eavs.utils.StringUtils;
 import globaz.apg.acor.parser.APACORPrestationsParser;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPG;
@@ -18,6 +19,7 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
+import globaz.prestation.acor.PRAcorDomaineException;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -42,7 +44,7 @@ public class APImportationCalculAcor {
         // TODO WS ACOR APG IMPLEMENT IMPORT DU STYLE IJImportationCalculAcor.importCalculAcor ou REImportationCalculAcor.actionImporterScriptACOR
         APDroitAPG droit = entityService.load(APDroitAPG.class, idDroit);
         final List<APBaseCalcul> basesCalcul = getBasesCalcul(entityService.getSession(), droit);
-        final Collection<APPrestationWrapper> pw = getWrappers(droit, entityService.getSession(), genreService, fCalcul);
+        final Collection<APPrestationWrapper> pw = getWrappers(droit, entityService.getSession(), genreService, fCalcul, basesCalcul);
         final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
         calculateur.reprendreDepuisACOR(entityService.getSession(), pw, droit, getFraisDeGarde(droit),basesCalcul);
     }
@@ -55,194 +57,145 @@ public class APImportationCalculAcor {
         return APBasesCalculBuilder.of(session, droit).createBasesCalcul();
     }
 
-    private SortedSet getWrappers(APDroitAPG droit, BSession session, String genreService, FCalcul fCalcul){
+    private SortedSet getWrappers(APDroitAPG droit, BSession session, String genreService, FCalcul fCalcul, List basesCalcul) throws PRACORException {
 
-//        try {
-//            PRDemande demande = new PRDemande();
-//            demande.setSession(session);
-//            demande.setIdDemande(droit.getIdDemande());
-//            demande.retrieve();
-//
-//            if (demande.isNew()) {
-//                throw new PRACORException("Demande prestation non trouvée !!");
-//            }
-//
-//            SortedSet wrappers = new TreeSet(new APPrestationWrapperComparator());
-//            APPrestationWrapper wrapper = new APPrestationWrapper();
-//            APResultatCalcul rc;
-//            APBaseCalcul baseCalcul;
-//            String line = null;
-//
-//            FWCurrency montantTotalPrestation = null;
-//            // bug selon mail Mme Grosvernier 22.09.2010
-//            FWCurrency nbrTotalJourService = null;
-//
-//            // récupération des frais de gardes
-//            // ---------------------------------------------------
-//            String nssAssureImporte = "";
-//            int nombreJoursSupplementaires = 0;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                if (line.startsWith(APACORPrestationsParser.CODE_CARTE)) {
-//                    wrapper.setFraisGarde(new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                            "MONTANT_FRAIS_GARDE")));
-//                    montantTotalPrestation = new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                            "MONTANT_TOTAL_CARTE_APG"));
-//                    try {
-//                        nbrTotalJourService = new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                                "NOMBRE_TOTAL_JOURS_SERVICE"));
-//                    } catch (Exception e) {
-//                        nbrTotalJourService = new FWCurrency(1);
-//                    }
-//
-//                    nssAssureImporte = APACORPrestationsParser.getField(line, fields, "NUMERO_AVS_ASSURE");
-//                    nombreJoursSupplementaires = Integer.parseInt(APACORPrestationsParser.getField(line, fields, "NOMBRE_JOURS_SUPPLEMENTAIRES"));
-//                    break;
-//                }
-//            }
-//            //wrapper.setFraisGarde(fCalcul.getInHost().getInHostCalcul().get);
-//
-//            // récupération des employeurs et de leurs taux d'impositions
-//            // -------------------------
-//            boolean aucunEmployeur = false;
-//
-//            fields = (HashMap) configs.get(APACORPrestationsParser.CODE_EMPLOYEURS);
-//
-//            do {
-//                // skipper les lignes eventuelles jusqu'aux employeurs
-//                line = bufferedReader.readLine();
-//                aucunEmployeur = (line != null) && line.startsWith(APACORPrestationsParser.CODE_PERIODE);
-//            } while ((line != null) && !line.startsWith(APACORPrestationsParser.CODE_EMPLOYEURS) && !aucunEmployeur);
-//
-//            if (!aucunEmployeur) {
-//                do {
-//                    String noAffilie = APACORPrestationsParser.getField(line, fields, "NUMERO_AFFILIE_EMPLOYEUR");
-//                    // Numéro d'affilié trop long au valais (reformatage à la sortie)
-//                    noAffilie = PRAbstractApplication.getAffileFormater().format(noAffilie);
-//                    String nom = APACORPrestationsParser.getField(line, fields, "NOM_EMPLOYEUR");
-//
-//                    APACORPrestationsParser.createEmpInfo(session, employeurs, noAffilie, nom,
-//                            APACORPrestationsParser.getField(line, fields, "CANTON_IMPOT"));
-//                } while (((line = bufferedReader.readLine()) != null)
-//                        && line.startsWith(APACORPrestationsParser.CODE_EMPLOYEURS));
-//            }
-//
-//            // périodes et résultats de calcul
-//            // ----------------------------------------------------
-//            while ((line != null) && !line.startsWith(APACORPrestationsParser.CODE_PERIODE)) {
-//                // skipper jusqu'aux périodes
-//                line = bufferedReader.readLine();
-//            }
-//
-//            do {
-//                // périodes
-//                fields = (HashMap) configs.get(APACORPrestationsParser.CODE_PERIODE);
-//
-//                if (wrapper == null) {
-//                    wrapper = new APPrestationWrapper();
-//                }
-//
-//                wrapper.setIdDroit(droit.getIdDroit());
-//
-//                // dates de la période
-//                APPeriodeWrapper periode = new APPeriodeWrapper();
-//
-//                String ddd_importee = APACORPrestationsParser.getField(line, fields, "DEBUT_PERIODE_SERVICE");
-//                String dfd_importee = APACORPrestationsParser.getField(line, fields, "FIN_PERIODE_SERVICE");
-//
-//                // Contrôle que les données importées correspondent bien au
-//                // droit courant (controle sur le no avs).
-//                // Permet d'éviter que l'utilisateur click sur importer les
-//                // données sans avoir préalablement calculée
-//                // les APG. Dans ce cas précis, l'importation des données se
-//                // fait avec le dernier calcul effectué sur le poste de
-//                // l'utilisateur.
-//                String nssAssure = droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-//
-//                if ((nssAssure != null) && (nssAssureImporte != null)) {
-//                    nssAssure = JadeStringUtil.removeChar(nssAssure, '.');
-//                    nssAssureImporte = JadeStringUtil.removeChar(nssAssureImporte, '.');
-//                    // TODO Le test nss1 égal nss2 a été remplacé par le test
-//                    // nss1 se termine par nss2.
-//                    // Lorsqu’ACOR supportera le format à 13 positions, l'ancien
-//                    // test pourra être restauré.
-//                    if (!nssAssure.endsWith(nssAssureImporte)) {
-//                        throw new PRACORException(session.getLabel("ERROR_NON_CONCORD_DONNEES"));
-//                    }
-//                }
-//
-//                periode.setDateDebut(new JADate(ddd_importee));
-//                periode.setDateFin(new JADate(dfd_importee));
-//                wrapper.setPeriodeBaseCalcul(periode);
-//
-//                // résultat de calcul
-//                rc = new APResultatCalcul();
-//                rc.setDateDebut(periode.getDateDebut()); // HACK: pour eviter
-//                // une
-//                // NullPointerException
-//                rc.setDateFin(periode.getDateFin());
-//
-//                // copie des informations relatives a l'imposition qui ne sont
-//                // pas lues du fichier ACOR
-//                baseCalcul = APACORPrestationsParser.findBaseCalcul(session, basesCalcul, periode.getDateDebut(),
-//                        periode.getDateFin());
-//                rc.setSoumisImpotSource(baseCalcul.isSoumisImpotSource());
-//                rc.setIdTauxImposition(baseCalcul.getIdTauxImposition());
-//                rc.setTauxImposition(baseCalcul.getTauxImposition());
-//
-//                // on force le genre service car ACOR regroupe certains genres
-//                // et renvoie un code maison qui ne nous
-//                // aide pas
-//                rc.setTypeAllocation(session.getCode(droit.getGenreService()));
-//
-//                // versement à l'assuré
-//                String versementAssure = APACORPrestationsParser.getField(line, fields, "PART_MONTANT_PERIODE");
-//
-//                if (!JadeStringUtil.isDecimalEmpty(versementAssure)) {
-//                    rc.setVersementAssure(new FWCurrency(versementAssure));
-//                }
-//
-//                // révision
-//                IAPReferenceDataPrestation ref;
-//
-//                if (session.getCode(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE).equals(rc.getTypeAllocation())) {
-//                    ref = APReferenceDataParser.loadReferenceData(session, "MATERNITE", periode.getDateDebut(),
-//                            periode.getDateFin(), periode.getDateFin());
-//                } else {
-//                    ref = APReferenceDataParser.loadReferenceData(session, "APG", periode.getDateDebut(),
-//                            periode.getDateFin(), periode.getDateFin());
-//                }
-//
-//                rc.setRevision(ref.getNoRevision());
-//                rc.setAllocationJournaliereMaxFraisGarde(ref.getMontantMaxFraisGarde());
-//                rc.setAllocationJournaliereExploitation(new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                        "MONTANT_ALLOCATION_EXPLOITATION_JOUR")));
-//
-//                FWCurrency mj = new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                        "ALLOC_BASE_PLUS_ENFANTS_JOURN"));
-//                rc.setMontantJournalier(mj);
-//
-//                // Récupération du basicDailyAmount
-//                // BZ 8329 : LGA 06.09.2013
-//                FWCurrency montantAllocJournPlafonnee = new FWCurrency(APACORPrestationsParser.getField(line, fields,
-//                        "ALLOC_BASE_PLUS_ENFANTS_JOURN"));
-//                rc.setBasicDailyAmount(montantAllocJournPlafonnee);
-//                // BZ 8329
-//
-//                wrapper.setPrestationBase(rc);
-//
-//                rc.setNombreJoursSoldes(Integer.parseInt(APACORPrestationsParser.getField(line, fields, "NOMBRE_JOURS")));
-//                rc.setNombreJoursSupplementaires(nombreJoursSupplementaires);
+        try {
+            HashMap employeurs = new HashMap();
+
+            PRDemande demande = new PRDemande();
+            demande.setSession(session);
+            demande.setIdDemande(droit.getIdDemande());
+            demande.retrieve();
+
+            if (demande.isNew()) {
+                throw new PRACORException("Demande prestation non trouvée !!");
+            }
+
+            SortedSet wrappers = new TreeSet(new APPrestationWrapperComparator());
+            APPrestationWrapper wrapper = new APPrestationWrapper();
+            wrapper.setIdDroit(droit.getIdDroit());
+            APResultatCalcul rc;
+            APBaseCalcul baseCalcul;
+            String line = null;
+
+            FWCurrency montantTotalPrestation = null;
+            // bug selon mail Mme Grosvernier 22.09.2010
+            FWCurrency nbrTotalJourService = null;
+
+            // récupération des frais de gardes
+            // ---------------------------------------------------
+            String nssAssureImporte = "";
+            wrapper.setFraisGarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
+            montantTotalPrestation = new FWCurrency(fCalcul.getCarteApg().getAllocTotaleCarteApg());
+            nbrTotalJourService = new FWCurrency(fCalcul.getCarteApg().getSommeJoursService());
+            nssAssureImporte = checkAndGetNssIntegrite(fCalcul, demande.getIdDemande());
+            // TODO : Récupération du nombres de jours supplémentaires impossible
+            // TODO : Essayer de voir avec les métiers où récupérer cette information avec le métier.
+
+            // périodes et résultats de calcul
+            // ----------------------------------------------------
+            int cmptPeriode = 0;
+            for (PeriodeServiceApgType periodeServiceApgType :
+                    fCalcul.getCarteApg().getPeriodeService()) {
+                if (wrapper == null) {
+                    wrapper = new APPrestationWrapper();
+                }
+
+                wrapper.setIdDroit(droit.getIdDroit());
+
+                // dates de la période
+                APPeriodeWrapper periode = new APPeriodeWrapper();
+
+                String ddd_importee = periodeServiceApgType.getDebut().toString();
+                String dfd_importee = periodeServiceApgType.getFin().toString();
+
+                // Contrôle que les données importées correspondent bien au
+                // droit courant (controle sur le no avs).
+                // Permet d'éviter que l'utilisateur click sur importer les
+                // données sans avoir préalablement calculée
+                // les APG. Dans ce cas précis, l'importation des données se
+                // fait avec le dernier calcul effectué sur le poste de
+                // l'utilisateur.
+                String nssAssure = droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+
+                if ((nssAssure != null) && (nssAssureImporte != null)) {
+                    nssAssure = JadeStringUtil.removeChar(nssAssure, '.');
+                    nssAssureImporte = JadeStringUtil.removeChar(nssAssureImporte, '.');
+                    // TODO Le test nss1 égal nss2 a été remplacé par le test
+                    // nss1 se termine par nss2.
+                    // Lorsqu’ACOR supportera le format à 13 positions, l'ancien
+                    // test pourra être restauré.
+                    if (!nssAssure.endsWith(nssAssureImporte)) {
+                        throw new PRACORException(session.getLabel("ERROR_NON_CONCORD_DONNEES"));
+                    }
+                }
+
+                periode.setDateDebut(new JADate(ddd_importee));
+                periode.setDateFin(new JADate(dfd_importee));
+                wrapper.setPeriodeBaseCalcul(periode);
+
+                // résultat de calcul
+                rc = new APResultatCalcul();
+                rc.setDateDebut(periode.getDateDebut()); // HACK: pour eviter
+                // une
+                // NullPointerException
+                rc.setDateFin(periode.getDateFin());
+
+                // copie des informations relatives a l'imposition qui ne sont
+                // pas lues du fichier ACOR
+                baseCalcul = findBaseCalcul(session, basesCalcul, periode.getDateDebut(),
+                        periode.getDateFin());
+                rc.setSoumisImpotSource(baseCalcul.isSoumisImpotSource());
+                rc.setIdTauxImposition(baseCalcul.getIdTauxImposition());
+                rc.setTauxImposition(baseCalcul.getTauxImposition());
+
+                // on force le genre service car ACOR regroupe certains genres
+                // et renvoie un code maison qui ne nous
+                // aide pas
+                rc.setTypeAllocation(session.getCode(droit.getGenreService()));
+
+                // versement à l'assuré
+                rc.setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
+
+                // révision
+                IAPReferenceDataPrestation ref;
+
+                if (session.getCode(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE).equals(rc.getTypeAllocation())) {
+                    ref = APReferenceDataParser.loadReferenceData(session, "MATERNITE", periode.getDateDebut(),
+                            periode.getDateFin(), periode.getDateFin());
+                } else {
+                    ref = APReferenceDataParser.loadReferenceData(session, "APG", periode.getDateDebut(),
+                            periode.getDateFin(), periode.getDateFin());
+                }
+
+                rc.setRevision(ref.getNoRevision());
+                rc.setAllocationJournaliereMaxFraisGarde(ref.getMontantMaxFraisGarde());
+                rc.setAllocationJournaliereExploitation(new FWCurrency(fCalcul.getPeriodeMontantJourn().get(cmptPeriode).getAllocJournExploitation()));
+
+                FWCurrency mj = new FWCurrency(fCalcul.getPeriodeMontantJourn().get(cmptPeriode).getAllocJournBaseEnfants());
+                rc.setMontantJournalier(mj);
+
+                // Récupération du basicDailyAmount
+                // BZ 8329 : LGA 06.09.2013
+                FWCurrency montantAllocJournPlafonnee = new FWCurrency(fCalcul.getPeriodeMontantJourn().get(cmptPeriode).getAllocJournBaseEnfants());
+                rc.setBasicDailyAmount(montantAllocJournPlafonnee);
+                // BZ 8329
+
+                wrapper.setPrestationBase(rc);
+
+                rc.setNombreJoursSoldes(periodeServiceApgType.getNbJours());
+                // TODO : Chercher comment récupérer les jours supplémentaires avec le métier
+                // rc.setNombreJoursSupplementaires();
+                // TODO : Chercher comment récupérer le revenu déterminant moyen
 //                rc.setRevenuDeterminantMoyen(new FWCurrency(APACORPrestationsParser.getField(line, fields,
 //                        "REVENU_JOURNALIER_MOYEN")));
+
+                // situations professionnelles
+//                for (PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur:
+//                        fCalcul.getPeriodeMontantJourn().get(cmptPeriode).getPeriodeRepartition().get(0).getEmployeur()) {
 //
-//                // situations professionnelles
-//                fields = (HashMap) configs.get(APACORPrestationsParser.CODE_EMP_PERIODE);
-//
-//                List<String> idsSP = new ArrayList<String>();
-//                while (((line = bufferedReader.readLine()) != null)
-//                        && line.startsWith(APACORPrestationsParser.CODE_EMP_PERIODE)) {
 //                    APResultatCalculSituationProfessionnel rcSitPro = new APResultatCalculSituationProfessionnel();
-//                    String noAffilie = APACORPrestationsParser.getField(line, fields, "NUMERO_AFFILIE_EMPLOYEUR");
+//                    String noAffilie = periodeRepartitionEmployeur.getIdEmpl();
 //                    // Numéro d'affilié trop long au valais (reformatage à la sortie)
 //                    noAffilie = PRAbstractApplication.getAffileFormater().format(noAffilie);
 //                    String nom = APACORPrestationsParser.getField(line, fields, "NOM_EMPLOYEUR");
@@ -294,16 +247,16 @@ public class APImportationCalculAcor {
 //
 //                    rc.addResultatCalculSitProfessionnelle(rcSitPro);
 //                }
-//
-//                // Ajouter dans la liste des wrappers les bases de calcul de
-//                // sit. prof. si non existante.
-//                // Dans certains cas, Il arrive que ACOR ne retourne pas
-//                // l'employeur si versé à l'assuré. Ces employeurs
-//                // ne seront donc pas pris en compte lors du calcul de la
-//                // répartition des pmts, pour le calcul des cotisations.
-//
-//                // Il faut donc les rajouter.
-//
+
+                // Ajouter dans la liste des wrappers les bases de calcul de
+                // sit. prof. si non existante.
+                // Dans certains cas, Il arrive que ACOR ne retourne pas
+                // l'employeur si versé à l'assuré. Ces employeurs
+                // ne seront donc pas pris en compte lors du calcul de la
+                // répartition des pmts, pour le calcul des cotisations.
+
+                // Il faut donc les rajouter.
+
 //                if (basesCalcul != null) {
 //
 //                    for (Iterator iter = baseCalcul.getBasesCalculSituationProfessionnel().iterator(); iter.hasNext();) {
@@ -385,14 +338,14 @@ public class APImportationCalculAcor {
 //                        }
 //                    }
 //                }
-//
-//                wrapper.setPrestationBase(rc);
-//                wrappers.add(wrapper);
-//                wrapper = null;
-//            } while ((line != null) && line.startsWith(APACORPrestationsParser.CODE_PERIODE));
-//
-//            // taux de participation des employeurs au RJM
-//            // ------------------------------------------------------------
+
+                wrapper.setPrestationBase(rc);
+                wrappers.add(wrapper);
+                wrapper = null;
+            }
+
+            // taux de participation des employeurs au RJM
+            // ------------------------------------------------------------
 //            fields = (HashMap) configs.get(APACORPrestationsParser.CODE_EMP_RJM);
 //
 //            while ((line != null) && !line.startsWith(APACORPrestationsParser.CODE_EMP_RJM)) {
@@ -467,19 +420,93 @@ public class APImportationCalculAcor {
 //                } while (((line = bufferedReader.readLine()) != null)
 //                        && line.startsWith(APACORPrestationsParser.CODE_EMP_RJM));
 //            }
-//
-//            return wrappers;
-//        } catch (PRACORException e) {
-//            throw e;
-//        } catch (Exception e) {
-//            throw new PRACORException("impossible de parser", e);
-//        } finally {
-//            try {
-//                bufferedReader.close();
-//            } catch (IOException e1) {
-//                ;
-//            }
-//        }
-        return null;
+
+            return wrappers;
+        } catch (PRACORException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PRACORException("impossible de parser", e);
+        }
+    }
+
+    private String checkAndGetNssIntegrite(FCalcul fCalcul, String idDemande) {
+
+        String nss = "";
+        PRTiersWrapper tiers = loadTiers(idDemande);
+        if(tiers == null){
+            throw new PRAcorDomaineException("Réponse invalide : Impossible de charger le tiers correspondant au requérant. ");
+        }
+        // Récupère le NSS du FCalcul reçu d'ACOR
+        for (AssureApgType assure :
+                fCalcul.getAssure()) {
+            if ("req".equals(assure.getFonction())) {
+                nss = assure.getId();
+                break;
+            }
+        }
+        if (StringUtils.isBlank(nss)) {
+            throw new PRAcorDomaineException("Réponse invalide : Impossible de retrouver le NSS du requérant. ");
+        }
+        if (nss.equals(tiers.getNSS())) {
+            throw new PRAcorDomaineException(entityService.getSession().getLabel("IMPORTATION_MAUVAIS_PRONONCE") + " (8)");
+        }
+        return nss;
+    }
+
+    private PRTiersWrapper loadTiers(String idDemande) {
+        PRDemande demande = entityService.load(PRDemande.class, idDemande);
+        PRTiersWrapper tiers = null;
+        try {
+            if (demande != null) {
+                tiers = demande.loadTiers();
+            }
+        }catch(Exception e){
+            throw new PRAcorDomaineException("Réponse invalide : Impossible de charger le tiers correspondant au requérant. ");
+        }
+        return tiers;
+    }
+
+    private static APBaseCalcul findBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor)
+            throws PRACORException {
+        APBaseCalcul retValue = null;
+
+        for (Iterator iter = basesCalcul.iterator(); iter.hasNext();) {
+            retValue = (APBaseCalcul) iter.next();
+
+            try {
+                if ((BSessionUtil.compareDateFirstLowerOrEqual(session, retValue.getDateDebut().toString(),
+                        dateDebutPeriodeAcor.toString()))
+                        && (BSessionUtil.compareDateFirstGreaterOrEqual(session, retValue.getDateFin().toString(),
+                        dateFinPeriodeAcor.toString()))) {
+                    break; // sortir de la boucle
+                }
+            } catch (Exception e) {
+                throw new PRACORException("comparaison de dates impossibles", e);
+            }
+
+            retValue = null; // on a pas trouve donc on va retourner null et non
+            // pas la derniere base de calcul
+        }
+
+        if(retValue==null && basesCalcul.stream().anyMatch(APBaseCalcul::isExtension)){
+            for (Iterator iter = basesCalcul.iterator(); iter.hasNext();) {
+                retValue = (APBaseCalcul) iter.next();
+
+                try {
+                    if(BSessionUtil.compareDateFirstLowerOrEqual(session, dateDebutPeriodeAcor.toString(), retValue.getDateDebut().toString())
+                            && (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFinPeriodeAcor.toString(),  retValue.getDateFin().toString()))){
+                        break; // sortir de la boucle
+                    }
+                } catch (Exception e) {
+                    throw new PRACORException("comparaison de dates impossibles", e);
+                }
+
+                retValue = null; // on a pas trouve donc on va retourner null et non
+                // pas la derniere base de calcul
+
+            }
+        }
+
+        return retValue;
     }
 }
