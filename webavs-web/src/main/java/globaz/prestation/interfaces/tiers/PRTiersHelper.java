@@ -1,8 +1,5 @@
 package globaz.prestation.interfaces.tiers;
 
-import apg.amatapat.AddressType;
-import apg.pandemie.InsuredAddress;
-import ch.globaz.common.util.JadeLogs;
 import ch.globaz.pyxis.business.model.*;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import com.google.gson.Gson;
@@ -22,7 +19,6 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
@@ -268,7 +264,6 @@ public class PRTiersHelper {
      *
      * @param session
      * @param dto
-     * @return le dto avec l'id du tiers
      * @throws Exception
      */
     public static final void addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
@@ -327,6 +322,13 @@ public class PRTiersHelper {
         dto.setId(avsPerson.getIdTiers());
     }
 
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de courrier)
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
     public static final void addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
 
@@ -344,47 +346,32 @@ public class PRTiersHelper {
         AdresseComplexModel homeAddress;
         PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
         searchTiers.setForIdTiers(tiers.getIdTiers());
-        PersonneEtendueSearchComplexModel personneEtendueSearch = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
+        searchTiers = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
 
-        if (personneEtendueSearch.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
-            PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) personneEtendueSearch.getSearchResults()[0];
-            homeAddress = createAdresseCourrier(personneEtendueComplexModel, adresseSimpleModel, localiteSimpleModel, CS_DOMAINE_DEFAUT);
+        if (searchTiers.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
+            PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) searchTiers.getSearchResults()[0];
+
+            AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+            adresseComplexModel.setTiers(personneEtendueComplexModel);
+            adresseComplexModel.setAdresse(adresseSimpleModel);
+            adresseComplexModel.setLocalite(localiteSimpleModel);
+            adresseComplexModel.getAvoirAdresse().setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
+            adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+
+            try {
+                homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, false);
+            } catch (Exception e) {
+                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré", e);
+                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+            }
+
+            if(!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+            }
         }
 
-        // TODO: Maybe use homeAddress to add a payment address
-    }
-
-    private static AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AdresseSimpleModel adresseSimpleModel, LocaliteSimpleModel localiteSimpleModel, String domain) {
-        AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
-        adresseComplexModel.setTiers(personneEtendueComplexModel);
-        adresseComplexModel.setAdresse(adresseSimpleModel);
-        adresseComplexModel.setLocalite(localiteSimpleModel);
-        adresseComplexModel.getAvoirAdresse().setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
-        adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
-
-        try {
-            adresseComplexModel = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domain, CS_TYPE_COURRIER, false);
-        } catch (Exception e) {
-            LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
-            JadeLogs.logAndClear("createAdresseCourrier", LOG);
-            return null;
-        }
-
-        if(!isJadeThreadError()) {
-            return adresseComplexModel;
-        } else {
-            LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré");
-            // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans la création des périodes
-            JadeLogs.logAndClear("createAdresseCourrier", LOG);
-            return null;
-        }
-    }
-
-    private static boolean isJadeThreadError(){
-        if(JadeThread.logMessages() != null) {
-            return JadeThread.logMessages().length > 0;
-        }
-        return false;
+        // TODO: Maybe use homeAddress to add a payment address ?
     }
 
     /**
