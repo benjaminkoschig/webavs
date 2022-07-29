@@ -328,7 +328,7 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
      *
      * @return DOCUMENT ME!
      */
-    public boolean  isEBillPrinted() {
+    public boolean isEBillPrinted() {
         return eBillPrinted;
     }
 

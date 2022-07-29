@@ -10,6 +10,7 @@ import ch.globaz.common.document.reference.ReferenceBVR;
 import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
+import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -185,12 +186,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
                 //  - eBillAquila est actif
                 //  - le compte annexe possède un eBillAccountID
                 //  - eBillPrintable est sélectioné sur l'écran d'impression
-                if (eBillAquilaActif && curContentieux.getEBillPrintable()) {
-                    CACompteAnnexe compteAnnexe = getCompteAnnexe();
-                    if (!compteAnnexe.isNew() && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
+                //  - l'impression prévisionel n'est pas activée
+                if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                    if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                         try {
                             EBillSftpProcessor.getInstance();
-                            traiterSommationEBillAquila(compteAnnexe);
+                            traiterSommationEBillAquila(curContentieux.getCompteAnnexe());
                             ajouteInfoEBillToEmail();
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
@@ -232,13 +233,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
 
-    private CACompteAnnexe getCompteAnnexe() throws Exception {
-        CACompteAnnexe compteAnnexe = new CACompteAnnexe();
-        compteAnnexe.setIdCompteAnnexe(curContentieux.getSection().getCompteAnnexe().getIdCompteAnnexe());
-        compteAnnexe.setIdRole(curContentieux.getSection().getCompteAnnexe().getIdRole());
-        compteAnnexe.retrieve();
-        return compteAnnexe;
-    }
+
 
     /**
      * Méthode permettant de créer la sommation eBill,
@@ -265,10 +260,23 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
 
+        // Met à jour l'historique eBill du contentieux
+        updateHistoriqueEBillPrintedEtTransactionID(entete.getEBillTransactionID());
+
         String dateEcheance = dateFacturation;
         eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
 
         factureEBill++;
+    }
+
+    private void updateHistoriqueEBillPrintedEtTransactionID(String transactionId) throws Exception {
+        COHistorique dernierHistorique = curContentieux.loadHistorique();
+        if (dernierHistorique.getIdEtape().equals(curContentieux.getIdEtape())
+                && dernierHistorique.getIdContentieux().equals(curContentieux.getIdContentieux())
+                && dernierHistorique.getIdSequence().equals(curContentieux.getIdSequence())) {
+            dernierHistorique.setEBillTransactionID(transactionId);
+            dernierHistorique.setEBillPrinted(true);
+        }
     }
 
     @Override
