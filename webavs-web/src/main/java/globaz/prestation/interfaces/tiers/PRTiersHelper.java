@@ -45,6 +45,7 @@ import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
+import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -342,6 +343,11 @@ public class PRTiersHelper {
         localiteSimpleModel.setLocalite(dto.getLocality());
         localiteSimpleModel.setIdPays(dto.getCountry());
 
+        AvoirAdresseSimpleModel avoirAdresseSimpleModel = new AvoirAdresseSimpleModel();
+        avoirAdresseSimpleModel.setIdTiers(tiers.getIdTiers());
+        avoirAdresseSimpleModel.setIdAdresse(adresseSimpleModel.getIdAdresse());
+        avoirAdresseSimpleModel.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
+
         AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, "");
         AdresseComplexModel homeAddress;
         PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
@@ -355,8 +361,7 @@ public class PRTiersHelper {
             adresseComplexModel.setTiers(personneEtendueComplexModel);
             adresseComplexModel.setAdresse(adresseSimpleModel);
             adresseComplexModel.setLocalite(localiteSimpleModel);
-            adresseComplexModel.getAvoirAdresse().setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
-            adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+            adresseComplexModel.setAvoirAdresse(avoirAdresseSimpleModel);
 
             try {
                 homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, false);
@@ -365,10 +370,12 @@ public class PRTiersHelper {
                 throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
             }
 
-            if(!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
                 LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
                 throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
             }
+        } else if (searchTiers.getNbOfResultMatchingQuery() != 1 || mailAddress.getFields() != null) {
+            throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
         }
 
         // TODO: Maybe use homeAddress to add a payment address ?
