@@ -568,9 +568,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setQuantityDescription("1I");
         Double masse = ((Double) lignes.get("COL_4"));
         lineItem.setPriceUnit(BigDecimal.valueOf(masse != null ? masse : 1.00));
-
-        // lineItem.setTax(createTaxLineItem());
-
         BigDecimal montant = lignes.get("COL_6") != null ? BigDecimal.valueOf((Double) lignes.get("COL_6")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
@@ -596,9 +593,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-
-        // lineItem.setTax(createTaxLineItem());
-
         lineItem.setAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
         lineItem.setAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
 
@@ -623,9 +617,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-
-        // lineItem.setTax(createTaxLineItem());
-
         BigDecimal montant = lignes.get("COL_4") != null ? BigDecimal.valueOf((Double) lignes.get("COL_4")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
