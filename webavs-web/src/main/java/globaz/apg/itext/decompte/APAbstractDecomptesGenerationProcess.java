@@ -2562,23 +2562,21 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     }
 
     private void resolveIdCantonImpotSource(String idDroit) throws Exception {
-        if (idCantonImpotSource == "") {
-            if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                if (droit == null) {
-                    droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
-                            idDroit);
-                }
-                idCantonImpotSource = droit.getCsCantonDomicile();
-            } else {
-                // recherche du canton d'impositionm
-                APPeriodeAPGManager mgr = new APPeriodeAPGManager();
-                mgr.setSession(getSession());
-                mgr.setForIdDroit(idDroit);
-                mgr.find(1);
+        if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+            if (droit == null) {
+                droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
+                        idDroit);
+            }
+            idCantonImpotSource = droit.getCsCantonDomicile();
+        } else {
+            // recherche du canton d'impositionm
+            APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+            mgr.setSession(getSession());
+            mgr.setForIdDroit(idDroit);
+            mgr.find(1);
 
-                if (!mgr.isEmpty()) {
-                    idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
-                }
+            if (!mgr.isEmpty()) {
+                idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
             }
         }
     }
