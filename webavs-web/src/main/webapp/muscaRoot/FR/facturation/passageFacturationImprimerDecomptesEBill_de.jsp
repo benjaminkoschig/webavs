@@ -31,14 +31,14 @@
         }
     }
 
-    function clearEBillInputs() {
+    function refreshEBillInputs() {
         $("#forcerImpressionPapier").attr("checked",false);
         $("#typeFacture").val("automatique");
     }
 
     function postInit(){
         showHideEBillInputs();
-        clearEBillInputs();
+        refreshEBillInputs();
     }
 
 </SCRIPT>
@@ -84,7 +84,6 @@ window.alert('Le passage choisi est verrouillé, si vous continuez, vous recevrez
            document.forms[0].elements('KcidLabel').disabled = true;*/
     }
 
-
     // stop hiding -->
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -112,7 +111,7 @@ window.alert('Le passage choisi est verrouillé, si vous continuez, vous recevrez
     <TD>Impression pour un seul affilié</TD>
     <TD>
         <input type="checkbox" id="chkImpressionUnSeulAffilie" name="chkImpressionUnSeulAffilie"
-               onclick="showHidePlageNumAffInput();clearInputsNumAff();clearEBillInputs();showHideEBillInputs();">
+               onclick="showHidePlageNumAffInput();clearInputsNumAff();refreshEBillInputs();showHideEBillInputs();">
         <INPUT type="hidden" id="valueKeeperChkImpressionUnSeulAffilie" name="valueKeeperChkImpressionUnSeulAffilie">
     </TD>
 </TR>

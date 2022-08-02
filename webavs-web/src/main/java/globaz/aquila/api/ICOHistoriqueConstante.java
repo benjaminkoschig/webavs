@@ -21,6 +21,8 @@ public interface ICOHistoriqueConstante {
     public static final String FNAME_NUMERO_POURSUITE = "OELNPO";
     public static final String FNAME_SOLDE = "OEMSOL";
     public static final String FNAME_TAXES = "OEMTAX";
+    public static final String FIELD_EBILL_TRANSACTION_ID = "EBILLTRANSACTIONID";
+    public static final String FIELD_EBILL_PRINTED = "EBILLPRINTED";
     public static final String FNAME_TYPE_JOURNAL = "OETTJR";
     public static final String FNAME_USERNAME = "OELUSR";
     public static final String TABLE_NAME = "COHISTP";

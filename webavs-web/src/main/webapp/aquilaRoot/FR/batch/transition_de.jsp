@@ -9,6 +9,8 @@
 <%@ page import="globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent"%>
 <%@ page import="globaz.globall.db.BSession"%>
 <%@ page import="java.util.Iterator"%>
+<%@ page import="globaz.osiris.application.CAApplication" %>
+<%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%
 	COTransitionViewBean transitionViewBean = (COTransitionViewBean) session.getAttribute("viewBean");
 	COContentieux viewBean = (COContentieux) session.getAttribute("contentieuxViewBean");
@@ -20,6 +22,9 @@
 	userActionValue = "aquila.batch.transition.effectuertransition";
 
 	idEcran = "GCO2001";
+%>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(viewBean.getSession());
 %>
 <SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/aquilaRoot/javascript/aquila.js"></SCRIPT>
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
@@ -104,6 +109,18 @@
 				<TD class="label">Date déclench.</TD>
 				<TD class="control" colspan="3"><INPUT type="text" value="<%=viewBean.getProchaineDateDeclenchement()%>" class="dateDisabled" readonly></TD>
 			</TR>
+
+			<% if (eBillAquilaActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+				<tr>
+				  <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+				  <td nowrap>
+					<input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+				  </td>
+				  <td>&nbsp;</td>
+				  <td nowrap>&nbsp;</td>
+				  <td nowrap>&nbsp;</td>
+				</tr>
+            <%}%>
 
 			<%
 			try {

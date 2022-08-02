@@ -73,16 +73,16 @@
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
 	}
 
-	function clearEBillInputs() {
+	function refreshEBillInputs() {
 		<% if (eBillOsirisActif && eBillAccountID) {%>
 			$("#eBillPrintable").attr("checked", true);
-		<%} else{%>
+		<%} else {%>
 			$("#eBillPrintable").attr("checked", false);
 		<%}%>
 	}
 
 	function postInit(){
-		clearEBillInputs();
+		refreshEBillInputs();
 	}
 
 // stop hiding -->
@@ -207,15 +207,13 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillOsirisActif) {%>
-		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
-			<tr>
-				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-				<td nowrap>
-					  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
-				</td>
-			</tr>
-		<%}%>
+	<% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+		<tr>
+			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+			<td nowrap>
+				  <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
+			</td>
+		</tr>
 	<%}%>
 	<tr>
 		<td class="label">Montant maximum à recouvrir</td>

@@ -10,6 +10,7 @@ import ch.globaz.common.document.reference.ReferenceBVR;
 import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
+import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -20,12 +21,25 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
+import globaz.jade.publish.client.JadePublishDocument;
+import globaz.musca.api.musca.PaireIdExterneEBill;
+import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.process.ebill.EBillHelper;
+import globaz.osiris.process.ebill.EBillSftpProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <H1>Description</H1> Document : Sommation <br>
@@ -98,6 +112,13 @@ public class CO00CSommationPaiement extends CODocumentManager {
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiement.STATE_IDLE;
 
+    /* eBill fields */
+    public Map<PaireIdExterneEBill, List<Map>> lignesSommation = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referencesSommation = new LinkedHashMap();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CO00CSommationPaiement.class);
+    private EBillHelper eBillHelper = new EBillHelper();
+    private int factureEBill = 0;
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -156,11 +177,106 @@ public class CO00CSommationPaiement extends CODocumentManager {
             } else {
                 this.mergePDF(getDocumentInfo(), true, 500, false, null);
             }
+
+            if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
+
+                boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+
+                // On imprime eBill si :
+                //  - eBillAquila est actif
+                //  - le compte annexe possède un eBillAccountID
+                //  - eBillPrintable est sélectioné sur l'écran d'impression
+                //  - l'impression prévisionel n'est pas activée
+                if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                    if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                        try {
+                            EBillSftpProcessor.getInstance();
+                            traiterSommationEBillAquila(curContentieux.getCompteAnnexe());
+                            ajouteInfoEBillToEmail();
+                        } catch (Exception exception) {
+                            LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                            getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                        } finally {
+                            EBillSftpProcessor.closeServiceFtp();
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
             this._addError(e.toString());
         }
         super.afterExecuteReport();
+    }
 
+    /**
+     * Méthode permettant de traiter les sommations eBill
+     * en attente d'être envoyé dans le processus actuel.
+     */
+    public void traiterSommationEBillAquila(CACompteAnnexe compteAnnexe) throws Exception {
+
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignes : lignesSommation.entrySet()) {
+            if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
+                    && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
+
+                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
+                String reference = referencesSommation.get(lignes.getKey());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName());
+                if (!attachedDocuments.isEmpty()) {
+                    creerFichierEBillAquila(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateDelaiPaiement(), curContentieux.getSection());
+                }
+            }
+        }
+    }
+
+    private void ajouteInfoEBillToEmail() {
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
+        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    }
+
+
+
+    /**
+     * Méthode permettant de créer la sommation eBill,
+     * de générer et remplir le fichier puis de l'envoyer sur le ftp.
+     *
+     * @param compteAnnexe            : le compte annexe
+     * @param entete                  : l'entête de la facture
+     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
+     * @param lignes                  : contient les lignes de bulletins de soldes
+     * @param reference               : la référence BVR ou QR.
+     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param dateFacturation         : la date de facturation
+     * @param section                 : la section
+     * @throws Exception
+     */
+    private void creerFichierEBillAquila(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section) throws Exception {
+
+        // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
+        entete.addEBillTransactionID(getTransaction());
+
+        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
+        entete.setEBillPrinted(true);
+
+        // Met à jour le status eBill de la section
+        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
+
+        // Met à jour l'historique eBill du contentieux
+        updateHistoriqueEBillPrintedEtTransactionID(entete.getEBillTransactionID());
+
+        String dateEcheance = dateFacturation;
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
+
+        factureEBill++;
+    }
+
+    private void updateHistoriqueEBillPrintedEtTransactionID(String transactionId) throws Exception {
+        COHistorique dernierHistorique = curContentieux.loadHistorique();
+        if (dernierHistorique.getIdEtape().equals(curContentieux.getIdEtape())
+                && dernierHistorique.getIdContentieux().equals(curContentieux.getIdContentieux())
+                && dernierHistorique.getIdSequence().equals(curContentieux.getIdSequence())) {
+            dernierHistorique.setEBillTransactionID(transactionId);
+            dernierHistorique.setEBillPrinted(true);
+        }
     }
 
     @Override

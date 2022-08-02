@@ -12,6 +12,8 @@
 <%@ page import="globaz.osiris.parser.CASelectBlockParser"%>
 <%@ page import="globaz.osiris.db.comptes.CARole" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="globaz.osiris.application.CAApplication" %>
+<%@ page import="globaz.globall.db.BSession" %>
 <%
 idEcran = "GCO3001";
 
@@ -20,6 +22,9 @@ COProcessContentieuxViewBean viewBean = (COProcessContentieuxViewBean) session.g
 userActionValue = "aquila.process.processContentieux.executer";
 
 globaz.globall.db.BSession objSession = (globaz.globall.db.BSession) viewBean.getISession();
+%>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses((BSession) viewBean.getISession());
 %>
 <LINK id="aquilaCSS" rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
 <%-- /tpl:put --%>
@@ -134,6 +139,15 @@ function changePrevisionnel() {
               <input type="text" name="libelleJournal" class="libelleLong" value="<%=viewBean.getLibelleJournal()%>">
             </TD>
           </TR>
+            <% if (eBillAquilaActif) {%>
+            <TR>
+                <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+                <td nowrap>
+                    <input type="checkbox" name="eBillPrintable"
+                           id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+                </td>
+            </TR>
+            <%}%>
           <TR>
             <TD colspan="4"><HR></TD>
           </TR>
