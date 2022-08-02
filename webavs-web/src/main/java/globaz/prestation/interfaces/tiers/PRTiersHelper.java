@@ -19,6 +19,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
@@ -363,17 +364,16 @@ public class PRTiersHelper {
             adresseComplexModel.setLocalite(localiteSimpleModel);
             adresseComplexModel.setAvoirAdresse(avoirAdresseSimpleModel);
 
-            try {
-                homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, false);
-            } catch (Exception e) {
-                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré", e);
-                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
-            }
+            homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, false);
 
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
                 LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
                 throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+            } else if (!JadeThread.logIsEmpty()) {
+                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
             }
+
         } else if (searchTiers.getNbOfResultMatchingQuery() != 1 || mailAddress.getFields() != null) {
             throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
         }
