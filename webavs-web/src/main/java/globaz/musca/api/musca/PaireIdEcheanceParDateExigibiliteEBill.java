@@ -2,12 +2,12 @@ package globaz.musca.api.musca;
 
 import java.util.Objects;
 
-public class PaireIdEcheanceParDateExigibilite {
+public class PaireIdEcheanceParDateExigibiliteEBill {
 
     private String idEcheance;
     private String dateExigibilite;
 
-    public PaireIdEcheanceParDateExigibilite(String idEcheance, String dateExigibilite) {
+    public PaireIdEcheanceParDateExigibiliteEBill(String idEcheance, String dateExigibilite) {
         this.idEcheance = idEcheance;
         this.dateExigibilite = dateExigibilite;
     }
@@ -32,7 +32,7 @@ public class PaireIdEcheanceParDateExigibilite {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PaireIdEcheanceParDateExigibilite that = (PaireIdEcheanceParDateExigibilite) o;
+        PaireIdEcheanceParDateExigibiliteEBill that = (PaireIdEcheanceParDateExigibiliteEBill) o;
         return Objects.equals(idEcheance, that.idEcheance) && Objects.equals(dateExigibilite, that.dateExigibilite);
     }
 

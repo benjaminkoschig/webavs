@@ -1,5 +1,7 @@
 package globaz.osiris.process.ebill;
 
+import globaz.aquila.db.access.poursuite.COContentieux;
+import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.docinfo.CADocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMemoryLog;
@@ -8,7 +10,7 @@ import globaz.globall.db.BSession;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.musca.api.musca.FAImpressionFactureEBillXml;
-import globaz.musca.api.musca.PaireIdEcheanceParDateExigibilite;
+import globaz.musca.api.musca.PaireIdEcheanceParDateExigibiliteEBill;
 import globaz.musca.api.musca.PaireIdExterneEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAEnteteFactureManager;
@@ -17,7 +19,6 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
-import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_Doc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import osiris.ch.ebill.send.invoice.InvoiceEnvelope;
@@ -33,7 +34,7 @@ public class EBillHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EBillHelper.class);
 
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibilite, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEBillBillerId();
 
@@ -53,6 +54,7 @@ public class EBillHelper {
         factureEBill.setSession(session);
         factureEBill.setTitreSursis(titreSursis);
         factureEBill.setBillerId(billerId);
+        factureEBill.setTypeDocument(typeDocument);
 
         // Init de la facture eBill
         factureEBill.initFactureEBill();
@@ -200,4 +202,24 @@ public class EBillHelper {
         }
     }
 
+    /**
+     * Mise à jour l'historique du contentieux avec
+     * le eBillPrinted et le transactionID
+     *
+     * @param transactionID l'id de transaction lié au traitement.
+     */
+    public void updateHistoriqueEBillPrintedEtTransactionID(COContentieux curContentieux, String transactionID, FWMemoryLog memoryLog) {
+        try {
+            COHistorique dernierHistorique = curContentieux.loadHistorique();
+            if (dernierHistorique.getIdEtape().equals(curContentieux.getIdEtape())
+                    && dernierHistorique.getIdContentieux().equals(curContentieux.getIdContentieux())
+                    && dernierHistorique.getIdSequence().equals(curContentieux.getIdSequence())) {
+                dernierHistorique.setEBillTransactionID(transactionID);
+                dernierHistorique.setEBillPrinted(true);
+                dernierHistorique.update();
+            }
+        } catch (Exception e) {
+            memoryLog.logMessage("Impossible de mettre à jour l'historique du contentieux avec le transactionID : " + transactionID + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
+        }
+    }
 }
