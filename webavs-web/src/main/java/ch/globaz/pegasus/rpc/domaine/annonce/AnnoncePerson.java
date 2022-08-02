@@ -11,6 +11,7 @@ import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.PersonsElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
 import ch.globaz.pegasus.rpc.domaine.RpcVitalNeedsCategory;
+import ch.globaz.pyxis.domaine.EtatCivil;
 
 public class AnnoncePerson {
 
@@ -52,7 +53,12 @@ public class AnnoncePerson {
             degreeOfInvalidity = String.format("%.2f",personData.getDegreInvalidite());
         }
         vitalNeedsCategory = annonce.resolveVitalNeedsCategory(personData, annonce.getDemande());
-        maritalStatus = ConverterMaritalStatus.convert(personData.getSituationFamiliale());
+        // PLAT2-1396 - le conjoint survivant aura un marital status MARIE
+        if (EtatCivil.VEUF.equals(personData.getSituationFamiliale())) {
+            maritalStatus = ConverterMaritalStatus.convert(EtatCivil.MARIE);
+        } else {
+            maritalStatus = ConverterMaritalStatus.convert(personData.getSituationFamiliale());
+        }
         housingMode = annonce.resolvePcaGenre(personData);
 
     }

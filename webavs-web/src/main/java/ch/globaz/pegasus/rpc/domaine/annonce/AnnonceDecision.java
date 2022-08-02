@@ -70,9 +70,20 @@ public class AnnonceDecision {
         decisionDate = decision.getDateDecision();
         validFrom = decision.getDateDebut();
 
-        decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
+        // PLAT2-1396 - Si Décés -> decisionKind = 3
+        String dateDeces = annonce.getPcaDecision().getPca().getBeneficiaire().getDateDeces();
+//        if (!dateDeces.isEmpty() && isAfterAnnonce(annonce, dateDeces)) {
+        if (!dateDeces.isEmpty()) {
+            // Pas de droit aux PC
+            decisionKind = BigInteger.valueOf(3);
+            // Décès
+            decisionCause = BigInteger.valueOf(4);
+        } else {
+            decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
+        }
+
         // null pour les annonces partielles
-        if (annonce.getVersionDroit() != null) {
+        if (annonce.getVersionDroit() != null && decisionCause == null) {
             decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif(), pca.getReformePC());
             // FC4 = 1 Uniquement si demande initiale
             if (decisionCause.equals(BigInteger.valueOf(1)) && !getAnnonce().getVersionDroit().isDemandeInitiale()) {
@@ -101,6 +112,19 @@ public class AnnonceDecision {
             decisionIdPartnerDecision = annonce.getDecisionIdPartner();
         }
         coupleSepare = decision.getType().isRefusSansCalcul() ? false : annonce.getRpcCalcul().isCoupleSepare();
+
+    }
+
+    private boolean isAfterAnnonce(RpcDecisionAnnonceComplete annonce, String dateDeces) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateDecesLocal = LocalDate.parse(dateDeces, formatter);
+        Date dateFinAnnonce = annonce.getPcaDecision().getDecision().getDateFin();
+        if (dateFinAnnonce == null) {
+            return false;
+        }
+        String dateAnnonce = dateFinAnnonce.getJour() + "." + dateFinAnnonce.getMois() + "." + dateFinAnnonce.getAnnee();
+        LocalDate dateAnnonceLocal = LocalDate.parse(dateAnnonce, formatter);
+        return dateDecesLocal.isAfter(dateAnnonceLocal);
 
     }
 
