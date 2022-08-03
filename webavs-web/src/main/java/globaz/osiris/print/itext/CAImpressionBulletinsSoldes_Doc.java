@@ -696,12 +696,12 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * @param lignes                  : contient les lignes de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateFacturation         : la date de facturation
+     * @param dateImprOuFactu         : la date de facturation
      * @param section                 : la section
      * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section, EBillTypeDocument typeDocument) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -712,8 +712,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
 
-        String dateEcheance = dateFacturation;
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null, typeDocument);
+        String dateEcheance = dateImprOuFactu;
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
 
         factureEBill++;
     }

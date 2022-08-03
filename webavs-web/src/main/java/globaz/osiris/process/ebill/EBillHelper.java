@@ -34,7 +34,7 @@ public class EBillHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EBillHelper.class);
 
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, String dateEcheance, String dateOctroi, BSession session, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, String dateEcheance, String dateOctroiSursis, BSession session, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEBillBillerId();
 
@@ -48,9 +48,9 @@ public class EBillHelper {
         factureEBill.setLignesSursis(lignesSursis);
         factureEBill.setReference(reference);
         factureEBill.setAttachedDocuments(attachedDocuments);
-        factureEBill.setDateFacturation(dateFacturation);
+        factureEBill.setDateImprOuFactu(dateImprOuFactu);
         factureEBill.setDateEcheance(dateEcheance);
-        factureEBill.setDateOctroi(dateOctroi);
+        factureEBill.setDateOctroiSursis(dateOctroiSursis);
         factureEBill.setSession(session);
         factureEBill.setTitreSursis(titreSursis);
         factureEBill.setBillerId(billerId);

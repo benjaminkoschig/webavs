@@ -489,13 +489,13 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      * @param lignesSursis            : contient les lignes de sursis au paiement
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateFacturation         : la date de facturation
+     * @param dateImprOuFactu         : la date d'execution ou de facturation du document
      * @param section                 : la section
      * @param titreSursis             : le titre de LineItem pour les sursis au paiement
      * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, List<CASection> section, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
+    private void creerFichierEBill(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, List<CASection> section, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -509,8 +509,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         }
 
         String dateEcheance = planRecouvrement.getDateEcheance();
-        String dateOctroi = planRecouvrement.getDate();
-        eBillHelper.creerFichierEBill(planRecouvrement.getCompteAnnexe(), entete, null, montantFacture, null, lignesSursis, reference, attachedDocuments, dateFacturation, dateEcheance, dateOctroi, getSession(), titreSursis, typeDocument);
+        String dateOctroiSursis = planRecouvrement.getDate();
+        eBillHelper.creerFichierEBill(planRecouvrement.getCompteAnnexe(), entete, null, montantFacture, null, lignesSursis, reference, attachedDocuments, dateImprOuFactu, dateEcheance, dateOctroiSursis, getSession(), titreSursis, typeDocument);
 
         factureEBill++;
     }
