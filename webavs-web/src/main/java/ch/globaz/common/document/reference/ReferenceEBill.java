@@ -78,6 +78,7 @@ public class ReferenceEBill extends AbstractReference {
     private String creNumMaisonAdresse;
 
     private boolean isSursis;
+    private boolean isSommation;
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
     private boolean isBulletinsDeSoldesAvecFactureEBill;
@@ -420,5 +421,13 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsSursis(boolean sursis) {
         isSursis = sursis;
+    }
+
+    public boolean isSommation() {
+        return isSommation;
+    }
+
+    public void setIsSommation(boolean sommation) {
+        isSommation = sommation;
     }
 }
