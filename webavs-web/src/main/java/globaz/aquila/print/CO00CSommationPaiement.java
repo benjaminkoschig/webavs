@@ -222,7 +222,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
                 String reference = referencesSommation.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName());
                 if (!attachedDocuments.isEmpty()) {
-                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateDelaiPaiement(), curContentieux.getSection(), EBillTypeDocument.SOMMATION);
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.SOMMATION);
                 }
             }
         }
@@ -232,8 +232,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
         getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
-
-
 
     /**
      * Méthode permettant de créer la sommation eBill,
@@ -245,12 +243,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
      * @param lignes                  : contient les lignes de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateFacturation         : la date de facturation
+     * @param dateImprOuFactu         : la date d'execution ou de facturation du document
      * @param section                 : la section
      * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section, EBillTypeDocument typeDocument) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -264,8 +262,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // Met à jour l'historique eBill du contentieux
         eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
 
-        String dateEcheance = dateFacturation;
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null, typeDocument);
+        String dateEcheance = getDateDelaiPaiement();
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
 
         factureEBill++;
     }
@@ -510,6 +508,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // ajout des taxes si necessaire
         FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
 
+        // Ajoute des lignes de détail sur les sommations
         for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext(); ) {
             COTaxe taxe = (COTaxe) taxesIter.next();
 
@@ -522,13 +521,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
             lignes.add(fields);
         }
 
-        // Prepare la map des lignes de sommations eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
-        // La ligne de TOTAL de la sommation n'a pas besoin d'être envoyé comme lineItem dans eBill
-        boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
-        if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
-            lignesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) lignes);// EBILL Sursis au paiement - BVR (0043GCA)
-        }
-
         // Ajoute une ligne de TOTAL sur les sommations après les lignes de détail
         if (montantTotal != null) {
             fields = new HashMap<>();
@@ -536,6 +528,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
             fields.put(COParameter.F3, formatMontant(montantTotal.toString()));
             fields.put(COParameter.F4, getCatalogueTextesUtil().texte(key, 3, 3));
             lignes.add(fields);
+        }
+
+        // Prepare la map des lignes de sommations eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
+        boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+        if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+            lignesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) lignes);// EBILL Sursis au paiement - BVR (0043GCA)
         }
 
         this.setDataSource(lignes);

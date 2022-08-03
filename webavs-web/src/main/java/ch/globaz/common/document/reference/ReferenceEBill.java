@@ -90,14 +90,14 @@ public class ReferenceEBill extends AbstractReference {
     /**
      * Initialisation de la référence eBill.
      *
-     * @param enteteFacture   : en-tête de facture.
-     * @param dateFacturation : la date de facturation.
+     * @param enteteFacture   : l'entête de la facture
+     * @param dateImprOuFactu : la date d'execution ou de facturation du document
      * @throws PropertiesException
      */
-    public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+    public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateImprOuFactu) throws Exception {
 
         // Récupération de l'adresse du débiteur.
-        initAdresseDeb(enteteFacture, dateFacturation);
+        initAdresseDeb(enteteFacture, dateImprOuFactu);
 
         // Récupération de l'adresse du créancier.
         initAdresseCre();
