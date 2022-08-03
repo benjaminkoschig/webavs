@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
+import java.util.Vector;
 import java.util.stream.Stream;
 
 @Data
@@ -83,7 +84,7 @@ public class PYTiersDTO {
     /**
      * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
      *
-     * isValidForUpdate vérifie l'absence des champs et lance une erreur en cas de problème.
+     * isValidForCreation vérifie l'absence des champs et lance une erreur en cas de problème.
      *
      * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
      */
@@ -91,14 +92,31 @@ public class PYTiersDTO {
     public Boolean isValid(){
         // TODO: Decide how we're doing it for page 2 and other fields
 
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(surname);
+        mandatoryParameters.add(language);
+        mandatoryParameters.add(isPhysicalPerson.toString());
+
+        if (postalCode != null) {
+            mandatoryParameters.add(street);
+            mandatoryParameters.add(streetNumber);
+            mandatoryParameters.add(postalCode);
+            mandatoryParameters.add(locality);
+        }
+
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
-                Stream.of(surname, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValidForCreation(this)
             );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)){
+            mandatoryParameters.add(title);
+            mandatoryParameters.add(name);
+            mandatoryParameters.add(nss);
+            mandatoryParameters.add(birthDate);
+            mandatoryParameters.add(civilStatus);
             return (
-                Stream.of(title, surname, name, nss, birthDate, civilStatus, language, isPhysicalPerson.toString()).noneMatch(JadeStringUtil::isEmpty)
+                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                 && PYValidateDTO.isValidForCreation(this)
             );
         }

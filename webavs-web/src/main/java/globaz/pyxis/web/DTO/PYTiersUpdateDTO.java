@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
+import java.util.Vector;
 import java.util.stream.Stream;
 
 @Data
@@ -26,17 +27,14 @@ public class PYTiersUpdateDTO extends PYTiersDTO {
     public Boolean isValid() {
         // TODO: Decide how we're doing it for page 2 and other fields
 
-        if (Boolean.FALSE.equals(super.getIsPhysicalPerson())) {
-            return (
-                Stream.of(super.getId(), super.getIsPhysicalPerson().toString(), modificationDate).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForUpdate(this)
-            );
-        } else if (Boolean.TRUE.equals(super.getIsPhysicalPerson())){
-            return (
-                Stream.of(super.getId(), super.getIsPhysicalPerson().toString(), modificationDate).noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForUpdate(this)
-            );
-        }
-        return false;
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getId());
+        mandatoryParameters.add(this.getIsPhysicalPerson().toString());
+        mandatoryParameters.add(this.getModificationDate());
+
+        return (
+            mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
+            && PYValidateDTO.isValidForUpdate(this)
+        );
     }
 }
