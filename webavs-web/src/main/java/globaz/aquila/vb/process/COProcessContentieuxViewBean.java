@@ -124,6 +124,7 @@ public class COProcessContentieuxViewBean extends COAbstractViewBeanSupport {
     private String selectionTriListeSection = "";
     private List sequences;
     private List typesSections;
+    private Boolean eBillPrintable = false;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -416,6 +417,15 @@ public class COProcessContentieuxViewBean extends COAbstractViewBeanSupport {
     }
 
     /**
+     * getter pour l'attribut eBillPrintable
+     *
+     * @return true si eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @return the userIdCollaborateur
      */
     public String getUserIdCollaborateur() {
@@ -677,6 +687,16 @@ public class COProcessContentieuxViewBean extends COAbstractViewBeanSupport {
      */
     public void setTypesSections(List list) {
         typesSections = list;
+    }
+
+     /**
+     * setter pour l'attribut eBillPrintable
+     *
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+     public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

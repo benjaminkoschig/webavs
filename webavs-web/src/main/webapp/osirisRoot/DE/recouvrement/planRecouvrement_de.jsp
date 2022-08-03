@@ -74,16 +74,16 @@
 	function init(){
 	}
 
-	function clearEBillInputs() {
+	function refreshEBillInputs() {
 		<% if (eBillOsirisActif && eBillAccountID) {%>
 			$("#eBillPrintable").attr("checked", true);
-		<%} else{%>
+		<%} else {%>
 			$("#eBillPrintable").attr("checked", false);
 		<%}%>
 	}
 
 	function postInit(){
-		clearEBillInputs();
+		refreshEBillInputs();
 	}
 
 // stop hiding -->
@@ -200,15 +200,13 @@
 	    %>
 		<TD class="control"><ct:FWCodeSelectTag codeType="OSIPLRVEN" defaut="<%=viewBean.getIdModeVentilation()%>" name="idModeVentilation" except="<%=exceptVen%>" /></TD>
 	</tr>
-	<% if (eBillOsirisActif) {%>
-		<% if (!JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
-			<tr>
-				<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-				<td nowrap>
-					  <input type="checkbox" name="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
-				</td>
-			</tr>
-		<%}%>
+	<% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+		<tr>
+			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+			<td nowrap>
+				  <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+			</td>
+		</tr>
 	<%}%>
 	<tr>
 		<td class="label">Höchstbetrag zu decken</td>

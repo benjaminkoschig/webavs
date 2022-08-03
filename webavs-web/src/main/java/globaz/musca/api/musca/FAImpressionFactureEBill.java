@@ -53,7 +53,7 @@ public class FAImpressionFactureEBill extends FAImpressionGenerique {
     @Override
     public boolean comptabiliser(IFAPassage passage, BProcess context) throws Exception {
         try {
-            FAImpressionFactureEBillProcess process = new FAImpressionFactureEBillProcess(); // TODO ESVE FIGURE IT OUT
+            FAImpressionFactureEBillProcess process = new FAImpressionFactureEBillProcess();
             process.setParentWithCopy(context);
             process.getMemoryLog();
             process.setIdPassage(passage.getIdPassage());
