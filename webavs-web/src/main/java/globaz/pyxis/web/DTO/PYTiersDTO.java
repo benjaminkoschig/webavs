@@ -97,7 +97,7 @@ public class PYTiersDTO {
         mandatoryParameters.add(language);
         mandatoryParameters.add(isPhysicalPerson.toString());
 
-        if (postalCode != null) {
+        if (street != null || streetNumber != null || postalCode != null || locality != null) {
             mandatoryParameters.add(street);
             mandatoryParameters.add(streetNumber);
             mandatoryParameters.add(postalCode);
