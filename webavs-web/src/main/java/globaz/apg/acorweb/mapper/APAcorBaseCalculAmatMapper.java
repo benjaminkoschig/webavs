@@ -1,7 +1,7 @@
 package globaz.apg.acorweb.mapper;
 
-import ch.admin.zas.xmlns.in_apg._0.BasesCalculAMat;
-import ch.admin.zas.xmlns.in_apg._0.GarantieIJ;
+import acor.xsd.in.apg.BasesCalculAMat;
+import acor.xsd.in.apg.GarantieIJ;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import globaz.apg.application.APApplication;
