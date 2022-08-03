@@ -543,7 +543,8 @@ public class FAImpressionFactureEBillXml {
             lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0)));
         // Création des LineItems pour les sommations
         } else if (eBillFacture.isSommation()) {
-            lignes.stream().filter(l -> l.get("F1") != "TOTAL").forEach(l -> lineItems.getLineItem().add(createLineItemSommation(l)));
+            // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
+            lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemSommation(l)));
         // Création des LineItems pour les factures
         } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
             lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemFactures(l)));

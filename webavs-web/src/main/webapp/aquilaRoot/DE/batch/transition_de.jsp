@@ -25,6 +25,7 @@
 %>
 <%
     boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(viewBean.getSession());
+	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
 %>
 <SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/aquilaRoot/javascript/aquila.js"></SCRIPT>
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
@@ -83,6 +84,19 @@
 			nextRowToShow ++;
 		}
 	}
+
+	function refreshEBillInputs() {
+		<% if (eBillAquilaActif && eBillAccountID) {%>
+			$("#eBillPrintable").attr("checked", true);
+		<%} else {%>
+			$("#eBillPrintable").attr("checked", false);
+		<%}%>
+	}
+
+	function postInit(){
+		refreshEBillInputs();
+	}
+
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
