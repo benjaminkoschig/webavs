@@ -16,7 +16,8 @@
 
 %>
 
-<%@page import="globaz.musca.process.FAImpressionFactureEBillProcess"%><SCRIPT language="JavaScript">
+<%@page import="globaz.musca.process.FAImpressionFactureEBillProcess"%>
+<SCRIPT language="JavaScript">
     top.document.title = "Musca - Impression des décomptes"
 
     function showHideEBillInputs() {
@@ -29,14 +30,14 @@
         }
     }
 
-    function clearEBillInputs() {
+    function refreshEBillInputs() {
         $("#forcerImpressionPapier").attr("checked",false);
         $("#typeFacture").val("automatique");
     }
 
     function postInit(){
         showHideEBillInputs();
-        clearEBillInputs();
+        refreshEBillInputs();
     }
 
 </SCRIPT>
@@ -73,34 +74,13 @@
 
     <%@ include file="/scripts/infoRom/infoRom304.js" %>
 
-    function init()
-    {
+    function init() {
         /*if (document.forms[0].elements('_method').value == "add")
            document.forms[0].elements('KcidIn').disabled = true;
            document.forms[0].elements('KcidLabel').disabled = true;
         else
            document.forms[0].elements('KcidIn').disabled = true;
            document.forms[0].elements('KcidLabel').disabled = true;*/
-    }
-
-    function showHideEBillInputs() {
-        $("#impressionPapier").hide();
-        $("#typeFactureLine").show();
-
-        if($("#chkImpressionUnSeulAffilie").is(':checked')){
-            $("#impressionPapier").show();
-            $("#typeFactureLine").hide();
-        }
-    }
-
-    function clearEBillInputs() {
-        $("#forcerImpressionPapier").attr("checked",false);
-        $("#typeFacture").val("automatique");
-    }
-
-    function postInit(){
-        showHideEBillInputs();
-        clearEBillInputs();
     }
 
     // stop hiding -->
@@ -128,7 +108,7 @@
     <TD>Ausdruck für ein einziges Mitglied</TD>
     <TD>
         <input type="checkbox" id="chkImpressionUnSeulAffilie" name="chkImpressionUnSeulAffilie"
-               onclick="showHidePlageNumAffInput();clearInputsNumAff();clearEBillInputs();showHideEBillInputs();">
+               onclick="showHidePlageNumAffInput();clearInputsNumAff();refreshEBillInputs();showHideEBillInputs();">
         <INPUT type="hidden" id="valueKeeperChkImpressionUnSeulAffilie" name="valueKeeperChkImpressionUnSeulAffilie">
     </TD>
 </TR>

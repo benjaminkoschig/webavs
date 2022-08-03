@@ -26,7 +26,7 @@ userActionValue = globaz.osiris.application.CAApplication.DEFAULT_OSIRIS_NAME + 
 <!--hide this script from non-javascript-enabled browsers
 top.document.title = "Generierung der Saldi-ESR - " + top.location.href;
 
-function clearEBillInputs() {
+function refreshEBillInputs() {
     <% if (eBillOsirisActif && eBillAccountID) {%>
         $("#eBillPrintable").attr("checked", true);
     <%} else{%>
@@ -35,7 +35,7 @@ function clearEBillInputs() {
 }
 
 function postInit(){
-    clearEBillInputs();
+    refreshEBillInputs();
 }
 
 // stop hiding -->
@@ -74,8 +74,7 @@ function postInit(){
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <% if (eBillOsirisActif) {%>
-            <% if (!JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
+          <% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
               <tr>
                 <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
                 <td nowrap>
@@ -85,7 +84,6 @@ function postInit(){
                 <td nowrap>&nbsp;</td>
                 <td nowrap>&nbsp;</td>
               </tr>
-            <%}%>
           <%}%>
           <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
