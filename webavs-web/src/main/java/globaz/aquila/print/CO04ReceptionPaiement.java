@@ -99,6 +99,14 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         getDocumentInfo().setDocumentProperty("annee", getAnneeFromContentieux());
     }
 
+    @Override
+    public void afterExecuteReport() {
+
+        if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
+            // TODO ESVE EBILL Réclamer frais et intérêts - formule 44
+        }
+    }
+
     /**
      * @throws FWIException
      */
