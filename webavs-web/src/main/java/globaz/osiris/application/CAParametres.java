@@ -450,7 +450,7 @@ public class CAParametres {
         return eBillAquilaActifEtDansListeCaisses;
     }
 
-    private boolean isDansListeCaisse(BSession session) {
+    public boolean isDansListeCaisse(BSession session) {
         // Vérifier que la caisse avs est dans la liste eBill crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
         String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
         List<String> listeCaisseEBill = null;

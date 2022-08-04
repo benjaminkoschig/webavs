@@ -1,5 +1,7 @@
 package globaz.aquila.print;
 
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
@@ -10,12 +12,24 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
-import ch.globaz.common.document.reference.ReferenceBVR;
-import ch.globaz.common.document.reference.ReferenceQR;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.publish.client.JadePublishDocument;
+import globaz.musca.api.musca.PaireIdExterneEBill;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.process.ebill.EBillHelper;
+import globaz.osiris.process.ebill.EBillSftpProcessor;
+import globaz.osiris.process.ebill.EBillTypeDocument;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +45,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
+    private static final Logger LOGGER = LoggerFactory.getLogger(CO04ReceptionPaiement.class);
 
     public static final String CENT_DEFAUT = "XX";
     public static final String MONTANT_DEFAUT = "XXXX";
@@ -42,6 +57,13 @@ public class CO04ReceptionPaiement extends CODocumentManager {
     private static final String TEMPLATE_NAME = "CO_04_RECEPTION_PAIEMENT_AF_BVR_QR";
 
     private List<CAInteretManuelVisualComponent> interetCalcule = null;
+
+    private EBillHelper eBillHelper = new EBillHelper();
+
+    public Map<PaireIdExterneEBill, List<Map>> lignesReclamation = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referencesReclamation = new LinkedHashMap();
+
+    private int factureEBill = 0;
 
     /**
      * Crée une nouvelle instance de la classe CO04ReceptionPaiement.
@@ -101,10 +123,83 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     @Override
     public void afterExecuteReport() {
-
         if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
-            // TODO ESVE EBILL Réclamer frais et intérêts - formule 44
+            boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+
+            // On imprime eBill si :
+            //  - eBillAquila est actif
+            //  - le compte annexe possède un eBillAccountID
+            //  - eBillPrintable est sélectioné sur l'écran d'impression
+            //  - l'impression prévisionel n'est pas activée
+            if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                    try {
+                        EBillSftpProcessor.getInstance();
+                        traiterReclamationEBillAquila(curContentieux.getCompteAnnexe());
+                        ajouteInfoEBillToEmail();
+                    } catch (Exception exception) {
+                        LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                    } finally {
+                        EBillSftpProcessor.closeServiceFtp();
+                    }
+                }
+            }
         }
+    }
+
+    public void traiterReclamationEBillAquila(CACompteAnnexe compteAnnexe) throws Exception {
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignes : lignesReclamation.entrySet()) {
+            if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
+                    && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
+
+                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
+                String reference = referencesReclamation.get(lignes.getKey());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
+                if (!attachedDocuments.isEmpty()) {
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection().getDateSection(), curContentieux.getSection(), EBillTypeDocument.RECLAMATION);
+                }
+            }
+        }
+    }
+
+    private void ajouteInfoEBillToEmail() {
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
+        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    }
+
+    /**
+     * Méthode permettant de créer la Réclamation eBill,
+     * de générer et remplir le fichier puis de l'envoyer sur le ftp.
+     *
+     * @param compteAnnexe            : le compte annexe
+     * @param entete                  : l'entête de la facture
+     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
+     * @param lignes                  : contient les lignes de bulletins de soldes
+     * @param reference               : la référence BVR ou QR.
+     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param dateFacturation         : la date de facturation
+     * @param section                 : la section
+     * @param typeDocument            : le type du document eBill
+     * @throws Exception
+     */
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section, EBillTypeDocument typeDocument) throws Exception {
+
+        // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
+        entete.addEBillTransactionID(getTransaction());
+
+        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
+        entete.setEBillPrinted(true);
+
+        // Met à jour le status eBill de la section
+        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
+
+        // Met à jour l'historique eBill du contentieux
+        eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
+
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateFacturation, null, getSession(), null, typeDocument);
+
+        factureEBill++;
     }
 
     /**
@@ -161,7 +256,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
             // formater le corps, les conventions de remplacement pour les paragraphes du corps sont:
             // {0} = formule de politesse (ex: Madame, Monsieur)
-            // {1} = date de la de la section
+            // {1} = date de la section
             this.setParametres(
                     COParameter.T2,
                     formatMessage(body, new Object[] { getFormulePolitesse(destinataireDocument),
@@ -183,6 +278,14 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                     COParameter.F2, COParameter.F3, getCatalogueTextesUtil().texte(getParent(), 3, 2),
                     ICOEtape.CS_FRAIS_ET_INTERETS_RECLAMES, infoSection[1]);
             dataSource.addAll(situation);
+
+            FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
+
+            // Prepare la map des lignes de frais et intérêt réclamé eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
+            boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+            if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                lignesReclamation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) situation);// EBILL  - BVR ()
+            }
 
             FWCurrency totalIM = addMontantIM(dataSource);
 
@@ -221,6 +324,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                 initVariableQR(bvr);
                 // Génération du document QR
                 qrFacture.initQR(this, qrFactures);
+                referencesReclamation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), qrFacture.getReference());
             } else {
                 initBVR(bvr);
             }

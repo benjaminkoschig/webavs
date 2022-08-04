@@ -79,6 +79,7 @@ public class ReferenceEBill extends AbstractReference {
 
     private boolean isSursis;
     private boolean isSommation;
+    private boolean isReclamation;
     private boolean isDecision;
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
@@ -93,7 +94,6 @@ public class ReferenceEBill extends AbstractReference {
      *
      * @param enteteFacture   : l'entête de la facture
      * @param dateImprOuFactu : la date d'execution ou de facturation du document
-     * @throws PropertiesException
      */
     public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateImprOuFactu) throws Exception {
 
@@ -426,6 +426,14 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsSommation(boolean sommation) {
         isSommation = sommation;
+    }
+
+    public boolean isReclamation() {
+        return isReclamation;
+    }
+
+    public void setIsReclamation(boolean reclamation) {
+        this.isReclamation = reclamation;
     }
 
     public boolean isDecision() {
