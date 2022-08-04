@@ -158,16 +158,19 @@ public class EBillHelper {
      *
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @param documentType : le type de document recherché
+     * @param removeAttachment : définit si le fichier doit être supprimé ou non des attachment
      * @return les fichiers qui match les critères
      */
-    public List<JadePublishDocument> findAndReturnAttachedDocuments(List<JadePublishDocument> attachedDocuments, String documentType) {
+    public List<JadePublishDocument> findAndReturnAttachedDocuments(List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
         List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
         Iterator<JadePublishDocument> it = attachedDocuments.iterator();
         while (it.hasNext()) {
             final JadePublishDocument jadePublishDocument = it.next();
             if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
                 filteredAttachedDocuments.add(jadePublishDocument);
-                break;
+                if (removeAttachment) {
+                    it.remove();
+                }
             }
         }
         return filteredAttachedDocuments;
@@ -181,6 +184,7 @@ public class EBillHelper {
      * @param entete : l'entete qui permet d'identifier le fichier à retourner
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @param documentType : le type de document recherché
+     * @param removeAttachment : définit si le fichier doit être supprimé ou non des attachment
      * @return les fichiers qui match les critères
      */
     public List<JadePublishDocument> findReturnOrRemoveAttachedDocuments(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
@@ -190,15 +194,16 @@ public class EBillHelper {
             final JadePublishDocument jadePublishDocument = it.next();
             if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
                     && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))) {
-                if (documentType != null) {
-                    if(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
-                        filteredAttachedDocuments.add(jadePublishDocument);
+                if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
+                    filteredAttachedDocuments.add(jadePublishDocument);
+                    if (removeAttachment) {
+                        it.remove();
                     }
                 } else {
                     filteredAttachedDocuments.add(jadePublishDocument);
-                }
-                if (removeAttachment) {
-                    it.remove();
+                    if (removeAttachment) {
+                        it.remove();
+                    }
                 }
             }
         }

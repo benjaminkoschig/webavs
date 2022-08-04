@@ -478,7 +478,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
      * Mise à jour de la section si on est sur un cas eBill
      *
      * @param entFacture : en-tête de facture
-     * @param sec        : section
+     * @param sec        : la section à mettre à jour
      */
     private void updateSectionEtatEtTransactionID(FAEnteteFacture entFacture, APISection sec) throws Exception {
         boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());

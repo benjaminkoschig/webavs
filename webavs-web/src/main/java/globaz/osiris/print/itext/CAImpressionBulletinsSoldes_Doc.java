@@ -664,9 +664,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCourante.getSection(), getSession());
                 FAEnteteFacture enteteReference = eBillHelper.getEnteteFactureReference(lignes.getKey(), getSession());
-
                 String reference = referencesBulletinDeSoldes.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, false);
+
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBill(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection(), EBillTypeDocument.BULLETIN_DE_SOLDES);
                 }
@@ -692,7 +692,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
      * @param enteteReference         : l'entête de référence pour les bulletin de soldes (seulement rempli dans le cas d'un bulletin de soldes)
-     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
+     * @param montantFacture          : contient le montant total de la factures
      * @param lignes                  : contient les lignes de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill

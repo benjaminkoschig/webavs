@@ -152,7 +152,7 @@ public class CAProcessImpressionPlan extends BProcess {
         //  - eBillPrintable est sélectioné sur le plan
         if (eBillOsirisActif && plan.getEBillPrintable()) {
             if (plan.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(plan.getCompteAnnexe().getEBillAccountID())) {
-                List<JadePublishDocument> decisions = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvDecision.class.getSimpleName());
+                List<JadePublishDocument> decisions = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvDecision.class.getSimpleName(), false);
                 List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(y -> y.getPublishJobDefinition().getDocumentInfo().getChildren().size())).collect(Collectors.toList());
                 return decisionsSorted.stream().findFirst();
             }
