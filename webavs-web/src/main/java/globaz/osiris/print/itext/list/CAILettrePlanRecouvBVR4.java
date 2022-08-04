@@ -61,8 +61,6 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME = "CAIEcheancierBVR4_QR";
 
-    private static final int NUMBER_MAX_OF_ECHEANCE=100;
-
     private ReferenceBVR bvr = null;
     private String centimes;
     private double cumulSolde = 0;
@@ -77,6 +75,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
+    private static final int MAX_NUMBER_OF_ECHEANCE_EBILL = 99;
 
     /** Données du formulaire */
     private CAPlanRecouvrement plan = new CAPlanRecouvrement();
@@ -381,8 +380,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         //  - eBillOsiris est actif
         //  - le compte annexe possède un eBillAccountID
         //  - eBillPrintable est sélectioné sur le plan
+        //  - le nombre d'échéance ne dépasse pas le maximum autorisé pour eBill
         if (eBillOsirisActif && plan.getEBillPrintable()) {
-            if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID()) && checkNumberEcheance()) {
+            if (getPlanRecouvrement().getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(getPlanRecouvrement().getCompteAnnexe().getEBillAccountID()) && !isMaxNumberOfEcheanceEBill()) {
                 try {
                     EBillSftpProcessor.getInstance();
                     traiterSursisEBillOsiris(this);
@@ -394,12 +394,13 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
-                ajouteInfoEBillErrorMail();
+                ajouteErrorEBillToEMail();
             }
         }
     }
-    private boolean checkNumberEcheance(){
-        return this.getLignesSursis().size()<NUMBER_MAX_OF_ECHEANCE;
+
+    private boolean isMaxNumberOfEcheanceEBill() {
+        return this.getLignesSursis().size() > MAX_NUMBER_OF_ECHEANCE_EBILL;
     }
 
     /**
@@ -411,15 +412,15 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         List<CASection> sectionsCouvertes = getSectionsCouvertes(documentBVR);
         if (!sectionsCouvertes.isEmpty()) {
 
-            CASection sectionCouverte = sectionsCouvertes.get(0); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
-            FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCouverte, getSession());
+            FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionsCouvertes.get(0), getSession()); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
             String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
             String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
+
             List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName());
             ajouteDecisionFusionee(attachedDocuments);
 
             if (!attachedDocuments.isEmpty()) {
-                creerFichierEBill(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSection(sectionCouverte), sectionsCouvertes, titreSursis, EBillTypeDocument.SURSIS);
+                creerFichierEBill(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSectionsCouvertes(sectionsCouvertes), sectionsCouvertes, titreSursis, EBillTypeDocument.SURSIS);
             }
         }
     }
@@ -435,7 +436,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
 
-    private void ajouteInfoEBillErrorMail() {
+    private void ajouteErrorEBillToEMail() {
         getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
         getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
@@ -468,15 +469,16 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         return JANumberFormatter.fmt(JANumberFormatter.deQuote(new FWCurrency(cumulSolde).toStringFormat()), false, true, false, 2);
     }
 
-    private String getDateFacturationFromSection(CASection section) throws Exception {
+    private String getDateFacturationFromSectionsCouvertes(List<CASection> sectionsCouvertes) throws Exception {
         JACalendarGregorian calendar = new JACalendarGregorian();
         JADate dateFacturation = JACalendar.today();
-        JADate dateEcheanceSection = new JADate(section.getDateEcheance());
-        if (calendar.compare(dateFacturation, dateEcheanceSection) == JACalendar.COMPARE_FIRSTUPPER) {
-             return dateFacturation.toStr(".");
-        } else {
-             return dateEcheanceSection.toStr(".");
+        for (CASection section : sectionsCouvertes) {
+            JADate dateEcheanceSection = new JADate(section.getDateEcheance());
+            if (calendar.compare(dateEcheanceSection, dateFacturation) == JACalendar.COMPARE_FIRSTUPPER) {
+                dateFacturation = dateEcheanceSection;
+            }
         }
+        return dateFacturation.toStr(".");
     }
 
     /**

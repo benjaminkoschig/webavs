@@ -134,11 +134,31 @@ public class EBillHelper {
     }
 
     /**
+     * Méthode permettant de rechercher un fichier spécifique généré durant l'impression
+     * de le retourner pour être ajouté à la facture eBill
+     *
+     * @param attachedDocuments : les fichiers généré durant l'impression
+     * @param documentType : le type de document recherché
+     * @return le fichier qui match le critère
+     */
+    public JadePublishDocument findAndReturnAttachedDocument(List<JadePublishDocument> attachedDocuments, String documentType) {
+        Iterator<JadePublishDocument> it = attachedDocuments.iterator();
+        while (it.hasNext()) {
+            final JadePublishDocument jadePublishDocument = it.next();
+            if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
+                return jadePublishDocument;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Méthode permettant de rechercher le fichier généré durant l'impression
      * de le retourner pour être ajouter à la facture eBill
      *
      * @param attachedDocuments : les fichiers généré durant l'impression
-     * @return le fichier généré durant l'impression
+     * @param documentType : le type de document recherché
+     * @return les fichiers qui match les critères
      */
     public List<JadePublishDocument> findAndReturnAttachedDocuments(List<JadePublishDocument> attachedDocuments, String documentType) {
         List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
@@ -160,9 +180,10 @@ public class EBillHelper {
      *
      * @param entete : l'entete qui permet d'identifier le fichier à retourner
      * @param attachedDocuments : les fichiers généré durant l'impression
-     * @return le fichier généré durant l'impression
+     * @param documentType : le type de document recherché
+     * @return les fichiers qui match les critères
      */
-    public List<JadePublishDocument> findRemoveAndReturnAttachedDocuments(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
+    public List<JadePublishDocument> findReturnOrRemoveAttachedDocuments(FAEnteteFacture entete, List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
         List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
         Iterator<JadePublishDocument> it = attachedDocuments.iterator();
         while (it.hasNext()) {
