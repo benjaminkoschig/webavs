@@ -20,8 +20,8 @@ public class PYExecuteService extends BProcess {
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         try {
-            String idTiers = PRTiersHelper.addTiersPage1(getSession(), dto);
-            dto.setId(idTiers);
+            PRTiersHelper.addTiersPage1(getSession(), dto);
+            PRTiersHelper.addTiersMailAddress(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);
@@ -49,8 +49,7 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
         // TODO: upgrade the updating
         try {
-            String date = PRTiersHelper.updateTiersPage1(getSession(), dto);
-            dto.setModificationDate(date);
+            PRTiersHelper.updateTiersPage1(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);

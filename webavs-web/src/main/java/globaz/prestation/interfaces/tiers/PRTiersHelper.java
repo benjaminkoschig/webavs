@@ -1,5 +1,7 @@
 package globaz.prestation.interfaces.tiers;
 
+import ch.globaz.pyxis.business.model.*;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.properties.REProperties;
@@ -17,6 +19,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
@@ -43,12 +46,16 @@ import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
+import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static ch.globaz.pyxis.business.services.AdresseService.CS_DOMAINE_DEFAUT;
+import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -259,10 +266,9 @@ public class PRTiersHelper {
      *
      * @param session
      * @param dto
-     * @return le dto avec l'id du tiers
      * @throws Exception
      */
-    public static final String addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
+    public static final void addTiersPage1(BSession session, PYTiersDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         // Fields in TITIERP
@@ -273,10 +279,11 @@ public class PRTiersHelper {
         avsPerson.setDesignation3(dto.getName1());
         avsPerson.setDesignation4(dto.getName2());
         avsPerson.setLangue(dto.getLanguage());
-        avsPerson.setIdPays(dto.getCountry());
+        avsPerson.setIdPays(dto.getNationality());
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
+        // TODO: add maidenName once PYXIS' ITITier is updated to support it
 
         // Fields in TIPERSP
         avsPerson.setDateNaissance(dto.getBirthDate());
@@ -314,7 +321,65 @@ public class PRTiersHelper {
                 }
             }
         }
-        return avsPerson.getIdTiers();
+        dto.setId(avsPerson.getIdTiers());
+    }
+
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de courrier)
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
+    public static final void addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
+
+        AdresseSimpleModel adresseSimpleModel = new AdresseSimpleModel();
+        adresseSimpleModel.setAttention(dto.getManner());
+        adresseSimpleModel.setRue(dto.getStreet());
+        adresseSimpleModel.setNumeroRue(dto.getStreetNumber());
+
+        LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
+        localiteSimpleModel.setNumPostal(dto.getPostalCode());
+        localiteSimpleModel.setLocalite(dto.getLocality());
+        localiteSimpleModel.setIdPays(dto.getCountry());
+
+        AvoirAdresseSimpleModel avoirAdresseSimpleModel = new AvoirAdresseSimpleModel();
+        avoirAdresseSimpleModel.setIdTiers(tiers.getIdTiers());
+        avoirAdresseSimpleModel.setIdAdresse(adresseSimpleModel.getIdAdresse());
+        avoirAdresseSimpleModel.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
+
+        AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, "");
+        AdresseComplexModel homeAddress;
+        PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
+        searchTiers.setForIdTiers(tiers.getIdTiers());
+        searchTiers = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
+
+        if (searchTiers.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
+            PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) searchTiers.getSearchResults()[0];
+
+            AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+            adresseComplexModel.setTiers(personneEtendueComplexModel);
+            adresseComplexModel.setAdresse(adresseSimpleModel);
+            adresseComplexModel.setLocalite(localiteSimpleModel);
+            adresseComplexModel.setAvoirAdresse(avoirAdresseSimpleModel);
+
+            homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, false);
+
+
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+            } else if (!JadeThread.logIsEmpty()) {
+                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            }
+        } else if (searchTiers.getNbOfResultMatchingQuery() != 1 || mailAddress.getFields() != null) {
+            throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
+        }
+
+        // TODO: Maybe use homeAddress to add a payment address ?
     }
 
     /**
@@ -325,10 +390,10 @@ public class PRTiersHelper {
      * @return
      * @throws Exception
      */
-    public static final String updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
+    public static final void updateTiersPage1(BSession session, PYTiersUpdateDTO dto) throws Exception {
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
-        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should be given by the user, maybe extend the DTO to add this
+        String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should probably be given by the user, maybe extend the DTO to add this
 
         // Get the tiers from database
         avsPerson.setIdTiers(dto.getId());
@@ -412,7 +477,7 @@ public class PRTiersHelper {
             }
         }
 
-        return dto.getModificationDate(); // TODO: Return an updated dto of sorts
+        dto.setModificationDate(dto.getModificationDate());
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
