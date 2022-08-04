@@ -1,12 +1,15 @@
 package globaz.apg.acorweb.service;
 
 import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
-import ch.admin.zas.xmlns.in_apg._0.AllocationPerteGainAPG;
+import acor.xsd.in.apg.AllocationPerteGainAPG;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.acorweb.mapper.*;
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.utils.APGUtils;
 import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BSession;
