@@ -478,7 +478,7 @@ public class REExportationCalculAcor {
     }
 
     private String getTiersNSS(String idTiersComplementaire1) {
-        if (!JadeStringUtil.isBlankOrZero(idTiersComplementaire1 )) {
+        if (!JadeStringUtil.isBlankOrZero(idTiersComplementaire1)) {
             try {
                 PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiersComplementaire1);
                 return tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
