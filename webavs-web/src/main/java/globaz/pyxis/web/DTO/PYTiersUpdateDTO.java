@@ -5,7 +5,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
 import java.util.Vector;
-import java.util.stream.Stream;
 
 @Data
 public class PYTiersUpdateDTO extends PYTiersDTO {

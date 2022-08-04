@@ -1,5 +1,6 @@
 package globaz.pyxis.web.service;
 
+import ch.globaz.pyxis.business.model.AdresseComplexModel;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -21,7 +22,10 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
-            PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            AdresseComplexModel homeAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            if (homeAddress != null && !homeAddress.isNew()) {
+                PRTiersHelper.addTiersPaymentAddress(getSession(), homeAddress, dto);
+            }
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);
