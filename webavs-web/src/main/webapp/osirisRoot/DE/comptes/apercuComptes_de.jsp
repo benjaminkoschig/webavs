@@ -22,7 +22,10 @@
 	} catch (Exception e){
 		// Le reste de la page doit tout de même fonctionner
 	}
-	boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(viewBean.getSession());
+	boolean eBillActif = CAApplication.getApplicationOsiris().getCAParametres().isDansListeCaisse(viewBean.getSession()) && (
+			CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActif() ||
+					CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActif() ||
+					CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActif());
   %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -117,7 +120,7 @@ top.document.title = "Konti - Detail eines Abrechnungskontos - " + top.location.
             <TD>
               <TEXTAREA cols="40" rows="6" class="libelleLongDisabled" readonly><%=viewBean.getTitulaireEntete()%></TEXTAREA>
             </TD>
-			<% if (eBillMuscaActif) {%>
+			<% if (eBillActif) {%>
             <TD colspan="2" align="right" valign="top">
 				<TABLE>
 					<TR>
