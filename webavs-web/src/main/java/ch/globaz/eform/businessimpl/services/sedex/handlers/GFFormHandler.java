@@ -1,6 +1,6 @@
 package ch.globaz.eform.businessimpl.services.sedex.handlers;
 
-import ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
+import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import ch.globaz.common.util.Dates;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
