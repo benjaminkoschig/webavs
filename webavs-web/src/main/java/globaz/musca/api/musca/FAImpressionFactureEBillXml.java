@@ -114,12 +114,14 @@ public class FAImpressionFactureEBillXml {
         eBillFacture = new ReferenceEBill();
         eBillFacture.setSession(getSession());
 
+        // init du type de facture
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             eBillFacture.setIsQR(true);
         } else {
             eBillFacture.setIsBVR(true);
         }
 
+        // init du type de document
         if (typeDocument == EBillTypeDocument.BULLETIN_DE_SOLDES && enteteReference != null) {
             eBillFacture.setIsBulletinsDeSoldes(true);
         }
@@ -129,8 +131,11 @@ public class FAImpressionFactureEBillXml {
         if (typeDocument == EBillTypeDocument.SOMMATION) {
             eBillFacture.setIsSommation(true);
         }
+        if (typeDocument == EBillTypeDocument.DECISION) {
+            eBillFacture.setIsDecision(true);
+        }
 
-        // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
+        // si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
         if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.getEBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
         }
@@ -310,7 +315,7 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
         InvoiceBillType.Header header = of.createInvoiceBillTypeHeader();
 
-        header.setDocumentType(eBillFacture.getDocumentType());
+        header.setDocumentType(eBillFacture.getSubTypeDocument());
         header.setDocumentID(entete.getEBillTransactionID());
 
         header.setDocumentDate(convertStringDateToXmlCalendarDate(dateImprOuFactu));
@@ -545,10 +550,14 @@ public class FAImpressionFactureEBillXml {
         } else if (eBillFacture.isSommation()) {
             // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
             lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemSommation(l)));
+        // Création des LineItems pour les décisions
+        } else if (eBillFacture.isDecision()) {
+            lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemDecision(l)));
         // Création des LineItems pour les factures
         } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
             lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemFactures(l)));
         }
+
         return lineItems;
     }
 
@@ -580,6 +589,31 @@ public class FAImpressionFactureEBillXml {
     }
 
     private LineItemType createLineItemSommation(Map lignes) {
+        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+
+        String dateDebut = (dateImprOuFactu);
+        String dateFin = (dateEcheance);
+        AchievementDateType achievementDate = null;
+        if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
+            achievementDate = createAchievementDate(dateDebut, dateFin);
+        }
+        lineItem.setAchievementDate(achievementDate);
+
+        lineItem.setProductDescription(lignes.get("F1") != null ? (String) lignes.get("F1") : "");
+
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
+        lineItem.setQuantityDescription("1I");
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
+        BigDecimal montant = lignes.get("F3") != null ? new BigDecimal((String) lignes.get("F3")) : null;
+        lineItem.setAmountInclusiveTax(montant);
+        lineItem.setAmountExclusiveTax(montant);
+
+        // lineItem.setAccountAssignment(createAccountAssignment());
+
+        return lineItem;
+    }
+
+    private LineItemType createLineItemDecision(Map lignes) {
         LineItemType lineItem = createLineItemWithIdAndType(lignes);
 
         String dateDebut = (dateImprOuFactu);

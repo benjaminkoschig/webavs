@@ -170,16 +170,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
     @Override
     public void afterExecuteReport() {
         try {
-            if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
-                    || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
-                    .equals(CODocumentManager.AVEC_VERSO)) {
-                this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
-            } else {
-                this.mergePDF(getDocumentInfo(), true, 500, false, null);
-            }
-
             if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
 
+                // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
                 boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
 
                 // On imprime eBill si :
@@ -202,6 +195,15 @@ public class CO00CSommationPaiement extends CODocumentManager {
                     }
                 }
             }
+
+            if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
+                    || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
+                    .equals(CODocumentManager.AVEC_VERSO)) {
+                this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
+            } else {
+                this.mergePDF(getDocumentInfo(), true, 500, false, null);
+            }
+
         } catch (Exception e) {
             this._addError(e.toString());
         }
@@ -220,7 +222,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
                 String reference = referencesSommation.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName(), false);
+
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.SOMMATION);
                 }
@@ -239,7 +242,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
-     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
+     * @param montantFacture          : contient le montant total de la factures
      * @param lignes                  : contient les lignes de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
@@ -267,8 +270,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
         factureEBill++;
     }
-
-
 
     @Override
     public void beforeBuildReport() throws FWIException {
@@ -533,7 +534,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // Prepare la map des lignes de sommations eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
         boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
         if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
-            lignesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) lignes);// EBILL Sursis au paiement - BVR (0043GCA)
+            lignesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) lignes);
         }
 
         this.setDataSource(lignes);

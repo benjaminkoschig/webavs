@@ -151,7 +151,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getBreakRules())) {
             for (String br : champsAnnonce.getBreakRules().split(",")) {
-                message.getBreakRules().getBreakRuleCode().add(new Integer(br)); // TODO ESVE MAT MODIF IMPACT NEW XSD
+                message.getBreakRules().getBreakRuleCode().add(new Integer(br));
             }
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getTimeStamp())) {

@@ -67,7 +67,6 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private String dateRef = "";
     private boolean factureAvecMontantMinime = false;
     private String montantSansCentime;
-    private JadePublishDocument decisionFusionee;
 
     /* eBill fields */
     public Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis = new LinkedHashMap();
@@ -76,6 +75,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
     private static final int MAX_NUMBER_OF_ECHEANCE_EBILL = 99;
+    private JadePublishDocument decisionFusionee;
 
     /** Données du formulaire */
     private CAPlanRecouvrement plan = new CAPlanRecouvrement();
@@ -219,7 +219,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             // Prepare la map des lignes de sursis au paiement eBill si propriété eBillOsiris est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur le plan
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
             if (eBillOsirisActif && plan.getEBillPrintable() && compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                lignesSursis.put(new PaireIdEcheanceParDateExigibiliteEBill(echeance.getIdEcheancePlan(), echeance.getDateExigibilite()), lignes); // EBILL Sursis au paiement - BVR (0043GCA)
+                lignesSursis.put(new PaireIdEcheanceParDateExigibiliteEBill(echeance.getIdEcheancePlan(), echeance.getDateExigibilite()), lignes);
             }
 
             this.setDataSource(lignes);
@@ -415,8 +415,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionsCouvertes.get(0), getSession()); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
             String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
             String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
-
-            List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName());
+            List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName(), false);
             ajouteDecisionFusionee(attachedDocuments);
 
             if (!attachedDocuments.isEmpty()) {
@@ -487,7 +486,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      *
      * @param planRecouvrement        : le plan de recouvrement
      * @param entete                  : l'entête de la facture
-     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
+     * @param montantFacture          : contient le montant total de la factures
      * @param lignesSursis            : contient les lignes de sursis au paiement
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
