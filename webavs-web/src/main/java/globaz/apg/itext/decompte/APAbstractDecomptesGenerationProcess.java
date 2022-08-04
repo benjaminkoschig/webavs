@@ -916,7 +916,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             parametres.put("PARAM_PIED", buffer.toString());
             buffer.setLength(0);
-            if (getFirstForCopy() && getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
+            if (!getFirstForCopy() && getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
                 buffer.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
             } else {
                 buffer.append(document.getTextes(6).getTexte(1).getDescription());
