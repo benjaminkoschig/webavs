@@ -1,7 +1,7 @@
 package globaz.apg.acorweb.mapper;
 
-import ch.admin.zas.xmlns.in_apg._0.EmployeurAPG;
-import ch.admin.zas.xmlns.in_apg._0.RevenuAPG;
+import acor.xsd.in.apg.EmployeurAPG;
+import acor.xsd.in.apg.RevenuAPG;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.Dates;
 import globaz.apg.acor.parser.APACORPrestationsParser;

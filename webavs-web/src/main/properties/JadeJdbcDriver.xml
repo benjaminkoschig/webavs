@@ -123,9 +123,9 @@
 
 		<datasource name="CCVD_QA" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://ASGLOB2</url>
-			<user>ssii</user>
-			<password>ssiiadm</password>
+			<url>jdbc:as400:10.128.16.27/ccvdqua</url>
+			<user>wascnt</user>
+			<password>wascnt</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>

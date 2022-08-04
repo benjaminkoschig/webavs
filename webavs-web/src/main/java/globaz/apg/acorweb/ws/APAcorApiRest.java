@@ -1,6 +1,6 @@
 package globaz.apg.acorweb.ws;
 
-import acor.rentes.xsd.fcalcul.FCalcul;
+import acor.apg.xsd.apg.out.FCalcul;
 import globaz.apg.acorweb.service.APAcorService;
 import lombok.extern.slf4j.Slf4j;
 
