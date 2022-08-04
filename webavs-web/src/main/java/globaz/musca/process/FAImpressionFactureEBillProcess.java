@@ -863,7 +863,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
             CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                eBillHelper.findRemoveAndReturnAttachedDocuments(entete, getAttachedDocuments(), null, true);
+                eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), null, true);
                 nbImprimer--;
             }
 
@@ -964,7 +964,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
 
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                    List<JadePublishDocument> attachedDocuments = eBillHelper.findRemoveAndReturnAttachedDocuments(entete, getAttachedDocuments(), null, true);
+                    List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), null, true);
                     if (!attachedDocuments.isEmpty()) {
                         creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocuments, passage.getDateFacturation(), EBillTypeDocument.FACTURE);
                     }
@@ -991,7 +991,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 if (compteAnnexe != null && compteAnnexeReference != null
                         && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())
                         && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.getEBillAccountID())) {
-                    List<JadePublishDocument> attachedDocument = eBillHelper.findRemoveAndReturnAttachedDocuments(enteteReference, getAttachedDocuments(), null, true);
+                    List<JadePublishDocument> attachedDocument = eBillHelper.findReturnOrRemoveAttachedDocuments(enteteReference, getAttachedDocuments(), null, true);
                     if (attachedDocument != null) {
                         creerFichierEBill(compteAnnexe, entete, enteteReference, ligneBulletinDeSoldes.getKey().getMontant(), ligneBulletinDeSoldes.getValue(), reference, attachedDocument, passage.getDateFacturation(), EBillTypeDocument.BULLETIN_DE_SOLDES);
                     }

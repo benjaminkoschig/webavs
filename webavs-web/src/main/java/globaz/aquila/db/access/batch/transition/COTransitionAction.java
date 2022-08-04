@@ -68,6 +68,7 @@ public abstract class COTransitionAction {
     private boolean annulerEcritures = true;
     private JACalendar calendar = new JACalendarGregorian();
     private String dateExecution = "";
+    private Boolean eBillPrintable = Boolean.FALSE;
     protected Map<String, String> etapeInfos;
     protected Map<String, String> etapeInfosParLibelle;
     private List frais;
@@ -443,6 +444,7 @@ public abstract class COTransitionAction {
         contentieux.setIdEtape(getTransition().getIdEtapeSuivante());
         contentieux.setDateDeclenchement(contentieux.getProchaineDateDeclenchement());
         contentieux.setDateExecution(getDateExecution());
+        contentieux.setEBillPrintable(getEBillPrintable());
         contentieux.setProchaineDateDeclenchement(transition.calculerDateProchainDeclenchement(contentieux));
     }
 
@@ -476,6 +478,13 @@ public abstract class COTransitionAction {
         }
 
         return dateExecution;
+    }
+
+    /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
     }
 
     /**
@@ -715,6 +724,14 @@ public abstract class COTransitionAction {
      */
     public void setDateExecution(String string) {
         dateExecution = string;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            the eBillPrintable to set
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**
