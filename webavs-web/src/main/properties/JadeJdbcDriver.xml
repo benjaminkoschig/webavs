@@ -91,6 +91,26 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 
+		<datasource name="REDSEN" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
+			<driver>com.ibm.db2.jcc.DB2Driver</driver>
+			<url>jdbc:db2://sh51xedge1.intranet-heb.ch:50005/h51xano</url>
+			<user>h51xwrk</user>
+			<password>EdGe2022RedSen</password>
+			<maxConnections>100</maxConnections>
+			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+			<urlParameter name="prompt" value="false"/>
+		</datasource>
+
+		<datasource name="H51X_REDSEN" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2://sh51xedge1.intranet-heb.ch:50005/h51xint</url>
+		<user>h51xwrk</user>
+		<password>EdGe2022RedSen</password>
+		<maxConnections>100</maxConnections>
+		<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+		<urlParameter name="prompt" value="false"/>
+	</datasource>
+
 		<datasource name="CICICAM_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
 			<url>jdbc:db2://sglobdev1.ju.globaz.ch:52022/dev1prod</url>

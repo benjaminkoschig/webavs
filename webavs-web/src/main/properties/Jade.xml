@@ -2,7 +2,7 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\Workspaces_git\WebAVS\repos_webavs\webavs-web\src\main\webapp</homeDir>
+	<homeDir>D:\Workspaces\WebAVS\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
@@ -43,16 +43,20 @@
 	
 <!--  	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>   -->
 <!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
+
+<!--	<defaultJdbcUrl>jdbc:jade:H51X_REDSEN</defaultJdbcUrl>-->
+<!--	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema>-->
+
 <!-- BASES DE QUALITE -->
 
-<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl>-->
-<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema>-->
+ 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl>
+ 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema>
 	
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl>
- 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema>
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema> -->
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 
