@@ -2126,7 +2126,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     // Affichage de l'impôt à la source
-                    if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
                         impotSource = true;
                         if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
@@ -2147,7 +2146,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                         JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
 
                         totalImpotSource.add(totalMontantImpotSource.toString());
-                    }
 
 
                     if (isTraitementDesVentilations()) {
