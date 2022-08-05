@@ -2135,7 +2135,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
-                                            JANumberFormatter.formatNoRound(tauxImpotSource)));
+                                            JANumberFormatter.formatNoRound(tauxImpotSource)+"%"));
                         } else {
                             champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
                         }
