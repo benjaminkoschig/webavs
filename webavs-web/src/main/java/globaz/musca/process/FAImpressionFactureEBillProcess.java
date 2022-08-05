@@ -61,7 +61,6 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private Map<PaireIdExterneEBill, String> referencesBulletinDeSoldes = new LinkedHashMap();
     private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
     private EBillHelper eBillHelper = new EBillHelper();
-
     private boolean forcerImpressionPapier;
     private String typeFacture;
     private int facturePapier = 0;
@@ -353,16 +352,16 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      *
      * @param compteAnnexe      : le compte annexe
      * @param entete            : l'entête de la facture
-     * @param enteteReference   : l'entête de référence pour les bulletin de soldes (seulement rempli dans le cas d'un bulletin de soldes)
-     * @param montant           : contient le montant total de la factures
-     * @param lignes            : contient les lignes de factures et de bulletins de soldes
+     * @param enteteReference   : l'entête de référence pour les bulletins de soldes (seulement rempli dans le cas d'un bulletin de soldes)
+     * @param montantFacture    : contient le montant total de la factures
+     * @param lignes            : contient les lignes
      * @param reference         : la référence BVR ou QR.
      * @param attachedDocuments : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateImprOuFactu   : la date d'execution ou de facturation du document
      * @param typeDocument      : le type du document eBill
      * @throws Exception
      */
-    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montant, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, EBillTypeDocument typeDocument) throws Exception {
+    public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -376,7 +375,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.getEBillTransactionID());
 
         String dateEcheance = getDateEcheanceFromEntete(entete, dateImprOuFactu);
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, enteteReference, montant, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, enteteReference, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
 
         factureEBill++;
     }

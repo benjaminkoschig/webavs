@@ -408,7 +408,6 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      * en attente d'être envoyé dans le processus actuel.
      */
     private void traiterSursisEBillOsiris(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
-
         List<CASection> sectionsCouvertes = getSectionsCouvertes(documentBVR);
         if (!sectionsCouvertes.isEmpty()) {
 

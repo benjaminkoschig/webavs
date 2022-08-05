@@ -243,7 +243,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
      * @param montantFacture          : contient le montant total de la factures
-     * @param lignes                  : contient les lignes de bulletins de soldes
+     * @param lignes                  : contient les lignes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateImprOuFactu         : la date d'execution ou de facturation du document

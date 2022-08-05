@@ -66,7 +66,7 @@
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getDateExecution()%>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" style="text-align: right;" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getSoldeFormate()%>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" style="text-align: right;" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getTaxesFormatte()%>&nbsp;</TD>
-	<TD class="mtd" nowrap onClick="<%=actionDetail%>" <%=styleAndTitle%>>
+	<TD class="mtd" nowrap="nowrap" style="text-align: center;" onClick="<%=actionDetail%>" <%=styleAndTitle%>>
 		<% if (line.isEBillPrinted()) {%> <IMG src="<%= servletContext %>/images/eBill_black.png" title="TransactionID : <%=line.getEBillTransactionID()%>">
 		<%} else {%> &nbsp; <%}%>
 	</TD>
