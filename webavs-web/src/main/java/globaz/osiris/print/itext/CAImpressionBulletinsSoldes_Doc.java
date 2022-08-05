@@ -691,9 +691,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      *
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
-     * @param enteteReference         : l'entête de référence pour les bulletin de soldes (seulement rempli dans le cas d'un bulletin de soldes)
+     * @param enteteReference         : l'entête de référence pour les bulletins de soldes (seulement rempli dans le cas d'un bulletin de soldes)
      * @param montantFacture          : contient le montant total de la factures
-     * @param lignes                  : contient les lignes de bulletins de soldes
+     * @param lignes                  : contient les lignes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateImprOuFactu         : la date de facturation

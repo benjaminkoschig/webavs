@@ -543,23 +543,23 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
         InvoiceBillType.LineItems lineItems = of.createInvoiceBillTypeLineItems();
 
-        // Création des LineItems pour les bulletins de soldes
+        // Création des LineItems pour les Bulletins de Soldes
         if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
             lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(l)));
-        // Création des LineItems pour les sursis au paiement
+        // Création des LineItems pour les Sursis au Paiement
         } else if (eBillFacture.isSursis()) {
             lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0)));
-        // Création des LineItems pour les sommations
+        // Création des LineItems pour les Sommations
         } else if (eBillFacture.isSommation()) {
             // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
             lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemSommation(l)));
-        // Création des LineItems pour les Réclamations de frais et intérêt
+        // Création des LineItems pour les Réclamations de frais et intérêts
         } else if (eBillFacture.isReclamation()) {
             lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemReclamation(l)));
-            // Création des LineItems pour les décisions
+        // Création des LineItems pour les Décisions
         } else if (eBillFacture.isDecision()) {
             lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemDecision(l)));
-            // Création des LineItems pour les factures
+        // Création des LineItems pour les Factures qui ne sont d'aucun des autres type de document spécifique
         } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
             lignes.forEach(l -> lineItems.getLineItem().add(createLineItemFactures(l)));
         }
