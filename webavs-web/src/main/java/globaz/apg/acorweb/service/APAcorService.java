@@ -12,7 +12,7 @@ public class APAcorService {
         try {
             APExportationCalculAcor inHostService = new APExportationCalculAcor(idDroit, genreService);
             InHostType inHost = inHostService.createInHost();
-            inHost.setVersionSchema("6.0"); // TODO WS ACOR APG UTILE POUR APG OU NON?
+            inHost.setVersionSchema("7.0"); // TODO WS ACOR APG UTILE POUR APG OU NON?
             // TODO WS ACOR APG A cet endroit IJAcorService.createInHostCalcul lance une validation XSD après création de l'objet alors que REAcorService.createInHostJson ne fait pas de validation
             return inHost;
         } catch (Exception e) {

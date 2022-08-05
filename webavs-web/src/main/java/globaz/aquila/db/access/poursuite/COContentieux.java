@@ -106,6 +106,7 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     // ------------------------------------------------------------------------------------------------
     private String prochaineDateDeclenchement = "";
     private boolean prochaineDateDeclenchementChangee = false;
+    private Boolean eBillPrintable = false;
 
     private boolean refreshLinks = true;
 
@@ -1120,6 +1121,13 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     }
 
     /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @return La valeur courante de la propriété
      */
     public String getRemarque() {
@@ -1563,6 +1571,14 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
         }
 
         prochaineDateDeclenchement = string;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            the eBillPrintable to set
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

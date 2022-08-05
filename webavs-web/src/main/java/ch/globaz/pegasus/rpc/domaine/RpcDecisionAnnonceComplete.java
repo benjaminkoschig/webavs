@@ -7,6 +7,7 @@ import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.pca.PcaDecision;
 import ch.globaz.pegasus.business.domaine.pca.PcaGenre;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import globaz.jade.client.util.JadeDateUtil;
 
 /**
@@ -99,14 +100,19 @@ public class RpcDecisionAnnonceComplete {
         } else {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null && !personsElementsCalcul.hasMembreDeces()) {
+                // PLAT2-1396 - conjoint survivant -> COUPLE et non ALONE
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null && !personsElementsCalcul.hasMembreDeces() || isVeuf(personData)) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;
             }
         }
     }
-    
+
+    private boolean isVeuf(PersonElementsCalcul personData) {
+        return EtatCivil.VEUF.equals(personData.getSituationFamiliale());
+    }
+
     private boolean isHome(PersonElementsCalcul personData, PcaDecision pcaDecision) {
         return personData.getMembreFamille().getPersonne().getId().equals(pcaDecision.getPca().getBeneficiaire().getId())
                 && pcaDecision.getPca().getGenre().isHome();

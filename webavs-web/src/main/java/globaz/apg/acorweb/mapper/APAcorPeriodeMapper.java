@@ -1,6 +1,6 @@
 package globaz.apg.acorweb.mapper;
 
-import ch.admin.zas.xmlns.in_apg._0.PeriodeAPG;
+import acor.xsd.in.apg.PeriodeAPG;
 import ch.globaz.common.util.Dates;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.module.calcul.APBaseCalcul;
