@@ -23,6 +23,7 @@ public class PYExecuteService extends BProcess {
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
             AdresseComplexModel homeAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation
             if (homeAddress != null && !homeAddress.isNew()) {
                 PRTiersHelper.addTiersPaymentAddress(getSession(), homeAddress, dto);
             }

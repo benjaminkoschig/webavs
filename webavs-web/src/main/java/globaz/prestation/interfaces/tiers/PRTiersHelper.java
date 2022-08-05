@@ -433,7 +433,7 @@ public class PRTiersHelper {
 
     /**
      * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de paiement)
-     * TODO: C'est just récupèré et vaguement adapté depuis APImportationAPGPandemie, ça semble ne pas utiliser autre chose que l'iban (accountNumber... j'imagine ???)
+     * TODO: C'est juste récupèré et vaguement adapté depuis APImportationAPGPandemie, ça semble ne pas utiliser autre chose que l'iban (accountNumber... j'imagine ???)
      * TODO: Il faut donc étudier ce qu'il se passe ici... et ce qui est supposé se passer
      *
      * @param session
@@ -449,13 +449,13 @@ public class PRTiersHelper {
         if (!Objects.isNull(dto.getAccountNumber())) {
             String iban = unformatIban(dto.getAccountNumber());
             if(checkIban(iban)) {
-                adressePaiement.setIdTiersBanque(retrieveBanque(iban).getTiersBanque().getId());
+                adressePaiement.setIdTiersBanque(retrieveBanque(iban, dto.getBranchOfficePostalCode()).getTiersBanque().getId());
                 adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
                 adressePaiement.setNumCompteBancaire(dto.getAccountNumber());
                 adressePaiement.setNumCcp(dto.getCcpNumber()); // TODO: check what happens
                 // TODO: what do we do with dto.getStatus() ?
                 // TODO: what do we do with dto.getClearing() ? => Useless since it's already in accountNumber
-                // TODO: what do we do with dto.getPostalCodeBranchOffice()
+                // TODO: what do we do with dto.getBranchOfficePostalCode()
                 //adressePaiement.setIdMonnaie(dto.getCurrency()); // TODO: it's not really used anyway... do we keep it ?
                 adressePaiement.setIdPays(dto.getBankCountry());
                 adressePaiement.setSession(session);
@@ -487,11 +487,12 @@ public class PRTiersHelper {
         return  ibanFormatter.unformat(iban);
     }
 
-    private static BanqueComplexModel retrieveBanque(String iban) throws JadeApplicationException, JadePersistenceException {
+    private static BanqueComplexModel retrieveBanque(String iban, String npa) throws JadeApplicationException, JadePersistenceException {
         BanqueComplexModel banque = new BanqueComplexModel();
         String noClearing = iban.substring(4, 9);
 
         BanqueSearchComplexModel banqueSearchModel = new BanqueSearchComplexModel();
+        banqueSearchModel.setForNpaLike(npa);
         banqueSearchModel.setForClearing(noClearing);
         banqueSearchModel.setDefinedSearchSize(1);
         banqueSearchModel = TIBusinessServiceLocator.getBanqueService().find(banqueSearchModel);
