@@ -1,10 +1,12 @@
 package globaz.apg.acorweb.mapper;
 
 import acor.xsd.in.apg.BasesCalculAPG;
+import acor.xsd.in.apg.BasesCalculCommunes;
 import acor.xsd.in.apg.GarantieIJ;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSituationFamilialeAPG;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.module.calcul.APBaseCalcul;
@@ -29,30 +31,11 @@ public class APAcorBaseCalculMapper {
         BasesCalculAPG basesCalcul = new BasesCalculAPG();
 
         basesCalcul.setGenreCarte(1);
-        if(droit.getIsSoumisImpotSource()) {
-            basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
-            try {
-                basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
-            }catch(NullPointerException | NumberFormatException e){
-                basesCalcul.setTauxImpot(0.00);
-            }
-        }
+        mapImpotSourceInformation(basesCalcul, droit);
 //        basesCalcul.setAFac();
 //        basesCalcul.setExemptionCotisation();
-        if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
-            GarantieIJ garantie = new GarantieIJ();
-            garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
-            garantie.setSource(Integer.parseInt(session.getCode(droit.getCsProvenanceDroitAcquis())));
-//  TODO            garantie.setNumeroReference(); --> obligatoire !
-            basesCalcul.setGarantieIJ(garantie);
-        }
-        try {
-            basesCalcul.setLimiteTransfert(Double.valueOf(session.getApplication().getProperty(
-                    APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE)));
-        } catch (Exception e) {
-            LOG.error("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE, e);
-            throw new CommonTechnicalException("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE , e);
-        }
+        mapDroitAcquisInformation(session, basesCalcul, droit);
+        mapLimiteTransferInformation(session, basesCalcul);
 
         basesCalcul.setGenreService(Integer.parseInt(session.getCode(droit.getGenreService())));
 
@@ -77,6 +60,37 @@ public class APAcorBaseCalculMapper {
         }
 
         return basesCalcul;
+    }
+
+    public static void mapLimiteTransferInformation(BSession session, BasesCalculCommunes basesCalcul) {
+        try {
+            basesCalcul.setLimiteTransfert(Double.valueOf(session.getApplication().getProperty(
+                    APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE)));
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE, e);
+            throw new CommonTechnicalException("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE , e);
+        }
+    }
+
+    public static void mapDroitAcquisInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
+        if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
+            GarantieIJ garantie = new GarantieIJ();
+            garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
+            garantie.setSource(Integer.parseInt(session.getCode(droit.getCsProvenanceDroitAcquis())));
+//  TODO            garantie.setNumeroReference(); --> obligatoire !
+            basesCalcul.setGarantieIJ(garantie);
+        }
+    }
+
+    public static void mapImpotSourceInformation(BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
+        if(droit.getIsSoumisImpotSource()) {
+            basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
+            try {
+                basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
+            }catch(NullPointerException | NumberFormatException e){
+                basesCalcul.setTauxImpot(0.00);
+            }
+        }
     }
 
     private List<APBaseCalcul> loadBasesCalcul(BSession session) {
