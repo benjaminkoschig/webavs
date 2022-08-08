@@ -1301,10 +1301,10 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
             }
 
             BSession session = BSessionUtil.getSessionFromThreadContext();
-            String SALBMINMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINMO", dateDebutValidite, "", 0));
-            String SALBMINAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINAN", dateDebutValidite, "", 0));
-            String REVENMAXMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVENMAXMO", dateDebutValidite, "", 0));
-            String REVEFMAXAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVEFMAXAN", dateDebutValidite, "", 0));
+            String SALBMINMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINMO", dateDebutValidite, "", 3));
+            String SALBMINAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "SALBMINAN", dateDebutValidite, "", 3));
+            String REVENMAXMO = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVENMAXMO", dateDebutValidite, "", 3));
+            String REVEFMAXAN = JANumberFormatter.formatNoRound(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "REVEFMAXAN", dateDebutValidite, "", 3));
 
             String paragraphe4 = this.getText("al.decision.standard.paragraphe4", langueDocument);
             paragraphe4 = paragraphe4.replace("{SALBMINMO}", SALBMINMO);
