@@ -240,6 +240,7 @@ calculerMontantRestitutionAjax = function (valeurDateSuppression){
 		viewBean.getDemande().getSimpleDemande().setIsPurRetro(
 				!SimpleDemandeChecker.isPossibleToCreateNewDeamande(viewBean.getDemande().getSimpleDemande().getIdDossier()));
 		viewBean.setIsOnlyRetro(viewBean.getDemande().getSimpleDemande().getIsPurRetro());
+		viewBean.setDemandePurRetro(viewBean.getDemande().getSimpleDemande().getIsPurRetro());
 	} else {
 		viewBean.setIsOnlyRetro(true);
 	}
