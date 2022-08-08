@@ -593,8 +593,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
-        // lineItem.setAccountAssignment(createAccountAssignment());
-
         return lineItem;
     }
 
@@ -617,8 +615,6 @@ public class FAImpressionFactureEBillXml {
         BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
-
-        // lineItem.setAccountAssignment(createAccountAssignment());
 
         return lineItem;
     }
@@ -643,8 +639,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
-        // lineItem.setAccountAssignment(createAccountAssignment());
-
         return lineItem;
     }
 
@@ -667,8 +661,6 @@ public class FAImpressionFactureEBillXml {
         BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
-
-        // lineItem.setAccountAssignment(createAccountAssignment());
 
         return lineItem;
     }
@@ -693,8 +685,6 @@ public class FAImpressionFactureEBillXml {
         lineItem.setAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
         lineItem.setAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
 
-        // lineItem.setAccountAssignment(createAccountAssignment());
-
         return lineItem;
     }
 
@@ -717,8 +707,6 @@ public class FAImpressionFactureEBillXml {
         BigDecimal montant = ligne.get("COL_4") != null ? BigDecimal.valueOf((Double) ligne.get("COL_4")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
-
-        // lineItem.setAccountAssignment(createAccountAssignment());
 
         return lineItem;
     }
