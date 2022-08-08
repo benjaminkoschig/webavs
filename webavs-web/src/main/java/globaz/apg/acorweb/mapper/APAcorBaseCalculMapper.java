@@ -29,14 +29,20 @@ public class APAcorBaseCalculMapper {
         BasesCalculAPG basesCalcul = new BasesCalculAPG();
 
         basesCalcul.setGenreCarte(1);
-        basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
-//        basesCalcul.setTauxImpot();
+        if(droit.getIsSoumisImpotSource()) {
+            basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
+            try {
+                basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
+            }catch(NullPointerException | NumberFormatException e){
+                basesCalcul.setTauxImpot(0.00);
+            }
+        }
 //        basesCalcul.setAFac();
 //        basesCalcul.setExemptionCotisation();
         if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
             GarantieIJ garantie = new GarantieIJ();
-            garantie.setMontant(Double.valueOf(droit.getDroitAcquis()));
-            garantie.setSource(Integer.valueOf(session.getCode(droit.getCsProvenanceDroitAcquis())));
+            garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
+            garantie.setSource(Integer.parseInt(session.getCode(droit.getCsProvenanceDroitAcquis())));
 //  TODO            garantie.setNumeroReference(); --> obligatoire !
             basesCalcul.setGarantieIJ(garantie);
         }
@@ -48,7 +54,7 @@ public class APAcorBaseCalculMapper {
             throw new CommonTechnicalException("Impossible de récupérer la propriété "+APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE , e);
         }
 
-        basesCalcul.setGenreService(Integer.valueOf(session.getCode(droit.getGenreService())));
+        basesCalcul.setGenreService(Integer.parseInt(session.getCode(droit.getGenreService())));
 
         if(!JadeStringUtil.isEmpty(droit.getNoCompte())) {
             basesCalcul.setNumeroReference(Integer.valueOf(droit.getNoCompte()));
