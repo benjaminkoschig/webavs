@@ -346,5 +346,6 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     public void setDemandePurRetro(boolean demandePurRetro) {
         demande.getSimpleDemande().setIsPurRetro(demandePurRetro);
+        this.isDemandePurRetro = demandePurRetro;
     }
 }
