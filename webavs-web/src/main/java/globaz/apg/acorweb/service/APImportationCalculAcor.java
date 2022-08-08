@@ -51,11 +51,11 @@ public class APImportationCalculAcor {
         APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(session, session.getCurrentThreadTransaction(),
                 idDroit);
         checkAndGetNssIntegrite(fCalcul, droit);
-        final List<APBaseCalcul> basesCalcul = getBasesCalcul(session, droit);
+        final List<APBaseCalcul> basesCalcul = retrieveBasesCalcul(session, droit);
         Collection<APPrestationWrapper> pw = createWrappers(session, createPrestationAcor(session, fCalcul, droit, basesCalcul), droit, basesCalcul);
         updateWrappersTauxParticipation(session, fCalcul, pw);
         final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-        calculateur.reprendreDepuisACOR(session, pw, droit, getFraisDeGarde(droit), basesCalcul);
+        calculateur.reprendreDepuisACOR(session, pw, droit, retrieveFraisDeGarde(droit), basesCalcul);
     }
 
     private List<APPrestationAcor> createPrestationAcor(BSession session, FCalcul fCalcul, APDroitLAPG droit,  List<APBaseCalcul> basesCalcul) throws Exception {
@@ -69,15 +69,15 @@ public class APImportationCalculAcor {
             if(fCalcul.getFraisGarde() != null) {
                 prestation.setFraisDegarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
             }else{
-                getFraisDeGarde(droit);
+                retrieveFraisDeGarde(droit);
             }
             prestation.setMoisComptable(Dates.toDate(JADate.newDateFromAMJ(String.valueOf(versementMoisComptable.getMoisComptable()))));
             prestation.setIdAssure(assure.getId());
             prestation.setGenre(genreService);
-            getInformationFromPeriodeServiceApg(session, fCalcul, genreService, versementMoisComptable, prestation);
-            getInformationFromMontantJournalierApg(fCalcul, prestation);
+            retrieveInformationFromPeriodeServiceApg(session, fCalcul, genreService, versementMoisComptable, prestation);
+            retrieveInformationFromMontantJournalierApg(fCalcul, prestation);
 
-            APBaseCalcul baseCalcul = getInformationFromBaseCalcul(session, basesCalcul, prestation);
+            APBaseCalcul baseCalcul = retrieveInformationFromBaseCalcul(session, basesCalcul, prestation);
             List<APRepartitionPaiementAcor> repartitionPaiement = createRepartitionPaiementsDecomptes(session, baseCalcul, fCalcul, versementMoisComptable);
             for (APRepartitionPaiementAcor repartitionPaiementAcor:
                     repartitionPaiement) {
@@ -88,7 +88,7 @@ public class APImportationCalculAcor {
         return prestations;
     }
 
-    private APBaseCalcul getInformationFromBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, APPrestationAcor prestation) throws PRACORException {
+    private APBaseCalcul retrieveInformationFromBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, APPrestationAcor prestation) throws PRACORException {
         APBaseCalcul baseCalcul = findBaseCalcul(session, basesCalcul, Dates.toJADate(prestation.getDateDebut()),
                 Dates.toJADate(prestation.getDateFin()));
         if(baseCalcul != null) {
@@ -99,7 +99,7 @@ public class APImportationCalculAcor {
         return baseCalcul;
     }
 
-    private void getInformationFromMontantJournalierApg(FCalcul fCalcul, APPrestationAcor prestation) {
+    private void retrieveInformationFromMontantJournalierApg(FCalcul fCalcul, APPrestationAcor prestation) {
         PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().get(0);
         if(periodeMontantJournApgType != null){
             prestation.setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJournBaseEnfants()));
@@ -109,7 +109,7 @@ public class APImportationCalculAcor {
         }
     }
 
-    private void getInformationFromPeriodeServiceApg(BSession session, FCalcul fCalcul, String genreService, VersementMoisComptableApgType versementMoisComptable, APPrestationAcor prestation) throws Exception {
+    private void retrieveInformationFromPeriodeServiceApg(BSession session, FCalcul fCalcul, String genreService, VersementMoisComptableApgType versementMoisComptable, APPrestationAcor prestation) throws Exception {
         Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg().getPeriodeService().stream().filter(p -> {
             try {
                 return checkPeriodesDansLeMemeMois(p.getDebut(), versementMoisComptable.getMoisComptable());
@@ -122,7 +122,7 @@ public class APImportationCalculAcor {
             if(periodeServiceApgType.getPartAssure() != null) {
                 prestation.setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
             }
-            IAPReferenceDataPrestation ref = getReferenceData(session,periodeServiceApgType, genreService);
+            IAPReferenceDataPrestation ref = retrieveReferenceData(session,periodeServiceApgType, genreService);
             prestation.setRevision(ref.getNoRevision());
             prestation.setFraisDegardeMax(ref.getMontantMaxFraisGarde());
             prestation.setDateDebut(Dates.toDate(JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()))));
@@ -162,7 +162,7 @@ public class APImportationCalculAcor {
         return null;
     }
 
-    private IAPReferenceDataPrestation getReferenceData(BSession session, PeriodeServiceApgType periode, String genreService) throws Exception {
+    private IAPReferenceDataPrestation retrieveReferenceData(BSession session, PeriodeServiceApgType periode, String genreService) throws Exception {
         IAPReferenceDataPrestation ref;
 
         if (session.getCode(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE).equals(genreService)) {
@@ -229,15 +229,15 @@ public class APImportationCalculAcor {
             rc.setNombreJoursSupplementaires(prestation.getNombreJoursSupplementaires());
             rc.setRevenuDeterminantMoyen(prestation.getRevenuDeterminantMoyen());
             prestationWrapper.setPrestationBase(rc);
-            setResultatCalculSituationProfessionnelWithAPPrestationAcor(prestation, rc);
-            setResultatCalculSituationProfessionnelWithBaseCalcul(session, basesCalcul, prestation, rc);
+            mapResultatCalculSituationProfessionnelWithAPPrestationAcor(prestation, rc);
+            mapResultatCalculSituationProfessionnelWithBaseCalcul(session, basesCalcul, prestation, rc);
             prestationWrapper.setPrestationBase(rc);
             wrappers.add(prestationWrapper);
         }
         return wrappers;
     }
 
-    private void setResultatCalculSituationProfessionnelWithBaseCalcul(BSession session, List basesCalcul, APPrestationAcor prestation, APResultatCalcul rc) throws PRACORException {
+    private void mapResultatCalculSituationProfessionnelWithBaseCalcul(BSession session, List basesCalcul, APPrestationAcor prestation, APResultatCalcul rc) throws PRACORException {
         APBaseCalcul baseCalcul = findBaseCalcul(session, basesCalcul, Dates.toJADate(prestation.getDateDebut()),
                 Dates.toJADate(prestation.getDateFin()));
         if(baseCalcul != null) {
@@ -317,7 +317,7 @@ public class APImportationCalculAcor {
         }
     }
 
-    private void setResultatCalculSituationProfessionnelWithAPPrestationAcor(APPrestationAcor prestation, APResultatCalcul rc) {
+    private void mapResultatCalculSituationProfessionnelWithAPPrestationAcor(APPrestationAcor prestation, APResultatCalcul rc) {
         for (APRepartitionPaiementAcor repartitionPaiement:
              prestation.getRepartitionPaiements()) {
             APResultatCalculSituationProfessionnel rcSitPro = new APResultatCalculSituationProfessionnel();
@@ -413,12 +413,12 @@ public class APImportationCalculAcor {
         return datePeriode1.getMonth().equals(datePeriode2.getMonth());
     }
 
-    private FWCurrency getFraisDeGarde(final APDroitLAPG droit) throws Exception {
+    private FWCurrency retrieveFraisDeGarde(final APDroitLAPG droit) throws Exception {
         APDroitAPG droitAPG = entityService.load(APDroitAPG.class, droit.getIdDroit());
         return new FWCurrency(droitAPG.loadSituationFamilliale().getFraisGarde());
     }
 
-    private List<APBaseCalcul> getBasesCalcul(final BSession session, final APDroitLAPG droit) throws Exception {
+    private List<APBaseCalcul> retrieveBasesCalcul(final BSession session, final APDroitLAPG droit) throws Exception {
         return APBasesCalculBuilder.of(session, droit).createBasesCalcul();
     }
 

@@ -31,11 +31,11 @@ public class APAcorBaseCalculMapper {
         BasesCalculAPG basesCalcul = new BasesCalculAPG();
 
         basesCalcul.setGenreCarte(1);
-        setImpotSourceInformation(basesCalcul, droit);
+        mapImpotSourceInformation(basesCalcul, droit);
 //        basesCalcul.setAFac();
 //        basesCalcul.setExemptionCotisation();
-        setDroitAcquisInformation(session, basesCalcul, droit);
-        setLimiteTransferInformation(session, basesCalcul);
+        mapDroitAcquisInformation(session, basesCalcul, droit);
+        mapLimiteTransferInformation(session, basesCalcul);
 
         basesCalcul.setGenreService(Integer.parseInt(session.getCode(droit.getGenreService())));
 
@@ -62,7 +62,7 @@ public class APAcorBaseCalculMapper {
         return basesCalcul;
     }
 
-    public static void setLimiteTransferInformation(BSession session, BasesCalculCommunes basesCalcul) {
+    public static void mapLimiteTransferInformation(BSession session, BasesCalculCommunes basesCalcul) {
         try {
             basesCalcul.setLimiteTransfert(Double.valueOf(session.getApplication().getProperty(
                     APApplication.PROPERTY_MONTANT_MINIMUM_PAYE_ASSURE)));
@@ -72,7 +72,7 @@ public class APAcorBaseCalculMapper {
         }
     }
 
-    public static void setDroitAcquisInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
+    public static void mapDroitAcquisInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
             GarantieIJ garantie = new GarantieIJ();
             garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
@@ -82,7 +82,7 @@ public class APAcorBaseCalculMapper {
         }
     }
 
-    public static void setImpotSourceInformation(BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
+    public static void mapImpotSourceInformation(BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(droit.getIsSoumisImpotSource()) {
             basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
             try {
