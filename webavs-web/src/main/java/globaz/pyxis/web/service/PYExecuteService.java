@@ -1,6 +1,5 @@
 package globaz.pyxis.web.service;
 
-import ch.globaz.pyxis.business.model.AdresseComplexModel;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -22,10 +21,10 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
-            AdresseComplexModel homeAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            String idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
             // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation
-            if (homeAddress != null && !homeAddress.isNew()) {
-                PRTiersHelper.addTiersPaymentAddress(getSession(), homeAddress, dto);
+            if (idMailAddress != null) {
+                PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
             }
         }
         catch (PYBadRequestException e) {

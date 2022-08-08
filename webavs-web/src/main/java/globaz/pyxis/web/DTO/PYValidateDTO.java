@@ -4,6 +4,7 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.CodesSysPays;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
+import ch.globaz.pyxis.domaine.StatusPaymentAddress;
 import ch.globaz.pyxis.domaine.Titre;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -110,6 +111,9 @@ public class PYValidateDTO {
 
         if (dto.getCcpNumber() != null) {
             checkCCP(dto.getCcpNumber());
+        }
+        if (dto.getStatus() != null) {
+            checkStatusPaymentAddress(dto.getStatus());
         }
     }
 
@@ -274,6 +278,20 @@ public class PYValidateDTO {
         } catch (IllegalArgumentException e) {
             System.err.println("Erreur lors de l'assignation de l'état civil du tiers.");
             throw new PYBadRequestException("Erreur lors de l'assignation de l'état civil du tiers.", e);
+        }
+    }
+
+    /**
+     * Méthode pour vérifier que status est un code système valide
+     *
+     * @param status
+     */
+    private static final void checkStatusPaymentAddress(String status) {
+        try {
+            StatusPaymentAddress.parse(status); // If this goes through without error, status has a valid value
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erreur dans le statut de l'addresse de paiement.");
+            throw new PYBadRequestException("Erreur dans le statut de l'addresse de paiement.", e);
         }
     }
 

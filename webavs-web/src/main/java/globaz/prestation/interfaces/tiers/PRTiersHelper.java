@@ -379,8 +379,9 @@ public class PRTiersHelper {
      * @param session
      * @param dto
      * @throws Exception
+     * @return l'id de l'adresse de courrier créée
      */
-    public static final AdresseComplexModel addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
+    public static final String addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
 
         AdresseSimpleModel adresseSimpleModel = new AdresseSimpleModel();
@@ -428,35 +429,31 @@ public class PRTiersHelper {
             throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
         }
 
-        return homeAddress;
+        return homeAddress.getAdresse().getId();
     }
 
     /**
      * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de paiement)
-     * TODO: C'est juste récupèré et vaguement adapté depuis APImportationAPGPandemie, ça semble ne pas utiliser autre chose que l'iban (accountNumber... j'imagine ???)
-     * TODO: Il faut donc étudier ce qu'il se passe ici... et ce qui est supposé se passer
      *
      * @param session
-     * @param adresseComplexModel
+     * @param idMailAddress
      * @param dto
      * @throws Exception
      */
-    public static void addTiersPaymentAddress(BSession session, AdresseComplexModel adresseComplexModel, PYTiersDTO dto) throws Exception {
+    public static void addTiersPaymentAddress(BSession session, String idMailAddress, PYTiersDTO dto) throws Exception {
+        TIIbanFormater ibanFormatter = new TIIbanFormater();
+
         TIAdressePaiement adressePaiement = new TIAdressePaiement();
         adressePaiement.setIdTiersAdresse(dto.getId());
-        adressePaiement.setIdAdresse(adresseComplexModel.getAdresse().getId());
+        adressePaiement.setIdAdresse(idMailAddress);
 
         if (!Objects.isNull(dto.getAccountNumber())) {
-            String iban = unformatIban(dto.getAccountNumber());
+            String iban = ibanFormatter.unformat(dto.getAccountNumber());
             if(checkIban(iban)) {
-                adressePaiement.setIdTiersBanque(retrieveBanque(iban, dto.getBranchOfficePostalCode()).getTiersBanque().getId());
-                adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
+                adressePaiement.setIdTiersBanque(retrieveBankId(iban, dto.getBranchOfficePostalCode()));
                 adressePaiement.setNumCompteBancaire(dto.getAccountNumber());
-                adressePaiement.setNumCcp(dto.getCcpNumber()); // TODO: check what happens
-                // TODO: what do we do with dto.getStatus() ?
-                // TODO: what do we do with dto.getClearing() ? => Useless since it's already in accountNumber
-                // TODO: what do we do with dto.getBranchOfficePostalCode()
-                //adressePaiement.setIdMonnaie(dto.getCurrency()); // TODO: it's not really used anyway... do we keep it ?
+                adressePaiement.setNumCcp(dto.getCcpNumber());
+                adressePaiement.setCode(dto.getStatus());
                 adressePaiement.setIdPays(dto.getBankCountry());
                 adressePaiement.setSession(session);
                 adressePaiement.add();
@@ -464,7 +461,6 @@ public class PRTiersHelper {
                 TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
                 avoirPaiement.setIdApplication(CS_DOMAINE_DEFAUT);
                 avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
-                avoirPaiement.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue()); // TODO: Do we keep this ?
                 avoirPaiement.setIdTiers(dto.getId());
                 avoirPaiement.setSession(session);
                 avoirPaiement.add();
@@ -482,12 +478,16 @@ public class PRTiersHelper {
         }
     }
 
-    private static String unformatIban(String iban) {
-        TIIbanFormater ibanFormatter = new TIIbanFormater();
-        return  ibanFormatter.unformat(iban);
-    }
-
-    private static BanqueComplexModel retrieveBanque(String iban, String npa) throws JadeApplicationException, JadePersistenceException {
+    /**
+     * Méthode permettant d'aller chercher chez quelle banque un compte se trouve, en fonction de l'IBAN du compte et du NPA de la banque
+     *
+     * @param iban
+     * @param npa
+     * @return l'id de la première banque trouvée
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private static String retrieveBankId(String iban, String npa) throws JadeApplicationException, JadePersistenceException {
         BanqueComplexModel banque = new BanqueComplexModel();
         String noClearing = iban.substring(4, 9);
 
@@ -500,7 +500,7 @@ public class PRTiersHelper {
         if (banqueSearchModel.getSize() == 1) {
             banque = (BanqueComplexModel) banqueSearchModel.getSearchResults()[0];
         }
-        return banque;
+        return banque.getTiersBanque().getId();
     }
 
     /**
@@ -514,7 +514,7 @@ public class PRTiersHelper {
         chIban = ibanFormatter.format(chIban);
 
         try {
-            ibanFormatter.check(chIban); // Honestly that method should return a boolean or void, it doesn't do anything to chIban, it checks if it's valid and throws errors if not.
+            ibanFormatter.check(chIban);
         } catch (Exception e) {
             throw new PYBadRequestException("Erreur lors du traitement du numéro de compte: " + e);
         }
