@@ -2051,6 +2051,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
                             totalMontantImpotSource.add((apCot.getMontant()));
                             tauxImpotSource = apCot.getTaux();
+                            impotSource = true;
                             tauxImposition = tauxImpotSource;
                             impotDateDebut = apCot.getDateDebut();
                             impotDateFin = apCot.getDateFin();
@@ -2126,16 +2127,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     // Affichage de l'impôt à la source
-                    if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
-                        impotSource = true;
+                    if (impotSource) {
                         if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
-                                ||  IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
-                                ||  IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()))) {
+                                || IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
+                                || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()))) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
-                                            JANumberFormatter.formatNoRound(tauxImpotSource)));
+                                            JANumberFormatter.formatNoRound(tauxImpotSource)+"%"));
                         } else {
                             champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
                         }
@@ -2148,7 +2148,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                         totalImpotSource.add(totalMontantImpotSource.toString());
                     }
-
 
                     if (isTraitementDesVentilations()) {
                         total.add(repartition.getMontantVentile());
