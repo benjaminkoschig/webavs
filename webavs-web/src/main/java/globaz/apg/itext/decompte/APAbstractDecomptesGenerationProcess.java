@@ -2131,7 +2131,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
-                                || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()))) {
+                                || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())
+                                || IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()))) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
