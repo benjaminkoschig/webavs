@@ -10,7 +10,6 @@ import ch.globaz.common.document.reference.ReferenceBVR;
 import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
-import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -30,6 +29,7 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.process.ebill.EBillHelper;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
+import globaz.osiris.process.ebill.EBillTypeDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,16 +170,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
     @Override
     public void afterExecuteReport() {
         try {
-            if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
-                    || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
-                    .equals(CODocumentManager.AVEC_VERSO)) {
-                this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
-            } else {
-                this.mergePDF(getDocumentInfo(), true, 500, false, null);
-            }
-
             if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
 
+                // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
                 boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
 
                 // On imprime eBill si :
@@ -202,6 +195,15 @@ public class CO00CSommationPaiement extends CODocumentManager {
                     }
                 }
             }
+
+            if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
+                    || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
+                    .equals(CODocumentManager.AVEC_VERSO)) {
+                this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
+            } else {
+                this.mergePDF(getDocumentInfo(), true, 500, false, null);
+            }
+
         } catch (Exception e) {
             this._addError(e.toString());
         }
@@ -220,9 +222,10 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
                 String reference = referencesSommation.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName(), false);
+
                 if (!attachedDocuments.isEmpty()) {
-                    creerFichierEBillAquila(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateDelaiPaiement(), curContentieux.getSection());
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.SOMMATION);
                 }
             }
         }
@@ -233,23 +236,22 @@ public class CO00CSommationPaiement extends CODocumentManager {
         getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
 
-
-
     /**
      * Méthode permettant de créer la sommation eBill,
      * de générer et remplir le fichier puis de l'envoyer sur le ftp.
      *
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
-     * @param montantFacture          : contient le montant total de la factures (seulement rempli dans le cas d'un bulletin de soldes ou d'un sursis au paiement)
-     * @param lignes                  : contient les lignes de bulletins de soldes
+     * @param montantFacture          : contient le montant total de la factures
+     * @param lignes                  : contient les lignes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateFacturation         : la date de facturation
+     * @param dateImprOuFactu         : la date d'execution ou de facturation du document
      * @param section                 : la section
+     * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBillAquila(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateFacturation, CASection section) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -261,22 +263,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
 
         // Met à jour l'historique eBill du contentieux
-        updateHistoriqueEBillPrintedEtTransactionID(entete.getEBillTransactionID());
+        eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
 
-        String dateEcheance = dateFacturation;
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateFacturation, dateEcheance, null, getSession(), null);
+        String dateEcheance = getDateDelaiPaiement();
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
 
         factureEBill++;
-    }
-
-    private void updateHistoriqueEBillPrintedEtTransactionID(String transactionId) throws Exception {
-        COHistorique dernierHistorique = curContentieux.loadHistorique();
-        if (dernierHistorique.getIdEtape().equals(curContentieux.getIdEtape())
-                && dernierHistorique.getIdContentieux().equals(curContentieux.getIdContentieux())
-                && dernierHistorique.getIdSequence().equals(curContentieux.getIdSequence())) {
-            dernierHistorique.setEBillTransactionID(transactionId);
-            dernierHistorique.setEBillPrinted(true);
-        }
     }
 
     @Override
@@ -355,9 +347,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
             // Génération du document QR
             qrFacture.initQR(this, qrFactures);
+            referencesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), qrFacture.getReference());
         } else {
             // -- BVR
             initBVR(montantTotal);
+            referencesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), getBvr().getRefNoSpace());
         }
 
     }
@@ -515,6 +509,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // ajout des taxes si necessaire
         FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
 
+        // Ajoute des lignes de détail sur les sommations
         for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext(); ) {
             COTaxe taxe = (COTaxe) taxesIter.next();
 
@@ -527,12 +522,19 @@ public class CO00CSommationPaiement extends CODocumentManager {
             lignes.add(fields);
         }
 
+        // Ajoute une ligne de TOTAL sur les sommations après les lignes de détail
         if (montantTotal != null) {
             fields = new HashMap<>();
             fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
             fields.put(COParameter.F3, formatMontant(montantTotal.toString()));
             fields.put(COParameter.F4, getCatalogueTextesUtil().texte(key, 3, 3));
             lignes.add(fields);
+        }
+
+        // Prepare la map des lignes de sommations eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
+        boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+        if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+            lignesSommation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) lignes);
         }
 
         this.setDataSource(lignes);

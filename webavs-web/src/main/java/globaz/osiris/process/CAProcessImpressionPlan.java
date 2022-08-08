@@ -17,11 +17,15 @@ import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
+import globaz.osiris.process.ebill.EBillHelper;
 import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.globaz.common.properties.PropertiesException;
 
@@ -43,6 +47,7 @@ public class CAProcessImpressionPlan extends BProcess {
     private Boolean impAvecBVR = new Boolean(false);
     private String modele = "";
     private String observation = "";
+    private EBillHelper eBillHelper = new EBillHelper();
 
     /**
      * Constructor for CAProcessImpressionPlan.
@@ -127,7 +132,7 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.addAllEntities(echeances);
         documentBVR.setPlanRecouvrement(plan);
         documentBVR.setCumulSolde(echeancier.getCumulSolde());
-        documentBVR.setDecisionFusionee((JadePublishDocument) getAttachedDocuments().get(3)); // TODO ESVE EBILL TROUVER METHODE DE RECHERCHE PLUS FIABLE
+        rechercheDecisionFusionneePourEBill(plan).ifPresent(decisionAvecPlusGrandNombreDePages -> documentBVR.setDecisionFusionee(decisionAvecPlusGrandNombreDePages));
         documentBVR.setImpressionParLot(true);
         documentBVR.setTailleLot(500);
 
@@ -136,6 +141,24 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.executeProcess();
 
         return documentBVR;
+    }
+
+    private Optional<JadePublishDocument> rechercheDecisionFusionneePourEBill(CAPlanRecouvrement plan) {
+        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
+
+        // Recherche la décision fusionnee dans les attachedDocuments si :
+        //  - eBillOsiris est actif
+        //  - le compte annexe possède un eBillAccountID
+        //  - eBillPrintable est sélectioné sur le plan
+        if (eBillOsirisActif && plan.getEBillPrintable()) {
+            if (plan.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(plan.getCompteAnnexe().getEBillAccountID())) {
+                List<JadePublishDocument> decisions = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvDecision.class.getSimpleName(), false);
+                List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(y -> y.getPublishJobDefinition().getDocumentInfo().getChildren().size())).collect(Collectors.toList());
+                return decisionsSorted.stream().findFirst();
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**

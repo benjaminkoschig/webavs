@@ -57,7 +57,7 @@ public class ReferenceEBill extends AbstractReference {
 
     private static final String CODE_PAYS_DEFAUT = "CH";
 
-    private String typeDocument;
+    private String subTypeDocument;
 
     private String paymentType;
 
@@ -78,6 +78,9 @@ public class ReferenceEBill extends AbstractReference {
     private String creNumMaisonAdresse;
 
     private boolean isSursis;
+    private boolean isSommation;
+    private boolean isReclamation;
+    private boolean isDecision;
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
     private boolean isBulletinsDeSoldesAvecFactureEBill;
@@ -89,20 +92,19 @@ public class ReferenceEBill extends AbstractReference {
     /**
      * Initialisation de la référence eBill.
      *
-     * @param enteteFacture   : en-tête de facture.
-     * @param dateFacturation : la date de facturation.
-     * @throws PropertiesException
+     * @param enteteFacture   : l'entête de la facture
+     * @param dateImprOuFactu : la date d'execution ou de facturation du document
      */
-    public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+    public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateImprOuFactu) throws Exception {
 
         // Récupération de l'adresse du débiteur.
-        initAdresseDeb(enteteFacture, dateFacturation);
+        initAdresseDeb(enteteFacture, dateImprOuFactu);
 
         // Récupération de l'adresse du créancier.
         initAdresseCre();
 
-        // Récupération du type du document
-        initTypeDocument();
+        // Récupération du sous type du document
+        initSubTypeDocument();
 
         // Récupération du type de payment QR=>IBAN, BVR=>ESR, LSV=>DD ou Notes de crédit=>CREDIT.
         initPaymentType();
@@ -123,13 +125,13 @@ public class ReferenceEBill extends AbstractReference {
         }
     }
 
-    private void initTypeDocument() {
+    private void initSubTypeDocument() {
         if (isNotesCredit) {
-            typeDocument = DOCUMENT_TYPE_CREDITADVICE;
+            subTypeDocument = DOCUMENT_TYPE_CREDITADVICE;
         } else if (isBulletinsDeSoldesAvecFactureEBill) {
-            typeDocument = DOCUMENT_TYPE_REMINDER;
+            subTypeDocument = DOCUMENT_TYPE_REMINDER;
         } else {
-            typeDocument = DOCUMENT_TYPE_BILL;
+            subTypeDocument = DOCUMENT_TYPE_BILL;
         }
     }
 
@@ -253,10 +255,6 @@ public class ReferenceEBill extends AbstractReference {
         }
     }
 
-    public String getDocumentType() {
-        return typeDocument;
-    }
-
     /**
      * Dans le cadre de WebAVS, on est toujours sur des factures en CHF.
      *
@@ -306,8 +304,8 @@ public class ReferenceEBill extends AbstractReference {
         }
     }
 
-    public String getTypeDocument() {
-        return typeDocument;
+    public String getSubTypeDocument() {
+        return subTypeDocument;
     }
 
     public String getDebNom() {
@@ -420,5 +418,29 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsSursis(boolean sursis) {
         isSursis = sursis;
+    }
+
+    public boolean isSommation() {
+        return isSommation;
+    }
+
+    public void setIsSommation(boolean sommation) {
+        isSommation = sommation;
+    }
+
+    public boolean isReclamation() {
+        return isReclamation;
+    }
+
+    public void setIsReclamation(boolean reclamation) {
+        this.isReclamation = reclamation;
+    }
+
+    public boolean isDecision() {
+        return isDecision;
+    }
+
+    public void setIsDecision(boolean decision) {
+        isDecision = decision;
     }
 }

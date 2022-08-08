@@ -19,5 +19,6 @@ public interface ICOContentieuxConstante {
     public static final String FNAME_PROCHAINE_DATE_DECL = "OADPDE";
     public static final String FNAME_REMARQUE = "OALREM";
     public static final String FNAME_USERNAME = "OALUSR";
+    public static final String FNAME_EBILL_PRINTABLE = "EBILLPRINTABLE";
     public static final String TABLE_NAME_AVS = "COCAVSP";
 }

@@ -54,6 +54,18 @@ function selectionner(selectedId, value) {
 	}
 }
 
+function refreshEBillInputs(eBillPrintable) {
+    <% if (eBillAquilaActif) {%>
+        if (eBillPrintable) {
+            $("#eBillPrintable").attr("checked", true);
+        } else {
+            $("#eBillPrintable").attr("checked", false);
+        }
+    <%} else {%>
+        $("#eBillPrintable").attr("checked", false);
+    <%}%>
+}
+
 var oldSels = [];
 
 <% for (java.util.Iterator seqIter = viewBean.getSequences().iterator(); seqIter.hasNext();) { %>
@@ -62,9 +74,16 @@ oldSels[<%=((globaz.aquila.db.access.batch.COSequence) seqIter.next()).getIdSequ
 
 function select(select, idSequence, idCreer) {
 	var oldSel = oldSels[idSequence];
-
+    var eBillPrintable = false;
 	// on itére sur les options du select pour trouver laquelle a été cliquée
-    for (var id = 0; id < select.options.length; id++){
+    for (var id = 0; id < select.options.length; id++) {
+        // si un des modules compatible eBill est sélectionné on coche la case à cocher eBill
+        if (select.options[id].selected) {
+            // 26 = Rappel réclamation frais et intérêts; 31 = Sommation ; 39 = Décision
+            if (select.options[id].value === "26" || select.options[id].value === "31" || select.options[id].value === "39") {
+                eBillPrintable = true;
+            }
+        }
         if (select.options[id].selected != oldSel[id]) {
         	// c'est l'option avec l'index 'id' qui a été cliquée
             oldSel[id] = select.options[id].selected;
@@ -75,6 +94,7 @@ function select(select, idSequence, idCreer) {
             }
         }
     }
+    refreshEBillInputs(eBillPrintable);
 }
 
 function GereControle() {

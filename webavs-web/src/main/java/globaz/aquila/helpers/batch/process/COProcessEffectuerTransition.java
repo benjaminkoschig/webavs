@@ -84,6 +84,7 @@ public class COProcessEffectuerTransition extends BProcess {
                     // contentieux, on remplace les dates
                     contentieux.setDateExecution(action.getDateExecution());
                     contentieux.setDateOuverture(action.getDateExecution());
+                    contentieux.setEBillPrintable(action.getEBillPrintable());
                     contentieux.add(getTransaction());
 
                     /*
