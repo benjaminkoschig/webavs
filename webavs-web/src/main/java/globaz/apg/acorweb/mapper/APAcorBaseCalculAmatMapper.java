@@ -9,6 +9,8 @@ import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.acor.PRACORConst;
+import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,9 +26,15 @@ public class APAcorBaseCalculAmatMapper {
         BasesCalculAMat basesCalcul = new BasesCalculAMat();
 
         basesCalcul.setGenreCarte(1);
+        if(droit.getIsSoumisImpotSource()) {
+            basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
+            try {
+                basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
+            }catch(NullPointerException | NumberFormatException e){
+                basesCalcul.setTauxImpot(0.00);
+            }
+        }
         // TODO : récupérer canton impot
-//        basesCalcul.setCantonImpot();
-//        basesCalcul.setTauxImpot();
 //        basesCalcul.setAFac();
 //        basesCalcul.setExemptionCotisation();
         if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {

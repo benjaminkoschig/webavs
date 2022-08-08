@@ -23,7 +23,7 @@ public class APAcorService {
     public void importCalculAcor(FCalcul fCalcul, String idDroit, String genreService) {
         try {
             APImportationCalculAcor importer = new APImportationCalculAcor();
-            importer.importCalculAcor(idDroit, genreService, fCalcul);
+            importer.importCalculAcor(idDroit, fCalcul);
         } catch (Exception e) {
             throw new APTechnicalRuntimeException(e);
         }
