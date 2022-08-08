@@ -16,16 +16,16 @@ public enum EBillTypeDocument {
     BULLETIN_DE_SOLDES(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, CAImpressionBulletinsSoldes_Doc.class.getSimpleName()),
     FACTURE(FAImpressionFacture_BVR_Doc.NUM_INFOROM_FACTURE_DECOMPTE_PARITAIRE, FAImpressionFactureEBillProcess.class.getSimpleName());
 
-    private String classeImnplementation;
+    private String classeImplementation;
     private String numeroInforom;
 
-    EBillTypeDocument(String classeImnplementation, String numeroInforom) {
-        this.classeImnplementation = classeImnplementation;
+    EBillTypeDocument(String classeImplementation, String numeroInforom) {
+        this.classeImplementation = classeImplementation;
         this.numeroInforom = numeroInforom;
     }
 
-    public String getClasseImnplementation() {
-        return classeImnplementation;
+    public String getClasseImplementation() {
+        return classeImplementation;
     }
 
     public String getNumeroInforom() {
