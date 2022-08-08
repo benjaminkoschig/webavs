@@ -48,10 +48,8 @@ public class PYTiersDTO {
     private String ccpNumber;
     private String accountNumber;
     private String status;
-    private String clearing;
     private String branchOfficePostalCode;
     private String country;
-    private String currency;
     private String meansOfCommunicationType;
     private String value;
     private String applicationDomain;

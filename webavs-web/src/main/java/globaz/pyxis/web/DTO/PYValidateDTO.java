@@ -107,6 +107,10 @@ public class PYValidateDTO {
             if (dto.getNationality() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
         }
+
+        if (dto.getCcpNumber() != null) {
+            checkCCP(dto.getCcpNumber());
+        }
     }
 
     /**
@@ -323,6 +327,19 @@ public class PYValidateDTO {
                 System.err.println("Erreur lors de l'assignation du pays");
                 throw new PYBadRequestException("Erreur lors de l'assignation du pays");
             }
+        }
+    }
+
+    /**
+     * Méthode qui vérifie si date est au format dd.mm.yyyy et lance une exception si besoin
+     *
+     * @param ccp
+     */
+    private static final void checkCCP(String ccp) throws PYBadRequestException {
+        String pattern = "\\d{2}\\-\\d{6}\\-\\d{1}";
+        if (!Pattern.matches(pattern, ccp)) {
+            System.err.println("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
+            throw new PYBadRequestException("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
         }
     }
 }
