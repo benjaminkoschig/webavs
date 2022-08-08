@@ -349,7 +349,7 @@ public class PYValidateDTO {
     }
 
     /**
-     * Méthode qui vérifie si date est au format dd.mm.yyyy et lance une exception si besoin
+     * Méthode qui vérifie si ccp est au format xx-xxxxxx-x et lance une exception si besoin
      *
      * @param ccp
      */
