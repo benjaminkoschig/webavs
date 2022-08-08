@@ -134,25 +134,6 @@ public class EBillHelper {
     }
 
     /**
-     * Méthode permettant de rechercher un fichier spécifique généré durant l'impression
-     * de le retourner pour être ajouté à la facture eBill
-     *
-     * @param attachedDocuments : les fichiers généré durant l'impression
-     * @param documentType : le type de document recherché
-     * @return le fichier qui match le critère
-     */
-    public JadePublishDocument findAndReturnAttachedDocument(List<JadePublishDocument> attachedDocuments, String documentType) {
-        Iterator<JadePublishDocument> it = attachedDocuments.iterator();
-        while (it.hasNext()) {
-            final JadePublishDocument jadePublishDocument = it.next();
-            if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
-                return jadePublishDocument;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Méthode permettant de rechercher le fichier généré durant l'impression
      * de le retourner pour être ajouter à la facture eBill
      *

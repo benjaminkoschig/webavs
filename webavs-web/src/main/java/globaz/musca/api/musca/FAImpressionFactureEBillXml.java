@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Classe permettant de générer la facture eBill au format xml.
@@ -138,7 +139,9 @@ public class FAImpressionFactureEBillXml {
             eBillFacture.setIsDecision(true);
         }
 
-        // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
+        // init du sous-type de document
+        // si eBillTransactionID de l'enteteReference est vide, la facture originale a été généré sur papier et entre-temps eBill a été activé alors bulletinsDeSoldesAvecFactureEBill(false) et il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
+        // autrement on est sur un bulletinsDeSoldesAvecFactureEBill(true)
         if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.getEBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
         }
@@ -542,49 +545,51 @@ public class FAImpressionFactureEBillXml {
     private InvoiceBillType.LineItems createLineItems() {
         ObjectFactory of = new ObjectFactory();
         InvoiceBillType.LineItems lineItems = of.createInvoiceBillTypeLineItems();
+        AtomicInteger ligneId = new AtomicInteger(1);
 
         // Création des LineItems pour les Bulletins de Soldes
         if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
-            lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(l)));
+            lignes.stream().forEach(ligne -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Sursis au Paiement
         } else if (eBillFacture.isSursis()) {
-            lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0)));
+            lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0), ligneId.getAndIncrement()));
         // Création des LineItems pour les Sommations
         } else if (eBillFacture.isSommation()) {
             // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
-            lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemSommation(l)));
+            lignes.stream().filter(ligne -> ligne.get("F4") == null).forEach(ligne -> lineItems.getLineItem().add(createLineItemSommation(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Réclamations de frais et intérêts
         } else if (eBillFacture.isReclamation()) {
-            lignes.stream().filter(l -> l.get("F4") == null).forEach(l -> lineItems.getLineItem().add(createLineItemReclamation(l)));
+            // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
+            lignes.stream().filter(ligne -> ligne.get("F4") == null).forEach(ligne -> lineItems.getLineItem().add(createLineItemReclamation(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Décisions
         } else if (eBillFacture.isDecision()) {
-            lignes.stream().forEach(l -> lineItems.getLineItem().add(createLineItemDecision(l)));
+            lignes.stream().forEach(ligne -> lineItems.getLineItem().add(createLineItemDecision(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Factures qui ne sont d'aucun des autres type de document spécifique
         } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
-            lignes.forEach(l -> lineItems.getLineItem().add(createLineItemFactures(l)));
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemFactures(ligne, ligneId.getAndIncrement())));
         }
         return lineItems;
     }
 
-    private LineItemType createLineItemFactures(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemFactures(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
-        String dateDebut = ((String) lignes.get("COL_7_DEBUT"));
-        String dateFin = ((String) lignes.get("COL_7_FIN"));
+        String dateDebut = ((String) ligne.get("COL_7_DEBUT"));
+        String dateFin = ((String) ligne.get("COL_7_FIN"));
         AchievementDateType achievementDate = null;
         if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
             achievementDate = createAchievementDate(dateDebut, dateFin);
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription((String) lignes.get("COL_1"));
+        lineItem.setProductDescription((String) ligne.get("COL_1"));
 
-        String taux = ((String) lignes.get("COL_5"));
+        String taux = ((String) ligne.get("COL_5"));
         lineItem.setQuantity(new BigDecimal(StringUtils.isEmpty(taux) ? "0.00" : taux));
         lineItem.setQuantityDescription("1I");
-        Double masse = ((Double) lignes.get("COL_4"));
+        Double masse = ((Double) ligne.get("COL_4"));
         lineItem.setPriceUnit(BigDecimal.valueOf(masse != null ? masse : 1.00));
-        BigDecimal montant = lignes.get("COL_6") != null ? BigDecimal.valueOf((Double) lignes.get("COL_6")) : null;
+        BigDecimal montant = ligne.get("COL_6") != null ? BigDecimal.valueOf((Double) ligne.get("COL_6")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
@@ -593,8 +598,8 @@ public class FAImpressionFactureEBillXml {
         return lineItem;
     }
 
-    private LineItemType createLineItemSommation(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemSommation(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
         String dateDebut = (dateImprOuFactu);
         String dateFin = (dateEcheance);
@@ -604,12 +609,12 @@ public class FAImpressionFactureEBillXml {
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription(lignes.get("F1") != null ? (String) lignes.get("F1") : "");
+        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-        BigDecimal montant = lignes.get("F3") != null ? new BigDecimal((String) lignes.get("F3")) : null;
+        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
@@ -618,8 +623,8 @@ public class FAImpressionFactureEBillXml {
         return lineItem;
     }
 
-    private LineItemType createLineItemReclamation(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemReclamation(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
         String dateDebut = (dateImprOuFactu);
         String dateFin = (dateEcheance);
@@ -629,12 +634,12 @@ public class FAImpressionFactureEBillXml {
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription(lignes.get("F1") != null ? (String) lignes.get("F1") : "");
+        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-        BigDecimal montant = lignes.get("F3") != null ? new BigDecimal((String) lignes.get("F3")) : null;
+        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
@@ -643,8 +648,8 @@ public class FAImpressionFactureEBillXml {
         return lineItem;
     }
 
-    private LineItemType createLineItemDecision(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemDecision(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
         String dateDebut = (dateImprOuFactu);
         String dateFin = (dateEcheance);
@@ -654,12 +659,12 @@ public class FAImpressionFactureEBillXml {
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription(lignes.get("F1") != null ? (String) lignes.get("F1") : "");
+        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-        BigDecimal montant = lignes.get("F3") != null ? new BigDecimal((String) lignes.get("F3")) : null;
+        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
@@ -669,8 +674,8 @@ public class FAImpressionFactureEBillXml {
     }
 
 
-    private LineItemType createLineItemSursis(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemSursis(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
         String dateDebut = (dateOctroiSursis);
         String dateFin = (dateEcheance);
@@ -693,23 +698,23 @@ public class FAImpressionFactureEBillXml {
         return lineItem;
     }
 
-    private LineItemType createLineItemBulletinsDeSoldes(Map lignes) {
-        LineItemType lineItem = createLineItemWithIdAndType(lignes);
+    private LineItemType createLineItemBulletinsDeSoldes(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
-        String dateDebut = (String) lignes.get("COL_1");
-        String dateFin = (String) lignes.get("COL_2");
+        String dateDebut = (String) ligne.get("COL_1");
+        String dateFin = (String) ligne.get("COL_2");
         AchievementDateType achievementDate = null;
         if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
             achievementDate = createAchievementDate(dateDebut, dateFin);
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription((String) lignes.get("COL_3"));
+        lineItem.setProductDescription((String) ligne.get("COL_3"));
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-        BigDecimal montant = lignes.get("COL_4") != null ? BigDecimal.valueOf((Double) lignes.get("COL_4")) : null;
+        BigDecimal montant = ligne.get("COL_4") != null ? BigDecimal.valueOf((Double) ligne.get("COL_4")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
@@ -723,11 +728,11 @@ public class FAImpressionFactureEBillXml {
      *
      * @return le LineItem de la facture eBill
      */
-    private LineItemType createLineItemWithIdAndType(Map lignes) {
+    private LineItemType createLineItemWithIdAndType(Map ligne, int ligneId) {
         ObjectFactory of = new ObjectFactory();
         LineItemType lineItem = of.createLineItemType();
         lineItem.setLineItemType(eBillFacture.getLineItemType());
-        lineItem.setLineItemID(lignes.get("COL_ID") != null ? String.valueOf((Integer) lignes.get("COL_ID")) : "1");
+        lineItem.setLineItemID(ligne.get("COL_ID") != null ? String.valueOf(ligne.get("COL_ID")) : String.valueOf(ligneId));
         return lineItem;
     }
 
@@ -744,15 +749,9 @@ public class FAImpressionFactureEBillXml {
 
         summaryType.setTotalAmountPaid(BigDecimal.valueOf(0.00));
 
-        if (eBillFacture.isSommation() || eBillFacture.isSursis() || eBillFacture.isBulletinsDeSoldes()) {
-            summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
-            summaryType.setTotalAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
-            summaryType.setTotalAmountDue(new FWCurrency(montantFacture).getBigDecimalValue());
-        } else {
-            summaryType.setTotalAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            summaryType.setTotalAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            summaryType.setTotalAmountDue(entete.getTotalFactureCurrency().getBigDecimalValue());
-        }
+        summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        summaryType.setTotalAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        summaryType.setTotalAmountDue(new FWCurrency(montantFacture).getBigDecimalValue());
 
         return summaryType;
     }
@@ -784,13 +783,8 @@ public class FAImpressionFactureEBillXml {
         taxDetailType.setRate(BigDecimal.valueOf(0.00));
         taxDetailType.setAmount(BigDecimal.valueOf(0.00));
 
-        if (eBillFacture.isBulletinsDeSoldes()) {
-            taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
-            taxDetailType.setBaseAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
-        } else {
-            taxDetailType.setBaseAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            taxDetailType.setBaseAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-        }
+        taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        taxDetailType.setBaseAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
 
         return taxDetailType;
     }
