@@ -488,7 +488,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 .setDateValidation(JadeDateUtil.getGlobazFormattedDate(new Date()));
         try {
             PegasusServiceLocator.getValidationDecisionService().validerDecisionSuppression(decisionSuppression,
-                    comptabilisationAuto, mailAdressCompta, true);
+                    comptabilisationAuto, mailAdressCompta, true,false);
         } catch (Exception e) {
             throw new DroitException("unable to valid decision de suppression an error occured while validating", e);
         }
@@ -582,7 +582,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 .setDateValidation(JadeDateUtil.getGlobazFormattedDate(new Date()));
         try {
             PegasusServiceLocator.getValidationDecisionService().validerDecisionSuppression(decisionSuppression,
-                    comptabilisationAuto, mailAdressCompta, false);
+                    comptabilisationAuto, mailAdressCompta, false,true);
         } catch (Exception e) {
             throw new DroitException("unable to valid decision de suppression an error occured while validating", e);
         }
@@ -4378,6 +4378,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             PegasusImplServiceLocator.getSimpleVersionDroitService().delete(droit.getSimpleVersionDroit());
 
             if (!JadeStringUtil.isEmpty(droit.getDemande().getSimpleDemande().getDateFinInitial())) {
+                droit.getDemande().getSimpleDemande().setDateFin(droit.getDemande().getSimpleDemande().getDateFinInitial());
                 droit.getDemande().getSimpleDemande().setDateFinInitial("");
                 PegasusImplServiceLocator.getSimpleDemandeService().update(droit.getDemande().getSimpleDemande());
             }
