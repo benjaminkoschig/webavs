@@ -11,6 +11,9 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <H1>Description</H1>
  * 
@@ -35,6 +38,8 @@ public class SFConjointManager extends BManager {
     private String forIdConjoint2 = "";
     // Si on veut retrouver un membre d'après l'idConjoints
     private String forIdDesConjoints = "";
+
+    private List<String> forInIdsConjoints = new ArrayList<>();
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -104,6 +109,23 @@ public class SFConjointManager extends BManager {
                     + SFConjoint.FIELD_IDCONJOINT2 + "=" + _dbWriteNumeric(statement.getTransaction(), forIdConjoint1)
                     + ")";
         }
+        if(!forInIdsConjoints.isEmpty() && forInIdsConjoints.size() == 2){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            // Etant donnée que le conjoint peut être soit au champ idCOnjoint1
+            // ou idConjoint2,
+            // On recherche sur les deux champs
+            sqlWhere += "(" + SFConjoint.FIELD_IDCONJOINT1 + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forInIdsConjoints.get(0)) + " OR " + "("
+                    + SFConjoint.FIELD_IDCONJOINT2 + "=" + _dbWriteNumeric(statement.getTransaction(), forInIdsConjoints.get(0))
+                    + "))";
+            sqlWhere += " OR (" + SFConjoint.FIELD_IDCONJOINT1 + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forInIdsConjoints.get(1)) + " OR " + "("
+                    + SFConjoint.FIELD_IDCONJOINT2 + "=" + _dbWriteNumeric(statement.getTransaction(), forInIdsConjoints.get(1))
+                    + "))";
+        }
         return sqlWhere;
     }
 
@@ -165,6 +187,10 @@ public class SFConjointManager extends BManager {
     public void setForIdsConjoints(String conjoint1, String conjoint2) {
         forIdConjoint1 = conjoint1;
         forIdConjoint2 = conjoint2;
+    }
+
+    public void setForInIdsConjoints(List list){
+        this.forInIdsConjoints =  list;
     }
 
 }

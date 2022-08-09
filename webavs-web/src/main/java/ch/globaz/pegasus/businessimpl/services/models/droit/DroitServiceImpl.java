@@ -4568,9 +4568,14 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
             MembreFamilleVO[] searchMembresFamilleDisponibles = HeraServiceLocator.getMembreFamilleService()
                     .searchMembresFamilleRequerantDomaineRentes(idTiersRequerant, dateRechecheMembre);
+            String idTiersConjoint = getIdTiersConjoint(searchMembresFamilleDisponibles);
+
+            MembreFamilleVO[] searchMembresFamilleDisponiblesEtendues = HeraServiceLocator.getMembreFamilleService()
+                    .searchMembresFamilleRequerantDomaineRentesEtendues(idTiersRequerant, dateRechecheMembre);
 
             MembreFamilleVO[] mfDisponibles = HeraServiceLocator.getMembreFamilleService().filtreMembreFamilleWithDate(
-                    searchMembresFamilleDisponibles, dateRechecheMembre);
+                    searchMembresFamilleDisponiblesEtendues, dateRechecheMembre);
+
 
             List<MembreFamilleVO> mfFiltre = new ArrayList<MembreFamilleVO>();
 
@@ -4641,6 +4646,10 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             }
         }
         return droit;
+    }
+
+    private String getIdTiersConjoint(MembreFamilleVO[] searchMembresFamilleDisponibles) {
+        return Arrays.stream(searchMembresFamilleDisponibles).filter(membreFamilleVO -> ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(membreFamilleVO.getRelationAuRequerant())).findFirst().map(MembreFamilleVO::getIdTiers).orElse("");
     }
 
     @Override

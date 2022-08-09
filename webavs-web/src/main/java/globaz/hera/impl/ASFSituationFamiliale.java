@@ -477,7 +477,153 @@ public abstract class ASFSituationFamiliale extends BEntity {
         ajouterRequerant(iMembres, idMembreRequerant);
         return iMembres;
     }
+    protected ISFMembreFamilleRequerant[] _getMembresFamilleRequerantEtendues(String idTiers, String csDomaine, String date)
+            throws Exception {
 
+        SFApercuRequerantManager reqMgr = new SFApercuRequerantManager();
+        reqMgr.setSession(getSession());
+        reqMgr.setForIdDomaineApplication(csDomaine);
+        reqMgr.setForIdTiers(idTiers);
+        reqMgr.find();
+        SFApercuRequerant requerant = (SFApercuRequerant) reqMgr.getFirstEntity();
+        if (requerant == null) {
+            return null;
+        }
+        // String idRequerant = requerant.getIdRequerant();
+        String idMembreRequerant = requerant.getIdMembreFamille();
+
+        // Liste des membres de famille
+        List membreList = new ArrayList();
+
+
+
+        SFApercuRelationConjointManager mgr = new SFApercuRelationConjointManager();
+        mgr.setSession(getSession());
+        mgr.setForIdConjoint(idMembreRequerant);
+        mgr.find();
+        SFApercuRelationConjoint apercuRelationConjoint = (SFApercuRelationConjoint) mgr.getFirstEntity();
+        // On recherche les conjoints du requerant
+        SFConjointManager conjointMgr = new SFConjointManager();
+        conjointMgr.setSession(getSession());
+        conjointMgr.setForInIdsConjoints(Arrays.asList(apercuRelationConjoint.getIdConjoint1(),apercuRelationConjoint.getIdConjoint2()));
+        conjointMgr.find();
+
+        for (Iterator it = conjointMgr.iterator(); it.hasNext();) {
+            SFConjoint conjoint = (SFConjoint) it.next();
+            String idConjoints = conjoint.getIdConjoints();
+            // recherche le type de relation
+            SFRelationConjointManager relMgr = new SFRelationConjointManager();
+            relMgr.setSession(getSession());
+            relMgr.setForIdDesConjoints(idConjoints);
+            relMgr.setOrderByDateDebutDsc(false);
+            relMgr.find();
+            // On garde la relation la plus ancienne
+            SFRelationConjoint relation = (SFRelationConjoint) relMgr.getFirstEntity();
+            // Si la relation entre les conjoints est de type indéfinie, on ne l'ajoute pas, ni leurs enfants
+            if ((relation == null)
+                    || ISFSituationFamiliale.CS_REL_CONJ_RELATION_INDEFINIE.equals(relation.getTypeRelation())) {
+                continue;
+            }
+
+            // On ajoute les enfants et les conjoints à la famille
+
+            // Ajoute les enfants des conjoints dans la liste
+            boolean enfantAjoute = false;
+            for (Iterator itEnfants = conjoint.getEnfants(null); itEnfants.hasNext();) {
+                SFApercuEnfant enfant = (SFApercuEnfant) itEnfants.next();
+                enfant.setRelationAuRequerant(ISFSituationFamiliale.CS_TYPE_RELATION_ENFANT);
+
+                if (JAUtil.isDateEmpty(date)) {
+                    // si la date n'est pas renseignée, on ajoute toujours l'enfant
+
+                    enfantAjoute = true;
+                } else {
+                    // la date est renseingée
+                    if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), enfant.getDateNaissance(), date)) {
+                        // Si l'enfant est né avant la date donnée
+                        enfantAjoute = true;
+                    }
+                }
+                if (enfantAjoute) {
+                    // On va récupéré la nationalité de l'enfant dans les tiers.
+                    if (!JadeStringUtil.isIntegerEmpty(enfant.getIdTiers())) {
+                        ISFMembreFamille mf = this.getMembreFamille(enfant.getIdMembreFamille());
+                        enfant.setCsNationalite(mf.getCsNationalite());
+                    }
+
+                    SFMembreFamilleRequerantWrapper wrapper = new SFMembreFamilleRequerantWrapper();
+
+                    // point ouvert 935
+                    // si l'enfant est dans les tiers et qu'il a une adresse de domicile
+                    // on ecrase l'adresse de la sit. fam.
+                    wrapper.setCsCantonDomicile(enfant.getCsCantonDomicile());
+                    if (!JadeStringUtil.isIntegerEmpty(enfant.getIdTiers())) {
+                        SFTiersWrapper tw = SFTiersHelper.getTiersAdresseDomicileParId(getSession(),
+                                enfant.getIdTiers());
+
+                        if (!JadeStringUtil.isEmpty(tw.getProperty(SFTiersWrapper.PROPERTY_ID_CANTON))) {
+                            wrapper.setCsCantonDomicile(tw.getProperty(SFTiersWrapper.PROPERTY_ID_CANTON));
+                        }
+                    }
+
+                    wrapper.setCsEtatCivil(enfant.getCsEtatCivil());
+                    wrapper.setCsNationalite(enfant.getCsNationalite());
+                    wrapper.setCsSexe(enfant.getCsSexe());
+                    wrapper.setDateDeces(enfant.getDateDeces());
+                    wrapper.setDateNaissance(enfant.getDateNaissance());
+                    wrapper.setIdMembreFamille(enfant.getIdMembreFamille());
+                    wrapper.setNom(enfant.getNom());
+                    wrapper.setNss(enfant.getNss());
+                    wrapper.setPrenom(enfant.getPrenom());
+                    wrapper.setRelationAuRequerant(enfant.getRelationAuRequerant());
+                    wrapper.setIdTiers(enfant.getIdTiers());
+                    wrapper.setPays(enfant.getPays());
+                    membreList.add(wrapper);
+                }
+
+            }
+
+            // Recherche le conjoint
+            String idMembreConjoint = conjoint.getIdMembreFamilleConjoint(idMembreRequerant);
+            SFMembreFamille membre = new SFMembreFamille();
+            membre.setSession(getSession());
+            membre.setIdMembreFamille(idMembreConjoint);
+            membre.retrieve();
+            membre.setRelationAuRequerant(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT);
+            if (membre.isNew()) {
+                continue;
+            }
+
+            SFMembreFamilleRequerantWrapper wrapper = wrapperFromMembreFamille(membre);
+            wrapper.setPays(membre.getPays());
+
+            // Si la date n'est pas renseignée, on prend le conjoint
+            if (JAUtil.isDateEmpty(date)) {
+                membreList.add(wrapper);
+
+            } else {
+                // date date est renseignée,
+
+                if (!JAUtil.isDateEmpty(relation.getDateDebut())
+                        && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), relation.getDateDebut(), date)) {
+                    // La relation commence avant la date donnée, on ajoute le conjoint
+                    membreList.add(wrapper);
+                } else if (enfantAjoute) {
+                    // Si enfant est né avant la date, on ajoute le conjoint
+                    membreList.add(wrapper);
+                }
+            }
+        }
+
+        // On met la liste des membres ds une tables d'interface
+        ISFMembreFamilleRequerant[] iMembres = new ISFMembreFamilleRequerant[membreList.size() + 1];
+        for (int i = 0; i < membreList.size(); i++) {
+            iMembres[i] = (ISFMembreFamilleRequerant) membreList.get(i);
+        }
+        // On ajoute le requerant lui-même au résultat
+        ajouterRequerant(iMembres, idMembreRequerant);
+        return iMembres;
+    }
     protected ISFMembreFamilleRequerant[] _getMembresFamilleRequerantParMbrFamille(String idMembreFamille,
             String csDomaine) throws Exception {
 

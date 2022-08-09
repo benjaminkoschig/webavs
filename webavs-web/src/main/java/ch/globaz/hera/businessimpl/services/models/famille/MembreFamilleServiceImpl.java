@@ -373,7 +373,45 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
         return (MembreFamilleVO[]) result.toArray(new MembreFamilleVO[] {});
     }
+    public MembreFamilleVO[] searchMembresFamilleRequerantEtendues(String csDomaine, String idTiersRequerant, String date)
+            throws MembreFamilleException{
 
+        BSession session = getSession();
+
+        // utilisation de l'API Hera pour trouver la famille du requerant pour
+        // un domaine
+
+        ISFMembreFamilleRequerant[] mf = null;
+        try {
+            ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session, csDomaine,
+                    idTiersRequerant);
+
+            if (JadeStringUtil.isBlankOrZero(date)) {
+                mf = sf.getMembresFamilleRequerantEtendues(idTiersRequerant);
+            } else {
+                mf = sf.getMembresFamilleRequerantEtendues(idTiersRequerant, date);
+            }
+        } catch (Exception e) {
+            throw new MembreFamilleException(e.toString());
+        }
+
+        // construction des MembreFamilleVO
+        ArrayList result = new ArrayList();
+
+        if (mf != null) {
+            for (int i = 0; i < mf.length; i++) {
+
+                ISFMembreFamilleRequerant mfr = mf[i];
+
+                result.add(new MembreFamilleVO(mfr.getCsCantonDomicile(), mfr.getCsEtatCivil(), mfr.getCsNationalite(),
+                        mfr.getCsSexe(), mfr.getDateDeces(), mfr.getDateNaissance(), mfr.getIdMembreFamille(), mfr
+                        .getIdTiers(), mfr.getNom(), mfr.getNss(), mfr.getPrenom(), mfr
+                        .getRelationAuRequerant()));
+            }
+        }
+
+        return (MembreFamilleVO[]) result.toArray(new MembreFamilleVO[] {});
+    }
     /*
      * (non-Javadoc)
      *
@@ -398,6 +436,13 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
             throws MembreFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
         return searchMembresFamilleRequerant(ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant, date);
+    }
+
+    @Override
+    public MembreFamilleVO[] searchMembresFamilleRequerantDomaineRentesEtendues(String idTiersRequerant, String date)
+            throws MembreFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        return searchMembresFamilleRequerantEtendues(ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant, date);
     }
 
     /*
