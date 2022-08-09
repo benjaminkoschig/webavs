@@ -158,7 +158,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
                     && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
+                FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesReclamation.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
 

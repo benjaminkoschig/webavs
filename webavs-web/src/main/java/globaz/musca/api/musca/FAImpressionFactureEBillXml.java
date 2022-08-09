@@ -515,10 +515,10 @@ public class FAImpressionFactureEBillXml {
      */
     private BillHeaderType.PaymentInformation.Instalments createInstalments(ObjectFactory of) {
         BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
-        int instalmentCount = 1;
+        int counter = 1;
         for (Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis : lignesSursis.entrySet()) {
-            instalments.getInstalment().add(createInstalment(of, instalments, ligneSursis, instalmentCount));
-            instalmentCount++;
+            instalments.getInstalment().add(createInstalment(of, ligneSursis, counter));
+            counter++;
         }
         return instalments;
     }
@@ -528,7 +528,7 @@ public class FAImpressionFactureEBillXml {
      *
      * @return le Instalment de la facture eBill
      */
-    private InstalmentType createInstalment(ObjectFactory of, BillHeaderType.PaymentInformation.Instalments instalments, Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis, int counter) {
+    private InstalmentType createInstalment(ObjectFactory of, Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis, int counter) {
         InstalmentType instalment = of.createInstalmentType();
         instalment.setDescription(ligneSursis.getValue().get(0).get("COL_1") != null ? String.valueOf(ligneSursis.getValue().get(0).get("COL_1")) : String.valueOf(counter));
         instalment.setAmount(ligneSursis.getValue().get(0).get("COL_6") != null ? BigDecimal.valueOf((Double) ligneSursis.getValue().get(0).get("COL_6")) : null);

@@ -80,14 +80,17 @@ public class EBillHelper {
 
     /**
      * Méthode permetant de construire une entête de facture fictive
-     * partiellement initialisé avec les informations trouvées
-     * dans la section et dans le compte annexe
+     * partiellement initialisée avec les informations trouvées
+     * dans la section et dans le compte annexe.
+     * Cette entête fictive est incomplète et ne peut pas être
+     * sauvegardé en DB. Elle est utilisé par eBill comme base pour
+     * la création d'une facture eBill.
      *
      * @param section : une section
      * @param session : une session
      * @return une entête de facture partiellement initialisée
      */
-    public FAEnteteFacture generateEnteteFacture(CASection section, BSession session) {
+    public FAEnteteFacture generateEnteteFactureFictive(CASection section, BSession session) {
         FAEnteteFacture entete = new FAEnteteFacture();
         entete.setSession(session);
         entete.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);

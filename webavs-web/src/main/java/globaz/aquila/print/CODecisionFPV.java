@@ -21,6 +21,15 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import ch.globaz.common.document.reference.ReferenceBVR;
 import ch.globaz.common.document.reference.ReferenceQR;
+import globaz.jade.publish.client.JadePublishDocument;
+import globaz.musca.api.musca.PaireIdExterneEBill;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.process.ebill.EBillHelper;
+import globaz.osiris.process.ebill.EBillSftpProcessor;
+import globaz.osiris.process.ebill.EBillTypeDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +37,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <H1>Description</H1>
@@ -58,6 +69,13 @@ public class CODecisionFPV extends CODocumentManager {
 
     private ReferenceBVR bvr = null;
     private int state = CODecisionFPV.STATE_IDLE;
+
+    /* eBill fields */
+    public Map<PaireIdExterneEBill, List<Map>> lignesDecision = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referencesDecision = new LinkedHashMap();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CODecision.class);
+    private EBillHelper eBillHelper = new EBillHelper();
+    private int factureEBill = 0;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -118,6 +136,32 @@ public class CODecisionFPV extends CODocumentManager {
     @Override
     public void afterExecuteReport() {
         try {
+            if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
+
+                // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+                boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+
+                // On imprime eBill si :
+                //  - eBillAquila est actif
+                //  - le compte annexe possède un eBillAccountID
+                //  - eBillPrintable est sélectioné sur l'écran d'impression
+                //  - l'impression prévisionel n'est pas activée
+                if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                    if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                        try {
+                            EBillSftpProcessor.getInstance();
+                            traiterDecisionEBillAquila(curContentieux.getCompteAnnexe());
+                            ajouteInfoEBillToEmail();
+                        } catch (Exception exception) {
+                            LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+                            getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                        } finally {
+                            EBillSftpProcessor.closeServiceFtp();
+                        }
+                    }
+                }
+            }
+
             if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
                     || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
                             .equals(CODocumentManager.AVEC_VERSO)) {
@@ -129,6 +173,67 @@ public class CODecisionFPV extends CODocumentManager {
             this._addError(e.toString());
         }
         super.afterExecuteReport();
+    }
+
+    /**
+     * Méthode permettant de traiter les décisions eBill
+     * en attente d'être envoyé dans le processus actuel.
+     */
+    public void traiterDecisionEBillAquila(CACompteAnnexe compteAnnexe) throws Exception {
+
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignes : lignesDecision.entrySet()) {
+            if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
+                    && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
+
+                FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
+                String reference = referencesDecision.get(lignes.getKey());
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CODecision.class.getSimpleName(), false);
+
+                if (!attachedDocuments.isEmpty()) {
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.DECISION);
+                }
+            }
+        }
+    }
+
+    private void ajouteInfoEBillToEmail() {
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
+        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    }
+
+    /**
+     * Méthode permettant de créer la décision eBill,
+     * de générer et remplir le fichier puis de l'envoyer sur le ftp.
+     *
+     * @param compteAnnexe            : le compte annexe
+     * @param entete                  : l'entête de la facture
+     * @param montantFacture          : contient le montant total de la factures
+     * @param lignes                  : contient les lignes
+     * @param reference               : la référence BVR ou QR.
+     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param dateImprOuFactu         : la date d'execution ou de facturation du document
+     * @param section                 : la section
+     * @param typeDocument            : le type du document eBill
+     * @throws Exception
+     */
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
+
+        // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
+        entete.addEBillTransactionID(getTransaction());
+
+        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
+        entete.setEBillPrinted(true);
+
+        // Met à jour le status eBill de la section
+        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
+
+        // Met à jour l'historique eBill du contentieux
+        eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
+
+        String dateEcheance = dateImprOuFactu;
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
+
+        factureEBill++;
     }
 
     /**
@@ -169,10 +274,11 @@ public class CODecisionFPV extends CODocumentManager {
                 initVariableQR(montantTotal);
                 // Génération du document QR
                 qrFacture.initQR(this, qrFactures);
+                referencesDecision.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), qrFacture.getReference());
             } else {
-
                 // -- BVR
                 initBVR(montantTotal);
+                referencesDecision.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), getBvr().getRefNoSpace());
             }
         } catch (Exception e) {
             this.log("exception: " + e.getMessage());
@@ -332,6 +438,12 @@ public class CODecisionFPV extends CODocumentManager {
                 fields.put(COParameter.F3, formatMontant(taxe.getMontantTaxe()));
                 dataSource.add(fields);
             }
+        }
+
+        // Prepare la map des lignes de décisions eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
+        boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+        if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+            lignesDecision.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), dataSource);
         }
 
         this.setDataSource(dataSource);
