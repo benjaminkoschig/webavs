@@ -39,20 +39,15 @@ public class PYTiersDTO {
     private String name2;
     private String taxpayerNumber;
     private Boolean isInactive;
-    private String privateMeansOfCommunication;
-    private String professionalMeansOfCommunication;
-    private String mobileMeansOfCommunication;
-    private String faxMeansOfCommunication;
-    private String emailMeansOfCommunication;
+    private String meanOfCommunicationType;
+    private String meanOfCommunicationValue;
+    private String applicationDomain;
     private String manner;
     private String ccpNumber;
     private String accountNumber;
     private String status;
     private String branchOfficePostalCode;
     private String country;
-    private String meansOfCommunicationType;
-    private String value;
-    private String applicationDomain;
     private String bankCountry;
 
     // CCVS-only fields

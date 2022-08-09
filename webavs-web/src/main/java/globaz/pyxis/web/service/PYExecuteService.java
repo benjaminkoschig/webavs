@@ -26,6 +26,7 @@ public class PYExecuteService extends BProcess {
             if (idMailAddress != null) {
                 PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
             }
+            PRTiersHelper.addTiersPage2(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);

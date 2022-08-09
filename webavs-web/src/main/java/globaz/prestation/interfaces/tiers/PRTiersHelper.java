@@ -70,7 +70,10 @@ import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.pyxis.db.tiers.TIAvoirContact;
+import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
+import globaz.pyxis.db.tiers.TIMoyenCommunication;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersAdresseManager;
@@ -371,6 +374,37 @@ public class PRTiersHelper {
             }
         }
         dto.setId(avsPerson.getIdTiers());
+    }
+
+    public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
+        TIContact contact = new TIContact();
+        contact.setSession(session);
+        contact.setNom(dto.getSurname());
+        contact.setPrenom(dto.getName());
+        contact.add();
+
+        TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
+        meanOfCommunication.setSession(session);
+        meanOfCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
+        meanOfCommunication.setMoyen(dto.getMeanOfCommunicationValue());
+        meanOfCommunication.setIdContact(contact.getIdContact());
+        meanOfCommunication.setIdApplication(dto.getApplicationDomain()); // TODO: Do we put it around a if (dto.getApplicationDomain() != null) ?
+        meanOfCommunication.add();
+
+        TIAvoirContact hasContact = new TIAvoirContact();
+        hasContact.setSession(session);
+        hasContact.setIdTiers(dto.getId());
+        hasContact.setIdContact(contact.getIdContact());
+        hasContact.add();
+
+        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+        } else if (!JadeThread.logIsEmpty()) {
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+        }
     }
 
     /**
