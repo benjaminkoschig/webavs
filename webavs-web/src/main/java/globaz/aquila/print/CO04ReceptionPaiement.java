@@ -163,7 +163,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
 
                 if (!attachedDocuments.isEmpty()) {
-                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection().getDateSection(), curContentieux.getSection(), EBillTypeDocument.RECLAMATION);
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection(), EBillTypeDocument.RECLAMATION);
                 }
             }
         }
@@ -184,12 +184,11 @@ public class CO04ReceptionPaiement extends CODocumentManager {
      * @param lignes                  : contient les lignes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateImprOuFactu         : la date d'execution ou de facturation du document
      * @param section                 : la section
      * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.addEBillTransactionID(getTransaction());
@@ -203,7 +202,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         // Met à jour l'historique eBill du contentieux
         eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
 
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateImprOuFactu, null, getSession(), null, typeDocument);
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getProchaineDateDeclenchement(), null, getSession(), null, typeDocument);
 
         factureEBill++;
     }

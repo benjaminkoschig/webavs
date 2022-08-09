@@ -51,6 +51,7 @@ import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
+import globaz.osiris.process.ebill.CAEBillField;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.constantes.IConstantes;
@@ -977,6 +978,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         List<Map<String, String>> lignes = new LinkedList<Map<String, String>>();
 
+        int colun_id = 1;
+
         for (Iterator<COSituationCompteItem> operIter = situationCompteNouveauRegime(fromAfterDateExecutionRP, useDate,
                 idJournal, csEtape).iterator(); operIter.hasNext(); ) {
             COSituationCompteItem item = operIter.next();
@@ -984,6 +987,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             if (!item.isLineBlocked(csEtape) && item.isMontantDifferentZero()) {
                 HashMap<String, String> fields = new HashMap<String, String>();
 
+                fields.put(CAEBillField.FIELD_COLUMN_ID, Integer.toString(colun_id++));
                 fields.put(fDesc, item.getDescription());
                 fields.put(CAExtraitCompte.SECTIONDATE_FIELD, item.getExtraitCompte().getDate());
                 fields.put(fMontant, formatMontant(item.getMontant().toString()));
