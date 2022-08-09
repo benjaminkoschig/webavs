@@ -32,6 +32,8 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     private boolean actionRefermerDemande = false;
     private Boolean annule = false;
     private Boolean isDateReduc = false;
+    private String dateReduc = "";
+    private String dateFinViewBean = "";
     private Boolean comptabilisationAuto = false;
     private Map<String, String> membresFamille = new HashMap<String, String>();
     private Boolean forcerAnnulerActif;
@@ -47,7 +49,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -67,7 +69,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -100,7 +102,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'id de la decision de refu liee ou 0 si pas de decision de refu
-     * 
+     *
      * @return
      */
     public String getIdDecisionRefus() {
@@ -130,7 +132,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Return true si il existe une decision de refus pour cette demande (idDecisionRefus != 0)
-     * 
+     *
      * @return
      */
     public boolean hasDecisionDerefus() {
@@ -157,7 +159,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Return true si la demande est transférable (demande dans les etats EN_ATTENTE_CALCUL ou EN_ATTENTE_JUSTIFICATIF)
-     * 
+     *
      * @return
      */
     public boolean isTransferable() {
@@ -168,7 +170,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     /**
      * Retourne true si une décsion de refus peut être préparée (demande dans les etats EN_ATTENTE_CALCUL ou
      * EN_ATTENTE_JUSTIFICATIF) et pas de décisions de refus deja creee
-     * 
+     *
      * @return
      */
     public boolean isValidForPrepDecisionRefus() throws DroitException, JadeApplicationServiceNotAvailableException,
@@ -180,7 +182,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -209,16 +211,14 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * @param dateArrivee
-     *            the dateArrivee to set
+     * @param dateArrivee the dateArrivee to set
      */
     public void setDateArrivee(String dateArrivee) {
         demande.getSimpleDemande().setDateArrivee(dateArrivee);
     }
 
     /**
-     * @param dateDepot
-     *            the dateDepot to set
+     * @param dateDepot the dateDepot to set
      */
     public void setDateDepot(String dateDepot) {
         demande.getSimpleDemande().setDateDepot(dateDepot);
@@ -235,12 +235,12 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
     public void update() throws Exception {
-         if (isDemandePurRetro == true && demande.getSimpleDemande().getIsPurRetro() == false) {
+        if (isDemandePurRetro == true && demande.getSimpleDemande().getIsPurRetro() == false) {
             // Si l'on n'est pas sur une demande pur Retro, il n'y a pas de date de début ni de fin.
             // On les enlève donc.
             demande.getSimpleDemande().setDateDebut("");
@@ -255,8 +255,8 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
             demande = PegasusServiceLocator.getDemandeService().annuler(demande, comptabilisationAuto);
         } else if (!annule && IPCDemandes.CS_ANNULE.equals(demande.getSimpleDemande().getCsEtatDemande())) {
             demande = PegasusServiceLocator.getDemandeService().retourArriereAnnuler(demande);
-        } else if (!JadeStringUtil.isEmpty(demande.getSimpleDemande().getDateFinInitial())) {
-            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande, comptabilisationAuto);
+        } else if (!JadeStringUtil.isEmpty(demande.getSimpleDemande().getDateFinInitial()) ||!JadeStringUtil.isEmpty(dateReduc)  ) {
+            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande,dateReduc, comptabilisationAuto);
         } else {
             demande = PegasusServiceLocator.getDemandeService().update(demande);
         }
@@ -315,13 +315,14 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     }
 
     public void setDateReduc(String dateReduc) {
-        if (JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateFinInitial())) {
-            demande.getSimpleDemande().setDateFinInitial(dateReduc);
-        }
+        this.dateReduc = dateReduc;
     }
 
     public String getDateReduc() {
-        return demande.getSimpleDemande().getDateFinInitial();
+        if(JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateFinInitial())){
+            return "";
+        }
+        return demande.getSimpleDemande().getDateFin();
     }
 
     public Boolean getIsDateReduc() {
@@ -347,5 +348,13 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     public void setDemandePurRetro(boolean demandePurRetro) {
         demande.getSimpleDemande().setIsPurRetro(demandePurRetro);
         this.isDemandePurRetro = demandePurRetro;
+    }
+
+    public String getDateFinViewBean() {
+        return dateFinViewBean;
+    }
+
+    public void setDateFinViewBean(String dateFinViewBean) {
+        this.dateFinViewBean = dateFinViewBean;
     }
 }
