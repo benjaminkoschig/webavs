@@ -133,7 +133,7 @@ boolean isCheck = false;
 
                         var dateTemp = document.getElementById("forDateFin").value;
                         $('#forDateFin').val(document.getElementById("dateReduc").value);
-                        $('#dateReduc').val(dateTemp);
+                       // $('#dateReduc').val(dateTemp);
                         action(COMMIT);
                     },
                     "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function () {
