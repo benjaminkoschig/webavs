@@ -45,28 +45,36 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.api.APIOperation;
-import globaz.osiris.db.comptes.*;
+import globaz.osiris.db.comptes.CARubrique;
+import globaz.osiris.db.comptes.CATypeOperation;
+import globaz.osiris.db.comptes.CATypeOperationManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
-import globaz.osiris.process.ebill.CAEBillField;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
 import net.sf.jasperreports.engine.JRExporterParameter;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.*;
-
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Classe abstraite parente de touts les documents du projet aquila.<br>
