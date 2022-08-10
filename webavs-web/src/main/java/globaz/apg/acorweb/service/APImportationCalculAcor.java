@@ -207,26 +207,17 @@ public class APImportationCalculAcor {
              fCalcul.getVersementMoisComptable()) {
             for (VersementApgType versementApg:
                  versement.getVersement()) {
-                VersementBeneficiaireApgType versementBeneficiaire;
-                if(versementApg.getVersementsFederal() != null){
-                    versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
-                    if(versementBeneficiaire == null){
-                        versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
-                    }
-                }else{
-                    versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
-                    if(versementBeneficiaire == null){
-                        versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
-                    }
-                }
-                for (DecompteApgType decompteApgType :
-                        versementBeneficiaire.getDecompte()) {
-                    for (PeriodeDecompteApgType periodeDecompte :
-                            decompteApgType.getPeriodeDecompte()) {
-                        if (checkPeriodesDansLeMemeMois(moisComptable.getMoisComptable(), periodeDecompte.getDebut())) {
-                            APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
-                            if(repartition != null){
-                                repartitions.add(repartition);
+                VersementBeneficiaireApgType versementBeneficiaire = findVersementBeneficiaireApgType(versementApg);
+                if(versementBeneficiaire != null) {
+                    for (DecompteApgType decompteApgType :
+                            versementBeneficiaire.getDecompte()) {
+                        for (PeriodeDecompteApgType periodeDecompte :
+                                decompteApgType.getPeriodeDecompte()) {
+                            if (checkPeriodesDansLeMemeMois(moisComptable.getMoisComptable(), periodeDecompte.getDebut())) {
+                                APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
+                                if (repartition != null) {
+                                    repartitions.add(repartition);
+                                }
                             }
                         }
                     }
@@ -235,6 +226,22 @@ public class APImportationCalculAcor {
             }
         }
         return repartitions;
+    }
+
+    private VersementBeneficiaireApgType findVersementBeneficiaireApgType(VersementApgType versementApg) {
+        VersementBeneficiaireApgType versementBeneficiaire;
+        if(versementApg.getVersementsFederal() != null){
+            versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
+            if(versementBeneficiaire == null){
+                versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
+            }
+        }else{
+            versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
+            if(versementBeneficiaire == null){
+                versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
+            }
+        }
+        return versementBeneficiaire;
     }
 
     private List<APPrestationWrapper> createWrappers(List<APPrestationAcor> prestations, APDroitLAPG droit, List<APBaseCalcul> basesCalcul) {
