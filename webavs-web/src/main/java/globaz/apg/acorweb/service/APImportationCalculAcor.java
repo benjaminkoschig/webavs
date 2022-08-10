@@ -207,7 +207,18 @@ public class APImportationCalculAcor {
              fCalcul.getVersementMoisComptable()) {
             for (VersementApgType versementApg:
                  versement.getVersement()) {
-                VersementBeneficiaireApgType versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
+                VersementBeneficiaireApgType versementBeneficiaire;
+                if(versementApg.getVersementsFederal() != null){
+                    versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
+                    if(versementBeneficiaire == null){
+                        versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
+                    }
+                }else{
+                    versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
+                    if(versementBeneficiaire == null){
+                        versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
+                    }
+                }
                 for (DecompteApgType decompteApgType :
                         versementBeneficiaire.getDecompte()) {
                     for (PeriodeDecompteApgType periodeDecompte :
@@ -220,6 +231,7 @@ public class APImportationCalculAcor {
                         }
                     }
                 }
+
             }
         }
         return repartitions;
@@ -479,6 +491,19 @@ public class APImportationCalculAcor {
                 retValue = baseCalcul;
 
                 if (comparePeriod2IsInsidePeriod1(dateDebutPeriodeAcor, dateFinPeriodeAcor, retValue.getDateDebut(), retValue.getDateFin())) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if(!found){
+            for (APBaseCalcul baseCalcul : basesCalcul){
+                retValue = baseCalcul;
+                LocalDate localDateDebutPeriod1 = Dates.toDate(dateDebutPeriodeAcor);
+                LocalDate localDateDebutPeriod2 = Dates.toDate(retValue.getDateDebut());
+                LocalDate localDateFinPeriod2 = Dates.toDate(retValue.getDateFin());
+                if(localDateDebutPeriod1.isBefore(localDateFinPeriod2) && localDateDebutPeriod1.isAfter(localDateDebutPeriod2)){
                     found = true;
                     break;
                 }

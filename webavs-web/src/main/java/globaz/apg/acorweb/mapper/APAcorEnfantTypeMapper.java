@@ -31,7 +31,11 @@ public class APAcorEnfantTypeMapper {
         EnfantType enfant = new EnfantType();
         enfant.setNom(situationFamiliale.getNom());
         enfant.setPrenom(situationFamiliale.getPrenom());
-        enfant.setNavs(Long.valueOf(NSUtil.unFormatAVS(situationFamiliale.getNoAVS())));
+        if(situationFamiliale.getNoAVS() != null && !situationFamiliale.getNoAVS().isEmpty()) {
+            enfant.setNavs(Long.valueOf(NSUtil.unFormatAVS(situationFamiliale.getNoAVS())));
+        }else{
+            enfant.setNavs(0);
+        }
         enfant.setNavsParent1(Long.valueOf(NSUtil.unFormatAVS(tiers.getNSS())));
         enfant.setParent1Inconnu(false);
         enfant.setEtatCivil(Short.valueOf(PRACORConst.CA_CELIBATAIRE));
