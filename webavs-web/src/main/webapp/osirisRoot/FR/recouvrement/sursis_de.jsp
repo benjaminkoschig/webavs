@@ -207,7 +207,7 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+	<% if (eBillOsirisActif && eBillAccountID) {%>
 		<tr>
 			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
 			<td nowrap>

@@ -75,10 +75,11 @@ public class CODecision extends CODocumentManager {
     private ReferenceBVR bvr = null;
     private int state = CODecision.STATE_IDLE;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CODecision.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesDecision = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesDecision = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CODecision.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 
@@ -190,7 +191,7 @@ public class CODecision extends CODocumentManager {
             if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
                     && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
+                FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesDecision.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CODecision.class.getSimpleName(), false);
 

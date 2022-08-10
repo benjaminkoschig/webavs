@@ -74,7 +74,7 @@ function postInit(){
             <td nowrap>&nbsp;</td>
             <td nowrap>&nbsp;</td>
           </tr>
-          <% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.loadSectionCompteAnnexe().getEBillAccountID())) {%>
+          <% if (eBillOsirisActif && eBillAccountID) {%>
               <tr>
                 <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
                 <td nowrap>

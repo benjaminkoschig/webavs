@@ -108,10 +108,11 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimePos = null;
     private String montantSansCentime;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesBulletinDeSoldes = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesBulletinDeSoldes = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 
@@ -465,6 +466,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     public void afterExecuteReport() {
         if (!isMuscaSource && sectionCourante.getSection() != null) {
 
+            // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
             boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
 
             // On imprime eBill si :
@@ -574,7 +576,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     // Prepare la map des lignes de bulletins de soldes eBill si propriété eBillMusca est active et si compte annexe de la facture inscrit à eBill
                     boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
                     if (eBillMuscaActif && compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
-                        // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idE
+                        // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'id
                         lignesBulletinDeSoldes.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
                     }
                     if (JadeStringUtil.isEmpty(getIdSection())) {
@@ -662,7 +664,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             if (sectionCourante.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
                     && sectionCourante.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionCourante.getSection(), getSession());
+                FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(sectionCourante.getSection(), getSession());
                 FAEnteteFacture enteteReference = eBillHelper.getEnteteFactureReference(lignes.getKey(), getSession());
                 String reference = referencesBulletinDeSoldes.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, false);

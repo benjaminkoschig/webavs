@@ -112,10 +112,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiement.STATE_IDLE;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CO00CSommationPaiement.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesSommation = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesSommation = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CO00CSommationPaiement.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 
@@ -220,7 +221,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             if (curContentieux.getSection().getCompteAnnexe().getIdExterneRole().equals(lignes.getKey().getIdExterneRole())
                     && curContentieux.getSection().getIdExterne().equals(lignes.getKey().getIdExterneFactureCompensation())) {
 
-                FAEnteteFacture entete = eBillHelper.generateEnteteFacture(curContentieux.getSection(), getSession());
+                FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesSommation.get(lignes.getKey());
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName(), false);
 

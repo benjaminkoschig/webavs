@@ -68,10 +68,11 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private boolean factureAvecMontantMinime = false;
     private String montantSansCentime;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
+
     /* eBill fields */
     public Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis = new LinkedHashMap();
     public Map<PaireIdEcheanceParDateExigibiliteEBill, String> referencesSursis = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
     private static final int MAX_NUMBER_OF_ECHEANCE_EBILL = 99;
@@ -411,11 +412,13 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         List<CASection> sectionsCouvertes = getSectionsCouvertes(documentBVR);
         if (!sectionsCouvertes.isEmpty()) {
 
-            FAEnteteFacture entete = eBillHelper.generateEnteteFacture(sectionsCouvertes.get(0), getSession()); // TODO ESVE EBILL UTILISER TOUTES LES SECTIONS COUVERTES
+            FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(sectionsCouvertes.get(0), getSession()); // On se base sur la première section couvertes trouvé pour définir les informations de l'entête
             String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
             String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
             List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName(), false);
-            ajouteDecisionFusionee(attachedDocuments);
+
+            // Ajoute la décision dans les attachedDocuments de la facture eBill
+            ajouteDecisionToAttachedDocuments(attachedDocuments);
 
             if (!attachedDocuments.isEmpty()) {
                 creerFichierEBill(documentBVR.getPlanRecouvrement(), entete, getCumulSoldeFormatee(documentBVR.getCumulSolde()), documentBVR.getLignesSursis(), reference, attachedDocuments, getDateFacturationFromSectionsCouvertes(sectionsCouvertes), sectionsCouvertes, titreSursis, EBillTypeDocument.SURSIS);
@@ -423,8 +426,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         }
     }
 
-    private void ajouteDecisionFusionee(List<JadePublishDocument> attachedDocuments) {
-        if (decisionFusionee!= null) {
+    private void ajouteDecisionToAttachedDocuments(List<JadePublishDocument> attachedDocuments) {
+        if (decisionFusionee != null) {
             attachedDocuments.add(decisionFusionee);
         }
     }

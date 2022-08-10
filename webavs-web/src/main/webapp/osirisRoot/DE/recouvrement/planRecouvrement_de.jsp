@@ -200,7 +200,7 @@
 	    %>
 		<TD class="control"><ct:FWCodeSelectTag codeType="OSIPLRVEN" defaut="<%=viewBean.getIdModeVentilation()%>" name="idModeVentilation" except="<%=exceptVen%>" /></TD>
 	</tr>
-	<% if (eBillOsirisActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+	<% if (eBillOsirisActif && eBillAccountID) {%>
 		<tr>
 			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
 			<td nowrap>

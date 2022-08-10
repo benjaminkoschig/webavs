@@ -54,12 +54,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private final static String FACTURES_TYPE_AUTOMATIQUE = "automatique";
     private final static String FACTURES_TYPE_PAPIER = "papier";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
+
     /* eBill fields */
     private Map<PaireIdExterneEBill, List<Map>> lignesFacture = new LinkedHashMap();
     private Map<PaireIdExterneEBill, String> referencesFacture = new LinkedHashMap();
     private Map<PaireIdExterneEBill, List<Map>> lignesBulletinDeSoldes = new LinkedHashMap();
     private Map<PaireIdExterneEBill, String> referencesBulletinDeSoldes = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private boolean forcerImpressionPapier;
     private String typeFacture;
@@ -758,6 +759,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 }
             }
 
+            //  On retire tous les documents eBill si :
+            // - l'impression papier est activé
             if (impressionPapierUniquement) {
                 removeEBillAttachedDocuments();
             }
@@ -857,17 +860,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      */
     private void removeEBillAttachedDocuments() throws Exception {
         for (Map.Entry<FAEnteteFacture, FAAfactManager> entry : afactParEnteteFactureEBill.entrySet()) {
-
             FAEnteteFacture entete = entry.getKey();
-
             CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
             if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                 eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), null, true);
                 nbImprimer--;
             }
-
         }
-
     }
 
     private boolean getSeparateMultiSheetsValue() {
@@ -965,7 +964,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                     List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), null, true);
                     if (!attachedDocuments.isEmpty()) {
-                        creerFichierEBill(compteAnnexe, entete, null, null, ligneFactureParPaireIdExterne.getValue(), reference, attachedDocuments, passage.getDateFacturation(), EBillTypeDocument.FACTURE);
+                        creerFichierEBill(compteAnnexe, entete, null, entete.getTotalFactureCurrency().getBigDecimalValue().toString(), ligneFactureParPaireIdExterne.getValue(), reference, attachedDocuments, passage.getDateFacturation(), EBillTypeDocument.FACTURE);
                     }
                 }
             }

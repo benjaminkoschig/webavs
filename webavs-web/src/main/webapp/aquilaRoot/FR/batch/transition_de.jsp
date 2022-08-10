@@ -124,7 +124,7 @@
 				<TD class="control" colspan="3"><INPUT type="text" value="<%=viewBean.getProchaineDateDeclenchement()%>" class="dateDisabled" readonly></TD>
 			</TR>
 
-			<% if (eBillAquilaActif && !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID())) {%>
+			<% if (eBillAquilaActif && eBillAccountID) {%>
 				<tr>
 				  <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
 				  <td nowrap>

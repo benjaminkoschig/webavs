@@ -515,10 +515,10 @@ public class FAImpressionFactureEBillXml {
      */
     private BillHeaderType.PaymentInformation.Instalments createInstalments(ObjectFactory of) {
         BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
-        int instalmentCount = 1;
+        int counter = 1;
         for (Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis : lignesSursis.entrySet()) {
-            instalments.getInstalment().add(createInstalment(of, instalments, ligneSursis, instalmentCount));
-            instalmentCount++;
+            instalments.getInstalment().add(createInstalment(of, ligneSursis, counter));
+            counter++;
         }
         return instalments;
     }
@@ -528,7 +528,7 @@ public class FAImpressionFactureEBillXml {
      *
      * @return le Instalment de la facture eBill
      */
-    private InstalmentType createInstalment(ObjectFactory of, BillHeaderType.PaymentInformation.Instalments instalments, Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis, int counter) {
+    private InstalmentType createInstalment(ObjectFactory of, Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis, int counter) {
         InstalmentType instalment = of.createInstalmentType();
         instalment.setDescription(ligneSursis.getValue().get(0).get("COL_1") != null ? String.valueOf(ligneSursis.getValue().get(0).get("COL_1")) : String.valueOf(counter));
         instalment.setAmount(ligneSursis.getValue().get(0).get("COL_6") != null ? BigDecimal.valueOf((Double) ligneSursis.getValue().get(0).get("COL_6")) : null);
@@ -549,7 +549,7 @@ public class FAImpressionFactureEBillXml {
 
         // Création des LineItems pour les Bulletins de Soldes
         if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
-            lignes.stream().forEach(ligne -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(ligne, ligneId.getAndIncrement())));
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Sursis au Paiement
         } else if (eBillFacture.isSursis()) {
             lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0), ligneId.getAndIncrement()));
@@ -559,11 +559,10 @@ public class FAImpressionFactureEBillXml {
             lignes.stream().filter(ligne -> ligne.get("F4") == null).forEach(ligne -> lineItems.getLineItem().add(createLineItemSommation(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Réclamations de frais et intérêts
         } else if (eBillFacture.isReclamation()) {
-            // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
-            lignes.stream().filter(ligne -> ligne.get("F4") == null).forEach(ligne -> lineItems.getLineItem().add(createLineItemReclamation(ligne, ligneId.getAndIncrement())));
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemReclamation(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Décisions
         } else if (eBillFacture.isDecision()) {
-            lignes.stream().forEach(ligne -> lineItems.getLineItem().add(createLineItemDecision(ligne, ligneId.getAndIncrement())));
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemDecision(ligne, ligneId.getAndIncrement())));
         // Création des LineItems pour les Factures qui ne sont d'aucun des autres type de document spécifique
         } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
             lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemFactures(ligne, ligneId.getAndIncrement())));
@@ -630,12 +629,12 @@ public class FAImpressionFactureEBillXml {
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
+        lineItem.setProductDescription(StringUtils.isNotEmpty((String) ligne.get("F1")) ? (String) ligne.get("F1") : "");
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
+        BigDecimal montant = StringUtils.isNotEmpty((String) ligne.get("F2")) ? new FWCurrency((String) ligne.get("F2")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
