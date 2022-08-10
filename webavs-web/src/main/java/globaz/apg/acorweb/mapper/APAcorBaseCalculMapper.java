@@ -4,6 +4,7 @@ import acor.xsd.in.apg.BasesCalculAPG;
 import acor.xsd.in.apg.BasesCalculCommunes;
 import acor.xsd.in.apg.GarantieIJ;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.eavs.utils.StringUtils;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -85,9 +86,9 @@ public class APAcorBaseCalculMapper {
     public static void mapImpotSourceInformation(BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(droit.getIsSoumisImpotSource()) {
             basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
-            try {
+            if(droit.getTauxImpotSource() != null && StringUtils.isNumeric(droit.getTauxImpotSource())) {
                 basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
-            }catch(NullPointerException | NumberFormatException e){
+            }else {
                 basesCalcul.setTauxImpot(0.00);
             }
         }
