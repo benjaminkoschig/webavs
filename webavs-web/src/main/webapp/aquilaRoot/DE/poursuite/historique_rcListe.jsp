@@ -10,8 +10,25 @@
 	size = viewBean.size();
 	detailLink = "aquila?userAction=aquila.poursuite.historique.afficher&selectedId=";
 %>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(viewBean.getSession());
+%>
 <%@page import="globaz.aquila.db.access.poursuite.COHistorique"%>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/aquilaRoot/javascript/aquila.js"></SCRIPT>
+<script type="text/javascript">
+
+	function refreshEBillInputs() {
+		<% if (eBillAquilaActif) {%>
+			$('input[name="btnFind"]').click();
+		<%}%>
+	}
+
+	function postInit(){
+		refreshEBillInputs();
+	}
+
+</script>
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
