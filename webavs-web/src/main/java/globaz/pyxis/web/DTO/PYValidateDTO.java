@@ -115,10 +115,15 @@ public class PYValidateDTO {
             checkCCP(dto.getCcpNumber());
         if (dto.getStatus() != null)
             checkStatusPaymentAddress(dto.getStatus());
-        if (dto.getApplicationDomain() != null)
-            checkApplicationDomain(dto.getApplicationDomain());
-        if (dto.getMeanOfCommunicationType() != null)
-            checkMeanOfCommuncationType(dto.getMeanOfCommunicationType());
+
+        for (PYContactDTO contactDTO: dto.getContacts()) {
+            for (PYMeanOfCommunicationDTO meanDTO: contactDTO.getMeansOfCommunication()) {
+                if (meanDTO.getApplicationDomain() != null)
+                    checkApplicationDomain(meanDTO.getApplicationDomain());
+                if (meanDTO.getMeanOfCommunicationType() != null)
+                    checkMeanOfCommuncationType(meanDTO.getMeanOfCommunicationType());
+            }
+        }
     }
 
     /**

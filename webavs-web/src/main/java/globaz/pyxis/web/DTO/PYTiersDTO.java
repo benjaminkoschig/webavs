@@ -8,6 +8,7 @@ import java.util.Vector;
 
 @Data
 public class PYTiersDTO {
+
     private String id = "";
 
     // Mandatory fields
@@ -39,9 +40,6 @@ public class PYTiersDTO {
     private String name2;
     private String taxpayerNumber;
     private Boolean isInactive;
-    private String meanOfCommunicationType;
-    private String meanOfCommunicationValue;
-    private String applicationDomain;
     private String manner;
     private String ccpNumber;
     private String accountNumber;
@@ -49,6 +47,8 @@ public class PYTiersDTO {
     private String branchOfficePostalCode;
     private String country;
     private String bankCountry;
+
+    private Vector<PYContactDTO> contacts = new Vector();
 
     // CCVS-only fields
     // Optional fields

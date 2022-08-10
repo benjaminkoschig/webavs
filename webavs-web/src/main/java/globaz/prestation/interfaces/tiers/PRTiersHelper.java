@@ -82,6 +82,8 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
+import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -384,26 +386,31 @@ public class PRTiersHelper {
      * @throws Exception
      */
     public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-        TIContact contact = new TIContact();
-        contact.setSession(session);
-        contact.setNom(dto.getSurname());
-        contact.setPrenom(dto.getName());
-        contact.add();
 
-        TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
-        meanOfCommunication.setSession(session);
-        meanOfCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
-        meanOfCommunication.setMoyen(dto.getMeanOfCommunicationValue());
-        meanOfCommunication.setIdContact(contact.getIdContact());
-        if (dto.getApplicationDomain() != null)
-            meanOfCommunication.setIdApplication(dto.getApplicationDomain());
-        meanOfCommunication.add();
+        for (PYContactDTO contactDTO: dto.getContacts()) {
+            TIContact contact = new TIContact();
+            contact.setSession(session);
+            contact.setNom(dto.getSurname());
+            contact.setPrenom(dto.getName());
+            contact.add();
 
-        TIAvoirContact hasContact = new TIAvoirContact();
-        hasContact.setSession(session);
-        hasContact.setIdTiers(dto.getId());
-        hasContact.setIdContact(contact.getIdContact());
-        hasContact.add();
+            for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
+                TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
+                meanOfCommunication.setSession(session);
+                meanOfCommunication.setTypeCommunication(meanDTO.getMeanOfCommunicationType());
+                meanOfCommunication.setMoyen(meanDTO.getMeanOfCommunicationValue());
+                meanOfCommunication.setIdContact(contact.getIdContact());
+                if (meanDTO.getApplicationDomain() != null)
+                    meanOfCommunication.setIdApplication(meanDTO.getApplicationDomain());
+                meanOfCommunication.add();
+            }
+
+            TIAvoirContact hasContact = new TIAvoirContact();
+            hasContact.setSession(session);
+            hasContact.setIdTiers(dto.getId());
+            hasContact.setIdContact(contact.getIdContact());
+            hasContact.add();
+        }
 
         if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
             LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
