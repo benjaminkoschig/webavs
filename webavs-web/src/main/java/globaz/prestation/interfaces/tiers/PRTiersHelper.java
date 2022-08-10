@@ -314,7 +314,7 @@ public class PRTiersHelper {
     }
 
     /**
-     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (page 1)
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 1 (détails généraux)
      *
      * @param session
      * @param dto
@@ -376,6 +376,13 @@ public class PRTiersHelper {
         dto.setId(avsPerson.getIdTiers());
     }
 
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
     public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
         TIContact contact = new TIContact();
         contact.setSession(session);
@@ -388,7 +395,8 @@ public class PRTiersHelper {
         meanOfCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
         meanOfCommunication.setMoyen(dto.getMeanOfCommunicationValue());
         meanOfCommunication.setIdContact(contact.getIdContact());
-        meanOfCommunication.setIdApplication(dto.getApplicationDomain()); // TODO: Do we put it around a if (dto.getApplicationDomain() != null) ?
+        if (dto.getApplicationDomain() != null)
+            meanOfCommunication.setIdApplication(dto.getApplicationDomain());
         meanOfCommunication.add();
 
         TIAvoirContact hasContact = new TIAvoirContact();

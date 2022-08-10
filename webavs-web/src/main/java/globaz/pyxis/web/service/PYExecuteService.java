@@ -19,9 +19,14 @@ public class PYExecuteService extends BProcess {
      * @return dto JSON contenant l'id du tiers créé
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
+        String idMailAddress = null;
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
-            String idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+
+            // Only add a mail address if the DTO contains a postal code
+            if (dto.getPostalCode() != null) {
+                idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            }
             // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation
             if (idMailAddress != null) {
                 PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
