@@ -1,6 +1,14 @@
 package globaz.prestation.interfaces.tiers;
 
-import ch.globaz.pyxis.business.model.*;
+import ch.globaz.pyxis.business.model.AdresseComplexModel;
+import ch.globaz.pyxis.business.model.AdresseSimpleModel;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.model.AvoirAdresseSimpleModel;
+import ch.globaz.pyxis.business.model.BanqueComplexModel;
+import ch.globaz.pyxis.business.model.BanqueSearchComplexModel;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
@@ -10,7 +18,11 @@ import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -20,6 +32,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.external.IntRole;
@@ -30,18 +44,40 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
-import globaz.pyxis.api.*;
+import globaz.pyxis.api.ITIAbstractAdresseData;
+import globaz.pyxis.api.ITIAdministration;
+import globaz.pyxis.api.ITIApplication;
+import globaz.pyxis.api.ITIAvoirAdresse;
+import globaz.pyxis.api.ITILocalite;
+import globaz.pyxis.api.ITIPays;
+import globaz.pyxis.api.ITIPersonne;
+import globaz.pyxis.api.ITIPersonneAvs;
+import globaz.pyxis.api.ITIPersonneAvsAdresse;
+import globaz.pyxis.api.ITIRole;
+import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.api.ITITiersAdresse;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
-import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
+import globaz.pyxis.db.tiers.TIAdministrationAdresse;
+import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
+import globaz.pyxis.db.tiers.TIAdministrationManager;
+import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
+import globaz.pyxis.db.tiers.TIPersonneAvsManager;
+import globaz.pyxis.db.tiers.TITiers;
+import globaz.pyxis.db.tiers.TITiersAdresseManager;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
+import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
@@ -52,7 +88,20 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import static ch.globaz.pyxis.business.services.AdresseService.CS_DOMAINE_DEFAUT;
 import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
@@ -330,8 +379,9 @@ public class PRTiersHelper {
      * @param session
      * @param dto
      * @throws Exception
+     * @return l'id de l'adresse de courrier créée
      */
-    public static final void addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
+    public static final String addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
 
         AdresseSimpleModel adresseSimpleModel = new AdresseSimpleModel();
@@ -350,7 +400,7 @@ public class PRTiersHelper {
         avoirAdresseSimpleModel.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
 
         AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, "");
-        AdresseComplexModel homeAddress;
+        AdresseComplexModel homeAddress = null;
         PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
         searchTiers.setForIdTiers(tiers.getIdTiers());
         searchTiers = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
@@ -379,7 +429,96 @@ public class PRTiersHelper {
             throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
         }
 
-        // TODO: Maybe use homeAddress to add a payment address ?
+        return homeAddress.getAdresse().getId();
+    }
+
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de paiement)
+     *
+     * @param session
+     * @param idMailAddress
+     * @param dto
+     * @throws Exception
+     */
+    public static void addTiersPaymentAddress(BSession session, String idMailAddress, PYTiersDTO dto) throws Exception {
+        TIIbanFormater ibanFormatter = new TIIbanFormater();
+
+        TIAdressePaiement adressePaiement = new TIAdressePaiement();
+        adressePaiement.setIdTiersAdresse(dto.getId());
+        adressePaiement.setIdAdresse(idMailAddress);
+
+        if (!Objects.isNull(dto.getAccountNumber())) {
+            String iban = ibanFormatter.unformat(dto.getAccountNumber());
+            if(checkIban(iban)) {
+                adressePaiement.setIdTiersBanque(retrieveBankId(iban, dto.getBranchOfficePostalCode()));
+                adressePaiement.setNumCompteBancaire(dto.getAccountNumber());
+                adressePaiement.setNumCcp(dto.getCcpNumber());
+                adressePaiement.setCode(dto.getStatus());
+                adressePaiement.setIdPays(dto.getBankCountry());
+                adressePaiement.setSession(session);
+                adressePaiement.add();
+
+                TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
+                avoirPaiement.setIdApplication(CS_DOMAINE_DEFAUT);
+                avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                avoirPaiement.setIdTiers(dto.getId());
+                avoirPaiement.setSession(session);
+                avoirPaiement.add();
+            } else {
+                LOG.error("Paiement adresse non créée : IBAN non valide : " + iban);
+            }
+        }
+        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+        } else if (!JadeThread.logIsEmpty()) {
+            LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+        }
+    }
+
+    /**
+     * Méthode permettant d'aller chercher chez quelle banque un compte se trouve, en fonction de l'IBAN du compte et du NPA de la banque
+     *
+     * @param iban
+     * @param npa
+     * @return l'id de la première banque trouvée
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private static String retrieveBankId(String iban, String npa) throws JadeApplicationException, JadePersistenceException {
+        BanqueComplexModel banque = new BanqueComplexModel();
+        String noClearing = iban.substring(4, 9);
+
+        BanqueSearchComplexModel banqueSearchModel = new BanqueSearchComplexModel();
+        banqueSearchModel.setForNpaLike(npa);
+        banqueSearchModel.setForClearing(noClearing);
+        banqueSearchModel.setDefinedSearchSize(1);
+        banqueSearchModel = TIBusinessServiceLocator.getBanqueService().find(banqueSearchModel);
+
+        if (banqueSearchModel.getSize() == 1) {
+            banque = (BanqueComplexModel) banqueSearchModel.getSearchResults()[0];
+        }
+        return banque.getTiersBanque().getId();
+    }
+
+    /**
+     * Méthode pour vérifier si l'IBAN est valide
+     *
+     * @param chIban
+     * @return true si chIban est valide, une erreur sinon
+     */
+    public static boolean checkIban(String chIban) {
+        TIIbanFormater ibanFormatter = new TIIbanFormater();
+        chIban = ibanFormatter.format(chIban);
+
+        try {
+            ibanFormatter.check(chIban);
+        } catch (Exception e) {
+            throw new PYBadRequestException("Erreur lors du traitement du numéro de compte: " + e);
+        }
+        return true;
     }
 
     /**

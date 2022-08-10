@@ -21,7 +21,11 @@ public class PYExecuteService extends BProcess {
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
-            PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            String idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation
+            if (idMailAddress != null) {
+                PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
+            }
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);

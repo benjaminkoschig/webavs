@@ -4,6 +4,7 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.CodesSysPays;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
+import ch.globaz.pyxis.domaine.StatusPaymentAddress;
 import ch.globaz.pyxis.domaine.Titre;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -106,6 +107,13 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
             if (dto.getNationality() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
+        }
+
+        if (dto.getCcpNumber() != null) {
+            checkCCP(dto.getCcpNumber());
+        }
+        if (dto.getStatus() != null) {
+            checkStatusPaymentAddress(dto.getStatus());
         }
     }
 
@@ -274,6 +282,20 @@ public class PYValidateDTO {
     }
 
     /**
+     * Méthode pour vérifier que status est un code système valide
+     *
+     * @param status
+     */
+    private static final void checkStatusPaymentAddress(String status) {
+        try {
+            StatusPaymentAddress.parse(status); // If this goes through without error, status has a valid value
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erreur dans le statut de l'addresse de paiement.");
+            throw new PYBadRequestException("Erreur dans le statut de l'addresse de paiement.", e);
+        }
+    }
+
+    /**
      * Si la langue est fournie avec un mot ("English", "FR", "rUmAntScH", etc.), le map vers le bon code système.
      * Sinon, on vérifie que c'est un code système valide et on lève une erreur si besoin.
      *
@@ -323,6 +345,19 @@ public class PYValidateDTO {
                 System.err.println("Erreur lors de l'assignation du pays");
                 throw new PYBadRequestException("Erreur lors de l'assignation du pays");
             }
+        }
+    }
+
+    /**
+     * Méthode qui vérifie si ccp est au format xx-xxxxxx-x et lance une exception si besoin
+     *
+     * @param ccp
+     */
+    private static final void checkCCP(String ccp) throws PYBadRequestException {
+        String pattern = "\\d{2}\\-\\d{6}\\-\\d{1}";
+        if (!Pattern.matches(pattern, ccp)) {
+            System.err.println("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
+            throw new PYBadRequestException("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
         }
     }
 }
