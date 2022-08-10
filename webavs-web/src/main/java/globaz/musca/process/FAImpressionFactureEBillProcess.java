@@ -54,12 +54,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private final static String FACTURES_TYPE_AUTOMATIQUE = "automatique";
     private final static String FACTURES_TYPE_PAPIER = "papier";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
+
     /* eBill fields */
     private Map<PaireIdExterneEBill, List<Map>> lignesFacture = new LinkedHashMap();
     private Map<PaireIdExterneEBill, String> referencesFacture = new LinkedHashMap();
     private Map<PaireIdExterneEBill, List<Map>> lignesBulletinDeSoldes = new LinkedHashMap();
     private Map<PaireIdExterneEBill, String> referencesBulletinDeSoldes = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(FAImpressionFactureEBillProcess.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private boolean forcerImpressionPapier;
     private String typeFacture;

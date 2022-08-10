@@ -68,10 +68,11 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private boolean factureAvecMontantMinime = false;
     private String montantSansCentime;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
+
     /* eBill fields */
     public Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis = new LinkedHashMap();
     public Map<PaireIdEcheanceParDateExigibiliteEBill, String> referencesSursis = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAILettrePlanRecouvBVR4.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
     private static final int MAX_NUMBER_OF_ECHEANCE_EBILL = 99;

@@ -112,10 +112,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiement.STATE_IDLE;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CO00CSommationPaiement.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesSommation = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesSommation = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CO00CSommationPaiement.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 

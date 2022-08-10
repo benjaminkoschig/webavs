@@ -57,10 +57,11 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     private List<CAInteretManuelVisualComponent> interetCalcule = null;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CO04ReceptionPaiement.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesReclamation = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesReclamation = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CO04ReceptionPaiement.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 

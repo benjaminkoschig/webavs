@@ -108,10 +108,11 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimePos = null;
     private String montantSansCentime;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
+
     /* eBill fields */
     public Map<PaireIdExterneEBill, List<Map>> lignesBulletinDeSoldes = new LinkedHashMap();
     public Map<PaireIdExterneEBill, String> referencesBulletinDeSoldes = new LinkedHashMap();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CAImpressionBulletinsSoldes_Doc.class);
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
 
