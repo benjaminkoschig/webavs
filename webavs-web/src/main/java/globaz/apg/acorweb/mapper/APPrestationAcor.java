@@ -39,10 +39,10 @@ public class APPrestationAcor {
     FWCurrency allocationJournalier;
     @Getter
     @Setter
-    FWCurrency fraisDegarde;
+    FWCurrency fraisGarde;
     @Getter
     @Setter
-    FWCurrency fraisDegardeMax;
+    FWCurrency fraisGardeMax;
     @Getter
     @Setter
     FWCurrency versementAssure;
