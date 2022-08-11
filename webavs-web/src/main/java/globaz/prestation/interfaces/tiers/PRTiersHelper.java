@@ -337,8 +337,7 @@ public class PRTiersHelper {
         avsPerson.setPersonnePhysique(dto.getIsPhysicalPerson());
         avsPerson.setPersonneMorale(!dto.getIsPhysicalPerson());
         avsPerson.setInactif(dto.getIsInactive());
-        // TODO: add maidenName once PYXIS' ITITier is updated to support it
-
+        avsPerson.setNomJeuneFille(dto.getMaidenName());
         // Fields in TIPERSP
         avsPerson.setDateNaissance(dto.getBirthDate());
         avsPerson.setDateDeces(dto.getDeathDate());
