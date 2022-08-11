@@ -70,7 +70,10 @@ import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.pyxis.db.tiers.TIAvoirContact;
+import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
+import globaz.pyxis.db.tiers.TIMoyenCommunication;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersAdresseManager;
@@ -79,6 +82,8 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
+import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -311,7 +316,7 @@ public class PRTiersHelper {
     }
 
     /**
-     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (page 1)
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 1 (détails généraux)
      *
      * @param session
      * @param dto
@@ -371,6 +376,50 @@ public class PRTiersHelper {
             }
         }
         dto.setId(avsPerson.getIdTiers());
+    }
+
+    /**
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
+    public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
+
+        for (PYContactDTO contactDTO: dto.getContacts()) {
+            TIContact contact = new TIContact();
+            contact.setSession(session);
+            contact.setNom(dto.getSurname());
+            contact.setPrenom(dto.getName());
+            contact.add();
+
+            for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
+                TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
+                meanOfCommunication.setSession(session);
+                meanOfCommunication.setTypeCommunication(meanDTO.getMeanOfCommunicationType());
+                meanOfCommunication.setMoyen(meanDTO.getMeanOfCommunicationValue());
+                meanOfCommunication.setIdContact(contact.getIdContact());
+                if (meanDTO.getApplicationDomain() != null)
+                    meanOfCommunication.setIdApplication(meanDTO.getApplicationDomain());
+                meanOfCommunication.add();
+            }
+
+            TIAvoirContact hasContact = new TIAvoirContact();
+            hasContact.setSession(session);
+            hasContact.setIdTiers(dto.getId());
+            hasContact.setIdContact(contact.getIdContact());
+            hasContact.add();
+        }
+
+        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+        } else if (!JadeThread.logIsEmpty()) {
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+        }
     }
 
     /**

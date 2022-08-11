@@ -2,11 +2,13 @@ package globaz.pyxis.web.DTO;
 
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.pyxis.domaine.CodesSysPays;
+import ch.globaz.pyxis.domaine.DomaineApplication;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.domaine.StatusPaymentAddress;
 import ch.globaz.pyxis.domaine.Titre;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
+import ch.globaz.vulpecula.external.models.pyxis.TypeContact;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -109,11 +111,18 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
         }
 
-        if (dto.getCcpNumber() != null) {
+        if (dto.getCcpNumber() != null)
             checkCCP(dto.getCcpNumber());
-        }
-        if (dto.getStatus() != null) {
+        if (dto.getStatus() != null)
             checkStatusPaymentAddress(dto.getStatus());
+
+        for (PYContactDTO contactDTO: dto.getContacts()) {
+            for (PYMeanOfCommunicationDTO meanDTO: contactDTO.getMeansOfCommunication()) {
+                if (meanDTO.getApplicationDomain() != null)
+                    checkApplicationDomain(meanDTO.getApplicationDomain());
+                if (meanDTO.getMeanOfCommunicationType() != null)
+                    checkMeanOfCommuncationType(meanDTO.getMeanOfCommunicationType());
+            }
         }
     }
 
@@ -292,6 +301,32 @@ public class PYValidateDTO {
         } catch (IllegalArgumentException e) {
             System.err.println("Erreur dans le statut de l'addresse de paiement.");
             throw new PYBadRequestException("Erreur dans le statut de l'addresse de paiement.", e);
+        }
+    }
+
+    /**
+     * Méthode pour vérifier que type est un code système valide
+     *
+     * @param type
+     */
+    private static final void checkMeanOfCommuncationType(String type) {
+        if(!TypeContact.isValid(type)){
+            System.err.println("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
+            throw new PYBadRequestException("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
+        }
+    }
+
+    /**
+     * Méthode pour vérifier que applicationDomain est un code système valide
+     *
+     * @param applicationDomain
+     */
+    private static final void checkApplicationDomain(String applicationDomain) {
+        try {
+            DomaineApplication.parse(applicationDomain); // If this goes through without error, applicationDomain has a valid value
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erreur dans le domaine d'application lors de l'ajout d'un contact.");
+            throw new PYBadRequestException("Erreur dans le domaine d'application lors de l'ajout d'un contact.", e);
         }
     }
 
