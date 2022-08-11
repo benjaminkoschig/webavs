@@ -74,7 +74,7 @@ public class APImportationCalculAcor {
                 JADate dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
                 JADate dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
                 APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
-                if(baseCalcul != null) {
+                if(Objects.nonNull(baseCalcul)) {
                     prestations.add(mapPrestation(session, fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
                 }
             }
@@ -86,7 +86,7 @@ public class APImportationCalculAcor {
         APPrestationAcor prestation = new APPrestationAcor();
         AssureApgType assure = fCalcul.getAssure().stream().filter(a -> a.getFonction() == FonctionApgType.REQUERANT).collect(Collectors.toList()).get(0);
         String genreService = session.getCode(droit.getGenreService());
-        if (fCalcul.getFraisGarde() != null) {
+        if (Objects.nonNull(fCalcul.getFraisGarde())) {
             prestation.setFraisGarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
         } else {
             retrieveFraisDeGarde(droit);
@@ -107,7 +107,7 @@ public class APImportationCalculAcor {
     }
 
     private void mapInformationFromBaseCalcul(APBaseCalcul baseCalcul, APPrestationAcor prestation) {
-        if(baseCalcul != null) {
+        if(Objects.nonNull(baseCalcul)) {
             prestation.setSoumisImpotSource(baseCalcul.isSoumisImpotSource());
             prestation.setIdTauxImposition(baseCalcul.getIdTauxImposition());
             prestation.setTauxImposition(baseCalcul.getTauxImposition());
@@ -116,7 +116,7 @@ public class APImportationCalculAcor {
 
     private void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul, APPrestationAcor prestation) {
         PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().get(0);
-        if(periodeMontantJournApgType != null){
+        if(Objects.nonNull(periodeMontantJournApgType)){
             prestation.setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJournBaseEnfants()));
             prestation.setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
             String nbJoursHospitalisation = droit.getJoursSupplementaires();
@@ -129,7 +129,7 @@ public class APImportationCalculAcor {
 
     private void mapInformationFromPeriodeServiceApg(BSession session, String genreService, PeriodeServiceApgType periodeServiceApgType, APPrestationAcor prestation) {
 
-        if (periodeServiceApgType.getPartAssure() != null) {
+        if (Objects.nonNull(periodeServiceApgType.getPartAssure())) {
             prestation.setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
         }
         IAPReferenceDataPrestation ref = retrieveReferenceData(session, periodeServiceApgType, genreService);
@@ -164,10 +164,10 @@ public class APImportationCalculAcor {
                     bcSitPro = findBaseCalculSitProParNoAffilie(baseCalcul, repartitionPaiementAcor.getIdTiers(),
                             repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
                 }catch(PRACORException e2){
-                    LOG.info("La situation professionnelle de la base de caclul n'a pas été trouvé. \nLa période correspondante est peut être créé pour des jours d'hosipitalisation.");
+                    LOG.warn("La situation professionnelle de la base de caclul n'a pas été trouvé. \nLa période correspondante est peut être créé pour des jours d'hosipitalisation.");
                 }
             }
-            if(bcSitPro != null) {
+            if(Objects.nonNull(bcSitPro)) {
                 repartitionPaiementAcor.setVersementEmployeur(bcSitPro.isPaiementEmployeur());
                 repartitionPaiementAcor.setIndependant(bcSitPro.isIndependant());
                 repartitionPaiementAcor.setTravailleurSansEmployeur(bcSitPro.isTravailleurSansEmployeur());
@@ -208,14 +208,14 @@ public class APImportationCalculAcor {
             for (VersementApgType versementApg:
                  versement.getVersement()) {
                 VersementBeneficiaireApgType versementBeneficiaire = findVersementBeneficiaireApgType(versementApg);
-                if(versementBeneficiaire != null) {
+                if(Objects.nonNull(versementBeneficiaire)) {
                     for (DecompteApgType decompteApgType :
                             versementBeneficiaire.getDecompte()) {
                         for (PeriodeDecompteApgType periodeDecompte :
                                 decompteApgType.getPeriodeDecompte()) {
                             if (checkPeriodesDansLeMemeMois(moisComptable.getMoisComptable(), periodeDecompte.getDebut())) {
                                 APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
-                                if (repartition != null) {
+                                if (Objects.nonNull(repartition)) {
                                     repartitions.add(repartition);
                                 }
                             }
@@ -229,13 +229,13 @@ public class APImportationCalculAcor {
     }
 
     private VersementBeneficiaireApgType findVersementBeneficiaireApgType(VersementApgType versementApg) {
-        VersementBeneficiaireApgType versementBeneficiaire;
-        if(versementApg.getVersementsFederal() != null){
+        VersementBeneficiaireApgType versementBeneficiaire = null;
+        if(Objects.nonNull(versementApg.getVersementsFederal())){
             versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
             if(versementBeneficiaire == null){
                 versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
             }
-        }else{
+        }else if(Objects.nonNull(versementApg.getVersementsGenevois())){
             versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
             if(versementBeneficiaire == null){
                 versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
@@ -283,7 +283,7 @@ public class APImportationCalculAcor {
     private void mapResultatCalculSituationProfessionnelWithBaseCalcul(List<APBaseCalcul> basesCalcul, APPrestationAcor prestation, APResultatCalcul rc) {
         APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, Dates.toJADate(prestation.getDateDebut()),
                 Dates.toJADate(prestation.getDateFin()));
-        if(baseCalcul != null) {
+        if(Objects.nonNull(baseCalcul)) {
             for (Object o : baseCalcul.getBasesCalculSituationProfessionnel()) {
                 APBaseCalculSituationProfessionnel bsp = (APBaseCalculSituationProfessionnel) o;
 
@@ -305,7 +305,7 @@ public class APImportationCalculAcor {
                      */
                     nomRCSP = mapNameWithoutEmployerType(nomRCSP);
                     if (rcsp.getIdTiers().equals(bsp.getIdTiers())
-                            && (rcsp.getIdAffilie().equals(bsp.getIdAffilie()) || ((rcsp.getNoAffilie() != null) && rcsp
+                            && (rcsp.getIdAffilie().equals(bsp.getIdAffilie()) || ((Objects.nonNull(rcsp.getNoAffilie())) && rcsp
                             .getNoAffilie().equals(bsp.getNoAffilie())))
                             && (nomBSP.contains(nomRCSP) || nomRCSP.contains(nomBSP))) {
                         found = true;
@@ -532,7 +532,7 @@ public class APImportationCalculAcor {
     }
 
     private APBaseCalculSituationProfessionnel findBaseCalculSitPro(APBaseCalcul basesCalcul,
-                                                                           String idTiers, String idAffilie, String nomAffilie)
+                                                                    String idTiers, String idAffilie, String nomAffilie)
             throws PRACORException {
         if (basesCalcul == null) {
             throw new PRACORException("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
@@ -541,18 +541,20 @@ public class APImportationCalculAcor {
         for (Object o : basesCalcul.getBasesCalculSituationProfessionnel()) {
             APBaseCalculSituationProfessionnel bcSitPro = (APBaseCalculSituationProfessionnel) o;
 
-            String nomSP = bcSitPro.getNom().trim();
-            String nomAff = nomAffilie.trim();
-            /*
-             * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '[' suivi d'un minimum
-             * de un ou de plusieurs chiffres ([0-9] signifie les caractères valide, donc les chiffres, le '+' dit que
-             * çà doit correspondre au moins une fois) et qui est suivit d'un ']' Si je n'est pas été assez claire :
-             * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
-             */
-            nomAff = mapNameWithoutEmployerType(nomAff);
-            if (idTiers.equals(bcSitPro.getIdTiers()) && idAffilie.equals(bcSitPro.getIdAffilie())
-                    && ((nomSP.contains(nomAff)) || nomAff.contains(nomSP))) {
-                return bcSitPro;
+            if(Objects.nonNull(bcSitPro.getNom())) {
+                String nomSP = bcSitPro.getNom().trim();
+                String nomAff = nomAffilie.trim();
+                /*
+                 * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '[' suivi d'un minimum
+                 * de un ou de plusieurs chiffres ([0-9] signifie les caractères valide, donc les chiffres, le '+' dit que
+                 * çà doit correspondre au moins une fois) et qui est suivit d'un ']' Si je n'est pas été assez claire :
+                 * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
+                 */
+                nomAff = mapNameWithoutEmployerType(nomAff);
+                if (Objects.equals(idTiers, bcSitPro.getIdTiers()) && Objects.equals(idAffilie, bcSitPro.getIdAffilie())
+                        && ((nomSP.contains(nomAff)) || nomAff.contains(nomSP))) {
+                    return bcSitPro;
+                }
             }
         }
 

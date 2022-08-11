@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Slf4j
@@ -84,9 +85,9 @@ public class APAcorBaseCalculMapper {
     }
 
     public static void mapImpotSourceInformation(BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
-        if(droit.getIsSoumisImpotSource()) {
+        if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
             basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
-            if(droit.getTauxImpotSource() != null && StringUtils.isNumeric(droit.getTauxImpotSource())) {
+            if(Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
                 basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
             }else {
                 basesCalcul.setTauxImpot(0.00);

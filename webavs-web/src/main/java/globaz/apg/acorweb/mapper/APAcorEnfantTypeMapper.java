@@ -11,8 +11,10 @@ import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.impl.PRNSS13ChiffresUtils;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,7 +33,7 @@ public class APAcorEnfantTypeMapper {
         EnfantType enfant = new EnfantType();
         enfant.setNom(situationFamiliale.getNom());
         enfant.setPrenom(situationFamiliale.getPrenom());
-        if(situationFamiliale.getNoAVS() != null && !situationFamiliale.getNoAVS().isEmpty()) {
+        if(StringUtils.isNotEmpty(situationFamiliale.getNoAVS())) {
             enfant.setNavs(Long.parseLong(NSUtil.unFormatAVS(situationFamiliale.getNoAVS())));
         }else{
             enfant.setNavs(0);
