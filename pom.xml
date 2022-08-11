@@ -610,6 +610,16 @@
 
   <build>
     <plugins>
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>versions-maven-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>check-dependencies-updates</id>
+					<phase>none</phase>
+				</execution>
+			</executions>
+		</plugin>
       <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
