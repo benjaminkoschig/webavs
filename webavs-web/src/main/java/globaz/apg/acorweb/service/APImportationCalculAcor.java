@@ -232,12 +232,12 @@ public class APImportationCalculAcor {
         VersementBeneficiaireApgType versementBeneficiaire = null;
         if(Objects.nonNull(versementApg.getVersementsFederal())){
             versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
-            if(versementBeneficiaire == null){
+            if(Objects.isNull(versementBeneficiaire)){
                 versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
             }
         }else if(Objects.nonNull(versementApg.getVersementsGenevois())){
             versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
-            if(versementBeneficiaire == null){
+            if(Objects.isNull(versementBeneficiaire)){
                 versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
             }
         }
@@ -413,7 +413,7 @@ public class APImportationCalculAcor {
                             // des cotisations, afin de determiner
                             // si la part salariale est supérieure à la part
                             // de l'indépendant, le cas échéant.
-                            if ((sitPro.getSalaireJournalierNonArrondi() == null)
+                            if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
                                     || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
                                     .toString())) {
                                 BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
@@ -534,7 +534,7 @@ public class APImportationCalculAcor {
     private APBaseCalculSituationProfessionnel findBaseCalculSitPro(APBaseCalcul basesCalcul,
                                                                     String idTiers, String idAffilie, String nomAffilie)
             throws PRACORException {
-        if (basesCalcul == null) {
+        if (Objects.isNull(basesCalcul)) {
             throw new PRACORException("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
         }
 
@@ -563,7 +563,7 @@ public class APImportationCalculAcor {
 
     private APBaseCalculSituationProfessionnel findBaseCalculSitProParNoAffilie(APBaseCalcul basesCalcul, String idTiers, String noAffilie,
                                                                                        String nomAffilie) throws PRACORException {
-        if (basesCalcul == null) {
+        if (Objects.isNull(basesCalcul)) {
             throw new PRACORException("La base de calcul est null et la situation professionelle ne peut être trouvée par no affilié !!!");
         }
 
