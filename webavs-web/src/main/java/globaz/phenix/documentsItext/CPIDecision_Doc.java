@@ -12,6 +12,7 @@ import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -2087,6 +2088,7 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
         entFactureManager.setSession(getSession());
         entFactureManager.setForIdTiers(decision.getIdTiers());
         entFactureManager.setForIdPassage(decision.getIdPassage());
+        entFactureManager.setLikeIdExterneFacture(decision.getAnneeDecision());
         entFactureManager.setForIdExterneRole(getAffiliation().getAffilieNumero());
         entFactureManager.setForIdRole(CaisseHelperFactory.getInstance().getRoleForAffiliePersonnel(getSession().getApplication()));
         entFactureManager.find(1);
