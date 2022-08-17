@@ -36,8 +36,13 @@ public class GFMainServlet extends FWJadeServlet {
 
     @Override
     protected void initializeActionMapping() {
+        //Mapping des actions P14
         registerActionMapping("eform.formulaire", GFFormulaireServletAction.class);
         registerActionMapping("eform.statistique", GFStatistiqueServletAction.class);
+        //Mapping des actions Da - Dossier
+        registerActionMapping("eform.envoi", GFEnvoiServletAction.class);
+        registerActionMapping("eform.demande", GFDemandeServletAction.class);
+        registerActionMapping("eform.suivi", GFSuiviServletAction.class);
     }
 
     @Override

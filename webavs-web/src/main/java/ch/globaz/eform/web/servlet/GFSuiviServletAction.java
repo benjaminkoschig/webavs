@@ -1,8 +1,6 @@
 package ch.globaz.eform.web.servlet;
 
-import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.constant.GFStatusEForm;
-import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -14,21 +12,18 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
-import org.apache.commons.io.FileUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 
-public class GFFormulaireServletAction extends FWDefaultServletAction {
-    public GFFormulaireServletAction(FWServlet aServlet) {
+public class GFSuiviServletAction extends FWDefaultServletAction {
+    public GFSuiviServletAction(FWServlet aServlet) {
         super(aServlet);
     }
 
-    public final static String PATH_EFORM = "eform.formulaire";
     public final static String ACTION_TELECHARGER = "telecharger";
     public final static String ACTION_CHANGE_STATUT = "statut";
 
@@ -86,8 +81,7 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 if(actionPart.equals(ACTION_TELECHARGER)) {
-                    GFFormulaireModel model =  ((GFFormulaireViewBean) viewBean).getFormulaire();
-                    GFFileUtils.downloadFile(response, model.getAttachementName(), FileUtils.readFileToByteArray(((GFFormulaireViewBean) viewBean).getAttachement()));
+                    GFFileUtils.downloadFile(response, ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachementName(), ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachement());
                 }
                 destination = _getDestChercherSucces(session, request, response, viewBean);
             } else {
