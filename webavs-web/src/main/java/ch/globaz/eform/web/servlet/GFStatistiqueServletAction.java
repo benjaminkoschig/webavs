@@ -17,11 +17,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class GFStatistiqueServletAction extends FWDefaultServletAction {
+    public final static String PATH_EFORM = "eform.statistique.statistique";
+
     public GFStatistiqueServletAction(FWServlet aServlet) {
         super(aServlet);
     }
-
-    public final static String PATH_EFORM = "eform.formulaire.statistique";
 
     @Override
     protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {

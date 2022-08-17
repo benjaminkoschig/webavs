@@ -19,12 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class GFFormulaireServletAction extends FWDefaultServletAction {
-    public GFFormulaireServletAction(FWServlet aServlet) {
+public class GFEnvoiServletAction extends FWDefaultServletAction {
+    public GFEnvoiServletAction(FWServlet aServlet) {
         super(aServlet);
     }
 
-    public final static String PATH_EFORM = "eform.formulaire";
     public final static String ACTION_TELECHARGER = "telecharger";
     public final static String ACTION_CHANGE_STATUT = "statut";
 
