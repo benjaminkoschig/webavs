@@ -21,7 +21,7 @@
 
 <%@ include file="/theme/find/javascripts.jspf" %>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" />
-<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/eform/formulaire/formulaire_rc.css" />
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/eformRoot/css/formulaire/formulaire_rc.css" />
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
