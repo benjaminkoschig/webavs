@@ -12,6 +12,8 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class GFEnvoiServletAction extends FWDefaultServletAction {
+    private static final Logger LOG = LoggerFactory.getLogger(GFEnvoiServletAction.class);
+
     public GFEnvoiServletAction(FWServlet aServlet) {
         super(aServlet);
     }
@@ -28,7 +32,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public final static String ACTION_CHANGE_STATUT = "statut";
 
     @Override
-    protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
+    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
         FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
         try {
 
@@ -37,10 +41,10 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             mainDispatcher.dispatch(viewBean, getAction());
 
         } catch (Exception e) {
-            JadeLogger.error("Failed to prepare viewBean for actionChercher", e);
+            LOG.error("Failed to prepare viewBean for actionChercher", e);
         }
 
-        super.actionChercher(session, request, response, mainDispatcher);
+        super.actionAfficher(session, request, response, mainDispatcher);
     }
 
     @Override

@@ -33,7 +33,7 @@
 					<node id="DAEnvoie">
 						<label refId="MENU_EFORM_DA_ENVOI"/>
 						<action command="/eform" responseTarget="fr_main">
-							<parameter name="userAction" value="eform.envoi.envoi.chercher"/>
+							<parameter name="userAction" value="eform.envoi.envoi.afficher"/>
 						</action>
 					</node>
 					<node id="DADemande">
