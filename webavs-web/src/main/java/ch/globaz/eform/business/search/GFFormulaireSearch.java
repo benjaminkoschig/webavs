@@ -14,6 +14,7 @@ public class GFFormulaireSearch extends JadeSearchSimpleModel {
     private String byType = null;
     private String byDate = null;
     private String byMessageId = null;
+    private String byBusinessProcessId = null;
     private String byLastName = null;
     private String byFirstName = null;
     private String likeNss = null;
@@ -64,6 +65,10 @@ public class GFFormulaireSearch extends JadeSearchSimpleModel {
 
     public String getByMessageId() {
         return byMessageId;
+    }
+
+    public String getByBusinessProcessId() {
+        return byBusinessProcessId;
     }
 
     public void setByMessageId(String byMessageId) {

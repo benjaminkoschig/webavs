@@ -19,7 +19,7 @@
     JadeUser currentUser = objSession.getUserInfo();
 
     GFFormulaireViewBean viewBean = (GFFormulaireViewBean) session.getAttribute("viewBean");
-    viewBean.retrieveWithBlob();
+    viewBean.retrieve();
     selectedIdValue = viewBean.getId();
 
     boolean manager = objSession.hasRight("eform.formulaire.formulaire.manager", "UPDATE");
@@ -234,8 +234,8 @@
                                 <dd><%=viewBean.getCompleteSubject(objSession)%></dd>
                                 <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_DATE"/></strong></dt>
                                 <dd>${viewBean.formulaire.date}</dd>
-                                <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_ID"/></strong></dt>
-                                <dd>${viewBean.formulaire.messageId}</dd>
+                                <dt><strong><ct:FWLabel key="JSP_EFORM_FORMULAIRE_BUSINESS_PROCESS_ID"/></strong></dt>
+                                <dd>${viewBean.formulaire.businessProcessId}</dd>
                             </dl>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
                                 <strong>${viewBean.formulaire.attachementName}</strong>
                             </div>
                             <div style="display: table-cell;">
-                                <strong>${viewBean.tailleAttachement}</strong>
+                                <strong>${viewBean.lenghtAttachement}</strong>
                             </div>
                             <div style="display: table-cell;">
                                 <a data-g-download="docType:zip,

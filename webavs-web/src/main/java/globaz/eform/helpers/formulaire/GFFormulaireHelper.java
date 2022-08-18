@@ -1,6 +1,8 @@
 package globaz.eform.helpers.formulaire;
 
 import ch.globaz.eform.constant.GFTypeEForm;
+import ch.globaz.eform.hosting.EFormFileService;
+import ch.globaz.eform.utils.GFFileUtils;
 import ch.globaz.eform.web.application.GFApplication;
 import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
 import globaz.eform.vb.formulaire.GFFormulaireViewBean;
@@ -16,6 +18,7 @@ import globaz.jade.admin.user.service.JadeUserService;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,9 +114,11 @@ public class GFFormulaireHelper extends FWHelper {
             GFFormulaireViewBean bean = (GFFormulaireViewBean) viewBean;
             try {
                 if (bean.getFormulaire().isNew()) {
-                    bean.retrieveWithBlob();
-                    if(bean.getFormulaire().getAttachement() == null) {
-                        viewBean.setMessage("Pas de fichier trouvé pour cet id : "+((GFFormulaireViewBean) viewBean).getId());
+                    EFormFileService fileService =EFormFileService.instance();
+
+                    bean.retrieve();
+                    if(!bean.getAttachement().exists()) {
+                        viewBean.setMessage("Pas de fichier trouvé pour ce formulaire : "+((GFFormulaireViewBean) viewBean).getId());
                         viewBean.setMsgType(FWViewBeanInterface.ERROR);
                     }
                 }
@@ -127,7 +132,7 @@ public class GFFormulaireHelper extends FWHelper {
             try {
                 if (bean.getFormulaire().isNew()) {
                     String statut = bean.getFormulaire().getStatus();
-                    bean.retrieveWithBlob();
+                    bean.retrieve();
                     bean.setByStatus(statut);
                     bean.setByGestionnaire(bean.getFormulaire().getUserGestionnaire());
                     bean.update();

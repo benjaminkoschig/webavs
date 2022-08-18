@@ -19,6 +19,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.sql.JadeAbstractSqlModelDefinition;
 import globaz.jade.persistence.sql.JadeSqlFieldDefinition;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
 import ch.globaz.corvus.business.exceptions.models.LotException;
 import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.services.HeraServiceLocator;
@@ -65,7 +67,6 @@ import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlter;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlterManager;
 import ch.globaz.prestation.business.exceptions.models.DemandePrestationException;
-import org.springframework.cglib.core.Local;
 
 /**
  * @author ECO
@@ -74,7 +75,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#count
      * (ch.globaz.pegasus.business.models.demande.DemandeSearch)
      */
@@ -88,7 +89,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#create
      * (ch.globaz.pegasus.business.models.demande.Demande)
      */
@@ -148,7 +149,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#delete
      * (ch.globaz.pegasus.business.models.demande.Demande)
      */
@@ -174,7 +175,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         ListDemandesSearch search = (ListDemandesSearch) QueryAlterManager.executSearch(searchModel, new QueryAlter() {
             @Override
             public String alterSql(String sql, JadeAbstractSearchModel search,
-                    JadeAbstractSqlModelDefinition modelDefinition) throws JadePersistenceException {
+                                   JadeAbstractSqlModelDefinition modelDefinition) throws JadePersistenceException {
                 String[] s = sql.split("ORDER BY");
                 String virgule = "";
                 if (s.length > 0) {
@@ -197,7 +198,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.pegasus.business.services.models.demande.DemandeService#hasDemandePCEnPremiereInstruction(java.lang
      * .String)
@@ -229,7 +230,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#read (java.lang.String)
      */
     @Override
@@ -263,7 +264,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#search
      * (ch.globaz.pegasus.business.models.demande.DemandeSearch)
      */
@@ -277,7 +278,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.pegasus.business.services.models.demande.DemandeService#searchDemandes(ch.globaz.pegasus.business.
      * models
@@ -295,7 +296,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.pegasus.business.services.models.demande.DemandeService#searchRevisions(ch.globaz.pegasus.business.
      * models.demande.ListRevisionsSearch)
@@ -312,7 +313,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.demande.DemandeService#update
      * (ch.globaz.pegasus.business.models.demande.Demande)
      */
@@ -358,10 +359,10 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
             listDecisionsSearch.setForDemande(demande.getId());
             listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
             if (listDecisionsSearch.getSearchResults().length > 0) {
-                return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions)listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
+                return IPCDecision.CS_TYPE_REFUS_AC.equals(((ListDecisions) listDecisionsSearch.getSearchResults()[0]).getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision());
             }
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException | DecisionException e) {
-            JadeThread.logWarn(demande.getClass().getName(),"Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
+            JadeThread.logWarn(demande.getClass().getName(), "Erreur non bloquante à la recherche d'anciennes décisions" + e.getMessage());
         }
         return false;
     }
@@ -376,11 +377,11 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
      */
     private boolean isDateFinDemandeFutur(String dateFin) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate dateFinDemande = LocalDate.parse("01."+dateFin, formatter);
+        LocalDate dateFinDemande = LocalDate.parse("01." + dateFin, formatter);
         dateFinDemande = dateFinDemande.withDayOfMonth(dateFinDemande.lengthOfMonth());
         LocalDate now = LocalDate.now();
         if (now.getYear() == dateFinDemande.getYear()) {
-            return dateFinDemande.getMonthValue() == 12 ? true: false;
+            return dateFinDemande.getMonthValue() == 12 ? true : false;
         }
         return false;
     }
@@ -569,19 +570,30 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
     }
 
     @Override
-    public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
+    public Demande dateReduction(Demande demande, String dateReduc, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException {
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                 Arrays.asList(demande.getId()));
         String today = JadeDateUtil.getGlobazFormattedDate(new Date());
-        String dateDeb = demande.getSimpleDemande().getDateFin();
+        String dateFinReduc = dateReduc;
+        String dateFin = demande.getSimpleDemande().getDateFin();
+        demande.getSimpleDemande().setDateFin(dateFinReduc);
         for (Droit droit : droits) {
-            droit = PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, demande, today, dateDeb,
+            PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, demande, today, dateFinReduc,
                     getDateDecision(), BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto,
                     null);
         }
-        if (dateDeb.equals(demande.getSimpleDemande().getDateFinInitial())) {
+        if (dateFinReduc.equals(dateFin)) {
             demande.getSimpleDemande().setDateFinInitial(null);
+            update(demande);
+        } else {
+            if (JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateFinInitial())) {
+                demande.getSimpleDemande().setDateFinInitial(dateFin);
+            }
+            demande.getSimpleDemande().setDateFin(dateFinReduc);
+            if (JadeStringUtil.isBlankOrZero(dateFinReduc)) {
+                demande.getSimpleDemande().setDateFin(demande.getSimpleDemande().getDateFinInitial());
+            }
             update(demande);
         }
         return demande;

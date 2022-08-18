@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<JadeFTPServer>
+	<!--servers-->
+	<servers>
+		<!--
+		<server name="exempleWithCertificat">
+			<protocol>FTP|SFTP</protocol>
+			<host></host>
+			<knownhosts></knownhosts>
+			<port></port>
+			<user></user>
+			<password></password>
+			<certificats>
+				<certificat passphrase="">C:\\.ssh\\private_openssh</certificat>
+			</certificats>
+		</server>
+		<server name="eFormServer">
+			<protocol>SFTP</protocol>
+			<host>localhost</host>
+			<port>22</port>
+			<user>foo</user>
+			<certificats>
+				<certificat passphrase="passphrase">C:\\Users\\tpa\\.ssh\\sftp\\foo_key</certificat>
+			</certificats>
+		</server>
+		-->
+		<server name="eFormServer">
+			<protocol>SFTP</protocol>
+			<host>sftpdata.globaz.ch</host>
+			<port>22</port>
+			<user>sftp-product</user>
+			<password>STU4HIMA</password>
+		</server>
+		<!--
+		<server name="eFormServer">
+			<protocol>SFTP</protocol>
+			<host>fdsbc.post.ch</host>
+			<port>22</port>
+			<user>e09089</user>
+			<certificats>
+				<certificat passphrase="ebillsftpglob4az">C:\\Users\\tpa\\.ssh\\private_openssh_id_rsa_fdsbc.post.ch</certificat>
+			</certificats>
+		</server>
+		-->
+	</servers>
+</JadeFTPServer>

@@ -48,6 +48,7 @@ public class GFMainServlet extends FWJadeServlet {
 
         aStack.addRule(new FWRemoveActionsEndingWith(".lister"));
         aStack.addRule(new FWRemoveActionsEndingWith(".modifier"));
+        aStack.addRule(new FWRemoveActionsEndingWith(".telecharger"));
 
         // Evite de garder 2 fois la même page
         aStack.addRule(new FWSuppressSameUserActions());
