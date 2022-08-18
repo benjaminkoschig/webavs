@@ -14,6 +14,7 @@ public class PYTiersDTO {
     // Mandatory fields
     private String surname;
     private String language;
+    private String typeAddress;
     private String street;
     private String streetNumber;
     private String postalCode;
@@ -44,6 +45,7 @@ public class PYTiersDTO {
     private String ccpNumber;
     private String accountNumber;
     private String status;
+    private String clearingNumber;
     private String branchOfficePostalCode;
     private String country;
     private String bankCountry;
@@ -76,13 +78,13 @@ public class PYTiersDTO {
 
     /**
      * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
-     *
+     * <p>
      * isValidForCreation vérifie l'absence des champs et lance une erreur en cas de problème.
      *
      * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
      */
     @JsonIgnore
-    public Boolean isValid(){
+    public Boolean isValid() {
         // TODO: Decide how we're doing it for page 2 and other fields
 
         Vector<String> mandatoryParameters = new Vector<>();
@@ -99,18 +101,18 @@ public class PYTiersDTO {
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
-                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForCreation(this)
+                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
+                            && PYValidateDTO.isValidForCreation(this)
             );
-        } else if (Boolean.TRUE.equals(isPhysicalPerson)){
+        } else if (Boolean.TRUE.equals(isPhysicalPerson)) {
             mandatoryParameters.add(title);
             mandatoryParameters.add(name);
             mandatoryParameters.add(nss);
             mandatoryParameters.add(birthDate);
             mandatoryParameters.add(civilStatus);
             return (
-                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidForCreation(this)
+                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
+                            && PYValidateDTO.isValidForCreation(this)
             );
         }
         return false;
