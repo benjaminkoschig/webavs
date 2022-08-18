@@ -77,7 +77,7 @@
     }
 </script>
 
-<link rel="stylesheet" type="text/css" href="<%=servletContext%>/common/css/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/common/css/bootstrap-2.0.4.css"/>
 <style>
 
     * {
