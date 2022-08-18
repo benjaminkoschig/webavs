@@ -339,12 +339,12 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
     public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
             String mailProcessCompta) throws JadePersistenceException, DecisionException, JadeCloneModelException,
             JadeApplicationException {
-        validerDecisionSuppression(decisionSuppression, isComptabilisationAuto, mailProcessCompta, false);
+        validerDecisionSuppression(decisionSuppression, isComptabilisationAuto, mailProcessCompta, false,false);
     }
 
     @Override
     public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
-            String mailProcessCompta, boolean isAnnulation) throws JadePersistenceException, DecisionException,
+            String mailProcessCompta, boolean isAnnulation,boolean isDateReduc) throws JadePersistenceException, DecisionException,
             JadeCloneModelException, JadeApplicationException {
 
         if (!PegasusServiceLocator.getPmtMensuelService().isValidationDecisionAuthorise()) {
@@ -368,7 +368,7 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
 
             if (!isAnnulation && EPCProperties.GESTION_COMMUNICATION_OCC.getBooleanValue()) {
                 PegasusImplServiceLocator.getGenerationCommunicationOCCService().genereCommunicationOCCSuppression(
-                        decisionSuppression);
+                        decisionSuppression,isDateReduc);
             }
 
             // Comptabilisation

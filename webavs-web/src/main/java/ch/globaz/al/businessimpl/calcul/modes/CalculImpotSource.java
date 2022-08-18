@@ -5,6 +5,7 @@ import ch.globaz.al.business.constantes.ALCSPays;
 import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.allocataire.AllocataireModel;
+import ch.globaz.al.business.models.dossier.DossierAgricoleComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.dossier.DossierModel;
@@ -37,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CalculImpotSource {
 
@@ -49,8 +51,8 @@ public class CalculImpotSource {
             throws JadeApplicationException, JadePersistenceException {
         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), dateCalcul);
         if (dossier.getDossierModel().getRetenueImpot()
-                && !ALCSDossier.PAIEMENT_INDIRECT.equals(getPaiementMode((DossierComplexModel) dossier, dateCalcul))) {
-            String cantonImposition = getCantonImposition((DossierComplexModel) dossier, infos.getCanton());
+                && !ALCSDossier.PAIEMENT_INDIRECT.equals(getPaiementMode(dossier, dateCalcul))) {
+            String cantonImposition = getCantonImposition(dossier, infos.getCanton());
             for (CalculBusinessModel droitCalcule : droitsCalcules) {
                 if (droitCalcule.getDroit().equals(droit)) {
                     computeISforDroit(dossier.getDossierModel(), droitCalcule, droitCalcule.getCalculResultMontantBase(), tauxGroupByCanton, tauxImpositionRepository, cantonImposition, dateCalcul);
@@ -63,7 +65,7 @@ public class CalculImpotSource {
             throws JadeApplicationException {
         try {
             // Si pas de montant prestation pas de montantIS
-            if(JadeStringUtil.isBlankOrZero(montant)){
+            if (JadeStringUtil.isBlankOrZero(montant)) {
                 return;
             }
             // cherche si le droit de ce dossier possède une prestation déjà comptabilisée à extourner pour la période en cours de traitement,
@@ -71,12 +73,12 @@ public class CalculImpotSource {
 
             String montantIS;
             if (prestationImpotSourceAExtourner != null) {
-                if(montant.equals(prestationImpotSourceAExtourner.getMontantDetailPrestation())) {
+                if (montant.equals(prestationImpotSourceAExtourner.getMontantDetailPrestation())) {
                     // l'ancien montant correspond au nouveau : on garde le montantIS précédemment calculé
                     montantIS = prestationImpotSourceAExtourner.getMontantIS();
                 } else {
                     Montant montantPrestation = new Montant(montant).add(new Montant(prestationImpotSourceAExtourner.getMontantDetailPrestation()).negate());
-                    if(montantPrestation.isPositive()) {
+                    if (montantPrestation.isPositive()) {
                         // montant à verser supérieur : on applique le taux actuel sur la différence et ajoute l'ancien montantIS
                         Montant impotsDiff = rechercheImpot(montantPrestation.getValue(), tauxGroupByCanton, tauxImpositionRepository, cantonImposition, JadeDateUtil.getGlobazFormattedDate(new java.util.Date()));
                         montantIS = impotsDiff.add(new Montant(prestationImpotSourceAExtourner.getMontantIS())).getValue();
@@ -90,9 +92,10 @@ public class CalculImpotSource {
             }
             droitCalcule.setCalculResultMontantIS(montantIS);
         } catch (TauxImpositionNotFoundException e) {
-            throw new ALCalculException(e.getMessage());
+            throw new ALCalculException(e.getMessage(), e);
         }
     }
+
     private static Montant rechercheImpot(String montant, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository, String cantonImposition, String date) throws TauxImpositionNotFoundException {
         Taux tauxApplicable = findTauxApplicable(tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
         return new Montant(montant).multiply(tauxApplicable).normalize();
@@ -129,21 +132,28 @@ public class CalculImpotSource {
 
     /**
      * Permet de récupérer le canton d'imposition suivant les règles suivantes :
-     *  - Si canton d'imposition forcé renseigné : canton imposition forcé.
-     *  - Si résident Suisse : canton de résidence de l'allocataire.
-     *  - Si résident hors Suisse : canton de l'affilié.
+     * - Si canton d'imposition forcé renseigné : canton imposition forcé.
+     * - Si résident Suisse : canton de résidence de l'allocataire.
+     * - Si résident hors Suisse : canton de l'affilié.
      *
      * @param dossierComplexModel
      * @param cantonAffiliation
      * @return le canton d'imposition
      */
-    public static String getCantonImposition(DossierComplexModel dossierComplexModel, String cantonAffiliation) throws JadeApplicationException {
+    public static String getCantonImposition(DossierComplexModelRoot dossierComplexModel, String cantonAffiliation) throws JadeApplicationException {
         String cantonImposition;
-        AllocataireModel allocataireModel = dossierComplexModel.getAllocataireComplexModel().getAllocataireModel();
-        String cantonImpositionForce =  dossierComplexModel.getDossierModel().getCantonImposition();
+        String cantonImpositionForce = dossierComplexModel.getDossierModel().getCantonImposition();
+
+        AllocataireModel allocataireModel = null;
+        if (dossierComplexModel instanceof DossierComplexModel) {
+            allocataireModel = ((DossierComplexModel) dossierComplexModel).getAllocataireComplexModel().getAllocataireModel();
+        } else if (dossierComplexModel instanceof DossierAgricoleComplexModel) {
+            allocataireModel = ((DossierAgricoleComplexModel) dossierComplexModel).getAllocataireAgricoleComplexModel().getAllocataireModel();
+        }
+
         if (StringUtils.isNotEmpty(cantonImpositionForce) && !StringUtils.equals("0", cantonImpositionForce)) {
             cantonImposition = cantonImpositionForce;
-        } else if (StringUtils.equals(ALCSPays.PAYS_SUISSE, allocataireModel.getIdPaysResidence())) {
+        } else if (Objects.nonNull(allocataireModel) && StringUtils.equals(ALCSPays.PAYS_SUISSE, allocataireModel.getIdPaysResidence())) {
             cantonImposition = allocataireModel.getCantonResidence();
         } else {
             cantonImposition = ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(cantonAffiliation);
@@ -161,11 +171,16 @@ public class CalculImpotSource {
                 new Date(date));
     }
 
-    public static String getPaiementMode(DossierComplexModel dossier, String date) {
+    public static String getPaiementMode(DossierComplexModelRoot dossier, String date) {
 
         String idTiersBeneficiaire = dossier.getDossierModel().getIdTiersBeneficiaire();
-        String idTiersAllocataire = dossier.getAllocataireComplexModel().getAllocataireModel()
-                .getIdTiersAllocataire();
+
+        String idTiersAllocataire = null;
+        if (dossier instanceof DossierComplexModel) {
+            idTiersAllocataire = ((DossierComplexModel) dossier).getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire();
+        } else if (dossier instanceof DossierAgricoleComplexModel) {
+            idTiersAllocataire = ((DossierAgricoleComplexModel) dossier).getAllocataireAgricoleComplexModel().getAllocataireModel().getIdTiersAllocataire();
+        }
 
         if (dossier.isNew()) {
 

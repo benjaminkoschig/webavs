@@ -38,8 +38,8 @@
             <criteria name="//message/header/messageType">2504</criteria>
             <handler>
                 <class>ch.globaz.eform.businessimpl.services.sedex.GFTraitementMessageServiceImpl</class>
-                <param key="userSedex">44kvDa8DmQO0QloqIBTpdg==</param>
-                <param key="passSedex">npe/eW73EFnkf1sbh0iroQ==</param>
+                <param key="userSedex">+woh7PbBpfxbQvWOM90U9A==</param>
+                <param key="passSedex">P6NxD5sds4mRcgD1M9cE+w==</param>
             </handler>
         </mapping>
     </messageMappings>

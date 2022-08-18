@@ -71,7 +71,7 @@ public interface ValidationDecisionService extends JadeApplicationService {
             JadeCloneModelException, JadeApplicationException;
 
     public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
-            String mailProcessCompta, boolean isAnnulation) throws JadePersistenceException, DecisionException,
+            String mailProcessCompta, boolean isAnnulation,boolean isDateReduc) throws JadePersistenceException, DecisionException,
             JadeCloneModelException, JadeApplicationException;
 
     /**

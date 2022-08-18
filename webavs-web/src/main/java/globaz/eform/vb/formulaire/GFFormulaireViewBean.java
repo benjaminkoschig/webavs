@@ -5,6 +5,8 @@ import ch.globaz.common.file.FileUtils;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.constant.GFTypeEForm;
+import ch.globaz.eform.hosting.EFormFileService;
+import ch.globaz.eform.utils.GFFileUtils;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -14,11 +16,15 @@ import globaz.pyxis.util.CommonNSSFormater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GFFormulaireViewBean.class);
 
-    GFFormulaireModel formulaire;
+    private GFFormulaireModel formulaire;
+
+    private File attachement;
 
     private String byGestionnaire = null;
     
@@ -45,6 +51,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
     public GFFormulaireViewBean() {
         super();
         formulaire = new GFFormulaireModel();
+        attachement = null;
     }
 
     public GFFormulaireViewBean(GFFormulaireModel formulaire) {
@@ -82,14 +89,11 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
     public void retrieve() throws Exception {
         formulaire = GFEFormServiceLocator.getGFEFormService().read(getId());
         try {
-            idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
+            EFormFileService fileService = EFormFileService.instance();
+            this.attachement = fileService.retrieve(GFFileUtils.generateFilePath(formulaire), formulaire.getAttachementName());
         } catch (Exception e) {
-            LOG.error("Un problème est survenu lors de la récupération du Tiers "+formulaire.getBeneficiaireNss(), e);
+            LOG.error("Un problème est survenu lors du chargement de la pièce jointe " + formulaire.getAttachementName(), e);
         }
-    }
-
-    public void retrieveWithBlob() throws Exception {
-        formulaire = GFEFormServiceLocator.getGFEFormService().readWithBlobs(formulaire.getId());
         try {
             idTiers = searchTierByNss(formulaire.getBeneficiaireNss());
         } catch (Exception e) {
@@ -116,6 +120,10 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     public GFFormulaireModel getFormulaire() {
         return formulaire;
+    }
+
+    public File getAttachement() {
+        return attachement;
     }
 
     public String getCompleteSubject(BSession session) throws NotFoundException {
@@ -146,7 +154,10 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         return idTiers;
     }
 
-    public String getTailleAttachement() {
-        return FileUtils.formatTaille(formulaire.getAttachement(), false);
+    public String getLenghtAttachement() {
+        if (this.attachement == null || !this.attachement.exists()) {
+            return "N/A";
+        }
+        return FileUtils.formatLenght(this.attachement, false);
     }
 }

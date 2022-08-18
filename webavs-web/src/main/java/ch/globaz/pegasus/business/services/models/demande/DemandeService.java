@@ -235,7 +235,7 @@ public interface DemandeService extends JadeApplicationService {
             DossierException, DroitException, JadeApplicationServiceNotAvailableException, DecisionException,
             DonneeFinanciereException, PCAccordeeException;
 
-    public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
+    public Demande dateReduction(Demande demande, String dateReduc, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException;
 
     public BigDecimal calculerMontantRestitution(String idDemande, String dateSuppressionDroit)
