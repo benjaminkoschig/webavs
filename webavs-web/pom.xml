@@ -715,6 +715,11 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <!-- Fin de dépendances pour anakin -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
 
         <dependency>
             <groupId>ch.admin.ofit.anakin</groupId>
