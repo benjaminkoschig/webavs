@@ -27,7 +27,7 @@ public class PYExecuteService extends BProcess {
             if (dto.getPostalCode() != null) {
                 idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
             }
-            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation
+            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation. Better check for payment info's fields
             if (idMailAddress != null) {
                 PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
             }
@@ -60,6 +60,9 @@ public class PYExecuteService extends BProcess {
         // TODO: upgrade the updating
         try {
             PRTiersHelper.updateTiersPage1(getSession(), dto);
+//            PRTiersHelper.updateTiersPaymentAddress(getSession(), dto);
+//            PRTiersHelper.retrieveAdressePaiementId(dto.getId());
+//            PRTiersHelper.retrieveAvoirPaiementId(dto.getId());
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);

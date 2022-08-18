@@ -1,12 +1,8 @@
 package globaz.pyxis.web.DTO;
 
 import ch.globaz.common.util.NSSUtils;
-import ch.globaz.pyxis.domaine.CodesSysPays;
-import ch.globaz.pyxis.domaine.DomaineApplication;
-import ch.globaz.pyxis.domaine.EtatCivil;
-import ch.globaz.pyxis.domaine.Sexe;
-import ch.globaz.pyxis.domaine.StatusPaymentAddress;
-import ch.globaz.pyxis.domaine.Titre;
+import ch.globaz.pyxis.business.service.AdresseService;
+import ch.globaz.pyxis.domaine.*;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.external.models.pyxis.TypeContact;
 import globaz.jade.client.util.JadeStringUtil;
@@ -72,7 +68,7 @@ public class PYValidateDTO {
     /**
      * Méthode pour s'assurer de la validité des données du DTO.
      * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
-     *
+     * <p>
      * Comme un field à null indique l'absence de modification (et pas la modification pour mettre à la valeur null),
      * on vérifie que les fields ne soient pas à null avant d'appeller les méthodes de check.
      *
@@ -111,13 +107,21 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
         }
 
+        if (dto.getTypeAddress() != null) {
+            getTypeAddressAsSystemCode(dto);
+        }
+
+        if (dto.getCountry() != null) {
+            getCountryAsSystemCode(dto);
+        }
+
         if (dto.getCcpNumber() != null)
             checkCCP(dto.getCcpNumber());
         if (dto.getStatus() != null)
             checkStatusPaymentAddress(dto.getStatus());
 
-        for (PYContactDTO contactDTO: dto.getContacts()) {
-            for (PYMeanOfCommunicationDTO meanDTO: contactDTO.getMeansOfCommunication()) {
+        for (PYContactDTO contactDTO : dto.getContacts()) {
+            for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
                 if (meanDTO.getApplicationDomain() != null)
                     checkApplicationDomain(meanDTO.getApplicationDomain());
                 if (meanDTO.getMeanOfCommunicationType() != null)
@@ -367,11 +371,43 @@ public class PYValidateDTO {
     }
 
     /**
-     * Méthode pour vérifier que country soit un code système valide désignant un pays
+     * Méthode pour vérifier que typeAddress soit un code système valide désignant un type d'adresse
+     *
+     * @param dto
+     */
+    private static final void getTypeAddressAsSystemCode(PYTiersDTO dto) {
+        if (dto.getTypeAddress() != null && dto.getTypeAddress() != "") {
+            if (dto.getTypeAddress().equals(AdresseService.CS_TYPE_COURRIER) || dto.getTypeAddress().equals(AdresseService.CS_TYPE_DOMICILE))
+                dto.setTypeAddress(dto.getTypeAddress());
+        } else {
+            System.err.println("Erreur lors de l'assignation du type d'adresse");
+            throw new PYBadRequestException("Erreur lors du type d'adresse");
+        }
+    }
+
+    /**
+     * Méthode pour vérifier que nationality soit un code système valide désignant un pays
      *
      * @param dto
      */
     private static final void getNationalityAsSystemCode(PYTiersDTO dto) {
+        if (dto.getNationality() != null && dto.getNationality() != "") {
+            CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getNationality());
+            if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
+                dto.setNationality(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
+            } else {
+                System.err.println("Erreur lors de l'assignation de la nationalité");
+                throw new PYBadRequestException("Erreur lors de l'assignation de la nationalité");
+            }
+        }
+    }
+
+    /**
+     * Méthode pour vérifier que country soit un code système valide désignant un pays
+     *
+     * @param dto
+     */
+    private static final void getCountryAsSystemCode(PYTiersDTO dto) {
         if (dto.getCountry() != null && dto.getCountry() != "") {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
