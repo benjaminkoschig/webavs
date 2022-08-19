@@ -39,7 +39,7 @@
 					<node id="DADemande">
 						<label refId="MENU_EFORM_DA_DEMANDE"/>
 						<action command="/eform" responseTarget="fr_main">
-							<parameter name="userAction" value="eform.demande.demande.chercher"/>
+							<parameter name="userAction" value="eform.demande.demande.afficher"/>
 						</action>
 					</node>
 					<node id="DASuivis">

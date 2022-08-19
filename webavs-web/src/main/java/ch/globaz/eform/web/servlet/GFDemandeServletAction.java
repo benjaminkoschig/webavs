@@ -1,8 +1,6 @@
 package ch.globaz.eform.web.servlet;
 
-import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.utils.GFFileUtils;
-import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -28,7 +26,13 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
     public final static String ACTION_CHANGE_STATUT = "statut";
 
     @Override
-    protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
+    protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
+                                     HttpServletResponse response, FWViewBeanInterface viewBean) {
+        return this.getActionFullURL() + ".afficher";
+    }
+
+    /*@Override
+    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
         FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
         try {
 
@@ -37,17 +41,11 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
             mainDispatcher.dispatch(viewBean, getAction());
 
         } catch (Exception e) {
-            JadeLogger.error("Failed to prepare viewBean for actionChercher", e);
+            JadeLogger.error("Failed to prepare viewBean for actionAfficher", e);
         }
 
-        super.actionChercher(session, request, response, mainDispatcher);
-    }
-
-    @Override
-    protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
-                                     HttpServletResponse response, FWViewBeanInterface viewBean) {
-        return this.getActionFullURL() + ".afficher";
-    }
+        super.actionAfficher(session, request, response, mainDispatcher);
+    }*/
 
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -55,20 +53,12 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
         String actionPart = getAction().getActionPart();
         String destination;
 
-        // Définition de l'action custom standard pour l'application ARIES
-        // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"
-
         try {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
 
             // Récupération du viewBean depuis la session
             FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(action, dispatcher.getPrefix());
-            String id = request.getParameter("selectedId");
-            ((GFFormulaireViewBean) viewBean).getFormulaire().setId(id);
-            if (actionPart.equals(ACTION_CHANGE_STATUT)) {
-                String statut = request.getParameter("statut");
-                ((GFFormulaireViewBean) viewBean).getFormulaire().setStatus(GFStatusEForm.getStatusByCode(statut).getCodeSystem());
-            }
+
             // Copie des propriétés
             JSPUtils.setBeanProperties(request, viewBean);
 
@@ -80,9 +70,6 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
             boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
 
             if (goesToSuccessDest) {
-                if(actionPart.equals(ACTION_TELECHARGER)) {
-                    GFFileUtils.downloadFile(response, ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachementName(), ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachement());
-                }
                 destination = _getDestChercherSucces(session, request, response, viewBean);
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);
