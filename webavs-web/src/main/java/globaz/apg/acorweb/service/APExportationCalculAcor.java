@@ -16,6 +16,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.acor.PRACORConst;
+import globaz.prestation.acor.PRAcorTechnicalException;
 import globaz.prestation.acor.web.mapper.PRAcorDemandeTypeMapper;
 import globaz.prestation.acor.web.mapper.PRAcorMapper;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
@@ -69,18 +70,22 @@ public class APExportationCalculAcor {
     private AssureType completeMappingAssure(final InHostType inHost,
                                              final AssureType assureType) {
 
-            AllocationPerteGainAPG allocationPerteGainAPG = new AllocationPerteGainAPG();
-            List<APSituationProfessionnelle> situationsProfessionnelles = APLoader.loadSituationsProfessionnelles(idDroit, session);
-            // TODO : splitter gestion APG et maternité ?
+        AllocationPerteGainAPG allocationPerteGainAPG = new AllocationPerteGainAPG();
+        List<APSituationProfessionnelle> situationsProfessionnelles = APLoader.loadSituationsProfessionnelles(idDroit, session);
+        // TODO : splitter gestion APG et maternité ?
+        try {
             if (droit instanceof APDroitAPG) {
                 allocationPerteGainAPG.setBasesCalculAPG(new APAcorBaseCalculMapper((APDroitAPG) droit, situationsProfessionnelles).map(session));
-            } else if(droit instanceof APDroitMaternite) {
+            } else if (droit instanceof APDroitMaternite) {
                 allocationPerteGainAPG.setBasesCalculAMat(new APAcorBaseCalculAmatMapper((APDroitMaternite) droit).map(session));
                 inHost.getEnfant().addAll(new APAcorEnfantTypeMapper(tiersRequerant, APLoader.loadSituationFamillialeMat(idDroit, session)).map());
                 inHost.getAssure().add(createPereInconnu());
             }
-            allocationPerteGainAPG.getRevenu().addAll(new APAcorRevenuMapper(situationsProfessionnelles, droit).map(session));
-            assureType.setAllocationPerteGain(allocationPerteGainAPG);
+        } catch (Exception e) {
+            throw new PRAcorTechnicalException("Une erreur est survenue lors de l'exportation d'un calcul ACOR", e);
+        }
+        allocationPerteGainAPG.getRevenu().addAll(new APAcorRevenuMapper(situationsProfessionnelles, droit).map(session));
+        assureType.setAllocationPerteGain(allocationPerteGainAPG);
         return assureType;
     }
 

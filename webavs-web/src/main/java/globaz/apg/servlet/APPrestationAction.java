@@ -270,22 +270,22 @@ public class APPrestationAction extends PRDefaultAction {
         }
     }
 
-    // public String actionAfficherErreurValidationPrestation(HttpSession session, HttpServletRequest request,
-    // HttpServletResponse response,
-    // FWDispatcher mainDispatcher, FWViewBeanInterface vb) throws Exception {
-    //
-    // if (!(vb instanceof APValidationPrestationViewBean)) {
-    // throw new APWrongViewBeanTypeException(
-    // "Wrong viewBean type for action : actionAfficherErreurValidationPrestation. It must be an instance of : "
-    // + APValidationPrestationViewBean.class.getName());
-    // }
-    // APValidationPrestationViewBean viewBean = (APValidationPrestationViewBean) vb;
-    // if (viewBean == null) {
-    // throw new
-    // APViewBeanNotFoundException("ViewBean not found for action : actionAfficherErreurValidationPrestation");
-    // }
-    // return "";
-    // }
+    public String actionValiderPrestationsDepuisACORWeb(HttpSession session, HttpServletRequest request,
+                                                      HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
+        ((APCalculACORViewBean) viewBean).setIdDroit(getSelectedId(request));
+
+        APPrestationViewBean pViewBean = new APPrestationViewBean();
+        pViewBean.setIdDroit(getSelectedId(request));
+        pViewBean.setCalculACOR(true);
+
+        if (FWViewBeanInterface.ERROR.equals(viewBean.getMsgType())) {
+            this.saveViewBean(viewBean, session);
+
+            return FWDefaultServletAction.ERROR_PAGE;
+        } else {
+            return controllerLesPrestation(session, request, response, mainDispatcher, pViewBean);
+        }
+    }
 
     private String controllerLesPrestation(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface vb) throws Exception {
