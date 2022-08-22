@@ -461,7 +461,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             genererPrestations(session, data.getDroit(), data.getFraisDeGarde(), data.getBasesCalcul());
 
-            viewBean = calculPrestationAMAT_ACM(session, transaction, data.getDroit(), data.getAction());
+            viewBean = calculPrestationAMAT_ACM(session, transaction, data.getDroit());
 
         } else {
             // Les données ne sont pas valides
@@ -626,7 +626,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     }
 
     public APPrestationViewBean calculPrestationAMAT_ACM(final BSession session, final BTransaction transaction,
-                                                         final APDroitLAPG droit, final FWAction action) throws Exception {
+                                                         final APDroitLAPG droit) throws Exception {
         APPrestationViewBean pViewBean;
         // charger la première prestation générée pour rediriger vers les
         // répartitions
@@ -706,7 +706,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                             // creation des prestations LAMat
                             if (APPrestationHelper.hasLAMatFalgInSitPro(session, droit)) {
-                                helper.calculerDroitMaterniteCantonale(vbDroit, action, session);
+                                helper.calculerDroitMaterniteCantonale(vbDroit, session);
                             }
 
                             // effacement des prestations standard
@@ -728,7 +728,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                             // creation des prestations LAMat
                             if (APPrestationHelper.hasLAMatFalgInSitPro(session, droit)) {
-                                helper.calculerDroitMaterniteCantonale(vbDroit, action, session);
+                                helper.calculerDroitMaterniteCantonale(vbDroit, session);
                             }
 
                             // effacement des prestations standard d'avant
@@ -754,7 +754,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                         .equals(propertyValue);
                 // Si la caisse est une caisse horlogere => calculer les ACM
                 if (hasPrestationACMALFA && APPrestationHelper.hasAcmFalgInSitPro(session, droit) && !isDroitAdoption) {
-                    helper.calculerACM(vbDroit, action, session);
+                    helper.calculerACM(vbDroit, session);
                 }
             } catch (final RemoteException e1) {
                 session.addError(session.getLabel("ERROR_CALCUL_LAMAT_ACM") + " " + e1.toString());

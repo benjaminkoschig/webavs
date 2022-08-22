@@ -26,15 +26,6 @@ import javax.servlet.http.HttpSession;
  */
 public class APCalculACORAction extends PRDefaultAction {
 
-    // ~ Static fields/initializers
-    // -------------------------------------------------------------------------------------
-
-    private static final String CACHE_CONTROL_CLE = "Cache-Control";
-    private static final String CACHE_CONTROL_VALEUR = "private, max-age=120";
-    private static final String CONTENT_DISPOSITION_CLE = "Content-Disposition";
-    private static final String CONTENT_DISPOSITION_VALEUR = "attachment; attachment; filename=\"acor.bat\"";
-    private static final String TYPE_MIME_BAT = "application/x-bat";
-
     private static final String VERS_ECRAN_DE = "_de.jsp";
 
     // ~ Constructors
@@ -42,9 +33,8 @@ public class APCalculACORAction extends PRDefaultAction {
 
     /**
      * Crée une nouvelle instance de la classe APCalculACORAction.
-     * 
-     * @param servlet
-     *            DOCUMENT ME!
+     *
+     * @param servlet DOCUMENT ME!
      */
     public APCalculACORAction(FWServlet servlet) {
         super(servlet);
@@ -55,27 +45,18 @@ public class APCalculACORAction extends PRDefaultAction {
 
     /**
      * DOCUMENT ME!
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
-     * 
+     *
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * 
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String actionCalculerACOR(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+                                     FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
         APCalculACORViewBean caViewBean = new APCalculACORViewBean();
 
         viewBean = caViewBean;
@@ -121,7 +102,7 @@ public class APCalculACORAction extends PRDefaultAction {
      * @throws Exception
      */
     public String actionCallACORWeb(HttpSession session, HttpServletRequest request,
-                                           HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
+                                    HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
 
         try {
 
@@ -130,10 +111,6 @@ public class APCalculACORAction extends PRDefaultAction {
             if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
                 caViewBean.setAcorV4Web(true);
             }
-
-            // TODO WS ACOR APG Implémenter HELPER du style RECalculACORDemandeRenteHelper ou IJCalculACORDecompteHelper ou IJCalculACORIJHelper ou trouver un HELPER existant pour APG
-            // l'ecriture se fait depuis le helper
-            //mainDispatcher.dispatch(viewBean, getAction());
 
         } catch (Exception e) {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
@@ -146,72 +123,14 @@ public class APCalculACORAction extends PRDefaultAction {
         return this.getUserActionURL(request, action.toString());
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     * 
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
-     * @deprecated
-     */
-    // public String actionTelechargerFichier(HttpSession session, HttpServletRequest request,
-    // HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean)
-    // throws ServletException, IOException {
-    // try {
-    // getAction().changeActionPart("actionSetSession");
-    // // getAction().setRight(FWSecureConstants.ADD);
-    // mainDispatcher.dispatch(viewBean, getAction()); // set session
-    //
-    // // creer le fichier bat
-    // APCalculACORViewBean caViewBean = (APCalculACORViewBean) viewBean;
-    // BSession bSession = (BSession) caViewBean.getISession();
-    // APACORBatchFilePrinter batman = APACORBatchFilePrinter.getInstance();
-    //
-    // response.setContentType(TYPE_MIME_BAT);
-    // response.setHeader(CONTENT_DISPOSITION_CLE, CONTENT_DISPOSITION_VALEUR);
-    // response.setHeader(CACHE_CONTROL_CLE, CACHE_CONTROL_VALEUR);
-    //
-    // // write http response
-    // PrintWriter writer = response.getWriter();
-    //
-    // try {
-    // batman.printBatchFile(response.getWriter(), bSession, caViewBean.loadDroit(), PRACORConst
-    // .dossierACOR(bSession));
-    // } finally {
-    // writer.close();
-    // }
-    // } catch (Exception e) {
-    // e.printStackTrace(); // pas moyen de rediriger, on a deja ecrit dans
-    // // la reponse http
-    // }
-    //
-    // return ""; // stopper le traitement de la requete.
-    // }
-
     @Deprecated
-    public String actionTelechargerFichier2(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean)
-            throws ServletException, IOException {
+    public String actionTelechargerFichier(HttpSession session, HttpServletRequest request,
+                                            HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
 
         APCalculACORViewBean caViewBean = (APCalculACORViewBean) viewBean;
         try {
 
             getAction().changeActionPart("actionSetSession");
-            // getAction().setRight(FWSecureConstants.ADD);
             mainDispatcher.dispatch(viewBean, getAction()); // set session
 
             // creer le fichier bat
@@ -230,17 +149,7 @@ public class APCalculACORAction extends PRDefaultAction {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(e.getMessage());
         }
-
-        String dest = getRelativeURL(request, session) + APCalculACORAction.VERS_ECRAN_DE + "?"
+        return getRelativeURL(request, session) + APCalculACORAction.VERS_ECRAN_DE + "?"
                 + PRDefaultAction.METHOD_ADD;
-        ;
-        return dest;
-
-        // return getUserActionURL(request, IAPActions.ACTION_CALCUL_ACOR,
-        // APPrestationAction.VERS_ECRAN_CALCUL_ACOR + caViewBean.getIdDroit() +
-        // "&genreService=" +
-        // caViewBean.getGenreService());
-
     }
-
 }

@@ -308,6 +308,9 @@ public class APApplication extends PRAbstractApplication {
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionImporterPrestationsDepuisACOR",
                 FWSecureConstants.UPDATE);
 
+        FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionValiderPrestationsDepuisACORWeb",
+                FWSecureConstants.UPDATE);
+
         FWAction.registerActionCustom(IAPActions.ACTION_REPARTITION_PAIEMENTS + ".actionNouvelleVentilation",
                 FWSecureConstants.ADD);
         FWAction.registerActionCustom(IAPActions.ACTION_REPARTITION_PAIEMENTS + ".actionPrestationPrecedante",
@@ -392,7 +395,7 @@ public class APApplication extends PRAbstractApplication {
                 FWSecureConstants.ADD);
 
         FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionCalculerACOR", FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionTelechargerFichier2",
+        FWAction.registerActionCustom(IAPActions.ACTION_CALCUL_ACOR + ".actionTelechargerFichier",
                 FWSecureConstants.UPDATE);
 
         FWAction.registerActionCustom(IAPActions.ACTION_INFO_COMPL + ".actionAfficherInfoCompl",
@@ -429,7 +432,6 @@ public class APApplication extends PRAbstractApplication {
      *
      * @param arg0
      *            DOCUMENT ME!
-     * @see globaz.globall.db.BApplication#_readProperties(java.util.Properties)
      */
     protected void _readProperties(Properties arg0) {
         // TODO Raccord de méthode auto-généré
