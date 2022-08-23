@@ -365,7 +365,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     public void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
+        entete.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(true, getSession()));
 
         // Met à jour le flag eBillPrinted dans l'entête de facture eBill
         entete.setEBillPrinted(true);
