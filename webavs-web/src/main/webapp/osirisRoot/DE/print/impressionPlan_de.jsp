@@ -5,6 +5,9 @@
 <%@ page import="globaz.osiris.print.itext.list.CAIListPlanRecouvNonRespectes"%>
 <%@ page import="globaz.globall.util.JACalendar"%>
 <%@ page import="globaz.osiris.db.print.CAImpressionPlanViewBean"%>
+<%@ page import="globaz.osiris.application.CAApplication" %>
+<%@ page import="globaz.globall.db.BSession" %>
+<%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%
 idEcran="GCA60005";
 	CAImpressionPlanViewBean viewBean = (CAImpressionPlanViewBean) session.getAttribute("viewBean");
@@ -14,6 +17,27 @@ idEcran="GCA60005";
 	// mettre directement la bonne valeur pour appeller le process
 	userActionValue="osiris.print.impressionPlan.executer";
 %>
+<%
+    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses((BSession) viewBean.getISession());
+	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
+%>
+
+<script type="text/javascript">
+
+	function refreshEBillInputs() {
+		<% if (eBillOsirisActif && eBillAccountID) {%>
+			$("#eBillPrintable").attr("checked", true);
+		<%} else {%>
+			$("#eBillPrintable").attr("checked", false);
+		<%}%>
+	}
+
+	function postInit(){
+		refreshEBillInputs();
+	}
+
+</script>
+
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 	<%-- /tpl:put --%>
@@ -50,6 +74,15 @@ idEcran="GCA60005";
 			<TD class="label">Ausdruck</TD>
 			<TD class="control"><INPUT type="checkbox" id="checkBVR" name="impAvecBVR" value="on" checked><label for="checkBVR">mit ESR</label></TD>
 		</TR>
+		<% if (eBillOsirisActif && eBillAccountID) {%>
+          <TR>
+              <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+              <td nowrap>
+                  <input type="checkbox" name="eBillPrintable"
+                         id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+              </td>
+          </TR>
+        <%}%>
 		<TR>
 			<TD class="label">Einhaltung (steht auf der Verfügung)</TD>
 			<TD><textarea name="observation" cols="65" rows="3" class="input"></textarea></TD>

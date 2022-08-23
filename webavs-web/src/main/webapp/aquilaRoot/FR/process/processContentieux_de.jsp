@@ -159,15 +159,15 @@ function changePrevisionnel() {
               <input type="text" name="libelleJournal" class="libelleLong" value="<%=viewBean.getLibelleJournal()%>">
             </TD>
           </TR>
-            <% if (eBillAquilaActif) {%>
-            <TR>
-                <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-                <td nowrap>
-                    <input type="checkbox" name="eBillPrintable"
-                           id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
-                </td>
-            </TR>
-            <%}%>
+          <% if (eBillAquilaActif) {%>
+          <TR>
+              <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+              <td nowrap>
+                  <input type="checkbox" name="eBillPrintable"
+                         id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+              </td>
+          </TR>
+          <%}%>
           <TR>
             <TD colspan="4"><HR></TD>
           </TR>
