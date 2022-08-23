@@ -103,6 +103,7 @@ public class COProcessContentieux extends BProcess {
     private String listTypesSections = null;
     // champs de configuration du process (serilaizables)
     private Boolean previsionnel = Boolean.FALSE;
+    private Boolean eBillPrintable = Boolean.FALSE;
 
     private List /* String (idRole) */<String> roles;
 
@@ -323,6 +324,7 @@ public class COProcessContentieux extends BProcess {
         amorcer.setListePourOP(listePourOP);
 
         amorcer.setPrevisionnel(getPrevisionnel().booleanValue());
+        amorcer.setEBillPrintable(getEBillPrintable().booleanValue());
 
         amorcer.amorcerContentieux(this, getSession(), getTransaction());
     }
@@ -443,6 +445,7 @@ public class COProcessContentieux extends BProcess {
         effectuer.setImprimerDocument(getImprimerDocument());
 
         effectuer.setPrevisionnel(getPrevisionnel().booleanValue());
+        effectuer.setEBillPrintable(getEBillPrintable());
 
         effectuer.effectuerTransitions(this, getSession(), getTransaction());
     }
@@ -663,6 +666,15 @@ public class COProcessContentieux extends BProcess {
             userIdCollaborateur = getSession().getUserId();
         }
         return userIdCollaborateur;
+    }
+
+    /**
+     * getter pour l'attribut eBillPrintable
+     *
+     * @return true si eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
     }
 
     public boolean isExecuteTraitementSpecifique() {
@@ -949,6 +961,16 @@ public class COProcessContentieux extends BProcess {
      */
     public void setUserIdCollaborateur(String userIdCollaborateur) {
         this.userIdCollaborateur = userIdCollaborateur;
+    }
+
+     /**
+     * setter pour l'attribut eBillPrintable
+     *
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+     public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

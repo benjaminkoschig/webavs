@@ -30,6 +30,7 @@ public class COExecuterEtapeManuelle extends CODefaultTransitionAction {
         // ETE EFFECTUEE !!!
         contentieux.setDateDeclenchement(contentieux.getProchaineDateDeclenchement());
         contentieux.setDateExecution(getDateExecution());
+        contentieux.setEBillTransactionID(getEBillTransactionID());
         contentieux.setEBillPrintable(getEBillPrintable());
     }
 }
