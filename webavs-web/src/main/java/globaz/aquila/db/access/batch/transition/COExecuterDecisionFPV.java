@@ -41,6 +41,8 @@ public class COExecuterDecisionFPV extends CO002ExecuterDeuxiemeRappel {
                 decision.addContentieux(contentieux);
             }
             decision.setTaxes(taxes);
+            decision.setEBillTransactionID(contentieux.getEBillTransactionID());
+            decision.setEBillPrintable(contentieux.getEBillPrintable());
 
             this._envoyerDocument(contentieux, decision);
 
