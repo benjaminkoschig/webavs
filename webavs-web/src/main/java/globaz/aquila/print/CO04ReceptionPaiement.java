@@ -64,6 +64,8 @@ public class CO04ReceptionPaiement extends CODocumentManager {
     public Map<PaireIdExterneEBill, String> referencesReclamation = new LinkedHashMap();
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
+    private String eBillTransactionID = "";
+    private Boolean eBillPrintable = Boolean.FALSE;
 
     /**
      * Crée une nouvelle instance de la classe CO04ReceptionPaiement.
@@ -83,6 +85,25 @@ public class CO04ReceptionPaiement extends CODocumentManager {
      */
     public CO04ReceptionPaiement(BSession parent) throws FWIException {
         super(parent);
+    }
+
+    // ~ Methods
+    // --------------------------------------------------------------------------------------------------------
+
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**
@@ -133,7 +154,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             //  - le compte annexe possède un eBillAccountID
             //  - eBillPrintable est sélectioné sur l'écran d'impression
             //  - l'impression prévisionel n'est pas activée
-            if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+            if (eBillAquilaActif && getEBillPrintable() && !curContentieux.getPrevisionnel()) {
                 if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                     try {
                         EBillSftpProcessor.getInstance();
@@ -192,16 +213,10 @@ public class CO04ReceptionPaiement extends CODocumentManager {
     private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
-
-        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
-        entete.setEBillPrinted(true);
+        entete.setEBillTransactionID(getEBillTransactionID());
 
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
-
-        // Met à jour l'historique eBill du contentieux
-        eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
 
         eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getProchaineDateDeclenchement(), null, getSession(), null, typeDocument);
 
@@ -289,7 +304,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
             // Prepare la map des lignes de frais et intérêts réclamé eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
             boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
-            if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+            if (eBillAquilaActif && getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                 lignesReclamation.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), (List) situation);
             }
 
