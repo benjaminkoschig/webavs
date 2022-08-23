@@ -30,10 +30,13 @@ public class APRepartitionPaiementAcor {
     @Getter
     String idAffilie;
     @Getter
+    @Setter
     String numeroAffilieEmployeur;
     @Getter
+    @Setter
     String nomEmployeur;
     @Getter
+    @Setter
     String cantonImposition;
     @Getter
     @Setter
@@ -68,6 +71,10 @@ public class APRepartitionPaiementAcor {
         this.nomEmployeur = nom;
         this.cantonImposition = cantonImpot;
 
+        updateIdsEmployeur(session, noAffilie, nom);
+    }
+
+    public void updateIdsEmployeur(BSession session, String noAffilie, String nom) throws PRACORException {
         // stocker les id pour les taux journaliers
         if (PRAbstractEmployeur.isNumeroBidon(noAffilie)) {
             idAffilie = "0"; // sauve dans la base puis recharge, donc 0
