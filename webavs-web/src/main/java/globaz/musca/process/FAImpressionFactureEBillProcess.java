@@ -616,7 +616,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES))
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL))
                 && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_LETTRE_TAXE_CO2))) {
-            executeRemboursementLSV(); // TODO ESVE TEMP REMOVE FOR SPEED
+            executeRemboursementLSV();
         }
 
         // état du process
@@ -663,8 +663,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             success = _createDocumentFromManager(manager);
             if ((success)
                     && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_PRINT_DECISIONMORATOIRE))
-                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES)
-                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL)))) {
+                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES))
+                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL))) {
                 imprimable = false;
                 isNewDocument = true;
                 manager.setForNonImprimable(Boolean.TRUE); // imprimer seulement
