@@ -165,7 +165,7 @@ public class COAmorcerContentieux {
         try {
             // créer l'opération de création dans le journal
             COTransition transition = transitionUtil.getTransitionForCreerCtx();
-            COContentieux contentieux = createContentieux(session, transition, ctxInfo, userName); // MAYBED HERERER
+            COContentieux contentieux = createContentieux(session, transition, ctxInfo, userName);
 
             if (!isPrevisionnel()) {
                 contentieux.add(transaction);
@@ -245,7 +245,7 @@ public class COAmorcerContentieux {
         contentieux.setIdSection(ctxInfo.getIdSection());
         contentieux.setIdSequence(ctxInfo.getIdSequenceContentieux());
 
-        contentieux.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(eBillPrintable, transition.getSession()));
+        contentieux.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(getEBillPrintable(), session));
         contentieux.setEBillPrintable(getEBillPrintable());
         contentieux.setDateExecution(getDateSurDocument());
         contentieux.setDateOuverture(getDateSurDocument());
