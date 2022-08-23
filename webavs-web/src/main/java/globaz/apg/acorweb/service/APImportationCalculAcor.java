@@ -165,7 +165,7 @@ public class APImportationCalculAcor {
     private void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul, APPrestationAcor prestation) {
         PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().get(0);
         if(Objects.nonNull(periodeMontantJournApgType)){
-            prestation.setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJournBaseEnfants()));
+            prestation.setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             prestation.setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
             String nbJoursHospitalisation = droit.getJoursSupplementaires();
             if(StringUtils.isInteger(nbJoursHospitalisation)) {
@@ -195,7 +195,7 @@ public class APImportationCalculAcor {
 
     private APRepartitionPaiementAcor createRepartitionPaiement(BSession session, APBaseCalcul baseCalcul, VersementBeneficiaireApgType beneficiare, PeriodeDecompteApgType periodeDecompte, FCalcul fCalcul) throws JAException {
         Optional<EmployeurApgType> employeurOptional = fCalcul.getEmployeur().stream().filter(e -> e.getIdIntEmpl().equals(beneficiare.getIdBeneficiaire())).findFirst();
-        if(employeurOptional.isPresent()){
+        if (employeurOptional.isPresent()) {
             EmployeurApgType employeur = employeurOptional.get();
             APRepartitionPaiementAcor repartitionPaiementAcor = new APRepartitionPaiementAcor(session, employeur.getNoAffilie(), employeur.getNom(), "");
             repartitionPaiementAcor.setMontantNet(new FWCurrency(periodeDecompte.getMontantPeriode()));
@@ -211,18 +211,12 @@ public class APImportationCalculAcor {
                     // le même #.
                     bcSitPro = findBaseCalculSitProParNoAffilie(baseCalcul, repartitionPaiementAcor.getIdTiers(),
                             repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
-                }catch(PRACORException e2){
+                } catch (PRACORException e2) {
                     LOG.warn("La situation professionnelle de la base de caclul n'a pas été trouvé. \nLa période correspondante est peut être créé pour des jours d'hosipitalisation.");
                 }
             }
-            if(Objects.nonNull(bcSitPro)) {
-                repartitionPaiementAcor.setVersementEmployeur(bcSitPro.isPaiementEmployeur());
-                repartitionPaiementAcor.setIndependant(bcSitPro.isIndependant());
-                repartitionPaiementAcor.setTravailleurSansEmployeur(bcSitPro.isTravailleurSansEmployeur());
-                repartitionPaiementAcor.setCollaborateurAgricole(bcSitPro.isCollaborateurAgricole());
-                repartitionPaiementAcor.setTravailleurAgricole(bcSitPro.isTravailleurAgricole());
-                repartitionPaiementAcor.setSoumisCotisation(bcSitPro.isSoumisCotisation());
-                repartitionPaiementAcor.setIdSituationProfessionnelle(bcSitPro.getIdSituationProfessionnelle());
+            if (Objects.nonNull(bcSitPro)) {
+                mapSituationProfessionnel(repartitionPaiementAcor, bcSitPro);
             }
             return repartitionPaiementAcor;
         }
@@ -230,8 +224,25 @@ public class APImportationCalculAcor {
         repartitionPaiementAcor.setMontantNet(new FWCurrency(periodeDecompte.getMontantPeriode()));
         repartitionPaiementAcor.setSalaireJournalier(new FWCurrency(periodeDecompte.getMontantJourn()));
         repartitionPaiementAcor.setVersementEmployeur(false);
-
+        APBaseCalculSituationProfessionnel bcSitPro = null;
+        bcSitPro = findBaseCalculSitProVersementAssure(baseCalcul);
+        if(Objects.nonNull(bcSitPro)){
+            repartitionPaiementAcor.setNomEmployeur(bcSitPro.getNom());
+            repartitionPaiementAcor.setNumeroAffilieEmployeur(bcSitPro.getNoAffilie());
+            repartitionPaiementAcor.updateIdsEmployeur(session, bcSitPro.getNoAffilie(), bcSitPro.getNom());
+            mapSituationProfessionnel(repartitionPaiementAcor, bcSitPro);
+        }
         return repartitionPaiementAcor;
+    }
+
+    private void mapSituationProfessionnel(APRepartitionPaiementAcor repartitionPaiementAcor, APBaseCalculSituationProfessionnel bcSitPro) {
+        repartitionPaiementAcor.setVersementEmployeur(bcSitPro.isPaiementEmployeur());
+        repartitionPaiementAcor.setIndependant(bcSitPro.isIndependant());
+        repartitionPaiementAcor.setTravailleurSansEmployeur(bcSitPro.isTravailleurSansEmployeur());
+        repartitionPaiementAcor.setCollaborateurAgricole(bcSitPro.isCollaborateurAgricole());
+        repartitionPaiementAcor.setTravailleurAgricole(bcSitPro.isTravailleurAgricole());
+        repartitionPaiementAcor.setSoumisCotisation(bcSitPro.isSoumisCotisation());
+        repartitionPaiementAcor.setIdSituationProfessionnelle(bcSitPro.getIdSituationProfessionnelle());
     }
 
     private IAPReferenceDataPrestation retrieveReferenceData(BSession session, PeriodeServiceApgType periode, String genreService) {
@@ -310,7 +321,7 @@ public class APImportationCalculAcor {
             prestationWrapper.setPeriodeBaseCalcul(periodeWrapper);
             APResultatCalcul rc = new APResultatCalcul();
             rc.setDateDebut(periodeWrapper.getDateDebut());
-            rc.setDateFin(periodeWrapper.getDateDebut());
+            rc.setDateFin(periodeWrapper.getDateFin());
             rc.setSoumisImpotSource(prestation.isSoumisImpotSource());
             rc.setIdTauxImposition(prestation.getIdTauxImposition());
             rc.setTauxImposition(prestation.getTauxImposition());
@@ -640,11 +651,11 @@ public class APImportationCalculAcor {
 
         throw new PRACORException("la situation professionelle ne peut être trouvée par no affilié !!!");
     }
-    private APBaseCalculSituationProfessionnel findBaseCalculSitProVersementAssure(APBaseCalcul basesCalcul, FWCurrency montantJournalier){
+    private APBaseCalculSituationProfessionnel findBaseCalculSitProVersementAssure(APBaseCalcul basesCalcul){
         APBaseCalculSituationProfessionnel bcSitPro = null;
-        for (Object o : basesCalcul.getBasesCalculSituationProfessionnel()) {
-            bcSitPro = (APBaseCalculSituationProfessionnel) o;
-            if(Objects.equals(bcSitPro.getVersementEmployeur().getSalaireJournalier(), montantJournalier)){
+        for (Object o1 : basesCalcul.getBasesCalculSituationProfessionnel()) {
+            bcSitPro = (APBaseCalculSituationProfessionnel) o1;
+            if(!bcSitPro.isPaiementEmployeur()){
                 return bcSitPro;
             }
         }
