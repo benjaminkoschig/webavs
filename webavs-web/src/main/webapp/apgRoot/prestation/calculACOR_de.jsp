@@ -54,7 +54,7 @@ selectedIdValue = viewBean.getIdDroit();
 <script language="JavaScript">
 
   function callACORWeb() {
-  	document.forms[0].elements('userAction').value = "<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionCallACORWeb";
+  	document.forms[0].elements['userAction'].value = "<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionCallACORWeb";
 	document.forms[0].submit();
   }
 
@@ -62,9 +62,8 @@ selectedIdValue = viewBean.getIdDroit();
 
 		$('#lienAcorWeb').one('click', function () {
 			ajaxUtils.addOverlay($('html'));
-			// window.location.href =  "apg?userAction=<%=IAPActions.ACTION_DROIT_LAPG%>.actionAfficherLAPG&selectedId=<%=viewBean.getIdDroit()%>"; // TODO WS ACOR APG Un lien direct vers le droit
-			// document.forms("mainForm").userAction.value = "<%=globaz.apg.servlet.IAPActions.ACTION_PRESTATIONS%>.actionImporterPrestationsDepuisACOR" // TODO WS ACOR APG Le lien actuel sur la page qui passe dans des action ACOR puis dans la méthode controllerLesPrestation
-			window.location.href =  "apg?userAction=<%=IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT%>.chercher&forIdDroit=<%=viewBean.getIdDroit()%>&checkRepartitionsDroit=true"; // TODO WS ACOR APG A Corriger, lien qui passe tout droit vers le detail prestaions sans controllerLesPrestations
+			document.forms['mainForm'].userAction.value = "<%=globaz.apg.servlet.IAPActions.ACTION_PRESTATIONS%>.actionValiderPrestationsDepuisACORWeb"; // TODO WS ACOR APG Le lien actuel sur la page qui passe dans des action ACOR puis dans la méthode controllerLesPrestation
+			document.forms['mainForm'].submit();
 		});
   });
 
@@ -211,15 +210,13 @@ selectedIdValue = viewBean.getIdDroit();
 								<p>ANCIEN ACOR</p>
 								<p>---------------------------------------------------------------------------------------------</p>
 								<H4>
-									<a style="color:black;" href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
-										<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_0"/>										
-									</a>								
+									<H4><u><ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_0"/></u></H4>
 								</H4>
 							</TD>
 						</TR>
 						<TR>
 							<TD valign="top" width="40%" style="margin-right: 40px;">
-								<P><a href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier2&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
+								<P><a href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
 									<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_1"/>
 								</a></P>
 								<P><ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_2"/>&nbsp;<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_3"/></P>

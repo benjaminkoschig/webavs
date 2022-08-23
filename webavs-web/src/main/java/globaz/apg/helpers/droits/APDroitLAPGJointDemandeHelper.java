@@ -72,7 +72,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
     private static final String CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT = "prestation-APG-correction-droit-PROCHE_AIDANT";
 
 
-    public void calculerACM(FWViewBeanInterface viewBean, FWAction action, BSession session) throws Exception {
+    public void calculerACM(FWViewBeanInterface viewBean, BSession session) throws Exception {
 
         APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
                 (APDroitLAPGJointDemandeViewBean) viewBean, session);
@@ -133,14 +133,12 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
      *
      * @param viewBean
      *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
      * @param session
      *            DOCUMENT ME!
      * @throws Exception
      *             DOCUMENT ME!
      */
-    public void calculerDroitMaterniteCantonale(FWViewBeanInterface viewBean, FWAction action, BSession session)
+    public void calculerDroitMaterniteCantonale(FWViewBeanInterface viewBean, BSession session)
             throws Exception {
         APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
                 (APDroitLAPGJointDemandeViewBean) viewBean, session);
