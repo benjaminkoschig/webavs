@@ -141,8 +141,6 @@
 	<td>
 		<nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="likeNss" newnss="true" tabindex="3"
 					  value='<%=gfFormulaireSearch != null ? NSUtil.formatWithoutPrefixe(gfFormulaireSearch.getLikeNss(), true) : ""%>'/>
-
-		<ct:inputHidden name="likeNss"/>
 	</td>
 	<td>
 	</td>

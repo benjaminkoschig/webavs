@@ -10,18 +10,18 @@
 				var NNSSTagName = tagName + "NNSS";
 				//-
 				if(charac == 45){
-					document.getElementById(tagName + 'NssPrefixe').style.visibility='hidden';
-					document.getElementById(tagName + 'NssPrefixe').style.display='none';
+					document.getElementsByName(tagName + 'NssPrefixe')[0].style.visibility='hidden';
+					document.getElementsByName(tagName + 'NssPrefixe')[0].style.display='none';
 					document.getElementById(partialTagName).maxLength = "14";
-					document.getElementById(NNSSTagName).value = "false";
+					document.getElementsByName(NNSSTagName)[0].value = "false";
 					eval(removeDots(partialTagName) + "PopupTag").setNNSS(false);
 					nssAction(tagName);
 					//+
 				}else if(charac == 43){
-					document.getElementById(tagName + 'NssPrefixe').style.visibility='visible';
-					document.getElementById(tagName + 'NssPrefixe').style.display='inline';
+					document.getElementsByName(tagName + 'NssPrefixe')[0].style.visibility='visible';
+					document.getElementsByName(tagName + 'NssPrefixe')[0].style.display='inline';
 					document.getElementById(partialTagName).maxLength = "12";
-					document.getElementById(NNSSTagName).value = "true";
+					document.getElementsByName(NNSSTagName)[0].value = "true";
 					eval(removeDots(partialTagName) + "PopupTag").setNNSS(true);
 					nssAction(tagName);
 				}
@@ -60,12 +60,12 @@
 				} catch (e){}
 //				alert(event.keyCode + " >format? " + shouldFormat);
 				var NNSSTagName = tagName + "NNSS";
-				var numAVS = document.forms[0].elements("partial" + tagName).value;
+				var numAVS = document.getElementById("partial" + tagName).value;
 				numAVS = removeDots(numAVS);
 				numAVS = trim(numAVS);
 				var newNumAVS = "";
 				if (shouldFormat) {
-					if(document.getElementById(NNSSTagName).value == "false"){ //AVS
+					if(document.getElementsByName(NNSSTagName)[0].value == "false"){ //AVS
 							if(numAVS.length != 0){
 								newNumAVS = numAVS.substring(0,3);
 								if (numAVS.length > 2) {
@@ -96,14 +96,14 @@
 
 			function concatPrefixAndPartial(tagName) {
 				var NNSSTagName = tagName + "NNSS";
-				if(document.getElementById(NNSSTagName).value == "false"){
-					document.getElementById(tagName).value = trim(document.getElementById("partial" + tagName).value);
+				if(document.getElementsByName(NNSSTagName)[0].value == "false"){
+					document.getElementsByName(tagName)[0].value = trim(document.getElementById("partial" + tagName).value);
 				} else {
 					var partialValue = document.getElementById("partial" + tagName).value;
 					if (partialValue != "") {
-						document.getElementById(tagName).value = trim(document.getElementById(tagName + "NssPrefixe").value + document.getElementById("partial" + tagName).value);
+						document.getElementsByName(tagName)[0].value = trim(document.getElementsByName(tagName + "NssPrefixe")[0].value + document.getElementById("partial" + tagName).value);
 					} else {
-						document.getElementById(tagName).value = "";
+						document.getElementsByName(tagName)[0].value = "";
 					}
 				}
 			}
