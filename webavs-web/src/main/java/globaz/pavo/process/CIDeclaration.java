@@ -87,6 +87,7 @@ import globaz.webavs.common.CommonExcelmlContainer;
 public class CIDeclaration extends BProcess {
 
     private static final String PUCS4_NAMESPACE = "http://www.swissdec.ch/schema/sd/20130514";
+    private static final String PUCS5_NAMESPACE = "http://www.swissdec.ch/schema/sd/20200220";
 
     private static final long serialVersionUID = 8208343321214530414L;
     public static String CS_AC = "327003";
@@ -258,6 +259,9 @@ public class CIDeclaration extends BProcess {
             Element element = getSoapBodyPayloadElement(resolveFileName());
 
             isPUCS4 = StringUtils.startsWith(element.getNamespaceURI(), PUCS4_NAMESPACE);
+            if(!isPUCS4){
+                isPUCS4 = StringUtils.startsWith(element.getNamespaceURI(), PUCS5_NAMESPACE);
+            }
 
         } catch (Exception e) {
             isPUCS4 = false;
@@ -280,7 +284,17 @@ public class CIDeclaration extends BProcess {
 
             if (nodes == null || nodes.getLength() == 0) {
                 nodes = doc.getElementsByTagNameNS(
+                        "http://www.swissdec.ch/schema/sd/20200220/SalaryDeclarationConsumerServiceTypes", "*");
+            }
+
+            if (nodes == null || nodes.getLength() == 0) {
+                nodes = doc.getElementsByTagNameNS(
                         "http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationServiceTypes", "*");
+            }
+
+            if (nodes == null || nodes.getLength() == 0) {
+                nodes = doc.getElementsByTagNameNS(
+                        "http://www.swissdec.ch/schema/sd/20200220/SalaryDeclarationServiceTypes", "*");
             }
 
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -2528,7 +2542,7 @@ public class CIDeclaration extends BProcess {
     }
 
     /**
-     * @param string
+     * @param accepteAnneeEnCours
      */
     public void setAccepteAnneeEnCours(String accepteAnneeEnCours) {
         this.accepteAnneeEnCours = accepteAnneeEnCours;
