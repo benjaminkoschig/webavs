@@ -1,22 +1,19 @@
 <%@ page import="globaz.eform.vb.envoi.GFEnvoiViewBean" %>
-<%@ page import="globaz.prestation.interfaces.util.nss.PRUtil" %>
-<%@ page import="javax.swing.*" %>
-
-<%@ page errorPage="/errorPage.jsp" %>
+<%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
+<%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
+<%--<%@ page errorPage="/errorPage.jsp" %>--%>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
-<%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
-
 
 <%@ include file="/theme/detail_ajax/header.jspf" %>
 
 <%
-    idEcran = " GFE0101";
-    GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
+	idEcran = " GFE0101";
+	GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
 //    String params = "&provenance1=TIERS&provenance2=CI";
 //    String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
-    String zipFileName;
+	String zipFileName;
 
 %>
 
@@ -33,38 +30,42 @@
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css"/>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/eform/envoi/envoi_de.css"/>
 
-<script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
+<%--<script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>--%>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
 
 <%@ include file="/theme/detail/javascripts.jspf" %>
-<%@ include file="/jade/notation/notationLibJs.jspf" %>
+<%--<%@ include file="/jade/notation/notationLibJs.jspf" %>--%>
 
 <style>
 
 </style>
 
 <script>
+    function init() {
+
+    }
+
     // var bFind = true;
     <%--var detailLink = "<%=actionNew%>";--%>
     var zipFileName;
-    var listFileArray=[];
+    var listFileArray = [];
 
     function validateform() {
 
         if (document.getElementsByName("filename")[0].value == "") {
-            if(langue=='FR') {
-                var value="Vous devez sélectionner un fichier."
+            if (langue == 'FR') {
+                var value = "Vous devez sélectionner un fichier."
             } else {
-                var value="Sie müssen eine Datei auswählen."
+                var value = "Sie müssen eine Datei auswählen."
             }
             alert(value);
             return false;
         } else {
 
             zipFileName = document.getElementsByName("filename")[0].value;
-            document.forms[0].value=zipFileName;
-            document.forms[0].elements('userAction').value="eform.envoi.envoi.upload";
+            document.forms[0].value = zipFileName;
+            document.forms[0].elements('userAction').value = "eform.envoi.envoi.upload";
             action(COMMIT);
 
             return true;
@@ -76,7 +77,7 @@
         action(COMMIT);
     }
 
-    function launchUnzip(){
+    function launchUnzip() {
         <%
             String filename = request.getParameter("filename");
             viewBean.checkFileExtension(filename);
@@ -98,7 +99,6 @@
 </script>
 
 
-
 <%--<TITLE><%=idEcran%>--%>
 <%--</TITLE>--%>
 <%--</HEAD>--%>
@@ -110,129 +110,145 @@
 <%--</div>--%>
 
 
-<%@ include file="/theme/detail/bodyStart.jspf" %>
+<%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
 <%-- tpl:insert attribute="zoneTitle" --%>
 <ct:FWLabel key="ENVOI_TITRE"/>
 <%-- /tpl:insert --%>
-<%@ include file="/theme/detail/bodyStart2.jspf" %>
+<%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 
-<tr><td>
-    <%--Partie gestionnaire--%>
-    <ct:inputHidden name="likeNss"/>
-    <div class="container-fluid" style="padding: 0px">
-        <div class="row-fluid" style="font-weight: bold">
-            <ct:FWLabel key="JSP_GESTIONNAIRE"/>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
-                                                                         id="nomGestionnaire"/></div>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
-                                                                         id="departementGestionnaire"/></div>
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireTelephone"
-                                                                         id="gestionnaireTelephone"/></div>
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="birthday" id="birthday"/></div>
-        </div>
+<tr>
+	<td>
+		<%--Partie gestionnaire--%>
+		<ct:inputHidden name="likeNss"/>
+		<div class="container-fluid" style="padding: 0px">
+			<div class="row-fluid" style="font-weight: bold">
+				<ct:FWLabel key="JSP_GESTIONNAIRE"/>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
+																			 id="nomGestionnaire"/></div>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
+																			 id="departementGestionnaire"/></div>
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireTelephone"
+																			 id="gestionnaireTelephone"/></div>
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireEmail" id="gestionnaireEmail"/></div>
+			</div>
 
-        <%--Partie assuré--%>
-        <div class="row-fluid" style="font-weight: bold">
-            <ct:FWLabel key="ASSURE"/>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="NSS"/></div>
-            <div style="display: table-cell;width: 310px;"><nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="Nss" newnss="true" tabindex="3"/></div>
+			<%--Partie assuré--%>
+			<div class="row-fluid" style="font-weight: bold">
+				<ct:FWLabel key="ASSURE"/>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
+				<div style="display: table-cell;width: 300px;">
+					<ct:widget id='byNss' name='byNss'>
+						<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
+							<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
+							<ct:widgetLineFormatter
+									format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
+							<ct:widgetJSReturnFunction>
+								<script type="text/javascript">
+									function(element) {
+										$('#lastName').val($(element).attr('tiers.designation1'));
+										$('#firstName').val($(element).attr('tiers.designation2'));
+										$('#birthday').val($(element).attr('personne.dateNaissance'));
+										this.value = $(element).attr('personneEtendue.numAvsActuel');
+									}
+								</script>
+							</ct:widgetJSReturnFunction>
+						</ct:widgetService>
+					</ct:widget>
+				</div>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="LASTNAME"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="lastName" id="lastName"
+																			 readonly="true"/></div>
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="FIRSTNAME"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="firstName" id="firstName"
+																			 readonly="true"/></div>
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="BIRTHDAY"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="birthday" id="birthday"
+																			 readonly="true"/></div>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="ADRESSE_DOMICILE"/></div>
+				<div style="display: table-cell;width: 310px;"><textarea id="remarque" name="remarque" cols="100"
+																		 rows="5"></textarea></div>
+			</div>
+
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
+			</div>
 
 
-            <%--            ct1:nssPopup name="likeNSS" onFailure="nssFailure();"--%>
-            <%--            onChange="nssChange(tag);" params="<%=params%>"--%>
-            <%--            value="<%=viewBean.getNumeroAvsFormateSansPrefixe()%>"--%>
-            <%--            newnss="<%=viewBean.isNNSS()%>"--%>
-            <%--            jspName="<%=jspLocation%>" avsMinNbrDigit="3"--%>
-            <%--            nssMinNbrDigit="3" avsAutoNbrDigit="11"--%>
-            <%--            nssAutoNbrDigit="10"--%>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="LASTNAME"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="lastName" id="lastName"
-                                                                         readonly="true"/></div>
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="FIRSTNAME"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="firstName" id="firstName"
-                                                                         readonly="true"/></div>
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="BIRTHDAY"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="birthday" id="birthday"
-                                                                         readonly="true"/></div>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="ADRESSE_DOMICILE"/></div>
-            <div style="display: table-cell;width: 310px;"><textarea id="remarque" name="remarque" cols="100"
-                                                                     rows="5"></textarea></div>
-        </div>
+			<%--        Partie sur la caisse--%>
+			<div class="row-fluid" style="font-weight: bold; margin-top: 15px;">
+				<ct:FWLabel key="CAISSE_DESTINATRICE"/>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="CAISSE"/></div>
+				<div style="display: table-cell;width: 310px; padding-bottom: 40px"><ct:select
+						name="attributAvisEcheance"
+						styleClass="longSelect" tabindex="3">
+					<ct:optionsCodesSystems csFamille="test selection caisse">
+					</ct:optionsCodesSystems>
+				</ct:select>
+				</div>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
+			</div>
 
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
-        </div>
+			<%--        Partie sur les fichiers--%>
+			<div class="row-fluid" style="font-weight: bold; padding-top: 20px">
+				<ct:FWLabel key="DOCUMENT_A_ENVOYER"/>
+			</div>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
+				<div style="display: table-cell;width: 310px;"><ct:select name="attributAvisEcheance"
+																		  styleClass="longSelect" tabindex="3">
+					<ct:option value="" label=""></ct:option>
+					<ct:option value="Rente AVS" label="Rente AVS"></ct:option>
+					<ct:option value="Rente AI" label="Rente AI"></ct:option>
+					<ct:option value="API AVS" label="API AVS"></ct:option>
+					<ct:option value="API AI" label="API AI"></ct:option>
+				</ct:select></div>
+			</div>
 
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
+				<div style="display: table-cell;width: 310px;"><input name="filename" type="file"
+																	  data-g-upload="callBack: callBackUpload, protocole:jdbc"/>
+				</div>
+			</div>
 
-        <%--        Partie sur la caisse--%>
-        <div class="row-fluid" style="font-weight: bold; margin-top: 15px;">
-            <ct:FWLabel key="CAISSE_DESTINATRICE"/>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="CAISSE"/></div>
-            <div style="display: table-cell;width: 310px; padding-bottom: 40px"><ct:select name="attributAvisEcheance"
-                                                                                           styleClass="longSelect" tabindex="3">
-                <ct:optionsCodesSystems csFamille="test selection caisse">
-                </ct:optionsCodesSystems>
-            </ct:select>
-            </div>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
-        </div>
-
-        <%--        Partie sur les fichiers--%>
-        <div class="row-fluid" style="font-weight: bold; padding-top: 20px">
-            <ct:FWLabel key="DOCUMENT_A_ENVOYER"/>
-        </div>
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:select name="attributAvisEcheance" styleClass="longSelect" tabindex="3">
-                <ct:option value="" label=""></ct:option>
-                <ct:option value="Rente AVS" label="Rente AVS"></ct:option>
-                <ct:option value="Rente AI" label="Rente AI"></ct:option>
-                <ct:option value="API AVS" label="API AVS"></ct:option>
-                <ct:option value="API AI" label="API AI"></ct:option>
-            </ct:select></div>
-        </div>
-
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
-            <div style="display: table-cell;width: 310px;"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload, protocole:jdbc"/></div>
-        </div>
-
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
-            <div style="width: 310px;background-color:#FFF">
-                <table id="periodes" name=periode" class="areaTable" style="width:100%">
-                    <%for (int i=0;i<viewBean.getFileNameList().size();i++) {%>
-                    <tr  name="rightParam"><%=viewBean.getFileNameList().get(i)%></tr>
-                    <%}%>
-                </table>
-            </div>
-        </div>
-        <%--        <input type="hidden"--%>
-        <%--               name="nss"--%>
-        <%--               id="nss"--%>
-        <%--               value="<%=viewBean.getNss()%>"/>--%>
-    </div>
-</tr></td>
+			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
+				<div style="width: 310px;background-color:#FFF">
+					<table id="periodes" name=periode" class="areaTable" style="width:100%">
+						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
+						<tr name="rightParam"><%=viewBean.getFileNameList().get(i)%>
+						</tr>
+						<%}%>
+					</table>
+				</div>
+			</div>
+			<%--        <input type="hidden"--%>
+			<%--               name="nss"--%>
+			<%--               id="nss"--%>
+			<%--               value="<%=viewBean.getNss()%>"/>--%>
+		</div>
+</tr>
+</td>
 <TR>
-    <%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
+	<%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
 </TR>
 <%--</form>--%>
 <%--</body>--%>
@@ -250,6 +266,6 @@
 
 <%--</html>--%>
 
-<%@ include file="/theme/detail/bodyButtons.jspf" %>
-<%@ include file="/theme/detail/bodyErrors.jspf" %>
-<%@ include file="/theme/detail/footer.jspf" %>
+<%@ include file="/theme/detail_ajax/bodyButtons.jspf" %>
+<%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
+<%@ include file="/theme/detail_ajax/footer.jspf" %>
