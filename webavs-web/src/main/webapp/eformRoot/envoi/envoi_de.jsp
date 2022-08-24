@@ -15,9 +15,9 @@
     idEcran = " GFE0101";
 //    bButtonNew = false;
     GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
-
     String params = "&provenance1=TIERS&provenance2=CI";
     String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
+    String zipFileName;
 
 %>
 
@@ -46,81 +46,69 @@
 </style>
 
 <script>
-    var bFind = true;
-    var detailLink = "<%=actionNew%>";
+    // var bFind = true;
+    <%--var detailLink = "<%=actionNew%>";--%>
+    var zipFileName;
+    var listFileArray=[];
 
-    <%--function nssChange(tag) {--%>
-    <%--    var param_nss = "756." + document.getElementById("partiallikeNSS").value;--%>
-    <%--    if (tag.select !== null) {--%>
-    <%--        var element = tag.select.options[tag.select.selectedIndex];--%>
-    <%--        if (element.nss !== null) {--%>
-    <%--            document.getElementById("nss").value = element.nss;--%>
-    <%--        }--%>
+    function validateform() {
 
-    <%--        if (element.nom !== null) {--%>
-    <%--            document.getElementById("nom").value = element.nom;--%>
-    <%--            document.getElementById("nomAffiche").value = element.nom;--%>
-    <%--        }--%>
+        if (document.getElementsByName("filename")[0].value == "") {
+            if(langue=='FR') {
+                var value="Vous devez sélectionner un fichier."
+            } else {
+                var value="Sie müssen eine Datei auswählen."
+            }
+            alert(value);
+            return false;
+        } else {
 
-    <%--        if (element.prenom !== null) {--%>
-    <%--            document.getElementById("prenom").value = element.prenom;--%>
-    <%--            document.getElementById("prenomAffiche").value = element.prenom;--%>
-    <%--        }--%>
+            zipFileName = document.getElementsByName("filename")[0].value;
+            // alert(zipFileName)
+            document.forms[0].value=zipFileName;
+            // document.forms[0].submit()
+            // action(COMMIT);
+            document.forms[0].elements('userAction').value="eform.envoi.envoi.upload";
 
-    <%--        if (element.nom !== null && element.prenom !== null) {--%>
-    <%--            document.getElementById("nomPrenom").value = element.nom + " " + element.prenom;--%>
-    <%--        }--%>
+            console.log("test");
+            // location.reload();
+            action(COMMIT);
+//           document[0].submit();
 
-    <%--        if (element.codeSexe !== null) {--%>
-    <%--            for (var i = 0; i < document.getElementById("csSexeAffiche").length; i++) {--%>
-    <%--                if (element.codeSexe === document.getElementById("csSexeAffiche").options[i].value) {--%>
-    <%--                    document.getElementById("csSexeAffiche").options[i].selected = true;--%>
-    <%--                }--%>
-    <%--            }--%>
-    <%--            document.getElementById("csSexe").value = element.codeSexe;--%>
-    <%--        }--%>
+            // alert(zipFileName)
 
-    <%--        if (element.provenance !== null) {--%>
-    <%--            document.getElementById("provenance").value = element.provenance;--%>
-    <%--        }--%>
+            // parent.document.forms[0].elements('filename').value = zipFileName;
+            // parent.document.forms[0].submit();
+<%--            <%--%>
+<%--//                String filename = request.getParameter("filename");--%>
+<%--                viewBean.test();--%>
+<%--            %>--%>
+//             launchUnzip();
 
-    <%--        if (element.id !== null) {--%>
-    <%--            document.getElementById("idAssure").value = element.idAssure;--%>
-    <%--        }--%>
+            return true;
+        }
+    }
 
-    <%--        if (element.dateNaissance !== null) {--%>
-    <%--            document.getElementById("dateNaissance").value = element.dateNaissance;--%>
-    <%--            document.getElementById("dateNaissanceAffiche").value = element.dateNaissance;--%>
-    <%--        }--%>
+    function validate() {
+        document.forms[0].elements('userAction').value = "eform.envoi.envoi.modifier";
+        action(COMMIT);
+    }
 
-    <%--        if (element.dateDeces !== null) {--%>
-    <%--            document.getElementById("dateDeces").value = element.dateDeces;--%>
-    <%--            document.getElementById("dateDecesAffiche").value = element.dateDeces;--%>
-    <%--        }--%>
+    function launchUnzip(){
+        <%
+            String filename = request.getParameter("filename");
+            viewBean.checkFileExtension(filename);
+        %>
 
-    <%--        if (element.codeEtatCivil !== null) {--%>
-    <%--            for (var i = 0; i < document.getElementById("csEtatCivilAffiche").length; i++) {--%>
-    <%--                if (element.codeEtatCivil === document.getElementById("csEtatCivilAffiche").options[i].value) {--%>
-    <%--                    document.getElementById("csEtatCivilAffiche").options[i].selected = true;--%>
-    <%--                }--%>
-    <%--            }--%>
-    <%--            document.getElementById("csEtatCivil").value = element.codeEtatCivil;--%>
-    <%--        }--%>
+        <%for(String s: viewBean.getFileNameList()){
+            System.out.println("depuis le view bean "+s);
+        }
+        %>
 
-    <%--        if ('<%=PRUtil.PROVENANCE_TIERS%>' === element.provenance) {--%>
-    <%--            document.getElementById("nomAffiche").disabled = true;--%>
-    <%--            document.getElementById("prenomAffiche").disabled = true;--%>
-    <%--            document.getElementById("dateNaissanceAffiche").disabled = true;--%>
-    <%--            document.getElementById("dateDecesAffiche").disabled = true;--%>
-    <%--            document.getElementById("csEtatCivilAffiche").disabled = true;--%>
-    <%--            document.getElementById("csSexeAffiche").disabled = true;--%>
-    <%--        }--%>
-    <%--    }--%>
-    <%--    checkNss(param_nss);--%>
-    <%--}--%>
-
+    }
 
 </script>
+
 
 
 <TITLE><%=idEcran%>
@@ -134,7 +122,7 @@
 </div>
 
 <%--Partie gestionnaire--%>
-<form name="mainForm" action="" method="post" enctype="multipart/form-data">
+<form name="mainForm" action="" method="post" >
     <ct:inputHidden name="likeNss"/>
     <div class="container-fluid" style="padding: 0px">
         <div class="row-fluid" style="font-weight: bold">
@@ -229,18 +217,16 @@
 
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
-            <div style="display: table-cell;width: 310px;"><input id='upload' name="upload" type="file"></div>
+            <div style="display: table-cell;width: 310px;"><input  name="filename" type="file" /></div>
         </div>
 
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
             <div style="width: 310px;background-color:#FFF">
                 <table id="periodes" name=periode" class="areaTable" style="width:100%">
-                    <tbody>
-                    <tr name="test"> fichier 1</tr>
-                    <tr> fichier 2</tr>
-                    <tr> fichier 3</tr>
-                    </tbody>
+                    <%for (int i=0;i<viewBean.getFileNameList().size();i++) {%>
+                    <tr  name="rightParam"><%=viewBean.getFileNameList().get(i)%></tr>
+                    <%}%>
                 </table>
             </div>
         </div>
@@ -249,6 +235,23 @@
         <%--               id="nss"--%>
         <%--               value="<%=viewBean.getNss()%>"/>--%>
     </div>
+        <TR>
+            <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk" value="Test" style="width:60" onclick="validateform()"></TD>
+        </TR>
 </body>
+
+
+
+<%@ include file="/theme/detail/bodyButtons.jspf" %>
+<%-- tpl:put name="zoneButtons" --%>
+<%--<input type="button"--%>
+<%--       value="<ct:FWLabel key="JSP_ARRET" /> (alt+<ct:FWLabel key="AK_MATERNITE_ARRET" />)"--%>
+<%--       onclick="arret()"--%>
+<%--       accesskey="<ct:FWLabel key="AK_MATERNITE_ARRET" />"/>--%>
+<input type="button"
+       value="<ct:FWLabel key="JSP_SUIVANT" /> (alt+<ct:FWLabel key="AK_MATERNITE_SUIVANT" />)"
+       onclick="validate()"
+       accesskey="<ct:FWLabel key="AK_MATERNITE_SUIVANT" />"/>
+
 </html>
 
