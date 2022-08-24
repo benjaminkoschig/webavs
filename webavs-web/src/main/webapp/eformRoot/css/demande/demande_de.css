@@ -1,33 +1,21 @@
 select {
     width: 300px;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
+    height: 23px;
+    font-size: 13px !important;
 }
 
-input[name="NssNssPrefixe"] {
-    width: 50px !important;
-    height: 20px !important;
-    padding: 1px !important;
-}
-input[name="partialNss"] {
-    width: 248px !important;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
+input {
+    font-size: 13px !important;
 }
 
-input{
-    width: 300px !important;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
+input[type="text"] {
+    width: 296px;
 }
 
 .corps {
     background-color: #B3C4DB;
 }
 
-#tgName {
-
+#byNss {
+    width: 291px;
 }

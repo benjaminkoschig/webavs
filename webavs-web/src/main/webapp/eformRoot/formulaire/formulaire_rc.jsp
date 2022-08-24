@@ -124,8 +124,6 @@
 	</td>
 	<td>
 		<nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="likeNss" newnss="true" tabindex="3"/>
-
-		<ct:inputHidden name="likeNss"/>
 	</td>
 	<td>
 	</td>
