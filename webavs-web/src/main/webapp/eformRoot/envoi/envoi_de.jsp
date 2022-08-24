@@ -13,10 +13,9 @@
 
 <%
     idEcran = " GFE0101";
-//    bButtonNew = false;
     GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
-    String params = "&provenance1=TIERS&provenance2=CI";
-    String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
+//    String params = "&provenance1=TIERS&provenance2=CI";
+//    String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
     String zipFileName;
 
 %>
@@ -64,26 +63,9 @@
         } else {
 
             zipFileName = document.getElementsByName("filename")[0].value;
-            // alert(zipFileName)
             document.forms[0].value=zipFileName;
-            // document.forms[0].submit()
-            // action(COMMIT);
             document.forms[0].elements('userAction').value="eform.envoi.envoi.upload";
-
-            console.log("test");
-            // location.reload();
             action(COMMIT);
-//           document[0].submit();
-
-            // alert(zipFileName)
-
-            // parent.document.forms[0].elements('filename').value = zipFileName;
-            // parent.document.forms[0].submit();
-<%--            <%--%>
-<%--//                String filename = request.getParameter("filename");--%>
-<%--                viewBean.test();--%>
-<%--            %>--%>
-//             launchUnzip();
 
             return true;
         }
@@ -107,22 +89,35 @@
 
     }
 
+    function callBackUpload(data) {
+        // $("#FILE_PATH_FOR_POPULATION").prop("disabled", false);
+        // $("#FILE_PATH_FOR_POPULATION").val(data.path+"/"+data.fileName);
+        // $('#fileName').val($("#fileInput").val());
+    }
+
 </script>
 
 
 
-<TITLE><%=idEcran%>
-</TITLE>
-</HEAD>
+<%--<TITLE><%=idEcran%>--%>
+<%--</TITLE>--%>
+<%--</HEAD>--%>
 
-<body style="background-color: #B3C4DB">
-<div class="title thDetail text-center">
-    <ct:FWLabel key="ENVOI_TITRE"/>
-    <span class="idEcran"><%=(null == idEcran) ? "" : idEcran%></span>
-</div>
+<%--<body style="background-color: #B3C4DB">--%>
+<%--<div class="title thDetail text-center">--%>
+<%--    <ct:FWLabel key="ENVOI_TITRE"/>--%>
+<%--    <span class="idEcran"><%=(null == idEcran) ? "" : idEcran%></span>--%>
+<%--</div>--%>
 
-<%--Partie gestionnaire--%>
-<form name="mainForm" action="" method="post" >
+
+<%@ include file="/theme/detail/bodyStart.jspf" %>
+<%-- tpl:insert attribute="zoneTitle" --%>
+<ct:FWLabel key="ENVOI_TITRE"/>
+<%-- /tpl:insert --%>
+<%@ include file="/theme/detail/bodyStart2.jspf" %>
+
+<tr><td>
+    <%--Partie gestionnaire--%>
     <ct:inputHidden name="likeNss"/>
     <div class="container-fluid" style="padding: 0px">
         <div class="row-fluid" style="font-weight: bold">
@@ -153,13 +148,13 @@
             <div style="display: table-cell;width: 310px;"><nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="Nss" newnss="true" tabindex="3"/></div>
 
 
-<%--            ct1:nssPopup name="likeNSS" onFailure="nssFailure();"--%>
-<%--            onChange="nssChange(tag);" params="<%=params%>"--%>
-<%--            value="<%=viewBean.getNumeroAvsFormateSansPrefixe()%>"--%>
-<%--            newnss="<%=viewBean.isNNSS()%>"--%>
-<%--            jspName="<%=jspLocation%>" avsMinNbrDigit="3"--%>
-<%--            nssMinNbrDigit="3" avsAutoNbrDigit="11"--%>
-<%--            nssAutoNbrDigit="10"--%>
+            <%--            ct1:nssPopup name="likeNSS" onFailure="nssFailure();"--%>
+            <%--            onChange="nssChange(tag);" params="<%=params%>"--%>
+            <%--            value="<%=viewBean.getNumeroAvsFormateSansPrefixe()%>"--%>
+            <%--            newnss="<%=viewBean.isNNSS()%>"--%>
+            <%--            jspName="<%=jspLocation%>" avsMinNbrDigit="3"--%>
+            <%--            nssMinNbrDigit="3" avsAutoNbrDigit="11"--%>
+            <%--            nssAutoNbrDigit="10"--%>
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="LASTNAME"/></div>
@@ -190,7 +185,7 @@
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="CAISSE"/></div>
             <div style="display: table-cell;width: 310px; padding-bottom: 40px"><ct:select name="attributAvisEcheance"
-                                                                      styleClass="longSelect" tabindex="3">
+                                                                                           styleClass="longSelect" tabindex="3">
                 <ct:optionsCodesSystems csFamille="test selection caisse">
                 </ct:optionsCodesSystems>
             </ct:select>
@@ -217,7 +212,7 @@
 
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
-            <div style="display: table-cell;width: 310px;"><input  name="filename" type="file" /></div>
+            <div style="display: table-cell;width: 310px;"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload, protocole:jdbc"/></div>
         </div>
 
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
@@ -235,23 +230,26 @@
         <%--               id="nss"--%>
         <%--               value="<%=viewBean.getNss()%>"/>--%>
     </div>
-        <TR>
-            <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk" value="Test" style="width:60" onclick="validateform()"></TD>
-        </TR>
-</body>
+</tr></td>
+<TR>
+    <%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
+</TR>
+<%--</form>--%>
+<%--</body>--%>
 
-
-
-<%@ include file="/theme/detail/bodyButtons.jspf" %>
+<%--<%@ include file="/theme/detail/bodyButtons.jspf" %>--%>
 <%-- tpl:put name="zoneButtons" --%>
 <%--<input type="button"--%>
 <%--       value="<ct:FWLabel key="JSP_ARRET" /> (alt+<ct:FWLabel key="AK_MATERNITE_ARRET" />)"--%>
 <%--       onclick="arret()"--%>
 <%--       accesskey="<ct:FWLabel key="AK_MATERNITE_ARRET" />"/>--%>
-<input type="button"
-       value="<ct:FWLabel key="JSP_SUIVANT" /> (alt+<ct:FWLabel key="AK_MATERNITE_SUIVANT" />)"
-       onclick="validate()"
-       accesskey="<ct:FWLabel key="AK_MATERNITE_SUIVANT" />"/>
+<%--<input type="button"--%>
+<%--       value="<ct:FWLabel key="JSP_SUIVANT" /> (alt+<ct:FWLabel key="AK_MATERNITE_SUIVANT" />)"--%>
+<%--       onclick="validate()"--%>
+<%--       accesskey="<ct:FWLabel key="AK_MATERNITE_SUIVANT" />"/>--%>
 
-</html>
+<%--</html>--%>
 
+<%@ include file="/theme/detail/bodyButtons.jspf" %>
+<%@ include file="/theme/detail/bodyErrors.jspf" %>
+<%@ include file="/theme/detail/footer.jspf" %>
