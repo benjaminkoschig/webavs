@@ -45,6 +45,7 @@ import globaz.corvus.db.retenues.RERetenuesPaiementManager;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.REPrestationUtils;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.decisions.KeyPeriodeInfo;
 import globaz.corvus.vb.decisions.REBeneficiaireInfoVO;
@@ -3094,16 +3095,9 @@ public class REDecisionOO extends REAbstractJobOO {
                                     line1.addData("genreRente", getTexte(catalogeDeTexteDecision, 2, 12));
 
                                 } else {
-                                        String libelle = RENumberFormatter.codeSystemToLibelle(
-                                                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
-                                                codeIsoLangue, getSession());
-                                    if (Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme)) {
-                                        DecimalFormat df = new DecimalFormat(" #.# %");
-                                        String quotite = df.format(Double.valueOf(benefs[inc].getQuotite()));
-                                        line1.addData("genreRente", libelle + quotite);
-                                    } else {
-                                        line1.addData("genreRente", libelle);
-                                    }
+                                    String libelle = REPrestationUtils.getLibelleGenrePrestation(pourRechercheCodeSysteme, benefs[inc].getQuotite(), codeIsoLangue, getSession());
+                                    line1.addData("genreRente", libelle);
+
                                 }
 
                                 line1.addData("montantLigne", JANumberFormatter.format(benefs[inc].getMontant()));
