@@ -26,6 +26,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,6 +58,7 @@ public class COAmorcerContentieux {
 
     private COImprimerListPourOP listePourOP;
     private boolean previsionnel;
+    private boolean eBillPrintable = false;
 
     private List<String> roles;
     private Map<String, COSelection> selections;
@@ -226,7 +228,7 @@ public class COAmorcerContentieux {
      * @param session
      * @param transition
      * @param ctxInfo
-     * @param sequence
+     * @param userName
      * @return
      * @throws Exception
      * @throws COTransitionException
@@ -243,6 +245,8 @@ public class COAmorcerContentieux {
         contentieux.setIdSection(ctxInfo.getIdSection());
         contentieux.setIdSequence(ctxInfo.getIdSequenceContentieux());
 
+        contentieux.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(getEBillPrintable(), session));
+        contentieux.setEBillPrintable(getEBillPrintable());
         contentieux.setDateExecution(getDateSurDocument());
         contentieux.setDateOuverture(getDateSurDocument());
         contentieux.setDateDeclenchement(ctxInfo.getDateEcheance());
@@ -362,6 +366,10 @@ public class COAmorcerContentieux {
 
     public COImprimerListPourOP getListePourOP() {
         return listePourOP;
+    }
+
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
     }
 
     public List<String> getRoles() {
@@ -546,6 +554,10 @@ public class COAmorcerContentieux {
         this.previsionnel = previsionnel;
     }
 
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
+    }
+
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
@@ -619,7 +631,7 @@ public class COAmorcerContentieux {
 
             // instancier l'action de transition a effectuer
             COTransitionAction action = COProcessContentieuxUtils.getTransitionAction(parent, selection, transition,
-                    getDateSurDocument(), getDateDelaiPaiement());
+                    getDateSurDocument(), getDateDelaiPaiement(), getEBillPrintable());
             try {
                 if (action != null) {
 

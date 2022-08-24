@@ -13,6 +13,8 @@ import globaz.aquila.vb.process.COSelection;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
+import globaz.musca.db.facturation.FAEnteteFacture;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class COProcessContentieuxUtils {
      *             si une instance de l'action ne peut être créée.
      */
     public static COTransitionAction getTransitionAction(BProcess parent, COSelection selection,
-            COTransition transition, String dateSurDocument, String dateDelaiPaiement) throws COTransitionException {
+            COTransition transition, String dateSurDocument, String dateDelaiPaiement, boolean eBillPrintable) throws COTransitionException {
         // vérifier que la transition a été sélectionnée
         if (!selection.getDetailEtapes().contains(transition.getIdEtapeSuivante())) {
             return null;
@@ -62,6 +64,8 @@ public class COProcessContentieuxUtils {
         // instancier l'action de transition a effectuer
         COTransitionAction action = COServiceLocator.getActionService().getTransitionAction(transition);
 
+        action.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(eBillPrintable, transition.getSession()));
+        action.setEBillPrintable(eBillPrintable);
         action.setDateExecution(dateSurDocument);
         action.setParent(parent);
 

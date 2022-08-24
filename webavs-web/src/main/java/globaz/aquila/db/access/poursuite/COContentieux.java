@@ -103,6 +103,7 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     private String nbDelaiMute = "";
     private String oldIdEtape = "";
     private Boolean previsionnel = Boolean.FALSE;
+    private String eBillTransactionID = "";
     private Boolean eBillPrintable = Boolean.FALSE;
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -219,6 +220,7 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
         idSection = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_ID_SECTION);
         nbDelaiMute = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_NB_DELAI_MUTE);
         idCompteAnnexePrincipal = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_ID_COMPTE_ANNEXE_PRINCIPAL);
+        eBillTransactionID = statement.dbReadString(ICOContentieuxConstante.FNAME_EBILL_TRANSACTION_ID);
         eBillPrintable = statement.dbReadBoolean(ICOContentieuxConstante.FNAME_EBILL_PRINTABLE);
     }
 
@@ -277,6 +279,8 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
                 this._dbWriteNumeric(statement.getTransaction(), nbDelaiMute, "nbDelaiMute"));
         statement.writeField(ICOContentieuxConstante.FNAME_ID_COMPTE_ANNEXE_PRINCIPAL,
                 this._dbWriteNumeric(statement.getTransaction(), idCompteAnnexePrincipal, "idCompteAnnexePrincipal"));
+        statement.writeField(ICOContentieuxConstante.FNAME_EBILL_TRANSACTION_ID,
+                this._dbWriteString(statement.getTransaction(), eBillTransactionID, "eBillTransactionID"));
         statement.writeField(ICOContentieuxConstante.FNAME_EBILL_PRINTABLE,
                 this._dbWriteBoolean(statement.getTransaction(), eBillPrintable, BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrintable"));
     }
@@ -1125,6 +1129,13 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     }
 
     /**
+     * @return the eBillTransactionID
+     */
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    /**
      * @return the eBillPrintable
      */
     public Boolean getEBillPrintable() {
@@ -1578,8 +1589,16 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     }
 
     /**
+     * @param eBillTransactionID
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    /**
      * @param eBillPrintable
-     *            the eBillPrintable to set
+     *            une nouvelle valeur pour cet attribut
      */
     public void setEBillPrintable(Boolean eBillPrintable) {
         this.eBillPrintable = eBillPrintable;

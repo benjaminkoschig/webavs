@@ -139,15 +139,13 @@ public class COProcessContentieuxHelper extends FWHelper {
             COProcessContentieuxViewBean processContentieuxViewBean = (COProcessContentieuxViewBean) viewBean;
             COProcessContentieux processContentieux = new COProcessContentieux();
 
-            processContentieux.setImprimerJournalContentieuxExcelml(processContentieuxViewBean
-                    .getImprimerJournalContentieuxExcelml());
+            processContentieux.setImprimerJournalContentieuxExcelml(processContentieuxViewBean.getImprimerJournalContentieuxExcelml());
             processContentieux.setDateSurDocument(processContentieuxViewBean.getDateSurDocument());
             processContentieux.setDateReference(processContentieuxViewBean.getDateReference());
             processContentieux.setDateDelaiPaiement(processContentieuxViewBean.getDateDelaiPaiement());
             processContentieux.setEMailAddress(processContentieuxViewBean.getEMailAddress());
             processContentieux.setImprimerDocument(processContentieuxViewBean.getImprimerDocument());
-            processContentieux
-                    .setImprimerListeDeclenchement(processContentieuxViewBean.getImprimerListeDeclenchement());
+            processContentieux.setImprimerListeDeclenchement(processContentieuxViewBean.getImprimerListeDeclenchement());
             processContentieux.setImprimerListePourOP(processContentieuxViewBean.getImprimerListePourOP());
             processContentieux.setISession(processContentieuxViewBean.getISession());
             processContentieux.setLibelleJournal(processContentieuxViewBean.getLibelleJournal());
@@ -158,9 +156,9 @@ public class COProcessContentieuxHelper extends FWHelper {
             processContentieux.setTypesSections(processContentieuxViewBean.getIdTypesSections());
             processContentieux.setSelections(processContentieuxViewBean.getSelection());
             processContentieux.setFromNoAffilie(processContentieuxViewBean.getFromNoAffilie());
+            processContentieux.setEBillPrintable(processContentieuxViewBean.getEBillPrintable());
             processContentieux.setBeforeNoAffilie(processContentieuxViewBean.getBeforeNoAffilie());
-            processContentieux.setExecuteTraitementSpecifique(processContentieuxViewBean
-                    .getExecuteTraitementSpecifique());
+            processContentieux.setExecuteTraitementSpecifique(processContentieuxViewBean.getExecuteTraitementSpecifique());
             processContentieux.setUserIdCollaborateur(processContentieuxViewBean.getUserIdCollaborateur());
             processContentieux.setForIdCategorie(processContentieuxViewBean.getForIdCategorie());
             processContentieux.setForIdGenreCompte(processContentieuxViewBean.getForIdGenreCompte());

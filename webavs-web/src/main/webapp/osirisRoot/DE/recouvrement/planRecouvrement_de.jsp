@@ -5,7 +5,6 @@
 <%@ page import="globaz.osiris.db.recouvrement.*,globaz.globall.util.*,globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
-<%@ page import="globaz.osiris.application.CAApplication" %>
 <%
 	idEcran="GCA60007";
 	CAPlanRecouvrementViewBean viewBean = (globaz.osiris.db.recouvrement.CAPlanRecouvrementViewBean)session.getAttribute("viewBean");
@@ -19,10 +18,6 @@
 		compteAnnexeIdExterneRole = viewBean.getCompteAnnexe().getTitulaireEnteteForCompteAnnexeParSection();
 	} catch (Exception e) {
 	}
-%>
-<%
-	boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
-	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -72,18 +67,6 @@
 	}
 
 	function init(){
-	}
-
-	function refreshEBillInputs() {
-		<% if (eBillOsirisActif && eBillAccountID) {%>
-			$("#eBillPrintable").attr("checked", true);
-		<%} else {%>
-			$("#eBillPrintable").attr("checked", false);
-		<%}%>
-	}
-
-	function postInit(){
-		refreshEBillInputs();
 	}
 
 // stop hiding -->
@@ -200,14 +183,6 @@
 	    %>
 		<TD class="control"><ct:FWCodeSelectTag codeType="OSIPLRVEN" defaut="<%=viewBean.getIdModeVentilation()%>" name="idModeVentilation" except="<%=exceptVen%>" /></TD>
 	</tr>
-	<% if (eBillOsirisActif && eBillAccountID) {%>
-		<tr>
-			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-			<td nowrap>
-				  <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
-			</td>
-		</tr>
-	<%}%>
 	<tr>
 		<td class="label">Höchstbetrag zu decken</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>

@@ -22,10 +22,7 @@ import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import ch.globaz.common.properties.PropertiesException;
 
@@ -48,6 +45,7 @@ public class CAProcessImpressionPlan extends BProcess {
     private String modele = "";
     private String observation = "";
     private EBillHelper eBillHelper = new EBillHelper();
+    private Boolean eBillPrintable = false;
 
     /**
      * Constructor for CAProcessImpressionPlan.
@@ -85,6 +83,10 @@ public class CAProcessImpressionPlan extends BProcess {
             document = createDecision();
             // CAILettrePlanRecouvVoiesDroit documentVD = this.createVoiesDroit();
             CAPlanRecouvrement plan = (CAPlanRecouvrement) document.currentEntity();
+
+            // On propage la case à coché eBillPrintable du CAImpressionPlanViewBean dans le plan
+            plan.setEBillPrintable(getEBillPrintable());
+
             CAILettrePlanRecouvEcheancier documentE = CASursisPaiement.createEcheancier(this, getTransaction(), plan);
             // Fusionne les documents ci-dessus (Décision, voies de droit et échéancier)
             fusionneDocuments(plan);
@@ -132,7 +134,7 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.addAllEntities(echeances);
         documentBVR.setPlanRecouvrement(plan);
         documentBVR.setCumulSolde(echeancier.getCumulSolde());
-        rechercheDecisionFusionneePourEBill(plan).ifPresent(decisionAvecPlusGrandNombreDePages -> documentBVR.setDecisionFusionee(decisionAvecPlusGrandNombreDePages));
+        documentBVR.setDecisionFusionnee(eBillHelper.rechercheDecisionFusionneePourEBill(plan, getSession(), getAttachedDocuments()));
         documentBVR.setImpressionParLot(true);
         documentBVR.setTailleLot(500);
 
@@ -141,24 +143,6 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.executeProcess();
 
         return documentBVR;
-    }
-
-    private Optional<JadePublishDocument> rechercheDecisionFusionneePourEBill(CAPlanRecouvrement plan) {
-        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(getSession());
-
-        // Recherche la décision fusionnee dans les attachedDocuments si :
-        //  - eBillOsiris est actif
-        //  - le compte annexe possède un eBillAccountID
-        //  - eBillPrintable est sélectioné sur le plan
-        if (eBillOsirisActif && plan.getEBillPrintable()) {
-            if (plan.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(plan.getCompteAnnexe().getEBillAccountID())) {
-                List<JadePublishDocument> decisions = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvDecision.class.getSimpleName(), false);
-                List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(y -> y.getPublishJobDefinition().getDocumentInfo().getChildren().size())).collect(Collectors.toList());
-                return decisionsSorted.stream().findFirst();
-            }
-        }
-
-        return Optional.empty();
     }
 
     /**
@@ -295,6 +279,13 @@ public class CAProcessImpressionPlan extends BProcess {
     }
 
     /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @return the modele
      */
     public String getModele() {
@@ -335,6 +326,14 @@ public class CAProcessImpressionPlan extends BProcess {
 
     public void setImpAvecBVR(Boolean newImpAvecBVR) {
         impAvecBVR = newImpAvecBVR;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+     public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**
