@@ -1,29 +1,136 @@
 package globaz.eform.vb.envoi;
 
-import ch.globaz.common.exceptions.NotFoundException;
-import ch.globaz.common.file.FileUtils;
-import ch.globaz.eform.business.GFEFormServiceLocator;
-import ch.globaz.eform.business.models.GFFormulaireModel;
-import ch.globaz.eform.constant.GFTypeEForm;
 import globaz.commons.nss.NSUtil;
-import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.pyxis.db.tiers.TIPersonneAvsManager;
-import globaz.pyxis.db.tiers.TITiersViewBean;
-import globaz.pyxis.util.CommonNSSFormater;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private static final Logger LOG = LoggerFactory.getLogger(GFEnvoiViewBean.class);
 
     private String id;
-
     private String nss ="";
+    private String filename;
+    private String nomGestionnaire;
+    private String nomDepartement;
+    private String telephoneGestionnaire;
+    private String emailGestionnaire;
+    private String nomAssure;
+    private String prenomAssure;
+    private String dateNaissance;
+    private String adresse;
+    private List<String> fileNameList = new LinkedList<>();
+
+    @Override
+    public String getId() {
+        return id;
+    }
+    @Override
+    public void setId(String newId) {
+        id = newId;
+    }
+
+    public String getNss() {
+        return nss;
+    }
+
+    public void setNss(String nss) {
+        this.nss = nss;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+
+        this.filename = filename;
+    }
+
+    public String getNomGestionnaire() {
+        return nomGestionnaire;
+    }
+
+    public void setNomGestionnaire(String nomGestionnaire) {
+        this.nomGestionnaire = nomGestionnaire;
+    }
+
+    public String getNomDepartement() {
+        return nomDepartement;
+    }
+
+    public void setNomDepartement(String nomDepartement) {
+        this.nomDepartement = nomDepartement;
+    }
+
+    public String getTelephoneGestionnaire() {
+        return telephoneGestionnaire;
+    }
+
+    public void setTelephoneGestionnaire(String telephoneGestionnaire) {
+        this.telephoneGestionnaire = telephoneGestionnaire;
+    }
+
+    public String getEmailGestionnaire() {
+        return emailGestionnaire;
+    }
+
+    public void setEmailGestionnaire(String emailGestionnaire) {
+        this.emailGestionnaire = emailGestionnaire;
+    }
+
+    public String getNomAssure() {
+        return nomAssure;
+    }
+
+    public void setNomAssure(String nomAssure) {
+        this.nomAssure = nomAssure;
+    }
+
+    public String getPrenomAssure() {
+        return prenomAssure;
+    }
+
+    public void setPrenomAssure(String prenomAssure) {
+        this.prenomAssure = prenomAssure;
+    }
+
+    public String getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public void setDateNaissance(String dateNaissance) {
+        this.dateNaissance = dateNaissance;
+    }
+
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    public List<String> getFileNameList() {
+        return fileNameList;
+    }
+
+    public void setFileNameList(List<String> fileNameList) {
+        this.fileNameList = fileNameList;
+    }
 
     public GFEnvoiViewBean() {
         super();
@@ -44,38 +151,19 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     public void delete() throws Exception {
 
     }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
     @Override
     public void retrieve() throws Exception {
 
     }
-
-    @Override
-    public void setId(String newId) {
-        id = newId;
-    }
-
     @Override
     public void update() throws Exception {
 
-    }
-
-    public void setNss(String nss) {
-        this.nss = nss;
     }
 
     public BSession getSession() {
         return (BSession) getISession();
     }
 
-    public String getNss() {
-        return nss;
-    }
     public String getNumeroAvsFormateSansPrefixe() {
         return NSUtil.formatWithoutPrefixe(getNss(), isNNSS().equals("true") ? true : false);
     }
@@ -90,5 +178,47 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
             return "false";
         }
     }
+
+    public void checkFileExtension(String filename) throws IOException {
+        if (!JadeStringUtil.isNull(filename)) {
+            String extension = FilenameUtils.getExtension(filename);
+
+            if (extension.equals("zip")) {
+                unZipFile(filename);
+            } else if (extension.equals("pdf") || extension.equals("tiff")) {
+                addPdfOrTIFFToList(filename);
+            }
+        }
+
+    }
+
+    private void addPdfOrTIFFToList(String filename) {
+        fileNameList.add(filename);
+    }
+
+    public void unZipFile(String filename) throws IOException {
+        List<String> fileNameList = new LinkedList<>();
+        if (!JadeStringUtil.isNull(filename)) {
+            FileInputStream fis = null;
+            ZipInputStream zipIs = null;
+            ZipEntry zEntry = null;
+            try {
+                fis = new FileInputStream(filename);
+                zipIs = new ZipInputStream(new BufferedInputStream(fis));
+                while ((zEntry = zipIs.getNextEntry()) != null) {
+                    fileNameList.add(zEntry.getName());
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                fis.close();
+                zipIs.close();
+            }
+        }
+        setFileNameList(fileNameList);
+    }
+
 }
 
