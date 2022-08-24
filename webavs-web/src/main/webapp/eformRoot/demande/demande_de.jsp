@@ -1,5 +1,6 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
+<%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -53,7 +54,22 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="byNss" />
+						<ct:widget id='byNss' name='byNss'>
+							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
+								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
+								<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
+								<ct:widgetJSReturnFunction>
+									<script type="text/javascript">
+										function(element){
+											$('#lastName').val($(element).attr('tiers.designation1'));
+											$('#firstName').val($(element).attr('tiers.designation2'));
+											$('#birthday').val($(element).attr('personne.dateNaissance'));
+											this.value=$(element).attr('personneEtendue.numAvsActuel');
+										}
+									</script>
+								</ct:widgetJSReturnFunction>
+							</ct:widgetService>
+						</ct:widget>
 					</div>
 				</div>
 				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
