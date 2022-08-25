@@ -193,13 +193,11 @@
 				<ct:FWLabel key="CAISSE_DESTINATRICE"/>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="CAISSE"/></div>
-				<div style="display: table-cell;width: 310px; padding-bottom: 40px"><ct:select
-						name="attributAvisEcheance"
-						styleClass="longSelect" tabindex="3">
-					<ct:optionsCodesSystems csFamille="test selection caisse">
-					</ct:optionsCodesSystems>
-				</ct:select>
+				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
+				<div style="display: table-cell;width: 300px;">
+					<ct:FWListSelectTag name="byCaisse"
+										data="<%=GFEchangeSedexHelper.getCaisseData(objSession)%>"
+										defaut="<%=objSession.getUserId()%>"/>
 				</div>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
