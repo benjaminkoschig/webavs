@@ -1243,8 +1243,6 @@ public class CAPlanRecouvrement extends CABEntity {
     }
 
     /**
-     * setter pour l'attribut eBillPrintable
-     *
      * @param eBillPrintable
      *            une nouvelle valeur pour cet attribut
      */

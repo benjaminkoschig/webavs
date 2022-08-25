@@ -2,9 +2,8 @@ package globaz.osiris.db.print;
 
 import globaz.babel.api.ICTDocument;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BManager;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
-import globaz.osiris.db.access.recouvrement.CAEcheancePlanManager;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrementManager;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -39,23 +38,15 @@ public class CAImpressionPlanViewBean extends CAProcessImpressionPlan implements
     public CACompteAnnexe getCompteAnnexe() {
         CACompteAnnexe compteAnnexe = new CACompteAnnexe();
 
-        CAEcheancePlanManager echeancePlanManager = new CAEcheancePlanManager();
-        echeancePlanManager.setSession(getSession());
-        echeancePlanManager.setForIdPlanRecouvrement(getIdPlanRecouvrement());
-
-        /*CAPlanRecouvrementManager planManager = new CAPlanRecouvrementManager();
+        CAPlanRecouvrementManager planManager = new CAPlanRecouvrementManager();
         planManager.setSession(getSession());
-        planManager.setForIdPlanRecouvrement(getIdPlanRecouvrement());*/
+        planManager.setForIdPlanRecouvrement(getIdPlanRecouvrement());
 
         try {
-            echeancePlanManager.find(getTransaction());
-            if (echeancePlanManager.size() > 0) {
-                compteAnnexe = ((CAEcheancePlan) echeancePlanManager.getFirstEntity()).getPlanRecouvrement().getCompteAnnexe();
-            }
-            /*planManager.find(getTransaction());
+            planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
             if (planManager.size() > 0) {
-                compteAnnexe2 = ((CAPlanRecouvrement) planManager.getFirstEntity()).getCompteAnnexe();
-            }*/
+                compteAnnexe = ((CAPlanRecouvrement) planManager.getFirstEntity()).getCompteAnnexe();
+            }
         } catch (Exception e) {
              JadeLogger.error(this, e);
         }
