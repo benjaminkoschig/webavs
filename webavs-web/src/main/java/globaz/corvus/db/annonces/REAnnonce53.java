@@ -36,6 +36,7 @@ public class REAnnonce53 extends REAnnoncesAbstractLevel3A {
     public static final String FIELDNAME_FRACTION_RENTE = "ZDTFRE";
     public static final String FIELDNAME_ID_ANNONCE_53 = "ZDIANN";
     public static final String FIELDNAME_OBSERVATION_CENTRALE = "ZDLOCE";
+    public static final String FIELDNAME_QUOTITE_ANNONCE_53 = "QUOTITE_ANNONCE_53";
 
     public static final String TABLE_NAME_ANNONCE_53 = "REANN53";
 
@@ -55,6 +56,7 @@ public class REAnnonce53 extends REAnnoncesAbstractLevel3A {
     private String etatOrigine = "";
     private String fractionRente = "";
     private String observationCentrale = "";
+    private String quotite = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -136,7 +138,7 @@ public class REAnnonce53 extends REAnnoncesAbstractLevel3A {
         observationCentrale = statement.dbReadString(FIELDNAME_OBSERVATION_CENTRALE);
         ancienSupplementAjourn = statement.dbReadString(FIELDNAME_ANCIEN_SUPP_AJOURNEMENT);
         ancienRedAnticipation = statement.dbReadString(FIELDNAME_ANCIEN_RED_ANTICIPATION);
-
+        quotite = statement.dbReadNumeric(FIELDNAME_QUOTITE_ANNONCE_53);
     }
 
     /**
@@ -226,7 +228,8 @@ public class REAnnonce53 extends REAnnoncesAbstractLevel3A {
                 _dbWriteString(statement.getTransaction(), ancienSupplementAjourn, "ancienSupplementAjourn"));
         statement.writeField(FIELDNAME_ANCIEN_RED_ANTICIPATION,
                 _dbWriteString(statement.getTransaction(), ancienRedAnticipation, "ancienRedAnticipation"));
-
+        statement.writeField(FIELDNAME_QUOTITE_ANNONCE_53,
+                _dbWriteNumeric(statement.getTransaction(), quotite, "quotite"));
     }
 
     public String getAncienCodeCasSpecial1() {
@@ -353,4 +356,11 @@ public class REAnnonce53 extends REAnnoncesAbstractLevel3A {
         this.observationCentrale = observationCentrale;
     }
 
+    public String getQuotite() {
+        return quotite;
+    }
+
+    public void setQuotite(String quotite) {
+        this.quotite = quotite;
+    }
 }
