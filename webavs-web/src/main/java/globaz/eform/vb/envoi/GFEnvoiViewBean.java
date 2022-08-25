@@ -5,6 +5,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,9 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private String dateNaissance;
     private String adresse;
     private List<String> fileNameList = new LinkedList<>();
+    @Getter
+    @Setter
+    private String fileNamePersistance;
 
     @Override
     public String getId() {
@@ -179,46 +184,6 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
         }
     }
 
-    public void checkFileExtension(String filename) throws IOException {
-        if (!JadeStringUtil.isNull(filename)) {
-            String extension = FilenameUtils.getExtension(filename);
-
-            if (extension.equals("zip")) {
-                unZipFile(filename);
-            } else if (extension.equals("pdf") || extension.equals("tiff")) {
-                addPdfOrTIFFToList(filename);
-            }
-        }
-
-    }
-
-    private void addPdfOrTIFFToList(String filename) {
-        fileNameList.add(filename);
-    }
-
-    public void unZipFile(String filename) throws IOException {
-        List<String> fileNameList = new LinkedList<>();
-        if (!JadeStringUtil.isNull(filename)) {
-            FileInputStream fis = null;
-            ZipInputStream zipIs = null;
-            ZipEntry zEntry = null;
-            try {
-                fis = new FileInputStream(filename);
-                zipIs = new ZipInputStream(new BufferedInputStream(fis));
-                while ((zEntry = zipIs.getNextEntry()) != null) {
-                    fileNameList.add(zEntry.getName());
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                fis.close();
-                zipIs.close();
-            }
-        }
-        setFileNameList(fileNameList);
-    }
 
 }
 

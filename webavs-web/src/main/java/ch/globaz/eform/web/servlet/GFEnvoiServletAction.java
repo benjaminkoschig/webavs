@@ -1,9 +1,7 @@
 package ch.globaz.eform.web.servlet;
 
-import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
-import globaz.eform.vb.formulaire.GFFormulaireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -12,7 +10,6 @@ import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +27,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     }
 
     public final static String ACTION_UPLOAD = "upload";
-    public final static String ACTION_CHANGE_STATUT = "statut";
 
     @Override
     protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
@@ -52,6 +48,15 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     }
 
     @Override
+    protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                    FWDispatcher mainDispatcher) throws ServletException, IOException {
+
+        beforeAfficher(session, request, response, (FWViewBeanInterface) session.getAttribute("viewBean"));
+        super.actionReAfficher(session, request, response, mainDispatcher);
+    }
+
+
+    @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
                                             HttpServletResponse response, FWViewBeanInterface viewBean) {
         return this.getActionFullURL() + ".afficher";
@@ -70,15 +75,16 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
 
             // Récupération du viewBean depuis la session
-            FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(action, dispatcher.getPrefix());
-            String id = request.getParameter("selectedId");
-            ((GFFormulaireViewBean) viewBean).getFormulaire().setId(id);
-            if (actionPart.equals(ACTION_UPLOAD)) {
-                String statut = request.getParameter("statut");
-                ((GFFormulaireViewBean) viewBean).getFormulaire().setStatus(GFStatusEForm.getStatusByCode(statut).getCodeSystem());
+            FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
+            if (!(viewBean instanceof GFEnvoiViewBean)) {
+                viewBean = FWViewBeanActionFactory.newInstance(getAction(), dispatcher.getPrefix());
+                session.setAttribute("viewbean", viewBean);
             }
             // Copie des propriétés
             JSPUtils.setBeanProperties(request, viewBean);
+            if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
+               GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
+            }
 
             // Traitement
             viewBean = dispatcher.dispatch(viewBean, action);
@@ -112,22 +118,4 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
         return this._getDestEchec(session, request, response, viewBean);
     }
 
-
-    protected void actionUpload(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
-//        super.actionAfficher(session, request, response, mainDispatcher);
-        FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
-        if (!(viewBean instanceof GFEnvoiViewBean)) {
-            viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
-            session.setAttribute("viewbean", viewBean);
-        }
-        try {
-
-            JSPUtils.setBeanProperties(request, viewBean);
-
-            mainDispatcher.dispatch(viewBean, getAction());
-
-        } catch (Exception e) {
-            LOG.error("Failed to prepare viewBean for actionChercher", e);
-        }
-    }
 }
