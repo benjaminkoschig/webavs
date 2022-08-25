@@ -1,10 +1,9 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
-<%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
+<%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
-<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 
 <%@ include file="/theme/detail_ajax/header.jspf" %>
 
@@ -30,7 +29,6 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
-<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
 
 <script >
@@ -83,9 +81,20 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:FWListSelectTag name="byCaisse"
-											data="<%=GFEchangeSedexHelper.getCaisseData(objSession)%>"
-											defaut="<%=objSession.getUserId()%>"/>
+						<ct:widget id='byNss' name='byNss'>
+							<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
+								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+								<ct:widgetJSReturnFunction>
+									<script type="text/javascript">
+										function(element){
+											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+										}
+									</script>
+								</ct:widgetJSReturnFunction>
+							</ct:widgetService>
+						</ct:widget>
 					</div>
 				</div>
 			</div>
