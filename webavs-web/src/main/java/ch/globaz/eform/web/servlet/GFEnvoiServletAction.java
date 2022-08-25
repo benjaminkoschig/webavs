@@ -25,7 +25,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public GFEnvoiServletAction(FWServlet aServlet) {
         super(aServlet);
     }
-
+    public final static String ACTION_PATH = "eform.envoi.envoi";
     public final static String ACTION_UPLOAD = "upload";
 
     @Override
@@ -95,6 +95,9 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
+                if(actionPart.equals(ACTION_UPLOAD)) {
+                    destination = this.getActionFullURL() + ".reAfficher";;
+                }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);
             }
