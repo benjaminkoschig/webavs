@@ -1,6 +1,7 @@
 <%@ page import="globaz.eform.vb.envoi.GFEnvoiViewBean" %>
 <%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
+<%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%--<%@ page errorPage="/errorPage.jsp" %>--%>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -51,6 +52,7 @@
     var zipFileName;
     var listFileArray = [];
 
+
     function validateform() {
 
         if (document.getElementsByName("filename")[0].value == "") {
@@ -95,6 +97,22 @@
         // $("#FILE_PATH_FOR_POPULATION").val(data.path+"/"+data.fileName);
         // $('#fileName').val($("#fileInput").val());
     }
+    function buttonCheck(){
+        var nss =document.getElementsByName("byNss")[0].value;
+        var typeDefichier=document.getElementsByName("typeDeFichier")[0].value;
+        var caisse=document.getElementsByName("byCaisse")[0].value;
+
+
+        if(nss=="" || typeDefichier=="" || caisse==""){
+            document.getElementsByName("btnEnvoyer")[0].disabled = true;
+		}else{
+            document.getElementsByName("btnEnvoyer")[0].disabled = false;
+		}
+
+	}
+    function cancel(){
+		location.reload();
+	}
 
 </script>
 
@@ -125,12 +143,12 @@
 				<ct:FWLabel key="JSP_GESTIONNAIRE"/>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
+				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
 																			 id="nomGestionnaire"/></div>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
+				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
 																			 id="departementGestionnaire"/></div>
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
@@ -147,7 +165,7 @@
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 				<div style="display: table-cell;width: 300px;">
-					<ct:widget id='byNss' name='byNss'>
+					<ct:widget id='byNss' name='byNss' onchange="buttonCheck()">
 						<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 							<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 							<ct:widgetLineFormatter
@@ -167,7 +185,7 @@
 				</div>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="LASTNAME"/></div>
+				<div style="display: table-cell;width: 140px; padding-left: 10px"><ct:FWLabel key="LASTNAME"/></div>
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="lastName" id="lastName"
 																			 readonly="true"/></div>
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="FIRSTNAME"/></div>
@@ -177,11 +195,11 @@
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="birthday" id="birthday"
 																			 readonly="true"/></div>
 			</div>
-			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="ADRESSE_DOMICILE"/></div>
-				<div style="display: table-cell;width: 310px;"><textarea id="remarque" name="remarque" cols="100"
-																		 rows="5"></textarea></div>
-			</div>
+<%--			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">--%>
+<%--				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="ADRESSE_DOMICILE"/></div>--%>
+<%--				<div style="display: table-cell;width: 310px;"><textarea id="remarque" name="remarque" cols="100"--%>
+<%--																		 rows="5"></textarea></div>--%>
+<%--			</div>--%>
 
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
@@ -194,11 +212,20 @@
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
-				<div style="display: table-cell;width: 300px;">
-					<ct:FWListSelectTag name="byCaisse"
-										data="<%=GFEchangeSedexHelper.getCaisseData(objSession)%>"
-										defaut="<%=objSession.getUserId()%>"/>
-				</div>
+				<ct:widget id='byCaisse' name='byCaisse'>
+					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+						<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
+						<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+						<ct:widgetJSReturnFunction>
+							<script type="text/javascript">
+                                function(element){
+                                    this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+                                }
+							</script>
+						</ct:widgetJSReturnFunction>
+					</ct:widgetService>
+				</ct:widget>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
@@ -210,8 +237,7 @@
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:select name="attributAvisEcheance"
-																		  styleClass="longSelect" tabindex="3">
+				<div style="display: table-cell;width: 310px;"><ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
 					<ct:option value="" label=""></ct:option>
 					<ct:option value="Rente AVS" label="Rente AVS"></ct:option>
 					<ct:option value="Rente AI" label="Rente AI"></ct:option>
@@ -231,20 +257,28 @@
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
 				<div style="width: 310px;background-color:#FFF">
 					<table id="periodes" name=periode" class="areaTable" style="width:100%">
-						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
-						<tr name="rightParam"><%=viewBean.getFileNameList().get(i)%>
-						</tr>
-						<%}%>
+<%--						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>--%>
+<%--						<tr name="rightParam"><%=viewBean.getFileNameList().get(i)%>--%>
+<%--						</tr>--%>
+<%--						<%}%>--%>
+					<tr>
+						<td>ligne 1</td>
+					</tr>
 					</table>
 				</div>
 			</div>
-			<%--        <input type="hidden"--%>
-			<%--               name="nss"--%>
-			<%--               id="nss"--%>
-			<%--               value="<%=viewBean.getNss()%>"/>--%>
 		</div>
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div style="float:right;">
+						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="action(COMMIT)">
+					</div>
+				</div>
+			</div>
 </tr>
 </td>
+
 <TR>
 	<%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
 </TR>
