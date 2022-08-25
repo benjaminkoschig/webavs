@@ -53,50 +53,20 @@
     var listFileArray = [];
 
 
-    function validateform() {
-
-        if (document.getElementsByName("filename")[0].value == "") {
-            if (langue == 'FR') {
-                var value = "Vous devez sélectionner un fichier."
-            } else {
-                var value = "Sie müssen eine Datei auswählen."
-            }
-            alert(value);
-            return false;
-        } else {
-
-            zipFileName = document.getElementsByName("filename")[0].value;
-            document.forms[0].value = zipFileName;
-            document.forms[0].elements('userAction').value = "eform.envoi.envoi.upload";
-            action(COMMIT);
-
-            return true;
-        }
-    }
-
     function validate() {
         document.forms[0].elements('userAction').value = "eform.envoi.envoi.modifier";
         action(COMMIT);
     }
 
-    function launchUnzip() {
-        <%
-            String filename = request.getParameter("filename");
-            viewBean.checkFileExtension(filename);
-        %>
+	function callBackUpload(data) {
+		document.forms[0].elements('fileNamePersistance').value=data.fileName;
+		zipFileName = document.getElementsByName("filename")[0].value;
+		document.forms[0].elements('filename').value=zipFileName;
+		document.forms[0].elements('userAction').value="eform.envoi.envoi.upload";
+		action(COMMIT);
+		return true;
+	}
 
-        <%for(String s: viewBean.getFileNameList()){
-            System.out.println("depuis le view bean "+s);
-        }
-        %>
-
-    }
-
-    function callBackUpload(data) {
-        // $("#FILE_PATH_FOR_POPULATION").prop("disabled", false);
-        // $("#FILE_PATH_FOR_POPULATION").val(data.path+"/"+data.fileName);
-        // $('#fileName').val($("#fileInput").val());
-    }
     function buttonCheck(){
         var nss =document.getElementsByName("byNss")[0].value;
         var typeDefichier=document.getElementsByName("typeDeFichier")[0].value;
@@ -117,46 +87,37 @@
 </script>
 
 
-<%--<TITLE><%=idEcran%>--%>
-<%--</TITLE>--%>
-<%--</HEAD>--%>
-
-<%--<body style="background-color: #B3C4DB">--%>
-<%--<div class="title thDetail text-center">--%>
-<%--    <ct:FWLabel key="ENVOI_TITRE"/>--%>
-<%--    <span class="idEcran"><%=(null == idEcran) ? "" : idEcran%></span>--%>
-<%--</div>--%>
-
-
 <%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
 <%-- tpl:insert attribute="zoneTitle" --%>
 <ct:FWLabel key="ENVOI_TITRE"/>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 
+<tr><td>
+    <%--Partie gestionnaire--%>
+    <ct:inputHidden name="likeNss"/>
+    <ct:inputHidden name="fileNamePersistance"/>
+    <div class="container-fluid" style="padding: 0px">
+        <div class="row-fluid" style="font-weight: bold">
+            <ct:FWLabel key="JSP_GESTIONNAIRE"/>
+        </div>
+        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+            <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
+                                                                         id="nomGestionnaire"/></div>
+        </div>
+        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+            <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
+                                                                         id="departementGestionnaire"/></div>
+            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireTelephone"
+                                                                         id="gestionnaireTelephone"/></div>
+            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireEmail" id="gestionnaireEmail"/></div>
+        </div>
 <tr>
 	<td>
-		<%--Partie gestionnaire--%>
-		<ct:inputHidden name="likeNss"/>
-		<div class="container-fluid" style="padding: 0px">
-			<div class="row-fluid" style="font-weight: bold">
-				<ct:FWLabel key="JSP_GESTIONNAIRE"/>
-			</div>
-			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
-																			 id="nomGestionnaire"/></div>
-			</div>
-			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
-																			 id="departementGestionnaire"/></div>
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireTelephone"
-																			 id="gestionnaireTelephone"/></div>
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireEmail" id="gestionnaireEmail"/></div>
-			</div>
 
 			<%--Partie assuré--%>
 			<div class="row-fluid" style="font-weight: bold">
@@ -246,12 +207,12 @@
 				</ct:select></div>
 			</div>
 
-			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
-				<div style="display: table-cell;width: 310px;"><input name="filename" type="file"
-																	  data-g-upload="callBack: callBackUpload, protocole:jdbc"/>
-				</div>
-			</div>
+        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
+            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
+            <div style="display: table-cell;width: 310px;">
+                <input  name="filename" type="file" data-g-upload="callBack: callBackUpload ,protocole:jdbc/>
+            </div>
+        </div>
 
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
@@ -285,19 +246,7 @@
 <%--</form>--%>
 <%--</body>--%>
 
-<%--<%@ include file="/theme/detail/bodyButtons.jspf" %>--%>
-<%-- tpl:put name="zoneButtons" --%>
-<%--<input type="button"--%>
-<%--       value="<ct:FWLabel key="JSP_ARRET" /> (alt+<ct:FWLabel key="AK_MATERNITE_ARRET" />)"--%>
-<%--       onclick="arret()"--%>
-<%--       accesskey="<ct:FWLabel key="AK_MATERNITE_ARRET" />"/>--%>
-<%--<input type="button"--%>
-<%--       value="<ct:FWLabel key="JSP_SUIVANT" /> (alt+<ct:FWLabel key="AK_MATERNITE_SUIVANT" />)"--%>
-<%--       onclick="validate()"--%>
-<%--       accesskey="<ct:FWLabel key="AK_MATERNITE_SUIVANT" />"/>--%>
 
-<%--</html>--%>
-
-<%@ include file="/theme/detail_ajax/bodyButtons.jspf" %>
+<%@ include file="/theme/detail/bodyButtons.jspf" %>
 <%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
 <%@ include file="/theme/detail_ajax/footer.jspf" %>
