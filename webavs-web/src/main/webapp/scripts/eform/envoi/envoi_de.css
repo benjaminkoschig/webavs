@@ -29,6 +29,7 @@ input{
     background-color: #B3C4DB;
 }
 
-#tgName {
-
+#byNss, #byCaisse{
+    width: 291px !important;
 }
+

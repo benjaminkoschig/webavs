@@ -2,6 +2,8 @@
 <%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 <%--<%@ page errorPage="/errorPage.jsp" %>--%>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -15,6 +17,9 @@
 //    String params = "&provenance1=TIERS&provenance2=CI";
 //    String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
 	String zipFileName;
+	List<String> fileList = viewBean.getFileNameList();
+
+
 
 %>
 
@@ -84,6 +89,10 @@
 		location.reload();
 	}
 
+    function deleteFile(index){
+        document.forms[0].elements('fileNameList').value=zipFileName;
+	}
+
 </script>
 
 
@@ -124,7 +133,7 @@
 				<ct:FWLabel key="ASSURE"/>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
+				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 				<div style="display: table-cell;width: 300px;">
 					<ct:widget id='byNss' name='byNss' onchange="buttonCheck()">
 						<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
@@ -172,7 +181,8 @@
 				<ct:FWLabel key="CAISSE_DESTINATRICE"/>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
+				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
+				<div style="display: table-cell;width: 300px;">
 				<ct:widget id='byCaisse' name='byCaisse'>
 					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
@@ -188,6 +198,7 @@
 					</ct:widgetService>
 				</ct:widget>
 			</div>
+			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
 			</div>
@@ -197,8 +208,8 @@
 				<ct:FWLabel key="DOCUMENT_A_ENVOYER"/>
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
+				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
+				<div style="display: table-cell;width: 300px;"><ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
 					<ct:option value="" label=""></ct:option>
 					<ct:option value="Rente AVS" label="Rente AVS"></ct:option>
 					<ct:option value="Rente AI" label="Rente AI"></ct:option>
@@ -207,42 +218,43 @@
 				</ct:select></div>
 			</div>
 
-        <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-            <div style="display: table-cell;width: 140px;"><ct:FWLabel key="REPERTOIRE_SOURCE"/></div>
-            <div style="display: table-cell;width: 310px;">
-                <input  name="filename" type="file" data-g-upload="callBack: callBackUpload ,protocole:jdbc/>
-            </div>
+
+				<div style="display: table ; margin-top: 10px" class="panel-body std-body-height">
+					<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="FICHIER_SOURCE"/></div>
+					<div style="display: table-cell;width: 310px;margin-bottom: 10px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload,protocole:jdbc"/>
+           	</div>
         </div>
 
-			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="SELECTION_FICHIER"/></div>
-				<div style="width: 310px;background-color:#FFF">
-					<table id="periodes" name=periode" class="areaTable" style="width:100%">
-<%--						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>--%>
-<%--						<tr name="rightParam"><%=viewBean.getFileNameList().get(i)%>--%>
-<%--						</tr>--%>
-<%--						<%}%>--%>
-					<tr>
-						<td>ligne 1</td>
-					</tr>
+				<div style="display: table; margin-top: 15px" class="panel-body std-body-height">
+				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="SELECTION_FICHIER"/></div>
+				<div style="width: 600px;background-color:#FFF;height: 200px; overflow-y: scroll;border: 1px solid black">
+					<table id="periodes" name=periode" style="width: 100%">
+
+						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
+	<tr>
+		<td><%=viewBean.getFileNameList().get(i)%></td>
+		<td><a onclick="deleteFile()"><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+	</tr>
+						<%}%>
 					</table>
-				</div>
+
+<%--				</div>--%>
 			</div>
 		</div>
 			<div class="container-fluid">
 				<div class="row-fluid">
-					<div style="float:right;">
+					<div style="float:right;margin-top: 20px">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="action(COMMIT)">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="validateform()">
 					</div>
 				</div>
 			</div>
 </tr>
 </td>
 
-<TR>
+<%--<TR>--%>
 	<%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
-</TR>
+<%--</TR>--%>
 <%--</form>--%>
 <%--</body>--%>
 
