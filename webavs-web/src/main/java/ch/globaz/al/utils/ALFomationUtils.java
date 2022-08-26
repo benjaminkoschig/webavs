@@ -16,6 +16,18 @@ public class ALFomationUtils {
     private ALFomationUtils(){
     }
 
+    /**
+     * Retourne l'age de formation en fonction de la date de naissance de l'enfant et des paramètres (en DB)
+     * qui sont en vigueur pour cette date.
+     *
+     * Attention : Cette méthode peut poser problème s'il y a des doublons en DB, en effet, la boucle for contient des
+     * return et n'itère que sur les deux premiers éléments. Dans ce cas, il faut supprimer les doublons en DB.
+     *
+     * @param dateNaissance             Date de naissance de l'enfant
+     * @return                          Age de formation selon la date de naissance de l'enfant
+     * @throws JadeApplicationException 
+     * @throws JadePersistenceException
+     */
     public static Integer getAgeFormation(String dateNaissance) throws JadeApplicationException, JadePersistenceException {
         ParameterSearchModel searchModel = new ParameterSearchModel();
         searchModel.setForIdApplParametre(ALConstParametres.APPNAME);
