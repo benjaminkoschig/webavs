@@ -14,11 +14,6 @@ public class PYTiersDTO {
     // Mandatory fields
     private String surname;
     private String language;
-    private String typeAddress;
-    private String street;
-    private String streetNumber;
-    private String postalCode;
-    private String locality;
 
     // Physical person's mandatory fields
     private Boolean isPhysicalPerson;
@@ -41,16 +36,15 @@ public class PYTiersDTO {
     private String name2;
     private String taxpayerNumber;
     private Boolean isInactive;
-    private String manner;
     private String ccpNumber;
     private String accountNumber;
     private String status;
     private String clearingNumber;
     private String branchOfficePostalCode;
-    private String country;
     private String bankCountry;
 
     private Vector<PYContactDTO> contacts = new Vector();
+    private Vector<PYAddressDTO> addresses = new Vector();
 
     // CCVS-only fields
     // Optional fields
@@ -92,16 +86,14 @@ public class PYTiersDTO {
         mandatoryParameters.add(language);
         mandatoryParameters.add(isPhysicalPerson.toString());
 
-        if (street != null || streetNumber != null || postalCode != null || locality != null) {
-            mandatoryParameters.add(street);
-            mandatoryParameters.add(streetNumber);
-            mandatoryParameters.add(postalCode);
-            mandatoryParameters.add(locality);
-        }
+
+        //Il faut surement pas faire ça ici. L'objet est vide du coup... isValid sera toujours bon
+        PYAddressDTO pyAddressDTO = new PYAddressDTO();
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
+                            && pyAddressDTO.isValid(this)
                             && PYValidateDTO.isValidForCreation(this)
             );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)) {
@@ -112,6 +104,7 @@ public class PYTiersDTO {
             mandatoryParameters.add(civilStatus);
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
+                            && pyAddressDTO.isValid(this)
                             && PYValidateDTO.isValidForCreation(this)
             );
         }
