@@ -23,11 +23,13 @@ public class PYExecuteService extends BProcess {
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
 
-            // Only add a mail address if the DTO contains a postal code
-            if (dto.getPostalCode() != null) {
-                idMailAddress = PRTiersHelper.addTiersMailAddress(getSession(), dto);
+            // Only add a mail address if the DTO contains an address
+            if (dto.getAddresses().size() != 0) {
+                idMailAddress = PRTiersHelper.addTiersAddress(getSession(), dto);
             }
-            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation. Better check for payment info's fields
+            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation. Better check for payment info's fields.
+            //  NO, the link between payment address and domicile/courrier address is mandatory. Define which address should be linked.
+            //  So, check for address AND payment infos
             if (idMailAddress != null) {
                 PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
             }

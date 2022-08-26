@@ -2,6 +2,7 @@ package globaz.prestation.interfaces.tiers;
 
 import ch.globaz.pyxis.business.model.*;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import ch.globaz.pyxis.domaine.DomaineApplication;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.properties.REProperties;
@@ -48,10 +49,7 @@ import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
-import globaz.pyxis.web.DTO.PYContactDTO;
-import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
+import globaz.pyxis.web.DTO.*;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
@@ -375,72 +373,97 @@ public class PRTiersHelper {
     }
 
     /**
-     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de courrier)
+     * Méthode pour les web services CCB/CCVS afin d'ajouter une adresse (domicile / courrier) à un tiers
      *
      * @param session
      * @param dto
+     * @return l'id de l'adresse courrier standard si présente, sinon l'id de l'adresse de domicile standard, sinon null
      * @throws Exception
-     * @return l'id de l'adresse de courrier créée
      */
-    public static final String addTiersMailAddress(BSession session, PYTiersDTO dto) throws Exception {
-        //TODO add the possibility to insert both address (domicile and courrier)
-        //Use boolean domicile = true; courrier = true in JSON ?
-        //How should I manage single field "street" for example. Separate each field for each address ?
-        String typeAddress = null;
-        if (CS_ADRESSE_DOMICILE.equals(dto.getTypeAddress())) {
-            typeAddress = CS_ADRESSE_DOMICILE;
-        } else if (CS_ADRESSE_COURRIER.equals(dto.getTypeAddress())) {
-            typeAddress = CS_ADRESSE_COURRIER;
-        }
-
+    public static final String addTiersAddress(BSession session, PYTiersDTO dto) throws Exception {
+        Boolean hasCourrierStandard = false;
+        String idAddress = null;
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
 
-        AdresseSimpleModel adresseSimpleModel = new AdresseSimpleModel();
-        adresseSimpleModel.setAttention(dto.getManner());
-        adresseSimpleModel.setRue(dto.getStreet());
-        adresseSimpleModel.setNumeroRue(dto.getStreetNumber());
-
-        LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
-        localiteSimpleModel.setNumPostal(dto.getPostalCode());
-        localiteSimpleModel.setLocalite(dto.getLocality());
-        localiteSimpleModel.setIdPays(dto.getCountry());
-
-        AvoirAdresseSimpleModel avoirAdresseSimpleModel = new AvoirAdresseSimpleModel();
-        avoirAdresseSimpleModel.setIdTiers(tiers.getIdTiers());
-        avoirAdresseSimpleModel.setIdAdresse(adresseSimpleModel.getIdAdresse());
-        avoirAdresseSimpleModel.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
-
-        AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), CS_DOMAINE_DEFAUT, CS_TYPE_COURRIER, "");
         AdresseComplexModel homeAddress = null;
-        PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
-        searchTiers.setForIdTiers(tiers.getIdTiers());
-        searchTiers = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
 
-        if (searchTiers.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
-            PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) searchTiers.getSearchResults()[0];
+        //Using a Vector for adding multiple addresses
+        for (PYAddressDTO addressDTO : dto.getAddresses()) {
 
-            AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
-            adresseComplexModel.setTiers(personneEtendueComplexModel);
-            adresseComplexModel.setAdresse(adresseSimpleModel);
-            adresseComplexModel.setLocalite(localiteSimpleModel);
-            adresseComplexModel.setAvoirAdresse(avoirAdresseSimpleModel);
-
-            homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, CS_DOMAINE_DEFAUT, typeAddress, false);
-
-
-            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
-                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
-
-            } else if (!JadeThread.logIsEmpty()) {
-                LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
-                throw new PYBadRequestException("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            //Special need for CCVS. The domain is not always set to "Default".
+            if (addressDTO.getDomainAddress() != null)
+                addressDTO.setDomainAddress(addressDTO.getDomainAddress());
+            else {
+                addressDTO.setDomainAddress(String.valueOf(DomaineApplication.STANDARD.getSystemCode()));
             }
-        } else if (searchTiers.getNbOfResultMatchingQuery() != 1 || mailAddress.getFields() != null) {
-            throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse de courrier.");
-        }
 
-        return homeAddress.getAdresse().getId();
+
+            String typeAddress = null;
+            if (CS_ADRESSE_DOMICILE.equals(addressDTO.getTypeAddress())) {
+                typeAddress = CS_ADRESSE_DOMICILE;
+            } else if (CS_ADRESSE_COURRIER.equals(addressDTO.getTypeAddress())) {
+                typeAddress = CS_ADRESSE_COURRIER;
+            }
+
+
+            AdresseSimpleModel adresseSimpleModel = new AdresseSimpleModel();
+            adresseSimpleModel.setAttention(addressDTO.getAttention());
+            adresseSimpleModel.setRue(addressDTO.getStreet());
+            adresseSimpleModel.setNumeroRue(addressDTO.getStreetNumber());
+
+            LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
+            localiteSimpleModel.setNumPostal(addressDTO.getPostalCode());
+            localiteSimpleModel.setLocalite(addressDTO.getLocality());
+            localiteSimpleModel.setIdPays(addressDTO.getCountry());
+
+            AvoirAdresseSimpleModel avoirAdresseSimpleModel = new AvoirAdresseSimpleModel();
+            avoirAdresseSimpleModel.setIdTiers(tiers.getIdTiers());
+            avoirAdresseSimpleModel.setIdAdresse(adresseSimpleModel.getIdAdresse());
+            avoirAdresseSimpleModel.setDateDebutRelation(ch.globaz.common.domaine.Date.now().getSwissValue());
+
+            AdresseTiersDetail mailAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new ch.globaz.common.domaine.Date().getSwissValue(), addressDTO.getDomainAddress(), typeAddress, "");
+
+            PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
+            searchTiers.setForIdTiers(tiers.getIdTiers());
+            searchTiers = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
+
+            if (searchTiers.getNbOfResultMatchingQuery() == 1 && mailAddress.getFields() == null) {
+                PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) searchTiers.getSearchResults()[0];
+
+                AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+                adresseComplexModel.setTiers(personneEtendueComplexModel);
+                adresseComplexModel.setAdresse(adresseSimpleModel);
+                adresseComplexModel.setLocalite(localiteSimpleModel);
+                adresseComplexModel.setAvoirAdresse(avoirAdresseSimpleModel);
+
+                homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, addressDTO.getDomainAddress(), typeAddress, false);
+
+                addressDTO.setIdAddress(homeAddress.getAdresse().getId());
+
+
+                if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                    LOG.error("PRTiersHelper#addTiersAddress - Erreur rencontrée lors de la création de l'adresse pour l'assuré");
+                    throw new PYBadRequestException("PRTiersHelper#addTiersAddress - Erreur rencontrée lors de la création de l'adresse pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+                } else if (!JadeThread.logIsEmpty()) {
+                    LOG.error("PRTiersHelper#addTiersAddress - Erreur rencontrée lors de la création de l'adresse pour l'assuré");
+                    throw new PYBadRequestException("PRTiersHelper#addTiersAddress - Erreur rencontrée lors de la création de l'adresse pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+                }
+            } else if (searchTiers.getNbOfResultMatchingQuery() != 1 || mailAddress.getFields() != null) {
+                throw new PYInternalException("Une erreur s'est produite pendant la récupération de l'adresse.");
+            }
+
+
+            //utilisé pour le retour de la fonction. On veut retourner si possible une adresse de courrier standard afin de l'utiliser pour créer une adresse de paiement.
+            if (typeAddress.equals(CS_TYPE_COURRIER) && addressDTO.getDomainAddress().equals(String.valueOf(DomaineApplication.STANDARD.getSystemCode()))) {
+                hasCourrierStandard = true;
+                idAddress = homeAddress.getAdresse().getId();
+            } else if (!hasCourrierStandard && addressDTO.getDomainAddress().equals(String.valueOf(DomaineApplication.STANDARD.getSystemCode())))
+                idAddress = homeAddress.getAdresse().getId();
+
+        }
+        //TODO retourner une List d'idAddress
+        return idAddress;
     }
 
     /**
@@ -452,6 +475,10 @@ public class PRTiersHelper {
      * @throws Exception
      */
     public static void addTiersPaymentAddress(BSession session, String idMailAddress, PYTiersDTO dto) throws Exception {
+        //TODO Vérifier l'existence d'une adresse en DB afin de créer une adresse de paiement.
+        // Si adresse courrier existante, celle-ci est utilisée pour lier l'adresse de paiement.
+        // Sinon on prend l'adresse de domicile, sinon, la création d'une adresse de paiement n'est pas possible.
+
         TIIbanFormater ibanFormatter = new TIIbanFormater();
 
         TIAdressePaiement adressePaiement = new TIAdressePaiement();
@@ -581,6 +608,8 @@ public class PRTiersHelper {
             avsPerson.setDesignation3(dto.getName1());
         if (dto.getName2() != null)
             avsPerson.setDesignation4(dto.getName2());
+        if (dto.getMaidenName() != null)
+            avsPerson.setNomJeuneFille(dto.getMaidenName());
         if (dto.getNss() != null)
             avsPerson.setNumAvsActuel(dto.getNss());
         if (dto.getBirthDate() != null)
@@ -591,10 +620,10 @@ public class PRTiersHelper {
             avsPerson.setSexe(dto.getSex());
         if (dto.getCivilStatus() != null)
             avsPerson.setEtatCivil(dto.getCivilStatus());
-        if(dto.getLanguage() != null)
+        if (dto.getLanguage() != null)
             avsPerson.setLangue(dto.getLanguage());
-        if (dto.getCountry() != null)
-            avsPerson.setIdPays(dto.getCountry());
+        if (dto.getNationality() != null)
+            avsPerson.setIdPays(dto.getNationality());
         if (dto.getTaxpayerNumber() != null)
             avsPerson.setNumContribuableActuel(dto.getTaxpayerNumber());
         if (dto.getIsPhysicalPerson() != null) {

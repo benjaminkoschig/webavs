@@ -9,6 +9,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +18,13 @@ import java.util.regex.Pattern;
 
 public class PYValidateDTO {
 
+    private static final Logger logger = LoggerFactory.getLogger(PYValidateDTO.class);
     private static final List<String> validLanguage = Arrays.asList(
-        CodeLangue.FR.getValue(),
-        CodeLangue.DE.getValue(),
-        CodeLangue.IT.getValue(),
-        CodeLangue.RM.getValue(),
-        CodeLangue.EN.getValue()
+            CodeLangue.FR.getValue(),
+            CodeLangue.DE.getValue(),
+            CodeLangue.IT.getValue(),
+            CodeLangue.RM.getValue(),
+            CodeLangue.EN.getValue()
     );
 
     /**
@@ -59,7 +62,7 @@ public class PYValidateDTO {
             dto.setDeathDate("");
             dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString()); // This one needs to be reseted directly to "0"
             dto.setCivilStatus("");
-            dto.setCountry("");
+            dto.setNationality("");
         }
 
         return true;
@@ -103,22 +106,30 @@ public class PYValidateDTO {
                 throw new PYBadRequestException("Le sexe ne doit pas être renseigné pour une personne morale.");
             if (dto.getCivilStatus() != null)
                 throw new PYBadRequestException("L'état civil ne doit pas être renseigné pour une personne morale.");
+            if (dto.getMaidenName() != null)
+                throw new PYBadRequestException("Le nom de jeune fille ne doit pas être renseigné pour une personne morale.");
             if (dto.getNationality() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
+
+            //bypass Pyxis auto set nationality for non physical person
+            dto.setNationality("0");
         }
 
-        if (dto.getTypeAddress() != null) {
-            getTypeAddressAsSystemCode(dto);
-        }
-
-        if (dto.getCountry() != null) {
-            getCountryAsSystemCode(dto);
+        for (PYAddressDTO addressDTO : dto.getAddresses()) {
+            if (addressDTO.getDomainAddress() != null)
+                getDomainAddressAsSystemCode(addressDTO);
+            if (addressDTO.getTypeAddress() != null)
+                getTypeAddressAsSystemCode(addressDTO);
+            if (addressDTO.getCountry() != null)
+                getCountryAsSystemCode(addressDTO);
         }
 
         if (dto.getCcpNumber() != null)
             checkCCP(dto.getCcpNumber());
+        //TODO delete or implement in dto to manage n° compte as IBAN ok not IBAN
         if (dto.getStatus() != null)
             checkStatusPaymentAddress(dto.getStatus());
+
 
         for (PYContactDTO contactDTO : dto.getContacts()) {
             for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
@@ -170,7 +181,7 @@ public class PYValidateDTO {
             dto.setNss("");
         } else {
             if (!NSSUtils.checkNSS(dto.getNss())) {
-                System.err.println("Erreur dans le format du NSS");
+                logger.error("Erreur dans le format du NSS");
                 throw new PYBadRequestException("Erreur dans le format du NSS");
             }
         }
@@ -224,7 +235,7 @@ public class PYValidateDTO {
     private static final void checkDate(String date) throws PYBadRequestException {
         String pattern = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
         if (!Pattern.matches(pattern, date)) {
-            System.err.println("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
+            logger.error("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
             throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
         }
     }
@@ -237,7 +248,7 @@ public class PYValidateDTO {
     private static final void checkModificationDate(String date) throws PYBadRequestException {
         String pattern = "(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}";
         if (!Pattern.matches(pattern, date)) {
-            System.err.println("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
+            logger.error("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
             throw new PYBadRequestException("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
         }
     }
@@ -269,7 +280,7 @@ public class PYValidateDTO {
                     Sexe.parse(dto.getSex()); // If this goes through without error, sex is a valid sex
                 }
                 catch (IllegalArgumentException e) {
-                    System.err.println("Erreur lors de l'assignation du sexe du tiers.");
+                    logger.error("Erreur lors de l'assignation du sexe du tiers.");
                     throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.", e);
                 }
                 dto.setSex(Sexe.UNDEFINDED.getCodeSysteme().toString());
@@ -289,7 +300,7 @@ public class PYValidateDTO {
                 dto.setCivilStatus("0");
             }
         } catch (IllegalArgumentException e) {
-            System.err.println("Erreur lors de l'assignation de l'état civil du tiers.");
+            logger.error("Erreur lors de l'assignation de l'état civil du tiers.");
             throw new PYBadRequestException("Erreur lors de l'assignation de l'état civil du tiers.", e);
         }
     }
@@ -303,7 +314,7 @@ public class PYValidateDTO {
         try {
             StatusPaymentAddress.parse(status); // If this goes through without error, status has a valid value
         } catch (IllegalArgumentException e) {
-            System.err.println("Erreur dans le statut de l'addresse de paiement.");
+            logger.error("Erreur dans le statut de l'addresse de paiement.");
             throw new PYBadRequestException("Erreur dans le statut de l'addresse de paiement.", e);
         }
     }
@@ -315,7 +326,7 @@ public class PYValidateDTO {
      */
     private static final void checkMeanOfCommuncationType(String type) {
         if(!TypeContact.isValid(type)){
-            System.err.println("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
+            logger.error("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
             throw new PYBadRequestException("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
         }
     }
@@ -329,7 +340,7 @@ public class PYValidateDTO {
         try {
             DomaineApplication.parse(applicationDomain); // If this goes through without error, applicationDomain has a valid value
         } catch (IllegalArgumentException e) {
-            System.err.println("Erreur dans le domaine d'application lors de l'ajout d'un contact.");
+            logger.error("Erreur dans le domaine d'application lors de l'ajout d'un contact.");
             throw new PYBadRequestException("Erreur dans le domaine d'application lors de l'ajout d'un contact.", e);
         }
     }
@@ -364,9 +375,24 @@ public class PYValidateDTO {
                 break;
             default: // If the language isn't one of those, check if it's a valid system code and throw an error if needed
                 if (!PYValidateDTO.validLanguage.contains(dto.getLanguage())) {
-                    System.err.println("Erreur lors de l'assignation de la langue du tiers.");
+                    logger.error("Erreur lors de l'assignation de la langue du tiers.");
                     throw new PYBadRequestException("Erreur lors de l'assignation de la langue du tiers.");
                 }
+        }
+    }
+
+
+    /**
+     * Méthode pour vérifier que domainAddress soit un code système valide désignant un domaine
+     *
+     * @param dto
+     */
+    private static final void getDomainAddressAsSystemCode(PYAddressDTO dto) {
+        if (dto.getDomainAddress() != null && dto.getDomainAddress() != "") {
+            dto.setDomainAddress(DomaineApplication.parse(dto.getDomainAddress()).getSystemCode().toString());
+        } else {
+            logger.error("Erreur lors de l'assignation du domaine");
+            throw new PYBadRequestException("Erreur lors de l'assignation du domaine");
         }
     }
 
@@ -375,12 +401,12 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getTypeAddressAsSystemCode(PYTiersDTO dto) {
+    private static final void getTypeAddressAsSystemCode(PYAddressDTO dto) {
         if (dto.getTypeAddress() != null && dto.getTypeAddress() != "") {
             if (dto.getTypeAddress().equals(AdresseService.CS_TYPE_COURRIER) || dto.getTypeAddress().equals(AdresseService.CS_TYPE_DOMICILE))
                 dto.setTypeAddress(dto.getTypeAddress());
         } else {
-            System.err.println("Erreur lors de l'assignation du type d'adresse");
+            logger.error("Erreur lors de l'assignation du type d'adresse");
             throw new PYBadRequestException("Erreur lors du type d'adresse");
         }
     }
@@ -396,7 +422,7 @@ public class PYValidateDTO {
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
                 dto.setNationality(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
             } else {
-                System.err.println("Erreur lors de l'assignation de la nationalité");
+                logger.error("Erreur lors de l'assignation de la nationalité");
                 throw new PYBadRequestException("Erreur lors de l'assignation de la nationalité");
             }
         }
@@ -407,13 +433,13 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getCountryAsSystemCode(PYTiersDTO dto) {
+    private static final void getCountryAsSystemCode(PYAddressDTO dto) {
         if (dto.getCountry() != null && dto.getCountry() != "") {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
                 dto.setCountry(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
             } else {
-                System.err.println("Erreur lors de l'assignation du pays");
+                logger.error("Erreur lors de l'assignation du pays");
                 throw new PYBadRequestException("Erreur lors de l'assignation du pays");
             }
         }
@@ -427,7 +453,7 @@ public class PYValidateDTO {
     private static final void checkCCP(String ccp) throws PYBadRequestException {
         String pattern = "\\d{2}\\-\\d{6}\\-\\d{1}";
         if (!Pattern.matches(pattern, ccp)) {
-            System.err.println("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
+            logger.error("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
             throw new PYBadRequestException("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
         }
     }
