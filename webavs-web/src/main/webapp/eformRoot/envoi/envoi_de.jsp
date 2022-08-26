@@ -88,9 +88,6 @@
 		location.reload();
 	}
 
-    function deleteFile(index){
-        document.forms[0].elements('fileNameList').value=zipFileName;
-	}
 
 </script>
 
@@ -155,7 +152,7 @@
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px; padding-left: 10px"><ct:FWLabel key="LASTNAME"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText defaultValue="<%=viewBean.getNomAssure()%>" name="nomAssure" id="nomAssure"
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="nomAssure" id="nomAssure"
 																			 readonly="true"/></div>
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="FIRSTNAME"/></div>
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="prenomAssure" id="prenomAssure"
@@ -232,7 +229,7 @@
 						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
 	<tr>
 		<td><%=viewBean.getFileNameList().get(i)%></td>
-		<td><a onclick=""><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+		<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getFileNameList().get(i)%>"><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
 	</tr>
 						<%}%>
 					</table>

@@ -27,6 +27,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     }
     public final static String ACTION_PATH = "eform.envoi.envoi";
     public final static String ACTION_UPLOAD = "upload";
+    public final static String ACTION_REMOVEFILE = "removeFile";
 
     @Override
     protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
@@ -83,7 +84,10 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             // Copie des propriétés
             JSPUtils.setBeanProperties(request, viewBean);
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
-               GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
+                GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
+            } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
+                String fileName = (String) request.getParameter("fileName");
+                ((GFEnvoiViewBean) viewBean).getFileNameList().remove(fileName);
             }
 
             // Traitement
@@ -97,6 +101,9 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
                 if(actionPart.equals(ACTION_UPLOAD)) {
                     destination = this.getActionFullURL() + ".reAfficher";;
+                } else if (actionPart.equals(ACTION_REMOVEFILE)) {
+                    destination = this.getActionFullURL() + ".reAfficher";
+                    ;
                 }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);
