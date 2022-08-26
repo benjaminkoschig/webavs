@@ -24,9 +24,6 @@ public class GFSuiviServletAction extends FWDefaultServletAction {
         super(aServlet);
     }
 
-    public final static String ACTION_TELECHARGER = "telecharger";
-    public final static String ACTION_CHANGE_STATUT = "statut";
-
     @Override
     protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
         FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
@@ -47,54 +44,6 @@ public class GFSuiviServletAction extends FWDefaultServletAction {
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
                                      HttpServletResponse response, FWViewBeanInterface viewBean) {
         return this.getActionFullURL() + ".afficher";
-    }
-
-    @Override
-    protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-                                FWDispatcher dispatcher) throws ServletException, IOException {
-        String actionPart = getAction().getActionPart();
-        String destination;
-
-        // Définition de l'action custom standard pour l'application ARIES
-        // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"
-
-        try {
-            FWAction action = FWAction.newInstance(request.getParameter("userAction"));
-
-            // Récupération du viewBean depuis la session
-            FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(action, dispatcher.getPrefix());
-            String id = request.getParameter("selectedId");
-            ((GFFormulaireViewBean) viewBean).getFormulaire().setId(id);
-            if (actionPart.equals(ACTION_CHANGE_STATUT)) {
-                String statut = request.getParameter("statut");
-                ((GFFormulaireViewBean) viewBean).getFormulaire().setStatus(GFStatusEForm.getStatusByCode(statut).getCodeSystem());
-            }
-            // Copie des propriétés
-            JSPUtils.setBeanProperties(request, viewBean);
-
-            // Traitement
-            viewBean = dispatcher.dispatch(viewBean, action);
-            session.setAttribute(FWServlet.VIEWBEAN, viewBean);
-
-            // Choix de la destination avec prise en compte des éventuels erreurs
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
-
-            if (goesToSuccessDest) {
-                if(actionPart.equals(ACTION_TELECHARGER)) {
-                    GFFileUtils.downloadFile(response, ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachementName(), ((GFFormulaireViewBean) viewBean).getFormulaire().getAttachement());
-                }
-                destination = _getDestChercherSucces(session, request, response, viewBean);
-            } else {
-                destination = _getDestChercherEchec(session, request, response, viewBean);
-            }
-
-        } catch (Exception e) {
-            JadeThread.logError(this.getClass().getName(), e.getMessage());
-            destination = FWDefaultServletAction.ERROR_PAGE;
-        }
-
-        // Redirection vers la destination
-        goSendRedirect(destination, request, response);
     }
 
     protected String _getDestChercherSucces(HttpSession session, HttpServletRequest request,
