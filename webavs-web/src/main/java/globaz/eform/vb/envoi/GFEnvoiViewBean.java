@@ -7,24 +7,17 @@ import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private static final Logger LOG = LoggerFactory.getLogger(GFEnvoiViewBean.class);
 
     private String id;
-    private String nss ="";
+    private String nss = "";
     private String filename;
     private String nomGestionnaire;
     private String nomDepartement;
@@ -33,6 +26,8 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private String nomAssure;
     private String prenomAssure;
     private String dateNaissance;
+    private String caisseDestinatrice;
+    private String typeDeFichier;
     private String adresse;
     private List<String> fileNameList = new LinkedList<>();
     @Getter
@@ -119,6 +114,22 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public void setDateNaissance(String dateNaissance) {
         this.dateNaissance = dateNaissance;
+    }
+
+    public String getCaisseDestinatrice() {
+        return caisseDestinatrice;
+    }
+
+    public void setCaisseDestinatrice(String caisseDestinatrice) {
+        this.caisseDestinatrice = caisseDestinatrice;
+    }
+
+    public String getTypeDeFichier() {
+        return typeDeFichier;
+    }
+
+    public void setTypeDeFichier(String typeDeFichier) {
+        this.typeDeFichier = typeDeFichier;
     }
 
     public String getAdresse() {

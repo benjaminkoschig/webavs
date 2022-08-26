@@ -49,7 +49,6 @@
 
 <script>
     function init() {
-
     }
 
     // var bFind = true;
@@ -73,9 +72,9 @@
 	}
 
     function buttonCheck(){
-        var nss =document.getElementsByName("byNss")[0].value;
+        var nss =document.getElementsByName("nss")[0].value;
         var typeDefichier=document.getElementsByName("typeDeFichier")[0].value;
-        var caisse=document.getElementsByName("byCaisse")[0].value;
+        var caisse=document.getElementsByName("caisseDestinatrice")[0].value;
 
 
         if(nss=="" || typeDefichier=="" || caisse==""){
@@ -117,13 +116,13 @@
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="departementGestionnaire"
-                                                                         id="departementGestionnaire"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement"
+                                                                         id="nomDepartement"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireTelephone"
-                                                                         id="gestionnaireTelephone"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire"
+                                                                         id="telephoneGestionnaire"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="gestionnaireEmail" id="gestionnaireEmail"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire"/></div>
         </div>
 <tr>
 	<td>
@@ -135,7 +134,7 @@
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 				<div style="display: table-cell;width: 300px;">
-					<ct:widget id='byNss' name='byNss' onchange="buttonCheck()">
+					<ct:widget id='nss' name='nss' onchange="buttonCheck()">
 						<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 							<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 							<ct:widgetLineFormatter
@@ -143,9 +142,9 @@
 							<ct:widgetJSReturnFunction>
 								<script type="text/javascript">
 									function(element) {
-										$('#lastName').val($(element).attr('tiers.designation1'));
-										$('#firstName').val($(element).attr('tiers.designation2'));
-										$('#birthday').val($(element).attr('personne.dateNaissance'));
+										$('#nomAssure').val($(element).attr('tiers.designation1'));
+										$('#prenomAssure').val($(element).attr('tiers.designation2'));
+										$('#dateNaissance').val($(element).attr('personne.dateNaissance'));
 										this.value = $(element).attr('personneEtendue.numAvsActuel');
 									}
 								</script>
@@ -156,13 +155,13 @@
 			</div>
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px; padding-left: 10px"><ct:FWLabel key="LASTNAME"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="lastName" id="lastName"
+				<div style="display: table-cell;width: 310px;"><ct:inputText defaultValue="<%=viewBean.getNomAssure()%>" name="nomAssure" id="nomAssure"
 																			 readonly="true"/></div>
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="FIRSTNAME"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="firstName" id="firstName"
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="prenomAssure" id="prenomAssure"
 																			 readonly="true"/></div>
 				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="BIRTHDAY"/></div>
-				<div style="display: table-cell;width: 310px;"><ct:inputText name="birthday" id="birthday"
+				<div style="display: table-cell;width: 310px;"><ct:inputText name="dateNaissance" id="dateNaissance"
 																			 readonly="true"/></div>
 			</div>
 <%--			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">--%>
@@ -183,7 +182,7 @@
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 				<div style="display: table-cell;width: 300px;">
-				<ct:widget id='byCaisse' name='byCaisse'>
+				<ct:widget id='caisseDestinatrice' name='caisseDestinatrice'>
 					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 						<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
@@ -233,7 +232,7 @@
 						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
 	<tr>
 		<td><%=viewBean.getFileNameList().get(i)%></td>
-		<td><a onclick="deleteFile()"><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+		<td><a onclick=""><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
 	</tr>
 						<%}%>
 					</table>
@@ -245,7 +244,7 @@
 				<div class="row-fluid">
 					<div style="float:right;margin-top: 20px">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="validateform()">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="validate()">
 					</div>
 				</div>
 			</div>
