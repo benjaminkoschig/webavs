@@ -36,6 +36,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.REPrestationUtils;
 import globaz.corvus.utils.RERentesToCompare;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.process.REGenererAttestationFiscaleUniqueViewBean;
@@ -523,17 +524,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
                                         codePrestation.put(index, ra.getCodePrestation());
                                     } else {
-                                        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
-
-                                        String libelle = RENumberFormatter.codeSystemToLibelle(
-                                                bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
-                                                codeIsoLangue, bSession);
-                                        if ((Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme))
-                                                && !JadeStringUtil.isEmpty(ra.getQuotite())) {
-                                            DecimalFormat dft = new DecimalFormat(" #.# %");
-                                            String quotite = dft.format(Double.valueOf(ra.getQuotite()));
-                                            libelle += quotite;
-                                        }
+                                        String libelle = REPrestationUtils.getLibelleGenrePrestation(getRERechercheCodeSystem(ra), ra.getQuotite(), codeIsoLangue, bSession);
                                         String index = Integer.toString(j);
                                         assure.put(index, infoTiers);
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));

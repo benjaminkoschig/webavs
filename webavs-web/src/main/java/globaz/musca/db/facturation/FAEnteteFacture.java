@@ -34,6 +34,9 @@ import globaz.pyxis.api.osiris.TITiersOSI;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.webavs.common.ICommonConstantes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Vector;
@@ -41,6 +44,7 @@ import java.util.Vector;
 public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serializable, IFAPrintDoc {
 
     private static final long serialVersionUID = -3034150363772847158L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FAEnteteFacture.class);
 
     /**
      * Clé alternée: idPassage, idRole, idExterneRole, idTypeFacture, idExterneFacture
@@ -1725,8 +1729,28 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         return eBillPrinted;
     }
 
-    public void addEBillTransactionID(BTransaction transaction) throws Exception {
-        setEBillTransactionID(this._incCounter(transaction, "", FIELD_EBILL_TRANSACTION_ID));
+     /**
+     * Méthode permettant d'incrémenter et de retourner un eBillTransactionID.
+     * L'incrément n'est déclanché que si eBillPrintable est à true
+     * ce qui signifie qu'il s'agit d'un cas eBill valide
+     *
+     * @param eBillPrintable : le eBillPrintable qui permet de savoir s'il s'agit d'un cas eBill valide
+     * @param session        : la session
+     * @return un eBillTransactionID incrémenté
+     */
+    public static String incrementAndGetEBillTransactionID(Boolean eBillPrintable, BSession session) {
+        String eBillTransactionID = null;
+        if (eBillPrintable) {
+            try {
+                FAEnteteFacture entete = new FAEnteteFacture();
+                entete.setSession(session);
+                eBillTransactionID = entete._incCounter(session.getCurrentThreadTransaction(), "", FIELD_EBILL_TRANSACTION_ID);
+            } catch (Exception e) {
+                LOGGER.error("Erreur lors de l'incrément de l'eBillTransactionID : " + eBillTransactionID + " exception : " + e.getMessage(), e);
+            }
+        }
+
+        return eBillTransactionID;
     }
 
     @Override

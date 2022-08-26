@@ -11,7 +11,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.PcaForDecompte;
 
 public interface GenerationCommunicationOCCService extends JadeApplicationService {
 
-    public void genereCommunicationOCCSuppression(DecisionSuppression decisionSuppression) throws PrestationException;
+    public void genereCommunicationOCCSuppression(DecisionSuppression decisionSuppression,boolean isDateReduc) throws PrestationException;
 
     public List<SimpleCommunicationOCC> genereCommunicationOCCValidation(List<DecisionApresCalcul> list,
             List<PcaForDecompte> listAnciennePca) throws DecisionException;

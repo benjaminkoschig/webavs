@@ -5,7 +5,6 @@
 <%@ page import="globaz.osiris.db.recouvrement.*,globaz.globall.util.*,globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
-<%@ page import="globaz.osiris.application.CAApplication" %>
 <%
 	idEcran = "GCA60015";
 	CASursisViewBean viewBean = (globaz.osiris.db.recouvrement.CASursisViewBean) session.getAttribute("viewBean");
@@ -28,10 +27,6 @@
 		compteAnnexeDescription = viewBean.getCompteAnnexe().getTitulaireEnteteForCompteAnnexeParSection();
 	} catch (Exception e) {
 	}
-%>
-<%
-    boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(viewBean.getSession());
-	boolean eBillAccountID = !JadeStringUtil.isBlankOrZero(viewBean.getCompteAnnexe().getEBillAccountID());
 %>
 <%@ taglib uri="/WEB-INF/osiris.tld" prefix="os"%>
 	<%-- /tpl:put --%>
@@ -71,18 +66,6 @@
 		//document.getElementById('idModeRecouvrement').options[1].disable=true
 		jscss("add", document.getElementById("idModeRecouvrement"), "disabled");
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
-	}
-
-	function refreshEBillInputs() {
-		<% if (eBillOsirisActif && eBillAccountID) {%>
-			$("#eBillPrintable").attr("checked", true);
-		<%} else {%>
-			$("#eBillPrintable").attr("checked", false);
-		<%}%>
-	}
-
-	function postInit(){
-		refreshEBillInputs();
 	}
 
 // stop hiding -->
@@ -207,14 +190,6 @@
 			<input type="hidden" name="idModeVentilation" value="<%=viewBean.getIdModeVentilation()%>">
 		</td>
 	</tr>
-	<% if (eBillOsirisActif && eBillAccountID) {%>
-		<tr>
-			<td><ct:FWLabel key="EBILL_PRINTABLE"/></td>
-			<td nowrap>
-				  <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable().booleanValue()) ? "checked" : "unchecked"%> >
-			</td>
-		</tr>
-	<%}%>
 	<tr>
 		<td class="label">Montant maximum à recouvrir</td>
 		<td class="control"><input type="text" name="plafond" value="<%=viewBean.getPlafondFormate()%>" class="montant"></td>

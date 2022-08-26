@@ -13,5 +13,9 @@
 			<!--private.key.1>C:\\Documents and Settings\\DDA\\Bureau\\keys\\id_dsa_513</private.key.1-->
 			<private.key.1 passphrase="true">D:\\data\\ebill\\key\\private_openssh_id_rsa_fdsbc.post.ch</private.key.1>
 		</protocol>
+		<protocol name="EFormHostService" type="sftp"><!-- type: sftp|filesystem-->
+			<server>eFormServer</server><!-- [REQUIRED] for type: sftp -->
+			<pathroot>PRODUCT</pathroot><!-- [REQUIRED] for type: filesystem, [OPTIONNAL] for type: sftp -->
+		</protocol>
 	</protocols>
 </globaz.jade.fs.service.JadeFsServer>

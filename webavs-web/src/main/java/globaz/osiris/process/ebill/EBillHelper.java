@@ -7,6 +7,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMemoryLog;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.musca.api.musca.FAImpressionFactureEBillXml;
@@ -16,9 +17,11 @@ import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAEnteteFactureManager;
 import globaz.naos.translation.CodeSystem;
 import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
+import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import osiris.ch.ebill.send.invoice.InvoiceEnvelope;
@@ -26,9 +29,11 @@ import osiris.ch.ebill.send.invoice.InvoiceEnvelope;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EBillHelper {
 
@@ -213,23 +218,29 @@ public class EBillHelper {
     }
 
     /**
-     * Mise à jour l'historique du contentieux avec
-     * le eBillPrinted et le transactionID
+     * Recherche la décision fusionnée dans les attachedDocuments
      *
-     * @param transactionID l'id de transaction lié au traitement.
+     * @param plan le plan.
+     * @param session la session.
+     * @param attachedDocuments les attachedDocuments.
      */
-    public void updateHistoriqueEBillPrintedEtTransactionID(COContentieux curContentieux, String transactionID, FWMemoryLog memoryLog) {
-        try {
-            COHistorique dernierHistorique = curContentieux.loadHistorique();
-            if (dernierHistorique.getIdEtape().equals(curContentieux.getIdEtape())
-                    && dernierHistorique.getIdContentieux().equals(curContentieux.getIdContentieux())
-                    && dernierHistorique.getIdSequence().equals(curContentieux.getIdSequence())) {
-                dernierHistorique.setEBillTransactionID(transactionID);
-                dernierHistorique.setEBillPrinted(true);
-                dernierHistorique.update();
+    public JadePublishDocument rechercheDecisionFusionneePourEBill(CAPlanRecouvrement plan, BSession session, List<JadePublishDocument> attachedDocuments) {
+        boolean eBillOsirisActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillOsirisActifEtDansListeCaisses(session);
+
+        // Recherche la décision fusionnee dans les attachedDocuments si :
+        //  - eBillOsiris est actif
+        //  - le compte annexe possède un eBillAccountID
+        //  - eBillPrintable est sélectioné sur le plan
+        if (eBillOsirisActif && plan.getEBillPrintable()) {
+            if (plan.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(plan.getCompteAnnexe().getEBillAccountID())) {
+                List<JadePublishDocument> decisions = findAndReturnAttachedDocuments(attachedDocuments, CAILettrePlanRecouvDecision.class.getSimpleName(), false);
+                List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(y -> y.getPublishJobDefinition().getDocumentInfo().getChildren().size())).collect(Collectors.toList());
+                if (!decisionsSorted.isEmpty()) {
+                    return decisionsSorted.get(0);
+                }
             }
-        } catch (Exception e) {
-            memoryLog.logMessage("Impossible de mettre à jour l'historique du contentieux avec le transactionID : " + transactionID + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
         }
+
+        return null;
     }
 }

@@ -40,21 +40,20 @@ public class GenerationCommunicationOCCServiceImpl extends PegasusAbstractServic
     }
 
     @Override
-    public void genereCommunicationOCCSuppression(DecisionSuppression decisionSuppression) throws PrestationException {
+    public void genereCommunicationOCCSuppression(DecisionSuppression decisionSuppression,boolean isDateReduc) throws PrestationException {
         try {
 
             SimpleVersionDroit simpleVersionDroit = decisionSuppression.getVersionDroit().getSimpleVersionDroit();
 
             List<PcaForDecompte> pcas;
 
-            if (JadeStringUtil.isBlankOrZero(decisionSuppression.getVersionDroit().getDemande().getSimpleDemande()
-                    .getDateFinInitial())) {
+            if (!isDateReduc) {
                 pcas = PcaPrecedante.findPcaCourrante(simpleVersionDroit.getIdDroit(),
                         simpleVersionDroit.getNoVersion());
             } else {
                 pcas = PcaPrecedante.findPcaCourrante(simpleVersionDroit.getIdDroit(),
                         simpleVersionDroit.getNoVersion(), decisionSuppression.getVersionDroit().getDemande()
-                                .getSimpleDemande().getDateFinInitial());
+                                .getSimpleDemande().getDateFin());
             }
 
             if (pcas.size() == 0) {

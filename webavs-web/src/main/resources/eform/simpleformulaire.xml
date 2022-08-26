@@ -6,6 +6,7 @@
         <fields>
             <primary-key comment="Id technique du formulaire fournis" name="id" column="ID" type="STRING" mandatory="true"/>
             <field comment="Id du formulaire fournis par la central" name="messageId" column="MESSAGE_ID" type="STRING" mandatory="true"/>
+            <field comment="Id du process métier fournis par la central" name="businessProcessId" column="BUSINESS_PROCESS_ID" type="STRING" mandatory="true"/>
             <field comment="Numéro du formulaire" name="subject" column="SUBJECT" type="STRING" mandatory="true"/>
             <field comment="Date d'émission du formulaire" name="date" column="DATE" type="DATE" mandatory="true"/>
             <field comment="Type du formulaire" name="type" column="TYPE" type="STRING" mandatory="true"/>
@@ -16,7 +17,6 @@
             <field comment="Date de naissance du bénéficiaire" name="beneficiaireDateNaissance" column="BENEFICIAIRE_DATE_NAISSANCE" type="DATE" mandatory="true"/>
             <field comment="Gestionnaire attitré" name="userGestionnaire" column="USER_GESTIONNAIRE" type="STRING" mandatory="false"/>
             <field comment="Nom de l'attachement" name="attachementName" column="ATTACHEMENT_NAME" type="STRING" mandatory="false"/>
-            <field comment="identifiant du fichier zip attaché" name="attachement" column="ATTACHEMENT" type="BLOB" mandatory="false"/>
         </fields>
 
         <search-definition name="default">
@@ -29,6 +29,11 @@
                 <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
             </search-group>
         </search-definition>
+        <search-definition name="businessProcessId">
+            <search-group operator="AND">
+                <search-field name="byBusinessProcessId" field-ref="businessProcessId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
         <search-definition name="formulaire">
             <search-group operator="AND">
                 <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>
@@ -36,6 +41,7 @@
                 <search-field name="byType" field-ref="subject" operation="EQUALS"/>
                 <search-field name="byDate" field-ref="date" operation="EQUALS"/>
                 <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
+                <search-field name="byBusinessProcessId" field-ref="businessProcessId" operation="EQUALS"/>
                 <search-field name="byLastName" field-ref="beneficiaireNom" operation="LIKE"/>
                 <search-field name="byFirstName" field-ref="beneficiairePrenom" operation="LIKE"/>
                 <search-field name="likeNss" field-ref="beneficiaireNss" operation="LIKE"/>

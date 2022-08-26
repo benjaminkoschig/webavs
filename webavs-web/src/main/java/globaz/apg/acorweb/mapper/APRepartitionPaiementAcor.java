@@ -14,6 +14,7 @@ import globaz.prestation.tools.PRSession;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 public class APRepartitionPaiementAcor {
     final static String CONST_TYPE_AFFILI_EMPLOY = "[1]";
@@ -29,10 +30,13 @@ public class APRepartitionPaiementAcor {
     @Getter
     String idAffilie;
     @Getter
+    @Setter
     String numeroAffilieEmployeur;
     @Getter
+    @Setter
     String nomEmployeur;
     @Getter
+    @Setter
     String cantonImposition;
     @Getter
     @Setter
@@ -67,6 +71,10 @@ public class APRepartitionPaiementAcor {
         this.nomEmployeur = nom;
         this.cantonImposition = cantonImpot;
 
+        updateIdsEmployeur(session, noAffilie, nom);
+    }
+
+    public void updateIdsEmployeur(BSession session, String noAffilie, String nom) throws PRACORException {
         // stocker les id pour les taux journaliers
         if (PRAbstractEmployeur.isNumeroBidon(noAffilie)) {
             idAffilie = "0"; // sauve dans la base puis recharge, donc 0
@@ -81,6 +89,13 @@ public class APRepartitionPaiementAcor {
                 throw new PRACORException("Impossible de trouver l'affilie", e);
             }
         }
+    }
+
+    public APRepartitionPaiementAcor(String idAssure) {
+        idTiers = idAssure;
+        this.numeroAffilieEmployeur = StringUtils.EMPTY;
+        this.nomEmployeur = StringUtils.EMPTY;
+        this.cantonImposition = StringUtils.EMPTY;
     }
 
     public static IPRAffilie getIprAffilie(BSession session, String noAffilie, String nom) throws Exception {

@@ -1243,9 +1243,8 @@ public class CAPlanRecouvrement extends CABEntity {
     }
 
     /**
-     * Cette méthode permet de setter eBillPrintable
-     *
      * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
      */
     public void setEBillPrintable(Boolean eBillPrintable) {
         this.eBillPrintable = eBillPrintable;

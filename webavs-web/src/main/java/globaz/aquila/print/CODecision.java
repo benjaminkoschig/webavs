@@ -82,6 +82,8 @@ public class CODecision extends CODocumentManager {
     public Map<PaireIdExterneEBill, String> referencesDecision = new LinkedHashMap();
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
+    private String eBillTransactionID = "";
+    private Boolean eBillPrintable = Boolean.FALSE;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -108,6 +110,22 @@ public class CODecision extends CODocumentManager {
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
+
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
+    }
 
     @Override
     public void beforeBuildReport() throws FWIException {
@@ -152,7 +170,7 @@ public class CODecision extends CODocumentManager {
                 //  - le compte annexe possède un eBillAccountID
                 //  - eBillPrintable est sélectioné sur l'écran d'impression
                 //  - l'impression prévisionel n'est pas activée
-                if (eBillAquilaActif && curContentieux.getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                if (eBillAquilaActif && getEBillPrintable() && !curContentieux.getPrevisionnel()) {
                     if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                         try {
                             EBillSftpProcessor.getInstance();
@@ -225,16 +243,10 @@ public class CODecision extends CODocumentManager {
     private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
-
-        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
-        entete.setEBillPrinted(true);
+        entete.setEBillTransactionID(getEBillTransactionID());
 
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
-
-        // Met à jour l'historique eBill du contentieux
-        eBillHelper.updateHistoriqueEBillPrintedEtTransactionID(curContentieux, entete.getEBillTransactionID(), getMemoryLog());
 
         String dateEcheance = dateImprOuFactu;
         eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
@@ -487,7 +499,7 @@ public class CODecision extends CODocumentManager {
 
         // Prepare la map des lignes de décisions eBill si propriété eBillAquila est active et si compte annexe de la facture inscrit à eBill et si eBillPrintable est sélectioné sur l'écran d'impression
         boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
-        if (eBillAquilaActif && curContentieux.getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+        if (eBillAquilaActif && getEBillPrintable() && curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
             lignesDecision.put(new PaireIdExterneEBill(curContentieux.getCompteAnnexe().getIdExterneRole(), curContentieux.getSection().getIdExterne(), montantTotal != null ? montantTotal.toString() : ""), dataSource);
         }
 

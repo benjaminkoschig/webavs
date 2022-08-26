@@ -46,6 +46,9 @@ public class CO003ExecuterSommation extends COAbstractDelaiPaiementAction {
             }
 
             sommation.setTaxes(taxes);
+            sommation.setEBillTransactionID(contentieux.getEBillTransactionID());
+            sommation.setEBillPrintable(contentieux.getEBillPrintable());
+
             this._envoyerDocument(contentieux, sommation);
 
         } catch (Exception e) {

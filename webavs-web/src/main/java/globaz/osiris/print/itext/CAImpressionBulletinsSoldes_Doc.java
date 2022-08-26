@@ -474,7 +474,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             //  - le compte annexe possède un eBillAccountID
             //  - eBillPrintable est sélectioné sur l'écran d'impression
             if (eBillOsirisActif && getEBillPrintable()) {
-                 if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
+                if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.getEBillAccountID())) {
                     try {
                         EBillSftpProcessor.getInstance();
                         traiterBulletinDeSoldesEBillOsiris();
@@ -681,9 +681,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         JADate dateFacturation = JACalendar.today();
         JADate dateEcheanceSection = new JADate(section.getDateEcheance());
         if (calendar.compare(dateFacturation, dateEcheanceSection) == JACalendar.COMPARE_FIRSTUPPER) {
-             return dateFacturation.toStr(".");
+            return dateFacturation.toStr(".");
         } else {
-             return dateEcheanceSection.toStr(".");
+            return dateEcheanceSection.toStr(".");
         }
     }
 
@@ -691,25 +691,22 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * Méthode permettant de créer la bulletin de soldes eBill,
      * de générer et remplir le fichier puis de l'envoyer sur le ftp.
      *
-     * @param compteAnnexe            : le compte annexe
-     * @param entete                  : l'entête de la facture
-     * @param enteteReference         : l'entête de référence pour les bulletins de soldes (seulement rempli dans le cas d'un bulletin de soldes)
-     * @param montantFacture          : contient le montant total de la factures
-     * @param lignes                  : contient les lignes
-     * @param reference               : la référence BVR ou QR.
-     * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
-     * @param dateImprOuFactu         : la date de facturation
-     * @param section                 : la section
-     * @param typeDocument            : le type du document eBill
+     * @param compteAnnexe      : le compte annexe
+     * @param entete            : l'entête de la facture
+     * @param enteteReference   : l'entête de référence pour les bulletins de soldes (seulement rempli dans le cas d'un bulletin de soldes)
+     * @param montantFacture    : contient le montant total de la factures
+     * @param lignes            : contient les lignes
+     * @param reference         : la référence BVR ou QR.
+     * @param attachedDocuments : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @param dateImprOuFactu   : la date de facturation
+     * @param section           : la section
+     * @param typeDocument      : le type du document eBill
      * @throws Exception
      */
     private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantFacture, List<Map> lignes, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, CASection section, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
-
-        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
-        entete.setEBillPrinted(true);
+        entete.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(getEBillPrintable(), getSession()));
 
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());

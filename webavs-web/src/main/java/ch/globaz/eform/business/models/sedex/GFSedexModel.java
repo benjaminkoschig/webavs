@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class GFSedexModel {
     private String messageId;
+    private String businessProcessId;
     private String messageSubject;
     private LocalDate messageDate;
     private String formulaireNom;

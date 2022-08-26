@@ -76,7 +76,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private EBillHelper eBillHelper = new EBillHelper();
     private int factureEBill = 0;
     private static final int MAX_NUMBER_OF_ECHEANCE_EBILL = 99;
-    private JadePublishDocument decisionFusionee;
+    private JadePublishDocument decisionFusionnee;
 
     /** Données du formulaire */
     private CAPlanRecouvrement plan = new CAPlanRecouvrement();
@@ -427,8 +427,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     }
 
     private void ajouteDecisionToAttachedDocuments(List<JadePublishDocument> attachedDocuments) {
-        if (decisionFusionee != null) {
-            attachedDocuments.add(decisionFusionee);
+        if (decisionFusionnee != null) {
+            attachedDocuments.add(decisionFusionnee);
         }
     }
 
@@ -501,10 +501,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private void creerFichierEBill(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, List<CASection> section, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
-        entete.addEBillTransactionID(getTransaction());
-
-        // Met à jour le flag eBillPrinted dans l'entête de facture eBill
-        entete.setEBillPrinted(true);
+        entete.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(plan.getEBillPrintable(), getSession()));
 
         // Met à jour le status eBill de la section
         for (int i = 0; i < section.size(); i++) {
@@ -605,11 +602,11 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         this.referencesSursis = referencesSursis;
     }
 
-    public JadePublishDocument getDecisionFusionee() {
-        return decisionFusionee;
+    public JadePublishDocument getDecisionFusionnee() {
+        return decisionFusionnee;
     }
 
-    public void setDecisionFusionee(JadePublishDocument decisionFusionee) {
-        this.decisionFusionee = decisionFusionee;
+    public void setDecisionFusionnee(JadePublishDocument decisionFusionnee) {
+        this.decisionFusionnee = decisionFusionnee;
     }
 }
