@@ -121,6 +121,7 @@
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
             <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire"/></div>
         </div>
+	</div>
 <tr>
 	<td>
 

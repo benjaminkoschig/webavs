@@ -43,8 +43,8 @@ public class GFFileUtils {
                 JadeFsFacade.copyFile(viewBean.getFilename(),Jade.getInstance().getPersistenceDir()+ viewBean.getFileNamePersistance());
                 viewBean.getFileNameList().addAll(unZipFile(viewBean.getFileNamePersistance()));
             } else if (extension.equals("pdf") || extension.equals("tiff")) {
-                String pathWork = Jade.getInstance().getHomeDir() + "work/" + filename;
-                JadeFsFacade.copyFile(Jade.getInstance().getPersistenceDir() + viewBean.getFileNamePersistance(),
+                String pathWork = Jade.getInstance().getPersistenceDir()+viewBean.getFileNamePersistance();
+                JadeFsFacade.copyFile(viewBean.getFilename(),
                         pathWork);
                 viewBean.getFileNameList().add(filename);
             }
