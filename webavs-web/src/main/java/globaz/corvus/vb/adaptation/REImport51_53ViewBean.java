@@ -8,8 +8,11 @@ import java.util.Iterator;
 /**
  * 
  * @author HPE
- * 
+ *
+ * Cette classe n'est plus utilisée suite à la migration de TRAX
+ *
  */
+@Deprecated
 public class REImport51_53ViewBean extends PRAbstractViewBeanSupport {
 
     // ~ Instance fields

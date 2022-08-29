@@ -76,7 +76,9 @@ public enum REProperties implements IProperties {
     RECAP_CENTRALE_TEST("recapRentes.centrale.test",
             "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale"),
     TYPE_DE_CAISSE("type_de_caisse", "renseigne le type de caisse (caisse cant ou prof)"),
-    ACOR_UTILISER_VERSION_WEB("acor.utiliser.version.web","Boolean, si true, utilisation de la version Web d'ACOR");
+    ACOR_UTILISER_VERSION_WEB("acor.utiliser.version.web","Boolean, si true, utilisation de la version Web d'ACOR"),
+    DESTINATAIRE_MAIL_ERREURS_ADAPTATIONS_RENTES("mail.erreur.adaptation.rentes","propriété pour définir l'adresse mail d'erreur lors du traitement des adaptations de rente."),
+    URL_CENTRALE_ADAPTATIONS_RENTES("centrale.url.adaptation.rentes","propriété pour définir l'url de la centrale où récupérer les fichiers de traitement des adaptations de rente.");
 
     private String description;
     private String propertyName;

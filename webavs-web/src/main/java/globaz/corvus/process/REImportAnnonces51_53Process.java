@@ -11,8 +11,10 @@ import globaz.globall.db.GlobazJobQueue;
 /**
  * 
  * @author HPE
- * 
+ *
+ * Cette classe n'est plus utilisée suite à la migration de TRAX
  */
+@Deprecated
 public class REImportAnnonces51_53Process extends BProcess {
 
     /**

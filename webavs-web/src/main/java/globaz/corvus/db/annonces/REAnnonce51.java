@@ -49,6 +49,7 @@ public class REAnnonce51 extends REAnnoncesAbstractLevel3B {
     public static final String FIELDNAME_ID_ANNONCE_51 = "ZFIANN";
     public static final String FIELDNAME_MONT_ANC_RENTE_REMPLACEE = "ZFMARO";
     public static final String FIELDNAME_OBSERVATION_CENTRALE = "ZFLOCE";
+    public static final String FIELDNAME_QUOTITE_ANNONCE_51 = "QUOTITE_ANNONCE_51";
 
     public static final String TABLE_NAME_ANNONCE_51 = "REANN51";
 
@@ -80,6 +81,7 @@ public class REAnnonce51 extends REAnnoncesAbstractLevel3B {
     private String fractionRente = "";
     private String montantAncRenteRemplacee = "";
     private String observationCentrale = "";
+    private String quotite = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -173,6 +175,7 @@ public class REAnnonce51 extends REAnnoncesAbstractLevel3B {
         ancienCasSpec3AvantTransfert = statement.dbReadString(FIELDNAME_ANCIEN_CAS_SPEC_3_TRANSFERT);
         ancienSupplAjournementTransfert = statement.dbReadString(FIELDNAME_ANCIEN_SUPP_AJOURN_TRANSFERT);
         ancienneEchelleRente = statement.dbReadString(FIELDNAME_ANCIENNE_ECHELLE_RENTE);
+        quotite = statement.dbReadNumeric(FIELDNAME_QUOTITE_ANNONCE_51);
 
     }
 
@@ -302,6 +305,8 @@ public class REAnnonce51 extends REAnnoncesAbstractLevel3B {
                         "ancienSupplAjournementTransfert"));
         statement.writeField(FIELDNAME_ANCIENNE_ECHELLE_RENTE,
                 _dbWriteString(statement.getTransaction(), ancienneEchelleRente, "ancienneEchelleRente"));
+
+        statement.writeField(FIELDNAME_QUOTITE_ANNONCE_51, _dbWriteNumeric(statement.getTransaction(), quotite, "quotite"));
     }
 
     public String getAncienCasSpec1AvantTransfert() {
@@ -516,4 +521,11 @@ public class REAnnonce51 extends REAnnoncesAbstractLevel3B {
         this.observationCentrale = observationCentrale;
     }
 
+    public String getQuotite() {
+        return quotite;
+    }
+
+    public void setQuotite(String quotite) {
+        this.quotite = quotite;
+    }
 }

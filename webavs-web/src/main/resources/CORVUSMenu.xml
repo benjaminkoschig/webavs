@@ -236,12 +236,6 @@
 						</action>
 					</node>
 					<node>
-						<label refId="MENU_OPTION_IMPORT_51_53" />
-						<action command="/corvus" responseTarget="fr_main">
-							<parameter name="userAction" value="corvus.adaptation.import51_53.afficher" />
-						</action>
-					</node>
-					<node>
 						<label refId="MENU_OPTION_LST_REM_CEN" />
 						<action command="/corvus" responseTarget="fr_main">
 							<parameter name="userAction" value="corvus.adaptation.listeRemarquesCentrale.afficher" />
