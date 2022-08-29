@@ -7,7 +7,11 @@ import ch.globaz.eform.business.models.sedex.GFSedexModel;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 public class GFFileUtils {
     public static void downloadFile(HttpServletResponse response, String name, byte buf[]) throws IOException {
         OutputStream os = response.getOutputStream();
@@ -40,18 +45,20 @@ public class GFFileUtils {
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals("zip")) {
-                JadeFsFacade.copyFile(viewBean.getFilename(),Jade.getInstance().getPersistenceDir()+ viewBean.getFileNamePersistance());
+                JadeFsFacade.copyFile(viewBean.getFilename(), Jade.getInstance().getPersistenceDir() + viewBean.getFileNamePersistance());
                 viewBean.getFileNameList().addAll(unZipFile(viewBean.getFileNamePersistance()));
             } else if (extension.equals("pdf") || extension.equals("tiff")) {
-                String pathWork = Jade.getInstance().getPersistenceDir()+viewBean.getFileNamePersistance();
-                JadeFsFacade.copyFile(viewBean.getFilename(),
-                        pathWork);
+                JadeFsFacade.copyFile(path, Jade.getInstance().getHomeDir() + "work/" + filename);
                 viewBean.getFileNameList().add(filename);
+            } else {
+                viewBean.getSession().addError("mauvais type de fichier");
+                return;
             }
             // suppression des doublons
             viewBean.setFileNameList(viewBean.getFileNameList().stream().distinct().collect(Collectors.toList()));
         }
     }
+
     public static List<String> unZipFile(String filename) throws Exception {
         String pathWork = Jade.getInstance().getPersistenceDir() + filename;
         List<String> fileNameList = new LinkedList<>();
@@ -62,7 +69,7 @@ public class GFFileUtils {
                 fis = new FileInputStream(pathWork);
                 zipIs = new ZipInputStream(new BufferedInputStream(fis));
                 File destDir = new File(Jade.getInstance().getHomeDir() + "work/");
-                fileNameList = unzip(new File(pathWork), destDir);;
+                fileNameList = unzip(new File(pathWork), destDir);
             } finally {
                 fis.close();
                 zipIs.close();
@@ -70,6 +77,7 @@ public class GFFileUtils {
         }
         return fileNameList;
     }
+
     public static List<String> unzip(File srcZipFile, File destDir) {
         final int bufferSize = 2048;
         List<String> unzipFiles = new ArrayList<>();
@@ -105,6 +113,12 @@ public class GFFileUtils {
         return unzipFiles;
     }
 
+    public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
+        String pathFileNameToRemove = Jade.getInstance().getHomeDir() + "work/" + fileNameToRemove;
+        viewBean.getFileNameList().remove(fileNameToRemove);
+        JadeFsFacade.delete(pathFileNameToRemove);
+    }
+
     public static String generateFilePath(GFFormulaireModel dbModel) {
         LocalDate date = Dates.toDate(dbModel.getDate());
 
@@ -116,3 +130,4 @@ public class GFFileUtils {
 
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
     }
+}
