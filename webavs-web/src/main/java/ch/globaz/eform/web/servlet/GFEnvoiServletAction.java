@@ -103,7 +103,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                     destination = this.getActionFullURL() + ".reAfficher";;
                 } else if (actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
-                    ;
                 }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);
