@@ -85,7 +85,7 @@
 
 	}
     function cancel(){
-		location.reload();
+        action(ROLLBACK);
 	}
 
 
@@ -223,7 +223,7 @@
         </div>
 
 				<div style="display: table; margin-top: 15px" class="panel-body std-body-height">
-				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="SELECTION_FICHIER"/></div>
+				<div style="display: table-cell;width: 140px;padding-left: 10px;vertical-align: top"><ct:FWLabel key="SELECTION_FICHIER"/></div>
 				<div style="width: 600px;background-color:#FFF;height: 200px; overflow-y: scroll;border: 1px solid black">
 					<table id="periodes" name=periode" style="width: 100%">
 
@@ -254,8 +254,18 @@
 <%--</TR>--%>
 <%--</form>--%>
 <%--</body>--%>
+</TBODY>
+</TABLE>
+<INPUT type="hidden" name="selectedId" value="<%=selectedIdValue%>">
+<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
+<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+<INPUT type="hidden" name="_sl" value="">
+<INPUT type="hidden" name="selectorName" value="">
+</FORM>
 
 
-<%@ include file="/theme/detail/bodyButtons.jspf" %>
+
+<%--<%@ include file="/theme/detail/bodyButtons.jspf" %>--%>
 <%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
 <%@ include file="/theme/detail_ajax/footer.jspf" %>
