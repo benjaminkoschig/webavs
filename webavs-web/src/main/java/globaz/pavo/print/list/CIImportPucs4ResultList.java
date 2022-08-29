@@ -2,8 +2,8 @@ package globaz.pavo.print.list;
 
 import globaz.aquila.print.list.COAbstractListExcel;
 import globaz.globall.db.BSession;
-import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultBean;
-import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultInscriptionBean;
+import globaz.pavo.db.inscriptions.declaration.CIImportPucsDetailResultBean;
+import globaz.pavo.db.inscriptions.declaration.CIImportPucsDetailResultInscriptionBean;
 import globaz.pavo.db.inscriptions.declaration.CIImportPucs4ResumeBean;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     private static final String NUMERO_INFOROM = "0319CCI";
 
-    private CIImportPucs4DetailResultBean detailResultBean;
+    private CIImportPucsDetailResultBean detailResultBean;
     private HSSFFont fontRed;
     private HSSFCellStyle styleRedAlignLeft;
 
-    public CIImportPucs4ResultList(BSession session, CIImportPucs4DetailResultBean detailResultBean) {
+    public CIImportPucs4ResultList(BSession session, CIImportPucsDetailResultBean detailResultBean) {
         super(session, NUMERO_INFOROM + "_" + session.getLabel("IMPORT_PUCS_4_PROCESS_ROOT_FILE_NAME"), session
                 .getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_TITLE"));
         this.detailResultBean = detailResultBean;
@@ -33,7 +33,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     public void createResultList() {
 
-        for (Entry<String, List<CIImportPucs4DetailResultInscriptionBean>> entryAnneeListInscriptions : detailResultBean
+        for (Entry<String, List<CIImportPucsDetailResultInscriptionBean>> entryAnneeListInscriptions : detailResultBean
                 .getMapAnneeListInscriptions().entrySet()) {
 
             String sheetName = getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_SHEET_NAME") + "_"
@@ -61,7 +61,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
     }
 
     private void createSheetDetail(String sheetName, String sheetTitle,
-            List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
+            List<CIImportPucsDetailResultInscriptionBean> listDetailResultInscriptionBean) {
 
         createSheet(sheetName);
         initPage(true);
@@ -154,7 +154,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     }
 
-    private void createContentRowsDetailCommon(CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean) {
+    private void createContentRowsDetailCommon(CIImportPucsDetailResultInscriptionBean aDetailResultInscriptionBean) {
         createRow();
         createCell(aDetailResultInscriptionBean.getNss());
         createCell(aDetailResultInscriptionBean.getNom());
@@ -165,9 +165,9 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         createCell(aDetailResultInscriptionBean.getRevenuCAF().doubleValue(), getStyleMontantWithoutBorder());
     }
 
-    private void createContentRowsDetail(List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
+    private void createContentRowsDetail(List<CIImportPucsDetailResultInscriptionBean> listDetailResultInscriptionBean) {
 
-        for (CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean : listDetailResultInscriptionBean) {
+        for (CIImportPucsDetailResultInscriptionBean aDetailResultInscriptionBean : listDetailResultInscriptionBean) {
 
             boolean isContentRowsDetailCommonToDuplicate = false;
             createContentRowsDetailCommon(aDetailResultInscriptionBean);

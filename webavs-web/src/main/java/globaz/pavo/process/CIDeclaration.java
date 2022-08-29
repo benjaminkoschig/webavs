@@ -161,6 +161,16 @@ public class CIDeclaration extends BProcess {
         this.isPUCS4 = isPUCS4;
     }
 
+    private boolean isPUCS5 = false;
+
+    public boolean isPUCS5() {
+        return isPUCS5;
+    }
+
+    public void setPUCS5(boolean isPUCS5) {
+        this.isPUCS5 = isPUCS5;
+    }
+
     private String accepteAnneeEnCours = "";
 
     private String accepteEcrituresNegatives = "";
@@ -222,7 +232,7 @@ public class CIDeclaration extends BProcess {
     private DeclarationSalaireType declarationSalaireType = DeclarationSalaireType.PRINCIPALE;
     private String anneeVersement;
 
-    private CIImportPucs4Process importPucs4Process;
+    private CIImportPucsProcess importPucsProcess;
 
     public CIDeclaration() {
         super();
@@ -259,12 +269,11 @@ public class CIDeclaration extends BProcess {
             Element element = getSoapBodyPayloadElement(resolveFileName());
 
             isPUCS4 = StringUtils.startsWith(element.getNamespaceURI(), PUCS4_NAMESPACE);
-            if(!isPUCS4){
-                isPUCS4 = StringUtils.startsWith(element.getNamespaceURI(), PUCS5_NAMESPACE);
-            }
+            isPUCS5 = StringUtils.startsWith(element.getNamespaceURI(), PUCS5_NAMESPACE);
 
         } catch (Exception e) {
             isPUCS4 = false;
+            isPUCS5 = false;
         }
 
     }
@@ -314,7 +323,7 @@ public class CIDeclaration extends BProcess {
         return null;
     }
 
-    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path)
+    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBodyELM4(String path)
             throws SAXException, IOException, ParserConfigurationException, JAXBException {
         Element element = getSoapBodyPayloadElement(path);
 
@@ -323,7 +332,21 @@ public class CIDeclaration extends BProcess {
                 .unmarshal(element, DeclareSalaryConsumerType.class).getValue();
 
         if (valueDeclareSalaryConsumerType.getDeclareSalary() == null) {
-            addDeclareSalary(element, valueDeclareSalaryConsumerType);
+            addDeclareSalaryELM4(element, valueDeclareSalaryConsumerType);
+        }
+        return valueDeclareSalaryConsumerType;
+    }
+
+    private ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBodyELM5(String path)
+            throws SAXException, IOException, ParserConfigurationException, JAXBException {
+        Element element = getSoapBodyPayloadElement(path);
+
+        JAXBContext jc = JAXBContext.newInstance(ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType.class);
+        ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType valueDeclareSalaryConsumerType = jc.createUnmarshaller()
+                .unmarshal(element, ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType.class).getValue();
+
+        if (valueDeclareSalaryConsumerType.getDeclareSalary() == null) {
+            addDeclareSalaryELM5(element, valueDeclareSalaryConsumerType);
         }
         return valueDeclareSalaryConsumerType;
     }
@@ -336,7 +359,7 @@ public class CIDeclaration extends BProcess {
      * @param valueDeclareSalaryConsumerType
      * @throws JAXBException
      */
-    private void addDeclareSalary(Element element, DeclareSalaryConsumerType valueDeclareSalaryConsumerType)
+    private void addDeclareSalaryELM4(Element element, DeclareSalaryConsumerType valueDeclareSalaryConsumerType)
             throws JAXBException {
         JAXBContext jcSalaryDeclarationType = JAXBContext.newInstance(SalaryDeclarationRequestType.class);
         SalaryDeclarationRequestType valueSalaryDeclarationRequestType = jcSalaryDeclarationType.createUnmarshaller()
@@ -345,13 +368,40 @@ public class CIDeclaration extends BProcess {
         valueDeclareSalaryConsumerType.setDeclareSalary(valueSalaryDeclarationRequestType);
     }
 
+    /***
+     * Ajout les informations de la balise DeclareSalary si le fichier SwissDec ne contient pas de balise
+     * DeclareSalaryConsumer
+     *
+     * @param element
+     * @param valueDeclareSalaryConsumerType
+     * @throws JAXBException
+     */
+    private void addDeclareSalaryELM5(Element element, ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType valueDeclareSalaryConsumerType)
+            throws JAXBException {
+        JAXBContext jcSalaryDeclarationType = JAXBContext.newInstance(SalaryDeclarationRequestType.class);
+        ch.swissdec.schema.sd._20200220.salarydeclarationcontainer.SalaryDeclarationRequestType valueSalaryDeclarationRequestType = jcSalaryDeclarationType.createUnmarshaller()
+                .unmarshal(element, ch.swissdec.schema.sd._20200220.salarydeclarationcontainer.SalaryDeclarationRequestType.class).getValue();
+
+        valueDeclareSalaryConsumerType.setDeclareSalary(valueSalaryDeclarationRequestType);
+    }
+
     private DeclarationSalaire convertPucs4FileToDeclarationSalaire()
             throws SAXException, IOException, ParserConfigurationException, JAXBException {
 
-        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(resolveFileName());
+        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBodyELM4(resolveFileName());
         PUCS4SalaryConverter salaryConverterPUCS4 = new PUCS4SalaryConverter();
 
         return salaryConverterPUCS4.convert(value);
+
+    }
+
+    private DeclarationSalaire convertPucs5FileToDeclarationSalaire()
+            throws SAXException, IOException, ParserConfigurationException, JAXBException {
+
+        ch.swissdec.schema.sd._20200220.salarydeclarationconsumercontainer.DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBodyELM5(resolveFileName());
+        PUCS5SalaryConverter salaryConverterPUCS5 = new PUCS5SalaryConverter();
+
+        return salaryConverterPUCS5.convert(value);
 
     }
 
@@ -364,49 +414,49 @@ public class CIDeclaration extends BProcess {
 
     }
 
-    private boolean executeImportPucs4Process() throws Exception {
+    private boolean executeImportPucsProcess() throws Exception {
 
-        importPucs4Process = new CIImportPucs4Process();
-        importPucs4Process.setSession(getSession());
-        importPucs4Process.setEMailAddress(getEMailAddress());
-        importPucs4Process.setDeclarationSalaire(convertPucs4FileToDeclarationSalaire());
+        importPucsProcess = new CIImportPucsProcess();
+        importPucsProcess.setSession(getSession());
+        importPucsProcess.setEMailAddress(getEMailAddress());
+        importPucsProcess.setDeclarationSalaire(isPUCS4 ? convertPucs4FileToDeclarationSalaire() : convertPucs5FileToDeclarationSalaire());
 
-        importPucs4Process.setFilename(resolveFileName());
+        importPucsProcess.setFilename(resolveFileName());
 
-        importPucs4Process.setDateReceptionForced(getDateReceptionForced());
-        importPucs4Process.setSimulation(getSimulation());
-        importPucs4Process.setProvenance(getProvenance());
-        importPucs4Process.setAccepteAnneeEnCours(getAccepteAnneeEnCours());
-        importPucs4Process.setAccepteEcrituresNegatives(getAccepteEcrituresNegatives());
-        importPucs4Process.setAccepteLienDraco(getAccepteLienDraco());
-        importPucs4Process.setLauncherImportPucsFileProcess(getLauncherImportPucsFileProcess());
-        importPucs4Process.setTotalControle(getTotalControle());
-        importPucs4Process.setNombreInscriptions(getNombreInscriptions());
-        importPucs4Process.setNumAffilieBase(getNumAffilieBase());
-        importPucs4Process.setType(getType());
-        importPucs4Process.setIdsPucsFile(getIdsPucsFile());
+        importPucsProcess.setDateReceptionForced(getDateReceptionForced());
+        importPucsProcess.setSimulation(getSimulation());
+        importPucsProcess.setProvenance(getProvenance());
+        importPucsProcess.setAccepteAnneeEnCours(getAccepteAnneeEnCours());
+        importPucsProcess.setAccepteEcrituresNegatives(getAccepteEcrituresNegatives());
+        importPucsProcess.setAccepteLienDraco(getAccepteLienDraco());
+        importPucsProcess.setLauncherImportPucsFileProcess(getLauncherImportPucsFileProcess());
+        importPucsProcess.setTotalControle(getTotalControle());
+        importPucsProcess.setNombreInscriptions(getNombreInscriptions());
+        importPucsProcess.setNumAffilieBase(getNumAffilieBase());
+        importPucsProcess.setType(getType());
+        importPucsProcess.setIdsPucsFile(getIdsPucsFile());
 
-        CIImportPucs4Process.initEbusinessAccessInstance(ebusinessAccessInstance);
+        CIImportPucsProcess.initEbusinessAccessInstance(ebusinessAccessInstance);
 
-        importPucs4Process.executeProcess();
+        importPucsProcess.executeProcess();
 
-        hasDifferenceAc = importPucs4Process.hasDifferenceAc();
-        declaration = importPucs4Process.getDeclaration();
-        setNumAffilieBase(importPucs4Process.getNumAffilieBase());
+        hasDifferenceAc = importPucsProcess.hasDifferenceAc();
+        declaration = importPucsProcess.getDeclaration();
+        setNumAffilieBase(importPucsProcess.getNumAffilieBase());
 
         setSendCompletionMail(false);
         setSendMailOnError(false);
 
         if (isAborted()) {
             return executeAnnulationTraitement(JadeStringUtil.isBlankOrZero(getSimulation()),
-                    importPucs4Process.getTableJournaux());
+                    importPucsProcess.getTableJournaux());
         }
 
         return true;
     }
 
-    public boolean isImportPucs4OnError() {
-        return importPucs4Process != null && importPucs4Process.isMemoryLogEnErreur();
+    public boolean isImportPucsOnError() {
+        return importPucsProcess != null && importPucsProcess.isMemoryLogEnErreur();
     }
 
     @Override
@@ -445,8 +495,8 @@ public class CIDeclaration extends BProcess {
                         && CIDeclaration.CS_PUCS_II.equalsIgnoreCase(getType())) {
 
                     setIsPUCS4AttributeReadingFileNamespace();
-                    if (isPUCS4) {
-                        return executeImportPucs4Process();
+                    if (isPUCS4 ||isPUCS5) {
+                        return executeImportPucsProcess();
                     }
 
                 }
