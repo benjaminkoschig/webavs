@@ -37,6 +37,7 @@ public class GFFileUtils {
             if (extension.equals("zip")) {
                 JadeFsFacade.copyFile(viewBean.getFilename(), Jade.getInstance().getPersistenceDir() + viewBean.getFileNamePersistance());
                 viewBean.getFileNameList().addAll(unZipFile(viewBean.getFileNamePersistance()));
+                checkUnZippedFiles(viewBean);
             } else if (extension.equals("pdf") || extension.equals("tiff")) {
                 JadeFsFacade.copyFile(path, Jade.getInstance().getHomeDir() + "work/" + filename);
                 viewBean.getFileNameList().add(filename);
@@ -107,6 +108,20 @@ public class GFFileUtils {
         String pathFileNameToRemove = Jade.getInstance().getHomeDir() + "work/" + fileNameToRemove;
         viewBean.getFileNameList().remove(fileNameToRemove);
         JadeFsFacade.delete(pathFileNameToRemove);
+    }
+
+    public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
+        List<String> fileNames = viewBean.getFileNameList();
+        for (int i = 0; i < fileNames.size(); i++) {
+            String extension = FilenameUtils.getExtension(fileNames.get(i));
+            if (!extension.equals("pdf") && !extension.equals("tiff")) {
+                viewBean.getErrorFileNameList().add(fileNames.get(i));
+                viewBean.getFileNameList().remove(fileNames.get(i));
+                deleteFile(viewBean, fileNames.get(i));
+            }
+        }
+        // suppression des doublons
+        viewBean.setErrorFileNameList(viewBean.getErrorFileNameList().stream().distinct().collect(Collectors.toList()));
     }
 
 }
