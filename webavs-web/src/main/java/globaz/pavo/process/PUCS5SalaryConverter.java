@@ -64,6 +64,9 @@ public class PUCS5SalaryConverter {
 
         DeclarationSalaire result = new DeclarationSalaire();
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
+        if(param.getDeclareSalary() == null || param.getDeclareSalary().getSalaryDeclaration() == null){
+            throw new NullPointerException("Aucune déclaration de salaire correctement formée dans le fichier XML fourni.");
+        }
         result.setAnnee(param.getDeclareSalary().getSalaryDeclaration().getGeneralSalaryDeclarationDescription()
                 .getAccountingPeriod().getYear());
 
