@@ -19,6 +19,8 @@ public class GFFormHandlersFactory {
 
     public GFFormHandlersFactory(){
         mapClasses = new HashMap();
+        mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2021_000101._3.Message.class, GF2021000101Handler.class);
+        mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message.class, GF2021000102Handler.class);
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2501_001800._1.Message.class, GF2501001800Handler.class);
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2501_001820._1.Message.class, GF2501001820Handler.class);
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2501_002690._1.Message.class, GF2501002690Handler.class);
