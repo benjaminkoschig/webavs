@@ -233,6 +233,15 @@
 		<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getFileNameList().get(i)%>"><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
 	</tr>
 						<%}%>
+
+						<%for (int i = 0; i < viewBean.getErrorFileNameList().size(); i++) {%>
+						<tr>
+							<td><%=viewBean.getErrorFileNameList().get(i)%></td>
+							<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getErrorFileNameList().get(i)%>"><img src="images/small_warning.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+						</tr>
+						<%}%>
+
+
 					</table>
 
 <%--				</div>--%>

@@ -30,6 +30,7 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private String typeDeFichier;
     private String adresse;
     private List<String> fileNameList = new LinkedList<>();
+    private List<String> errorFileNameList = new LinkedList<>();
     @Getter
     @Setter
     private String fileNamePersistance;
@@ -146,6 +147,22 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public void setFileNameList(List<String> fileNameList) {
         this.fileNameList = fileNameList;
+    }
+
+    public List<String> getErrorFileNameList() {
+        return errorFileNameList;
+    }
+
+    public void setErrorFileNameList(List<String> errorFileNameList) {
+        this.errorFileNameList = errorFileNameList;
+    }
+
+    public String getFileNamePersistance() {
+        return fileNamePersistance;
+    }
+
+    public void setFileNamePersistance(String fileNamePersistance) {
+        this.fileNamePersistance = fileNamePersistance;
     }
 
     public GFEnvoiViewBean() {
