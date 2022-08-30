@@ -24,7 +24,7 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
         super(aServlet);
     }
 
-    public final static String PATH_EFORM = "eform.formulaire";
+    public final static String PATH_EFORM = "eform.formulaire.formulaire";
     public final static String ACTION_TELECHARGER = "telecharger";
     public final static String ACTION_CHANGE_STATUT = "statut";
 
