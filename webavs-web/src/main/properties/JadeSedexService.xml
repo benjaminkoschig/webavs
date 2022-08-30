@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--globaz.jade.sedex.JadeSedexService: service d'interfaï¿½age avec SEDEX-->
+<!--globaz.jade.sedex.JadeSedexService: service d'interfaçage avec SEDEX-->
 <globaz.jade.sedex.JadeSedexService>
     <testDeliveryFlag>true</testDeliveryFlag>
-    <!--dir.input: rï¿½pertoire oï¿½ arrivent les messages SEDEX destinï¿½s ï¿½ cette application-->
-    <!--dir.output: rï¿½pertoire oï¿½ sont dï¿½posï¿½s les messages SEDEX gï¿½nï¿½rï¿½s par cette application-->
+    <!--dir.input: répertoire où arrivent les messages SEDEX destinés à cette application-->
+    <!--dir.output: répertoire où sont déposés les messages SEDEX générés par cette application-->
     <dir.input checkDelay="1m">d:\sedex\inbox</dir.input>
     <dir.output>d:\sedex\outbox</dir.output>
     <dir.output.backup>d:\sedex\backup</dir.output.backup>
