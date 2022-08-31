@@ -1,14 +1,11 @@
 package globaz.corvus.process;
 
+import ch.globaz.common.util.Dates;
 import globaz.commons.nss.NSUtil;
-import globaz.corvus.api.arc.downloader.REReaderAnnonces51_53;
+import globaz.corvus.api.arc.downloader.RELoaderAnnonces5153;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiers;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiersManager;
-import globaz.corvus.db.annonces.IREAnnonceAdaptation;
-import globaz.corvus.db.annonces.REAnnonce51;
-import globaz.corvus.db.annonces.REAnnonce51Adaptation;
-import globaz.corvus.db.annonces.REAnnonce53;
-import globaz.corvus.db.annonces.REAnnonce53Adaptation;
+import globaz.corvus.db.annonces.*;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.itext.REListeDifferencesCentraleCaisse;
 import globaz.corvus.itext.REListeDifferencesDroitApplique;
@@ -19,18 +16,14 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.*;
 
 /**
  * 
@@ -105,10 +98,15 @@ public class REComparaisonCentraleProcess extends BProcess {
 
     private String moisAnnee = "";
 
+    @Getter
+    @Setter
+    private String dateImportation = "";
+
     @Override
     protected void _executeCleanUp() {
 
     }
+
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -118,21 +116,14 @@ public class REComparaisonCentraleProcess extends BProcess {
             transaction = ((BSession) getISession()).newTransaction();
             transaction.openTransaction();
 
-            // 1) Import des annonces 51/ 53 (Pas de stockage)
-            REReaderAnnonces51_53 read51_53 = new REReaderAnnonces51_53();
+            // 1) Import des annonces 51/ 53
+
+            RELoaderAnnonces5153 read51_53 = new RELoaderAnnonces5153();
             read51_53.setSession(getSession());
             read51_53.setParentProcess(this);
-            read51_53.setIdLot(getIdLot());
             read51_53.setLog(getMemoryLog());
 
-            if (JadeStringUtil.isBlankOrZero(getIdLot())) {
-                throw new Exception("Aucun lot sélectionné ! Aucune annonce à comparer...");
-            }
-
-            read51_53.read((BTransaction) transaction);
-
-            Map<KeyRAAnnComparaison, ArrayList<Object>> mapAnnoncesLues = new HashMap<KeyRAAnnComparaison, ArrayList<Object>>();
-            mapAnnoncesLues = read51_53.getAnnoncesCrees();
+            Map<KeyRAAnnComparaison, ArrayList<Object>> mapAnnoncesLues = read51_53.loadAnnonces(Dates.toDbDate(getDateImportation()));;
 
             // 2) Ajout des rentes accordées dans une map (clé =
             // NSS/CodePrestation/Montant)

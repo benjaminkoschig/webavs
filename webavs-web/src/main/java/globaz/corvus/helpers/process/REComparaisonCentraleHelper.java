@@ -30,6 +30,7 @@ public class REComparaisonCentraleHelper extends PRAbstractHelper {
             process.setSession((BSession) session);
             process.setEMailAddress(vBean.getEMailAddress());
             process.setMoisAnnee(vBean.getMoisAnnee());
+            process.setDateImportation(vBean.getDateImportation());
             process.setIdLot(vBean.getIdLot());
             process.setSendCompletionMail(true);
             process.setSendMailOnError(true);

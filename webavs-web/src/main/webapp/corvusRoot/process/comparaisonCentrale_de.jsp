@@ -53,15 +53,15 @@
 									<TD>&nbsp;</TD>								
 								</TR>
 								<TR>
-									<TD><ct:FWLabel key="JSP_CIRC_LOT_HERMES"/></TD>
+									<TD><ct:FWLabel key="JSP_DATE_IMPORTATION"/></TD>
 									<TD>
-										<SELECT name="idLot">
-											<%for (int i=0; i<lots.length; i=i+2){%>
-												<OPTION value="<%=lots[i]%>"><%=lots[i+1]%></OPTION>
-											<%}%>
-										</SELECT>
+										<ct:select name="dateImportation" id="dateImportation"  wantBlank="false">
+											<%for(String date:viewBean.loadListDateImportation()){%>
+											<ct:option id="<%=date%>" value="<%=date%>" label="<%=date%>"/>
+											<%} %>
+										</ct:select>
 									</TD>
-								</TR>										
+								</TR>
 								</TBODY>							
 								</TABLE>
 						</TD></TR>

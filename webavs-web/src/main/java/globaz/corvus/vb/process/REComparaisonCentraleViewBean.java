@@ -1,9 +1,16 @@
 package globaz.corvus.vb.process;
 
+import ch.globaz.common.util.Dates;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.hermes.db.gestion.HELotListViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -19,6 +26,10 @@ public class REComparaisonCentraleViewBean extends PRAbstractViewBeanSupport {
     private String eMailAddress = "";
     private String idLot = "";
     private String moisAnnee = "";
+
+    @Getter
+    @Setter
+    private String dateImportation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -59,6 +70,12 @@ public class REComparaisonCentraleViewBean extends PRAbstractViewBeanSupport {
 
         return lotList;
 
+    }
+
+    public List<String> loadListDateImportation() {
+        return SCM.newInstance(String.class).session(getSession())
+                .query("SELECT DISTINCT WJDAUG from schema.REFICHA ORDER BY WJDAUG DESC").execute()
+                .stream().map(date -> Dates.formatSwiss(Dates.toDateFromDb(date))).collect(Collectors.toList());
     }
 
     public String getMoisAnnee() {
