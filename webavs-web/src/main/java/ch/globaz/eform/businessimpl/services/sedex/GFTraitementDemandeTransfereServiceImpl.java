@@ -7,7 +7,6 @@ import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandler;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandlersFactory;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
-import ch.globaz.eform.validator.GFEFormValidator;
 import ch.globaz.eform.web.application.GFApplication;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
@@ -18,8 +17,6 @@ import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.message.GroupedSedexMessage;
@@ -33,7 +30,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Slf4j
-public class GFTraitementDADemandeServiceImpl {
+public class GFTraitementDemandeTransfereServiceImpl {
     private BSession session;
     private JadeContext context;
     private GFFormHandlersFactory objectFactory;
@@ -44,11 +41,11 @@ public class GFTraitementDADemandeServiceImpl {
         String encryptedPass = properties.getProperty("passSedex");
 
         if (encryptedUser == null) {
-            LOG.error("GFTraitementDADemandeServiceImpl#setUp - Réception message demande DA-Dossier: user sedex non renseigné. ");
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#setUp - Réception message demande DA-Dossier: user sedex non renseigné. ");
             throw new IllegalStateException("Réception message demande DA-Dossier: user sedex non renseigné. ");
         }
         if (encryptedPass == null) {
-            LOG.error("GFTraitementDADemandeServiceImpl#setUp - Réception message demande DA-Dossier: pass sedex non renseigné. ");
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#setUp - Réception message demande DA-Dossier: pass sedex non renseigné. ");
             throw new IllegalStateException("Réception message demande DA-Dossier: pass sedex non renseigné. ");
         }
 
@@ -77,24 +74,24 @@ public class GFTraitementDADemandeServiceImpl {
 
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
-                        importMessagesSingle(messageToTreat, result);
+                        importMessagesSingle(messageToTreat, zipFile, result);
 
                         if (result.hasError()) {
                             sendMail(zipFile, result);
                             errorMailSanded[0] = true;
-                            LOG.error("GFTraitementDADemandeServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
-                            result.getErrors().forEach(error -> LOG.error("GFTraitementDADemandeServiceImpl#importMessages - {} ", error.getDesignation(session)));
+                            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
+                            result.getErrors().forEach(error -> LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - {} ", error.getDesignation(session)));
                             //Déclenchement de l'exception pour invalidé l'import sedex
                             throw new JadeApplicationRuntimeException("");
                         } else {
-                            LOG.info("GFTraitementDADemandeServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
+                            LOG.info("GFTraitementDemandeTransfereServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                         }
                     } catch (Exception e) {
                         if (!errorMailSanded[0]) {
                             try {
                                 sendMail(zipFile);
                             } catch (Exception e1) {
-                                LOG.error("GFTraitementDADemandeServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                                LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                             }
                         }
                         throw new JadeApplicationRuntimeException(e);
@@ -106,35 +103,35 @@ public class GFTraitementDADemandeServiceImpl {
                 zipFile = new ZipFile(messageToTreat.zipFileLocation);
 
                 try {
-                    importMessagesSingle(messageToTreat, result);
+                    importMessagesSingle(messageToTreat, zipFile, result);
 
                     if (result.hasError()) {
                         sendMail(zipFile, result);
                         errorMailSanded[0] = true;
-                        LOG.error("GFTraitementDADemandeServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
-                        result.getErrors().forEach(error -> LOG.error("GFTraitementDADemandeServiceImpl#importMessages - {} ", error.getDesignation(session)));
+                        LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - Traitement en erreur pour le fichier {}", messageToTreat.fileLocation);
+                        result.getErrors().forEach(error -> LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - {} ", error.getDesignation(session)));
                         //Déclenchement de l'exception pour invalidé l'import sedex
                         throw new JadeApplicationRuntimeException("");
                     } else {
-                        LOG.info("GFTraitementDADemandeServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
+                        LOG.info("GFTraitementDemandeTransfereServiceImpl#importMessages - Traitement OK pour le fichier {}", messageToTreat.fileLocation);
                     }
                 } catch (Exception e) {
                     if (!errorMailSanded[0]) {
                         try {
                             sendMail(zipFile);
                         } catch (Exception e1) {
-                            LOG.error("GFTraitementDADemandeServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
+                            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - Une Erreur s'est produite lors de l'envoie du mail!", e1);
                         }
                     }
                     throw new JadeApplicationRuntimeException(e);
                 }
             } else {
-                LOG.error("GFTraitementDADemandeServiceImpl#importMessages - Type de message Sedex non géré!");
+                LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessages - Type de message Sedex non géré!");
                 throw new JadeApplicationRuntimeException("Type de message Sedex non géré!");
             }
         } catch (Exception e1) {
             JadeLogger.error(this,
-                    "GFTraitementDADemandeServiceImpl#importMessages - Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
+                    "GFTraitementDemandeTransfereServiceImpl#importMessages - Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
             throw new JadeApplicationRuntimeException(e1);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
@@ -174,22 +171,22 @@ public class GFTraitementDADemandeServiceImpl {
     }
 
     /**
-     * Méthode de lecture du message sedex en réception, et traitement
+     * Méthode de lecture du message sedex en réception et traitement
      */
-    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ValidationResult result) throws RuntimeException {
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
         try {
-            GFDaDossierValidator.sedexMessage(currentSimpleMessage, result);
+            GFDaDossierValidator.sedexMessage101(currentSimpleMessage, result);
             if (!result.hasError()) {
                 GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
                 if (formHandler != null) {
-                    formHandler.setDataFromFile(null, null, null);
-                    formHandler.saveDataInDb(result);
+                    formHandler.setDataFromFile(null, null);
+                    formHandler.saveData(result, zipFile);
 
-                    LOG.info("GFTraitementDADemandeServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
+                    LOG.info("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
             }
         } catch (Exception e) {
-            LOG.error("GFTraitementDADemandeServiceImpl#importMessagesSingle - Erreur lors du traitement du message.");
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - Erreur lors du traitement du message.");
             throw new JadeApplicationRuntimeException(e);
         }
     }
@@ -224,7 +221,7 @@ public class GFTraitementDADemandeServiceImpl {
         try {
             return GFProperties.EMAIL_EFORM.getValue().split(";");
         } catch (PropertiesException e) {
-            LOG.error("GFTraitementDADemandeServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }
         return null;
     }

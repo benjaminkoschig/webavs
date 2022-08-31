@@ -22,30 +22,11 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
         super(aServlet);
     }
 
-    public final static String ACTION_TELECHARGER = "telecharger";
-    public final static String ACTION_CHANGE_STATUT = "statut";
-
     @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
                                      HttpServletResponse response, FWViewBeanInterface viewBean) {
         return this.getActionFullURL() + ".afficher";
     }
-
-    /*@Override
-    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
-        FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
-        try {
-
-            JSPUtils.setBeanProperties(request, viewBean);
-
-            mainDispatcher.dispatch(viewBean, getAction());
-
-        } catch (Exception e) {
-            JadeLogger.error("Failed to prepare viewBean for actionAfficher", e);
-        }
-
-        super.actionAfficher(session, request, response, mainDispatcher);
-    }*/
 
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
