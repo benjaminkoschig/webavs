@@ -29,7 +29,82 @@ public class GFDaDossierValidator {
     private GFDaDossierValidator() {
     }
 
-    public static ValidationResult sedexMessage(SimpleSedexMessage messageSedex, ValidationResult result) {
+    public static ValidationResult sedexMessage101(SimpleSedexMessage messageSedex, ValidationResult result) {
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document xmlDocument;
+        try {
+            builder = builderFactory.newDocumentBuilder();
+            xmlDocument = builder.parse(messageSedex.getFileLocation());
+
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            //Validation du doublon du message ID (message déjà traité)
+            Node nodeMessageId = (Node) xPath.compile("/message/header/messageId").evaluate(xmlDocument, XPathConstants.NODE);
+            String messageId = nodeMessageId.getFirstChild().getNodeValue();
+            if (!StringUtils.isEmpty(messageId)) {
+                GFFormulaireSearch search = new GFFormulaireSearch();
+                search.setByMessageId(messageId);
+                search.setWhereKey("messageId");
+                search = GFEFormServiceLocator.getGFEFormService().search(search);
+                if (search.getSearchResults().length != 0) {
+                    result.addError("messageId", ValidationError.ALREADY_EXIST);
+                }
+            } else {
+                result.addError("messageId", ValidationError.MANDATORY);
+            }
+
+            //Validation du double du ourBusinessReferenceId (demande déjà reçu)
+            Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
+            String ourBusinessReferenceId = nodeMessageId.getFirstChild().getNodeValue();
+            if (!StringUtils.isEmpty(ourBusinessReferenceId)) {
+                GFFormulaireSearch search = new GFFormulaireSearch();
+                search.setByMessageId(messageId);
+                search.setWhereKey("messageId");
+                search = GFEFormServiceLocator.getGFEFormService().search(search);
+                if (search.getSearchResults().length != 0) {
+                    result.addError("messageId", ValidationError.ALREADY_EXIST);
+                }
+            } else {
+                result.addError("messageId", ValidationError.MANDATORY);
+            }
+
+            //Validation de la présence de message Date
+            Node nodeMessageDate = (Node) xPath.compile("/message/header/messageDate").evaluate(xmlDocument, XPathConstants.NODE);
+            String messageDate = nodeMessageDate.getFirstChild().getNodeValue();
+            if (StringUtils.isEmpty(messageDate)) {
+                result.addError("messageDate", ValidationError.MANDATORY);
+            }
+
+            //Validation de la présence du MSS
+            Node nodeVn = (Node) xPath.compile("/message/content/insuredPerson/vn").evaluate(xmlDocument, XPathConstants.NODE);
+            String nss = nodeVn.getFirstChild().getNodeValue();
+            if (StringUtils.isEmpty(nss)) {
+                result.addError("nss", ValidationError.MANDATORY);
+            } else if (!NSSUtils.checkNSS(nss)) {
+                result.addError("nss", ValidationError.MALFORMED);
+            }
+        } catch (ParserConfigurationException e) {
+            LOG.error("Erreur dans la configuration du parceur XML", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (IOException | SAXException e) {
+            LOG.error("Erreur dans le parcing du fichier XML", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (XPathExpressionException e) {
+            LOG.error("Erreur dans le parcing de l'expression xpath", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (JadePersistenceException e) {
+            LOG.error("Erreur dans le parcour du dom xml", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            LOG.error("Erreur dans le chargement du service eform", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        }
+
+        return result;
+    }
+
+    public static ValidationResult sedexMessage102(SimpleSedexMessage messageSedex, ValidationResult result) {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document xmlDocument;

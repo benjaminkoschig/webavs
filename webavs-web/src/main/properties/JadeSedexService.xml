@@ -46,7 +46,7 @@
             <criteria name="//message/header/messageType">2021</criteria>
             <criteria name="//message/header/subMessageType">000101</criteria>
             <handler>
-                <class>ch.globaz.eform.businessimpl.services.sedex.GFTraitementDADemandeServiceImpl</class>
+                <class>ch.globaz.eform.businessimpl.services.sedex.GFTraitementDemandeTransfereServiceImpl</class>
                 <param key="userSedex">0ZqkuKx+NGcOdT5bbWlStQ==</param>
                 <param key="passSedex">VodoAfBz+wZIR+D4weSlcw==</param>
             </handler>
