@@ -109,15 +109,15 @@
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire" id="nomGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getVisa()%>"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire" id="nomGestionnaire" defaultValue="<%=viewBean.getSession().getUserFullName()%>" readonly="true"/></div>
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="<%=viewBean.getSession().getUserInfo().getDepartment()%>"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="Service des rentes" readonly="true"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getPhone()%>"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="0328440000" readonly="true"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" readonly="true"/></div>
         </div>
 	</div>
 <tr>
