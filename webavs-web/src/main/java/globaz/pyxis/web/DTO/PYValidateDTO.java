@@ -124,12 +124,13 @@ public class PYValidateDTO {
                 getCountryAsSystemCode(addressDTO);
         }
 
-        if (dto.getCcpNumber() != null)
-            checkCCP(dto.getCcpNumber());
-        //TODO delete or implement in dto to manage n° compte as IBAN ok not IBAN
-        if (dto.getStatus() != null)
-            checkStatusPaymentAddress(dto.getStatus());
-
+        for (PYPaymentAddressDTO paymentAddressDTO : dto.getPaymentAddress()) {
+            if (paymentAddressDTO.getCcpNumber() != null)
+                checkCCP(paymentAddressDTO.getCcpNumber());
+            //TODO delete or implement status in dto to manage n° compte as IBAN ok not IBAN
+            if (paymentAddressDTO.getStatus() != null)
+                checkStatusPaymentAddress(paymentAddressDTO.getStatus());
+        }
 
         for (PYContactDTO contactDTO : dto.getContacts()) {
             for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {

@@ -59,7 +59,6 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ch.globaz.pyxis.business.services.AdresseService.CS_DOMAINE_DEFAUT;
 import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
 /**
@@ -470,54 +469,85 @@ public class PRTiersHelper {
      * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers (adresse de paiement)
      *
      * @param session
-     * @param idMailAddress
+     * @param idAddress
+     * @param modificationDate
+     * @param withAvoirPaymentAddress
      * @param dto
      * @throws Exception
      */
-    public static void addTiersPaymentAddress(BSession session, String idMailAddress, PYTiersDTO dto) throws Exception {
+    public static TIAdressePaiement addTiersPaymentAddress(BSession session, String idAddress, String modificationDate, boolean withAvoirPaymentAddress, PYTiersDTO dto) throws Exception {
         //TODO Vérifier l'existence d'une adresse en DB afin de créer une adresse de paiement.
         // Si adresse courrier existante, celle-ci est utilisée pour lier l'adresse de paiement.
         // Sinon on prend l'adresse de domicile, sinon, la création d'une adresse de paiement n'est pas possible.
 
-        TIIbanFormater ibanFormatter = new TIIbanFormater();
 
-        TIAdressePaiement adressePaiement = new TIAdressePaiement();
-        adressePaiement.setIdTiersAdresse(dto.getId());
-        adressePaiement.setIdAdresse(idMailAddress);
+        TIAdressePaiement adressePaiement = null;
 
-        //Renseigner soit N°Compte soit N°CCP
-        if (!Objects.isNull(dto.getAccountNumber())) {
-            String iban = ibanFormatter.unformat(dto.getAccountNumber());
-            //TODO check sur format N° Compte (IBAN et l'autre ex: 206-208604)
-            if (checkIban(iban)) {
-                adressePaiement.setIdTiersBanque(retrieveBankId(dto.getClearingNumber(), dto.getBranchOfficePostalCode()));
-                adressePaiement.setNumCompteBancaire(dto.getAccountNumber());
+        //Using a Vector for adding multiple payment addresses
+        for (PYPaymentAddressDTO pyPaymentAddressDTO : dto.getPaymentAddress()) {
+            if (pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress() != null)
+                idAddress = pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress();
+
+
+            TIIbanFormater ibanFormatter = new TIIbanFormater();
+
+            adressePaiement = new TIAdressePaiement();
+            adressePaiement.setIdTiersAdresse(dto.getId());
+            adressePaiement.setIdAdresse(idAddress);
+
+            //Special need for CCVS. The domain is not always set to "Default".
+            pyPaymentAddressDTO.setDomainPaymentAddress(setDomainPaymentAddress(pyPaymentAddressDTO));
+//            if (pyPaymentAddressDTO.getDomainPaymentAddress() != null)
+//                pyPaymentAddressDTO.setDomainPaymentAddress(pyPaymentAddressDTO.getDomainPaymentAddress());
+//            else {
+//                pyPaymentAddressDTO.setDomainPaymentAddress(String.valueOf(DomaineApplication.STANDARD.getSystemCode()));
+//            }
+
+            //Renseigner soit N°Compte soit N°CCP
+            if (!(Objects.isNull(pyPaymentAddressDTO.getAccountNumber()))) {
+                String iban = ibanFormatter.unformat(pyPaymentAddressDTO.getAccountNumber());
+                //TODO check sur format N° Compte (IBAN et l'autre ex: 206-208604)
+                if (checkIban(iban)) {
+                    adressePaiement.setIdTiersBanque(retrieveBankId(pyPaymentAddressDTO.getClearingNumber(), pyPaymentAddressDTO.getBranchOfficePostalCode()));
+                    adressePaiement.setNumCompteBancaire(pyPaymentAddressDTO.getAccountNumber());
+                } else {
+                    LOG.error("Paiement adresse non créée : IBAN non valide : " + iban);
+                }
             } else {
-                LOG.error("Paiement adresse non créée : IBAN non valide : " + iban);
+                adressePaiement.setNumCcp(pyPaymentAddressDTO.getCcpNumber());
             }
-        } else {
-            adressePaiement.setNumCcp(dto.getCcpNumber());
+            adressePaiement.setIdPays(pyPaymentAddressDTO.getBankCountry());
+            adressePaiement.setSession(session);
+            if (modificationDate != null)
+                adressePaiement.setDateDebutPaiement(modificationDate);
+            adressePaiement.add();
+
+            if (withAvoirPaymentAddress) {
+                TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
+                avoirPaiement.setIdApplication(pyPaymentAddressDTO.getDomainPaymentAddress());
+                avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                avoirPaiement.setIdTiers(dto.getId());
+                avoirPaiement.setSession(session);
+                avoirPaiement.add();
+            }
+
+            //set les champs pour les afficher dans la réponse de la requête.
+            pyPaymentAddressDTO.setIdPaymentAddress(adressePaiement.getIdAdressePaiement());
+            pyPaymentAddressDTO.setIdAddressRelatedToPaymentAddress((adressePaiement.getIdAdresse()));
+
+
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                LOG.error("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+            } else if (!JadeThread.logIsEmpty()) {
+                LOG.error("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            }
         }
-        adressePaiement.setIdPays(dto.getBankCountry());
-        adressePaiement.setSession(session);
-        adressePaiement.add();
 
-        TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
-        avoirPaiement.setIdApplication(CS_DOMAINE_DEFAUT);
-        avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
-        avoirPaiement.setIdTiers(dto.getId());
-        avoirPaiement.setSession(session);
-        avoirPaiement.add();
-
-
-        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
-
-        } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#addTiersMailAddress - Erreur rencontrée lors de la création de l'adresse de courrier pour l'assuré");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
-        }
+        //TODO retourner une liste d'adressePaiement crées ?
+        return adressePaiement;
     }
 
     /**
@@ -660,6 +690,129 @@ public class PRTiersHelper {
         }
 
         dto.setModificationDate(dto.getModificationDate());
+    }
+
+    /**
+     * Méthode pour définir le domaine d'une adresse de paiement en fonction de la présence ou non du champ dans le JSON
+     *
+     * @param pyPaymentAddressDTO
+     * @return
+     */
+    public static final String setDomainPaymentAddress(PYPaymentAddressDTO pyPaymentAddressDTO) {
+        if (pyPaymentAddressDTO.getDomainPaymentAddress() != null) {
+            pyPaymentAddressDTO.setDomainPaymentAddress(pyPaymentAddressDTO.getDomainPaymentAddress());
+        } else {
+            pyPaymentAddressDTO.setDomainPaymentAddress(String.valueOf(DomaineApplication.STANDARD.getSystemCode()));
+        }
+        return pyPaymentAddressDTO.getDomainPaymentAddress();
+    }
+
+    /**
+     * Méthode pour mettre à jour une adresse de paiement
+     *
+     * @param session
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public static final void updateTiersPaymentAddress(BSession session, PYTiersDTO dto) throws Exception {
+        //Even if there are more than one payment address entered, only the first one will be updated. --> firstElement
+        PYPaymentAddressDTO pyPaymentAddressDTO = dto.getPaymentAddress().firstElement();
+
+        //Special need for CCVS. The domain is not always set to "Default".
+        pyPaymentAddressDTO.setDomainPaymentAddress(setDomainPaymentAddress(pyPaymentAddressDTO));
+
+        //Si le tiers n'a aucune adresse de paiement pour ce domaine, on en crée une nouvelle. (create smth from REST update..)
+        if (Objects.isNull(TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(dto.getId(), false, pyPaymentAddressDTO.getDomainPaymentAddress(), JadeDateUtil.getGlobazFormattedDate(new Date()), "").getFields())) {
+            addTiersPaymentAddress(session, pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress(), dto.getModificationDate(), true, dto);
+        } else { //Une adresse de paiement est existante pour ce domaine, on peut faire une MAJ ou une COR
+            //Utiliser l'idAddress pour créer une nouvelle adresse de paiement
+            String idAddress = null;
+            //Si on a renseigné le champ idAddressRelatedToPaymentAddress on l'utilise.
+            if (pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress() != null)
+                idAddress = pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress();
+                //Sinon, on récupère l'idAddress (de courrier si existante, sinon domicile, sinon throw)
+            else {
+                if (null != TIBusinessServiceLocator.getAdresseService().getAdresseTiers(dto.getId(), false, JadeDateUtil.getGlobazFormattedDate(new Date()), "", CS_ADRESSE_COURRIER, "").getFields())
+                    idAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(dto.getId(), false, JadeDateUtil.getGlobazFormattedDate(new Date()), "", CS_ADRESSE_COURRIER, "").getFields().get("id_adresse");
+                else if (null != TIBusinessServiceLocator.getAdresseService().getAdresseTiers(dto.getId(), false, JadeDateUtil.getGlobazFormattedDate(new Date()), "", CS_ADRESSE_DOMICILE, "").getFields())
+                    idAddress = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(dto.getId(), false, JadeDateUtil.getGlobazFormattedDate(new Date()), "", CS_ADRESSE_DOMICILE, "").getFields().get("id_adresse");
+                else {
+                    LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré. Aucune adresse pour ce tiers.");
+                    throw new NullPointerException("Aucune adresse pour ce tiers.");
+                }
+            }
+
+            //Dans tous les cas (MAJ ou COR), on crée une nouvelle adresse de paiement, mais sans AvoirAdressePaiement.
+            TIAdressePaiement adressePaiement = addTiersPaymentAddress(session, idAddress, dto.getModificationDate(), false, dto);
+
+
+            if (!(dto.getModificationDate().equals(JadeDateUtil.getDMYDate(new Date())))) {
+                //MAJ
+                //Nouvelle ligne DB dans AvoirPaiement
+                TIAvoirPaiement tiAvoirPaiement = new TIAvoirPaiement();
+                tiAvoirPaiement.setIdTiers(dto.getId());
+                tiAvoirPaiement.setIdApplication(pyPaymentAddressDTO.getDomainPaymentAddress());
+                tiAvoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement()); //Pointer sur une adresse de paiement existante. (celle créée juste au-dessus)
+                tiAvoirPaiement.setDateDebutRelation(dto.getModificationDate());
+                tiAvoirPaiement.add();
+            } else {
+                //COR (possible uniquement pour le jour même)
+                //Update colonne HIIAPA de la table TIAPAIP
+                BITransaction trans = null;
+                try {
+                    //Récupérer l'idAvoirPaiementUnique (HCIAIU)
+                    String idAvoirPaiementUnique = null;
+                    //TODO null pointer si le tiers n'a pas d'adresse de paiement
+                    //Comme une seule adresse de paiement est possible par domaine, on aura qu'un seul idAvoirPaiementUnique.
+                    if (null != TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(dto.getId(), false, pyPaymentAddressDTO.getDomainPaymentAddress(), JadeDateUtil.getGlobazFormattedDate(new Date()), "").getFields())
+                        idAvoirPaiementUnique = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(dto.getId(), false, pyPaymentAddressDTO.getDomainPaymentAddress(), JadeDateUtil.getGlobazFormattedDate(new Date()), "").getFields().get("id_avoir_paiement_unique");
+                    else {
+                        LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré. Aucune adresse de paiement pour ce tiers.");
+                        throw new NullPointerException("Aucune adresse de paiement pour ce tiers.");
+                    }
+
+                    //Code from TIActionAdressePaiement#actionAjouter
+                    TIAvoirPaiement currentAvoirPaiement = new TIAvoirPaiement();
+                    currentAvoirPaiement.setISession(session);
+                    currentAvoirPaiement.setIdAdrPmtIntUnique(idAvoirPaiementUnique);
+                    currentAvoirPaiement.retrieve();
+
+
+                    trans = session.newTransaction();
+                    trans.openTransaction();
+
+                    currentAvoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                    currentAvoirPaiement.update(trans);
+
+                    if (trans.hasErrors()) {
+                        trans.rollback();
+                        LOG.error(trans.getErrors().toString());
+                    } else {
+                        trans.commit();
+                    }
+                } catch (NullPointerException nullPointerException) {
+                    throw new PYBadRequestException("Aucune adresse de paiement pour ce tiers.");
+                } finally {
+                    if (trans != null) {
+                        try {
+                            trans.closeTransaction();
+                        } catch (Exception var25) {
+                            LOG.error(trans.getErrors().toString());
+                        }
+                    }
+                }
+            }
+
+            if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+                LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+
+            } else if (!JadeThread.logIsEmpty()) {
+                LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            }
+        }
     }
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
