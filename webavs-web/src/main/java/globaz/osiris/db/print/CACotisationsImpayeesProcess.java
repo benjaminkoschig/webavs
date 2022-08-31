@@ -359,7 +359,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
      */
     public double round(double num, int scale) {
         BigDecimal bd = new BigDecimal(num);
-        BigDecimal bd2 = bd.setScale(scale, BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal bd2 = bd.setScale(scale, BigDecimal.ROUND_HALF_UP);
         num = bd2.doubleValue();
         return num;
     }
