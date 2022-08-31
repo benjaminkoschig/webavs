@@ -48,11 +48,12 @@
 </style>
 
 <script>
+    $(function() {
+        buttonCheck();
+    });
     function init() {
     }
 
-    // var bFind = true;
-    <%--var detailLink = "<%=actionNew%>";--%>
     var zipFileName;
     var listFileArray = [];
 
@@ -108,18 +109,15 @@
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire"
-                                                                         id="nomGestionnaire"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomGestionnaire" id="nomGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getVisa()%>"/></div>
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement"
-                                                                         id="nomDepartement"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="<%=viewBean.getSession().getUserInfo().getDepartment()%>"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire"
-                                                                         id="telephoneGestionnaire"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getPhone()%>"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>"/></div>
         </div>
 	</div>
 <tr>
@@ -236,8 +234,8 @@
 
 						<%for (int i = 0; i < viewBean.getErrorFileNameList().size(); i++) {%>
 						<tr>
-							<td><%=viewBean.getErrorFileNameList().get(i)%></td>
-							<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getErrorFileNameList().get(i)%>"><img src="images/small_warning.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+							<td style="color: red"><%=viewBean.getErrorFileNameList().get(i)%></td>
+							<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getErrorFileNameList().get(i)%>"><img height="'+height+'" width="12px" alt="delete" /></a></td>
 						</tr>
 						<%}%>
 
