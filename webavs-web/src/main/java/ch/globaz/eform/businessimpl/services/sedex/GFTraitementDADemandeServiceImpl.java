@@ -77,7 +77,7 @@ public class GFTraitementDADemandeServiceImpl {
 
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
-                        importMessagesSingle(messageToTreat, result);
+                        importMessagesSingle(messageToTreat, zipFile, result);
 
                         if (result.hasError()) {
                             sendMail(zipFile, result);
@@ -106,7 +106,7 @@ public class GFTraitementDADemandeServiceImpl {
                 zipFile = new ZipFile(messageToTreat.zipFileLocation);
 
                 try {
-                    importMessagesSingle(messageToTreat, result);
+                    importMessagesSingle(messageToTreat, zipFile, result);
 
                     if (result.hasError()) {
                         sendMail(zipFile, result);
@@ -176,14 +176,14 @@ public class GFTraitementDADemandeServiceImpl {
     /**
      * Méthode de lecture du message sedex en réception, et traitement
      */
-    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ValidationResult result) throws RuntimeException {
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
         try {
             GFDaDossierValidator.sedexMessage(currentSimpleMessage, result);
             if (!result.hasError()) {
                 GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
                 if (formHandler != null) {
-                    formHandler.setDataFromFile(null, null, null);
-                    formHandler.saveDataInDb(result);
+                    formHandler.setDataFromFile(null, null);
+                    formHandler.saveData(result, zipFile);
 
                     LOG.info("GFTraitementDADemandeServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }

@@ -21,6 +21,10 @@ public class ZipFile {
         return file.getName();
     }
 
+    public File getFile() {
+        return file;
+    }
+
     public byte[] getFileToByte() throws Exception {
         if (Objects.isNull(byteFile)) {
             byteFile = CommonBlobUtils.fileToByteArray(file.getPath());

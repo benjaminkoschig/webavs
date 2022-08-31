@@ -13,11 +13,11 @@ public class GF2021000101Handler extends GFFormHandler {
             Message messageToTreat = (Message) message;
             HeaderType header = messageToTreat.getHeader();
             if (header != null) {
-                initModel(header.getMessageId(), header.getMessageType(), header.getSubject(), header.getMessageDate().toGregorianCalendar().toZonedDateTime().toLocalDate());
+                initModel(header.getMessageId(), header.getBusinessProcessId(), header.getMessageType(), header.getSubject(), header.getMessageDate().toGregorianCalendar().toZonedDateTime().toLocalDate());
             }
             setBeneficiaireData(messageToTreat.getContent() != null ? messageToTreat.getContent().getInsuredPerson() : null);
         } catch (ClassCastException e) {
-            LOG.error("GF2501001800#extractData - HandlerErreur de type de message.", e);
+            LOG.error("GF202100010Handler#extractData - HandlerErreur de type de message.", e);
             throw new JadeApplicationRuntimeException(e);
         }
     }
