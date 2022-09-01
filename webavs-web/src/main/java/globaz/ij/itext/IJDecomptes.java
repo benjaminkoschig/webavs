@@ -1128,7 +1128,7 @@ public class IJDecomptes extends FWIDocumentManager {
 
                 FWCurrency totalMontantCotisation = new FWCurrency(0);
                 FWCurrency totalMontantImpotSource = new FWCurrency(0);
-                FWCurrency tauxImpotSource = new FWCurrency(0);
+                String tauxImpotSource = null;
 
                 String libelleCot = document.getTextes(3).getTexte(15).getDescription();
                 String libelleAVS = "";
@@ -1140,8 +1140,10 @@ public class IJDecomptes extends FWIDocumentManager {
 
                     if (ijCot.getIsImpotSource().booleanValue() == true) {
                         totalMontantImpotSource.add(ijCot.getMontant());
-                        tauxImpotSource.add(ijCot.getTaux());
-                        setImpotSource(true);
+                        if (tauxImpotSource == null) {
+                            tauxImpotSource = ijCot.getTaux();
+                            setImpotSource(true);
+                        }
                     }
 
                     else {
@@ -1209,7 +1211,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
                 if (isImpotSource()){
                     // Affichage de l'impôt à la source
-                    champs.put("FIELD_DETAIL_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(), "{tauxImpotSource}", tauxImpotSource.toString() + "%"));
+                    champs.put("FIELD_DETAIL_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(), "{tauxImpotSource}", tauxImpotSource + "%"));
 
                     champs.put("FIELD_MONTANT_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(22)
                                     .getDescription(), "{montantImpot}",
@@ -2348,9 +2350,9 @@ public class IJDecomptes extends FWIDocumentManager {
 
             // le pied de page
             buffer.setLength(0);
-            buffer.append( document.getTextes(4).getTexte(1).getDescription());
-            buffer.append("\n");
-            if(isImpotSource()) {
+            buffer.append(document.getTextes(4).getTexte(1).getDescription());
+            if (isImpotSource()) {
+                buffer.append("\n");
                 buffer.append(document.getTextes(4).getTexte(101).getDescription());
             }
 
