@@ -83,6 +83,7 @@ public class EBTreatPucsFiles extends BProcess {
     private static final long serialVersionUID = 1L;
     private String emailAdress = "";
     private String mode = "";
+    private boolean batch = false;
     private List<PucsFile> pucsEntrysToLoad = new ArrayList<PucsFile>();
     private boolean simulation = false;
     private Map<String, List<String>> pucsToMerge;
@@ -209,6 +210,11 @@ public class EBTreatPucsFiles extends BProcess {
     public String getMode() {
         return mode;
     }
+
+    public boolean isBatch() {
+        return batch;
+    }
+
 
     public BSession getSessionPavo() throws Exception {
         BSession local = getSession();
@@ -763,6 +769,10 @@ public class EBTreatPucsFiles extends BProcess {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public void setBatch(boolean batch) {
+        this.batch = batch;
     }
 
     public void setSimulation(boolean simulation) {
