@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -32,6 +34,13 @@ import java.util.zip.ZipInputStream;
 
 @Slf4j
 public class GFFileUtils {
+    public final static String WORK_PATH = Jade.getInstance().getHomeDir() + "work/";
+    public final static String PERSISTANCE_PATH = Jade.getInstance().getPersistenceDir();
+    public final static String FILE_TYPE_PDF = "pdf";
+    public final static String FILE_TYPE_TIFF = "tiff";
+    public final static String FILE_TYPE_ZIP = "zip";
+    public final static String FOLDER_UID = "testUid";
+
     public static void downloadFile(HttpServletResponse response, String name, byte buf[]) throws IOException {
         OutputStream os = response.getOutputStream();
         response.setHeader("Content-Disposition", "attachment;filename=" + name);
@@ -44,15 +53,15 @@ public class GFFileUtils {
         String filename = path.substring(path.lastIndexOf("\\") + 1);
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
-            if (extension.equals("zip")) {
-                JadeFsFacade.copyFile(viewBean.getFilename(), Jade.getInstance().getPersistenceDir() + viewBean.getFileNamePersistance());
-                viewBean.getFileNameList().addAll(unZipFile(viewBean.getFileNamePersistance()));
+            if (extension.equals(FILE_TYPE_ZIP)) {
+                JadeFsFacade.copyFile(viewBean.getFilename(), PERSISTANCE_PATH + viewBean.getFileNamePersistance());
+                viewBean.getFileNameList().addAll(unZipFile(viewBean));
                 checkUnZippedFiles(viewBean);
-            } else if (extension.equals("pdf") || extension.equals("tiff")) {
-                JadeFsFacade.copyFile(path, Jade.getInstance().getHomeDir() + "work/" + filename);
+            } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
+                JadeFsFacade.copyFile(path, WORK_PATH + filename);
                 viewBean.getFileNameList().add(filename);
             } else {
-                viewBean.getSession().addError("mauvais type de fichier");
+                viewBean.getSession().getCurrentThreadTransaction().addErrors("mauvais type de fichier");
                 return;
             }
             // suppression des doublons
@@ -60,26 +69,23 @@ public class GFFileUtils {
         }
     }
 
-    public static List<String> unZipFile(String filename) throws Exception {
-        String pathWork = Jade.getInstance().getPersistenceDir() + filename;
+    public static List<String> unZipFile(GFEnvoiViewBean viewBean) throws Exception {
+        String filename = viewBean.getFileNamePersistance();
+        String pathWork = PERSISTANCE_PATH + filename;
         List<String> fileNameList = new LinkedList<>();
         if (!JadeStringUtil.isNull(pathWork)) {
-            FileInputStream fis = null;
-            ZipInputStream zipIs = null;
-            try {
-                fis = new FileInputStream(pathWork);
-                zipIs = new ZipInputStream(new BufferedInputStream(fis));
-                File destDir = new File(Jade.getInstance().getHomeDir() + "work/");
-                fileNameList = unzip(new File(pathWork), destDir);
-            } finally {
-                fis.close();
-                zipIs.close();
+            try (FileInputStream fis = new FileInputStream(pathWork); ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis))) {
+                //creation des directories pour extraire les fichiers contenus dans le zip
+                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
+                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
+                File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+                fileNameList = unzip(new File(pathWork), destDir, viewBean);
             }
         }
         return fileNameList;
     }
 
-    public static List<String> unzip(File srcZipFile, File destDir) {
+    public static List<String> unzip(File srcZipFile, File destDir, GFEnvoiViewBean viewBean) {
         final int bufferSize = 2048;
         List<String> unzipFiles = new ArrayList<>();
 
@@ -87,13 +93,17 @@ public class GFFileUtils {
             BufferedOutputStream bufferedOutputStream = null;
             FileInputStream fis = new FileInputStream(srcZipFile);
             ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-
+            File newFile = null;
             ZipEntry entry;
+
             while ((entry = zis.getNextEntry()) != null) {
                 int count;
                 byte data[] = new byte[bufferSize];
-
-                File newFile = new File(destDir + File.separator + entry.getName());
+                if (isFileExist(entry.getName(), viewBean.getFileNameList())) {
+                    newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(entry.getName()) + "_1." + FilenameUtils.getExtension(entry.getName()));
+                } else {
+                    newFile = new File(destDir + File.separator + entry.getName());
+                }
                 // création des répertoires parents du fichier si ceux-ci n'existent pas
                 new File(newFile.getParent()).mkdirs();
 
@@ -102,7 +112,6 @@ public class GFFileUtils {
                 while ((count = zis.read(data, 0, bufferSize)) != -1) {
                     bufferedOutputStream.write(data, 0, count);
                 }
-
                 bufferedOutputStream.flush();
                 bufferedOutputStream.close();
                 unzipFiles.add(newFile.getName());
@@ -112,6 +121,10 @@ public class GFFileUtils {
             throw new RuntimeException(e);
         }
         return unzipFiles;
+    }
+
+    public static boolean isFileExist(String fileName, List<String> fileNamesList) {
+        return fileNamesList.contains(fileName);
     }
 
     public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
@@ -124,7 +137,7 @@ public class GFFileUtils {
         List<String> fileNames = viewBean.getFileNameList();
         for (int i = 0; i < fileNames.size(); i++) {
             String extension = FilenameUtils.getExtension(fileNames.get(i));
-            if (!extension.equals("pdf") && !extension.equals("tiff")) {
+            if (!extension.equals(FILE_TYPE_PDF) && !extension.equals(FILE_TYPE_TIFF)) {
                 viewBean.getErrorFileNameList().add(fileNames.get(i));
                 viewBean.getFileNameList().remove(fileNames.get(i));
                 deleteFile(viewBean, fileNames.get(i));
@@ -132,6 +145,9 @@ public class GFFileUtils {
         }
         // suppression des doublons
         viewBean.setErrorFileNameList(viewBean.getErrorFileNameList().stream().distinct().collect(Collectors.toList()));
+        if (viewBean.getErrorFileNameList().size() > 0) {
+            viewBean.getSession().getCurrentThreadTransaction().addErrors(("les documents en rouges ne respectent pas le format requis et ne seront pas pris en compte pour l'envoi."));
+        }
     }
 
     public static String generateFilePath(GFFormulaireModel dbModel) {
