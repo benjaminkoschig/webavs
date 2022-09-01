@@ -36,15 +36,11 @@ public class PYTiersDTO {
     private String name2;
     private String taxpayerNumber;
     private Boolean isInactive;
-    private String ccpNumber;
-    private String accountNumber;
-    private String status;
-    private String clearingNumber;
-    private String branchOfficePostalCode;
-    private String bankCountry;
+    private String modificationDate;
 
     private Vector<PYContactDTO> contacts = new Vector();
     private Vector<PYAddressDTO> addresses = new Vector();
+    private Vector<PYPaymentAddressDTO> paymentAddress = new Vector<>();
 
     // CCVS-only fields
     // Optional fields
@@ -89,11 +85,13 @@ public class PYTiersDTO {
 
         //Il faut surement pas faire ça ici. L'objet est vide du coup... isValid sera toujours bon
         PYAddressDTO pyAddressDTO = new PYAddressDTO();
+        PYPaymentAddressDTO pyPaymentAddressDTO = new PYPaymentAddressDTO();
 
         if (Boolean.FALSE.equals(isPhysicalPerson)) {
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                             && pyAddressDTO.isValid(this)
+                            && pyPaymentAddressDTO.isValid(this)
                             && PYValidateDTO.isValidForCreation(this)
             );
         } else if (Boolean.TRUE.equals(isPhysicalPerson)) {
@@ -105,6 +103,7 @@ public class PYTiersDTO {
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                             && pyAddressDTO.isValid(this)
+                            && pyPaymentAddressDTO.isValid(this)
                             && PYValidateDTO.isValidForCreation(this)
             );
         }

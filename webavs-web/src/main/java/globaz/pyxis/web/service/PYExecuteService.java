@@ -19,19 +19,19 @@ public class PYExecuteService extends BProcess {
      * @return dto JSON contenant l'id du tiers créé
      */
     public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
-        String idMailAddress = null;
+        String idAddress = null;
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
 
             // Only add a mail address if the DTO contains an address
             if (dto.getAddresses().size() != 0) {
-                idMailAddress = PRTiersHelper.addTiersAddress(getSession(), dto);
+                idAddress = PRTiersHelper.addTiersAddress(getSession(), dto);
             }
             // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation. Better check for payment info's fields.
             //  NO, the link between payment address and domicile/courrier address is mandatory. Define which address should be linked.
             //  So, check for address AND payment infos
-            if (idMailAddress != null) {
-                PRTiersHelper.addTiersPaymentAddress(getSession(), idMailAddress, dto);
+            if (idAddress != null) {
+                PRTiersHelper.addTiersPaymentAddress(getSession(), idAddress, null, true, dto);
             }
             PRTiersHelper.addTiersPage2(getSession(), dto);
         }
@@ -59,12 +59,10 @@ public class PYExecuteService extends BProcess {
      * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
     public PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
-        // TODO: upgrade the updating
+        // TODO: upgrade the updating. If at least one field is present then update. Faire un vecteur de champs pour les update comme pour la création et isValid.
         try {
             PRTiersHelper.updateTiersPage1(getSession(), dto);
-//            PRTiersHelper.updateTiersPaymentAddress(getSession(), dto);
-//            PRTiersHelper.retrieveAdressePaiementId(dto.getId());
-//            PRTiersHelper.retrieveAvoirPaiementId(dto.getId());
+            PRTiersHelper.updateTiersPaymentAddress(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);
