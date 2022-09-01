@@ -13,6 +13,7 @@ import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.hssf.record.formula.functions.Int;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -26,8 +27,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -40,6 +43,12 @@ public class GFFileUtils {
     public final static String FILE_TYPE_TIFF = "tiff";
     public final static String FILE_TYPE_ZIP = "zip";
     public final static String FOLDER_UID = "testUid";
+
+    public static int fileCounter = 1;
+
+    public int getFileCounter() {
+        return fileCounter;
+    }
 
     public static void downloadFile(HttpServletResponse response, String name, byte buf[]) throws IOException {
         OutputStream os = response.getOutputStream();
@@ -88,6 +97,7 @@ public class GFFileUtils {
     public static List<String> unzip(File srcZipFile, File destDir, GFEnvoiViewBean viewBean) {
         final int bufferSize = 2048;
         List<String> unzipFiles = new ArrayList<>();
+        Map<String, Integer> counterMap = new HashMap<>();
 
         try {
             BufferedOutputStream bufferedOutputStream = null;
@@ -100,7 +110,7 @@ public class GFFileUtils {
                 int count;
                 byte data[] = new byte[bufferSize];
                 if (isFileExist(entry.getName(), viewBean.getFileNameList())) {
-                    newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(entry.getName()) + "_1." + FilenameUtils.getExtension(entry.getName()));
+                    newFile = renameFileWithSameName(entry.getName(),destDir,counterMap);
                 } else {
                     newFile = new File(destDir + File.separator + entry.getName());
                 }
@@ -160,5 +170,11 @@ public class GFFileUtils {
         LocalDate date = model.getMessageDate();
 
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
+    }
+    public static File renameFileWithSameName(String fileName, File destDir, Map<String, Integer> counterMap){
+        counterMap.merge(fileName, 1, Integer::sum);
+        File newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(fileName) +"_"+counterMap.get(fileName)+"."+ FilenameUtils.getExtension(fileName));
+        GFFileUtils.fileCounter++;
+      return newFile;
     }
 }

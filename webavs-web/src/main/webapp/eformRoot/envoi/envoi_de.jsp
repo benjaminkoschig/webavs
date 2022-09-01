@@ -232,7 +232,7 @@
 				<div class="row-fluid">
 					<div style="float:right;margin-top: 20px">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="validate()">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="top.fr_main.location.href='http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.envoyer'">
 					</div>
 				</div>
 			</div>
