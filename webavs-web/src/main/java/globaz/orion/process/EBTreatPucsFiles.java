@@ -366,37 +366,42 @@ public class EBTreatPucsFiles extends BProcess {
                             .getPucsFile().getProvenance());
 
 
-                    // Si lancement batch on effectue des contrôles additionels
+                    // Si lancement depuis batch on effectue des contrôles additionels
                     if (isBatch()) {
-                        if (pucsImportFilter.hasDeclarationSalaireDracoOuverteDansAnneeConcernee(ds, aff, getSession())) {
+                        if (pucsImportFilter.hasDeclarationSalaireOuverteDansAnneeConcernee(pucsFile, ds, aff, getSession())) {
                             moveFile = false;
-                            _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " " + pucsFile.getNumeroAffilie() + " - " + getSession().getLabel("CANTON"));
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
-                            //continue;
+                            continue;
                         }
                         if (pucsImportFilter.hasDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, listPucsFile)) {
                             moveFile = false;
-                            _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " " + pucsFile.getNumeroAffilie() + " - " + getSession().getLabel("CANTON"));
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
-                            //continue;
+                            continue;
                         }
-                        if (pucsImportFilter.hasNumeroAffilieEtNomSocieteNonExistant(pucsFile, getSession())) {
+                        if (pucsImportFilter.hasNumeroAffilieNonExistant(pucsFile, getSession())) {
                             moveFile = false;
-                            _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " " + pucsFile.getNumeroAffilie() + " - " + getSession().getLabel("CANTON"));
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
-                            //continue;
+                            continue;
                         }
-                        if (pucsImportFilter.hasCollaborateursDansPlusieursCantonsEtTypeNonMixe(ds)) {
+                        if (pucsImportFilter.hasCollaborateursDansPlusieursCantonsEtNonSwissDec(pucsFile,ds)) {
                             moveFile = false;
-                            _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " " + pucsFile.getNumeroAffilie() + " - " + getSession().getLabel("CANTON"));
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
-                            //continue;
+                            continue;
                         }
                         if (pucsImportFilter.hasSalaireNegatif(ds.getEmployees())) {
                             moveFile = false;
-                            _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " " + aff.getAffilieNumero() + " - " + getSession().getLabel("CANTON"));
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
-                            //continue;
+                            continue;
                         }
                     }
 
