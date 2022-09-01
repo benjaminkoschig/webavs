@@ -475,11 +475,13 @@ public class PRTiersHelper {
      * @param dto
      * @throws Exception
      */
-    public static TIAdressePaiement addTiersPaymentAddress(BSession session, String idAddress, String modificationDate, boolean withAvoirPaymentAddress, PYTiersDTO dto) throws Exception {
+    public static List<TIAdressePaiement> addTiersPaymentAddress(BSession session, String idAddress, String modificationDate, boolean withAvoirPaymentAddress, PYTiersDTO dto) throws Exception {
         //TODO Vérifier l'existence d'une adresse en DB afin de créer une adresse de paiement.
         // Si adresse courrier existante, celle-ci est utilisée pour lier l'adresse de paiement.
         // Sinon on prend l'adresse de domicile, sinon, la création d'une adresse de paiement n'est pas possible.
 
+
+        List<TIAdressePaiement> adressePaiementList = new ArrayList<>();
 
         TIAdressePaiement adressePaiement = null;
 
@@ -497,16 +499,10 @@ public class PRTiersHelper {
 
             //Special need for CCVS. The domain is not always set to "Default".
             pyPaymentAddressDTO.setDomainPaymentAddress(setDomainPaymentAddress(pyPaymentAddressDTO));
-//            if (pyPaymentAddressDTO.getDomainPaymentAddress() != null)
-//                pyPaymentAddressDTO.setDomainPaymentAddress(pyPaymentAddressDTO.getDomainPaymentAddress());
-//            else {
-//                pyPaymentAddressDTO.setDomainPaymentAddress(String.valueOf(DomaineApplication.STANDARD.getSystemCode()));
-//            }
 
             //Renseigner soit N°Compte soit N°CCP
             if (!(Objects.isNull(pyPaymentAddressDTO.getAccountNumber()))) {
                 String iban = ibanFormatter.unformat(pyPaymentAddressDTO.getAccountNumber());
-                //TODO check sur format N° Compte (IBAN et l'autre ex: 206-208604)
                 if (checkIban(iban)) {
                     adressePaiement.setIdTiersBanque(retrieveBankId(pyPaymentAddressDTO.getClearingNumber(), pyPaymentAddressDTO.getBranchOfficePostalCode()));
                     adressePaiement.setNumCompteBancaire(pyPaymentAddressDTO.getAccountNumber());
@@ -535,6 +531,9 @@ public class PRTiersHelper {
             pyPaymentAddressDTO.setIdPaymentAddress(adressePaiement.getIdAdressePaiement());
             pyPaymentAddressDTO.setIdAddressRelatedToPaymentAddress((adressePaiement.getIdAdresse()));
 
+            //Add payment address into list
+            adressePaiementList.add(adressePaiement);
+
 
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
                 LOG.error("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré");
@@ -546,8 +545,7 @@ public class PRTiersHelper {
             }
         }
 
-        //TODO retourner une liste d'adressePaiement crées ?
-        return adressePaiement;
+        return adressePaiementList;
     }
 
     /**
@@ -722,7 +720,7 @@ public class PRTiersHelper {
         //Special need for CCVS. The domain is not always set to "Default".
         pyPaymentAddressDTO.setDomainPaymentAddress(setDomainPaymentAddress(pyPaymentAddressDTO));
 
-        //Si le tiers n'a aucune adresse de paiement pour ce domaine, on en crée une nouvelle. (create smth from REST update..)
+        //Si le tiers n'a aucune adresse de paiement pour ce domaine, on en crée une nouvelle + AvoirPaiement. (create smth from REST update..)
         if (Objects.isNull(TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(dto.getId(), false, pyPaymentAddressDTO.getDomainPaymentAddress(), JadeDateUtil.getGlobazFormattedDate(new Date()), "").getFields())) {
             addTiersPaymentAddress(session, pyPaymentAddressDTO.getIdAddressRelatedToPaymentAddress(), dto.getModificationDate(), true, dto);
         } else { //Une adresse de paiement est existante pour ce domaine, on peut faire une MAJ ou une COR
@@ -744,7 +742,7 @@ public class PRTiersHelper {
             }
 
             //Dans tous les cas (MAJ ou COR), on crée une nouvelle adresse de paiement, mais sans AvoirAdressePaiement.
-            TIAdressePaiement adressePaiement = addTiersPaymentAddress(session, idAddress, dto.getModificationDate(), false, dto);
+            List<TIAdressePaiement> adressePaiementList = addTiersPaymentAddress(session, idAddress, dto.getModificationDate(), false, dto);
 
 
             if (!(dto.getModificationDate().equals(JadeDateUtil.getDMYDate(new Date())))) {
@@ -753,7 +751,7 @@ public class PRTiersHelper {
                 TIAvoirPaiement tiAvoirPaiement = new TIAvoirPaiement();
                 tiAvoirPaiement.setIdTiers(dto.getId());
                 tiAvoirPaiement.setIdApplication(pyPaymentAddressDTO.getDomainPaymentAddress());
-                tiAvoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement()); //Pointer sur une adresse de paiement existante. (celle créée juste au-dessus)
+                tiAvoirPaiement.setIdAdressePaiement(adressePaiementList.get(0).getIdAdressePaiement()); //Pointer sur une adresse de paiement existante. (celle créée juste au-dessus)
                 tiAvoirPaiement.setDateDebutRelation(dto.getModificationDate());
                 tiAvoirPaiement.add();
             } else {
@@ -782,7 +780,7 @@ public class PRTiersHelper {
                     trans = session.newTransaction();
                     trans.openTransaction();
 
-                    currentAvoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                    currentAvoirPaiement.setIdAdressePaiement(adressePaiementList.get(0).getIdAdressePaiement());
                     currentAvoirPaiement.update(trans);
 
                     if (trans.hasErrors()) {
