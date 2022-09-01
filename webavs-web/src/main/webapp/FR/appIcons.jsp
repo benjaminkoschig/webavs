@@ -418,7 +418,7 @@
                         <%if (objSession.hasRight("eform", globaz.framework.secure.FWSecureConstants.READ)) {%>
                         <li>
                             <a href="<%=request.getContextPath()%>/eform" target="_top">
-                                Gestion des formulaires
+                                Gestion des échanges SEDEX
                             </a>
                         </li>
                         <%}%>

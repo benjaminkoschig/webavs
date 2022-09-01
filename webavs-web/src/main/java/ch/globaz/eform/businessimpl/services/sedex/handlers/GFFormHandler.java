@@ -7,6 +7,7 @@ import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
+import ch.globaz.eform.businessimpl.services.sedex.ZipFile;
 import ch.globaz.eform.constant.GFStatusEForm;
 import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
@@ -16,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.time.LocalDate;
-
-import static ch.globaz.eform.businessimpl.services.sedex.GFTraitementMessageServiceImpl.ZipFile;
 
 @Slf4j
 public abstract class GFFormHandler {

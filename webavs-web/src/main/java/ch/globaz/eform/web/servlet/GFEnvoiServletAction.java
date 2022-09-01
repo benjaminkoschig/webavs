@@ -1,5 +1,7 @@
 package ch.globaz.eform.web.servlet;
 
+import ch.globaz.eform.utils.GFFileUtils;
+import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -8,7 +10,8 @@ import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +19,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class GFStatistiqueServletAction extends FWDefaultServletAction {
-    public final static String PATH_EFORM = "eform.statistique.statistique";
+public class GFEnvoiServletAction extends FWDefaultServletAction {
+    private static final Logger LOG = LoggerFactory.getLogger(GFEnvoiServletAction.class);
 
-    public GFStatistiqueServletAction(FWServlet aServlet) {
+    public GFEnvoiServletAction(FWServlet aServlet) {
         super(aServlet);
     }
+    public final static String ACTION_PATH = "eform.envoi.envoi";
+    public final static String ACTION_UPLOAD = "upload";
+    public final static String ACTION_REMOVEFILE = "removeFile";
 
     @Override
-    protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
-        FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
+    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
+        super.actionAfficher(session, request, response, mainDispatcher);
+        FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
+        if (!(viewBean instanceof GFEnvoiViewBean)) {
+            viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
+            session.setAttribute("viewbean", viewBean);
+        }
         try {
 
             JSPUtils.setBeanProperties(request, viewBean);
@@ -33,23 +44,30 @@ public class GFStatistiqueServletAction extends FWDefaultServletAction {
             mainDispatcher.dispatch(viewBean, getAction());
 
         } catch (Exception e) {
-            JadeLogger.error("Failed to prepare viewBean for actionChercher", e);
+            LOG.error("Failed to prepare viewBean for actionChercher", e);
         }
-
-        super.actionChercher(session, request, response, mainDispatcher);
     }
 
     @Override
+    protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                    FWDispatcher mainDispatcher) throws ServletException, IOException {
+
+        beforeAfficher(session, request, response, (FWViewBeanInterface) session.getAttribute("viewBean"));
+        super.actionReAfficher(session, request, response, mainDispatcher);
+    }
+
+
+    @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
-                                     HttpServletResponse response, FWViewBeanInterface viewBean) {
-        return this.getActionFullURL() + ".chercher";
+                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
+        return this.getActionFullURL() + ".afficher";
     }
 
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                 FWDispatcher dispatcher) throws ServletException, IOException {
         String actionPart = getAction().getActionPart();
-        String destination = null;
+        String destination;
 
         // Définition de l'action custom standard pour l'application ARIES
         // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"
@@ -58,9 +76,19 @@ public class GFStatistiqueServletAction extends FWDefaultServletAction {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
 
             // Récupération du viewBean depuis la session
-            FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(action, dispatcher.getPrefix());
+            FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
+            if (!(viewBean instanceof GFEnvoiViewBean)) {
+                viewBean = FWViewBeanActionFactory.newInstance(getAction(), dispatcher.getPrefix());
+                session.setAttribute("viewbean", viewBean);
+            }
             // Copie des propriétés
             JSPUtils.setBeanProperties(request, viewBean);
+            if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
+                GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
+            } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
+                String fileName = (String) request.getParameter("fileName");
+                GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+            }
 
             // Traitement
             viewBean = dispatcher.dispatch(viewBean, action);
@@ -71,6 +99,9 @@ public class GFStatistiqueServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
+                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
+                    destination = this.getActionFullURL() + ".reAfficher";
+                }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);
             }
@@ -93,4 +124,5 @@ public class GFStatistiqueServletAction extends FWDefaultServletAction {
                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
         return this._getDestEchec(session, request, response, viewBean);
     }
+
 }
