@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>java-superpom</artifactId>
-		<version>3.1.0</version>
+		<version>4.0.0</version>
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
@@ -59,8 +59,8 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
 
-    <slf4j.version>1.7.21</slf4j.version>
-    <logback.version>1.1.7</logback.version>
+		<slf4j.version>1.7.21</slf4j.version>
+		<logback.version>1.1.7</logback.version>
 
     <assertj-core.version>3.19.0</assertj-core.version>
     <mockito-core.version>3.10.0</mockito-core.version>
@@ -613,6 +613,47 @@
                 <version>${powermock.version}</version>
                 <scope>test</scope>
             </dependency>
+			<!-- Configure loggers. WARN : you are NOT allowed to declare any compile-time
+                dependency to any logger implementation here (the parent pom). It's up to
+                the final artifact (not even every children of this parent pom!!) to choose
+                to which logger implementation it'd like to bind. But EVERY final artifact
+                MUST at least use slf4j-api (btw, we will encourage everybody to rely on
+                logback). -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- compile time dependency is ok here, since slf4j is the preferred
+                    way to implement logging. but only the slf4j-api :) -->
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
