@@ -1,10 +1,7 @@
 <%@ page import="globaz.eform.vb.envoi.GFEnvoiViewBean" %>
-<%@ page import="globaz.eform.helpers.GFEchangeSedexHelper" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%--<%@ page errorPage="/errorPage.jsp" %>--%>
+
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -14,13 +11,6 @@
 <%
 	idEcran = " GFE0101";
 	GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
-//    String params = "&provenance1=TIERS&provenance2=CI";
-//    String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
-	String zipFileName;
-	List<String> fileList = viewBean.getFileNameList();
-
-
-
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
@@ -36,12 +26,12 @@
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css"/>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/eform/envoi/envoi_de.css"/>
 
-<%--<script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>--%>
+
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
 
 <%@ include file="/theme/detail/javascripts.jspf" %>
-<%--<%@ include file="/jade/notation/notationLibJs.jspf" %>--%>
+
 
 <style>
 
@@ -160,11 +150,6 @@
 				<div style="display: table-cell;width: 310px;"><ct:inputText name="dateNaissance" id="dateNaissance"
 																			 readonly="true"/></div>
 			</div>
-<%--			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">--%>
-<%--				<div style="display: table-cell;width: 140px;"><ct:FWLabel key="ADRESSE_DOMICILE"/></div>--%>
-<%--				<div style="display: table-cell;width: 310px;"><textarea id="remarque" name="remarque" cols="100"--%>
-<%--																		 rows="5"></textarea></div>--%>
-<%--			</div>--%>
 
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 1350px; border-bottom: 2px solid black"></div>
@@ -241,8 +226,6 @@
 
 
 					</table>
-
-<%--				</div>--%>
 			</div>
 		</div>
 			<div class="container-fluid">
@@ -256,11 +239,6 @@
 </tr>
 </td>
 
-<%--<TR>--%>
-	<%--        <TD bgcolor="#FFFFFF" colspan="3" align="center"><INPUT type="button" id="btnOk"  style="width:60" onclick="validateform()" /></TD>--%>
-<%--</TR>--%>
-<%--</form>--%>
-<%--</body>--%>
 </TBODY>
 </TABLE>
 <INPUT type="hidden" name="selectedId" value="<%=selectedIdValue%>">
@@ -273,6 +251,5 @@
 
 
 
-<%--<%@ include file="/theme/detail/bodyButtons.jspf" %>--%>
 <%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
 <%@ include file="/theme/detail_ajax/footer.jspf" %>

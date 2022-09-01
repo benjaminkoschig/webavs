@@ -99,9 +99,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
-                if(actionPart.equals(ACTION_UPLOAD)) {
-                    destination = this.getActionFullURL() + ".reAfficher";;
-                } else if (actionPart.equals(ACTION_REMOVEFILE)) {
+                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
                 }
             } else {
