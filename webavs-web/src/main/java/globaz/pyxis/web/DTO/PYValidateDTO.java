@@ -127,9 +127,6 @@ public class PYValidateDTO {
         for (PYPaymentAddressDTO paymentAddressDTO : dto.getPaymentAddress()) {
             if (paymentAddressDTO.getCcpNumber() != null)
                 checkCCP(paymentAddressDTO.getCcpNumber());
-            //TODO delete or implement status in dto to manage n° compte as IBAN ok not IBAN
-            if (paymentAddressDTO.getStatus() != null)
-                checkStatusPaymentAddress(paymentAddressDTO.getStatus());
         }
 
         for (PYContactDTO contactDTO : dto.getContacts()) {

@@ -22,8 +22,6 @@ public class PYPaymentAddressDTO {
     private String branchOfficePostalCode;
     private String bankCountry;
 
-    private String status;
-
 
     /**
      * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
@@ -41,7 +39,6 @@ public class PYPaymentAddressDTO {
                 mandatoryParameters.add(paymentAddressDTO.getAccountNumber());
                 mandatoryParameters.add(paymentAddressDTO.getClearingNumber());
                 mandatoryParameters.add(paymentAddressDTO.getBranchOfficePostalCode());
-//                mandatoryParameters.add(paymentAddressDTO.getIdAddress());
             }
         }
         return (mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty));
