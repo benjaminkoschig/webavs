@@ -85,7 +85,7 @@ public class EBTreatPucsFiles extends BProcess {
     private String emailAdress = "";
     private String mode = "";
     private boolean isBatch = false;
-    private EBPucsBatchController pucsImportController = new EBPucsBatchController();
+    private EBPucsBatchController pucsBatchController = new EBPucsBatchController();
     private List<PucsFile> pucsEntrysToLoad = new ArrayList<PucsFile>();
     private boolean simulation = false;
     private Map<String, List<String>> pucsToMerge;
@@ -368,36 +368,36 @@ public class EBTreatPucsFiles extends BProcess {
 
                     // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
                     if (getIsBatch()) {
-                        pucsImportController.setSession(getSession());
-                        if (pucsImportController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
+                        pucsBatchController.setSession(getSession());
+                        if (pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
                             continue;
                         }
-                        if (pucsImportController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, listPucsFile)) {
+                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, listPucsFile)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
                             continue;
                         }
-                        if (pucsImportController.contientNumeroAffilieNonExistant(pucsFile)) {
+                        if (pucsBatchController.contientNumeroAffilieNonExistant(pucsFile)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_AFFILIE_NON_EXISTANT") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
                             continue;
                         }
-                        if (pucsImportController.contientCollaborateursDansPlusieursCantonsEtNonSwissDec(pucsFile,ds)) {
+                        if (pucsBatchController.contientCollaborateursDansPlusieursCantonsEtPasSwissDecMixte(ds, aff)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_CANTONS_MULTIPLES") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
                             continue;
                         }
-                        if (pucsImportController.contientSalaireNegatif(ds.getEmployees())) {
+                        if (pucsBatchController.contientSalaireNegatif(ds.getEmployees())) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_SALAIRE_NEGATIF") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
@@ -813,8 +813,8 @@ public class EBTreatPucsFiles extends BProcess {
         this.mode = mode;
     }
 
-    public void setIsBatch(boolean batch) {
-        isBatch = batch;
+    public void setIsBatch(boolean isBatch) {
+        this.isBatch = isBatch;
     }
 
     public void setSimulation(boolean simulation) {

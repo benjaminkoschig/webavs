@@ -9,6 +9,7 @@ import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
+import globaz.draco.process.DSProcessValidation;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.properties.JadePropertiesService;
@@ -97,14 +98,16 @@ public class EBPucsBatchController {
 
     /**
      * Contrôle si des collaborateurs sont dans plusieurs cantons alors il doit s’agir
-     * d’un fichier SWISSDEC ou il y a un détail par canton
+     * d’un fichier SwissDec Mixte ou il y a un détail par canton
      * utilisé lors du processus de mise à jour des PUCS.
      */
-    public boolean contientCollaborateursDansPlusieursCantonsEtNonSwissDec(PucsFile pucsFile, DeclarationSalaire ds) {
-        if (!pucsFile.getProvenance().isSwissDec()) {
-            Set<String> cantons = ds.resolveDistinctContant();
-            if (cantons.size() > 1) {
-                return true;
+    public boolean contientCollaborateursDansPlusieursCantonsEtPasSwissDecMixte(DeclarationSalaire ds, AFAffiliation aff) {
+        if (!ds.getProvenance().isSwissDec()) {
+            if (DSProcessValidation.CS_DECL_MIXTE.equals(aff.getDeclarationSalaire())) {
+                Set<String> cantons = ds.resolveDistinctContant();
+                if (cantons.size() > 1) {
+                    return true;
+                }
             }
         }
 
