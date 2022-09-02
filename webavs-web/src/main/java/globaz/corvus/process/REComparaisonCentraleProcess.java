@@ -5,7 +5,11 @@ import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.arc.downloader.RELoaderAnnonces5153;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiers;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiersManager;
-import globaz.corvus.db.annonces.*;
+import globaz.corvus.db.annonces.IREAnnonceAdaptation;
+import globaz.corvus.db.annonces.REAnnonce51;
+import globaz.corvus.db.annonces.REAnnonce51Adaptation;
+import globaz.corvus.db.annonces.REAnnonce53;
+import globaz.corvus.db.annonces.REAnnonce53Adaptation;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.itext.REListeDifferencesCentraleCaisse;
 import globaz.corvus.itext.REListeDifferencesDroitApplique;
@@ -23,7 +27,12 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * 
