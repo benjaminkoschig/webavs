@@ -58,7 +58,7 @@ public class GFFormulaireServletAction extends FWDefaultServletAction {
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                 FWDispatcher dispatcher) throws ServletException, IOException {
         String actionPart = getAction().getActionPart();
-        String destination = null;
+        String destination;
 
         // Définition de l'action custom standard pour l'application ARIES
         // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"

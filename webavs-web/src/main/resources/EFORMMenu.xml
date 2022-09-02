@@ -10,17 +10,45 @@
 	<menu id="eform-menuprincipal">
 		<label refId="MENU_EFORM_PRINCIPAL"/>
 		<nodes>
-			<node id="Recherche">
-				<label refId="MENU_EFORM_RECHERCHE"/>
-				<action command="/eform" responseTarget="fr_main">
-					<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
-				</action>
+			<node id="P14">
+				<label refId="MENU_EFORM_P14"/>
+				<nodes>
+					<node id="Recherche">
+						<label refId="MENU_EFORM_RECHERCHE"/>
+						<action command="/eform" responseTarget="fr_main">
+							<parameter name="userAction" value="eform.formulaire.formulaire.chercher"/>
+						</action>
+					</node>
+					<node id="Statistique">
+						<label refId="MENU_EFORM_STATISTIQUE"/>
+						<action command="/eform" responseTarget="fr_main">
+							<parameter name="userAction" value="eform.statistique.statistique.chercher"/>
+						</action>
+					</node>
+				</nodes>
 			</node>
-			<node id="Statistique">
-				<label refId="MENU_EFORM_STATISTIQUE"/>
-				<action command="/eform" responseTarget="fr_main">
-					<parameter name="userAction" value="eform.statistique.statistique.chercher"/>
-				</action>
+			<node id="DADossier">
+				<label refId="MENU_EFORM_DA_DOSSIER"/>
+				<nodes>
+					<node id="DAEnvoie">
+						<label refId="MENU_EFORM_DA_ENVOI"/>
+						<action command="/eform" responseTarget="fr_main">
+							<parameter name="userAction" value="eform.envoi.envoi.afficher"/>
+						</action>
+					</node>
+					<node id="DADemande">
+						<label refId="MENU_EFORM_DA_DEMANDE"/>
+						<action command="/eform" responseTarget="fr_main">
+							<parameter name="userAction" value="eform.demande.demande.afficher"/>
+						</action>
+					</node>
+					<node id="DASuivis">
+						<label refId="MENU_EFORM_DA_SUIVI"/>
+						<action command="/eform" responseTarget="fr_main">
+							<parameter name="userAction" value="eform.suivi.suivi.chercher"/>
+						</action>
+					</node>
+				</nodes>
 			</node>
 		</nodes>
 	</menu>
