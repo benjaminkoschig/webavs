@@ -14,9 +14,11 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.cotisation.AFCotisation;
 import globaz.orion.utils.EBDanUtils;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 public class EBPucsBatchController {
 
     public static final String PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_ACTIVER = "orion.pucs.batch.validations.activer";
-    public static final String PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_COTISATIONS = "orion.pucs.batch.validations.cotisations";
+    public static final String PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_ASSURANCES = "orion.pucs.batch.validations.assurances";
 
     BSession session = null;
 
@@ -134,7 +136,7 @@ public class EBPucsBatchController {
      * Contrôle si les validations additionnel sont activées dans la propriété système
      * utilisé lors du processus de validation des PUCS.
      */
-    public boolean isValidationsActive() {
+    public boolean isValidationsBatchActive() {
         if (JadePropertiesService.getInstance().getProperty(PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_ACTIVER).equals("true")) {
             return true;
         }
@@ -143,21 +145,34 @@ public class EBPucsBatchController {
     }
 
     /**
-     * Contrôle si les cotisations listé dans la propriété système sont toutes présentes
+     * Contrôle si les assurances listé dans la propriété système sont toutes présentes
      * utilisé lors du processus de validation des PUCS.
      */
-    public boolean contientToutesLesCotisations(DSDeclarationViewBean decl) {
+    public boolean contientPasToutesLesAssurancesRequises(DSDeclarationViewBean decl) throws Exception {
         // Recherche cotisations actives
         List<AFMassesForAffilie> listeMasseForAffilie = AppAffiliationService.retrieveListCotisationForNumAffilie(getSession(),
             decl.getNumeroAffilie(), decl.getAnnee() + "1231");
 
         // Recherche cotisations présentes dans les propriétées
-        String propertyCotisationsString = JadePropertiesService.getInstance().getProperty(PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_COTISATIONS);
-        propertyCotisationsString = propertyCotisationsString.replaceAll("\\s+", "");
-        String[] propertyCotisationsArray = propertyCotisationsString.split("[,;:]");
+        String propertyAssurancesIdString = JadePropertiesService.getInstance().getProperty(PROPERTY_ORION_PUCS_BATCH_VALIDATIONS_ASSURANCES);
+        propertyAssurancesIdString = propertyAssurancesIdString.replaceAll("\\s+", "");
+        String[] propertyAssurancesIdArray = propertyAssurancesIdString.split("[,;:]");
 
-        // Compares les cotisations actives avec les cotisations présentes dans les propriétées
-        if (listeMasseForAffilie.stream().map(AFMassesForAffilie::getIdCotisation).collect(Collectors.toList()).containsAll(Arrays.asList(propertyCotisationsArray))) {
+        // Récupère les ids d'assurance en se basant sur les ids de cotisations présents sur la déclarations de l'affilié
+        List<String> cotisationsId = listeMasseForAffilie.stream().map(AFMassesForAffilie::getIdCotisation).collect(Collectors.toList());
+        Set<String> assurancesId = new HashSet<>();
+        for (String cotisationId : cotisationsId) {
+            AFCotisation cotisation = new AFCotisation();
+            cotisation.setSession(getSession());
+            cotisation.setCotisationId(cotisationId);
+            cotisation.retrieve();
+            if (!cotisation.isNew()) {
+                assurancesId.add(cotisation.getAssuranceId());
+            }
+        }
+
+        // Compare les ids d'assurances trouvés avec les ids présents dans la propriété système
+        if (!assurancesId.containsAll(Arrays.asList(propertyAssurancesIdArray))) {
             return true;
         }
 
