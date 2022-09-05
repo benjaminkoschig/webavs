@@ -24,7 +24,9 @@
 <%@page import="globaz.corvus.utils.REPmtMensuel"%>
 <%@page import="globaz.globall.util.JACalendar"%>
 <%@page import="globaz.prestation.tools.PRDateFormater"%>
-<%@page import="globaz.corvus.vb.process.REComparaisonCentraleViewBean"%><SCRIPT>
+<%@page import="globaz.corvus.vb.process.REComparaisonCentraleViewBean"%>
+<%@ page import="globaz.corvus.api.arc.downloader.REAnnoncesDateAugmentation5153" %>
+<SCRIPT>
 
     
 </SCRIPT>
@@ -56,8 +58,8 @@
 									<TD><ct:FWLabel key="JSP_DATE_IMPORTATION"/></TD>
 									<TD>
 										<ct:select name="dateImportation" id="dateImportation"  wantBlank="false">
-											<%for(String date:viewBean.loadListDateImportation()){%>
-											<ct:option id="<%=date%>" value="<%=date%>" label="<%=date%>"/>
+											<%for(REAnnoncesDateAugmentation5153 annonce:viewBean.loadListDateImportation()){%>
+											<ct:option id="<%=annonce.getValue()%>" value="<%=annonce.getValue()%>" label="<%=annonce.getLabel()%>"/>
 											<%} %>
 										</ct:select>
 									</TD>

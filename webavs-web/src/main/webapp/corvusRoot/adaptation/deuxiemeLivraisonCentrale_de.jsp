@@ -22,6 +22,7 @@
 
 <%@page import="globaz.corvus.utils.REPmtMensuel"%>
 <%@page import="globaz.corvus.vb.adaptation.REDeuxiemeLivraisonCentraleViewBean"%>
+<%@ page import="globaz.corvus.api.arc.downloader.REAnnoncesDateAugmentation5153" %>
 
 <ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
 <ct:menuChange displayId="options" menuId="corvus-optionsempty" showTab="menu">
@@ -45,17 +46,17 @@
 									data-g-calendar="type:month"
 									value="<%=viewBean.getMoisAnneeActuelle()%>" />
 						</TD>
-					</TR>				
-						<TR>
-							<TD><ct:FWLabel key="JSP_CIRC_LOT_HERMES"/></TD>
-							<TD>
-								<SELECT name="idLot">
-									<%for (int i=0; i<lots.length; i=i+2){%>
-										<OPTION value="<%=lots[i]%>"><%=lots[i+1]%></OPTION>
-									<%}%>
-								</SELECT>
-							</TD>
-						</TR>
+					</TR>
+					<TR>
+						<TD><ct:FWLabel key="JSP_DATE_IMPORTATION"/></TD>
+						<TD>
+							<ct:select name="dateImportation" id="dateImportation"  wantBlank="false">
+								<%for(REAnnoncesDateAugmentation5153 annonce:viewBean.loadListDateImportation()){%>
+								<ct:option id="<%=annonce.getValue()%>" value="<%=annonce.getValue()%>" label="<%=annonce.getLabel()%>"/>
+								<%} %>
+							</ct:select>
+						</TD>
+					</TR>
 											
 						<%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>

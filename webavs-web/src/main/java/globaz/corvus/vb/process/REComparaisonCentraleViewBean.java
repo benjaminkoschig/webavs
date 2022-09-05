@@ -1,5 +1,6 @@
 package globaz.corvus.vb.process;
 
+import globaz.corvus.api.arc.downloader.REAnnoncesDateAugmentation5153;
 import globaz.corvus.db.annonces.REAnnoncesService;
 import globaz.hermes.db.gestion.HELotListViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
@@ -70,8 +71,8 @@ public class REComparaisonCentraleViewBean extends PRAbstractViewBeanSupport {
 
     }
 
-    public List<String> loadListDateImportation() {
-        return REAnnoncesService.loadDateAugmentationRente(getSession());
+    public List<REAnnoncesDateAugmentation5153> loadListDateImportation() {
+        return REAnnoncesService.loadDateAugmentationRente5153(getSession());
     }
 
     public String getMoisAnnee() {

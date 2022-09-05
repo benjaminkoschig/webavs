@@ -1,11 +1,17 @@
 package globaz.corvus.vb.adaptation;
 
+import globaz.corvus.api.arc.downloader.REAnnoncesDateAugmentation5153;
+import globaz.corvus.db.annonces.REAnnoncesService;
 import globaz.globall.util.JACalendar;
 import globaz.hermes.db.gestion.HELotListViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -20,6 +26,10 @@ public class REDeuxiemeLivraisonCentraleViewBean extends PRAbstractViewBeanSuppo
     private String eMailAddress = "";
     private String idLot = "";
     private String moisAnnee = "";
+    @Getter
+    @Setter
+    private String dateImportation = "";
+
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -55,6 +65,10 @@ public class REDeuxiemeLivraisonCentraleViewBean extends PRAbstractViewBeanSuppo
 
         return lotList;
 
+    }
+
+    public List<REAnnoncesDateAugmentation5153> loadListDateImportation() {
+        return REAnnoncesService.loadDateAugmentationRente5153(getSession());
     }
 
     public String getMoisAnnee() {
