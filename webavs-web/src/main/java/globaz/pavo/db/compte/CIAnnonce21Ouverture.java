@@ -319,7 +319,7 @@ public class CIAnnonce21Ouverture extends CIAnnonceWrapper {
                     exceptionCI.setNumeroAvs(compte.getNumeroAvs());
                     exceptionCI.setAffilie(numeroAffillie);
                     exceptionCI.setDateEngagement(remoteAnnonce.getDateEngagement());
-                    exceptionCI.add(transaction); // ICI ARC Jean-Marc
+                    exceptionCI.add(transaction);
                 }
             }
         }
