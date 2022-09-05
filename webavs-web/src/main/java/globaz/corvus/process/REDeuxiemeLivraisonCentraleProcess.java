@@ -1,7 +1,9 @@
 package globaz.corvus.process;
 
+import ch.globaz.common.util.Dates;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.adaptation.IREAdaptationRente;
+import globaz.corvus.api.arc.downloader.RELoaderAnnonces5153;
 import globaz.corvus.api.arc.downloader.REReaderAnnonces51_53;
 import globaz.corvus.db.adaptation.RERentesAdapteesJointRATiers;
 import globaz.corvus.db.adaptation.RERentesAdapteesJointRATiersManager;
@@ -21,6 +23,9 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +97,10 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
     private Map<KeyRAAnnoncesAdap, RERentesAdapteesJointRATiers> mapRenteAdaptees = new TreeMap<KeyRAAnnoncesAdap, RERentesAdapteesJointRATiers>();
     private String moisAnnee = "";
 
+    @Getter
+    @Setter
+    private String dateImportation = "";
+
     public REDeuxiemeLivraisonCentraleProcess() {
         super();
     }
@@ -112,21 +121,18 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
 
             // 1) Recherche de la deuxième livraison de la centrale pour les annonces
             // 51 et 53 dans Hermes, les mettre dans une map
-            REReaderAnnonces51_53 da51_53 = new REReaderAnnonces51_53();
-            da51_53.setSession(getSession());
-            da51_53.setParentProcess(this);
-            da51_53.setLog(getMemoryLog());
-            da51_53.setIdLot(getIdLot());
 
-            da51_53.read((BTransaction) transaction);
+            RELoaderAnnonces5153 read51_53 = new RELoaderAnnonces5153();
+            read51_53.setSession(getSession());
+            read51_53.setParentProcess(this);
+            read51_53.setLog(getMemoryLog());
+
+            Map<KeyRAAnnComparaison, ArrayList<Object>> mapAnnoncesLues = read51_53.loadAnnonces(getDateImportation());;
 
             // 2) Comparer ces annonces avec les rentesAdaptées manuellement ou par
             // le programme JAVA de la centrale
-            if (da51_53.getAnnoncesCrees().isEmpty()) {
-                throw new Exception("Aucune annonce 51/53 n'a été importée");
-            }
 
-            doComparaisonAnnoncesRenteAdaptees(da51_53.getAnnoncesCrees(), transaction);
+            doComparaisonAnnoncesRenteAdaptees(mapAnnoncesLues, transaction);
 
             // 3) Créer des listes pour les résultats
             // => Liste des correspondances et différences entre centrale et renteAdaptees
