@@ -13,7 +13,6 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class GFStatistiqueListViewBean extends BJadePersistentObjectListViewBean {
@@ -40,7 +39,7 @@ public class GFStatistiqueListViewBean extends BJadePersistentObjectListViewBean
         } else if (!(Objects.isNull(statistiqueSearch.getByStartDate()) || Objects.isNull(statistiqueSearch.getByEndDate()))) {
             statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE_BETWEEN);
         }
-        statistiqueSearch = GFEFormServiceLocator.getGFEFormService().search(statistiqueSearch);
+        statistiqueSearch = GFEFormServiceLocator.gfEFormService().search(statistiqueSearch);
         calculStatistique();
     }
 

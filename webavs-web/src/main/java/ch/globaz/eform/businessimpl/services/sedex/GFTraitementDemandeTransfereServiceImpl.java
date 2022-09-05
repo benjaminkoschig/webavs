@@ -3,8 +3,8 @@ package ch.globaz.eform.businessimpl.services.sedex;
 import ch.globaz.amal.web.application.AMApplication;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandler;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -33,7 +33,7 @@ import java.util.Properties;
 public class GFTraitementDemandeTransfereServiceImpl {
     private BSession session;
     private JadeContext context;
-    private GFFormHandlersFactory objectFactory;
+    private GFHandlersFactory objectFactory;
 
 
     public void setUp(Properties properties) throws Exception {
@@ -52,7 +52,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
         String userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
         String passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
 
-        objectFactory = new GFFormHandlersFactory();
+        objectFactory = new GFHandlersFactory();
 
         session = (BSession) GlobazSystem.getApplication(GFApplication.APPLICATION_ID).newSession(userSedex, passSedex);
     }
@@ -74,7 +74,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
 
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
-                        importMessagesSingle(messageToTreat, zipFile, result);
+                        importMessagesSingle(messageToTreat, result);
 
                         if (result.hasError()) {
                             sendMail(zipFile, result);
@@ -103,7 +103,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
                 zipFile = new ZipFile(messageToTreat.zipFileLocation);
 
                 try {
-                    importMessagesSingle(messageToTreat, zipFile, result);
+                    importMessagesSingle(messageToTreat, result);
 
                     if (result.hasError()) {
                         sendMail(zipFile, result);
@@ -173,14 +173,13 @@ public class GFTraitementDemandeTransfereServiceImpl {
     /**
      * Méthode de lecture du message sedex en réception et traitement
      */
-    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ValidationResult result) throws RuntimeException {
         try {
             GFDaDossierValidator.sedexMessage101(currentSimpleMessage, result);
             if (!result.hasError()) {
-                GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
-                if (formHandler != null) {
-                    formHandler.setDataFromFile(null, null);
-                    formHandler.saveData(result, zipFile);
+                GFSedexhandler handler = objectFactory.getSedexHandler(currentSimpleMessage, session);
+                if (handler != null) {
+                    handler.save(result);
 
                     LOG.info("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
@@ -203,14 +202,14 @@ public class GFTraitementDemandeTransfereServiceImpl {
     }
 
     private String getMailSubjet() {
-        return session.getLabel("MAIL_SUBJECT_IMPORT_SEDEX");
+        return session.getLabel("MAIL_SUBJECT_DEMANDE_SEDEX");
     }
 
     private String getMailBody(ZipFile zipFile, ValidationResult validationResult) {
-        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_IMPORT_SEDEX"), zipFile.getName()));
+        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_DEMANDE_SEDEX"), zipFile.getName()));
 
         if (Objects.nonNull(validationResult)) {
-            body.append(session.getLabel("MAIL_BODY_IMPORT_ERROR_SECTION_SEDEX"));
+            body.append(session.getLabel("MAIL_BODY_DEMANDE_ERROR_SECTION_SEDEX"));
             validationResult.getErrors().forEach(error -> body.append("\n").append(error.getDesignation(session)));
         }
 

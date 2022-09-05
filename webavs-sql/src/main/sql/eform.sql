@@ -1,32 +1,32 @@
 ---------------------------------------------------------------
 -----   EFORM.SQL
 ---------------------------------------------------------------
-INSERT INTO FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
 VALUES (82000000, 'GFDATYPE', 0, 1, 0, 2, 'Type DA-Dossier', 2, 2, 2, 2, 2, 1, 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000001, 'GFDATYPE', 1, 1, 0, 2, 'Sollicitation', 1, 2, 2, 2, 2, 2, 82000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000002, 'GFDATYPE', 2, 1, 0, 2, 'Envoi', 1, 2, 2, 2, 2, 2, 82000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000003, 'GFDATYPE', 3, 1, 0, 2, 'Réception', 1, 2, 2, 2, 2, 2, 82000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),;
+       (82000003, 'GFDATYPE', 3, 1, 0, 2, 'Réception', 1, 2, 2, 2, 2, 2, 82000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
-INSERT INTO FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (82000000, 'F', '', 'Type DA-Dossier', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000000, 'D', '', 'Typ DA-Ordner', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000001, 'F', 'SOLICITATION', 'Sollicitation', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000001, 'D', 'SOLICITATION', 'Aufforderung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000001, 'F', 'SOLICITAT', 'Sollicitation', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000001, 'D', 'SOLICITAT', 'Aufforderung', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000002, 'F', 'SEND_TYPE', 'Envoi', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000002, 'D', 'SEND_TYPE', 'Post', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000003, 'F', 'RECEPTION', 'Réception', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000003, 'D', 'RECEPTION', 'Rezeption', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
-INSERT INTO FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
+INSERT INTO SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY)
 VALUES (82000010, 'GFDASTATUS', 0, 1, 0, 2, 'Status DA-Dossier', 2, 2, 2, 2, 2, 1, 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000011, 'GFDASTATUS', 1, 1, 0, 2, 'A envoyer', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000012, 'GFDASTATUS', 2, 1, 0, 2, 'Envoyé', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000013, 'GFDASTATUS', 3, 1, 0, 2, 'Attente', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000014, 'GFDASTATUS', 4, 1, 0, 2, 'A traiter', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
-       (82000015, 'GFDASTATUS', 5, 1, 0, 2, 'Terminé', 1, 2, 2, 2, 2, 2, 81000000, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+       (82000011, 'GFDASTATUS', 1, 1, 0, 2, 'A envoyer', 1, 2, 2, 2, 2, 2, 82000010, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000012, 'GFDASTATUS', 2, 1, 0, 2, 'Envoyé', 1, 2, 2, 2, 2, 2, 82000010, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000013, 'GFDASTATUS', 3, 1, 0, 2, 'Attente', 1, 2, 2, 2, 2, 2, 82000010, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000014, 'GFDASTATUS', 4, 1, 0, 2, 'A traiter', 1, 2, 2, 2, 2, 2, 82000010, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
+       (82000015, 'GFDASTATUS', 5, 1, 0, 2, 'Terminé', 1, 2, 2, 2, 2, 2, 82000010, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 
-INSERT INTO FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
+INSERT INTO SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY)
 VALUES (82000010, 'F', '', 'Status DA-Dossier', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000010, 'D', '', 'Status DA-Ordner', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000011, 'F', 'TO_SEND', 'A envoyer', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
@@ -39,3 +39,19 @@ VALUES (82000010, 'F', '', 'Status DA-Dossier', to_char(current timestamp, 'YYYY
        (82000014, 'D', 'TREAT', 'Zu bearbeite', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000015, 'F', 'ENDED', 'Terminé', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz'),
        (82000015, 'D', 'ENDED', 'Beendet', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+CREATE TABLE SCHEMA.GF_DA_DOSSIER
+(
+    ID                          NUMERIC(15,0) 	NOT NULL,
+    MESSAGE_ID                  VARCHAR(255) 	NOT NULL UNIQUE,
+    NSS_AFFILIER 	            VARCHAR(255) 	NOT NULL,
+    CODE_CAISSE                 NUMERIC(8,0) 	NOT NULL,
+    TYPE 	                    VARCHAR(255) 	NOT NULL,
+    STATUS 	                    VARCHAR(255) 	NOT NULL,
+    USER_GESTIONNAIRE 	        VARCHAR(255),
+    YOUR_BUSINESS_REFERENCE_ID 	VARCHAR(255),
+    OUR_BUSINESS_REFERENCE_ID 	VARCHAR(255) 	NOT NULL,
+    CSPY 	                    VARCHAR(24) 	NOT NULL,
+    PSPY 	                    VARCHAR(24) 	NOT NULL,
+    PRIMARY KEY(ID)
+);

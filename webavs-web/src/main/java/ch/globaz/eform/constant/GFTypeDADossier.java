@@ -22,6 +22,14 @@ public enum GFTypeDADossier {
         return session.getLabel(code);
     }
 
+    public String getCodeSystem() {
+        return codeSystem;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
     public static GFTypeDADossier getStatusByCodeSystem(String codeSystem) {
         return Arrays.stream(GFTypeDADossier.values())
                 .filter(status -> status.codeSystem.equals(codeSystem))

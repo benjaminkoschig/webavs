@@ -1,6 +1,6 @@
 package globaz.eform.vb.suivi;
 
-import ch.globaz.eform.business.models.GFSuiviModel;
+import ch.globaz.eform.business.models.GFDaDossierModel;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 public class GFSuiviViewBean extends BJadePersistentObjectViewBean {
     private static final Logger LOG = LoggerFactory.getLogger(GFSuiviViewBean.class);
 
-    GFSuiviModel suivi;
+    GFDaDossierModel suivi;
 
-    public GFSuiviModel getSuivi() {
+    public GFDaDossierModel getSuivi() {
         return suivi;
     }
 

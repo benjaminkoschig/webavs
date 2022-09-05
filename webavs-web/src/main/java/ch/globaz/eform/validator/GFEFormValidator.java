@@ -26,17 +26,18 @@ import java.io.IOException;
 
 @Slf4j
 public class GFEFormValidator {
-    public static boolean isExists(String id) {
+    public static boolean isExists(String messageId) {
         GFFormulaireSearch gfeFormSearch = new GFFormulaireSearch();
-        gfeFormSearch.setByMessageId(id);
-        if (id == null) {
+        gfeFormSearch.setByMessageId(messageId);
+        gfeFormSearch.setWhereKey("messageId");
+        if (messageId == null) {
             return false;
         }
         try {
-            gfeFormSearch = GFEFormServiceLocator.getGFEFormService().search(gfeFormSearch);
+            gfeFormSearch = GFEFormServiceLocator.gfEFormService().search(gfeFormSearch);
             return gfeFormSearch.getSearchResults().length > 0;
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
-            LOG.error("Une erreur c'est produite pour la recherche du gfeFormModel id :" + id, e);
+            LOG.error("Une erreur c'est produite pour la recherche du gfeFormModel id :" + messageId, e);
         }
 
         return false;
@@ -73,11 +74,7 @@ public class GFEFormValidator {
             Node nodeMessageId = (Node) xPath.compile("/message/header/messageId").evaluate(xmlDocument, XPathConstants.NODE);
             String messageId = nodeMessageId.getFirstChild().getNodeValue();
             if (!StringUtils.isEmpty(messageId)) {
-                GFFormulaireSearch search = new GFFormulaireSearch();
-                search.setByMessageId(messageId);
-                search.setWhereKey("messageId");
-                search = GFEFormServiceLocator.getGFEFormService().search(search);
-                if (search.getSearchResults().length != 0) {
+                if (isExists(messageId)) {
                     result.addError("messageId", ValidationError.ALREADY_EXIST);
                 }
             } else {
@@ -121,12 +118,6 @@ public class GFEFormValidator {
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         } catch (XPathExpressionException e) {
             LOG.error("Erreur dans le parcing de l'expression xpath", e);
-            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
-        } catch (JadePersistenceException e) {
-            LOG.error("Erreur dans le parcour du dom xml", e);
-            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
-        } catch (JadeApplicationServiceNotAvailableException e) {
-            LOG.error("Erreur dans le chargement du service eform", e);
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         }
 
