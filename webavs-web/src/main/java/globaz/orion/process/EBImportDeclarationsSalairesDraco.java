@@ -78,7 +78,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         EBTreatPucsFiles process = new EBTreatPucsFiles();
         process.setSendCompletionMail(true);
         process.setEmailAdress(getEMailAddress());
-        process.setBatch(true);
+        process.setIsBatch(true);
         // TODO activer le mode miseajour au lieu de simulation : process.setMode("miseajour")
         process.setMode("simulation");
         process.setIdMiseEnGed(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));

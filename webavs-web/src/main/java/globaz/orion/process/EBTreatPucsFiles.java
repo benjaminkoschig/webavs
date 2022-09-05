@@ -36,6 +36,7 @@ import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationManager;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
+import globaz.orion.helpers.pucs.EBPucsBatchController;
 import globaz.orion.utils.EBDanUtils;
 import globaz.pavo.process.CIDeclaration;
 import globaz.pavo.process.CIImportPucsFileProcess;
@@ -83,7 +84,8 @@ public class EBTreatPucsFiles extends BProcess {
     private static final long serialVersionUID = 1L;
     private String emailAdress = "";
     private String mode = "";
-    private boolean batch = false;
+    private boolean isBatch = false;
+    private EBPucsBatchController pucsBatchController = new EBPucsBatchController();
     private List<PucsFile> pucsEntrysToLoad = new ArrayList<PucsFile>();
     private boolean simulation = false;
     private Map<String, List<String>> pucsToMerge;
@@ -211,10 +213,9 @@ public class EBTreatPucsFiles extends BProcess {
         return mode;
     }
 
-    public boolean isBatch() {
-        return batch;
+    public boolean getIsBatch() {
+        return isBatch;
     }
-
 
     public BSession getSessionPavo() throws Exception {
         BSession local = getSession();
@@ -257,8 +258,8 @@ public class EBTreatPucsFiles extends BProcess {
     /**
      * Mise à jour du mode de déclaration de salaire
      * 
-     * @param idAffiliation
-     *            un id affiliation
+     * @param aff
+     *            une affiliation
      * @param provenance
      *            une provenance
      * @throws Exception
@@ -363,6 +364,47 @@ public class EBTreatPucsFiles extends BProcess {
 
                     DeclarationSalaire ds = DeclarationSalaireBuilder.build(pucsFileMerge.getDomParser(), pucsFileMerge
                             .getPucsFile().getProvenance());
+
+
+                    // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
+                    if (getIsBatch()) {
+                        pucsBatchController.setSession(getSession());
+                        if (pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
+                            moveFile = false;
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
+                            hasError = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, listPucsFile)) {
+                            moveFile = false;
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
+                            hasError = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientNumeroAffilieNonExistant(pucsFile)) {
+                            moveFile = false;
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_AFFILIE_NON_EXISTANT") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
+                            hasError = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientCollaborateursDansPlusieursCantonsEtPasSwissDecMixte(ds, aff)) {
+                            moveFile = false;
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_CANTONS_MULTIPLES") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
+                            hasError = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientSalaireNegatif(ds.getEmployees())) {
+                            moveFile = false;
+                            _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_SALAIRE_NEGATIF") + " " + pucsFile.getNumeroAffilie());
+                            handleOnError(emailAdress, null, this, pucsFileMerge);
+                            hasError = true;
+                            continue;
+                        }
+                    }
 
                     if (ds.isAfSeul()) {
                         boolean error = false;
@@ -771,8 +813,8 @@ public class EBTreatPucsFiles extends BProcess {
         this.mode = mode;
     }
 
-    public void setBatch(boolean batch) {
-        this.batch = batch;
+    public void setIsBatch(boolean isBatch) {
+        this.isBatch = isBatch;
     }
 
     public void setSimulation(boolean simulation) {
@@ -782,7 +824,7 @@ public class EBTreatPucsFiles extends BProcess {
     /**
      * Mise à jour des institutions LAA, LPP
      * 
-     * @param numAffilie
+     * @param id
      * @param idAffiliation
      * @param annee
      * @param declarationSalaireProvenance
