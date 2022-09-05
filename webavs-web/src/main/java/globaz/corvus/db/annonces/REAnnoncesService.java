@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class REAnnoncesService {
 
     public static List<REAnnoncesDateAugmentation5153> loadDateAugmentationRente5153(BSession session) {
-        return loadDateAugmentationRente5153Db(session).stream().map(REAnnoncesService::convertAnnonce5153).collect(Collectors.toList());
+        return executeRequeteDateAugmentationRente(session).stream().map(REAnnoncesService::convertAnnonce5153).collect(Collectors.toList());
     }
 
     public static REAnnoncesDateAugmentation5153 convertAnnonce5153(REAnnoncesDateAugmentation5153 annonce) {
@@ -20,7 +20,7 @@ public class REAnnoncesService {
         return annonce;
     }
 
-    private static List<REAnnoncesDateAugmentation5153> loadDateAugmentationRente5153Db(BSession session) {
+    private static List<REAnnoncesDateAugmentation5153> executeRequeteDateAugmentationRente(BSession session) {
         return SCM.newInstance(REAnnoncesDateAugmentation5153.class).session(session)
                 .query("SELECT WJDAUG as value, count(*) as label from schema.REFICHA GROUP BY WJDAUG ORDER BY WJDAUG DESC").execute();
     }
