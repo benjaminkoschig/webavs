@@ -132,6 +132,7 @@ public class ValidationAutomatique {
         processValidation.setEMailAddress(session.getUserEMail());
         processValidation.setSession(session);
         processValidation.setIdDeclaration(declaration.getDeclaration().getIdDeclaration());
+        processValidation.setIsBatch(declaration.getIsBatch());
         ValidationAutomatique validationAutomatique = null;
         Map<String, String> values = new HashMap<String, String>();
         boolean isProcessExecuted = false;
