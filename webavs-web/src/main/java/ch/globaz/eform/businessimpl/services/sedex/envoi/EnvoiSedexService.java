@@ -72,16 +72,8 @@ public class EnvoiSedexService {
         List<AttachmentType> attachmentTypeList = new ArrayList<>();
 
         if (tiffFileNameList.size() < 1) {
-            for (String s : fileNameList) {
-                AttachmentType attachmentType = new AttachmentType();
-                attachmentType.setTitle("titre de test"); // trouver le vrai titre ( mélange entre document type et nom prenom de l'assuré)
-                attachmentType.setDocumentDate(getDocumentDate());
-                attachmentType.setLeadingDocument(SedexType2021Enum.TYPE_102.isLeadingDocument());
-                attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
-                attachmentType.setDocumentFormat(FilenameUtils.getExtension(s));
-                attachmentType.setDocumentType("01.10.11");
-                attachmentType.getFile().addAll(getAttachementFileTypeList(s));
-                attachmentTypeList.add(attachmentType);
+            for (String fileName : fileNameList) {
+                attachmentTypeList.add(createAttachment(fileName,getAttachementFileTypeList(fileName)));
             }
         } else {
             Map<String, List<String>> multipleTiffFiles = findMultipleTiffFiles(tiffFileNameList);
@@ -119,17 +111,20 @@ public class EnvoiSedexService {
         List<AttachmentType> attachmentTypeList = new LinkedList<>();
 
         for (String key : multipleTiffFiles.keySet()) {
-            AttachmentType attachmentType = new AttachmentType();
-            attachmentType.setTitle("titre de test");
-            attachmentType.setDocumentDate(getDocumentDate());
-            attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
-            attachmentType.setDocumentFormat("tiff");
-            attachmentType.setDocumentType("01.10.11");
-            attachmentType.getFile().addAll(getMultipleAttachementFileTypeList(multipleTiffFiles.get(key)));
-            attachmentTypeList.add(attachmentType);
+           attachmentTypeList.add(createAttachment(key,getMultipleAttachementFileTypeList(multipleTiffFiles.get(key))));
         }
-
         return attachmentTypeList;
+    }
+    private AttachmentType createAttachment(String fileName, List<AttachmentFileType> attachmentTypeList) throws DatatypeConfigurationException {
+        AttachmentType attachmentType = new AttachmentType();
+        attachmentType.setTitle("titre de test");
+        attachmentType.setDocumentDate(getDocumentDate());
+        attachmentType.setLeadingDocument(SedexType2021Enum.TYPE_102.isLeadingDocument());
+        attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
+        attachmentType.setDocumentFormat(FilenameUtils.getExtension(fileName));
+        attachmentType.setDocumentType("01.10.11");
+        attachmentType.getFile().addAll(attachmentTypeList);
+        return attachmentType;
     }
 
 
