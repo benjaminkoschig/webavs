@@ -107,8 +107,17 @@ public class CIAnnonce21Ouverture extends CIAnnonceWrapper {
 
         affiliationManager.setSession(getSession());
         affiliationManager.setForAffilieNumero(numeroAffilie);
+        affiliationManager.setForActif(true);
 
         affiliationManager.find();
+
+        // retourne en priorité l'affiliation employeur ou indépendant employeur
+        for (int i = 0; i < affiliationManager.size(); i++) {
+            AFAffiliation affiliation = ((AFAffiliation) affiliationManager.get(i));
+            if (CodeSystem.TYPE_AFFILI_EMPLOY.equals(affiliation.getTypeAffiliation()) || CodeSystem.TYPE_AFFILI_INDEP_EMPLOY.equals(affiliation.getTypeAffiliation())) {
+                return affiliation;
+            }
+        }
 
         AFAffiliation affiliation = ((AFAffiliation) affiliationManager.getFirstEntity());
 
