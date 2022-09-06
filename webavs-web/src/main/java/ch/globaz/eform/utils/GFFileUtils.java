@@ -13,7 +13,6 @@ import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.record.formula.functions.Int;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -43,12 +42,8 @@ public class GFFileUtils {
     public final static String FILE_TYPE_TIFF = "tiff";
     public final static String FILE_TYPE_ZIP = "zip";
     public final static String FOLDER_UID = "testUid";
+    public static Map<String, Integer> counterMap = new HashMap<>();
 
-    public static int fileCounter = 1;
-
-    public int getFileCounter() {
-        return fileCounter;
-    }
 
     public static void downloadFile(HttpServletResponse response, String name, byte buf[]) throws IOException {
         OutputStream os = response.getOutputStream();
@@ -60,6 +55,7 @@ public class GFFileUtils {
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
         String path = viewBean.getFilename();
         String filename = path.substring(path.lastIndexOf("\\") + 1);
+        File destDir = new File(WORK_PATH + FOLDER_UID);
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals(FILE_TYPE_ZIP)) {
@@ -67,7 +63,10 @@ public class GFFileUtils {
                 viewBean.getFileNameList().addAll(unZipFile(viewBean));
                 checkUnZippedFiles(viewBean);
             } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
-                JadeFsFacade.copyFile(path, WORK_PATH + filename);
+                if (isFileExist(filename, viewBean.getFileNameList())) {
+                    filename = renameFileWithSameName(filename);
+                }
+                JadeFsFacade.copyFile(path, destDir + File.separator + filename);
                 viewBean.getFileNameList().add(filename);
             } else {
                 viewBean.getSession().getCurrentThreadTransaction().addErrors("mauvais type de fichier");
@@ -86,8 +85,8 @@ public class GFFileUtils {
             try (FileInputStream fis = new FileInputStream(pathWork); ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis))) {
                 //creation des directories pour extraire les fichiers contenus dans le zip
                 Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
-                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
-                File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename)));
+                File destDir = new File(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename));
                 fileNameList = unzip(new File(pathWork), destDir, viewBean);
             }
         }
@@ -97,7 +96,6 @@ public class GFFileUtils {
     public static List<String> unzip(File srcZipFile, File destDir, GFEnvoiViewBean viewBean) {
         final int bufferSize = 2048;
         List<String> unzipFiles = new ArrayList<>();
-        Map<String, Integer> counterMap = new HashMap<>();
 
         try {
             BufferedOutputStream bufferedOutputStream = null;
@@ -110,7 +108,7 @@ public class GFFileUtils {
                 int count;
                 byte data[] = new byte[bufferSize];
                 if (isFileExist(entry.getName(), viewBean.getFileNameList())) {
-                    newFile = renameFileWithSameName(entry.getName(),destDir,counterMap);
+                    newFile = renameFileWithSameNameInZip(entry.getName(), destDir);
                 } else {
                     newFile = new File(destDir + File.separator + entry.getName());
                 }
@@ -171,10 +169,15 @@ public class GFFileUtils {
 
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
     }
-    public static File renameFileWithSameName(String fileName, File destDir, Map<String, Integer> counterMap){
+
+    public static File renameFileWithSameNameInZip(String fileName, File destDir) {
         counterMap.merge(fileName, 1, Integer::sum);
-        File newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(fileName) +"_"+counterMap.get(fileName)+"."+ FilenameUtils.getExtension(fileName));
-        GFFileUtils.fileCounter++;
-      return newFile;
+        File newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(fileName) + "_" + counterMap.get(fileName) + "." + FilenameUtils.getExtension(fileName));
+        return newFile;
+    }
+
+    public static String renameFileWithSameName(String fileName) {
+        counterMap.merge(fileName, 1, Integer::sum);
+        return FilenameUtils.removeExtension(fileName) + "_" + counterMap.get(fileName) + "." + FilenameUtils.getExtension(fileName);
     }
 }
