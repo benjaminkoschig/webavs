@@ -61,11 +61,12 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 
+
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>-->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
@@ -76,8 +77,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 		
- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE</defaultJdbcUrl>
- 			<defaultJdbcSchema>DB2COTT</defaultJdbcSchema>
+<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE</defaultJdbcUrl>-->
+<!-- 			<defaultJdbcSchema>DB2COTT</defaultJdbcSchema>-->
 		
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
@@ -85,12 +86,15 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema>-->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl>-->
-<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema>-->
+ 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl>
+ 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema>
 		
 <!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
+		
+	
 
+	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_QUALITE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
 
