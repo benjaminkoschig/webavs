@@ -66,7 +66,6 @@ public class Sedex000102 implements SedexMessageSender<ContentType> {
         Message message = factory.createMessage();
         message.setHeader(header);
         message.setContent(content);
-//        message.setMinorVersion();  pas obligatoire
         return message;
     }
 
