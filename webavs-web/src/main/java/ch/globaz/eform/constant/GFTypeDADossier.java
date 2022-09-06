@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public enum GFTypeDADossier {
     BLANK("", ""),
-    SOLICITATION("82000001", "SOLICITATION"),
+    SOLICITATION("82000001", "SOLICITAT"),
     SEND_TYPE("82000002", "SEND_TYPE"),
     RECEPTION("82000003", "RECEPTION");
 
@@ -30,16 +30,16 @@ public enum GFTypeDADossier {
         return code;
     }
 
-    public static GFTypeDADossier getStatusByCodeSystem(String codeSystem) {
+    public static GFTypeDADossier getTypeByCodeSystem(String codeSystem) {
         return Arrays.stream(GFTypeDADossier.values())
-                .filter(status -> status.codeSystem.equals(codeSystem))
+                .filter(type -> type.codeSystem.equals(codeSystem))
                 .findFirst()
                 .orElse(BLANK);
     }
 
-    public static GFTypeDADossier getStatusByCode(String code) {
+    public static GFTypeDADossier getTypeByCode(String code) {
         return Arrays.stream(GFTypeDADossier.values())
-                .filter(status -> status.code.equals(code))
+                .filter(type -> type.code.equals(code))
                 .findFirst()
                 .orElse(BLANK);
     }

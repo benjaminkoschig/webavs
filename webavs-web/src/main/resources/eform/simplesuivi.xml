@@ -10,8 +10,8 @@
             <field comment="Type de la demande" name="type" column="TYPE" type="STRING" mandatory="true"/>
             <field comment="Statut de la demande" name="status" column="STATUS" type="STRING" mandatory="true"/>
             <field comment="Visa du gestionnaire en charge" name="userGestionnaire" column="USER_GESTIONNAIRE" type="STRING" mandatory="false"/>
-            <field comment="Référence id de la caisse demandeuse" name="yourBusinessRefId" column="YOUR_BUSINESS_REF_ID" type="STRING" mandatory="false"/>
-            <field comment="Référence id de la demande" name="ourBusinessRefId" column="OUR_BUSINESS_REF_ID" type="STRING" mandatory="true"/>
+            <field comment="Référence id de la caisse demandeuse" name="yourBusinessRefId" column="YOUR_BUSINESS_REFERENCE_ID" type="STRING" mandatory="false"/>
+            <field comment="Référence id de la demande" name="ourBusinessRefId" column="OUR_BUSINESS_REFERENCE_ID" type="STRING" mandatory="true"/>
         </fields>
 
         <search-definition name="default">

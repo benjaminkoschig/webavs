@@ -197,7 +197,7 @@ public class GFTraitementMessageServiceImpl {
     }
 
     /**
-     * Retourne un contexte. Si nécessaire il est initialiséJadeSe
+     * Retourne un contexte. Si nécessaire il est initialisé
      *
      * @return le contexte
      * @throws Exception Exception levée si le contexte ne peut être initialisé

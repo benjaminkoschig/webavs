@@ -12,7 +12,7 @@ import java.io.File;
 public class GFEFormFileServiceImpl implements GFEFormFileService {
     @Override
     public String getZipFormulaire(String id) throws Exception {
-        GFFormulaireModel model = GFEFormServiceLocator.gfEFormService().read(id);
+        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormDBService().read(id);
 
         //Chargement du zip
         EFormFileService fileService = EFormFileService.instance();

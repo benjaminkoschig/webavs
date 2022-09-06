@@ -38,7 +38,7 @@ public class GFDaDossierValidator {
         search.setByMessageId(messageId);
         search.setWhereKey("messageId");
         try {
-            search = GFEFormServiceLocator.gfDaDossierDBService().search(search);
+            search = GFEFormServiceLocator.getGFDaDossierDBService().search(search);
             return search.getSearchResults().length > 1;
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
             LOG.error("Une erreur c'est produite pour la recherche du message id :" + messageId, e);
@@ -71,7 +71,7 @@ public class GFDaDossierValidator {
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
             String ourBusinessReferenceId = nodeMessageId.getFirstChild().getNodeValue();
-            if (!StringUtils.isEmpty(ourBusinessReferenceId)) {
+            if (StringUtils.isEmpty(ourBusinessReferenceId)) {
                 result.addError("ourBusinessReferenceId", ValidationError.MANDATORY);
             }
 
@@ -134,7 +134,7 @@ public class GFDaDossierValidator {
                 GFFormulaireSearch search = new GFFormulaireSearch();
                 search.setByMessageId(messageId);
                 search.setWhereKey("messageId");
-                search = GFEFormServiceLocator.gfEFormService().search(search);
+                search = GFEFormServiceLocator.getGFEFormDBService().search(search);
                 if (search.getSearchResults().length != 0) {
                     result.addError("messageId", ValidationError.ALREADY_EXIST);
                 }

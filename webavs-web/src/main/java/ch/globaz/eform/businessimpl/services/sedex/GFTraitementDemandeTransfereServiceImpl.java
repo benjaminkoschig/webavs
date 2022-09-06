@@ -14,11 +14,13 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.sedex.annotation.OnReceive;
+import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.sedex.message.GroupedSedexMessage;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
@@ -35,7 +37,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
     private JadeContext context;
     private GFHandlersFactory objectFactory;
 
-
+    @Setup
     public void setUp(Properties properties) throws Exception {
         String encryptedUser = properties.getProperty("userSedex");
         String encryptedPass = properties.getProperty("passSedex");
@@ -64,6 +66,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
 
         try {
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), getContext());
+            JadeThread.storeTemporaryObject("bsession",session);
             ValidationResult result = new ValidationResult();
 
 
@@ -131,7 +134,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
             }
         } catch (Exception e1) {
             JadeLogger.error(this,
-                    "GFTraitementDemandeTransfereServiceImpl#importMessages - Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
+                    "GFTraitementDemandeTransfereServiceImpl#importMessages - Une erreur s'est produite pendant l'importation de la demande de dossier: " + e1.getMessage());
             throw new JadeApplicationRuntimeException(e1);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
@@ -155,7 +158,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
     private JadeThreadContext initContext(BSession session) throws Exception {
         JadeThreadContext context;
         JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(AMApplication.DEFAULT_APPLICATION_AMAL);
+        ctxtImpl.setApplicationId(GFApplication.DEFAULT_APPLICATION_ROOT);
         ctxtImpl.setLanguage(session.getIdLangueISO());
         ctxtImpl.setUserEmail(session.getUserEMail());
         ctxtImpl.setUserId(session.getUserId());
@@ -185,7 +188,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
                 }
             }
         } catch (Exception e) {
-            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - Erreur lors du traitement du message.");
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - Erreur lors du traitement du message.", e);
             throw new JadeApplicationRuntimeException(e);
         }
     }

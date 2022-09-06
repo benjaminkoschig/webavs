@@ -39,7 +39,7 @@ public class GFStatistiqueListViewBean extends BJadePersistentObjectListViewBean
         } else if (!(Objects.isNull(statistiqueSearch.getByStartDate()) || Objects.isNull(statistiqueSearch.getByEndDate()))) {
             statistiqueSearch.setWhereKey(GFStatistiqueSearch.WHERE_DEFINITION_STATISTIQUE_BETWEEN);
         }
-        statistiqueSearch = GFEFormServiceLocator.gfEFormService().search(statistiqueSearch);
+        statistiqueSearch = GFEFormServiceLocator.getGFEFormDBService().search(statistiqueSearch);
         calculStatistique();
     }
 

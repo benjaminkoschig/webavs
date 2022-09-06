@@ -34,7 +34,7 @@ public class GFEFormValidator {
             return false;
         }
         try {
-            gfeFormSearch = GFEFormServiceLocator.gfEFormService().search(gfeFormSearch);
+            gfeFormSearch = GFEFormServiceLocator.getGFEFormDBService().search(gfeFormSearch);
             return gfeFormSearch.getSearchResults().length > 0;
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
             LOG.error("Une erreur c'est produite pour la recherche du gfeFormModel id :" + messageId, e);

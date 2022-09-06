@@ -37,7 +37,7 @@ public class GFHandlersFactory {
     HashMap<Class<?>, Class<?>> mapClasses;
 
     public GFHandlersFactory(){
-        mapClasses = new HashMap();
+        mapClasses = new HashMap<>();
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2021_000101._3.Message.class, GF2021000101Handler.class);
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message.class, GF2021000102Handler.class);
         mapClasses.put(eform.ch.eahv_iv.xmlns.eahv_iv_2501_001800._1.Message.class, GF2501001800Handler.class);
@@ -68,22 +68,18 @@ public class GFHandlersFactory {
     public GFSedexhandler getSedexHandler(SimpleSedexMessage currentSimpleMessage, BSession session) throws Exception {
         JAXBServices jaxbs = JAXBServices.getInstance();
         Class<?>[] addClasses = mapClasses.keySet().toArray(new Class[0]);
-        Object oMessage;
-        oMessage = jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-        return getHandler(oMessage, addClasses, session);
-    }
-
-    private GFSedexhandler getHandler(Object message, Class<?>[] addClasses, BSession session) throws InstantiationException, IllegalAccessException {
-        GFEFormHandler handler = null;
-        Iterator<Class<?>> iterator = Arrays.stream(addClasses).iterator();
-        while(handler == null && iterator.hasNext()){
-            Class<?> theClass = iterator.next();
-            if(theClass != null && theClass.isInstance(message)){
-                handler = (GFEFormHandler) mapClasses.get(theClass).newInstance();
-                handler.setMessage(message);
-                handler.setSession(session);
-            }
-        }
-        return handler;
+        Object oMessage = jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
+        return mapClasses.entrySet().stream()
+                .filter(entry -> entry.getKey().isInstance(oMessage))
+                .map(entry -> {
+                    try {
+                        GFSedexhandler handler = (GFSedexhandler) entry.getValue().newInstance();
+                        handler.setMessage(oMessage);
+                        handler.setSession(session);
+                        return handler;
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).findFirst().orElse(null);
     }
 }

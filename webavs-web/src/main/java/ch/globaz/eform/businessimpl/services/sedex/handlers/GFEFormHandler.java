@@ -94,7 +94,7 @@ public abstract class GFEFormHandler implements GFSedexhandler {
             dbModel.setUserGestionnaire(model.getUserGestionnaire());
             dbModel.setAttachementName(model.getAttachementName());
 
-            GFEFormServiceLocator.gfEFormService().create(dbModel, result);
+            GFEFormServiceLocator.getGFEFormDBService().create(dbModel, result);
     }
 
     public void setMessage(Object message){
