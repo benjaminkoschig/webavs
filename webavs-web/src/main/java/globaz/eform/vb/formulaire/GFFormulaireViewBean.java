@@ -72,12 +72,12 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void add() throws Exception {
-        formulaire = GFEFormServiceLocator.getGFEFormService().create(formulaire);
+        formulaire = GFEFormServiceLocator.getGFEFormDBService().create(formulaire);
     }
 
     @Override
     public void delete() throws Exception {
-        GFEFormServiceLocator.getGFEFormService().delete(formulaire.getId());
+        GFEFormServiceLocator.getGFEFormDBService().delete(formulaire.getId());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void retrieve() throws Exception {
-        formulaire = GFEFormServiceLocator.getGFEFormService().read(getId());
+        formulaire = GFEFormServiceLocator.getGFEFormDBService().read(getId());
         try {
             EFormFileService fileService = EFormFileService.instance();
             this.attachement = fileService.retrieve(GFFileUtils.generateFilePath(formulaire), formulaire.getAttachementName());
@@ -111,7 +111,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         formulaire.setStatus(getByStatus());
         formulaire.setUserGestionnaire(getByGestionnaire());
         
-        GFEFormServiceLocator.getGFEFormService().update(formulaire);
+        GFEFormServiceLocator.getGFEFormDBService().update(formulaire);
     }
 
     public BSession getSession() {

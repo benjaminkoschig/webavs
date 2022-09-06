@@ -26,7 +26,7 @@ public class GFFormulaireListViewBean extends BJadePersistentObjectListViewBean 
     public void find() throws Exception {
         formulaireSearch.setWhereKey(GFFormulaireSearch.WHERE_DEFINITION_FORMULAIRE);
         formulaireSearch.setOrderKey(getOrderBy());
-        formulaireSearch = GFEFormServiceLocator.getGFEFormService().search(formulaireSearch);
+        formulaireSearch = GFEFormServiceLocator.getGFEFormDBService().search(formulaireSearch);
     }
 
     @Override

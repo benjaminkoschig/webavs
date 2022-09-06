@@ -92,7 +92,7 @@ public class GFRecuperationFormulairesProcess extends BProcess {
         GFFormulaireSearch formulaireSearch = new GFFormulaireSearch();
         formulaireSearch.setWhereKey(GFFormulaireSearch.WHERE_DEFINITION_FORMULAIRE);
         formulaireSearch.setByStatus(GFStatusEForm.RECEIVE.getCodeSystem());
-        formulaireSearch = GFEFormServiceLocator.getGFEFormService().search(formulaireSearch);
+        formulaireSearch = GFEFormServiceLocator.getGFEFormDBService().search(formulaireSearch);
         formulaireContainerList = Arrays.stream(formulaireSearch.getSearchResults())
                 .map(o -> (GFFormulaireModel) o)
                 .map(model -> {

@@ -8,12 +8,11 @@ import ch.globaz.eform.utils.GFFileUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.File;
-import java.nio.file.Files;
 
 public class GFEFormFileServiceImpl implements GFEFormFileService {
     @Override
     public String getZipFormulaire(String id) throws Exception {
-        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormService().read(id);
+        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormDBService().read(id);
 
         //Chargement du zip
         EFormFileService fileService = EFormFileService.instance();

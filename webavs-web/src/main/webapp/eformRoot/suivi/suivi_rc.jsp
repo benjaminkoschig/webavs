@@ -6,10 +6,9 @@
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
-<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
-
 
 <%@ include file="/theme/find/header.jspf" %>
+
 <%
 	idEcran="GFE0121";
 	bButtonNew = false;
@@ -17,13 +16,12 @@
 
 <%-- tpl:insert attribute="zoneInit" --%>
 <%-- /tpl:insert --%>
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" />
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/eformRoot/css/suivi/suivi_rc.css" />
 
 <%@ include file="/theme/find/javascripts.jspf" %>
-<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" />
-<link rel="stylesheet" type="text/css" href="<%=servletContext%>/eformRoot/css/formulaire/formulaire_rc.css" />
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.js"></script>
-<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
 
 
@@ -45,7 +43,6 @@
 
 <%-- tpl:insert attribute="zoneMain" --%>
 <tr>
-	<td style="width:10px"></td>
 	<td style="width:150px">
 		<LABEL for="byNss">
 			<ct:FWLabel key="NSS"/>
@@ -65,8 +62,6 @@
 				</ct:widgetJSReturnFunction>
 			</ct:widgetService>
 		</ct:widget>
-	</td>
-	<td style="width:25px">
 	</td>
 	<td style="width:150px">
 		<LABEL for="byCaisse">
@@ -100,6 +95,8 @@
 							wantBlank="true"
 							codeType="GFDATYPE"/>
 	</td>
+</tr>
+<tr>
 	<td style="width:150px">
 		<LABEL for="byStatus">
 			<ct:FWLabel key="STATUS"/>
@@ -127,7 +124,7 @@
 			%>
 		</ct:select>
 	</td>
-	<td style="width:10px"></td>
+	<td style="width:10px" colspan="2"></td>
 </tr>
 
 <%-- /tpl:insert --%>

@@ -81,7 +81,7 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='byNss' name='byNss'>
+						<ct:widget id='byCaisse' name='byCaisse'>
 							<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>

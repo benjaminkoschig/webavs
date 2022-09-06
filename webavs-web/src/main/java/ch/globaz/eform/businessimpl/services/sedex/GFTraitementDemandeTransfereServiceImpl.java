@@ -3,8 +3,8 @@ package ch.globaz.eform.businessimpl.services.sedex;
 import ch.globaz.amal.web.application.AMApplication;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandler;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -14,11 +14,13 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.sedex.annotation.OnReceive;
+import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.sedex.message.GroupedSedexMessage;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
@@ -33,9 +35,9 @@ import java.util.Properties;
 public class GFTraitementDemandeTransfereServiceImpl {
     private BSession session;
     private JadeContext context;
-    private GFFormHandlersFactory objectFactory;
+    private GFHandlersFactory objectFactory;
 
-
+    @Setup
     public void setUp(Properties properties) throws Exception {
         String encryptedUser = properties.getProperty("userSedex");
         String encryptedPass = properties.getProperty("passSedex");
@@ -52,7 +54,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
         String userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
         String passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
 
-        objectFactory = new GFFormHandlersFactory();
+        objectFactory = new GFHandlersFactory();
 
         session = (BSession) GlobazSystem.getApplication(GFApplication.APPLICATION_ID).newSession(userSedex, passSedex);
     }
@@ -64,6 +66,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
 
         try {
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), getContext());
+            JadeThread.storeTemporaryObject("bsession",session);
             ValidationResult result = new ValidationResult();
 
 
@@ -74,7 +77,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
 
                 currentGroupedMessage.simpleMessages.forEach(messageToTreat -> {
                     try {
-                        importMessagesSingle(messageToTreat, zipFile, result);
+                        importMessagesSingle(messageToTreat, result);
 
                         if (result.hasError()) {
                             sendMail(zipFile, result);
@@ -103,7 +106,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
                 zipFile = new ZipFile(messageToTreat.zipFileLocation);
 
                 try {
-                    importMessagesSingle(messageToTreat, zipFile, result);
+                    importMessagesSingle(messageToTreat, result);
 
                     if (result.hasError()) {
                         sendMail(zipFile, result);
@@ -131,7 +134,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
             }
         } catch (Exception e1) {
             JadeLogger.error(this,
-                    "GFTraitementDemandeTransfereServiceImpl#importMessages - Une erreur s'est produite pendant l'importation d'un formulaire P14: " + e1.getMessage());
+                    "GFTraitementDemandeTransfereServiceImpl#importMessages - Une erreur s'est produite pendant l'importation de la demande de dossier: " + e1.getMessage());
             throw new JadeApplicationRuntimeException(e1);
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
@@ -155,7 +158,7 @@ public class GFTraitementDemandeTransfereServiceImpl {
     private JadeThreadContext initContext(BSession session) throws Exception {
         JadeThreadContext context;
         JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(AMApplication.DEFAULT_APPLICATION_AMAL);
+        ctxtImpl.setApplicationId(GFApplication.DEFAULT_APPLICATION_ROOT);
         ctxtImpl.setLanguage(session.getIdLangueISO());
         ctxtImpl.setUserEmail(session.getUserEMail());
         ctxtImpl.setUserId(session.getUserId());
@@ -173,20 +176,19 @@ public class GFTraitementDemandeTransfereServiceImpl {
     /**
      * Méthode de lecture du message sedex en réception et traitement
      */
-    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
+    private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ValidationResult result) throws RuntimeException {
         try {
             GFDaDossierValidator.sedexMessage101(currentSimpleMessage, result);
             if (!result.hasError()) {
-                GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
-                if (formHandler != null) {
-                    formHandler.setDataFromFile(null, null);
-                    formHandler.saveData(result, zipFile);
+                GFSedexhandler handler = objectFactory.getSedexHandler(currentSimpleMessage, session);
+                if (handler != null) {
+                    handler.save(result);
 
                     LOG.info("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
             }
         } catch (Exception e) {
-            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - Erreur lors du traitement du message.");
+            LOG.error("GFTraitementDemandeTransfereServiceImpl#importMessagesSingle - Erreur lors du traitement du message.", e);
             throw new JadeApplicationRuntimeException(e);
         }
     }
@@ -203,14 +205,14 @@ public class GFTraitementDemandeTransfereServiceImpl {
     }
 
     private String getMailSubjet() {
-        return session.getLabel("MAIL_SUBJECT_IMPORT_SEDEX");
+        return session.getLabel("MAIL_SUBJECT_DEMANDE_SEDEX");
     }
 
     private String getMailBody(ZipFile zipFile, ValidationResult validationResult) {
-        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_IMPORT_SEDEX"), zipFile.getName()));
+        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_DEMANDE_SEDEX"), zipFile.getName()));
 
         if (Objects.nonNull(validationResult)) {
-            body.append(session.getLabel("MAIL_BODY_IMPORT_ERROR_SECTION_SEDEX"));
+            body.append(session.getLabel("MAIL_BODY_DEMANDE_ERROR_SECTION_SEDEX"));
             validationResult.getErrors().forEach(error -> body.append("\n").append(error.getDesignation(session)));
         }
 

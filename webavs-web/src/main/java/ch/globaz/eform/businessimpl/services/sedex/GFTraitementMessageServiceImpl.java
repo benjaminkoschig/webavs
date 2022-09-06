@@ -3,8 +3,8 @@ package ch.globaz.eform.businessimpl.services.sedex;
 import ch.globaz.amal.web.application.AMApplication;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandler;
-import ch.globaz.eform.businessimpl.services.sedex.handlers.GFFormHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
+import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFEFormValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -31,7 +31,8 @@ import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -41,7 +42,7 @@ public class GFTraitementMessageServiceImpl {
     private BSession session;
     private JadeContext context;
 
-    private GFFormHandlersFactory objectFactory;
+    private GFHandlersFactory objectFactory;
 
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
@@ -67,7 +68,7 @@ public class GFTraitementMessageServiceImpl {
         String userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
         String passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
 
-        objectFactory = new GFFormHandlersFactory();
+        objectFactory = new GFHandlersFactory();
 
         session = (BSession) GlobazSystem.getApplication(GFApplication.APPLICATION_ID).newSession(userSedex, passSedex);
     }
@@ -177,10 +178,14 @@ public class GFTraitementMessageServiceImpl {
         try {
             GFEFormValidator.sedexMessage(currentSimpleMessage, result);
             if (!result.hasError()) {
-                GFFormHandler formHandler = objectFactory.getFormHandler(currentSimpleMessage, session);
+                GFSedexhandler formHandler = objectFactory.getSedexHandler(currentSimpleMessage, session);
                 if (formHandler != null) {
-                    formHandler.setDataFromFile(userGestionnaire, zipFile.getName());
-                    formHandler.saveData(result, zipFile);
+                    Map<String, Object> extraData = new HashMap<>();
+                    extraData.put("userGestionnaire", userGestionnaire);
+                    extraData.put("zipFile", zipFile);
+
+                    formHandler.setData(extraData);
+                    formHandler.save(result);
 
                     LOG.info("GFTraitementMessageServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
