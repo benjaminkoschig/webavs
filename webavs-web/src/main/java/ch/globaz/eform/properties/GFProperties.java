@@ -11,7 +11,9 @@ public enum GFProperties implements IProperties {
     EMAIL_EFORM("email.sedex.validation", "Email pour l'envoi des fichiers sedex P14 non traités"),
     EMAIL_BODY_ERROR("email.sedex.error", "Email d'erreur pour le traitement sedex P14 en erreur"),
     GESTIONNAIRE_USER_DEFAULT("user.gestionnaire.default", "Gestionnaire par défaut"),
-    EMAIL_RECAP_FORMULAIRE("email.recap.formulaire", "Email d'envoie du fichier récapitulatif des formulaires au statut reçu");
+    EMAIL_RECAP_FORMULAIRE("email.recap.formulaire", "Email d'envoie du fichier récapitulatif des formulaires au statut reçu"),
+    GESTIONNAIRE_USER_DEPARTEMENT("dadossier.envoi.departement", "Departement du gestionnaire"),
+    GESTIONNAIRE_USER_TELEPHONE("dadossier.envoi.telephone", "Telephone du gestionnaire");
 
     private final String description;
     private final String propertyName;
