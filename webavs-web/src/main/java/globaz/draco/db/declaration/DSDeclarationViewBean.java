@@ -491,7 +491,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             }
         }
         // S'il existe une particularité "fiche partielle" on affiche une erreur
-        if (!JadeStringUtil.isBlankOrZero(getAffiliationId())) {
+        if (!isEnFacturation() && !JadeStringUtil.isBlankOrZero(getAffiliationId())) {
             AFParticulariteAffiliationManager particulariteMana = new AFParticulariteAffiliationManager();
             particulariteMana.setSession(getSession());
             particulariteMana.setForAffiliationId(getAffiliationId());
@@ -860,12 +860,14 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                             + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL)
                             + getSession().getLabel("PLAUSI_PARTICULARITE2") + " " + getNumeroAffilie());
                 }
-                particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
-                particulariteMana.find(BManager.SIZE_USEDEFAULT);
-                if (particulariteMana.size() > 0) {
-                    _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
-                            + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE)
-                            + getSession().getLabel("PLAUSI_PARTICULARITE2") + " " + getNumeroAffilie());
+                if(!isEnFacturation()) {
+                    particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+                    particulariteMana.find(BManager.SIZE_USEDEFAULT);
+                    if (particulariteMana.size() > 0) {
+                        _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
+                                + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE)
+                                + getSession().getLabel("PLAUSI_PARTICULARITE2") + " " + getNumeroAffilie());
+                    }
                 }
             }
         }
