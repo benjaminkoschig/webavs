@@ -478,7 +478,7 @@ public class APImportationCalculAcor {
                         if (idAffilie.equals(sitPro.getIdAffilie())
                                 && idTiers.equals(sitPro.getIdTiers())
                                 && nomEmployeur.equals(nomSitProEmployeur)) {
-                            FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr());
+                            FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
                             sitPro.setTauxProRata(taux);
 
                             // Il s'agit d'une situation profesionnelle

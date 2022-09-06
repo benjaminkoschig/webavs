@@ -33,14 +33,6 @@ public class APAcorBaseCalculAmatMapper {
         List<APSituationFamilialeMat> situationsFamilialeAPG = APLoader.loadSituationFamillialeMat(droit.getIdDroit(), session);
         basesCalcul.setAdoption(situationsFamilialeAPG.stream().allMatch(APSituationFamilialeMat::getIsAdoption));
 
-        List<APSituationProfessionnelle> situatuionProfessionnelles = APLoader.loadSituationsProfessionnelles(droit.getIdDroit(), session);
-        for (APSituationProfessionnelle sitPro:
-             situatuionProfessionnelles) {
-            if(Boolean.TRUE.equals(sitPro.getHasLaMatPrestations())){
-                basesCalcul.setAssuranceGE(true);
-            }
-        }
-
         basesCalcul.setNombreJoursHospitalisationEnfant(Integer.valueOf(droit.getJoursSupplementaires()));
 
         return basesCalcul;
