@@ -3851,7 +3851,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     /**
      * Point d'entrée publique pour la creation des données fincières devant être mise à jour pour une version de droit
      *
-     * @param versionDroit
+
      * @param donneeFinanciere
      * @param service
      * @throws DroitException
@@ -4566,9 +4566,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             String dateRechecheMembre = JadeDateUtil.getLastDateOfMonth(droit.getDemande().getSimpleDemande()
                     .getDateDepot());
 
-            MembreFamilleVO[] searchMembresFamilleDisponibles = HeraServiceLocator.getMembreFamilleService()
-                    .searchMembresFamilleRequerantDomaineRentes(idTiersRequerant, dateRechecheMembre);
-            String idTiersConjoint = getIdTiersConjoint(searchMembresFamilleDisponibles);
+
 
             MembreFamilleVO[] searchMembresFamilleDisponiblesEtendues = HeraServiceLocator.getMembreFamilleService()
                     .searchMembresFamilleRequerantDomaineRentesEtendues(idTiersRequerant, dateRechecheMembre);
