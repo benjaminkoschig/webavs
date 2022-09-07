@@ -1,5 +1,6 @@
 package globaz.apg.acorweb.mapper;
 
+import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.naos.api.IAFAffiliation;
@@ -11,19 +12,18 @@ import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.tools.PRSession;
 
-import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 public class APRepartitionPaiementAcor {
-    final static String CONST_TYPE_AFFILI_EMPLOY = "[1]";
-    final static String CONST_TYPE_AFFILI_EMPLOY_D_F = "[4]";
-    final static String CONST_TYPE_AFFILI_INDEP = "[3]";
-    final static String CONST_TYPE_AFFILI_INDEP_EMPLOY = "[2]";
-    final static String CONST_TYPE_AFFILI_LTN = "[5]";
-    final static String CONST_TYPE_AFFILI_TSE = "[6]";
-    final static String CONST_TYPE_AFFILI_TSE_VOLONTAIRE = "[7]";
+    static final String CONST_TYPE_AFFILI_EMPLOY = "[1]";
+    static final String CONST_TYPE_AFFILI_EMPLOY_D_F = "[4]";
+    static final String CONST_TYPE_AFFILI_INDEP = "[3]";
+    static final String CONST_TYPE_AFFILI_INDEP_EMPLOY = "[2]";
+    static final String CONST_TYPE_AFFILI_LTN = "[5]";
+    static final String CONST_TYPE_AFFILI_TSE = "[6]";
+    static final String CONST_TYPE_AFFILI_TSE_VOLONTAIRE = "[7]";
 
     @Getter
     String idTiers;
@@ -129,6 +129,16 @@ public class APRepartitionPaiementAcor {
             affilie = PRAffiliationHelper.getEmployeurParNumAffilie(session, noAffilie);
         }
         return affilie;
+    }
+
+    public void mapSituationProfessionnel(APBaseCalculSituationProfessionnel bcSitPro) {
+        setVersementEmployeur(bcSitPro.isPaiementEmployeur());
+        setIndependant(bcSitPro.isIndependant());
+        setTravailleurSansEmployeur(bcSitPro.isTravailleurSansEmployeur());
+        setCollaborateurAgricole(bcSitPro.isCollaborateurAgricole());
+        setTravailleurAgricole(bcSitPro.isTravailleurAgricole());
+        setSoumisCotisation(bcSitPro.isSoumisCotisation());
+        setIdSituationProfessionnelle(bcSitPro.getIdSituationProfessionnelle());
     }
 
 }
