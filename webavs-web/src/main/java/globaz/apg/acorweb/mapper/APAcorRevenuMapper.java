@@ -158,7 +158,7 @@ public class APAcorRevenuMapper {
         APSalaireAdapter adapter = new APSalaireAdapter(sitPro);
         RevenuAPG revenu = new RevenuAPG();
         if (Boolean.TRUE.equals(sitPro.getIsIndependant())) {
-            revenu.setSalaire(Double.parseDouble(sitPro.getRevenuIndependant()));
+            revenu.setSalaire(Double.valueOf(sitPro.getRevenuIndependant()));
             revenu.setTypeSalaire(Integer.parseInt(PRACORConst.CA_TYPE_SALAIRE_ANNUEL));
 //            revenuAPG.setNombreHeuresHebdomadaires(); -> 0 ?
             revenu.setPourcentSalaireVerse(POURCENT_TOTAL_VERSE);

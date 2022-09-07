@@ -139,7 +139,10 @@ public class APPrestationAcor {
         setNombreJoursSoldes(periodeServiceApgType.getNbJours());
     }
 
-    public void createAndMapRepartitionPaiementsDecomptes(BSession session, APBaseCalcul baseCalcul, FCalcul fCalcul, VersementMoisComptableApgType moisComptable) throws Exception {
+    public void createAndMapRepartitionPaiementsDecomptes(BSession session,
+                                                          APBaseCalcul baseCalcul,
+                                                          FCalcul fCalcul,
+                                                          VersementMoisComptableApgType moisComptable) {
         for (VersementMoisComptableApgType versement:
                 fCalcul.getVersementMoisComptable()) {
             for (VersementApgType versementApg:
@@ -152,51 +155,82 @@ public class APPrestationAcor {
         }
     }
 
-    private void addRepartitionsPaiementParBenficiaire(BSession session, APBaseCalcul baseCalcul, FCalcul fCalcul, VersementMoisComptableApgType moisComptable, VersementBeneficiaireApgType versementBeneficiaire) throws Exception {
+    private void addRepartitionsPaiementParBenficiaire(BSession session,
+                                                       APBaseCalcul baseCalcul,
+                                                       FCalcul fCalcul,
+                                                       VersementMoisComptableApgType moisComptable,
+                                                       VersementBeneficiaireApgType versementBeneficiaire) {
         if(Objects.nonNull(versementBeneficiaire)) {
             for (DecompteApgType decompteApgType :
                     versementBeneficiaire.getDecompte()) {
-                for (PeriodeDecompteApgType periodeDecompte :
-                        decompteApgType.getPeriodeDecompte()) {
-                    if (checkPeriodesDansLeMemeMois(periodeDecompte.getDebut(), periodeDecompte.getFin(), moisComptable.getMoisComptable())) {
-                        APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
-                        if (Objects.nonNull(repartition)) {
-                            repartitionPaiements.add(repartition);
-                        }
-                    }
-                }
+                addRepartitionPaiementByDecompte(session, baseCalcul, fCalcul, moisComptable, versementBeneficiaire, decompteApgType);
             }
         }
     }
 
-    private APRepartitionPaiementAcor createRepartitionPaiement(BSession session, APBaseCalcul baseCalcul, VersementBeneficiaireApgType beneficiare, PeriodeDecompteApgType periodeDecompte, FCalcul fCalcul) throws Exception {
-        Optional<EmployeurApgType> employeurOptional = fCalcul.getEmployeur().stream().filter(e -> e.getIdIntEmpl().equals(beneficiare.getIdBeneficiaire())).findFirst();
+    private void addRepartitionPaiementByDecompte(BSession session,
+                                                  APBaseCalcul baseCalcul,
+                                                  FCalcul fCalcul,
+                                                  VersementMoisComptableApgType moisComptable,
+                                                  VersementBeneficiaireApgType versementBeneficiaire,
+                                                  DecompteApgType decompteApgType) {
+        decompteApgType.getPeriodeDecompte().stream().filter(p -> {
+            try {
+                return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), moisComptable.getMoisComptable());
+            } catch (JAException e) {
+                throw new PRAcorTechnicalException(e);
+            }
+        }).forEach(p -> {
+            try {
+                createAndAddRepartitionPaiement(session, baseCalcul, fCalcul, versementBeneficiaire, p);
+            } catch (PRACORException e) {
+                throw new PRAcorTechnicalException(e);
+            }
+        });
+    }
+
+    private void createAndAddRepartitionPaiement(BSession session,
+                                                 APBaseCalcul baseCalcul,
+                                                 FCalcul fCalcul,
+                                                 VersementBeneficiaireApgType versementBeneficiaire,
+                                                 PeriodeDecompteApgType periodeDecompte) throws PRACORException {
+        APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
+        if (Objects.nonNull(repartition)) {
+            repartitionPaiements.add(repartition);
+        }
+    }
+
+    private APRepartitionPaiementAcor createRepartitionPaiement(BSession session,
+                                                                APBaseCalcul baseCalcul,
+                                                                VersementBeneficiaireApgType beneficiare,
+                                                                PeriodeDecompteApgType periodeDecompte, FCalcul fCalcul) throws PRACORException {
+        Optional<EmployeurApgType> employeurOptional = fCalcul.getEmployeur().stream()
+                                                              .filter(e -> e.getIdIntEmpl().equals(beneficiare.getIdBeneficiaire()))
+                                                              .findFirst();
         if (employeurOptional.isPresent()) {
             EmployeurApgType employeur = employeurOptional.get();
-            APRepartitionPaiementAcor repartitionPaiementAcor = new APRepartitionPaiementAcor(session, employeur.getNoAffilie(), employeur.getNom(), "");
+            APRepartitionPaiementAcor repartitionPaiementAcor = new APRepartitionPaiementAcor(session,
+                                                                                              employeur.getNoAffilie(),
+                                                                                              employeur.getNom(),
+                                                                                    "");
             repartitionPaiementAcor.setMontantNet(new FWCurrency(periodeDecompte.getMontantPeriode()));
             repartitionPaiementAcor.setSalaireJournalier(new FWCurrency(periodeDecompte.getMontantJourn()));
             APBaseCalculSituationProfessionnel bcSitPro = null;
-            try {
-                bcSitPro = findBaseCalculSitPro(baseCalcul, repartitionPaiementAcor.getIdTiers(),
-                        repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
-            } catch (PRACORException e) {
 
-                try {
-                    // Nouvelle tentative de recherche par #affilie pour les cas affiliés avec 2 affiliations sous
-                    // le même #.
-                    bcSitPro = findBaseCalculSitProParNoAffilie(baseCalcul, repartitionPaiementAcor.getIdTiers(),
-                            repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
-                } catch (PRACORException e2) {
-                    LOG.warn("La situation professionnelle de la base de caclul n'a pas été trouvé. \nLa période correspondante est peut être créé pour des jours d'hosipitalisation.");
-                }
+            bcSitPro = findBaseCalculSitPro(baseCalcul, repartitionPaiementAcor.getIdTiers(),
+                    repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
+            if (Objects.isNull(bcSitPro)) {
+                // Nouvelle tentative de recherche par #affilie pour les cas affiliés avec 2 affiliations sous
+                // le même #.
+                bcSitPro = findBaseCalculSitProParNoAffilie(baseCalcul, repartitionPaiementAcor.getIdTiers(),
+                        repartitionPaiementAcor.getIdAffilie(), employeur.getNom());
             }
             if (Objects.nonNull(bcSitPro)) {
                 repartitionPaiementAcor.mapSituationProfessionnel(bcSitPro);
             }
             return repartitionPaiementAcor;
         }
-        if(periodeDecompte.getTauxAllocJourn() != 0) {
+        if(Double.compare(periodeDecompte.getTauxAllocJourn(), 0) != 0) {
             APBaseCalculSituationProfessionnel bcSitPro = findBaseCalculSitProVersementAssure(baseCalcul);
             if (Objects.isNull(bcSitPro)) {
                 bcSitPro = findBaseCalculSitProIndependant(session, baseCalcul, beneficiare.getIdBeneficiaire());

@@ -80,9 +80,12 @@ public class APImportationCalculAcor {
         }
     }
 
-    private List<APPrestationWrapper> createAPPrestationWrappers(BSession session, FCalcul fCalcul, APDroitLAPG droit, List<APBaseCalcul> basesCalcul) throws Exception {
+    private List<APPrestationWrapper> createAPPrestationWrappers(BSession session,
+                                                                 FCalcul fCalcul,
+                                                                 APDroitLAPG droit,
+                                                                 List<APBaseCalcul> basesCalcul) throws Exception {
         List<APPrestationWrapper> wrappers = new ArrayList<>();
-        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(session, fCalcul, droit, basesCalcul);
+        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(fCalcul, droit, basesCalcul);
         for (APPrestationAcor prestation:
                 prestationsAcor) {
             APPrestationWrapper prestationWrapper = new APPrestationWrapper();
@@ -96,7 +99,11 @@ public class APImportationCalculAcor {
         return wrappers;
     }
 
-    private void calculerPrestationsComplementaires(BSession session, BTransaction transaction, APDroitLAPG droit, Collection<APPrestationWrapper> pw, List<APBaseCalcul> basesCalcul) throws Exception {
+    private void calculerPrestationsComplementaires(BSession session,
+                                                    BTransaction transaction,
+                                                    APDroitLAPG droit,
+                                                    Collection<APPrestationWrapper> pw,
+                                                    List<APBaseCalcul> basesCalcul) throws Exception {
         final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
 
         APPrestationHelper.calculerComplement(session, transaction, droit);
@@ -118,7 +125,7 @@ public class APImportationCalculAcor {
         calculateur.deletePrestationsStandardsWhenAmatIsExcluded(session, transaction, droit);
     }
 
-    private APPeriodeWrapper createAndMapPeriodeWrapper(APPrestationAcor prestation, APPrestationWrapper prestationWrapper) {
+    private static APPeriodeWrapper createAndMapPeriodeWrapper(APPrestationAcor prestation, APPrestationWrapper prestationWrapper) {
         APPeriodeWrapper periodeWrapper = new APPeriodeWrapper();
         periodeWrapper.setDateDebut(Dates.toJADate(prestation.getDateDebut()));
         periodeWrapper.setDateFin(Dates.toJADate(prestation.getDateFin()));
@@ -126,7 +133,10 @@ public class APImportationCalculAcor {
         return periodeWrapper;
     }
 
-    private APResultatCalcul createAndMapAPResultatCalul(List<APBaseCalcul> basesCalcul, APPrestationAcor prestation, APPrestationWrapper prestationWrapper, APPeriodeWrapper periodeWrapper) {
+    private static APResultatCalcul createAndMapAPResultatCalul(List<APBaseCalcul> basesCalcul,
+                                                                APPrestationAcor prestation,
+                                                                APPrestationWrapper prestationWrapper,
+                                                                APPeriodeWrapper periodeWrapper) {
         APResultatCalcul rc = new APResultatCalcul();
         rc.setDateDebut(periodeWrapper.getDateDebut());
         rc.setDateFin(periodeWrapper.getDateFin());
@@ -149,7 +159,9 @@ public class APImportationCalculAcor {
         return rc;
     }
 
-    private List<APPrestationAcor> createAndMapPrestationsAcor(BSession session, FCalcul fCalcul, APDroitLAPG droit, List<APBaseCalcul> basesCalcul) throws Exception {
+    private List<APPrestationAcor> createAndMapPrestationsAcor(FCalcul fCalcul,
+                                                               APDroitLAPG droit,
+                                                               List<APBaseCalcul> basesCalcul) throws Exception {
         List<APPrestationAcor> prestations = new ArrayList<>();
         for (VersementMoisComptableApgType versementMoisComptable:
              fCalcul.getVersementMoisComptable()) {
@@ -166,16 +178,23 @@ public class APImportationCalculAcor {
                 JADate dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
                 APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
                 if(Objects.nonNull(baseCalcul)) {
-                    prestations.add(createAndMapPrestation(session, fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
+                    prestations.add(createAndMapPrestation(fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
                 }
             }
         }
         return prestations;
     }
 
-    private APPrestationAcor createAndMapPrestation(BSession session, FCalcul fCalcul, APDroitLAPG droit, VersementMoisComptableApgType versementMoisComptable, PeriodeServiceApgType periodeServiceApgType, APBaseCalcul baseCalcul) throws Exception {
+    private APPrestationAcor createAndMapPrestation(FCalcul fCalcul,
+                                                    APDroitLAPG droit,
+                                                    VersementMoisComptableApgType versementMoisComptable,
+                                                    PeriodeServiceApgType periodeServiceApgType,
+                                                    APBaseCalcul baseCalcul) throws Exception {
+        BSession session = entityService.getSession();
         APPrestationAcor prestation = new APPrestationAcor();
-        AssureApgType assure = fCalcul.getAssure().stream().filter(a -> a.getFonction() == FonctionApgType.REQUERANT).collect(Collectors.toList()).get(0);
+        AssureApgType assure = fCalcul.getAssure().stream()
+                                                    .filter(a -> a.getFonction() == FonctionApgType.REQUERANT)
+                                                    .collect(Collectors.toList()).get(0);
         String genreService = session.getCode(droit.getGenreService());
         if (Objects.nonNull(fCalcul.getFraisGarde())) {
             prestation.setFraisGarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
@@ -193,7 +212,9 @@ public class APImportationCalculAcor {
         return prestation;
     }
 
-    private void mapResultatCalculSituationProfessionnelWithBaseCalcul(List<APBaseCalcul> basesCalcul, APPrestationAcor prestationAcor, APResultatCalcul rc) {
+    private static void mapResultatCalculSituationProfessionnelWithBaseCalcul(List<APBaseCalcul> basesCalcul,
+                                                                       APPrestationAcor prestationAcor,
+                                                                       APResultatCalcul rc) {
         APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, Dates.toJADate(prestationAcor.getDateDebut()),
                 Dates.toJADate(prestationAcor.getDateFin()));
         if(Objects.nonNull(baseCalcul)) {
@@ -217,10 +238,7 @@ public class APImportationCalculAcor {
                      * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
                      */
                     nomRCSP = mapNameWithoutEmployerType(nomRCSP);
-                    if (rcsp.getIdTiers().equals(bsp.getIdTiers())
-                            && (rcsp.getIdAffilie().equals(bsp.getIdAffilie()) || ((Objects.nonNull(rcsp.getNoAffilie())) && rcsp
-                            .getNoAffilie().equals(bsp.getNoAffilie())))
-                            && (nomBSP.contains(nomRCSP) || nomRCSP.contains(nomBSP))) {
+                    if (isSameAffilie(rcsp, bsp) && isBaseCalculAndSitProAreSame(nomRCSP, nomBSP)) {
                         found = true;
                         break;
                     }
@@ -255,10 +273,25 @@ public class APImportationCalculAcor {
         }
     }
 
-    private void updateWrappersTauxParticipation(BSession session, FCalcul fCalcul, Collection<APPrestationWrapper> wrappers) throws PRACORException {
+    private static boolean isBaseCalculAndSitProAreSame(String nomRCSP, String nomBSP) {
+        return nomBSP.contains(nomRCSP) || nomRCSP.contains(nomBSP);
+    }
+
+    private static boolean isSameAffilie(APResultatCalculSituationProfessionnel rcsp, APBaseCalculSituationProfessionnel bsp) {
+        return (rcsp.getIdTiers().equals(bsp.getIdTiers()) &&
+                rcsp.getIdAffilie().equals(bsp.getIdAffilie())) ||
+               rcsp.getNoAffilie().equals(bsp.getNoAffilie());
+    }
+
+    private static void updateWrappersTauxParticipation(BSession session,
+                                                        FCalcul fCalcul,
+                                                        Collection<APPrestationWrapper> wrappers) throws PRACORException {
         for (EmployeurApgType employeur:
             fCalcul.getEmployeur()) {
-            Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional = fCalcul.getPeriodeMontantJourn().get(0).getPeriodeRepartition().get(0).getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
+            Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
+                    fCalcul.getPeriodeMontantJourn().get(0)
+                           .getPeriodeRepartition().get(0)
+                           .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
             if(periodeRepartitionEmployeurOptional.isPresent()) {
                 PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
                 for (APPrestationWrapper wrapper : wrappers) {
@@ -270,8 +303,7 @@ public class APImportationCalculAcor {
                          * suivit d'un ']' Si je n'est pas été assez claire :
                          * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
                          */
-                        String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
-                        String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
+
                         String idAffilie;
                         String idTiers;
                         if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
@@ -287,6 +319,8 @@ public class APImportationCalculAcor {
                                 throw new PRACORException("Impossible de trouver l'affilie", e);
                             }
                         }
+                        String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
+                        String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
                         if (idAffilie.equals(sitPro.getIdAffilie())
                                 && idTiers.equals(sitPro.getIdTiers())
                                 && nomEmployeur.equals(nomSitProEmployeur)) {
@@ -316,7 +350,6 @@ public class APImportationCalculAcor {
                                 sitPro.setMontant(new FWCurrency(montant.toString()));
                                 sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
                             }
-
                         }
                     }
                 }
@@ -329,7 +362,7 @@ public class APImportationCalculAcor {
         return new FWCurrency(droitAPG.loadSituationFamilliale().getFraisGarde());
     }
 
-    private boolean hasErrors(final BSession session, final BTransaction transaction) {
+    private static boolean hasErrors(final BSession session, final BTransaction transaction) {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
     }
 }

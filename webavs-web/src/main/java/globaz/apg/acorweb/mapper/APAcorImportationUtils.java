@@ -20,12 +20,20 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.pyxis.util.CommonNSSFormater;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-public class APAcorImportationUtils {
+@Slf4j
+public final class APAcorImportationUtils {
+
+    private APAcorImportationUtils(){
+
+    }
 
     public static List<APBaseCalcul> retrieveBasesCalcul(final BSession session, final APDroitLAPG droit) throws Exception {
         return APBasesCalculBuilder.of(session, droit).createBasesCalcul();
@@ -52,7 +60,7 @@ public class APAcorImportationUtils {
             // Récupère le NSS du FCalcul reçu d'ACOR
             for (AssureApgType assure :
                     fCalcul.getAssure()) {
-                if (FonctionApgType.REQUERANT.equals(assure.getFonction())) {
+                if (FonctionApgType.REQUERANT == assure.getFonction()) {
                     nss = assure.getId();
                     break;
                 }
@@ -88,42 +96,35 @@ public class APAcorImportationUtils {
         return versementBeneficiaire;
     }
 
-    public static APBaseCalcul findBaseCalcul(List<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor) {
-        APBaseCalcul retValue = null;
-        boolean found = false;
-        for (APBaseCalcul baseCalcul : basesCalcul) {
-            retValue = baseCalcul;
-            if (comparePeriod2IsInsidePeriod1(retValue.getDateDebut(), retValue.getDateFin(), dateDebutPeriodeAcor, dateFinPeriodeAcor)) {
-                found = true;
-                break;
-            }
+    public static APBaseCalcul findBaseCalcul(Collection<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor) {
+        APBaseCalcul retValue = basesCalcul.stream().filter(b ->
+                comparePeriod2IsInsidePeriod1(b.getDateDebut(),
+                                              b.getDateFin(),
+                                              dateDebutPeriodeAcor,
+                                              dateFinPeriodeAcor))
+                                .findFirst()
+                                .orElse(null);
+
+        if(Objects.isNull(retValue) && basesCalcul.stream().anyMatch(APBaseCalcul::isExtension)){
+            retValue = basesCalcul.stream().filter(b ->
+                            comparePeriod2IsInsidePeriod1(dateDebutPeriodeAcor,
+                                                          dateFinPeriodeAcor,
+                                                          b.getDateDebut(),
+                                                          b.getDateFin()))
+                    .findFirst()
+                    .orElse(null);
         }
 
-        if(!found && basesCalcul.stream().anyMatch(APBaseCalcul::isExtension)){
-            for (APBaseCalcul baseCalcul : basesCalcul) {
-                retValue = baseCalcul;
+        if(Objects.isNull(retValue)){
+            retValue = basesCalcul.stream()
+                           .filter(b -> Dates.toDate(dateDebutPeriodeAcor).isBefore(Dates.toDate(b.getDateFin())) &&
+                                        Dates.toDate(dateDebutPeriodeAcor).isAfter(Dates.toDate(b.getDateDebut())))
+                           .findFirst()
+                           .orElse(null);
 
-                if (comparePeriod2IsInsidePeriod1(dateDebutPeriodeAcor, dateFinPeriodeAcor, retValue.getDateDebut(), retValue.getDateFin())) {
-                    found = true;
-                    break;
-                }
-            }
         }
 
-        if(!found){
-            for (APBaseCalcul baseCalcul : basesCalcul){
-                retValue = baseCalcul;
-                LocalDate localDateDebutPeriod1 = Dates.toDate(dateDebutPeriodeAcor);
-                LocalDate localDateDebutPeriod2 = Dates.toDate(retValue.getDateDebut());
-                LocalDate localDateFinPeriod2 = Dates.toDate(retValue.getDateFin());
-                if(localDateDebutPeriod1.isBefore(localDateFinPeriod2) && localDateDebutPeriod1.isAfter(localDateDebutPeriod2)){
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        return found ? retValue : null;
+        return retValue;
     }
 
     public static APBaseCalculSituationProfessionnel findBaseCalculSitProVersementAssure(APBaseCalcul basesCalcul){
@@ -137,25 +138,33 @@ public class APAcorImportationUtils {
         return null;
     }
 
-    public static APBaseCalculSituationProfessionnel findBaseCalculSitProIndependant(BSession session, APBaseCalcul basesCalcul, String idBeneficiaire) throws Exception {
-        APBaseCalculSituationProfessionnel bcSitPro;
+    public static APBaseCalculSituationProfessionnel findBaseCalculSitProIndependant(BSession session,
+                                                                                     APBaseCalcul basesCalcul,
+                                                                                     String idBeneficiaire) {
         CommonNSSFormater formater = new CommonNSSFormater();
-        PRTiersWrapper tiers = PRTiersHelper.getTiers(session, formater.format(idBeneficiaire));
-        if (Objects.nonNull(tiers)) {
-            for (Object o1 : basesCalcul.getBasesCalculSituationProfessionnel()) {
-                bcSitPro = (APBaseCalculSituationProfessionnel) o1;
-                if (bcSitPro.getIdTiers().equals(tiers.getIdTiers()) && bcSitPro.isIndependant()) {
-                    return bcSitPro;
-                }
+        try {
+            PRTiersWrapper tiers = PRTiersHelper.getTiers(session, formater.format(idBeneficiaire));
+            if (Objects.nonNull(tiers)) {
+                Optional opt = basesCalcul.getBasesCalculSituationProfessionnel()
+                        .stream()
+                        .filter(bc ->
+                                ((APBaseCalculSituationProfessionnel)bc).getIdTiers().equals(tiers.getIdTiers()) &&
+                                ((APBaseCalculSituationProfessionnel)bc).isIndependant())
+                        .findFirst();
+                return (APBaseCalculSituationProfessionnel)opt.orElse(null);
             }
+        }catch(Exception exception){
+            LOG.warn("Le tiers avec l'id " + idBeneficiaire + " défini pour retrouver l'instance de "
+                                            + APBaseCalculSituationProfessionnel.class + "n'existe pas.");
         }
         return null;
     }
 
     public static APBaseCalculSituationProfessionnel findBaseCalculSitProParNoAffilie(APBaseCalcul basesCalcul, String idTiers, String noAffilie,
-                                                                                String nomAffilie) throws PRACORException {
+                                                                                String nomAffilie) {
         if (Objects.isNull(basesCalcul)) {
-            throw new PRACORException("La base de calcul est null et la situation professionelle ne peut être trouvée par no affilié !!!");
+            LOG.warn("La base de calcul est null et la situation professionelle ne peut être trouvée par no affilié !!!");
+            return null;
         }
 
         for (Object o : basesCalcul.getBasesCalculSituationProfessionnel()) {
@@ -175,14 +184,16 @@ public class APAcorImportationUtils {
             }
         }
 
-        throw new PRACORException("la situation professionelle ne peut être trouvée par no affilié !!!");
+        LOG.warn("la situation professionelle ne peut être trouvée par no affilié !!!");
+        return null;
     }
 
     public static APBaseCalculSituationProfessionnel findBaseCalculSitPro(APBaseCalcul basesCalcul,
                                                                     String idTiers, String idAffilie, String nomAffilie)
             throws PRACORException {
         if (Objects.isNull(basesCalcul)) {
-            throw new PRACORException("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
+            LOG.warn("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
+            return null;
         }
 
         for (Object o : basesCalcul.getBasesCalculSituationProfessionnel()) {
@@ -204,8 +215,8 @@ public class APAcorImportationUtils {
                 }
             }
         }
-
-        throw new PRACORException("La situation professionelle ne peut être trouvée !!!");
+        LOG.warn("La situation professionelle ne peut être trouvée !!!");
+        return null;
     }
 
     /**
@@ -218,7 +229,8 @@ public class APAcorImportationUtils {
         return name.replaceFirst("^\\[\\d+\\]", "");
     }
 
-    public static boolean comparePeriod2IsInsidePeriod1(JADate startDatePeriod1, JADate endDatePeriode1, JADate startDatePeriod2, JADate endDatePeriode2) {
+    public static boolean comparePeriod2IsInsidePeriod1(JADate startDatePeriod1, JADate endDatePeriode1,
+                                                        JADate startDatePeriod2, JADate endDatePeriode2) {
         LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1);
         LocalDate localDateFinPeriode1 = Dates.toDate(endDatePeriode1);
         LocalDate localDateDebutPeriod2 = Dates.toDate(startDatePeriod2);
@@ -229,14 +241,14 @@ public class APAcorImportationUtils {
                         localDateFinPeriode1.isEqual(localDateFinPeriod2));
     }
 
-    public static boolean checkPeriodesDansLeMemeMois(int dateDebutPeriode1, int dateFinPeriode1, int dateDebutPeriode2) throws JAException {
+    public static boolean  checkPeriodesDansLeMemeMois(int dateDebutPeriode1, int dateFinPeriode1, int dateDebutPeriode2) throws JAException {
         LocalDate dateLocalDebutPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode1)));
         LocalDate dateLocalFinPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateFinPeriode1)));
         LocalDate datePeriode2 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode2)));
-        return dateLocalDebutPeriode1.getMonth().equals(datePeriode2.getMonth()) || dateLocalFinPeriode1.getMonth().equals(datePeriode2.getMonth());
+        return dateLocalDebutPeriode1.getMonth() == datePeriode2.getMonth() || dateLocalFinPeriode1.getMonth() == datePeriode2.getMonth();
     }
 
-    public static IAPReferenceDataPrestation retrieveReferenceData(BSession session, PeriodeServiceApgType periode, String genreService) {
+    public static IAPReferenceDataPrestation retrieveReferenceData(BSession session, PeriodeApgType periode, String genreService) {
         IAPReferenceDataPrestation ref;
 
         try {
