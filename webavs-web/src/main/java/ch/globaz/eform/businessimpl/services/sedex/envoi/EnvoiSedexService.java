@@ -1,5 +1,8 @@
 package ch.globaz.eform.businessimpl.services.sedex.envoi;
 
+import ch.globaz.eform.business.GFEFormServiceLocator;
+import ch.globaz.eform.business.models.GFDaDossierModel;
+import ch.globaz.eform.business.search.GFDaDossierSearch;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
@@ -11,7 +14,12 @@ import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.ContactInformationType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import eform.ch.ech.xmlns.ech_0044_f._4.DatePartiallyKnownType;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
+import globaz.globall.db.BSession;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.smtp.JadeSmtpClient;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -21,12 +29,16 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class EnvoiSedexService {
@@ -38,32 +50,84 @@ public class EnvoiSedexService {
         this.viewBean = viewBean;
     }
 
-    public void createSedexMessage() throws DatatypeConfigurationException {
-        Sedex000102 sedex0001021 = new Sedex000102();
-        Message message = sedex0001021.createMessage(createHeader(), createContent());
+    public void createSedexMessage() {
+        try {
+            Sedex000102 sedex0001021 = new Sedex000102();
+            Message message = sedex0001021.createMessage(createHeader(), createContent());
+        } catch (Exception e) {
+            sendMail();
+        }
+    }
+    private HeaderType createHeader() {
+        //todo sprint 18 lier l'id avec une demande
+        try {
+            String id = "2";
+            GFDaDossierModel model = getModel(id);
+            HeaderType header = new HeaderType();
+            //TODO sprint 18 mapper les 3 données commentées
+//        header.setSenderId();
+//        header.setRecipientId(getSedexId(model.getCodeCaisse())); a faire sprint 2022.18
+//        header.setMessageId(); info généré soit par sm-client soit par nous a vérifier
+            header.setReferenceMessageId(Objects.isNull(model.getMessageId()) ? "" : model.getMessageId());
+            header.setBusinessProcessId(generateBusinessProcessId());
+            header.setOurBusinessReferenceId(Objects.isNull(model.getOurBusinessRefId()) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
+            header.setYourBusinessReferenceId(Objects.isNull(model.getYourBusinessRefId()) ? "" : model.getYourBusinessRefId());
+            header.setMessageType(SedexType2021Enum.TYPE_102.getMessageType());
+            header.setSubMessageType(SedexType2021Enum.TYPE_102.getSubMessageType());
+            header.setSendingApplication(sedex000102.getSendingApplicationType());
+            header.setSubject(createHeaderSubject());
+            header.setMessageDate(getDocumentDate());
+            header.setAction(SedexType2021Enum.TYPE_102.getAction());
+            header.getAttachment().addAll(getAttachmentTypeList());
+            header.setTestDeliveryFlag(SedexType2021Enum.TYPE_102.isTestDeliveryFlag());
+            header.setResponseExpected(SedexType2021Enum.TYPE_102.isResponseExpected());
+            header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
+            header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
+            header.setExtension(getExtensionType());
+
+            return header;
+
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    private HeaderType createHeader() throws DatatypeConfigurationException {
-        HeaderType header = new HeaderType();
-//        header.setSenderId();  info de la demande en db
-//        header.setRecipientId(); info de la demande en db
-//        header.setMessageId(); info de la demande en db
-//        header.setReferenceMessageId(); info de la demande en db
-//        header.setBusinessProcessId(); a créer
-//        header.setOurBusinessReferenceId(); a créer
-//        header.setYourBusinessReferenceId(); info de la demande en db
-        header.setMessageType(SedexType2021Enum.TYPE_102.getMessageType());
-        header.setSubMessageType(SedexType2021Enum.TYPE_102.getSubMessageType());
-        header.setSendingApplication(sedex000102.getSendingApplicationType());
-//        header.setSubject(); info de la demande en db
-        header.setMessageDate(getDocumentDate());
-        header.setAction(SedexType2021Enum.TYPE_102.getAction());
-        header.getAttachment().addAll(getAttachmentTypeList());
-        header.setTestDeliveryFlag(SedexType2021Enum.TYPE_102.isTestDeliveryFlag());
-        header.setResponseExpected(SedexType2021Enum.TYPE_102.isResponseExpected());
-        header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
-        header.setExtension(getExtensionType());
-        return header;
+    private GFDaDossierModel getModel(String id) {
+        try {
+            GFDaDossierSearch search = new GFDaDossierSearch();
+            search.setById(id);
+            GFEFormServiceLocator.getGFDaDossierDBService().search(search);
+            GFDaDossierModel model = Arrays.stream(search.getSearchResults())
+                    .map(o -> (GFDaDossierModel) o)
+                    .findFirst()
+                    .orElse(null);
+            return model;
+        } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String generateBusinessProcessId() {
+        return RandomStringUtils.randomAlphabetic(10);
+    }
+
+    private void updateGFFormulaireStatus(GFDaDossierModel model) {
+        //todo sprint 18 faire l'implementation
+//        try {
+//            if(model==null){
+//                // ajout du status dans la table correspondante
+//                GFEFormServiceLocator.gfDaDossierDBService().create();
+//            }else{
+////                update du status
+//        model.setStatus("Envoyé");
+//        model.setType("Envoi");
+//                GFEFormServiceLocator.gfDaDossierDBService().update(model);
+//            }
+//
+//        } catch (JadeApplicationServiceNotAvailableException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private List<AttachmentType> getAttachmentTypeList() throws DatatypeConfigurationException {
@@ -73,7 +137,7 @@ public class EnvoiSedexService {
 
         if (tiffFileNameList.size() < 1) {
             for (String fileName : fileNameList) {
-                attachmentTypeList.add(createAttachment(fileName,getAttachementFileTypeList(fileName)));
+                attachmentTypeList.add(createAttachment(fileName, getAttachementFileTypeList(fileName)));
             }
         } else {
             Map<String, List<String>> multipleTiffFiles = findMultipleTiffFiles(tiffFileNameList);
@@ -111,22 +175,30 @@ public class EnvoiSedexService {
         List<AttachmentType> attachmentTypeList = new LinkedList<>();
 
         for (String key : multipleTiffFiles.keySet()) {
-           attachmentTypeList.add(createAttachment(key,getMultipleAttachementFileTypeList(multipleTiffFiles.get(key))));
+            attachmentTypeList.add(createAttachment(key, getMultipleAttachementFileTypeList(multipleTiffFiles.get(key))));
         }
         return attachmentTypeList;
     }
+
     private AttachmentType createAttachment(String fileName, List<AttachmentFileType> attachmentTypeList) throws DatatypeConfigurationException {
         AttachmentType attachmentType = new AttachmentType();
-        attachmentType.setTitle("titre de test");
+        attachmentType.setDocumentType("01.10.11");
+        attachmentType.setTitle(createAttachmentTitle(attachmentType.getDocumentType()));
         attachmentType.setDocumentDate(getDocumentDate());
         attachmentType.setLeadingDocument(SedexType2021Enum.TYPE_102.isLeadingDocument());
         attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
         attachmentType.setDocumentFormat(FilenameUtils.getExtension(fileName));
-        attachmentType.setDocumentType("01.10.11");
         attachmentType.getFile().addAll(attachmentTypeList);
         return attachmentType;
     }
 
+    private String createAttachmentTitle(String documentType) {
+        return documentType + "-" + viewBean.getNomAssure() + " ," + viewBean.getPrenomAssure();
+    }
+
+    private String createHeaderSubject() {
+        return "demande de dossier CC " + "-" + viewBean.getNomAssure() + " ," + viewBean.getPrenomAssure();
+    }
 
     private XMLGregorianCalendar getDocumentDate() throws DatatypeConfigurationException {
         GregorianCalendar calendar = new GregorianCalendar();
@@ -137,28 +209,27 @@ public class EnvoiSedexService {
 
     private List<AttachmentFileType> getAttachementFileTypeList(String fileName) {
         List<AttachmentFileType> attachmentFileTypesList = new ArrayList<>();
-       attachmentFileTypesList.add(getAttachmentFileType(fileName,1));
-       return attachmentFileTypesList;
+        attachmentFileTypesList.add(getAttachmentFileType(fileName, 1));
+        return attachmentFileTypesList;
 
     }
 
     private List<AttachmentFileType> getMultipleAttachementFileTypeList(List<String> fileNameList) {
-//        int sortOrder = 1;
         List<AttachmentFileType> attachmentFileTypesList = new ArrayList<>();
         int sortOrder = 1;
 
         for (String fileName : fileNameList) {
-            attachmentFileTypesList.add(getAttachmentFileType(fileName,sortOrder));
+            attachmentFileTypesList.add(getAttachmentFileType(fileName, sortOrder));
             sortOrder++;
         }
         return attachmentFileTypesList;
     }
 
-    private AttachmentFileType getAttachmentFileType(String fileName, int sortOrder){
+    private AttachmentFileType getAttachmentFileType(String fileName, int sortOrder) {
         AttachmentFileType attachmentFileType = new AttachmentFileType();
         attachmentFileType.setPathFileName(fileName);
         attachmentFileType.setInternalSortOrder(BigInteger.valueOf(sortOrder));
-        return  attachmentFileType;
+        return attachmentFileType;
     }
 
     public ExtensionType getExtensionType() {
@@ -212,6 +283,15 @@ public class EnvoiSedexService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sendMail() {
+        try {
+            String[] files = null;
+            JadeSmtpClient.getInstance().sendMail(viewBean.getEmailGestionnaire(), "erreur creation message sedex", "l'envoi n'a pas pu être effectué à cause d'une erreur de la construction du message ", files);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
