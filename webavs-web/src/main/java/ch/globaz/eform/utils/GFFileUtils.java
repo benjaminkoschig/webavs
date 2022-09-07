@@ -55,7 +55,7 @@ public class GFFileUtils {
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
         String path = viewBean.getFilename();
         String filename = path.substring(path.lastIndexOf("\\") + 1);
-        File destDir = new File(WORK_PATH + FOLDER_UID);
+        String destDir = WORK_PATH + FOLDER_UID;
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals(FILE_TYPE_ZIP)) {

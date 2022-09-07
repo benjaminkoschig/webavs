@@ -33,11 +33,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public final static String ACTION_ENVOYER = "envoyer";
 
     @Override
-    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
-        super.actionAfficher(session, request, response, mainDispatcher);
-    }
-
-    @Override
     protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                     FWDispatcher mainDispatcher) throws ServletException, IOException {
 

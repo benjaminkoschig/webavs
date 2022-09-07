@@ -136,27 +136,29 @@ public class EnvoiSedexService {
     }
 
     private List<AttachmentFileType> getAttachementFileTypeList(String fileName) {
-        BigInteger BigInteger = new BigInteger("1");
         List<AttachmentFileType> attachmentFileTypesList = new ArrayList<>();
-        AttachmentFileType attachmentFileType = new AttachmentFileType();
-        attachmentFileType.setPathFileName(fileName);
-        attachmentFileType.setInternalSortOrder(BigInteger);
-        attachmentFileTypesList.add(attachmentFileType);
-        return attachmentFileTypesList;
+       attachmentFileTypesList.add(getAttachmentFileType(fileName,1));
+       return attachmentFileTypesList;
+
     }
 
     private List<AttachmentFileType> getMultipleAttachementFileTypeList(List<String> fileNameList) {
-        int sortOrder = 1;
+//        int sortOrder = 1;
         List<AttachmentFileType> attachmentFileTypesList = new ArrayList<>();
+        int sortOrder = 1;
 
-        for (String s : fileNameList) {
-            AttachmentFileType attachmentFileType = new AttachmentFileType();
-            attachmentFileType.setPathFileName(s);
-            attachmentFileType.setInternalSortOrder(BigInteger.valueOf(sortOrder));
-            attachmentFileTypesList.add(attachmentFileType);
-            ++sortOrder;
+        for (String fileName : fileNameList) {
+            attachmentFileTypesList.add(getAttachmentFileType(fileName,sortOrder));
+            sortOrder++;
         }
         return attachmentFileTypesList;
+    }
+
+    private AttachmentFileType getAttachmentFileType(String fileName, int sortOrder){
+        AttachmentFileType attachmentFileType = new AttachmentFileType();
+        attachmentFileType.setPathFileName(fileName);
+        attachmentFileType.setInternalSortOrder(BigInteger.valueOf(sortOrder));
+        return  attachmentFileType;
     }
 
     public ExtensionType getExtensionType() {
