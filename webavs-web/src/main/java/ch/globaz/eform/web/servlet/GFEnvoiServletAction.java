@@ -1,5 +1,6 @@
 package ch.globaz.eform.web.servlet;
 
+import ch.globaz.eform.businessimpl.services.sedex.envoi.EnvoiSedexService;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -25,28 +26,11 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public GFEnvoiServletAction(FWServlet aServlet) {
         super(aServlet);
     }
+
     public final static String ACTION_PATH = "eform.envoi.envoi";
     public final static String ACTION_UPLOAD = "upload";
     public final static String ACTION_REMOVEFILE = "removeFile";
-
-    @Override
-    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
-        super.actionAfficher(session, request, response, mainDispatcher);
-        FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
-        if (!(viewBean instanceof GFEnvoiViewBean)) {
-            viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
-            session.setAttribute("viewbean", viewBean);
-        }
-        try {
-
-            JSPUtils.setBeanProperties(request, viewBean);
-
-            mainDispatcher.dispatch(viewBean, getAction());
-
-        } catch (Exception e) {
-            LOG.error("Failed to prepare viewBean for actionChercher", e);
-        }
-    }
+    public final static String ACTION_ENVOYER = "envoyer";
 
     @Override
     protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -76,10 +60,10 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
 
             // Récupération du viewBean depuis la session
-            FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewbean");
+            FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewBean");
             if (!(viewBean instanceof GFEnvoiViewBean)) {
                 viewBean = FWViewBeanActionFactory.newInstance(getAction(), dispatcher.getPrefix());
-                session.setAttribute("viewbean", viewBean);
+                session.setAttribute("viewBean", viewBean);
             }
             // Copie des propriétés
             JSPUtils.setBeanProperties(request, viewBean);
@@ -88,6 +72,9 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
                 String fileName = (String) request.getParameter("fileName");
                 GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+            } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_ENVOYER)) {
+                EnvoiSedexService envoiSedexService = new EnvoiSedexService((GFEnvoiViewBean) viewBean);
+                envoiSedexService.createSedexMessage();
             }
 
             // Traitement
@@ -99,7 +86,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
-                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
+                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE) || actionPart.equals(ACTION_ENVOYER)) {
                     destination = this.getActionFullURL() + ".reAfficher";
                 }
             } else {

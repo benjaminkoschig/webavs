@@ -55,3 +55,6 @@ CREATE TABLE SCHEMA.GF_DA_DOSSIER
     PSPY 	                    VARCHAR(24) 	NOT NULL,
     PRIMARY KEY(ID)
 );
+
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('eform.dadossier.envoi.departement','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('eform.dadossier.envoi.telephone','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
