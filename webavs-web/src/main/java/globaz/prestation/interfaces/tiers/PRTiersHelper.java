@@ -1,6 +1,14 @@
 package globaz.prestation.interfaces.tiers;
 
-import ch.globaz.pyxis.business.model.*;
+import ch.globaz.pyxis.business.model.AdresseComplexModel;
+import ch.globaz.pyxis.business.model.AdresseSimpleModel;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.model.AvoirAdresseSimpleModel;
+import ch.globaz.pyxis.business.model.BanqueComplexModel;
+import ch.globaz.pyxis.business.model.BanqueSearchComplexModel;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.pyxis.domaine.DomaineApplication;
 import com.google.gson.Gson;
@@ -11,7 +19,11 @@ import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -33,7 +45,18 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
-import globaz.pyxis.api.*;
+import globaz.pyxis.api.ITIAbstractAdresseData;
+import globaz.pyxis.api.ITIAdministration;
+import globaz.pyxis.api.ITIApplication;
+import globaz.pyxis.api.ITIAvoirAdresse;
+import globaz.pyxis.api.ITILocalite;
+import globaz.pyxis.api.ITIPays;
+import globaz.pyxis.api.ITIPersonne;
+import globaz.pyxis.api.ITIPersonneAvs;
+import globaz.pyxis.api.ITIPersonneAvsAdresse;
+import globaz.pyxis.api.ITIRole;
+import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.api.ITITiersAdresse;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
@@ -44,12 +67,28 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
-import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.db.tiers.TIAdministrationAdresse;
+import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
+import globaz.pyxis.db.tiers.TIAdministrationManager;
+import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.pyxis.db.tiers.TIAvoirContact;
+import globaz.pyxis.db.tiers.TIContact;
+import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
+import globaz.pyxis.db.tiers.TIMoyenCommunication;
+import globaz.pyxis.db.tiers.TIPersonneAvsManager;
+import globaz.pyxis.db.tiers.TITiers;
+import globaz.pyxis.db.tiers.TITiersAdresseManager;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
-import globaz.pyxis.web.DTO.*;
+import globaz.pyxis.web.DTO.PYAddressDTO;
+import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
+import globaz.pyxis.web.DTO.PYPaymentAddressDTO;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
@@ -57,7 +96,20 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
@@ -364,10 +416,98 @@ public class PRTiersHelper {
         if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
             LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
             throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
-
         } else if (!JadeThread.logIsEmpty()) {
             LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
             throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+        }
+    }
+
+    /**
+     * Methode pour mettre à jour un moyen de communication (table TIMCOMP).
+     * <p>
+     * Seul la valeur (newMoyen) peut être modifiée.
+     * @param session
+     * @param idContact clé composite
+     * @param typeCommunication clé composite
+     * @param domaineApplication clé composite
+     * @param newMoyen valeur à mettre à jour
+     * @throws Exception
+     */
+    public static final void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
+        // Get the contact
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setIdApplication(domaineApplication);
+        tiMoyenCommunication.setIdContact(idContact);
+        tiMoyenCommunication.setTypeCommunication(typeCommunication);
+        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
+
+        // Update the contact
+        tiMoyenCommunication.setMoyen(newMoyen);
+        //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
+        //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
+        tiMoyenCommunication.update(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Méthode pour mettre à jour un contact (table TICONTP).
+     *
+     * @param session
+     * @param idContact clé primaire
+     * @param newLastName valeur à mettre à jour
+     * @param newFirstName valeur à mettre à jour
+     * @throws Exception
+     */
+    public static final void updateContact(BSession session, String idContact, String newLastName, String newFirstName) throws Exception {
+        TIContact tiContact = new TIContact();
+        tiContact.setIdContact(idContact);
+        tiContact.retrieve(session.getCurrentThreadTransaction());
+
+        tiContact.setNom(newLastName);
+        tiContact.setPrenom(newFirstName);
+        tiContact.update(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Méthode pour mettre à jour un tiers (page 2 - contacts/moyens de communication)
+     *
+     * @param session
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public static final void updateTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
+        for (PYContactDTO contact: dto.getContacts()) {
+            TIContact tiContact = new TIContact();
+            tiContact.setIdContact(contact.getId());
+            tiContact.retrieve(session.getCurrentThreadTransaction());
+            if (tiContact.getId().isEmpty()) {
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le contact à modifier n'existe pas");
+            }
+
+            updateContact(session, contact.getId(), contact.getLastName(), contact.getFirstName());
+
+            Vector<PYMeanOfCommunicationDTO> meansOfCommunication = contact.getMeansOfCommunication();
+            for (PYMeanOfCommunicationDTO mean: meansOfCommunication) {
+                // Check that mean's id belongs to the contact (i.e. check that a Contact/TICONTP with HLICON same as MoyenDeCommunication/TIMCOMP exists)
+                TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+                tiMoyenCommunication.setIdApplication(mean.getApplicationDomain());
+                tiMoyenCommunication.setIdContact(contact.getId());
+                tiMoyenCommunication.setTypeCommunication(mean.getMeanOfCommunicationType());
+                tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
+                if (tiMoyenCommunication.getId().isEmpty()) {
+                    throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le moyen de communication à modifier n'existe pas");
+                }
+
+                updateMeanOfCommunication(session, contact.getId(), mean.getMeanOfCommunicationType(), mean.getApplicationDomain(), mean.getMeanOfCommunicationValue());
+            }
+        }
+
+        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
+            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
+        } else if (!JadeThread.logIsEmpty()) {
+            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
+            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
         }
     }
 
@@ -804,7 +944,7 @@ public class PRTiersHelper {
 
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
                 LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");
-                throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
 
             } else if (!JadeThread.logIsEmpty()) {
                 LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");

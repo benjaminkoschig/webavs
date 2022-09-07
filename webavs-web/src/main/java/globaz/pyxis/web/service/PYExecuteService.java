@@ -62,7 +62,10 @@ public class PYExecuteService extends BProcess {
         // TODO: upgrade the updating. If at least one field is present then update. Faire un vecteur de champs pour les update comme pour la création et isValid.
         try {
             PRTiersHelper.updateTiersPage1(getSession(), dto);
-            PRTiersHelper.updateTiersPaymentAddress(getSession(), dto);
+            if (!dto.getPaymentAddress().isEmpty())
+                PRTiersHelper.updateTiersPaymentAddress(getSession(), dto);
+            if (!dto.getContacts().isEmpty())
+                PRTiersHelper.updateTiersPage2(getSession(), dto);
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);

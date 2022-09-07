@@ -10,5 +10,8 @@ import java.util.Vector;
  */
 @Data
 public class PYContactDTO {
+    private String id;
+    private String firstName;
+    private String lastName;
     private Vector<PYMeanOfCommunicationDTO> meansOfCommunication = new Vector();
 }
