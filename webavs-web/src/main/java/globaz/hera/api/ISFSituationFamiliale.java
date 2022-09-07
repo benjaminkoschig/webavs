@@ -192,7 +192,7 @@ public interface ISFSituationFamiliale {
      * @throws Exception
      */
     ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers) throws Exception;
-
+    ISFMembreFamilleRequerant[] getMembresFamilleRequerantEtendues(String idTiers) throws Exception;
     /**
      * <p>
      * Renvoie les membres de la famille du requérant et le requérant lui-même pour son idTiers donné.<br/>
@@ -214,6 +214,8 @@ public interface ISFSituationFamiliale {
      * @throws Exception
      */
     ISFMembreFamilleRequerant[] getMembresFamilleRequerant(String idTiers, String date) throws Exception;
+
+    ISFMembreFamilleRequerant[] getMembresFamilleRequerantEtendues(String idTiers, String date) throws Exception;
 
     /**
      * <p>
