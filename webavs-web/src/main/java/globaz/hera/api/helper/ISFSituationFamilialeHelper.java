@@ -191,6 +191,14 @@ public class ISFSituationFamilialeHelper extends GlobazHelper implements ISFSitu
 
         return mbrFam;
     }
+    @Override
+    public ISFMembreFamilleRequerant[] getMembresFamilleRequerantEtendues(String idTiers) throws Exception {
+        Object result = _getObject("getMembresFamilleRequerantEtendues", new Object[] { idTiers });
+        ISFMembreFamilleRequerant[] mbrFam = (ISFMembreFamilleRequerant[]) result;
+
+        return mbrFam;
+    }
+
 
     /**
      * (non-Javadoc)
@@ -214,6 +222,14 @@ public class ISFSituationFamilialeHelper extends GlobazHelper implements ISFSitu
 
         return mbrFam;
     }
+    @Override
+    public ISFMembreFamilleRequerant[] getMembresFamilleRequerantEtendues(String idTiers, String date) throws Exception {
+        Object result = _getObject("getMembresFamilleRequerantEtendues", new Object[] { idTiers, date });
+        ISFMembreFamilleRequerant[] mbrFam = (ISFMembreFamilleRequerant[]) result;
+
+        return mbrFam;
+    }
+
 
     /*
      * (non-Javadoc)

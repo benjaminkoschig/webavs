@@ -114,7 +114,7 @@ public class GFFormulaireHelper extends FWHelper {
             GFFormulaireViewBean bean = (GFFormulaireViewBean) viewBean;
             try {
                 if (bean.getFormulaire().isNew()) {
-                    EFormFileService fileService =EFormFileService.instance();
+                    EFormFileService fileService = new EFormFileService(GFApplication.EFORM_HOST_FILE_SERVER);
 
                     bean.retrieve();
                     if(!bean.getAttachement().exists()) {

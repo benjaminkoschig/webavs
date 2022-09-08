@@ -178,6 +178,17 @@ public class Dates {
     }
 
     /**
+     * Permet d'extraire la date des champs cspy et pspy
+     * @param spyDate valeur spy
+     * @return la date en LocalDate
+     */
+    public static LocalDate extractSpyDate(String spyDate) {
+        return LocalDate.of(Integer.parseInt(spyDate.substring(0,4)),
+                Integer.parseInt(spyDate.substring(4,6)),
+                Integer.parseInt(spyDate.substring(6,8)));
+    }
+
+    /**
      * Convertie une LocalDate en JaDate.
      *
      * @param date La date à convertir.

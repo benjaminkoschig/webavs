@@ -1,33 +1,44 @@
 package ch.globaz.common.util;
 
-import globaz.commons.nss.NSUtil;
 import org.apache.commons.lang3.StringUtils;
 
-public interface NSSUtils {
-    String AVS_CODE_PAYS = "756";
+public final class NSSUtils {
+    private NSSUtils(){}
+    public static final String AVS_CODE_PAYS = "756";
 
-    static boolean checkNSS(String nss) {
-        String unformatNss = NSUtil.unFormatAVS(nss);
+    public static boolean checkNSS(String nss) {
+        String unformatedNss = unFormatNss(nss);
 
-        if (!StringUtils.isNumeric(unformatNss) || unformatNss.length() != 13) {
+        if (!StringUtils.isNumeric(unformatedNss) || unformatedNss.length() != 13) {
             return false;
         }
 
-        if (!StringUtils.startsWith(unformatNss, AVS_CODE_PAYS)) {
+        if (!StringUtils.startsWith(unformatedNss, AVS_CODE_PAYS)) {
             return false;
         }
 
         int nbControle = 0;
         for (int i = 11; i > -1; i--) {
             if (i % 2 == 0) {
-                nbControle = nbControle + Integer.parseInt(String.valueOf(unformatNss.charAt(i)));
+                nbControle = nbControle + Integer.parseInt(String.valueOf(unformatedNss.charAt(i)));
             } else {
-                nbControle = nbControle + Integer.parseInt(String.valueOf(unformatNss.charAt(i))) * 3;
+                nbControle = nbControle + Integer.parseInt(String.valueOf(unformatedNss.charAt(i))) * 3;
             }
         }
 
         int numControle = nbControle % 10 == 0 ? 0 : 10 - nbControle % 10;
 
-        return StringUtils.endsWith(unformatNss, String.valueOf(numControle));
+        return StringUtils.endsWith(unformatedNss, String.valueOf(numControle));
+    }
+
+    public static String unFormatNss(String nss) {
+        if (StringUtils.isEmpty(nss)) {throw new IllegalArgumentException();}
+        return nss.replaceAll("\\.", "");
+    }
+
+    public static String formatNss(String nss) {
+        if (StringUtils.isEmpty(nss) || !checkNSS(nss)) {throw new IllegalArgumentException();}
+
+        return unFormatNss(nss).replaceAll("^(\\d{3})(\\d{4})(\\d{4})(\\d{2})$", "$1.$2.$3.$4");
     }
 }

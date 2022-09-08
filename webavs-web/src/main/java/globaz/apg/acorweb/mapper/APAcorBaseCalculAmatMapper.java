@@ -4,6 +4,7 @@ import acor.xsd.in.apg.BasesCalculAMat;
 import ch.globaz.common.util.Dates;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationFamilialeMat;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.globall.db.BSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,6 @@ public class APAcorBaseCalculAmatMapper {
         List<APSituationFamilialeMat> situationsFamilialeAPG = APLoader.loadSituationFamillialeMat(droit.getIdDroit(), session);
         basesCalcul.setAdoption(situationsFamilialeAPG.stream().allMatch(APSituationFamilialeMat::getIsAdoption));
 
-//        basesCalcul.setAssuranceGE();
         basesCalcul.setNombreJoursHospitalisationEnfant(Integer.valueOf(droit.getJoursSupplementaires()));
 
         return basesCalcul;

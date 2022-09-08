@@ -1,5 +1,6 @@
 package ch.globaz.eform.businessimpl.services.sedex.handlers;
 
+import ch.globaz.eform.web.application.GFApplication;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import ch.globaz.common.sftp.exception.SFtpOperationException;
 import ch.globaz.common.util.Dates;
@@ -57,10 +58,10 @@ public abstract class GFEFormHandler implements GFSedexhandler {
     }
 
     @Override
-    public void save(ValidationResult result) throws RuntimeException {
-        EFormFileService fileService = EFormFileService.instance();
+    public void create(ValidationResult result) throws RuntimeException {
+        EFormFileService fileService = new EFormFileService(GFApplication.EFORM_HOST_FILE_SERVER);
         try {
-            fileService.send(zipFile.getFile().getAbsolutePath(), GFFileUtils.generateFilePath(model));
+            fileService.send(zipFile.getFile().getAbsolutePath(), GFFileUtils.generateEFormFilePath(model));
             setFormulaireData(result);
         } catch (SFtpOperationException e) {
             LOG.error("GFFormHandler#saveDataInDb - Erreur lors de l'envoie du fichier sur le server FTP : {}", model.getMessageId(), e);
@@ -70,13 +71,17 @@ public abstract class GFEFormHandler implements GFSedexhandler {
 
             //Nétoyage du fichier si l'enregistrement en db c'est mal passé.
             try {
-                fileService.remove(GFFileUtils.generateFilePath(model) + File.separator + zipFile.getName());
+                fileService.remove(GFFileUtils.generateEFormFilePath(model) + File.separator + zipFile.getName());
             }catch (Exception ex) {
-                LOG.error("GFFormHandler#saveDataInDb - Le nétoyage du fichier a échoué", ex);
+                LOG.error("GFFormHandler#saveDataInDb - Le nettoyage du fichier a échoué", ex);
             }
 
             throw new JadeApplicationRuntimeException(e);
         }
+    }
+
+    @Override
+    public void update(ValidationResult result) {
     }
 
     private void setFormulaireData(ValidationResult result) throws Exception {

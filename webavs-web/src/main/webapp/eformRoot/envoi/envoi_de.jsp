@@ -1,6 +1,7 @@
 <%@ page import="globaz.eform.vb.envoi.GFEnvoiViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
+<%@ page import="ch.globaz.eform.properties.GFProperties" %>
 
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -103,9 +104,9 @@
         </div>
         <div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
             <div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="Service des rentes" readonly="true"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_DEPARTEMENT.getValue()%>" readonly="true"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div>
-            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="0328440000" readonly="true"/></div>
+            <div style="display: table-cell;width: 310px;"><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_TELEPHONE.getValue()%>" readonly="true"/></div>
             <div style="display: table-cell;width: 140px;"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div>
             <div style="display: table-cell;width: 310px;"><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" readonly="true"/></div>
         </div>
@@ -232,7 +233,7 @@
 				<div class="row-fluid">
 					<div style="float:right;margin-top: 20px">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="validate()">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="top.fr_main.location.href='http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.envoyer'">
 					</div>
 				</div>
 			</div>

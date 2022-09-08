@@ -44,12 +44,12 @@
 <%-- tpl:insert attribute="zoneMain" --%>
 <tr>
 	<td style="width:150px">
-		<LABEL for="byNss">
+		<LABEL for="likeNss">
 			<ct:FWLabel key="NSS"/>
 		</LABEL>
 	</td>
 	<td>
-		<ct:widget id='byNss' name='byNss'>
+		<ct:widget id='likeNss' name='likeNss'>
 			<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 				<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 				<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>

@@ -3851,7 +3851,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     /**
      * Point d'entrée publique pour la creation des données fincières devant être mise à jour pour une version de droit
      *
-     * @param versionDroit
+
      * @param donneeFinanciere
      * @param service
      * @throws DroitException
@@ -4567,11 +4567,14 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             String dateRechecheMembre = JadeDateUtil.getLastDateOfMonth(droit.getDemande().getSimpleDemande()
                     .getDateDepot());
 
-            MembreFamilleVO[] searchMembresFamilleDisponibles = HeraServiceLocator.getMembreFamilleService()
-                    .searchMembresFamilleRequerantDomaineRentes(idTiersRequerant, dateRechecheMembre);
+
+
+            MembreFamilleVO[] searchMembresFamilleDisponiblesEtendues = HeraServiceLocator.getMembreFamilleService()
+                    .searchMembresFamilleRequerantDomaineRentesEtendues(idTiersRequerant, dateRechecheMembre);
 
             MembreFamilleVO[] mfDisponibles = HeraServiceLocator.getMembreFamilleService().filtreMembreFamilleWithDate(
-                    searchMembresFamilleDisponibles, dateRechecheMembre);
+                    searchMembresFamilleDisponiblesEtendues, dateRechecheMembre);
+
 
             List<MembreFamilleVO> mfFiltre = new ArrayList<MembreFamilleVO>();
 
@@ -4642,6 +4645,10 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             }
         }
         return droit;
+    }
+
+    private String getIdTiersConjoint(MembreFamilleVO[] searchMembresFamilleDisponibles) {
+        return Arrays.stream(searchMembresFamilleDisponibles).filter(membreFamilleVO -> ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT.equals(membreFamilleVO.getRelationAuRequerant())).findFirst().map(MembreFamilleVO::getIdTiers).orElse("");
     }
 
     @Override

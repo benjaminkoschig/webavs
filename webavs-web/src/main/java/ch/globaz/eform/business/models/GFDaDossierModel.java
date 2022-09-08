@@ -1,14 +1,11 @@
 package ch.globaz.eform.business.models;
 
-import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.validation.ValidationError;
 import ch.globaz.common.validation.ValidationResult;
-import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
 import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeStringUtil;
@@ -63,7 +60,7 @@ public class GFDaDossierModel extends JadeSimpleModel {
         } else {
             FWParametersSystemCodeManager gfDaDossierType = new FWParametersSystemCodeManager();
             gfDaDossierType.setForActif(true);
-            gfDaDossierType.setForCodeUtilisateur(GFTypeDADossier.getTypeByCodeSystem(type).getCode());
+            gfDaDossierType.setForCodeUtilisateur(GFTypeDADossier.getByCodeSystem(type).getCode());
             gfDaDossierType.setForIdGroupe("GFDATYPE");
             gfDaDossierType.setSession(BSessionUtil.getSessionFromThreadContext());
 
@@ -82,7 +79,7 @@ public class GFDaDossierModel extends JadeSimpleModel {
         } else {
             FWParametersSystemCodeManager gfDaDossierStatus = new FWParametersSystemCodeManager();
             gfDaDossierStatus.setForActif(true);
-            gfDaDossierStatus.setForCodeUtilisateur(GFStatusDADossier.getStatusByCodeSystem(status).getCode());
+            gfDaDossierStatus.setForCodeUtilisateur(GFStatusDADossier.getByCodeSystem(status).getCode());
             gfDaDossierStatus.setForIdGroupe("GFDASTATUS");
             gfDaDossierStatus.setSession(BSessionUtil.getSessionFromThreadContext());
 

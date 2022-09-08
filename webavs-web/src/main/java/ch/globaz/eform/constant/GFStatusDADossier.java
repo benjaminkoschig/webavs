@@ -32,14 +32,14 @@ public enum GFStatusDADossier {
         return code;
     }
 
-    public static GFStatusDADossier getStatusByCodeSystem(String codeSystem) {
+    public static GFStatusDADossier getByCodeSystem(String codeSystem) {
         return Arrays.stream(GFStatusDADossier.values())
                 .filter(status -> status.codeSystem.equals(codeSystem))
                 .findFirst()
                 .orElse(BLANK);
     }
 
-    public static GFStatusDADossier getStatusByCode(String code) {
+    public static GFStatusDADossier getByCode(String code) {
         return Arrays.stream(GFStatusDADossier.values())
                 .filter(status -> status.code.equals(code))
                 .findFirst()

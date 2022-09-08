@@ -22,10 +22,10 @@ import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.prestation.acor.PRACORConst;
-import globaz.prestation.acor.PRACORException;
 import globaz.prestation.tools.PRSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -56,7 +56,6 @@ public class APAcorRevenuMapper {
                     case ETAT_NORMAL:
                         if (!JAUtil.isDateEmpty(sitPro.getDateDebut())) {
                             dateFin = Dates.formatSwiss(Dates.toDate(sitPro.getDateDebut()).minusDays(1));
-                            ;
                             forcer100Pourcent = true;
                             etat = ETAT_PENDANT_MONTANT_VERSE;
                         } else if (!JAUtil.isDateEmpty(sitPro.getDateFin())) {
@@ -92,7 +91,7 @@ public class APAcorRevenuMapper {
 
                 }
                 RevenuAPG revenu = mapRevenu(sitPro, forcer100Pourcent, session);
-                if (sitPro.getIsPourcentAutreRemun()) {
+                if (Boolean.TRUE.equals(sitPro.getIsPourcentAutreRemun())) {
                     FWCurrency sal = new FWCurrency();
                     // on ajoute le salaire de base
                     sal.add(revenu.getSalaire());
@@ -135,13 +134,20 @@ public class APAcorRevenuMapper {
         revenu.setEmployeur(employeurAPG);
 
         revenu.setPrestationNature(Double.valueOf(sitPro.getSalaireNature()));
-        revenu.setTypePrestationNature(Integer.valueOf(PRACORConst.csPeriodiciteSalaireToAcor(sitPro.getPeriodiciteSalaireNature())));
-        if (!sitPro.getIsPourcentAutreRemun().booleanValue()) {
+        String typePrestationNature = PRACORConst.csPeriodiciteSalaireToAcor(sitPro.getPeriodiciteSalaireNature());
+        if(StringUtils.isEmpty(typePrestationNature) || !StringUtils.isNumeric(typePrestationNature)){
+            typePrestationNature = "1";
+        }
+        revenu.setTypePrestationNature(Integer.valueOf(typePrestationNature));
+        if (Boolean.FALSE.equals(sitPro.getIsPourcentAutreRemun())) {
             // 8. 13e, gratifications, autre salaire
             revenu.setSalaireAutre(Double.valueOf(sitPro.getAutreRemuneration()));
-            revenu.setTypeSalaireAutre(Integer.valueOf(PRACORConst.csPeriodiciteSalaireToAcor(sitPro.getPeriodiciteAutreRemun())));
+            String typeSalaireAutre = PRACORConst.csPeriodiciteSalaireToAcor(sitPro.getPeriodiciteAutreRemun());
+            if(StringUtils.isEmpty(typeSalaireAutre) || !StringUtils.isNumeric(typeSalaireAutre)){
+                typeSalaireAutre = "1";
+            }
+            revenu.setTypeSalaireAutre(Integer.valueOf(typeSalaireAutre));
         }
-//        revenu.setSalaireIrregulier();
         revenu.setCotisationsAC(false);
         revenu.setCotisationsAVSAIAPG(false);
         revenu.setCotisationsLFA(false);
@@ -151,42 +157,42 @@ public class APAcorRevenuMapper {
     private RevenuAPG buildRevenu(APSituationProfessionnelle sitPro, boolean forcer100Pourcent, BSession session) {
         APSalaireAdapter adapter = new APSalaireAdapter(sitPro);
         RevenuAPG revenu = new RevenuAPG();
-        if (sitPro.getIsIndependant().booleanValue()) {
+        if (Boolean.TRUE.equals(sitPro.getIsIndependant())) {
             revenu.setSalaire(Double.valueOf(sitPro.getRevenuIndependant()));
-            revenu.setTypeSalaire(Integer.valueOf(PRACORConst.CA_TYPE_SALAIRE_ANNUEL));
+            revenu.setTypeSalaire(Integer.parseInt(PRACORConst.CA_TYPE_SALAIRE_ANNUEL));
 //            revenuAPG.setNombreHeuresHebdomadaires(); -> 0 ?
             revenu.setPourcentSalaireVerse(POURCENT_TOTAL_VERSE);
             revenu.setMontantSalaireVerse(Double.valueOf(sitPro.getRevenuIndependant()));
             revenu.setTypeSalaireVerse(Integer.valueOf(PRACORConst.CA_TYPE_SALAIRE_ANNUEL));
-            revenu.setStatut(Integer.valueOf(PRACORConst.CA_STATUT_INDEPENDANT));
-            revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_POURCENTAGE));
+            revenu.setStatut(Integer.parseInt(PRACORConst.CA_STATUT_INDEPENDANT));
+            revenu.setVerseAQui(Integer.parseInt(PRACORConst.CA_VERSEMENT_POURCENTAGE));
         } else {
             APSalaire salaire = adapter.salairePrincipal();
-            revenu.setSalaire(Double.valueOf(salaire.getMontant()));
+            revenu.setSalaire(Double.parseDouble(salaire.getMontant()));
             revenu.setTypeSalaire(Integer.parseInt(PRACORConst.csPeriodiciteSalaireToAcor(salaire.getCsPeriodiciteSalaire())));
             revenu.setNombreHeuresHebdomadaires(roundNombreHeureSemaine(sitPro.getHeuresSemaine()));
-            revenu.setStatut(Integer.valueOf(PRACORConst.CA_STATUT_SALARIE));
+            revenu.setStatut(Integer.parseInt(PRACORConst.CA_STATUT_SALARIE));
             if (!forcer100Pourcent && (adapter.montantVerse() != null)) {
-                revenu.setPourcentSalaireVerse(JANumberFormatter.round(Double.valueOf(adapter.montantVerse().getPourcentage()), 0.01, 2,
+                revenu.setPourcentSalaireVerse(JANumberFormatter.round(Double.parseDouble(adapter.montantVerse().getPourcentage()), 0.01, 2,
                         JANumberFormatter.NEAR));
                 revenu.setMontantSalaireVerse(Double.valueOf(adapter.montantVerse().getMontant()));
                 revenu.setTypeSalaireVerse(Integer.valueOf(PRACORConst.csPeriodiciteSalaireToAcor(adapter.montantVerse().getCsPeriodiciteSalaire())));
-                revenu.setVerseAQui(Integer.valueOf(adapter.montantVerse().isPourcent() ? PRACORConst.CA_VERSEMENT_POURCENTAGE
+                revenu.setVerseAQui(Integer.parseInt(adapter.montantVerse().isPourcent() ? PRACORConst.CA_VERSEMENT_POURCENTAGE
                         : PRACORConst.CA_VERSEMENT_MONTANT));
             } else {
                 revenu.setPourcentSalaireVerse(POURCENT_TOTAL_VERSE);
                 revenu.setMontantSalaireVerse(Double.valueOf(adapter.salairePrincipal().getMontant()));
                 revenu.setTypeSalaireVerse(Integer.valueOf(PRACORConst.csPeriodiciteSalaireToAcor(adapter.salairePrincipal().getCsPeriodiciteSalaire())));
-                revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_POURCENTAGE));
+                revenu.setVerseAQui(Integer.parseInt(PRACORConst.CA_VERSEMENT_POURCENTAGE));
             }
         }
-        if (!sitPro.getIsVersementEmployeur().booleanValue()) {
+        if (Boolean.FALSE.equals(sitPro.getIsVersementEmployeur())) {
             // écraser le type de paiement si la prestation doit etre versée à
             // l'assuré
-            revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_ASSURE));
+            revenu.setVerseAQui(Integer.parseInt(PRACORConst.CA_VERSEMENT_ASSURE));
         }
 
-        if (sitPro.getIsAllocationMax().booleanValue()) {
+        if (Boolean.TRUE.equals(sitPro.getIsAllocationMax())) {
             // ecraser les montants si on veut l'allocation max.
 
             try {
@@ -204,14 +210,14 @@ public class APAcorRevenuMapper {
                             new JADate(droit.getDateFinDroit())).getMontantJournalierMax();
                 }
 
-                revenu.setSalaire(Double.valueOf(montantMax.getBigDecimalValue().multiply(new BigDecimal(40d)).toString()));
+                revenu.setSalaire(Double.parseDouble(montantMax.getBigDecimalValue().multiply(BigDecimal.valueOf(40d)).toString()));
             } catch (Exception e) {
                 LOG.error("ERROR_CHARGEMENT_MONTANT_MAXIMUM", e);
                 throw new CommonTechnicalException("ERROR_CHARGEMENT_MONTANT_MAXIMUM", e);
             }
-            revenu.setTypeSalaire(Integer.valueOf(PRACORConst.CA_TYPE_SALAIRE_MENSUEL));
+            revenu.setTypeSalaire(Integer.parseInt(PRACORConst.CA_TYPE_SALAIRE_MENSUEL));
             revenu.setPourcentSalaireVerse(POURCENT_TOTAL_VERSE);
-            revenu.setVerseAQui(Integer.valueOf(PRACORConst.CA_VERSEMENT_POURCENTAGE));
+            revenu.setVerseAQui(Integer.parseInt(PRACORConst.CA_VERSEMENT_POURCENTAGE));
         }
         return revenu;
     }
@@ -221,15 +227,15 @@ public class APAcorRevenuMapper {
     // sinon au 1 le plus proche
     private Double roundNombreHeureSemaine(String heureSemaine) {
         if (heureSemaine.lastIndexOf(".") == -1) {
-            return JANumberFormatter.round(Double.valueOf(heureSemaine), 1, 0, JANumberFormatter.NEAR);
+            return JANumberFormatter.round(Double.parseDouble(heureSemaine), 1, 0, JANumberFormatter.NEAR);
         } else {
-            return JANumberFormatter.round(Double.valueOf(heureSemaine), 0.1, 1, JANumberFormatter.NEAR);
+            return JANumberFormatter.round(Double.parseDouble(heureSemaine), 0.1, 1, JANumberFormatter.NEAR);
         }
     }
 
     private String buildNomAffilie(APEmployeur employeur, BSession session) {
 
-        String nomAffilie = null;
+        String nomAffilie;
         try {
             nomAffilie = employeur.loadNom();
         } catch (Exception e) {
@@ -268,27 +274,4 @@ public class APAcorRevenuMapper {
         }
         return nomAffilie;
     }
-
-    public long nbContrats(String noAffilie, BSession session) throws PRACORException {
-        return situationProfessionnelles.stream().filter(s -> loadNumeroWithRunTimeException(s, session).equals(noAffilie)).count();
-    }
-
-    private APEmployeur loadEmployeurWithRunTimeException(APSituationProfessionnelle situationProfessionnelle, BSession session) {
-        try {
-            return situationProfessionnelle.loadEmployeur();
-        } catch (Exception e) {
-            LOG.error(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + situationProfessionnelle.getIdEmployeur(), e);
-            throw new CommonTechnicalException(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + situationProfessionnelle.getIdEmployeur(), e);
-        }
-    }
-
-    private String loadNumeroWithRunTimeException(APSituationProfessionnelle situationProfessionnelle, BSession session) {
-        try {
-            return situationProfessionnelle.loadEmployeur().loadNumero();
-        } catch (Exception e) {
-            LOG.error(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + situationProfessionnelle.getIdEmployeur(), e);
-            throw new CommonTechnicalException(session.getLabel("ERREUR_CHARGEMENT_EMPLOYEUR") + situationProfessionnelle.getIdEmployeur(), e);
-        }
-    }
-
 }

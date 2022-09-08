@@ -20,6 +20,8 @@ public class GFApplication extends BApplication {
     public static final String APPLICATION_NAME = "EFORM";
     public static final String APPLICATION_PREFIX = "GF";
     public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
+    public static final String EFORM_HOST_FILE_SERVER = "EFormHostService";
+    public static final String DA_DOSSIER_HOST_FILE_SERVER = "DaDossierHostService";
 
     /**
      * Constructeur
@@ -62,5 +64,6 @@ public class GFApplication extends BApplication {
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_CHANGE_STATUT, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_UPLOAD, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_REMOVEFILE, FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
     }
 }
