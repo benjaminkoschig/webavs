@@ -53,25 +53,29 @@ public class EnvoiSedexService {
     public void createSedexMessage() {
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
-            Message message = sedex0001021.createMessage(createHeader(), createContent());
+            String id = "1";
+            GFDaDossierModel model = getModel(id);
+            Message message = sedex0001021.createMessage(createHeader(model), createContent());
+            updateGFFormulaireStatus(model);
+
         } catch (Exception e) {
             sendMail();
         }
     }
-    private HeaderType createHeader() {
+    private HeaderType createHeader(GFDaDossierModel model) {
         //todo sprint 18 lier l'id avec une demande
         try {
-            String id = "2";
-            GFDaDossierModel model = getModel(id);
+//            String id = "2";
+//            GFDaDossierModel model = getModel(id);
             HeaderType header = new HeaderType();
             //TODO sprint 18 mapper les 3 données commentées
 //        header.setSenderId();
 //        header.setRecipientId(getSedexId(model.getCodeCaisse())); a faire sprint 2022.18
 //        header.setMessageId(); info généré soit par sm-client soit par nous a vérifier
-            header.setReferenceMessageId(Objects.isNull(model.getMessageId()) ? "" : model.getMessageId());
+            header.setReferenceMessageId(Objects.isNull(model) ? "" : model.getMessageId());
             header.setBusinessProcessId(generateBusinessProcessId());
-            header.setOurBusinessReferenceId(Objects.isNull(model.getOurBusinessRefId()) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
-            header.setYourBusinessReferenceId(Objects.isNull(model.getYourBusinessRefId()) ? "" : model.getYourBusinessRefId());
+            header.setOurBusinessReferenceId(Objects.isNull(model) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
+            header.setYourBusinessReferenceId(Objects.isNull(model) ? "" : model.getYourBusinessRefId());
             header.setMessageType(SedexType2021Enum.TYPE_102.getMessageType());
             header.setSubMessageType(SedexType2021Enum.TYPE_102.getSubMessageType());
             header.setSendingApplication(sedex000102.getSendingApplicationType());
@@ -113,21 +117,29 @@ public class EnvoiSedexService {
     }
 
     private void updateGFFormulaireStatus(GFDaDossierModel model) {
-        //todo sprint 18 faire l'implementation
-//        try {
-//            if(model==null){
-//                // ajout du status dans la table correspondante
-//                GFEFormServiceLocator.gfDaDossierDBService().create();
-//            }else{
-////                update du status
-//        model.setStatus("Envoyé");
-//        model.setType("Envoi");
-//                GFEFormServiceLocator.gfDaDossierDBService().update(model);
-//            }
-//
-//        } catch (JadeApplicationServiceNotAvailableException e) {
-//            throw new RuntimeException(e);
-//        }
+
+        try {
+            if(Objects.isNull(model)){
+                GFDaDossierModel gfDaDossierModel = new GFDaDossierModel();
+                gfDaDossierModel.setType("Envoi");
+                gfDaDossierModel.setStatus("Envoyé");
+                gfDaDossierModel.setCodeCaisse(viewBean.getCaisseDestinatrice());
+                gfDaDossierModel.setNssAffilier(viewBean.getNss());
+                gfDaDossierModel.setOurBusinessRefId(UUID.randomUUID().toString());
+
+                // ajout du status dans la table correspondante
+                GFEFormServiceLocator.getGFDaDossierDBService().create(gfDaDossierModel);
+            }else{
+//                update du status
+                model.setType("Envoi");  // en dur ou il y a des numeros ?
+                model.setStatus("Envoyé");
+                GFEFormServiceLocator.getGFDaDossierDBService().update(model);
+            }
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        } catch (JadePersistenceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<AttachmentType> getAttachmentTypeList() throws DatatypeConfigurationException {
