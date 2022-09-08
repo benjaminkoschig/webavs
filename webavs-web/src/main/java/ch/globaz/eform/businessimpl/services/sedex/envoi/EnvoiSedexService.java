@@ -16,6 +16,7 @@ import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.ContactInformationType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import eform.ch.ech.xmlns.ech_0044_f._4.DatePartiallyKnownType;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
@@ -54,7 +55,7 @@ public class EnvoiSedexService {
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
             //todo sprint 18 lier l'id avec une demande
-            String id = "2";
+            String id = "5";
             GFDaDossierModel model = getModel(id);
             Message message = sedex0001021.createMessage(createHeader(model), createContent());
             updateGFFormulaireStatus(model);
@@ -70,7 +71,7 @@ public class EnvoiSedexService {
             //TODO sprint 18 mapper les 3 données commentées
 //        header.setSenderId();
 //        header.setRecipientId(getSedexId(model.getCodeCaisse())); a faire sprint 2022.18
-//        header.setMessageId(); info généré soit par sm-client soit par nous a vérifier
+            header.setMessageId(JadeUUIDGenerator.createLongUID().toString());
             header.setReferenceMessageId(Objects.isNull(model) ? "" : model.getMessageId());
             header.setBusinessProcessId(generateBusinessProcessId());
             header.setOurBusinessReferenceId(Objects.isNull(model) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
@@ -124,7 +125,7 @@ public class EnvoiSedexService {
             if (Objects.isNull(model)) {
                 reformatViewBean();
                 GFDaDossierModel gfDaDossierModel = new GFDaDossierModel();
-                gfDaDossierModel.setMessageId(UUID.randomUUID().toString());
+                gfDaDossierModel.setMessageId(JadeUUIDGenerator.createLongUID().toString());
                 gfDaDossierModel.setNssAffilier(viewBean.getNss());
                 gfDaDossierModel.setCodeCaisse(viewBean.getCaisseDestinatrice());
                 gfDaDossierModel.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
