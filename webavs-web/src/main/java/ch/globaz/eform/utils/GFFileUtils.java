@@ -14,6 +14,7 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,7 @@ public class GFFileUtils {
 
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
         String path = viewBean.getFilename();
+        Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
         String filename = path.substring(path.lastIndexOf("\\") + 1);
         String destDir = WORK_PATH + FOLDER_UID;
         if (!JadeStringUtil.isNull(filename)) {
@@ -135,9 +139,21 @@ public class GFFileUtils {
     }
 
     public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
-        String pathFileNameToRemove = Jade.getInstance().getHomeDir() + "work/" + fileNameToRemove;
+        String pathFileNameToRemove = null;
+        File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
+        Collection<File> files = FileUtils.listFiles(directory, null, true);
+
+        for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
+            File file = (File) iterator.next();
+            if (file.getName().equals(fileNameToRemove)) {
+                pathFileNameToRemove = file.getAbsolutePath();
+                JadeFsFacade.delete(pathFileNameToRemove);
+                if (file.getParentFile().listFiles().length == 0) {
+                    JadeFsFacade.delete(file.getParentFile().toString());
+                }
+            }
+        }
         viewBean.getFileNameList().remove(fileNameToRemove);
-        JadeFsFacade.delete(pathFileNameToRemove);
     }
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
