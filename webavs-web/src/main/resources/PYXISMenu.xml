@@ -302,6 +302,15 @@
 		</nodes>
 	</menu>
 
+	<!-- Options des références de paiement -->
+
+	<menu id="reference-paiement">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+		</nodes>
+	</menu>
+
+
 	<!-- Options des tiers -->
 
 	<menu id="tiers-detail">
