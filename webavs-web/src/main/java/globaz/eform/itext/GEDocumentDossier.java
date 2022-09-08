@@ -16,7 +16,7 @@ public class GEDocumentDossier extends FWIDocumentManager {
 
     private static final long serialVersionUID = 1L;
 
-    private final static String MODEL_NAME = "GE_DOCUMENT_DOSSIER";
+    protected final static String MODEL_NAME = "GE_DOCUMENT_DOSSIER";
     protected final static String LABEL_FORMULE_POLITESSE = "DOCUMENT_FORMULE_POLITESSE";
     protected final static String LABEL_SALUTATION = "DOCUMENT_SALUTATION";
     protected final static String LABEL_ASSURE = "DOCUMENT_ASSURE";
@@ -86,7 +86,6 @@ public class GEDocumentDossier extends FWIDocumentManager {
         this.setParametres(PARAM_LIEU_DATE, getLieuDate());
         this.setParametres(PARAM_FORMULE_POLITESSE, getSession().getLabel(LABEL_FORMULE_POLITESSE));
         this.setParametres(PARAM_ASSURE_LABEL, getSession().getLabel(LABEL_ASSURE));
-//        this.setParametres(PARAM_ASSURE, documentPojo.);
         this.setParametres(PARAM_NSS_LABEL, getSession().getLabel(LABEL_NSS));
         this.setParametres(PARAM_NSS, documentPojo.getNss());
         this.setParametres(PARAM_NOM_LABEL, getSession().getLabel(LABEL_NOM));
