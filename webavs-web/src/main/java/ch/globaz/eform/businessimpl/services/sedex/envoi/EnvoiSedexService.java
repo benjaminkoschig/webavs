@@ -3,6 +3,8 @@ package ch.globaz.eform.businessimpl.services.sedex.envoi;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
+import ch.globaz.eform.constant.GFStatusDADossier;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
@@ -14,7 +16,6 @@ import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.ContactInformationType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import eform.ch.ech.xmlns.ech_0044_f._4.DatePartiallyKnownType;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
-import globaz.globall.db.BSession;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
@@ -37,7 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,25 +53,30 @@ public class EnvoiSedexService {
     public void createSedexMessage() {
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
-            Message message = sedex0001021.createMessage(createHeader(), createContent());
+            String id = "5";
+            GFDaDossierModel model = getModel(id);
+            Message message = sedex0001021.createMessage(createHeader(model), createContent());
+            updateGFFormulaireStatus(model);
+
         } catch (Exception e) {
             sendMail();
         }
     }
-    private HeaderType createHeader() {
+
+    private HeaderType createHeader(GFDaDossierModel model) {
         //todo sprint 18 lier l'id avec une demande
         try {
-            String id = "2";
-            GFDaDossierModel model = getModel(id);
+//            String id = "2";
+//            GFDaDossierModel model = getModel(id);
             HeaderType header = new HeaderType();
             //TODO sprint 18 mapper les 3 données commentées
 //        header.setSenderId();
 //        header.setRecipientId(getSedexId(model.getCodeCaisse())); a faire sprint 2022.18
 //        header.setMessageId(); info généré soit par sm-client soit par nous a vérifier
-            header.setReferenceMessageId(Objects.isNull(model.getMessageId()) ? "" : model.getMessageId());
+            header.setReferenceMessageId(Objects.isNull(model) ? "" : model.getMessageId());
             header.setBusinessProcessId(generateBusinessProcessId());
-            header.setOurBusinessReferenceId(Objects.isNull(model.getOurBusinessRefId()) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
-            header.setYourBusinessReferenceId(Objects.isNull(model.getYourBusinessRefId()) ? "" : model.getYourBusinessRefId());
+            header.setOurBusinessReferenceId(Objects.isNull(model) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
+            header.setYourBusinessReferenceId(Objects.isNull(model) ? "" : model.getYourBusinessRefId());
             header.setMessageType(SedexType2021Enum.TYPE_102.getMessageType());
             header.setSubMessageType(SedexType2021Enum.TYPE_102.getSubMessageType());
             header.setSendingApplication(sedex000102.getSendingApplicationType());
@@ -90,7 +95,11 @@ public class EnvoiSedexService {
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    private void reformatViewBean() {
+        viewBean.setNss(viewBean.getNss().replaceAll("\\.", ""));
+        viewBean.setCaisseDestinatrice(viewBean.getCaisseDestinatrice().replaceAll("\\D", ""));
     }
 
     private GFDaDossierModel getModel(String id) {
@@ -113,21 +122,29 @@ public class EnvoiSedexService {
     }
 
     private void updateGFFormulaireStatus(GFDaDossierModel model) {
-        //todo sprint 18 faire l'implementation
-//        try {
-//            if(model==null){
-//                // ajout du status dans la table correspondante
-//                GFEFormServiceLocator.gfDaDossierDBService().create();
-//            }else{
-////                update du status
-//        model.setStatus("Envoyé");
-//        model.setType("Envoi");
-//                GFEFormServiceLocator.gfDaDossierDBService().update(model);
-//            }
-//
-//        } catch (JadeApplicationServiceNotAvailableException e) {
-//            throw new RuntimeException(e);
-//        }
+
+        try {
+            if (Objects.isNull(model)) {
+                reformatViewBean();
+                GFDaDossierModel gfDaDossierModel = new GFDaDossierModel();
+                gfDaDossierModel.setMessageId(UUID.randomUUID().toString());
+                gfDaDossierModel.setNssAffilier(viewBean.getNss());
+                gfDaDossierModel.setCodeCaisse(viewBean.getCaisseDestinatrice());
+                gfDaDossierModel.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+                gfDaDossierModel.setStatus(GFStatusDADossier.SEND.getCodeSystem());
+                gfDaDossierModel.setUserGestionnaire(viewBean.getSession().getUserInfo().getVisa());
+                gfDaDossierModel.setOurBusinessRefId(UUID.randomUUID().toString());
+                GFEFormServiceLocator.getGFDaDossierDBService().create(gfDaDossierModel);
+            } else {
+                model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+                model.setStatus(GFStatusDADossier.SEND.getCodeSystem());
+                GFEFormServiceLocator.getGFDaDossierDBService().update(model);
+            }
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        } catch (JadePersistenceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<AttachmentType> getAttachmentTypeList() throws DatatypeConfigurationException {
