@@ -53,7 +53,8 @@ public class EnvoiSedexService {
     public void createSedexMessage() {
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
-            String id = "5";
+            //todo sprint 18 lier l'id avec une demande
+            String id = "2";
             GFDaDossierModel model = getModel(id);
             Message message = sedex0001021.createMessage(createHeader(model), createContent());
             updateGFFormulaireStatus(model);
@@ -64,10 +65,7 @@ public class EnvoiSedexService {
     }
 
     private HeaderType createHeader(GFDaDossierModel model) {
-        //todo sprint 18 lier l'id avec une demande
         try {
-//            String id = "2";
-//            GFDaDossierModel model = getModel(id);
             HeaderType header = new HeaderType();
             //TODO sprint 18 mapper les 3 données commentées
 //        header.setSenderId();
@@ -89,7 +87,6 @@ public class EnvoiSedexService {
             header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
             header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
             header.setExtension(getExtensionType());
-
             return header;
 
         } catch (DatatypeConfigurationException e) {
@@ -295,7 +292,6 @@ public class EnvoiSedexService {
             datePartiallyKnownType.setYearMonth(xmlGregorianCalendar);
             datePartiallyKnownType.setYearMonthDay(xmlGregorianCalendar);
             datePartiallyKnownType.setYear(xmlGregorianCalendar);
-
             return datePartiallyKnownType;
         } catch (ParseException e) {
             throw new RuntimeException(e);
