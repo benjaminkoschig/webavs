@@ -30,14 +30,14 @@ public enum GFTypeDADossier {
         return code;
     }
 
-    public static GFTypeDADossier getTypeByCodeSystem(String codeSystem) {
+    public static GFTypeDADossier getByCodeSystem(String codeSystem) {
         return Arrays.stream(GFTypeDADossier.values())
                 .filter(type -> type.codeSystem.equals(codeSystem))
                 .findFirst()
                 .orElse(BLANK);
     }
 
-    public static GFTypeDADossier getTypeByCode(String code) {
+    public static GFTypeDADossier getByCode(String code) {
         return Arrays.stream(GFTypeDADossier.values())
                 .filter(type -> type.code.equals(code))
                 .findFirst()

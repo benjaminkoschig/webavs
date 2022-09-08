@@ -51,5 +51,14 @@
                 <param key="passSedex">VodoAfBz+wZIR+D4weSlcw==</param>
             </handler>
         </mapping>
+        <mapping>
+            <criteria name="//message/header/messageType">2021</criteria>
+            <criteria name="//message/header/subMessageType">000102</criteria>
+            <handler>
+                <class>ch.globaz.eform.businessimpl.services.sedex.GFTraitementReceptionServiceImpl</class>
+                <param key="userSedex">44kvDa8DmQO0QloqIBTpdg==</param>
+                <param key="passSedex">npe/eW73EFnkf1sbh0iroQ==</param>
+            </handler>
+        </mapping>
     </messageMappings>
 </globaz.jade.sedex.JadeSedexService>

@@ -2,10 +2,11 @@ package ch.globaz.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-public interface NSSUtils {
-    String AVS_CODE_PAYS = "756";
+public final class NSSUtils {
+    private NSSUtils(){}
+    public static final String AVS_CODE_PAYS = "756";
 
-    static boolean checkNSS(String nss) {
+    public static boolean checkNSS(String nss) {
         String unformatedNss = unFormatNss(nss);
 
         if (!StringUtils.isNumeric(unformatedNss) || unformatedNss.length() != 13) {
@@ -30,13 +31,13 @@ public interface NSSUtils {
         return StringUtils.endsWith(unformatedNss, String.valueOf(numControle));
     }
 
-    static String unFormatNss(String nss) {
+    public static String unFormatNss(String nss) {
         if (StringUtils.isEmpty(nss)) {throw new IllegalArgumentException();}
         return nss.replaceAll("\\.", "");
     }
 
-    static String formatNss(String nss) {
-        if (StringUtils.isEmpty(nss) || checkNSS(nss)) {throw new IllegalArgumentException();}
+    public static String formatNss(String nss) {
+        if (StringUtils.isEmpty(nss) || !checkNSS(nss)) {throw new IllegalArgumentException();}
 
         return unFormatNss(nss).replaceAll("^(\\d{3})(\\d{4})(\\d{4})(\\d{2})$", "$1.$2.$3.$4");
     }

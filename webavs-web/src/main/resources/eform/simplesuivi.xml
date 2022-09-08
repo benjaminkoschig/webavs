@@ -29,6 +29,15 @@
                 <search-field name="byYourBusinessRefId" field-ref="yourBusinessRefId" operation="EQUALS"/>
             </search-group>
         </search-definition>
+        <search-definition name="suivi">
+            <search-group operator="AND">
+                <search-field name="likeNss" field-ref="nssAffilier" operation="LIKE"/>
+                <search-field name="byCaisse" field-ref="codeCaisse" operation="EQUALS"/>
+                <search-field name="byType" field-ref="type" operation="EQUALS"/>
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
+                <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
         <order-by name="default">
             <order-field field-ref="id" order="ASC"/>
         </order-by>

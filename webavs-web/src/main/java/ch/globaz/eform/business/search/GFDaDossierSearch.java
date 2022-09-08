@@ -10,7 +10,7 @@ import lombok.Setter;
 public class GFDaDossierSearch extends JadeSearchSimpleModel {
     private String byId = null;
     private String byMessageId = null;
-    private String byNss = null;
+    private String likeNss = null;
     private String byCaisse = null;
     private String byType = null;
     private String byStatus = null;
