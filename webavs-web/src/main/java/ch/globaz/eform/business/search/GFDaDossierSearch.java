@@ -11,10 +11,11 @@ public class GFDaDossierSearch extends JadeSearchSimpleModel {
     private String byId = null;
     private String byMessageId = null;
     private String byNss = null;
-    private String byCaisse;
-    private String byType;
-    private String byStatus;
-    private String byGestionnaire;
+    private String byCaisse = null;
+    private String byType = null;
+    private String byStatus = null;
+    private String byGestionnaire = null;
+    private String byYourBusinessRefId = null;
 
     public GFDaDossierSearch() {
         super(JadeSearchSimpleModel.SIZE_NOLIMIT);

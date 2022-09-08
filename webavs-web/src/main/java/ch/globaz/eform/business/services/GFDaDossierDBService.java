@@ -28,7 +28,7 @@ public interface GFDaDossierDBService extends JadeApplicationService {
      * Permet la création d'une entité Prestation
      *
      * @param gfDaDossierModel Le formulaireModel à créer
-     * @param validationResult permet de remonté la validation des informations
+     * @param validationResult permet de remonter la validation des informations
      * @return formulaireModel créé
      */
     GFDaDossierModel create(GFDaDossierModel gfDaDossierModel, ValidationResult validationResult) throws JadeApplicationServiceNotAvailableException, JadePersistenceException;
@@ -66,5 +66,14 @@ public interface GFDaDossierDBService extends JadeApplicationService {
      * @return simplePresation mis à jour
      */
     GFDaDossierModel update(GFDaDossierModel gfDaDossierModel) throws JadePersistenceException;
+
+    /**
+     * Permet la mise à jour d'une entité Prestation
+     *
+     * @param gfDaDossierModel Le modèle à mettre à jour
+     * @param validationResult permet de remonter la validation des informations
+     * @return simplePresation mis à jour
+     */
+    GFDaDossierModel update(GFDaDossierModel gfDaDossierModel, ValidationResult validationResult) throws JadePersistenceException;
 
 }

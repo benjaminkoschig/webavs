@@ -99,9 +99,24 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
 
     @Override
     public GFDaDossierModel update(GFDaDossierModel model) throws JadePersistenceException {
+        return update(model, new ValidationResult());
+    }
+
+    @Override
+    public GFDaDossierModel update(GFDaDossierModel model, ValidationResult result) throws JadePersistenceException {
         if (Objects.isNull(model)) {
             throw new IllegalArgumentException("Unable to update GFDaDossierModel, the model passed is null!");
         }
-        return (GFDaDossierModel) JadePersistenceManager.update(model);
+        if (Objects.isNull(result)) {
+            throw new IllegalArgumentException("Unable to update validationResult, the result passed is null!");
+        }
+
+        model.validating(result);
+
+        if (!result.hasError()) {
+            JadePersistenceManager.update(model);
+        }
+
+        return model;
     }
 }

@@ -17,5 +17,9 @@
 			<server>eFormServer</server><!-- [REQUIRED] for type: sftp -->
 			<pathroot>PRODUCT</pathroot><!-- [REQUIRED] for type: filesystem, [OPTIONNAL] for type: sftp -->
 		</protocol>
+		<protocol name="DaDossierHostService" type="sftp"><!-- type: sftp|filesystem-->
+			<server>DaDossierServer</server><!-- [REQUIRED] for type: sftp -->
+			<pathroot>PRODUCT</pathroot><!-- [REQUIRED] for type: filesystem, [OPTIONNAL] for type: sftp -->
+		</protocol>
 	</protocols>
 </globaz.jade.fs.service.JadeFsServer>

@@ -14,7 +14,8 @@
 				<certificat passphrase="">C:\\.ssh\\private_openssh</certificat>
 			</certificats>
 		</server>
-		<server name="eFormServer">
+		-->
+		<server name="DaDossierServer">
 			<protocol>SFTP</protocol>
 			<host>localhost</host>
 			<port>22</port>
@@ -23,7 +24,6 @@
 				<certificat passphrase="passphrase">C:\\Users\\tpa\\.ssh\\sftp\\foo_key</certificat>
 			</certificats>
 		</server>
-		-->
 		<server name="eFormServer">
 			<protocol>SFTP</protocol>
 			<host>sftpdata.globaz.ch</host>
@@ -32,7 +32,7 @@
 			<password>STU4HIMA</password>
 		</server>
 		<!--
-		<server name="eFormServer">
+		<server name="DaDossierServer">
 			<protocol>SFTP</protocol>
 			<host>fdsbc.post.ch</host>
 			<port>22</port>
