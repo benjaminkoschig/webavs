@@ -46,7 +46,6 @@ public class GFFileUtils {
     public final static String FOLDER_UID = "testUid";
     public static Map<String, Integer> counterMap = new HashMap<>();
 
-
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
         OutputStream os = response.getOutputStream();
         response.setHeader("Content-Disposition", "attachment;filename=" + name);
@@ -84,13 +83,11 @@ public class GFFileUtils {
         String pathWork = PERSISTANCE_PATH + filename;
         List<String> fileNameList = new LinkedList<>();
         if (!JadeStringUtil.isNull(pathWork)) {
-            try (FileInputStream fis = new FileInputStream(pathWork); ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis))) {
-                //creation des directories pour extraire les fichiers contenus dans le zip
-                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
-                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename)));
-                File destDir = new File(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename));
-                fileNameList = unzip(new File(pathWork), destDir, viewBean);
-            }
+            //creation des directories pour extraire les fichiers contenus dans le zip
+            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
+            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
+            File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+            fileNameList = unzip(new File(pathWork), destDir, viewBean);
         }
         return fileNameList;
     }
