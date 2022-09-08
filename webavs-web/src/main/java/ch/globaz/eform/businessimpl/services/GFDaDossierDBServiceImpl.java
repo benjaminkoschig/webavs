@@ -14,7 +14,7 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public int count(GFDaDossierSearch search) throws JadePersistenceException {
         if (search == null) {
-            throw new IllegalArgumentException("Unable to count search, the model passed is null!");
+            throw new IllegalArgumentException("Impossible de compter l'objet search passé est nul!");
         }
 
         return JadePersistenceManager.count(search);
@@ -23,13 +23,13 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public GFDaDossierModel create(GFDaDossierModel gfDaDossierModel, ValidationResult validationResult) throws JadePersistenceException {
         if (Objects.isNull(gfDaDossierModel)) {
-            throw new IllegalArgumentException("Unable to create gfeFormModel, the model passed is null!");
+            throw new IllegalArgumentException("Impossible de créer l'enregistrement en base, le model passé est null!");
         }
         if (Objects.isNull(validationResult)) {
-            throw new IllegalArgumentException("Unable to create validationResult, the result passed is null!");
+            throw new IllegalArgumentException("Impossible de créer l'enregistrement en base, Le ValidationResult passé est null!");
         }
         if (GFDaDossierValidator.isExists(gfDaDossierModel.getMessageId())) {
-            throw new IllegalArgumentException("Unable to create gfDaDossierModel, the model passed is already in database id : " + gfDaDossierModel.getMessageId() + "!");
+            throw new IllegalArgumentException("Impossible de créer l'enregistrement en base, L'enregistrement existe déjà : " + gfDaDossierModel.getMessageId() + "!");
         }
 
         gfDaDossierModel.validating(validationResult);
@@ -50,10 +50,10 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public boolean delete(String messageId) throws JadePersistenceException {
         if (Objects.isNull(messageId)) {
-            throw new IllegalArgumentException("Unable to delete GFDaDossierModel, the message id passed is null!");
+            throw new IllegalArgumentException("Impossible de supprimer l'enregistrement en base, l'id du message passé est null!");
         }
         if (!GFDaDossierValidator.isExists(messageId)) {
-            throw new IllegalArgumentException("Unable to delete GFDaDossierModel, the model passed is not in database!");
+            throw new IllegalArgumentException("Impossible de supprimer l'enregistrement en base, l'enregistrement n'a pas été trouvé!");
         }
 
         GFDaDossierSearch search = new GFDaDossierSearch();
@@ -65,7 +65,7 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public int delete(GFDaDossierSearch search) throws JadePersistenceException {
         if (Objects.isNull(search)) {
-            throw new IllegalArgumentException("Unable to delete gfDaDossierSearch, the search passed is null!");
+            throw new IllegalArgumentException("Impossible de supprimer l'enregistrement en base, le model de critère passé is null!");
         }
 
         return JadePersistenceManager.delete(search);
@@ -92,7 +92,7 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public GFDaDossierSearch search(GFDaDossierSearch search) throws JadePersistenceException {
         if (Objects.isNull(search)) {
-            throw new IllegalArgumentException("Unable to search GFDaDossierSearch, the search passed is null!");
+            throw new IllegalArgumentException("Unable to search GFDaDossierSearch, the search passed est null!");
         }
         return (GFDaDossierSearch) JadePersistenceManager.search(search);
     }
@@ -105,10 +105,10 @@ public class GFDaDossierDBServiceImpl implements GFDaDossierDBService {
     @Override
     public GFDaDossierModel update(GFDaDossierModel model, ValidationResult result) throws JadePersistenceException {
         if (Objects.isNull(model)) {
-            throw new IllegalArgumentException("Unable to update GFDaDossierModel, the model passed is null!");
+            throw new IllegalArgumentException("Impossible de mettre à jour l'enregistrement en base, le model passé est null!");
         }
         if (Objects.isNull(result)) {
-            throw new IllegalArgumentException("Unable to update validationResult, the result passed is null!");
+            throw new IllegalArgumentException("Impossible de mettre à jour l'enregistrement en base, le ValidationResult passé est null!");
         }
 
         model.validating(result);

@@ -73,7 +73,7 @@ public abstract class GFEFormHandler implements GFSedexhandler {
             try {
                 fileService.remove(GFFileUtils.generateEFormFilePath(model) + File.separator + zipFile.getName());
             }catch (Exception ex) {
-                LOG.error("GFFormHandler#saveDataInDb - Le nétoyage du fichier a échoué", ex);
+                LOG.error("GFFormHandler#saveDataInDb - Le nettoyage du fichier a échoué", ex);
             }
 
             throw new JadeApplicationRuntimeException(e);

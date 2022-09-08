@@ -74,7 +74,7 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
             model = Arrays.stream(search.getSearchResults())
                     .map(o -> (GFDaDossierModel) o)
                     .findFirst()
-                    .orElseThrow(() -> new NotFoundException("prompt not found messageId : " + getMessageId()));
+                    .orElseThrow(() -> new NotFoundException("Sollicitation non trouvé pour le message Id : " + getMessageId()));
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +91,7 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
             initSollicitationModel();
             GFEFormServiceLocator.getGFDaDossierDBService().create(model, result);
         } catch (Exception e) {
-            LOG.error("GFDaDossierHandler#create - Erreur lors de l'ajout du de la demande en DB  : {}", model.getMessageId(), e);
+            LOG.error("GFDaDossierHandler#create - Erreur lors de l'ajout de la demande en DB : {}", model.getMessageId(), e);
             throw new JadeApplicationRuntimeException(e);
         }
     }

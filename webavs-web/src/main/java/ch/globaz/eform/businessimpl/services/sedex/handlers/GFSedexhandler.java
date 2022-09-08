@@ -10,6 +10,5 @@ public interface GFSedexhandler {
     void create(ValidationResult result);
     void update(ValidationResult result);
     void setMessage(Object message);
-
     void setSession(BSession session);
 }
