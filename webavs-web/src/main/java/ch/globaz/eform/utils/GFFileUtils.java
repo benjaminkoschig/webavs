@@ -1,6 +1,8 @@
 package ch.globaz.eform.utils;
 
 import ch.globaz.common.util.Dates;
+import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
 
@@ -44,8 +46,7 @@ public class GFFileUtils {
     public final static String FOLDER_UID = "testUid";
     public static Map<String, Integer> counterMap = new HashMap<>();
 
-
-    public static void downloadFile(HttpServletResponse response, String name, byte buf[]) throws IOException {
+    public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
         OutputStream os = response.getOutputStream();
         response.setHeader("Content-Disposition", "attachment;filename=" + name);
         os.write(buf);
@@ -82,13 +83,11 @@ public class GFFileUtils {
         String pathWork = PERSISTANCE_PATH + filename;
         List<String> fileNameList = new LinkedList<>();
         if (!JadeStringUtil.isNull(pathWork)) {
-            try (FileInputStream fis = new FileInputStream(pathWork); ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis))) {
-                //creation des directories pour extraire les fichiers contenus dans le zip
-                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
-                Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename)));
-                File destDir = new File(WORK_PATH + FOLDER_UID + File.separator + FilenameUtils.removeExtension(filename));
-                fileNameList = unzip(new File(pathWork), destDir, viewBean);
-            }
+            //creation des directories pour extraire les fichiers contenus dans le zip
+            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
+            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
+            File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+            fileNameList = unzip(new File(pathWork), destDir, viewBean);
         }
         return fileNameList;
     }
@@ -98,15 +97,15 @@ public class GFFileUtils {
         List<String> unzipFiles = new ArrayList<>();
 
         try {
-            BufferedOutputStream bufferedOutputStream = null;
+            BufferedOutputStream bufferedOutputStream;
             FileInputStream fis = new FileInputStream(srcZipFile);
             ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-            File newFile = null;
+            File newFile;
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
                 int count;
-                byte data[] = new byte[bufferSize];
+                byte[] data = new byte[bufferSize];
                 if (isFileExist(entry.getName(), viewBean.getFileNameList())) {
                     newFile = renameFileWithSameNameInZip(entry.getName(), destDir);
                 } else {
@@ -143,12 +142,12 @@ public class GFFileUtils {
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
         List<String> fileNames = viewBean.getFileNameList();
-        for (int i = 0; i < fileNames.size(); i++) {
-            String extension = FilenameUtils.getExtension(fileNames.get(i));
+        for (String fileName : fileNames) {
+            String extension = FilenameUtils.getExtension(fileName);
             if (!extension.equals(FILE_TYPE_PDF) && !extension.equals(FILE_TYPE_TIFF)) {
-                viewBean.getErrorFileNameList().add(fileNames.get(i));
-                viewBean.getFileNameList().remove(fileNames.get(i));
-                deleteFile(viewBean, fileNames.get(i));
+                viewBean.getErrorFileNameList().add(fileName);
+                viewBean.getFileNameList().remove(fileName);
+                deleteFile(viewBean, fileName);
             }
         }
         // suppression des doublons
@@ -158,16 +157,28 @@ public class GFFileUtils {
         }
     }
 
-    public static String generateFilePath(GFFormulaireModel dbModel) {
+    public static String generateEFormFilePath(GFFormulaireModel dbModel) {
         LocalDate date = Dates.toDate(dbModel.getDate());
 
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
     }
 
-    public static String generateFilePath(GFSedexModel model) {
+    public static String generateEFormFilePath(GFSedexModel model) {
         LocalDate date = model.getMessageDate();
 
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
+    }
+
+    public static String generateDaDossierFilePath(GFDaDossierModel dbModel) {
+        LocalDate date = Dates.extractSpyDate(dbModel.getCreationSpy());
+
+        return date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(dbModel.getNssAffilier()) + File.separator;
+    }
+
+    public static String generateDaDossierFilePath(GFSedexModel model) {
+        LocalDate date = model.getMessageDate();
+
+        return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(model.getNssBeneficiaire()) + File.separator;
     }
 
     public static File renameFileWithSameNameInZip(String fileName, File destDir) {

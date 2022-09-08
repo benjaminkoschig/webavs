@@ -185,7 +185,7 @@ public class GFTraitementMessageServiceImpl {
                     extraData.put("zipFile", zipFile);
 
                     formHandler.setData(extraData);
-                    formHandler.save(result);
+                    formHandler.create(result);
 
                     LOG.info("GFTraitementMessageServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
