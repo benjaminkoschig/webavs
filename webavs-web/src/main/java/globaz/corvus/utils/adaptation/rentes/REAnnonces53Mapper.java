@@ -121,7 +121,7 @@ public class REAnnonces53Mapper {
         ann53_02.setCodeRevenuSplitte(PRConverterUtils.formatBooleanToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().isGesplitteteEinkommen()));
 
         // 11 | Durée de cotisations pour déterminer le RAM
-        ann53_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getBeitragsdauerDurchschnittlichesJahreseinkommen()));
+        ann53_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimal(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getBeitragsdauerDurchschnittlichesJahreseinkommen()));
 
         // 12 | Année de niveau
         ann53_02.setAnneeNiveau(PRConverterUtils.formatDateToAA(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getNiveaujahr()));
