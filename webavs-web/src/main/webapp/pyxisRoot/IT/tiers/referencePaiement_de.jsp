@@ -88,13 +88,13 @@ function init(){}
             <TD width="50"></TD>
             <TD width="180">Konto-Nr.</TD>
             <TD nowrap width="125" align="left">
-                <INPUT type="text" name="numCompteBancaire" class="libelleLong" value="<%=viewBean.getNumCompteBancaire()%>"></TD>
+                <INPUT type="text" name="numCompteBancaire" class="numero" value="<%=viewBean.getNumCompteBancaire()%>"></TD>
           </TR>
 
           <TR>
             <TD width="119">Riferimento QR</TD>
             <TD nowrap width="211">
-              <INPUT type="text" name="referenceQR" class="libelleLong" value="<%=viewBean.getReferenceQR()%>" maxlength="30"></TD>
+              <INPUT type="text" name="referenceQR" class="numero" value="<%=viewBean.getReferenceQR()%>" maxlength="30"></TD>
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125" align="left"></TD>
@@ -103,7 +103,7 @@ function init(){}
           <TR>
             <TD width="119">Data d'inizio</TD>
             <TD nowrap width="211">
-                <INPUT type="text" name="dateDebut" class="numero" value="<%=viewBean.getDateDebut()%>"></TD>
+                <ct:FWCalendarTag name="dateFin" doClientValidation="CALENDAR" value="<%=viewBean.getDateFin()%>"/></TD>
             <TD width="50" nowrap></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
@@ -112,7 +112,7 @@ function init(){}
           <TR>
             <TD width="119">Data di fine</TD>
             <TD nowrap width="211">
-                <INPUT type="text" name="dateFin" class="numero" value="<%=viewBean.getDateFin()%>"></TD>
+                <ct:FWCalendarTag name="dateFin" doClientValidation="CALENDAR" value="<%=viewBean.getDateFin()%>"/></TD>
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
