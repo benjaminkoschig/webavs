@@ -9,6 +9,7 @@ import globaz.pyxis.web.service.PYExecuteService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -51,17 +52,24 @@ public class PYApiRestExecute {
     }
 
     @PUT
-    @Path(value = "update_contact")
+    @Path(value = "contact")
     public Response updateContact(@HeaderParam("authorization") String token, PYContactDTO dto) {
         LOG.info("update_contact");
         return execute(token, dto, service::updateContact, dto::isValid);
     }
 
     @POST
-    @Path(value = "create_contact")
+    @Path(value = "contact")
     public Response createContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
         LOG.info("create_contact");
-        return execute(token, dto, service::createContact, dto::isValid);
+        return execute(token, dto, service::createContact, dto::isValidForCreation);
+    }
+
+    @DELETE
+    @Path(value = "contact")
+    public Response deleteContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
+        LOG.info("delete_contact");
+        return execute(token, dto, service::deleteContact, dto::isValidForDeletion);
     }
 
     /**

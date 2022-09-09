@@ -13,13 +13,21 @@ import java.util.Vector;
 public class PYContactCreateDTO extends PYContactDTO{
     private String idTiers;
 
-    @Override
     @JsonIgnore
-    public Boolean isValid() {
+    public Boolean isValidForCreation() {
         Vector<String> mandatoryParameters = new Vector<>();
         mandatoryParameters.add(this.getIdTiers());
         mandatoryParameters.add(this.getFirstName());
         mandatoryParameters.add(this.getLastName());
+
+        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+    }
+
+    @JsonIgnore
+    public Boolean isValidForDeletion() {
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getIdTiers());
+        mandatoryParameters.add(this.getId());
 
         return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
     }

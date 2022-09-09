@@ -71,10 +71,7 @@ import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
-import globaz.pyxis.db.tiers.TIAvoirContact;
-import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
-import globaz.pyxis.db.tiers.TIMoyenCommunication;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersAdresseManager;
@@ -84,8 +81,6 @@ import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
 import globaz.pyxis.web.DTO.PYAddressDTO;
-import globaz.pyxis.web.DTO.PYContactDTO;
-import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYPaymentAddressDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
@@ -377,165 +372,6 @@ public class PRTiersHelper {
             }
         }
         dto.setId(avsPerson.getIdTiers());
-    }
-
-    /**
-     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
-     *
-     * @param session
-     * @param dto
-     * @throws Exception
-     */
-    public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-
-        for (PYContactDTO contactDTO: dto.getContacts()) {
-            TIContact contact = new TIContact();
-            contact.setSession(session);
-            contact.setNom(dto.getSurname());
-            contact.setPrenom(dto.getName());
-            contact.add();
-
-            for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
-                TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
-                meanOfCommunication.setSession(session);
-                meanOfCommunication.setTypeCommunication(meanDTO.getMeanOfCommunicationType());
-                meanOfCommunication.setMoyen(meanDTO.getMeanOfCommunicationValue());
-                meanOfCommunication.setIdContact(contact.getIdContact());
-                if (meanDTO.getApplicationDomain() != null)
-                    meanOfCommunication.setIdApplication(meanDTO.getApplicationDomain());
-                meanOfCommunication.add();
-            }
-
-            TIAvoirContact hasContact = new TIAvoirContact();
-            hasContact.setSession(session);
-            hasContact.setIdTiers(dto.getId());
-            hasContact.setIdContact(contact.getIdContact());
-            hasContact.add();
-        }
-
-        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
-        } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
-        }
-    }
-
-    /**
-     * Methode pour mettre à jour un moyen de communication (table TIMCOMP).
-     * <p>
-     * Seul la valeur (newMoyen) peut être modifiée.
-     * @param session
-     * @param idContact clé composite
-     * @param typeCommunication clé composite
-     * @param domaineApplication clé composite
-     * @param newMoyen valeur à mettre à jour
-     * @throws Exception
-     */
-    public static final void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
-        // Get the contact
-        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-        tiMoyenCommunication.setIdApplication(domaineApplication);
-        tiMoyenCommunication.setIdContact(idContact);
-        tiMoyenCommunication.setTypeCommunication(typeCommunication);
-        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-
-        // Update the contact
-        if(!newMoyen.isEmpty() && newMoyen != null)
-            tiMoyenCommunication.setMoyen(newMoyen);
-        //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
-        //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
-        tiMoyenCommunication.update(session.getCurrentThreadTransaction());
-    }
-
-    /**
-     * Méthode pour mettre à jour un contact (table TICONTP).
-     *
-     * @param session
-     * @param idContact clé primaire
-     * @param newLastName valeur à mettre à jour
-     * @param newFirstName valeur à mettre à jour
-     * @throws Exception
-     */
-    public static final void updateContact(BSession session, String idContact, String newLastName, String newFirstName) throws Exception {
-        TIContact tiContact = new TIContact();
-        tiContact.setIdContact(idContact);
-        tiContact.retrieve(session.getCurrentThreadTransaction());
-
-        if(newLastName != null && !newLastName.isEmpty())
-            tiContact.setNom(newLastName);
-        if(newFirstName != null && !newFirstName.isEmpty())
-            tiContact.setPrenom(newFirstName);
-
-        tiContact.update(session.getCurrentThreadTransaction());
-    }
-
-    public static final String createContact(BSession session, String idTiers, String lastName, String firstName) throws Exception {
-        TIContact tiContact = new TIContact();
-        tiContact.setNom(lastName);
-        tiContact.setPrenom(firstName);
-        tiContact.add(session.getCurrentThreadTransaction());
-
-        TIAvoirContact tiAvoirContact = new TIAvoirContact();
-        tiAvoirContact.setIdContact(tiContact.getIdContact());
-        tiAvoirContact.setIdTiers(idTiers);
-        tiAvoirContact.add(session.getCurrentThreadTransaction());
-
-        return tiContact.getIdContact();
-    }
-
-    public static final void createMeanOfCommunication(BSession session, String idContact, String application, String type, String value) throws Exception {
-        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-        tiMoyenCommunication.setMoyen(value);
-        tiMoyenCommunication.setTypeCommunication(type);
-        tiMoyenCommunication.setIdApplication(application);
-        tiMoyenCommunication.setIdContact(idContact);
-        tiMoyenCommunication.add(session.getCurrentThreadTransaction());
-    }
-
-    /**
-     * Méthode pour mettre à jour un tiers (page 2 - contacts/moyens de communication)
-     *
-     * @param session
-     * @param dto
-     * @return
-     * @throws Exception
-     */
-    public static final void updateTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-        for (PYContactDTO contact: dto.getContacts()) {
-            TIContact tiContact = new TIContact();
-            tiContact.setIdContact(contact.getId());
-            tiContact.retrieve(session.getCurrentThreadTransaction());
-            if (tiContact.getId().isEmpty()) {
-                throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le contact à modifier n'existe pas");
-            }
-
-            updateContact(session, contact.getId(), contact.getLastName(), contact.getFirstName());
-
-            Vector<PYMeanOfCommunicationDTO> meansOfCommunication = contact.getMeansOfCommunication();
-            for (PYMeanOfCommunicationDTO mean: meansOfCommunication) {
-                // Check that mean's id belongs to the contact (i.e. check that a Contact/TICONTP with HLICON same as MoyenDeCommunication/TIMCOMP exists)
-                TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-                tiMoyenCommunication.setIdApplication(mean.getApplicationDomain());
-                tiMoyenCommunication.setIdContact(contact.getId());
-                tiMoyenCommunication.setTypeCommunication(mean.getMeanOfCommunicationType());
-                tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-                if (tiMoyenCommunication.getId().isEmpty()) {
-                    throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le moyen de communication à modifier n'existe pas");
-                }
-
-                updateMeanOfCommunication(session, contact.getId(), mean.getMeanOfCommunicationType(), mean.getApplicationDomain(), mean.getMeanOfCommunicationValue());
-            }
-        }
-
-        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
-            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
-        } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
-            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
-        }
     }
 
     /**
