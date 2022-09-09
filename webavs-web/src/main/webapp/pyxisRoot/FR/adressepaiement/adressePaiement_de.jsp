@@ -159,7 +159,27 @@ function init(){
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
+
 		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
+		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
+
+		<%
+			Object[] referencePaiementMethodsName = new Object[]{
+			new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
+			};
+		%>
+
+		<ct:FWSelectorTag
+			name="referencePaiementSelector1"
+
+			methods="<%=referencePaiementMethodsName%>"
+			providerApplication ="pyxis"
+			providerPrefix="TI"
+			providerAction ="pyxis.tiers.referencePaiement.chercher"
+			providerActionParams ="<%=adresseParams%>"
+		/>
+
 </td>				
 <tr>
 	<td>Pays</td>
