@@ -1,5 +1,6 @@
 package globaz.pyxis.web.ws;
 
+import globaz.pyxis.web.DTO.PYContactCreateDTO;
 import globaz.pyxis.web.DTO.PYContactDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
@@ -54,6 +55,13 @@ public class PYApiRestExecute {
     public Response updateContact(@HeaderParam("authorization") String token, PYContactDTO dto) {
         LOG.info("update_contact");
         return execute(token, dto, service::updateContact, dto::isValid);
+    }
+
+    @POST
+    @Path(value = "create_contact")
+    public Response createContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
+        LOG.info("create_contact");
+        return execute(token, dto, service::createContact, dto::isValid);
     }
 
     /**

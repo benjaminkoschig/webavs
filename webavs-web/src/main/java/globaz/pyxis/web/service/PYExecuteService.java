@@ -3,6 +3,7 @@ package globaz.pyxis.web.service;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.web.DTO.PYContactCreateDTO;
 import globaz.pyxis.web.DTO.PYContactDTO;
 import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
@@ -101,6 +102,29 @@ public class PYExecuteService extends BProcess {
             List<PYMeanOfCommunicationDTO> means = new ArrayList<>(dto.getMeansOfCommunication());
             for (PYMeanOfCommunicationDTO contact: means) {
                 PRTiersHelper.updateMeanOfCommunication(getSession(), dto.getId(), contact.getMeanOfCommunicationType(), contact.getApplicationDomain(), contact.getMeanOfCommunicationValue());
+            }
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du contact: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la modification du contact: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la modification du contact: " + e);
+            throw new PYInternalException(e);
+        }
+        return dto;
+    }
+
+    public PYContactDTO createContact(PYContactCreateDTO dto, String token) {
+        try {
+            String idContact = PRTiersHelper.createContact(getSession(), dto.getIdTiers(), dto.getLastName(), dto.getFirstName());
+            dto.setId(idContact);
+            for (PYMeanOfCommunicationDTO mean: dto.getMeansOfCommunication()) {
+                PRTiersHelper.createMeanOfCommunication(getSession(), dto.getId(), mean.getApplicationDomain(), mean.getMeanOfCommunicationType(), mean.getMeanOfCommunicationValue());
             }
         }
         catch (PYBadRequestException e) {

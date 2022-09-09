@@ -471,6 +471,29 @@ public class PRTiersHelper {
         tiContact.update(session.getCurrentThreadTransaction());
     }
 
+    public static final String createContact(BSession session, String idTiers, String lastName, String firstName) throws Exception {
+        TIContact tiContact = new TIContact();
+        tiContact.setNom(lastName);
+        tiContact.setPrenom(firstName);
+        tiContact.add(session.getCurrentThreadTransaction());
+
+        TIAvoirContact tiAvoirContact = new TIAvoirContact();
+        tiAvoirContact.setIdContact(tiContact.getIdContact());
+        tiAvoirContact.setIdTiers(idTiers);
+        tiAvoirContact.add(session.getCurrentThreadTransaction());
+
+        return tiContact.getIdContact();
+    }
+
+    public static final void createMeanOfCommunication(BSession session, String idContact, String application, String type, String value) throws Exception {
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setMoyen(value);
+        tiMoyenCommunication.setTypeCommunication(type);
+        tiMoyenCommunication.setIdApplication(application);
+        tiMoyenCommunication.setIdContact(idContact);
+        tiMoyenCommunication.add(session.getCurrentThreadTransaction());
+    }
+
     /**
      * Méthode pour mettre à jour un tiers (page 2 - contacts/moyens de communication)
      *
