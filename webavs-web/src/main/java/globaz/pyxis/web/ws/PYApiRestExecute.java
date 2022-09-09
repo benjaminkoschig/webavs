@@ -2,6 +2,7 @@ package globaz.pyxis.web.ws;
 
 import globaz.pyxis.web.DTO.PYContactCreateDTO;
 import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationCreationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -70,6 +71,13 @@ public class PYApiRestExecute {
     public Response deleteContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
         LOG.info("delete_contact");
         return execute(token, dto, service::deleteContact, dto::isValidForDeletion);
+    }
+
+    @DELETE
+    @Path(value = "mean_of_communication")
+    public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+        LOG.info("delete_mean_of_communication");
+        return execute(token, dto, service::deleteMeanOfCommunication, dto::isValid);
     }
 
     /**

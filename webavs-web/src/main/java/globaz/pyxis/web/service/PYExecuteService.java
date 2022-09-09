@@ -11,6 +11,7 @@ import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TIMoyenCommunication;
 import globaz.pyxis.web.DTO.PYContactCreateDTO;
 import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationCreationDTO;
 import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
@@ -182,6 +183,25 @@ public class PYExecuteService extends BProcess {
         return "Deletion successful";
     }
 
+    public String deleteMeanOfCommunication(PYMeanOfCommunicationCreationDTO dto, String token) {
+        try {
+            deleteMeanOfCommunication(getSession(), dto);
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la suppression du moyen de communication: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la suppression du moyen de communication: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la suppression du moyen de communication: " + e);
+            throw new PYInternalException(e);
+        }
+        return "Deletion successful";
+    }
+
     /**
      * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
      *
@@ -331,6 +351,15 @@ public class PYExecuteService extends BProcess {
         tiMoyenCommunication.setIdApplication(application);
         tiMoyenCommunication.setIdContact(idContact);
         tiMoyenCommunication.add(session.getCurrentThreadTransaction());
+    }
+
+    public static final void deleteMeanOfCommunication(BSession session, PYMeanOfCommunicationCreationDTO dto) throws Exception {
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
+        tiMoyenCommunication.setIdApplication(dto.getApplicationDomain());
+        tiMoyenCommunication.setIdContact(dto.getIdContact());
+        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
+        tiMoyenCommunication.delete(session.getCurrentThreadTransaction());
     }
 
     /**
