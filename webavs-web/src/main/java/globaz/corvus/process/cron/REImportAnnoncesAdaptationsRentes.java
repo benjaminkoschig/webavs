@@ -1,46 +1,44 @@
 package globaz.corvus.process.cron;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolAntwortVonZAS;
-import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung10Type;
+import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung9Type;
 import ch.globaz.common.properties.PropertiesException;
-import com.google.common.annotations.VisibleForTesting;
 import globaz.corvus.db.annonces.REAnnonce51;
 import globaz.corvus.db.annonces.REAnnonce53;
 import globaz.corvus.db.annonces.REFicheAugmentation;
 import globaz.corvus.properties.REProperties;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces51Mapper;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces53Mapper;
-import globaz.corvus.utils.REPmtMensuel;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
+import globaz.jade.context.JadeThread;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.xml.sax.SAXException;
+import org.apache.commons.lang.StringUtils;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * CRON permettant d'importer les annonces 51 et 53
@@ -49,12 +47,15 @@ import java.util.Optional;
 public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
     private static final String XML_EXTENSION = ".xml";
-    private static final String XSD_FOLDER = "/xsd/acor/xsd/annoncesRC/";
-    private static final String XSD_FILE_NAME = "AntwortVonZas.xsd";
     private static final String ANNONCES_SCHEMA = "acor.ch.admin.zas.rc.annonces.rente.pool";
     public static final String DOSSIER_ANNONCES_51_53 = "annonces51_53/";
-    private Schema xsdSchema;
+    private static final String MAIL_ERROR_CONTENT = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT";
+    private static final String MAIL_ERROR_CONTENT_51 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_51";
+    private static final String MAIL_ERROR_CONTENT_53 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_53";
+    private static final String MAIL_ERROR_SUBJECT = "ADAPTATIONS_RENTES_MAIL_ERROR_SUBJECT";
     private JADate datePmtMensuel;
+    private LocalDateTime dateDuTraitement;
+    private List<REProtocoleErreurAdaptationsRentes> protocoles = new ArrayList<>();
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -67,14 +68,35 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             initBsession();
             importFiles();
 
+            if (!protocoles.isEmpty()) {
+                StringBuilder errors = generateErrorMailContent();
+                sendErrorMail(errors.toString());
+            }
+
         } catch (Exception e) {
-            // TODO : gestion des erreurs : voir si le mail on error ne suffit pas en surchargeant le getAdresseEmail()
-            sendErrorMail("Les erreurs");
+            sendErrorMail(e.getMessage());
         } finally {
             closeBsession();
         }
 
         return true;
+    }
+
+    private StringBuilder generateErrorMailContent() {
+        StringBuilder errors = new StringBuilder();
+        String content = getSession().getLabel(MAIL_ERROR_CONTENT);
+        String content51 = getSession().getLabel(MAIL_ERROR_CONTENT_51);
+        String content53 = getSession().getLabel(MAIL_ERROR_CONTENT_53);
+        for (REProtocoleErreurAdaptationsRentes eachProtocole : protocoles) {
+            errors.append(FWMessageFormat.format(content, eachProtocole.getFichier()));
+            if (StringUtils.isNotEmpty(eachProtocole.getAnnonces51enErreur())) {
+                errors.append(FWMessageFormat.format(content51, eachProtocole.getAnnonces51enErreur()));
+            }
+            if (StringUtils.isNotEmpty(eachProtocole.getAnnonces53enErreur())) {
+                errors.append(FWMessageFormat.format(content53, eachProtocole.getAnnonces53enErreur()));
+            }
+        }
+        return errors;
     }
 
     private void importFiles() throws PropertiesException, JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException {
@@ -93,7 +115,6 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             if (nameOriginalFile.endsWith(XML_EXTENSION) && nameOriginalFile.startsWith("R")) {
                 String localFile = localFolder + nameOriginalFile;
                 JadeFsFacade.copyFile(nomFichierDistant, localFile);
-                // TODO : traitement du fichier local
                 boolean succes = traitementFichier(localFile);
                 if (succes) {
                     JadeFsFacade.delete(localFolder + nameOriginalFile);
@@ -106,18 +127,22 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         String tmpLocalWorkFile = JadeFsFacade.readFile(localFile);
         File annonce51ou53File = new File(tmpLocalWorkFile);
         if (annonce51ou53File.isFile()) {
-            // TODO : actuellement la validation est en erreur
-//            if (validateXml(annonce51ou53File)) {
-                PoolAntwortVonZAS annonces = getAnnonces(annonce51ou53File);
-                datePmtMensuel = new JADate(REPmtMensuel.getDateProchainPmt(getSession()));
-                // Traitement des annonces 53
-                traitementAnnonces53(annonces);
-                // Traitement des annonces 51
-                traitementAnnonces51(annonces);
-//            }
+            PoolAntwortVonZAS annonces = getAnnonces(annonce51ou53File);
+            datePmtMensuel = new JADate(REPmtMensuel.getDateProchainPmt(getSession()));
+            dateDuTraitement = LocalDateTime.now();
+            REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce51ou53File.getName());
+            // Traitement des annonces 53
+            traitementAnnonces53(annonces, protocole);
+            // Traitement des annonces 51
+            traitementAnnonces51(annonces, protocole);
 
+            if (protocole.hasErrors()) {
+                protocoles.add(protocole);
+            } else {
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     private PoolAntwortVonZAS getAnnonces(File annonce51ou53File) throws JAXBException {
@@ -126,56 +151,84 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         return (PoolAntwortVonZAS) unmarshaller.unmarshal(annonce51ou53File);
     }
 
-    private void traitementAnnonces53(PoolAntwortVonZAS annonces) {
+    private void traitementAnnonces53(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole) {
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof RRBestandesmeldung10Type)
                 .map(o -> (RRBestandesmeldung10Type) o)
-                .forEach(this::createAnnonce53);
+                .forEach((each) -> createAnnonce53(each, protocole));
     }
 
-    private void traitementAnnonces51(PoolAntwortVonZAS annonces) {
+    private void traitementAnnonces51(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole) {
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof RRBestandesmeldung9Type)
                 .map(o -> (RRBestandesmeldung9Type) o)
-                .forEach(this::createAnnonce51);
+                .forEach((each) -> createAnnonce51(each, protocole));
     }
 
-    private void createAnnonce53(RRBestandesmeldung10Type bestandesmeldung10Type) {
+    /**
+     * @param bestandesmeldung10Type
+     * @param protocole
+     * @return
+     */
+    private void createAnnonce53(RRBestandesmeldung10Type bestandesmeldung10Type, REProtocoleErreurAdaptationsRentes protocole) {
+        StringBuilder errorMessage = new StringBuilder();
         try {
             REAnnonces53Mapper annonces53Mapper = new REAnnonces53Mapper(getSession().getCurrentThreadTransaction());
             REAnnonce53 ann53 = null;
             if (Objects.nonNull(bestandesmeldung10Type.getOrdentlicheRente())) {
+                errorMessage.append(bestandesmeldung10Type.getOrdentlicheRente().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(bestandesmeldung10Type.getOrdentlicheRente().getLeistungsbeschreibung().getLeistungsart());
                 ann53 = annonces53Mapper.createAnnonce53Ordinaire(bestandesmeldung10Type);
             } else if (Objects.nonNull(bestandesmeldung10Type.getAusserordentlicheRente())) {
+                errorMessage.append(bestandesmeldung10Type.getAusserordentlicheRente().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(bestandesmeldung10Type.getAusserordentlicheRente().getLeistungsbeschreibung().getLeistungsart());
                 ann53 = annonces53Mapper.createAnnonce53Extraordinaire(bestandesmeldung10Type);
             } else if (Objects.nonNull(bestandesmeldung10Type.getHilflosenentschaedigung())) {
+                errorMessage.append(bestandesmeldung10Type.getHilflosenentschaedigung().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(bestandesmeldung10Type.getHilflosenentschaedigung().getLeistungsbeschreibung().getLeistungsart());
                 ann53 = annonces53Mapper.createAnnonce53Indemnisation(bestandesmeldung10Type);
             }
 
             REFicheAugmentation ficheAugmentation = new REFicheAugmentation();
             ficheAugmentation.setSession(getSession());
             ficheAugmentation.setIdAnnonceHeader(ann53.getIdAnnonce());
-
             ficheAugmentation.setDateAugmentation(datePmtMensuel.toStrAMJ());
+            ficheAugmentation.setDateTraitement(JadeDateUtil.getFormattedDateTime(Timestamp.valueOf(dateDuTraitement)));
             ficheAugmentation.add(getSession().getCurrentThreadTransaction());
 
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la création des annonces 53. ", e);
+            protocole.addAnnonces53enErreur(errorMessage.toString());
+            clearErrorsWarning();
         }
     }
 
+    private void clearErrorsWarning() {
+        getSession().getErrors();
+        getTransaction().clearErrorBuffer();
+        getTransaction().clearWarningBuffer();
+        getSession().getCurrentThreadTransaction().clearErrorBuffer();
+        getSession().getCurrentThreadTransaction().clearWarningBuffer();
+        getMemoryLog().clear();
+        JadeThread.logClear();
+    }
 
-    private void createAnnonce51(RRBestandesmeldung9Type rrBestandesmeldung9Type) {
+
+    /**
+     * @param rrBestandesmeldung9Type
+     */
+    private void createAnnonce51(RRBestandesmeldung9Type rrBestandesmeldung9Type, REProtocoleErreurAdaptationsRentes protocole) {
+        StringBuilder errorMessage = new StringBuilder();
         try {
             REAnnonces51Mapper annonces51Mapper = new REAnnonces51Mapper(getSession().getCurrentThreadTransaction());
             REAnnonce51 ann51 = null;
             if (Objects.nonNull(rrBestandesmeldung9Type.getOrdentlicheRente())) {
+                errorMessage.append(rrBestandesmeldung9Type.getOrdentlicheRente().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(rrBestandesmeldung9Type.getOrdentlicheRente().getLeistungsbeschreibung().getLeistungsart());
                 ann51 = annonces51Mapper.createAnnonce51Ordinaire(rrBestandesmeldung9Type);
             } else if (Objects.nonNull(rrBestandesmeldung9Type.getAusserordentlicheRente())) {
+                errorMessage.append(rrBestandesmeldung9Type.getAusserordentlicheRente().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(rrBestandesmeldung9Type.getAusserordentlicheRente().getLeistungsbeschreibung().getLeistungsart());
                 ann51 = annonces51Mapper.createAnnonce51Extraordinaire(rrBestandesmeldung9Type);
             } else if (Objects.nonNull(rrBestandesmeldung9Type.getHilflosenentschaedigung())) {
+                errorMessage.append(rrBestandesmeldung9Type.getHilflosenentschaedigung().getLeistungsberechtigtePerson().getVersichertennummer()).append("-").append(rrBestandesmeldung9Type.getHilflosenentschaedigung().getLeistungsbeschreibung().getLeistungsart());
                 ann51 = annonces51Mapper.createAnnonce51Indemnisation(rrBestandesmeldung9Type);
             }
 
@@ -184,47 +237,15 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             ficheAugmentation.setIdAnnonceHeader(ann51.getIdAnnonce());
 
             ficheAugmentation.setDateAugmentation(datePmtMensuel.toStrAMJ());
+            ficheAugmentation.setDateTraitement(JadeDateUtil.getFormattedDateTime(Timestamp.valueOf(dateDuTraitement)));
             ficheAugmentation.add(getSession().getCurrentThreadTransaction());
 
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la création des annonces 53. ", e);
+            protocole.addAnnonces51enErreur(errorMessage.toString());
+            clearErrorsWarning();
         }
     }
-
-    private boolean validateXml(File annonce51ou53File) {
-        try {
-            Optional<Schema> theSchema = loadXsdSchema();
-            if (theSchema.isPresent()) {
-                xsdSchema = theSchema.get();
-                Validator validator = xsdSchema.newValidator();
-                validator.validate(new StreamSource(annonce51ou53File));
-                return true;
-            } else {
-                LOG.error("Impossible de lire l'url du xsd: {}", XSD_FOLDER + XSD_FILE_NAME);
-                return false;
-            }
-        } catch (SAXException | NullPointerException | IOException e) {
-            LOG.error("e fichier xml fourni n'est pas valide.", e);
-            return false;
-        }
-    }
-
-    @VisibleForTesting
-    Optional<Schema> loadXsdSchema() {
-        if (Objects.isNull(xsdSchema)) {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            URL url = getClass().getResource(XSD_FOLDER + XSD_FILE_NAME);
-            if (Objects.nonNull(url)) {
-                try {
-                    return Optional.of(factory.newSchema(url));
-                } catch (SAXException e) {
-                    LOG.error("Impossible de charger le schema xsd: {}", url, e);
-                }
-            }
-        }
-        return Optional.ofNullable(xsdSchema);
-    }
-
 
     private void sendErrorMail(String errors) throws Exception {
         JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getEMailObject(), errors, null);
@@ -255,7 +276,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
     @Override
     protected String getEMailObject() {
-        return null;
+        return getSession().getLabel(MAIL_ERROR_SUBJECT);
     }
 
     @Override
