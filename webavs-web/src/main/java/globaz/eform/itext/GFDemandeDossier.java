@@ -1,6 +1,6 @@
 package globaz.eform.itext;
 
-public class GEDemandeDossier extends GEDocumentDossier {
+public class GFDemandeDossier extends GFDocumentDossier {
 
     private static final long serialVersionUID = 1L;
     private final static String LABEL_TITRE = "DOCUMENT_DEMANDE_TITRE";
