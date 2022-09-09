@@ -1,5 +1,7 @@
 package globaz.pyxis.web.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
 import java.util.Vector;
@@ -14,4 +16,12 @@ public class PYContactDTO {
     private String firstName;
     private String lastName;
     private Vector<PYMeanOfCommunicationDTO> meansOfCommunication = new Vector();
+
+    @JsonIgnore
+    public Boolean isValid() {
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getId());
+
+        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+    }
 }

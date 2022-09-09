@@ -3,11 +3,16 @@ package globaz.pyxis.web.service;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class PYExecuteService extends BProcess {
@@ -80,6 +85,36 @@ public class PYExecuteService extends BProcess {
             throw new PYInternalException(e);
         }
 
+        return dto;
+    }
+
+    /**
+     * Modification d'un contact ainsi que de ses moyens de communication.
+     *
+     * @param dto
+     * @param token
+     * @return
+     */
+    public PYContactDTO updateContact(PYContactDTO dto, String token) {
+        try {
+            PRTiersHelper.updateContact(getSession(), dto.getId(), dto.getLastName(), dto.getFirstName());
+            List<PYMeanOfCommunicationDTO> means = new ArrayList<>(dto.getMeansOfCommunication());
+            for (PYMeanOfCommunicationDTO contact: means) {
+                PRTiersHelper.updateMeanOfCommunication(getSession(), dto.getId(), contact.getMeanOfCommunicationType(), contact.getApplicationDomain(), contact.getMeanOfCommunicationValue());
+            }
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du contact: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la modification du contact: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la modification du contact: " + e);
+            throw new PYInternalException(e);
+        }
         return dto;
     }
 

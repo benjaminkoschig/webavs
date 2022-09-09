@@ -1,5 +1,6 @@
 package globaz.pyxis.web.ws;
 
+import globaz.pyxis.web.DTO.PYContactDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -46,6 +47,13 @@ public class PYApiRestExecute {
     public Response updateTiers(@HeaderParam("authorization") String token, PYTiersUpdateDTO dto) {
         LOG.info("update_tiers");
         return execute(token, dto, service::updateTiers, dto::isValid);
+    }
+
+    @PUT
+    @Path(value = "update_contact")
+    public Response updateContact(@HeaderParam("authorization") String token, PYContactDTO dto) {
+        LOG.info("update_contact");
+        return execute(token, dto, service::updateContact, dto::isValid);
     }
 
     /**

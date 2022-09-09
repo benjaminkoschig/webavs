@@ -442,7 +442,8 @@ public class PRTiersHelper {
         tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
 
         // Update the contact
-        tiMoyenCommunication.setMoyen(newMoyen);
+        if(!newMoyen.isEmpty() && newMoyen != null)
+            tiMoyenCommunication.setMoyen(newMoyen);
         //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
         //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
         tiMoyenCommunication.update(session.getCurrentThreadTransaction());
@@ -462,8 +463,11 @@ public class PRTiersHelper {
         tiContact.setIdContact(idContact);
         tiContact.retrieve(session.getCurrentThreadTransaction());
 
-        tiContact.setNom(newLastName);
-        tiContact.setPrenom(newFirstName);
+        if(newLastName != null && !newLastName.isEmpty())
+            tiContact.setNom(newLastName);
+        if(newFirstName != null && !newFirstName.isEmpty())
+            tiContact.setPrenom(newFirstName);
+
         tiContact.update(session.getCurrentThreadTransaction());
     }
 
