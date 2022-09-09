@@ -20,11 +20,11 @@
 
 	<Th nowrap width="16">&nbsp;</Th>
 
-    <Th>Libelle</Th>
-    <Th>Référence QR</Th>
-    <Th>Date début</Th>
-	<Th>Date fin</Th>
-    <Th>N° de Compte</Th>
+    <Th>Beschriftung</Th>
+    <Th>QR-Referenz</Th>
+    <Th>Anfangsdatum</Th>
+	<Th>Endtermin</Th>
+    <Th>Konto-Nr.</Th>
     <Th>Adresse</Th>
 
     <%

@@ -20,12 +20,12 @@
 
 	<Th nowrap width="16">&nbsp;</Th>
 
-    <Th>Libelle</Th>
-    <Th>Référence QR</Th>
-    <Th>Date début</Th>
-	<Th>Date fin</Th>
-    <Th>N° de Compte</Th>
-    <Th>Adresse</Th>
+    <Th>Etichetta</Th>
+    <Th>Riferimento QR</Th>
+    <Th>Data d'inizio</Th>
+	<Th>Data di fine</Th>
+    <Th>Numero di conto</Th>
+    <Th>Indirizzo</Th>
 
     <%
     boolean oldCondition = true;

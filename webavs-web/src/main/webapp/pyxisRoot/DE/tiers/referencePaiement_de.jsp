@@ -63,7 +63,7 @@ function init(){}
 // stop hiding -->
 </SCRIPT> <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%>Référence paiement - Détail<%-- /tpl:put  --%>
+			<%-- tpl:put name="zoneTitle" --%>Zahlungsreferenz - Detail<%-- /tpl:put  --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain"  --%>
 
@@ -82,17 +82,17 @@ function init(){}
           </TR>
 
           <TR>
-            <TD width="119">Libelle</TD>
+            <TD width="119">Beschriftung</TD>
             <TD nowrap width="211">
               <INPUT type="text" name="libelle" class="libelleLong" value="<%=viewBean.getLibelle()%>"></TD>
             <TD width="50"></TD>
-            <TD width="180">N° compte</TD>
+            <TD width="180">Konto-Nr.</TD>
             <TD nowrap width="125" align="left">
                 <INPUT type="text" name="numCompteBancaire" class="libelleLong" value="<%=viewBean.getNumCompteBancaire()%>"></TD>
           </TR>
 
           <TR>
-            <TD width="119">Référence QR</TD>
+            <TD width="119">QR-Referenz</TD>
             <TD nowrap width="211">
               <INPUT type="text" name="referenceQR" class="libelleLong" value="<%=viewBean.getReferenceQR()%>" maxlength="30"></TD>
             <TD width="50"></TD>
@@ -101,7 +101,7 @@ function init(){}
           </TR>
 
           <TR>
-            <TD width="119">Date début</TD>
+            <TD width="119">Anfangsdatum</TD>
             <TD nowrap width="211">
                 <INPUT type="text" name="dateDebut" class="numero" value="<%=viewBean.getDateDebut()%>"></TD>
             <TD width="50" nowrap></TD>
@@ -110,7 +110,7 @@ function init(){}
           </TR>
 
           <TR>
-            <TD width="119">Date fin</TD>
+            <TD width="119">Endtermin</TD>
             <TD nowrap width="211">
                 <INPUT type="text" name="dateFin" class="numero" value="<%=viewBean.getDateFin()%>"></TD>
             <TD width="50"></TD>
@@ -124,7 +124,7 @@ function init(){}
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
-          </TR>          
+          </TR>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
@@ -132,9 +132,9 @@ function init(){}
 				<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage"  --%>
-<%if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> 
+<%if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %>
 <SCRIPT>
-</SCRIPT> 
+</SCRIPT>
 <%}%>
 
 <ct:menuChange displayId="options" menuId="reference-paiement" showTab="options">
