@@ -138,7 +138,7 @@ function init(){
 	</td>					
 </tr>
 <tr>
-<td >Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
+	<td >Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
 	<td >
 		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
 			<%
@@ -148,9 +148,7 @@ function init(){
 			Object[] adresseParams = new Object[]{ new String[]{"critereParam","critere"}};
 		%>
 		<input type="hidden" name="critereParam" value="512006">
-		
-
-		<ct:FWSelectorTag 
+		<ct:FWSelectorTag
 			name="adresseSelector1" 
 			
 			methods="<%=adresseMethodsName%>"
@@ -159,31 +157,32 @@ function init(){
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
+			<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+		Reference QR
+			<%
+				Object[] referencePaiementMethodsName = new Object[]{
+						new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
+				};
+			%>
+			<ct:FWSelectorTag
+					name="referencePaiementSelector1"
 
-		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+					methods="<%=referencePaiementMethodsName%>"
+					providerApplication ="pyxis"
+					providerPrefix="TI"
+					providerAction ="pyxis.tiers.referencePaiement.chercher"
+					providerActionParams ="<%=adresseParams%>"
+			/>
+		<%}%>
 		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
 		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
-
-		<%
-			Object[] referencePaiementMethodsName = new Object[]{
-			new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
-			};
-		%>
-
-		<ct:FWSelectorTag
-			name="referencePaiementSelector1"
-
-			methods="<%=referencePaiementMethodsName%>"
-			providerApplication ="pyxis"
-			providerPrefix="TI"
-			providerAction ="pyxis.tiers.referencePaiement.chercher"
-			providerActionParams ="<%=adresseParams%>"
-		/>
-
-</td>				
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+	</td>
+</tr>
 <tr>
-	<td>Pays</td>
-			<td nowrap>			<input type="text" class="libelleLongDisabled" readonly value="<%=viewBean.getNomPays()%>">
+			<td>Pays</td>
+			<td nowrap>
+				<input type="text" class="libelleLongDisabled" readonly value="<%=viewBean.getNomPays()%>">
 
 			<%
 				Object[] paysMethodsName = new Object[]{

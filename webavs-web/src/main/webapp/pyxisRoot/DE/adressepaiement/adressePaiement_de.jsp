@@ -163,26 +163,29 @@ function init(){
 		/>
 
 		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
-		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
-		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
-
+	</td>
+		<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+	<td>QR-Referenz</td>
+	<td>
 		<%
 			Object[] referencePaiementMethodsName = new Object[]{
-			new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
+					new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
 			};
 		%>
-
 		<ct:FWSelectorTag
-			name="referencePaiementSelector1"
+				name="referencePaiementSelector1"
 
-			methods="<%=referencePaiementMethodsName%>"
-			providerApplication ="pyxis"
-			providerPrefix="TI"
-			providerAction ="pyxis.tiers.referencePaiement.chercher"
-			providerActionParams ="<%=adresseParams%>"
+				methods="<%=referencePaiementMethodsName%>"
+				providerApplication ="pyxis"
+				providerPrefix="TI"
+				providerAction ="pyxis.tiers.referencePaiement.chercher"
+				providerActionParams ="<%=adresseParams%>"
 		/>
-
-</td>				
+		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
+		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
+	</td>
+		<%}%>
+<tr/>
 <tr>
 	<td>Land</td>
 			<td nowrap>			<input type="text" class="libelleLongDisabled" readonly value="<%=viewBean.getNomPays()%>">
