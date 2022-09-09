@@ -6,6 +6,7 @@
 	idEcran ="GTI0333";
 	actionNew  +=	(request.getParameter("colonneSelection")==null)?"":"&colonneSelection="+request.getParameter("colonneSelection");
 	actionNew  += "&idTiers=" + ((request.getParameter("idTiers")!=null)?request.getParameter("idTiers"):"") ;
+	actionNew  += "&idAdresse=" + ((request.getParameter("idAdresse")!=null)?request.getParameter("idAdresse"):"") ;
 	rememberSearchCriterias = true;
 %>
 <%-- /tpl:put --%>

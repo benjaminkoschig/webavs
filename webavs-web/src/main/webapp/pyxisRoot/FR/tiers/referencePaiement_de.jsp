@@ -139,7 +139,7 @@ function init(){}
 <%}%>
 
 <ct:menuChange displayId="options" menuId="reference-paiement" showTab="options">
-	<ct:menuSetAllParams key="idTiers" value="<%=viewBean.getIdTiers()%>"/>
+	<ct:menuSetAllParams key="idReference" value="<%=viewBean.getIdReference()%>"/>
 </ct:menuChange>
 
 <%-- /tpl:put --%>

@@ -29,7 +29,7 @@
 
     <%
     boolean oldCondition = true;
-    boolean sameTiers = false;
+    boolean sameAdresse = false;
     int pos = -1;
     %>
 
@@ -40,13 +40,13 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if(!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdTiers().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdTiers())){
+				if(!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdresse().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdresse())){
 					condition = !oldCondition;
 					oldCondition = condition;
-					sameTiers= false;
+					sameAdresse = false;
 				} else {
 					condition = oldCondition;
-					sameTiers= true;
+					sameAdresse = true;
 				}
 			}
     %>
@@ -56,32 +56,32 @@
 	<%-- tpl:put name="zoneList"  --%>
 <%
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean entity = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean) viewBean.getEntity(i);
-	actionDetail = "parent.location.href='"+detailLink+entity.getIdTiers()+"'";
+	actionDetail = "parent.location.href='"+detailLink+entity.getIdReference()+"'";
 %>
 <%
-	if  (!sameTiers) {
+	if  (!sameAdresse) {
 		pos ++;
 %>
-      <TD class="mtd" width="16" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">
+      <TD class="mtd" width="16" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">
 			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReference();%>
 			<ct:menuPopup menu="reference-paiement" detailLabelId="Detail" detailLink="<%=url%>">
-	 			<ct:menuParam key="idTiers" value="<%=entity.getIdTiers()%>"/>
+	 			<ct:menuParam key="idReference" value="<%=entity.getIdReference()%>"/>
 			</ct:menuPopup>
       </TD>
 
-      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;"><%=entity.getLibelle()%>&nbsp;</TD>
-      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;"><%=entity.getReferenceQR()%>&nbsp;</TD>
-      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;"><%=entity.getDateDebut()%>&nbsp;</TD>
-	  <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;"><%=entity.getDateFin()%>&nbsp;</TD>
-	  <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;"><%=entity.getNumCompteBancaire()%>&nbsp;</TD>
+      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getLibelle()%>&nbsp;</TD>
+      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getReferenceQR()%>&nbsp;</TD>
+      <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getDateDebut()%>&nbsp;</TD>
+	  <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getDateFin()%>&nbsp;</TD>
+	  <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getNumCompteBancaire()%>&nbsp;</TD>
 
 <%} else {%>
-      <TD class="mtd" width="16" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
-      <TD class="mtd" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;" >&nbsp;</TD>
-      <TD class="mtd" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
-      <TD class="mtd" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
-      <TD class="mtd" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
-      <TD class="mtd" style="<%=(sameTiers)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
+      <TD class="mtd" width="16" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
+      <TD class="mtd" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;" >&nbsp;</TD>
+      <TD class="mtd" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
+      <TD class="mtd" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
+      <TD class="mtd" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
+      <TD class="mtd" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">&nbsp;</TD>
 <%}%>
 <%
 	if (condition) {
@@ -91,7 +91,7 @@
 	}
 %>
 
-	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameTiers)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" >
+	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" >
 		<i>
 			<%
 				pageContext.getOut().write(entity.getDetailAdresse());
