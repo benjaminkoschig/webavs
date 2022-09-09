@@ -2,12 +2,15 @@ package ch.globaz.eform.utils;
 
 import ch.globaz.common.util.Dates;
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.common.util.ZipUtils;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
 
+import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
@@ -18,6 +21,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -171,6 +178,58 @@ public class GFFileUtils {
         if (viewBean.getErrorFileNameList().size() > 0) {
             viewBean.getSession().getCurrentThreadTransaction().addErrors(("les documents en rouges ne respectent pas le format requis et ne seront pas pris en compte pour l'envoi."));
         }
+    }
+
+    public static void createSedexXml(Message message, String sedexOutPut) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Message.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            // Chemin en dur à changer
+            File file = new File(sedexOutPut + "/message_00102.xml");
+            jaxbMarshaller.marshal(message, file);
+
+        } catch (JAXBException e) {
+//            LOGGER.error("Error : impossible de créer le fichier xml.");
+        }
+    }
+
+    public static void createSedexZipFolder(Message message, List<String> fileNames) throws IOException {
+        // chemin à changer
+        String uuid = JadeUUIDGenerator.createLongUID().toString();
+        Path destDir = Paths.get(WORK_PATH + "testZip/" + "data_" + uuid);
+        Path attachmentsDir = Paths.get(destDir + "/attachments_00102");
+        Files.createDirectories(destDir);
+        Files.createDirectories(attachmentsDir);
+        createSedexXml(message, destDir.toString());
+        createSedexAttachments(message, fileNames, attachmentsDir.toString());
+        zipSedexFile(destDir);
+    }
+
+    public static void createSedexAttachments(Message message, List<String> fileNames, String attachmentDir) {
+        File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
+        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        int attachmentIncrement = 0;
+        for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
+            File file = (File) iterator.next();
+            if (fileNames.contains(file.getName())) {
+                try {
+                    JadeFsFacade.copyFile(file.getAbsolutePath(), attachmentDir + "/" + "attachment_" + ++attachmentIncrement + "." + FilenameUtils.getExtension(file.getName()));
+                } catch (JadeServiceLocatorException e) {
+                    throw new RuntimeException(e);
+                } catch (JadeServiceActivatorException e) {
+                    throw new RuntimeException(e);
+                } catch (JadeClassCastException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+    }
+
+    public static void zipSedexFile(Path destDir) {
+        ZipUtils.zip(Paths.get(destDir + ".zip"), destDir);
     }
 
     public static String generateEFormFilePath(GFFormulaireModel dbModel) {

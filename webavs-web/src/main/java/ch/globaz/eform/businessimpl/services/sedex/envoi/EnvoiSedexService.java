@@ -5,6 +5,7 @@ import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
+import ch.globaz.eform.utils.GFFileUtils;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,18 +53,21 @@ public class EnvoiSedexService {
         this.viewBean = viewBean;
     }
 
-    public void createSedexMessage() {
+    public Message createSedexMessage() {
+        Message message = new Message();
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
             //todo sprint 18 lier l'id avec une demande
             String id = "5";
             GFDaDossierModel model = getModel(id);
-            Message message = sedex0001021.createMessage(createHeader(model), createContent());
+            message = sedex0001021.createMessage(createHeader(model), createContent());
             updateGFFormulaireStatus(model);
+
 
         } catch (Exception e) {
             sendMail();
         }
+        return message;
     }
 
     private HeaderType createHeader(GFDaDossierModel model) {
@@ -309,4 +314,9 @@ public class EnvoiSedexService {
             throw new RuntimeException(e);
         }
     }
+
+    public void createSedexZip(Message message) throws IOException {
+        GFFileUtils.createSedexZipFolder(message, viewBean.getFileNameList());
+    }
+
 }
