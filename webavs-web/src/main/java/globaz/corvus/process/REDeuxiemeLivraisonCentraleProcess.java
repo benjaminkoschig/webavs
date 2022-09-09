@@ -1,10 +1,8 @@
 package globaz.corvus.process;
 
-import ch.globaz.common.util.Dates;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.adaptation.IREAdaptationRente;
 import globaz.corvus.api.arc.downloader.RELoaderAnnonces5153;
-import globaz.corvus.api.arc.downloader.REReaderAnnonces51_53;
 import globaz.corvus.db.adaptation.RERentesAdapteesJointRATiers;
 import globaz.corvus.db.adaptation.RERentesAdapteesJointRATiersManager;
 import globaz.corvus.db.annonces.REAnnonce51;
@@ -18,7 +16,6 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
@@ -100,6 +97,7 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
     @Getter
     @Setter
     private String dateImportation = "";
+
 
     public REDeuxiemeLivraisonCentraleProcess() {
         super();

@@ -1,6 +1,5 @@
 package globaz.corvus.process;
 
-import ch.globaz.common.util.Dates;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.arc.downloader.RELoaderAnnonces5153;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiers;
@@ -132,7 +131,7 @@ public class REComparaisonCentraleProcess extends BProcess {
             read51_53.setParentProcess(this);
             read51_53.setLog(getMemoryLog());
 
-            Map<KeyRAAnnComparaison, ArrayList<Object>> mapAnnoncesLues = read51_53.loadAnnonces(Dates.toDbDate(getDateImportation()));;
+            Map<KeyRAAnnComparaison, ArrayList<Object>> mapAnnoncesLues = read51_53.loadAnnonces(getDateImportation());;
 
             // 2) Ajout des rentes accordées dans une map (clé =
             // NSS/CodePrestation/Montant)
