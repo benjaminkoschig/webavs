@@ -24,7 +24,6 @@ import globaz.jade.smtp.JadeSmtpClient;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -73,9 +72,9 @@ public class EnvoiSedexService {
     private HeaderType createHeader(GFDaDossierModel model) {
         try {
             HeaderType header = new HeaderType();
-            //TODO sprint 18 mapper les 3 données commentées
+            //TODO sprint 18 mapper les 2 données commentées
 //        header.setSenderId();
-//        header.setRecipientId(getSedexId(model.getCodeCaisse())); a faire sprint 2022.18
+//        header.setRecipientId(getSedexId(model.getCodeCaisse()));
             header.setMessageId(JadeUUIDGenerator.createLongUID().toString());
             header.setReferenceMessageId(Objects.isNull(model) ? "" : model.getMessageId());
             header.setBusinessProcessId(generateBusinessProcessId());
@@ -318,5 +317,30 @@ public class EnvoiSedexService {
     public void createSedexZip(Message message) throws IOException {
         GFFileUtils.createSedexZipFolder(message, viewBean.getFileNameList());
     }
+
+    //TODO sprint 18 récupérer le recipient id
+//    public static SedexSender buildSedexSender() {
+//        try {
+//            String recipientId = PCproperties.getProperties(EPCProperties.RPC_DESTINATAIRE);
+//            if (JadeSedexService.getInstance().isServiceStarted()) {
+//                return new SedexSender(JadeSedexService.getInstance(), recipientId, Jade.getInstance()
+//                        .getPersistenceDir());
+//            }
+//            LOG.info("JadeSedexService is not started we will use a mock like !");
+//            return new SedexSender(recipientId, Jade.getInstance().getPersistenceDir());
+//        } catch (PropertiesException e) {
+//            throw new IllegalArgumentException("Property Exception " + e.toString(), e);
+//        }
+//    }
+//    public void sendMessages() throws JadeSedexMessageNotSentException {
+//
+//        JadeSedexService service = JadeSedexService.getInstance();
+//        SimpleSedexMessage sms;
+//        for (String s : viewBean.getFileNameList()) {
+//            sms = new SimpleSedexMessage();
+//            sms.fileLocation = s;
+//            service.sendSimpleMessage(sms);
+//        }
+//    }
 
 }

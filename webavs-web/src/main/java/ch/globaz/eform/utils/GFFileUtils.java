@@ -196,18 +196,20 @@ public class GFFileUtils {
     }
 
     public static void createSedexZipFolder(Message message, List<String> fileNames) throws IOException {
-        // chemin à changer
+        // Creer un dossier avec les attachments, le fichier xml et le transforme en zip
         String uuid = JadeUUIDGenerator.createLongUID().toString();
         Path destDir = Paths.get(WORK_PATH + "testZip/" + "data_" + uuid);
         Path attachmentsDir = Paths.get(destDir + "/attachments_00102");
         Files.createDirectories(destDir);
         Files.createDirectories(attachmentsDir);
         createSedexXml(message, destDir.toString());
-        createSedexAttachments(message, fileNames, attachmentsDir.toString());
+        createSedexAttachments(fileNames, attachmentsDir.toString());
         zipSedexFile(destDir);
+//        buildSedexSender();
     }
 
-    public static void createSedexAttachments(Message message, List<String> fileNames, String attachmentDir) {
+    public static void createSedexAttachments(List<String> fileNames, String attachmentDir) {
+        // recherche les fichiers et les envoi dans le dossier attachment.
         File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
         Collection<File> files = FileUtils.listFiles(directory, null, true);
         int attachmentIncrement = 0;
