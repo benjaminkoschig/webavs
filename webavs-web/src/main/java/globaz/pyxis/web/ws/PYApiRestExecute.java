@@ -73,6 +73,13 @@ public class PYApiRestExecute {
         return execute(token, dto, service::deleteContact, dto::isValidForDeletion);
     }
 
+    @POST
+    @Path(value = "mean_of_communication")
+    public Response createMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+        LOG.info("create_mean_of_communication");
+        return execute(token, dto, service::createMeanOfCommunication, dto::isValid);
+    }
+
     @DELETE
     @Path(value = "mean_of_communication")
     public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {

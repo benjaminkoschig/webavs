@@ -32,7 +32,7 @@ public class PYExecuteService extends BProcess {
      * @param token header d'authentification
      * @return dto JSON contenant l'id du tiers créé
      */
-    public PYTiersDTO createTiers(PYTiersDTO dto, String token) {
+    public final PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         String idAddress = null;
         try {
             PRTiersHelper.addTiersPage1(getSession(), dto);
@@ -72,7 +72,7 @@ public class PYExecuteService extends BProcess {
      * @param token header d'authentification
      * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
-    public PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
+    public final PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
         // TODO: upgrade the updating. If at least one field is present then update. Faire un vecteur de champs pour les update comme pour la création et isValid.
         try {
             PRTiersHelper.updateTiersPage1(getSession(), dto);
@@ -104,7 +104,7 @@ public class PYExecuteService extends BProcess {
      * @param token
      * @return
      */
-    public PYContactDTO updateContact(PYContactDTO dto, String token) {
+    public final PYContactDTO updateContact(PYContactDTO dto, String token) {
         try {
             updateContact(getSession(), dto.getId(), dto.getLastName(), dto.getFirstName());
             List<PYMeanOfCommunicationDTO> means = new ArrayList<>(dto.getMeansOfCommunication());
@@ -128,13 +128,63 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
+     * Méthode pour mettre à jour un contact (table TICONTP).
+     *
+     * @param session
+     * @param idContact clé primaire
+     * @param newLastName valeur à mettre à jour
+     * @param newFirstName valeur à mettre à jour
+     * @throws Exception
+     */
+    public final void updateContact(BSession session, String idContact, String newLastName, String newFirstName) throws Exception {
+        TIContact tiContact = new TIContact();
+        tiContact.setIdContact(idContact);
+        tiContact.retrieve(session.getCurrentThreadTransaction());
+
+        if(newLastName != null && !newLastName.isEmpty())
+            tiContact.setNom(newLastName);
+        if(newFirstName != null && !newFirstName.isEmpty())
+            tiContact.setPrenom(newFirstName);
+
+        tiContact.update(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Methode pour mettre à jour un moyen de communication (table TIMCOMP).
+     * <p>
+     * Seul la valeur (newMoyen) peut être modifiée.
+     *
+     * @param session
+     * @param idContact clé composite
+     * @param typeCommunication clé composite
+     * @param domaineApplication clé composite
+     * @param newMoyen valeur à mettre à jour
+     * @throws Exception
+     */
+    public final void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
+        // Get the contact
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setIdApplication(domaineApplication);
+        tiMoyenCommunication.setIdContact(idContact);
+        tiMoyenCommunication.setTypeCommunication(typeCommunication);
+        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
+
+        // Update the contact
+        if(!newMoyen.isEmpty() && newMoyen != null)
+            tiMoyenCommunication.setMoyen(newMoyen);
+        //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
+        //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
+        tiMoyenCommunication.update(session.getCurrentThreadTransaction());
+    }
+
+    /**
      * Création d'un contact et de ses moyens de communication
      *
      * @param dto
      * @param token
      * @return
      */
-    public PYContactDTO createContact(PYContactCreateDTO dto, String token) {
+    public final PYContactDTO createContact(PYContactCreateDTO dto, String token) {
         try {
             String idContact = createContact(getSession(), dto.getIdTiers(), dto.getLastName(), dto.getFirstName());
             dto.setId(idContact);
@@ -158,13 +208,37 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
+     * Méthode pour créer un contact avec des moyens de communication.
+     *
+     * @param session
+     * @param idTiers
+     * @param lastName
+     * @param firstName
+     * @return
+     * @throws Exception
+     */
+    public final String createContact(BSession session, String idTiers, String lastName, String firstName) throws Exception {
+        TIContact tiContact = new TIContact();
+        tiContact.setNom(lastName);
+        tiContact.setPrenom(firstName);
+        tiContact.add(session.getCurrentThreadTransaction());
+
+        TIAvoirContact tiAvoirContact = new TIAvoirContact();
+        tiAvoirContact.setIdContact(tiContact.getIdContact());
+        tiAvoirContact.setIdTiers(idTiers);
+        tiAvoirContact.add(session.getCurrentThreadTransaction());
+
+        return tiContact.getIdContact();
+    }
+
+    /**
      * Suppression d'un contact
      *
      * @param dto
      * @param token
      * @return
      */
-    public String deleteContact(PYContactCreateDTO dto, String token) {
+    public final String deleteContact(PYContactCreateDTO dto, String token) {
         try {
             deleteContact(getSession(), dto.getId(), dto.getIdTiers());
         }
@@ -183,7 +257,90 @@ public class PYExecuteService extends BProcess {
         return "Deletion successful";
     }
 
-    public String deleteMeanOfCommunication(PYMeanOfCommunicationCreationDTO dto, String token) {
+    /**
+     * Méthode pour supprimer un contact.
+     *
+     * @param session
+     * @param id
+     * @param idTiers
+     * @throws Exception
+     */
+    public final void deleteContact(BSession session, String id, String idTiers) throws Exception {
+        TIContact tiContact = new TIContact();
+        tiContact.setIdContact(id);
+        tiContact.retrieve(session.getCurrentThreadTransaction());
+        tiContact.delete(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Création d'un moyen de communication.
+     *
+     * @param dto
+     * @param token
+     * @return
+     */
+    public final PYMeanOfCommunicationCreationDTO createMeanOfCommunication(PYMeanOfCommunicationCreationDTO dto, String token) {
+        try {
+            createMeanOfCommunication(getSession(), dto);
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la création du moyen de communication: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la création du moyen de communication: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la création du moyen de communication: " + e);
+            throw new PYInternalException(e);
+        }
+        return dto;
+    }
+
+    /**
+     * Méthode pour créer un moyen de communication pour un contact.
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
+    public final void createMeanOfCommunication(BSession session, PYMeanOfCommunicationCreationDTO dto) throws Exception {
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setMoyen(dto.getMeanOfCommunicationValue());
+        tiMoyenCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
+        tiMoyenCommunication.setIdApplication(dto.getApplicationDomain());
+        tiMoyenCommunication.setIdContact(dto.getIdContact());
+        tiMoyenCommunication.add(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Méthode pour créer un moyen de communication pour un contact.
+     *
+     * @param session
+     * @param idContact
+     * @param application
+     * @param type
+     * @param value
+     * @throws Exception
+     */
+    public final void createMeanOfCommunication(BSession session, String idContact, String application, String type, String value) throws Exception {
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setMoyen(value);
+        tiMoyenCommunication.setTypeCommunication(type);
+        tiMoyenCommunication.setIdApplication(application);
+        tiMoyenCommunication.setIdContact(idContact);
+        tiMoyenCommunication.add(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Suppression d'un moyen de communication.
+     *
+     * @param dto
+     * @param token
+     * @return
+     */
+    public final String deleteMeanOfCommunication(PYMeanOfCommunicationCreationDTO dto, String token) {
         try {
             deleteMeanOfCommunication(getSession(), dto);
         }
@@ -203,14 +360,29 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
+     * Méthode pour supprimer un moyen de communication d'un contact.
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
+    public final void deleteMeanOfCommunication(BSession session, PYMeanOfCommunicationCreationDTO dto) throws Exception {
+        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
+        tiMoyenCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
+        tiMoyenCommunication.setIdApplication(dto.getApplicationDomain());
+        tiMoyenCommunication.setIdContact(dto.getIdContact());
+        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
+        tiMoyenCommunication.delete(session.getCurrentThreadTransaction());
+    }
+
+    /**
      * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
      *
      * @param session
      * @param dto
      * @throws Exception
      */
-    public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-
+    public final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
         for (PYContactDTO contactDTO: dto.getContacts()) {
             TIContact contact = new TIContact();
             contact.setSession(session);
@@ -246,123 +418,6 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Methode pour mettre à jour un moyen de communication (table TIMCOMP).
-     * <p>
-     * Seul la valeur (newMoyen) peut être modifiée.
-     *
-     * @param session
-     * @param idContact clé composite
-     * @param typeCommunication clé composite
-     * @param domaineApplication clé composite
-     * @param newMoyen valeur à mettre à jour
-     * @throws Exception
-     */
-    public static final void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
-        // Get the contact
-        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-        tiMoyenCommunication.setIdApplication(domaineApplication);
-        tiMoyenCommunication.setIdContact(idContact);
-        tiMoyenCommunication.setTypeCommunication(typeCommunication);
-        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-
-        // Update the contact
-        if(!newMoyen.isEmpty() && newMoyen != null)
-            tiMoyenCommunication.setMoyen(newMoyen);
-        //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
-        //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
-        tiMoyenCommunication.update(session.getCurrentThreadTransaction());
-    }
-
-    /**
-     * Méthode pour mettre à jour un contact (table TICONTP).
-     *
-     * @param session
-     * @param idContact clé primaire
-     * @param newLastName valeur à mettre à jour
-     * @param newFirstName valeur à mettre à jour
-     * @throws Exception
-     */
-    public static final void updateContact(BSession session, String idContact, String newLastName, String newFirstName) throws Exception {
-        TIContact tiContact = new TIContact();
-        tiContact.setIdContact(idContact);
-        tiContact.retrieve(session.getCurrentThreadTransaction());
-
-        if(newLastName != null && !newLastName.isEmpty())
-            tiContact.setNom(newLastName);
-        if(newFirstName != null && !newFirstName.isEmpty())
-            tiContact.setPrenom(newFirstName);
-
-        tiContact.update(session.getCurrentThreadTransaction());
-    }
-
-    /**
-     * Méthode pour créer un contact avec des moyens de communication.
-     *
-     * @param session
-     * @param idTiers
-     * @param lastName
-     * @param firstName
-     * @return
-     * @throws Exception
-     */
-    public static final String createContact(BSession session, String idTiers, String lastName, String firstName) throws Exception {
-        TIContact tiContact = new TIContact();
-        tiContact.setNom(lastName);
-        tiContact.setPrenom(firstName);
-        tiContact.add(session.getCurrentThreadTransaction());
-
-        TIAvoirContact tiAvoirContact = new TIAvoirContact();
-        tiAvoirContact.setIdContact(tiContact.getIdContact());
-        tiAvoirContact.setIdTiers(idTiers);
-        tiAvoirContact.add(session.getCurrentThreadTransaction());
-
-        return tiContact.getIdContact();
-    }
-
-    /**
-     * Méthode pour supprimer un contact.
-     *
-     * @param session
-     * @param id
-     * @param idTiers
-     * @throws Exception
-     */
-    public static final void deleteContact(BSession session, String id, String idTiers) throws Exception {
-        TIContact tiContact = new TIContact();
-        tiContact.setIdContact(id);
-        tiContact.retrieve(session.getCurrentThreadTransaction());
-        tiContact.delete(session.getCurrentThreadTransaction());
-    }
-
-    /**
-     * Méthode pour créer un moyen de communication pour un contact.
-     *
-     * @param session
-     * @param idContact
-     * @param application
-     * @param type
-     * @param value
-     * @throws Exception
-     */
-    public static final void createMeanOfCommunication(BSession session, String idContact, String application, String type, String value) throws Exception {
-        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-        tiMoyenCommunication.setMoyen(value);
-        tiMoyenCommunication.setTypeCommunication(type);
-        tiMoyenCommunication.setIdApplication(application);
-        tiMoyenCommunication.setIdContact(idContact);
-        tiMoyenCommunication.add(session.getCurrentThreadTransaction());
-    }
-
-    public static final void deleteMeanOfCommunication(BSession session, PYMeanOfCommunicationCreationDTO dto) throws Exception {
-        TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
-        tiMoyenCommunication.setTypeCommunication(dto.getMeanOfCommunicationType());
-        tiMoyenCommunication.setIdApplication(dto.getApplicationDomain());
-        tiMoyenCommunication.setIdContact(dto.getIdContact());
-        tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-        tiMoyenCommunication.delete(session.getCurrentThreadTransaction());
-    }
-
-    /**
      * Méthode pour mettre à jour un tiers (page 2 - contacts/moyens de communication)
      *
      * @param session
@@ -370,7 +425,7 @@ public class PYExecuteService extends BProcess {
      * @return
      * @throws Exception
      */
-    public static final void updateTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
+    public final void updateTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
         for (PYContactDTO contact: dto.getContacts()) {
             TIContact tiContact = new TIContact();
             tiContact.setIdContact(contact.getId());
