@@ -17,6 +17,7 @@ public class REFicheAugmentation extends BEntity {
     public static final String FIELDNAME_ID_ANNONCE_HEADER = "WJIANH";
     public static final String FIELDNAME_ID_FICHE_AUGMENTATION = "WJIFIA";
     public static final String FIELDNAME_ID_PRESTATION_ACCORDEE = "WJIPRA";
+    public static final String FIELDNAME_DATE_TRAITEMENT = "DATE_TRAITEMENT";
     public static final String TABLE_NAME_FICHE_AUGMENTATION = "REFICHA";
 
     // ~ Instance fields
@@ -26,6 +27,7 @@ public class REFicheAugmentation extends BEntity {
     private String idAnnonceHeader = "";
     private String idFicheAugmentation = "";
     private String idPrestationAccordee = "";
+    private String dateTraitement = "";
 
     // ~ Methods
     // ---------------------------------------------------------------------------------------------------------------------------
@@ -51,7 +53,7 @@ public class REFicheAugmentation extends BEntity {
         idAnnonceHeader = statement.dbReadNumeric(FIELDNAME_ID_ANNONCE_HEADER);
         idPrestationAccordee = statement.dbReadNumeric(FIELDNAME_ID_PRESTATION_ACCORDEE);
         dateAugmentation = statement.dbReadString(FIELDNAME_DATE_AUGMENTATION);
-
+        dateTraitement = statement.dbReadString(FIELDNAME_DATE_TRAITEMENT);
     }
 
     @Override
@@ -74,6 +76,8 @@ public class REFicheAugmentation extends BEntity {
                 _dbWriteNumeric(statement.getTransaction(), idPrestationAccordee, "idPrestationAccordee"));
         statement.writeField(FIELDNAME_DATE_AUGMENTATION,
                 _dbWriteString(statement.getTransaction(), dateAugmentation, "dateAugmentation"));
+        statement.writeField(FIELDNAME_DATE_TRAITEMENT,
+                _dbWriteString(statement.getTransaction(), dateTraitement, "dateTraitement"));
     }
 
     public String getDateAugmentation() {
@@ -116,4 +120,11 @@ public class REFicheAugmentation extends BEntity {
         idPrestationAccordee = newIdPrestationAccordee;
     }
 
+    public String getDateTraitement() {
+        return dateTraitement;
+    }
+
+    public void setDateTraitement(String dateTraitement) {
+        this.dateTraitement = dateTraitement;
+    }
 }

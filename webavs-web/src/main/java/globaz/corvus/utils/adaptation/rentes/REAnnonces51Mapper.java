@@ -98,7 +98,7 @@ public class REAnnonces51Mapper {
         ann51_02.setRamDeterminant(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getDurchschnittlichesJahreseinkommen()));
 
         // 4 | Durée de cotisation pour déterminer le revenu annuel moyen : AAMM
-        ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getBeitragsdauerDurchschnittlichesJahreseinkommen()));
+        ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimal(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getBeitragsdauerDurchschnittlichesJahreseinkommen()));
 
         // 5 | Année de niveau
         ann51_02.setAnneeNiveau(PRConverterUtils.formatDateToAA(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getNiveaujahr()));
@@ -405,7 +405,7 @@ public class REAnnonces51Mapper {
             ann51_02.setRamDeterminant(PRConverterUtils.formatBigDecimalToString(djeBeschreibung.getDurchschnittlichesJahreseinkommen()));
 
             // 4 | Durée de cotisation pour déterminer le revenu annuel moyen : AAMM
-            ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimalToString(djeBeschreibung.getBeitragsdauerDurchschnittlichesJahreseinkommen()));
+            ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimal(djeBeschreibung.getBeitragsdauerDurchschnittlichesJahreseinkommen()));
 
             // 6 | Revenus pris en compte
             ann51_02.setRevenuPrisEnCompte(PRConverterUtils.formatShortToString(djeBeschreibung.getAngerechneteEinkommen()));

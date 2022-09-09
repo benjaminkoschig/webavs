@@ -12,13 +12,12 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-public class GEDocumentDossier extends FWIDocumentManager {
+public class GFDocumentDossier extends FWIDocumentManager {
 
     private static final long serialVersionUID = 1L;
 
-    protected final static String MODEL_NAME = "GE_DOCUMENT_DOSSIER";
+    protected final static String MODEL_NAME = "GF_DOCUMENT_DOSSIER";
     protected final static String LABEL_FORMULE_POLITESSE = "DOCUMENT_FORMULE_POLITESSE";
-    protected final static String LABEL_SALUTATION = "DOCUMENT_SALUTATION";
     protected final static String LABEL_ASSURE = "DOCUMENT_ASSURE";
     protected final static String LABEL_NSS = "DOCUMENT_NSS";
     protected final static String LABEL_NOM = "DOCUMENT_NOM";
@@ -43,7 +42,7 @@ public class GEDocumentDossier extends FWIDocumentManager {
 
     @Getter
     @Setter
-    private GEDocumentPojo documentPojo;
+    private GFDocumentPojo documentPojo;
 
     private boolean isFirst = true;
 
