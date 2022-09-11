@@ -7,6 +7,8 @@
 <%@ page import="ch.globaz.eform.constant.GFTypeDADossier" %>
 <%@ page import="ch.globaz.eform.constant.GFStatusDADossier" %>
 <%@ page import="globaz.eform.helpers.formulaire.GFFormulaireHelper" %>
+<%@ page import="globaz.pyxis.db.tiers.TITiersViewBean" %>
+<%@ page import="ch.globaz.pyxis.business.model.AdministrationComplexModel" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
 <%@ page errorPage="/errorPage.jsp" %>
@@ -15,7 +17,6 @@
     GFSuiviListViewBean viewBean = (GFSuiviListViewBean) request.getAttribute("viewBean");
     JadeUser currentUser = objSession.getUserInfo();
     size = viewBean.getSize();
-    detailLink = baseLink + "afficher&selectedId=";
 %>
 <%-- tpl:insert attribute="zoneScripts" --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
@@ -38,7 +39,8 @@
 <%-- tpl:insert attribute="zoneCondition" --%>
 <%
     GFSuiviViewBean line = (GFSuiviViewBean)viewBean.getEntity(i);
-    String detailUrl = "parent.location.href='" + detailLink + line.getId() + "'";
+    TITiersViewBean tiers = GFUtils.getTiers(line.getDaDossier().getNssAffilier(), objSession);
+    AdministrationComplexModel caisse = GFUtils.getCaisse(line.getDaDossier().getCodeCaisse());
 %>
 <%-- /tpl:insert --%>
 
@@ -46,14 +48,23 @@
 <%-- tpl:insert attribute="zoneList" --%>
 <TD class="mtd" nowrap>
     <div style="font-weight: bold;font-size: 12px"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
-    <div style="font-size: 10px"><%=GFUtils.formatAffilier(line.getDaDossier().getNssAffilier(), objSession)%></div>
+    <div style="font-size: 10px"><%=GFUtils.formatTiers(tiers)%></div>
 </TD>
-<TD class="mtd>" nowrap></TD>
+<TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1()%></TD>
 <TD class="mtd" nowrap><%=GFTypeDADossier.getByCodeSystem(line.getDaDossier().getType()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFStatusDADossier.getByCodeSystem(line.getDaDossier().getStatus()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFUtils.formatSpy(line.getDaDossier().getSpy()).getDate()%></TD>
 <TD class="mtd" nowrap><%= GFFormulaireHelper.getGestionnaireDesignation(line.getDaDossier().getUserGestionnaire()) %></TD>
-<TD class="mtd" nowrap></TD>
+<TD class="mtd" nowrap>
+    <%
+        String urlGED = baseLink + "ged"
+                + "&noAVSId=" + NSSUtils.formatNss(line.getDaDossier().getNssAffilier())
+                + "&idTiersExtraFolder=" + tiers.getIdTiers();
+    %>
+    <a href="#" onclick="window.open('<%=urlGED%>','GED_CONSULT')">
+        <ct:FWLabel key="JSP_LIEN_GED"/>
+    </a>
+</TD>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:insert attribute="zoneTableFooter" --%>

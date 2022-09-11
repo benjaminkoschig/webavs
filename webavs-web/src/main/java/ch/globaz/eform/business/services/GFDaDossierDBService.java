@@ -54,10 +54,10 @@ public interface GFDaDossierDBService extends JadeApplicationService {
     /**
      * Permet de chercher des formulaires selon un modèle de critères.
      *
-     * @param gfeFormSearch Le modèle de critères
+     * @param gfDaDossierSearch Le modèle de critères
      * @return Le modèle de critère avec les résultats
      */
-    GFDaDossierSearch search(GFDaDossierSearch gfeFormSearch) throws JadePersistenceException;
+    GFDaDossierSearch search(GFDaDossierSearch gfDaDossierSearch) throws JadePersistenceException;
 
     /**
      * Permet la mise à jour d'une entité Prestation

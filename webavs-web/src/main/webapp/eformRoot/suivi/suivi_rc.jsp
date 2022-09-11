@@ -2,6 +2,8 @@
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="globaz.eform.helpers.dadossier.GFDADossierHelper" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="ch.globaz.eform.utils.GFSessionDataContainerHelper" %>
+<%@ page import="ch.globaz.eform.business.search.GFDaDossierSearch" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -11,6 +13,7 @@
 
 <%
 	idEcran="GFE0121";
+	GFDaDossierSearch gfSuiviSearch = GFSessionDataContainerHelper.getGFDaDossierSearchFromSession(session);
 	bButtonNew = false;
 %>
 
@@ -49,7 +52,7 @@
 		</LABEL>
 	</td>
 	<td>
-		<ct:widget id='likeNss' name='likeNss'>
+		<ct:widget id='likeNss' name='likeNss' defaultValue='<%=gfSuiviSearch != null ? gfSuiviSearch.getLikeNss() : ""%>'>
 			<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 				<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 				<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
@@ -69,7 +72,7 @@
 		</LABEL>
 	</td>
 	<td>
-		<ct:widget id='byCaisse' name='byCaisse'>
+		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=gfSuiviSearch != null ? gfSuiviSearch.getByCaisse() : ""%>'>
 			<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
@@ -91,7 +94,7 @@
 	</td>
 	<td>
 		<ct:FWCodeSelectTag name="byType"
-							defaut=""
+							defaut='<%=gfSuiviSearch != null ? gfSuiviSearch.getByType() : ""%>'
 							wantBlank="true"
 							codeType="GFDATYPE"/>
 	</td>
@@ -104,7 +107,7 @@
 	</td>
 	<td>
 		<ct:FWCodeSelectTag name="byStatus"
-							defaut=""
+							defaut='<%=gfSuiviSearch != null ? gfSuiviSearch.getByStatus() : ""%>'
 							wantBlank="true"
 							codeType="GFDASTATUS"/>
 	</td>
