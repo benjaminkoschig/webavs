@@ -40,7 +40,9 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if(!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdresse().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdresse())){
+				if (!JadeStringUtil.isBlankOrZero(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdressePaiement())
+					&& !JadeStringUtil.isBlankOrZero(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdressePaiement())
+					&& !((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdressePaiement().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdressePaiement())) {
 					condition = !oldCondition;
 					oldCondition = condition;
 					sameAdresse = false;
@@ -89,13 +91,9 @@
 	}
 %>
 
-	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><%=entity.getNumCompteBancaire()%>&nbsp;</TD>
+	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><%=entity.getDetailNumCompteBancaire()%>&nbsp;</TD>
 	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" >
-		<i>
-			<%
-				pageContext.getOut().write(entity.getDetailAdresse());
-			%>
-		</i>
+		<i><%pageContext.getOut().write(entity.getDetailAdresseCourt());%></i>
 	</TD>
 
     <%-- /tpl:put --%>

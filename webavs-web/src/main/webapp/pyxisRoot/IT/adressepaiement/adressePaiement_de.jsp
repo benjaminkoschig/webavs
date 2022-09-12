@@ -138,8 +138,8 @@ function init(){
 	</td>					
 </tr>
 <tr>
-<td >Indirizzo<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
-	<td >
+	<td>Indirizzo<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
+	<td>
 		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
 			<%
 			Object[] adresseMethodsName = new Object[]{
@@ -148,7 +148,6 @@ function init(){
 			Object[] adresseParams = new Object[]{ new String[]{"critereParam","critere"}};
 		%>
 		<input type="hidden" name="critereParam" value="512006">
-		
 
 		<ct:FWSelectorTag 
 			name="adresseSelector1" 
@@ -159,29 +158,29 @@ function init(){
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
-		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
-	</td>
-	<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
-	<td>Riferimento QR</td>
-	<td>
-		<%
-			Object[] referencePaiementMethodsName = new Object[]{
-					new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
-			};
-		%>
-		<ct:FWSelectorTag
-				name="referencePaiementSelector1"
 
-				methods="<%=referencePaiementMethodsName%>"
-				providerApplication ="pyxis"
-				providerPrefix="TI"
-				providerAction ="pyxis.tiers.referencePaiement.chercher"
-				providerActionParams ="<%=adresseParams%>"
-		/>
-		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
-		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
-	</td>
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+
+	<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+		Riferimento QR
+			<%
+				Object[] referencePaiementMethodsName = new Object[]{
+						new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
+				};
+			%>
+			<ct:FWSelectorTag
+					name="referencePaiementSelector1"
+
+					methods="<%=referencePaiementMethodsName%>"
+					providerApplication ="pyxis"
+					providerPrefix="TI"
+					providerAction ="pyxis.tiers.referencePaiement.chercher"
+					providerActionParams ="<%=adresseParams%>"
+			/>
+		<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
+		<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePmtUnique()%>">
 	<%}%>
+	</td>
 </tr>
 <tr>
 	<td>Paese</td>

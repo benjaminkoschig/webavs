@@ -73,21 +73,14 @@ function init(){}
             <TD width="50"></TD>
           </TR>
 
-	   	  <TR>
-              <TD width="119">Adresse Paiement</TD>
-              <TD nowrap width="211" style="align-content: center">
-                  <label>
-                      <TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>
-                  </label>
-              </TD>
-              <TD width="50"></TD>
-          </TR>
-
           <TR>
             <TD width="119">Libelle</TD>
             <TD nowrap width="211">
               <INPUT type="text" name="libelle" class="libelleLong" value="<%=viewBean.getLibelle()%>"></TD>
             <TD width="50"></TD>
+            <TD width="180">N° compte</TD>
+            <TD nowrap width="125" align="left">
+                <INPUT type="text" name="numCompteBancaire" readonly class="libelleLongDisabled" value="<%=viewBean.getDetailNumCompteBancaire()%>"></TD>
           </TR>
 
           <TR>
@@ -118,12 +111,22 @@ function init(){}
           </TR>
 
           <TR>
+            <TD width="119">Adresse Paiement</TD>
+            <TD nowrap width="211" style="align-content: center">
+                <label>
+                    <TEXTAREA tabindex="-1" rows="9" cols="25" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresseLong()%></TEXTAREA>
+                </label>
+            </TD>
+            <TD width="50"></TD>
+          </TR>
+
+          <TR>
             <TD width="119">&nbsp;</TD>
             <TD nowrap width="211"></TD>
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
-          </TR>          
+          </TR>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

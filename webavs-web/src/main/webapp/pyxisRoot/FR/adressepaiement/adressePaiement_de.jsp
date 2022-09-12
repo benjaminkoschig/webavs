@@ -138,8 +138,8 @@ function init(){
 	</td>					
 </tr>
 <tr>
-	<td >Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
-	<td >
+	<td>Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
+	<td>
 		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
 			<%
 			Object[] adresseMethodsName = new Object[]{
@@ -148,6 +148,7 @@ function init(){
 			Object[] adresseParams = new Object[]{ new String[]{"critereParam","critere"}};
 		%>
 		<input type="hidden" name="critereParam" value="512006">
+
 		<ct:FWSelectorTag
 			name="adresseSelector1" 
 			
@@ -157,7 +158,10 @@ function init(){
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
-			<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+
+	<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
 		Reference QR
 			<%
 				Object[] referencePaiementMethodsName = new Object[]{
@@ -173,10 +177,9 @@ function init(){
 					providerAction ="pyxis.tiers.referencePaiement.chercher"
 					providerActionParams ="<%=adresseParams%>"
 			/>
-		<%}%>
-		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
-		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
-		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+		<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
+		<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePmtUnique()%>">
+	<%}%>
 	</td>
 </tr>
 <tr>
