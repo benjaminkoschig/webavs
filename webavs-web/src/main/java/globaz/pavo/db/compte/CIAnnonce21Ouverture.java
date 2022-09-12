@@ -14,6 +14,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.util.CIUtil;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper de l'annonce 21. Date de création : (20.12.2002 09:51:15)
@@ -43,23 +44,29 @@ public class CIAnnonce21Ouverture extends CIAnnonceWrapper {
         if (numeroAffilie == null) {
             transaction.addErrors("Affiliation number is null");
         } else {
-            // On récupère l'affiliation en tant qu'objet grace au numéro d'affiliation
-            AFAffiliation affiliation = retrieveAffiliation(numeroAffilie, transaction);
+            // On récupère les affiliations en tant qu'objet grace au numéro d'affiliation
+            List<AFAffiliation> affiliations = retrieveAffiliations(numeroAffilie, transaction);
 
-            // récupérer NSS du tiers affilié
-            String numeroNSSAffiliation = NSUtil.unFormatAVS(affiliation.getTiers().getNumAvsActuel());
-            String numeroNSSAnnonce = NSUtil.unFormatAVS(compte.getNumeroAvs());
+            for (AFAffiliation affiliation : affiliations) {
+                if (!JadeStringUtil.isBlankOrZero(affiliation.getDateFin())) {
 
-            if (CodeSystem.TYPE_AFFILI_EMPLOY.equals(affiliation.getTypeAffiliation())) {
-                IsParitaire = true;
-            }
+                        // récupérer NSS du tiers affilié
+                        String numeroNSSAffiliation = NSUtil.unFormatAVS(affiliation.getTiers().getNumAvsActuel());
+                        String numeroNSSAnnonce = NSUtil.unFormatAVS(compte.getNumeroAvs());
 
-            else if (CodeSystem.TYPE_AFFILI_INDEP_EMPLOY.equals(affiliation.getTypeAffiliation())) {
-                if (!numeroNSSAffiliation.equals(numeroNSSAnnonce)) {
-                    IsParitaire = true;
+                        if (CodeSystem.TYPE_AFFILI_EMPLOY.equals(affiliation.getTypeAffiliation())) {
+                            IsParitaire = true;
+                        }
+
+                        else if (CodeSystem.TYPE_AFFILI_INDEP_EMPLOY.equals(affiliation.getTypeAffiliation())) {
+                            if (!numeroNSSAffiliation.equals(numeroNSSAnnonce)) {
+                                IsParitaire = true;
+                            }
+                        }
+                    }
                 }
             }
-        }
+
         return IsParitaire;
     }
 
@@ -99,32 +106,28 @@ public class CIAnnonce21Ouverture extends CIAnnonceWrapper {
 
     /**
      * @param numeroAffilie
+     * @param transaction
      * @return
      * @throws Exception
      */
-    private AFAffiliation retrieveAffiliation(String numeroAffilie, BTransaction transaction) throws Exception {
+    private List<AFAffiliation> retrieveAffiliations(String numeroAffilie, BTransaction transaction) throws Exception {
         AFAffiliationManager affiliationManager = new AFAffiliationManager();
 
         affiliationManager.setSession(getSession());
         affiliationManager.setForAffilieNumero(numeroAffilie);
-        affiliationManager.setForActif(true);
 
         affiliationManager.find();
 
-        // retourne en priorité l'affiliation employeur ou indépendant employeur
+        List<AFAffiliation> affiliations = new ArrayList<>();
         for (int i = 0; i < affiliationManager.size(); i++) {
-            AFAffiliation affiliation = ((AFAffiliation) affiliationManager.get(i));
-            if (CodeSystem.TYPE_AFFILI_EMPLOY.equals(affiliation.getTypeAffiliation()) || CodeSystem.TYPE_AFFILI_INDEP_EMPLOY.equals(affiliation.getTypeAffiliation())) {
-                return affiliation;
-            }
+            AFAffiliation affiliation = (AFAffiliation) affiliationManager.get(i);
+            affiliations.add(affiliation);
         }
 
-        AFAffiliation affiliation = ((AFAffiliation) affiliationManager.getFirstEntity());
-
-        if (affiliation == null) {
+        if (affiliations.size() <= 0) {
             transaction.addErrors("Can't find affiliation for affiliation number : " + numeroAffilie);
         }
-        return affiliation;
+        return affiliations;
     }
 
     /**
