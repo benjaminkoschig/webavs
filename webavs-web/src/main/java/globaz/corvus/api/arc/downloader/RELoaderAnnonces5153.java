@@ -2,7 +2,10 @@ package globaz.corvus.api.arc.downloader;
 
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.external.arc.REDownloaderException;
-import globaz.corvus.db.annonces.*;
+import globaz.corvus.db.annonces.REAnnonce51;
+import globaz.corvus.db.annonces.REAnnonce51LevelManager;
+import globaz.corvus.db.annonces.REAnnonce53;
+import globaz.corvus.db.annonces.REAnnonce53LevelManager;
 import globaz.corvus.process.REComparaisonCentraleProcess;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
@@ -21,19 +24,19 @@ public class RELoaderAnnonces5153 extends REReaderAnnonces51_53  {
     public static final String CODE_ENREGISTREMENT_02 = "02";
     public static final String CODE_ENREGISTREMENT_03 = "03";
 
-    public Map<REComparaisonCentraleProcess.KeyRAAnnComparaison, ArrayList<Object>> loadAnnonces(String dateMoisAdaptation) throws Exception {
-        loadAnnonces51(dateMoisAdaptation);
-        loadAnnonces53(dateMoisAdaptation);
+    public Map<REComparaisonCentraleProcess.KeyRAAnnComparaison, ArrayList<Object>> loadAnnonces(String dateAugmentationDateTraitement) throws Exception {
+        loadAnnonces51(dateAugmentationDateTraitement);
+        loadAnnonces53(dateAugmentationDateTraitement);
 
         return annoncesCrees;
     }
 
-    private void loadAnnonces51(String dateMoisAdaptation) throws Exception {
+    private void loadAnnonces51(String dateAugmentationDateTraitement) throws Exception {
 
 
         REAnnonce51LevelManager mgr = new REAnnonce51LevelManager();
         mgr.setSession(getSession());
-        mgr.setForMoisAdaptation(dateMoisAdaptation);
+        mgr.setForDateAugmentationDateTraitement(dateAugmentationDateTraitement);
         mgr.find(BManager.SIZE_NOLIMIT);
 
         Map<String, REAnnonce51> map1 = reduceMapCodeEnregistrement(mgr, CODE_ENREGISTREMENT_01);
@@ -47,11 +50,11 @@ public class RELoaderAnnonces5153 extends REReaderAnnonces51_53  {
         map1.values().stream().forEach(a -> genereMap51(a, map2, map3));
     }
 
-    private void loadAnnonces53(String dateMoisAdaptation) throws Exception {
+    private void loadAnnonces53(String dateAugmentationDateTraitement) throws Exception {
 
         REAnnonce53LevelManager mgr = new REAnnonce53LevelManager();
         mgr.setSession(getSession());
-        mgr.setForMoisAdaptation(dateMoisAdaptation);
+        mgr.setForDateAugmentationDateTraitement(dateAugmentationDateTraitement);
         mgr.find(BManager.SIZE_NOLIMIT);
 
         Map<String, REAnnonce53> map1 = reduceMapCodeEnregistrement(mgr, CODE_ENREGISTREMENT_01);
