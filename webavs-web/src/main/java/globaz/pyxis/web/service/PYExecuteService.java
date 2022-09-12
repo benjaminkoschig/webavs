@@ -19,8 +19,6 @@ import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 @Slf4j
@@ -98,7 +96,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Modification d'un contact ainsi que de ses moyens de communication.
+     * Modification d'un contact
      *
      * @param dto
      * @param token
@@ -107,10 +105,6 @@ public class PYExecuteService extends BProcess {
     public final PYContactDTO updateContact(PYContactDTO dto, String token) {
         try {
             updateContact(getSession(), dto.getId(), dto.getLastName(), dto.getFirstName());
-            List<PYMeanOfCommunicationDTO> means = new ArrayList<>(dto.getMeansOfCommunication());
-            for (PYMeanOfCommunicationDTO contact: means) {
-                updateMeanOfCommunication(getSession(), dto.getId(), contact.getMeanOfCommunicationType(), contact.getApplicationDomain(), contact.getMeanOfCommunicationValue());
-            }
         }
         catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du contact: " + e);
@@ -147,6 +141,32 @@ public class PYExecuteService extends BProcess {
             tiContact.setPrenom(newFirstName);
 
         tiContact.update(session.getCurrentThreadTransaction());
+    }
+
+    /**
+     * Modification d'un moyen de communication.
+     *
+     * @param dto
+     * @param token
+     * @return
+     */
+    public final PYMeanOfCommunicationCreationDTO updateMeanOfCommunication(PYMeanOfCommunicationCreationDTO dto, String token) {
+        try {
+            updateMeanOfCommunication(getSession(), dto.getIdContact(), dto.getMeanOfCommunicationType(), dto.getApplicationDomain(), dto.getMeanOfCommunicationValue());
+        }
+        catch (PYBadRequestException e) {
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du moyen de communication: " + e);
+            throw e;
+        }
+        catch (PYInternalException e) {
+            LOG.error("Une erreur interne est survenue lors de la modification du moyen de communication: " + e);
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error("Une erreur est survenue lors de la modification du moyen de communication: " + e);
+            throw new PYInternalException(e);
+        }
+        return dto;
     }
 
     /**
