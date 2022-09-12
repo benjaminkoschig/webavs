@@ -73,13 +73,15 @@ function init(){}
             <TD width="50"></TD>
           </TR>
 
-	   	  <TR>
-            <TD width="119"></TD>
-            <TD nowrap width="211">&nbsp;</TD>
+        <TR>
+            <TD width="119">Zahlungsadresse</TD>
+            <TD nowrap width="211" style="align-content: center">
+                <label>
+                    <TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>
+                </label>
+            </TD>
             <TD width="50"></TD>
-            <TD width="180"></TD>
-            <TD nowrap width="125"></TD>
-          </TR>
+        </TR>
 
           <TR>
             <TD width="119">Beschriftung</TD>
