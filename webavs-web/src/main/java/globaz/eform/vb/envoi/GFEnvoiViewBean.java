@@ -5,6 +5,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -29,8 +30,12 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private String caisseDestinatrice;
     private String typeDeFichier;
     private String adresse;
+
     private List<String> fileNameList = new LinkedList<>();
     private List<String> errorFileNameList = new LinkedList<>();
+    @Getter
+    @Setter
+    private String folderUid = JadeUUIDGenerator.createLongUID().toString();
     @Getter
     @Setter
     private String fileNamePersistance;

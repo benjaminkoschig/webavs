@@ -10,7 +10,6 @@ import ch.globaz.eform.business.models.sedex.GFSedexModel;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
@@ -53,7 +52,6 @@ public class GFFileUtils {
     public final static String FILE_TYPE_PDF = "pdf";
     public final static String FILE_TYPE_TIFF = "tiff";
     public final static String FILE_TYPE_ZIP = "zip";
-    public final static String FOLDER_UID = "testUid";
     public static Map<String, Integer> counterMap = new HashMap<>();
 
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
@@ -65,9 +63,9 @@ public class GFFileUtils {
 
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
         String path = viewBean.getFilename();
-        Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
+        Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
         String filename = path.substring(path.lastIndexOf("\\") + 1);
-        String destDir = WORK_PATH + FOLDER_UID;
+        String destDir = WORK_PATH + viewBean.getFolderUid();
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals(FILE_TYPE_ZIP)) {
@@ -95,9 +93,9 @@ public class GFFileUtils {
         List<String> fileNameList = new LinkedList<>();
         if (!JadeStringUtil.isNull(pathWork)) {
             //creation des directories pour extraire les fichiers contenus dans le zip
-            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
-            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
-            File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
+            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename)));
+            File destDir = new File(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename));
             fileNameList = unzip(new File(pathWork), destDir, viewBean);
         }
         return fileNameList;
@@ -147,8 +145,7 @@ public class GFFileUtils {
 
     public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
         String pathFileNameToRemove = null;
-        File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
-        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        Collection<File> files = listFile(GFFileUtils.WORK_PATH + viewBean.getFolderUid());
 
         for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
             File file = (File) iterator.next();
@@ -161,6 +158,12 @@ public class GFFileUtils {
             }
         }
         viewBean.getFileNameList().remove(fileNameToRemove);
+    }
+
+    public static Collection<File> listFile(String path) {
+        File directory = new File(String.valueOf(Paths.get(path)));
+        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        return files;
     }
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
@@ -195,40 +198,6 @@ public class GFFileUtils {
         }
     }
 
-    public static void createSedexZipFolder(Message message, List<String> fileNames) throws IOException {
-        // Creer un dossier avec les attachments, le fichier xml et le transforme en zip
-        String uuid = JadeUUIDGenerator.createLongUID().toString();
-        Path destDir = Paths.get(WORK_PATH + "testZip/" + "data_" + uuid);
-        Path attachmentsDir = Paths.get(destDir + "/attachments_00102");
-        Files.createDirectories(destDir);
-        Files.createDirectories(attachmentsDir);
-        createSedexXml(message, destDir.toString());
-        createSedexAttachments(fileNames, attachmentsDir.toString());
-        zipSedexFile(destDir);
-//        buildSedexSender();
-    }
-
-    public static void createSedexAttachments(List<String> fileNames, String attachmentDir) {
-        // recherche les fichiers et les envoi dans le dossier attachment.
-        File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
-        Collection<File> files = FileUtils.listFiles(directory, null, true);
-        int attachmentIncrement = 0;
-        for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
-            File file = (File) iterator.next();
-            if (fileNames.contains(file.getName())) {
-                try {
-                    JadeFsFacade.copyFile(file.getAbsolutePath(), attachmentDir + "/" + "attachment_" + ++attachmentIncrement + "." + FilenameUtils.getExtension(file.getName()));
-                } catch (JadeServiceLocatorException e) {
-                    throw new RuntimeException(e);
-                } catch (JadeServiceActivatorException e) {
-                    throw new RuntimeException(e);
-                } catch (JadeClassCastException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-    }
 
     public static void zipSedexFile(Path destDir) {
         ZipUtils.zip(Paths.get(destDir + ".zip"), destDir);
