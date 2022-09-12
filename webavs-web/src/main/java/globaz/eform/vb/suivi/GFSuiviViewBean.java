@@ -1,10 +1,12 @@
 package globaz.eform.vb.suivi;
 
+import ch.globaz.common.util.NSSUtils;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,42 @@ public class GFSuiviViewBean extends BJadePersistentObjectViewBean {
 
     public GFDaDossierModel getDaDossier() {
         return daDossier;
+    }
+
+    public String getLikeNss() {
+        return StringUtils.isBlank(daDossier.getNssAffilier()) ? daDossier.getNssAffilier() : NSSUtils.formatNss(daDossier.getNssAffilier());
+    }
+
+    public void setLikeNss(String likeNss) {
+        if (StringUtils.isBlank(likeNss) || NSSUtils.checkNSS(likeNss)) {
+            daDossier.setNssAffilier(likeNss);
+        } else {
+            daDossier.setNssAffilier(NSSUtils.unFormatNss(likeNss));
+        }
+    }
+
+    public String getByCaisse() {
+        return daDossier.getCodeCaisse();
+    }
+
+    public void setByCaisse(String codeCaisse) {
+        daDossier.setCodeCaisse(codeCaisse);
+    }
+
+    public String getByType() {
+        return daDossier.getType();
+    }
+
+    public void setByType(String type) {
+        daDossier.setType(type);
+    }
+
+    public String getByStatus() {
+        return daDossier.getStatus();
+    }
+
+    public void setByStatus(String status) {
+        daDossier.setStatus(status);
     }
 
     @Override

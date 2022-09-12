@@ -9,8 +9,8 @@
 
 <%
 	idEcran="GFE0111";
-
 	GFDemandeViewBean viewBean = (GFDemandeViewBean) session.getAttribute("viewBean");
+	String btnEnvoyerLabel = "Envoyer";
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -33,7 +33,35 @@
 
 <script >
 	var bFind = true;
-	var detailLink = "<%=actionNew%>";
+
+	$(function() {
+		buttonCheck();
+	});
+
+	function init() {
+	}
+
+	function validate() {
+		var nss = document.getElementById("nssAffilier").value;
+		var caisse = document.getElementById("codeCaisse").value;
+
+		top.fr_main.location.href='http://localhost:8080/webavs/eform?userAction=eform.demande.demande.envoyer&nssAffilier=' + nss + "&codeCaisse=" + caisse;
+	}
+
+	function buttonCheck(){
+		var nss = document.getElementById("nssAffilier").value;
+		var caisse = document.getElementById("codeCaisse").value;
+
+
+		if(nss == "" || caisse == ""){
+			document.getElementById("btnEnvoyer").disabled = true;
+		}else{
+			document.getElementById("btnEnvoyer").disabled = false;
+		}
+	}
+	function cancel(){
+		action(ROLLBACK);
+	}
 </script>
 
 <TITLE><%=idEcran%></TITLE>
@@ -45,6 +73,10 @@
 		</div>
 
 		<form name="mainForm" action="" method="post">
+			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
+			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+			<INPUT type="hidden" name="_sl" value="">
 			<div class="container-fluid corps" style="padding-bottom: 15px;margin-bottom: 5px;">
 				<div class="row-fluid" style="font-weight: bold">
 					<ct:FWLabel key="ASSURE"/>
@@ -52,7 +84,7 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='byNss' name='byNss'>
+						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck()">
 							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 								<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
@@ -81,15 +113,15 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='byCaisse' name='byCaisse'>
+						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 							<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 								<ct:widgetJSReturnFunction>
 									<script type="text/javascript">
 										function(element){
-											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
 										}
 									</script>
 								</ct:widgetJSReturnFunction>
@@ -98,15 +130,15 @@
 					</div>
 				</div>
 			</div>
-		</form>
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div style="float:right;">
-					<input class="btnCtrl" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if (validate()) action(COMMIT);">
-					<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div style="float:right;">
+						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<%=btnEnvoyerLabel%>" onclick="validate()">
+					</div>
 				</div>
 			</div>
-		</div>
+		</form>
 
 		<SCRIPT>
 			if(top.fr_error!=null) {

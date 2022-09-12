@@ -1,5 +1,6 @@
 package ch.globaz.eform.web.application;
 
+import ch.globaz.eform.web.servlet.GFDemandeServletAction;
 import ch.globaz.eform.web.servlet.GFEnvoiServletAction;
 import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
 import globaz.framework.controller.FWAction;
@@ -59,11 +60,12 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _initializeCustomActions() {
-        // Définition et enregistrement des Custom actions à exécuter dans le module.
+        // Définition et enregistrement des Customs actions à exécuter dans le module.
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_TELECHARGER, FWSecureConstants.READ);
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_CHANGE_STATUT, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_UPLOAD, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_REMOVEFILE, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
+        FWAction.registerActionCustom(GFDemandeServletAction.ACTION_PATH + "." + GFDemandeServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
     }
 }

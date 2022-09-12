@@ -3,6 +3,8 @@ package ch.globaz.eform.businessimpl.services.sedex.envoi;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
+import ch.globaz.eform.businessimpl.services.sedex.constant.GFActionSedex;
+import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.utils.GFFileUtils;
@@ -98,17 +100,17 @@ public class EnvoiSedexService {
             header.setBusinessProcessId(generateBusinessProcessId());
             header.setOurBusinessReferenceId(Objects.isNull(model) ? UUID.randomUUID().toString() : model.getOurBusinessRefId());
             header.setYourBusinessReferenceId(Objects.isNull(model) ? "" : model.getYourBusinessRefId());
-            header.setMessageType(SedexType2021Enum.TYPE_102.getMessageType());
-            header.setSubMessageType(SedexType2021Enum.TYPE_102.getSubMessageType());
+            header.setMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getMessageType());
+            header.setSubMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getSubMessageType());
             header.setSendingApplication(sedex000102.getSendingApplicationType());
             header.setSubject(createHeaderSubject());
             header.setMessageDate(getDocumentDate());
-            header.setAction(SedexType2021Enum.TYPE_102.getAction());
+            header.setAction(GFActionSedex.REPONSE.getCode().toString());
             header.getAttachment().addAll(getAttachmentTypeList());
-            header.setTestDeliveryFlag(SedexType2021Enum.TYPE_102.isTestDeliveryFlag());
-            header.setResponseExpected(SedexType2021Enum.TYPE_102.isResponseExpected());
-            header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
-            header.setBusinessCaseClosed(SedexType2021Enum.TYPE_102.isBusinessCaseClosed());
+            header.setTestDeliveryFlag(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isTestDeliveryFlag());
+            header.setResponseExpected(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isResponseExpected());
+            header.setBusinessCaseClosed(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isBusinessCaseClosed());
+            header.setBusinessCaseClosed(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isBusinessCaseClosed());
             header.setExtension(getExtensionType());
             return header;
 
@@ -236,8 +238,8 @@ public class EnvoiSedexService {
         attachmentType.setDocumentType("01.10.11");
         attachmentType.setTitle(createAttachmentTitle(attachmentType.getDocumentType()));
         attachmentType.setDocumentDate(getDocumentDate());
-        attachmentType.setLeadingDocument(SedexType2021Enum.TYPE_102.isLeadingDocument());
-        attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
+        attachmentType.setLeadingDocument(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isLeadingDocument());
+        attachmentType.setSortOrder(BigInteger.ONE);
         attachmentType.setDocumentFormat(FilenameUtils.getExtension(fileName));
         attachmentType.getFile().addAll(attachmentTypeList);
         return attachmentType;
@@ -307,7 +309,7 @@ public class EnvoiSedexService {
 
     private ContentType createContent() {
         ContentType contentType = new ContentType();
-        contentType.setPensionRecipient(SedexType2021Enum.TYPE_102.isPensionRecipient());
+        contentType.setPensionRecipient(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isPensionRecipient());
         contentType.setInsuredPerson(getNaturalPersonsOASIDIType());
         return contentType;
     }
