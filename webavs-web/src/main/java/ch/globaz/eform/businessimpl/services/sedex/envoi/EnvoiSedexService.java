@@ -239,8 +239,8 @@ public class EnvoiSedexService {
         attachmentType.setDocumentType(viewBean.getTypeDeFichier());
         attachmentType.setTitle(createAttachmentTitle(attachmentType.getDocumentType()));
         attachmentType.setDocumentDate(getDocumentDate());
-        attachmentType.setLeadingDocument(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isLeadingDocument());
-        attachmentType.setSortOrder(order);
+        attachmentType.setLeadingDocument(SedexType2021Enum.TYPE_102.isLeadingDocument());
+        attachmentType.setSortOrder(new BigInteger(String.valueOf(SedexType2021Enum.TYPE_102.getOrder())));
         attachmentType.setDocumentFormat(FilenameUtils.getExtension(fileName));
         attachmentType.getFile().addAll(attachmentTypeList);
         return attachmentType;
