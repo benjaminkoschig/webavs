@@ -24,11 +24,11 @@ import java.util.Vector;
 @Slf4j
 public class PYExecuteService extends BProcess {
     /**
-     * Crï¿½ation de tiers
+     * Création de tiers
      *
-     * @param dto JSON mappï¿½ en objet qui contient des informations sur les tiers
+     * @param dto JSON mappé en objet qui contient des informations sur les tiers
      * @param token header d'authentification
-     * @return dto JSON contenant l'id du tiers crï¿½ï¿½
+     * @return dto JSON contenant l'id du tiers créé
      */
     public final PYTiersDTO createTiers(PYTiersDTO dto, String token) {
         String idAddress = null;
@@ -48,15 +48,15 @@ public class PYExecuteService extends BProcess {
             addTiersPage2(getSession(), dto);
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la crï¿½ation du tiers: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);
             throw e;
         }
         catch (PYInternalException e) {
-            LOG.error("Une erreur interne est survenue lors de la crï¿½ation du tiers: " + e);
+            LOG.error("Une erreur interne est survenue lors de la création du tiers: " + e);
             throw e;
         }
         catch (Exception e) {
-            LOG.error("Une erreur est survenue lors de la crï¿½ation du tiers: " + e);
+            LOG.error("Une erreur est survenue lors de la création du tiers: " + e);
             throw new PYInternalException(e);
         }
 
@@ -66,12 +66,12 @@ public class PYExecuteService extends BProcess {
     /**
      * Modification de tiers
      *
-     * @param dto JSON mappï¿½ en objet qui contient des informations sur les tiers
+     * @param dto JSON mappé en objet qui contient des informations sur les tiers
      * @param token header d'authentification
-     * @return dto JSON contenant l'id du tiers crï¿½ï¿½ et la date de mise ï¿½ jour
+     * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
     public final PYTiersDTO updateTiers(PYTiersUpdateDTO dto, String token) {
-        // TODO: upgrade the updating. If at least one field is present then update. Faire un vecteur de champs pour les update comme pour la crï¿½ation et isValid.
+        // TODO: upgrade the updating. If at least one field is present then update. Faire un vecteur de champs pour les update comme pour la création et isValid.
         try {
             PRTiersHelper.updateTiersPage1(getSession(), dto);
             if (!dto.getPaymentAddress().isEmpty())
@@ -80,7 +80,7 @@ public class PYExecuteService extends BProcess {
                 updateTiersPage2(getSession(), dto);
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la modification du tiers: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers: " + e);
             throw e;
         }
         catch (PYInternalException e) {
@@ -107,7 +107,7 @@ public class PYExecuteService extends BProcess {
             updateContact(getSession(), dto.getId(), dto.getLastName(), dto.getFirstName());
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la modification du contact: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du contact: " + e);
             throw e;
         }
         catch (PYInternalException e) {
@@ -122,12 +122,12 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Mï¿½thode pour mettre ï¿½ jour un contact (table TICONTP).
+     * Méthode pour mettre à jour un contact (table TICONTP).
      *
      * @param session
-     * @param idContact clï¿½ primaire
-     * @param newLastName valeur ï¿½ mettre ï¿½ jour
-     * @param newFirstName valeur ï¿½ mettre ï¿½ jour
+     * @param idContact clé primaire
+     * @param newLastName valeur à mettre à jour
+     * @param newFirstName valeur à mettre à jour
      * @throws Exception
      */
     public final void updateContact(BSession session, String idContact, String newLastName, String newFirstName) throws Exception {
@@ -155,7 +155,7 @@ public class PYExecuteService extends BProcess {
             updateMeanOfCommunication(getSession(), dto.getIdContact(), dto.getMeanOfCommunicationType(), dto.getApplicationDomain(), dto.getMeanOfCommunicationValue());
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la modification du moyen de communication: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la modification du moyen de communication: " + e);
             throw e;
         }
         catch (PYInternalException e) {
@@ -170,15 +170,15 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Methode pour mettre ï¿½ jour un moyen de communication (table TIMCOMP).
+     * Methode pour mettre à jour un moyen de communication (table TIMCOMP).
      * <p>
-     * Seul la valeur (newMoyen) peut ï¿½tre modifiï¿½e.
+     * Seul la valeur (newMoyen) peut être modifiée.
      *
      * @param session
-     * @param idContact clï¿½ composite
-     * @param typeCommunication clï¿½ composite
-     * @param domaineApplication clï¿½ composite
-     * @param newMoyen valeur ï¿½ mettre ï¿½ jour
+     * @param idContact clé composite
+     * @param typeCommunication clé composite
+     * @param domaineApplication clé composite
+     * @param newMoyen valeur à mettre à jour
      * @throws Exception
      */
     public final void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
@@ -198,7 +198,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Crï¿½ation d'un contact et de ses moyens de communication
+     * Création d'un contact et de ses moyens de communication
      *
      * @param dto
      * @param token
@@ -213,22 +213,22 @@ public class PYExecuteService extends BProcess {
             }
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la crï¿½ation du contact: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la création du contact: " + e);
             throw e;
         }
         catch (PYInternalException e) {
-            LOG.error("Une erreur interne est survenue lors de la crï¿½ation du contact: " + e);
+            LOG.error("Une erreur interne est survenue lors de la création du contact: " + e);
             throw e;
         }
         catch (Exception e) {
-            LOG.error("Une erreur est survenue lors de la crï¿½ation du contact: " + e);
+            LOG.error("Une erreur est survenue lors de la création du contact: " + e);
             throw new PYInternalException(e);
         }
         return dto;
     }
 
     /**
-     * Mï¿½thode pour crï¿½er un contact avec des moyens de communication.
+     * Méthode pour créer un contact avec des moyens de communication.
      *
      * @param session
      * @param idTiers
@@ -263,7 +263,7 @@ public class PYExecuteService extends BProcess {
             deleteContact(getSession(), dto.getId(), dto.getIdTiers());
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la suppression du contact: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la suppression du contact: " + e);
             throw e;
         }
         catch (PYInternalException e) {
@@ -278,7 +278,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Mï¿½thode pour supprimer un contact.
+     * Méthode pour supprimer un contact.
      *
      * @param session
      * @param id
@@ -293,7 +293,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Crï¿½ation d'un moyen de communication.
+     * Création d'un moyen de communication.
      *
      * @param dto
      * @param token
@@ -304,22 +304,22 @@ public class PYExecuteService extends BProcess {
             createMeanOfCommunication(getSession(), dto);
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la crï¿½ation du moyen de communication: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la création du moyen de communication: " + e);
             throw e;
         }
         catch (PYInternalException e) {
-            LOG.error("Une erreur interne est survenue lors de la crï¿½ation du moyen de communication: " + e);
+            LOG.error("Une erreur interne est survenue lors de la création du moyen de communication: " + e);
             throw e;
         }
         catch (Exception e) {
-            LOG.error("Une erreur est survenue lors de la crï¿½ation du moyen de communication: " + e);
+            LOG.error("Une erreur est survenue lors de la création du moyen de communication: " + e);
             throw new PYInternalException(e);
         }
         return dto;
     }
 
     /**
-     * Mï¿½thode pour crï¿½er un moyen de communication pour un contact.
+     * Méthode pour créer un moyen de communication pour un contact.
      *
      * @param session
      * @param dto
@@ -335,7 +335,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Mï¿½thode pour crï¿½er un moyen de communication pour un contact.
+     * Méthode pour créer un moyen de communication pour un contact.
      *
      * @param session
      * @param idContact
@@ -365,7 +365,7 @@ public class PYExecuteService extends BProcess {
             deleteMeanOfCommunication(getSession(), dto);
         }
         catch (PYBadRequestException e) {
-            LOG.error("Une erreur de paramï¿½tre est survenue lors de la suppression du moyen de communication: " + e);
+            LOG.error("Une erreur de paramètre est survenue lors de la suppression du moyen de communication: " + e);
             throw e;
         }
         catch (PYInternalException e) {
@@ -380,7 +380,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Mï¿½thode pour supprimer un moyen de communication d'un contact.
+     * Méthode pour supprimer un moyen de communication d'un contact.
      *
      * @param session
      * @param dto
@@ -396,7 +396,7 @@ public class PYExecuteService extends BProcess {
     }
 
     /**
-     * Mï¿½thode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
+     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
      *
      * @param session
      * @param dto
@@ -429,16 +429,16 @@ public class PYExecuteService extends BProcess {
         }
 
         if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrï¿½e lors de la crï¿½ation de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrï¿½e lors de la crï¿½ation de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
         } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrï¿½e lors de la crï¿½ation de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrï¿½e lors de la crï¿½ation de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
+            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
         }
     }
 
     /**
-     * Mï¿½thode pour mettre ï¿½ jour un tiers (page 2 - contacts/moyens de communication)
+     * Méthode pour mettre à jour un tiers (page 2 - contacts/moyens de communication)
      *
      * @param session
      * @param dto
@@ -450,8 +450,8 @@ public class PYExecuteService extends BProcess {
             TIContact tiContact = new TIContact();
             tiContact.setIdContact(contact.getId());
             tiContact.retrieve(session.getCurrentThreadTransaction());
-            if (!tiContact.isNew()) {
-                throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le contact ï¿½ modifier n'existe pas");
+            if (tiContact.getId().isEmpty()) {
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le contact à modifier n'existe pas");
             }
 
             updateContact(session, contact.getId(), contact.getLastName(), contact.getFirstName());
@@ -464,8 +464,8 @@ public class PYExecuteService extends BProcess {
                 tiMoyenCommunication.setIdContact(contact.getId());
                 tiMoyenCommunication.setTypeCommunication(mean.getMeanOfCommunicationType());
                 tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-                if (!tiMoyenCommunication.isNew()) {
-                    throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le moyen de communication ï¿½ modifier n'existe pas");
+                if (tiMoyenCommunication.getId().isEmpty()) {
+                    throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le moyen de communication à modifier n'existe pas");
                 }
 
                 updateMeanOfCommunication(session, contact.getId(), mean.getMeanOfCommunicationType(), mean.getApplicationDomain(), mean.getMeanOfCommunicationValue());
@@ -473,11 +473,11 @@ public class PYExecuteService extends BProcess {
         }
 
         if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrï¿½e lors de l'update de contact");
-            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrï¿½e lors de l'update de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
+            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
+            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
         } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrï¿½e lors de l'update de contact");
-            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrï¿½e lors de l'update de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            LOG.error("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact");
+            throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Erreur rencontrée lors de l'update de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
         }
     }
 
