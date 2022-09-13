@@ -1,6 +1,14 @@
 package globaz.prestation.interfaces.tiers;
 
-import ch.globaz.pyxis.business.model.*;
+import ch.globaz.pyxis.business.model.AdresseComplexModel;
+import ch.globaz.pyxis.business.model.AdresseSimpleModel;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.model.AvoirAdresseSimpleModel;
+import ch.globaz.pyxis.business.model.BanqueComplexModel;
+import ch.globaz.pyxis.business.model.BanqueSearchComplexModel;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.pyxis.domaine.DomaineApplication;
 import com.google.gson.Gson;
@@ -11,7 +19,11 @@ import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
 import globaz.globall.parameters.FWParametersCodeManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.shared.GlobazValueObject;
@@ -33,7 +45,18 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
-import globaz.pyxis.api.*;
+import globaz.pyxis.api.ITIAbstractAdresseData;
+import globaz.pyxis.api.ITIAdministration;
+import globaz.pyxis.api.ITIApplication;
+import globaz.pyxis.api.ITIAvoirAdresse;
+import globaz.pyxis.api.ITILocalite;
+import globaz.pyxis.api.ITIPays;
+import globaz.pyxis.api.ITIPersonne;
+import globaz.pyxis.api.ITIPersonneAvs;
+import globaz.pyxis.api.ITIPersonneAvsAdresse;
+import globaz.pyxis.api.ITIRole;
+import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.api.ITITiersAdresse;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
@@ -44,12 +67,23 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
-import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.db.tiers.TIAdministrationAdresse;
+import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
+import globaz.pyxis.db.tiers.TIAdministrationManager;
+import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
+import globaz.pyxis.db.tiers.TIPersonneAvsManager;
+import globaz.pyxis.db.tiers.TITiers;
+import globaz.pyxis.db.tiers.TITiersAdresseManager;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.util.TINSSFormater;
-import globaz.pyxis.web.DTO.*;
+import globaz.pyxis.web.DTO.PYAddressDTO;
+import globaz.pyxis.web.DTO.PYPaymentAddressDTO;
+import globaz.pyxis.web.DTO.PYTiersDTO;
+import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
@@ -57,7 +91,20 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
@@ -325,50 +372,6 @@ public class PRTiersHelper {
             }
         }
         dto.setId(avsPerson.getIdTiers());
-    }
-
-    /**
-     * Méthode pour les web services CCB/CCVS afin d'ajouter un tiers - page 2 (les contacts/moyens de communication)
-     *
-     * @param session
-     * @param dto
-     * @throws Exception
-     */
-    public static final void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-
-        for (PYContactDTO contactDTO: dto.getContacts()) {
-            TIContact contact = new TIContact();
-            contact.setSession(session);
-            contact.setNom(dto.getSurname());
-            contact.setPrenom(dto.getName());
-            contact.add();
-
-            for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
-                TIMoyenCommunication meanOfCommunication = new TIMoyenCommunication();
-                meanOfCommunication.setSession(session);
-                meanOfCommunication.setTypeCommunication(meanDTO.getMeanOfCommunicationType());
-                meanOfCommunication.setMoyen(meanDTO.getMeanOfCommunicationValue());
-                meanOfCommunication.setIdContact(contact.getIdContact());
-                if (meanDTO.getApplicationDomain() != null)
-                    meanOfCommunication.setIdApplication(meanDTO.getApplicationDomain());
-                meanOfCommunication.add();
-            }
-
-            TIAvoirContact hasContact = new TIAvoirContact();
-            hasContact.setSession(session);
-            hasContact.setIdTiers(dto.getId());
-            hasContact.setIdContact(contact.getIdContact());
-            hasContact.add();
-        }
-
-        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + session.getCurrentThreadTransaction().getErrors().toString());
-
-        } else if (!JadeThread.logIsEmpty()) {
-            LOG.error("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPage2 - Erreur rencontrée lors de la création de contact: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
-        }
     }
 
     /**
@@ -804,7 +807,7 @@ public class PRTiersHelper {
 
             if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
                 LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");
-                throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + session.getCurrentThreadTransaction().getErrors().toString());
 
             } else if (!JadeThread.logIsEmpty()) {
                 LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");

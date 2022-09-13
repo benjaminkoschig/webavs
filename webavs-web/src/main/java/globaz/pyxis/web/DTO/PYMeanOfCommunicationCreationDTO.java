@@ -6,21 +6,16 @@ import lombok.Data;
 
 import java.util.Vector;
 
-/**
- * On utilise cette classe comme un struct simplement pour contenir les données
- * de la liste de contacts dans le JSON
- */
 @Data
-public class PYContactDTO {
-    private String id;
-    private String firstName;
-    private String lastName;
-    private Vector<PYMeanOfCommunicationDTO> meansOfCommunication = new Vector();
+public class PYMeanOfCommunicationCreationDTO extends PYMeanOfCommunicationDTO{
+    private String idContact;
 
     @JsonIgnore
     public Boolean isValid() {
         Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getId());
+        mandatoryParameters.add(this.getMeanOfCommunicationType());
+        mandatoryParameters.add(this.getApplicationDomain());
+        mandatoryParameters.add(this.getIdContact());
 
         return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
     }

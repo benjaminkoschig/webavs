@@ -1,5 +1,8 @@
 package globaz.pyxis.web.ws;
 
+import globaz.pyxis.web.DTO.PYContactCreateDTO;
+import globaz.pyxis.web.DTO.PYContactDTO;
+import globaz.pyxis.web.DTO.PYMeanOfCommunicationCreationDTO;
 import globaz.pyxis.web.DTO.PYTiersDTO;
 import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -7,6 +10,7 @@ import globaz.pyxis.web.service.PYExecuteService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -46,6 +50,48 @@ public class PYApiRestExecute {
     public Response updateTiers(@HeaderParam("authorization") String token, PYTiersUpdateDTO dto) {
         LOG.info("update_tiers");
         return execute(token, dto, service::updateTiers, dto::isValid);
+    }
+
+    @PUT
+    @Path(value = "contact")
+    public Response updateContact(@HeaderParam("authorization") String token, PYContactDTO dto) {
+        LOG.info("update_contact");
+        return execute(token, dto, service::updateContact, dto::isValid);
+    }
+
+    @POST
+    @Path(value = "contact")
+    public Response createContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
+        LOG.info("create_contact");
+        return execute(token, dto, service::createContact, dto::isValidForCreation);
+    }
+
+    @DELETE
+    @Path(value = "contact")
+    public Response deleteContact(@HeaderParam("authorization") String token, PYContactCreateDTO dto) {
+        LOG.info("delete_contact");
+        return execute(token, dto, service::deleteContact, dto::isValidForDeletion);
+    }
+
+    @PUT
+    @Path(value = "mean_of_communication")
+    public Response updateMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+        LOG.info("create_mean_of_communication");
+        return execute(token, dto, service::updateMeanOfCommunication, dto::isValid);
+    }
+
+    @POST
+    @Path(value = "mean_of_communication")
+    public Response createMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+        LOG.info("create_mean_of_communication");
+        return execute(token, dto, service::createMeanOfCommunication, dto::isValid);
+    }
+
+    @DELETE
+    @Path(value = "mean_of_communication")
+    public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+        LOG.info("delete_mean_of_communication");
+        return execute(token, dto, service::deleteMeanOfCommunication, dto::isValid);
     }
 
     /**
