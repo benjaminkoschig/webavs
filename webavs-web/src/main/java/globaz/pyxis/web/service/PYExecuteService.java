@@ -450,7 +450,7 @@ public class PYExecuteService extends BProcess {
             TIContact tiContact = new TIContact();
             tiContact.setIdContact(contact.getId());
             tiContact.retrieve(session.getCurrentThreadTransaction());
-            if (tiContact.getId().isEmpty()) {
+            if (!tiContact.isNew()) {
                 throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le contact à modifier n'existe pas");
             }
 
@@ -464,7 +464,7 @@ public class PYExecuteService extends BProcess {
                 tiMoyenCommunication.setIdContact(contact.getId());
                 tiMoyenCommunication.setTypeCommunication(mean.getMeanOfCommunicationType());
                 tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
-                if (tiMoyenCommunication.getId().isEmpty()) {
+                if (!tiMoyenCommunication.isNew()) {
                     throw new PYBadRequestException("PRTiersHelper#updateTiersPage2 - Le moyen de communication à modifier n'existe pas");
                 }
 
