@@ -69,7 +69,6 @@ public class GFFileUtils {
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals(FILE_TYPE_ZIP)) {
-                JadeFsFacade.copyFile(viewBean.getFilename(), PERSISTANCE_PATH + viewBean.getFileNamePersistance());
                 viewBean.getFileNameList().addAll(unZipFile(viewBean));
                 checkUnZippedFiles(viewBean);
             } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
