@@ -18,6 +18,8 @@ public class GFMainServlet extends FWJadeServlet {
 
     private static final long serialVersionUID = 1L;
 
+    public final static String ACTION_DOSSIER_GED = "ged";
+
     /**
      * Noeuds du menu désactivés en mode droit "Lecture seule"
      */
@@ -39,7 +41,7 @@ public class GFMainServlet extends FWJadeServlet {
         //Mapping des actions P14
         registerActionMapping("eform.formulaire", GFFormulaireServletAction.class);
         registerActionMapping("eform.statistique", GFStatistiqueServletAction.class);
-        //Mapping des actions Da - Dossier
+        //Mapping des actions Da-Dossier
         registerActionMapping("eform.envoi", GFEnvoiServletAction.class);
         registerActionMapping("eform.demande", GFDemandeServletAction.class);
         registerActionMapping("eform.suivi", GFSuiviServletAction.class);
@@ -54,6 +56,7 @@ public class GFMainServlet extends FWJadeServlet {
         aStack.addRule(new FWRemoveActionsEndingWith(".lister"));
         aStack.addRule(new FWRemoveActionsEndingWith(".modifier"));
         aStack.addRule(new FWRemoveActionsEndingWith(".telecharger"));
+        aStack.addRule(new FWRemoveActionsEndingWith(".ged"));
 
         // Evite de garder 2 fois la même page
         aStack.addRule(new FWSuppressSameUserActions());
