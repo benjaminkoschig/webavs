@@ -7,6 +7,8 @@ public class GFEnvoiDossier extends GFDocumentDossier {
     private final static String LABEL_PARAGRAPHE = "DOCUMENT_ENVOI_PARAGRAPHE";
     private final static String LABEL_SALUTATION = "DOCUMENT_ENVOI_SALUTATION";
 
+    public static String FILENAME = "lead_transfert.pdf";
+
 
     @Override
     public void createDataSource() throws Exception {

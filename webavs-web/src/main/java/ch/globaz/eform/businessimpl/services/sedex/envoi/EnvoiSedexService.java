@@ -3,6 +3,7 @@ package ch.globaz.eform.businessimpl.services.sedex.envoi;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
+import ch.globaz.eform.constant.GFDocumentTypeDossier;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFActionSedex;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
 import ch.globaz.eform.constant.GFStatusDADossier;
@@ -174,11 +175,11 @@ public class EnvoiSedexService {
         List<String> tiffFileNameList = getTiffFilesNameList(fileNameList);
         List<AttachmentType> attachmentTypeList = new ArrayList<>();
 
-        attachmentTypeList.add(createAttachmentLead(documentLead, getAttachementFileTypeList(documentLead)));
-
+        attachmentTypeList.add(createAttachmentLead(documentLead, getAttachementFileTypeList(new File(documentLead).getName())));
+        int order = 2;
         if (tiffFileNameList.size() < 1) {
             for (String fileName : fileNameList) {
-                attachmentTypeList.add(createAttachment(fileName, getAttachementFileTypeList(fileName)));
+                attachmentTypeList.add(createAttachment(fileName, getAttachementFileTypeList(fileName), BigInteger.valueOf(order++)));
             }
         } else {
             Map<String, List<String>> multipleTiffFiles = findMultipleTiffFiles(tiffFileNameList);
@@ -226,28 +227,29 @@ public class EnvoiSedexService {
 
     private List<AttachmentType> getMultipleAttachmentTypeList(Map<String, List<String>> multipleTiffFiles) throws DatatypeConfigurationException {
         List<AttachmentType> attachmentTypeList = new LinkedList<>();
-
+        int order = 1;
         for (String key : multipleTiffFiles.keySet()) {
-            attachmentTypeList.add(createAttachment(key, getMultipleAttachementFileTypeList(multipleTiffFiles.get(key))));
+            attachmentTypeList.add(createAttachment(key, getMultipleAttachementFileTypeList(multipleTiffFiles.get(key)),BigInteger.valueOf(order++)));
         }
         return attachmentTypeList;
     }
 
-    private AttachmentType createAttachment(String fileName, List<AttachmentFileType> attachmentTypeList) throws DatatypeConfigurationException {
+    private AttachmentType createAttachment(String fileName, List<AttachmentFileType> attachmentTypeList, BigInteger order) throws DatatypeConfigurationException {
         AttachmentType attachmentType = new AttachmentType();
-        attachmentType.setDocumentType("01.10.11");
+        attachmentType.setDocumentType(viewBean.getTypeDeFichier());
         attachmentType.setTitle(createAttachmentTitle(attachmentType.getDocumentType()));
         attachmentType.setDocumentDate(getDocumentDate());
         attachmentType.setLeadingDocument(GFMessageTypeSedex.TYPE_2021_TRANSFERE.isLeadingDocument());
-        attachmentType.setSortOrder(BigInteger.ONE);
+        attachmentType.setSortOrder(order);
         attachmentType.setDocumentFormat(FilenameUtils.getExtension(fileName));
         attachmentType.getFile().addAll(attachmentTypeList);
         return attachmentType;
     }
 
     private AttachmentType createAttachmentLead(String fileName, List<AttachmentFileType> attachmentTypeList) throws DatatypeConfigurationException {
-        AttachmentType attachmentLead = createAttachment(fileName, attachmentTypeList);
+        AttachmentType attachmentLead = createAttachment(fileName, attachmentTypeList, BigInteger.valueOf(1));
         attachmentLead.setLeadingDocument(true);
+        attachmentLead.setDocumentType(GFDocumentTypeDossier.getStatusByDocumentType(viewBean.getTypeDeFichier()).getDocumentTypeLead());
         return attachmentLead;
     }
 
@@ -286,7 +288,7 @@ public class EnvoiSedexService {
 
     private AttachmentFileType getAttachmentFileType(String fileName, int sortOrder) {
         AttachmentFileType attachmentFileType = new AttachmentFileType();
-        attachmentFileType.setPathFileName(fileName);
+        attachmentFileType.setPathFileName("attachements/"+fileName);
         attachmentFileType.setInternalSortOrder(BigInteger.valueOf(sortOrder));
         return attachmentFileType;
     }

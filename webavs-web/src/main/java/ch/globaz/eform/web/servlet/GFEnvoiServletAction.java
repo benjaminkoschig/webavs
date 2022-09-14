@@ -1,6 +1,10 @@
 package ch.globaz.eform.web.servlet;
 
+import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.constant.GFStatusDADossier;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.utils.GFFileUtils;
+import globaz.eform.vb.demande.GFDemandeViewBean;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -82,8 +86,14 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
-                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE) || actionPart.equals(ACTION_ENVOYER)) {
+                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
+                } else if(actionPart.equals(ACTION_ENVOYER)) {
+                    destination = "/eform?userAction=eform.suivi.suivi.chercher" +
+                    "&likeNss=" + NSSUtils.unFormatNss(((GFEnvoiViewBean) viewBean).getNss()) +
+                            "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCaisseDestinatrice() +
+                            "&byType=" + GFTypeDADossier.SEND_TYPE.getCodeSystem() +
+                            "&byStatus=" + GFStatusDADossier.SEND.getCodeSystem();
                 }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);

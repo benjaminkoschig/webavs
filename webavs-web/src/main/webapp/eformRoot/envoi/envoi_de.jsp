@@ -2,6 +2,7 @@
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="ch.globaz.eform.properties.GFProperties" %>
+<%@ page import="ch.globaz.eform.constant.GFDocumentTypeDossier" %>
 
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -191,11 +192,9 @@
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="TYPE_DE_FICHIER"/></div>
 				<div style="display: table-cell;width: 300px;"><ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
-					<ct:option value="" label=""></ct:option>
-					<ct:option value="Rente AVS" label="Rente AVS"></ct:option>
-					<ct:option value="Rente AI" label="Rente AI"></ct:option>
-					<ct:option value="API AVS" label="API AVS"></ct:option>
-					<ct:option value="API AI" label="API AI"></ct:option>
+					<% for(GFDocumentTypeDossier type : GFDocumentTypeDossier.values()) { %>
+						<ct:option value="<%=type.getDocumentType()%>" label="<%=type.getLabel()%>"></ct:option>
+					<% } %>
 				</ct:select></div>
 			</div>
 
