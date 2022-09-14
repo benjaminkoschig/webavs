@@ -5,17 +5,15 @@
  <%
 	idEcran ="GTI0333";
 	actionNew  +=	(request.getParameter("colonneSelection")==null)?"":"&colonneSelection="+request.getParameter("colonneSelection");
-	actionNew  += "&idTiers=" + ((request.getParameter("idTiers")!=null)?request.getParameter("idTiers"):"") ;
-	actionNew  += "&idAdresse=" + ((request.getParameter("idAdresse")!=null)?request.getParameter("idAdresse"):"") ;
+	actionNew  += "&forIdTiers=" + ((request.getParameter("forIdTiers")!=null)?request.getParameter("forIdTiers"):"") ;
+	actionNew  += "&forIdAdressePaiement=" + ((request.getParameter("forIdAdressePaiement")!=null)?request.getParameter("forIdAdressePaiement"):"") ;
 	rememberSearchCriterias = true;
 %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts"  --%>
 <SCRIPT>
-<%if (request.getParameter("_pos")== null) {%>
-bFind= false;
-<%}%>
+bFind= true;
 usrAction = "pyxis.tiers.referencePaiement.lister";
 
 </SCRIPT>
@@ -26,14 +24,16 @@ usrAction = "pyxis.tiers.referencePaiement.lister";
 				<%-- tpl:put name="zoneMain"  --%>
 
 		<tr>
-			<td align="right"><b>Beschriftung&nbsp;</b></td>
+			<td align="right">Beschriftung&nbsp;</td>
 			<td><input name="forlibelleLike" type="text"></td>
 		</tr>
 		<tr>
-			<td align="right" style="padding-left:0.5cm"><b>Konto-Nr.&nbsp;</b></td>
-			<td><input name="forCompteLike" type="text"></td>
-			<td align="right" style="padding-left:0.5cm"><b>QR-Referenz&nbsp;</b></td>
+			<td align="right" style="padding-left:0.5cm">Konto-Nr.&nbsp;</td>
+			<td><input name="forCompteLike" type="text" readonly class="disabled" value='<%=(request.getParameter("forCompteLike")==null)?"":request.getParameter("forCompteLike") %>'/></td>
+			<td align="right" style="padding-left:0.5cm">QR-Referenz&nbsp;</td>
 			<td><input name="forReferenceQR" type="text"></td>
+			<input type="hidden"  name="forIdTiers" value='<%=(request.getParameter("forIdTiers")==null)?"":request.getParameter("forIdTiers") %>'/>
+			<input type="hidden"  name="forIdAdressePaiement" value='<%=(request.getParameter("forIdAdressePaiement")==null)?"":request.getParameter("forIdAdressePaiement") %>'/>
 		</tr>
 
           		<%-- /tpl:put --%>

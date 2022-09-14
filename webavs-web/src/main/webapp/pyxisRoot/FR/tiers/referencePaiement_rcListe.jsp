@@ -25,7 +25,7 @@
     <Th>Date début</Th>
 	<Th>Date fin</Th>
     <Th>N° de Compte</Th>
-    <Th>Adresse</Th>
+    <Th>Adresse de paiement</Th>
 
     <%
     boolean oldCondition = true;
@@ -40,9 +40,7 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if (!JadeStringUtil.isBlankOrZero(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdressePaiement())
-					&& !JadeStringUtil.isBlankOrZero(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdressePaiement())
-					&& !((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdressePaiement().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdressePaiement())) {
+				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReference().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReference())) {
 					condition = !oldCondition;
 					oldCondition = condition;
 					sameAdresse = false;
