@@ -2,10 +2,12 @@ package ch.globaz.eform.utils;
 
 import ch.globaz.common.util.Dates;
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.common.util.ZipUtils;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
 
+import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -18,6 +20,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,7 +52,6 @@ public class GFFileUtils {
     public final static String FILE_TYPE_PDF = "pdf";
     public final static String FILE_TYPE_TIFF = "tiff";
     public final static String FILE_TYPE_ZIP = "zip";
-    public final static String FOLDER_UID = "testUid";
     public static Map<String, Integer> counterMap = new HashMap<>();
 
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
@@ -58,13 +63,12 @@ public class GFFileUtils {
 
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
         String path = viewBean.getFilename();
-        Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
+        Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
         String filename = path.substring(path.lastIndexOf("\\") + 1);
-        String destDir = WORK_PATH + FOLDER_UID;
+        String destDir = WORK_PATH + viewBean.getFolderUid();
         if (!JadeStringUtil.isNull(filename)) {
             String extension = FilenameUtils.getExtension(filename);
             if (extension.equals(FILE_TYPE_ZIP)) {
-                JadeFsFacade.copyFile(viewBean.getFilename(), PERSISTANCE_PATH + viewBean.getFileNamePersistance());
                 viewBean.getFileNameList().addAll(unZipFile(viewBean));
                 checkUnZippedFiles(viewBean);
             } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
@@ -88,9 +92,9 @@ public class GFFileUtils {
         List<String> fileNameList = new LinkedList<>();
         if (!JadeStringUtil.isNull(pathWork)) {
             //creation des directories pour extraire les fichiers contenus dans le zip
-            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID));
-            Files.createDirectories(Paths.get(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename)));
-            File destDir = new File(WORK_PATH + FOLDER_UID + "/" + FilenameUtils.removeExtension(filename));
+            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
+            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename)));
+            File destDir = new File(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename));
             fileNameList = unzip(new File(pathWork), destDir, viewBean);
         }
         return fileNameList;
@@ -140,8 +144,7 @@ public class GFFileUtils {
 
     public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
         String pathFileNameToRemove = null;
-        File directory = new File(String.valueOf(Paths.get(WORK_PATH + FOLDER_UID)));
-        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        Collection<File> files = listFile(GFFileUtils.WORK_PATH + viewBean.getFolderUid());
 
         for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
             File file = (File) iterator.next();
@@ -154,6 +157,12 @@ public class GFFileUtils {
             }
         }
         viewBean.getFileNameList().remove(fileNameToRemove);
+    }
+
+    public static Collection<File> listFile(String path) {
+        File directory = new File(String.valueOf(Paths.get(path)));
+        Collection<File> files = FileUtils.listFiles(directory, null, true);
+        return files;
     }
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
@@ -171,6 +180,26 @@ public class GFFileUtils {
         if (viewBean.getErrorFileNameList().size() > 0) {
             viewBean.getSession().getCurrentThreadTransaction().addErrors(("les documents en rouges ne respectent pas le format requis et ne seront pas pris en compte pour l'envoi."));
         }
+    }
+
+    public static void createSedexXml(Message message, String sedexOutPut) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Message.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            // Chemin en dur à changer
+            File file = new File(sedexOutPut + "/message_00102.xml");
+            jaxbMarshaller.marshal(message, file);
+
+        } catch (JAXBException e) {
+//            LOGGER.error("Error : impossible de créer le fichier xml.");
+        }
+    }
+
+
+    public static void zipSedexFile(Path destDir) {
+        ZipUtils.zip(Paths.get(destDir + ".zip"), destDir);
     }
 
     public static String generateEFormFilePath(GFFormulaireModel dbModel) {

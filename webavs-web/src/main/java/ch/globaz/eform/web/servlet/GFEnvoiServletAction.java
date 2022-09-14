@@ -1,6 +1,5 @@
 package ch.globaz.eform.web.servlet;
 
-import ch.globaz.eform.businessimpl.services.sedex.envoi.EnvoiSedexService;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -72,9 +71,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
                 String fileName = (String) request.getParameter("fileName");
                 GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
-            } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_ENVOYER)) {
-                EnvoiSedexService envoiSedexService = new EnvoiSedexService((GFEnvoiViewBean) viewBean);
-                envoiSedexService.createSedexMessage();
             }
 
             // Traitement

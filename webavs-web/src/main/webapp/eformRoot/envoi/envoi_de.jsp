@@ -164,7 +164,7 @@
 			<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 				<div style="display: table-cell;width: 300px;">
-				<ct:widget id='caisseDestinatrice' name='caisseDestinatrice'>
+				<ct:widget id='caisseDestinatrice' name='caisseDestinatrice' onchange="buttonCheck()">
 					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 						<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
@@ -202,7 +202,7 @@
 
 				<div style="display: table ; margin-top: 10px" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 140px;padding-left: 10px"><ct:FWLabel key="FICHIER_SOURCE"/></div>
-					<div style="display: table-cell;width: 310px;margin-bottom: 10px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload,protocole:jdbc"/>
+					<div style="display: table-cell;width: 310px;margin-bottom: 10px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/>
            	</div>
         </div>
 
