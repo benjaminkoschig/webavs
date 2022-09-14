@@ -52,13 +52,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class APGenerateurAnnonceRAPG {
     private final int NB_JOURS_PATERNITE_14 = 14;
@@ -312,7 +306,9 @@ public class APGenerateurAnnonceRAPG {
                 annonceACreer.setNumeroAssure(
                         droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                 annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
-                annonceACreer.setTauxJournalierAllocationBase(montantJournalierPrestation.toString());
+                if(Objects.isNull(annonceACreer.getTauxJournalierAllocationBase())) {
+                    annonceACreer.setTauxJournalierAllocationBase("0");
+                }
                 annonceACreer.setPeriodeDe(prestation.getDateDebut());
                 annonceACreer.setPeriodeA(prestation.getDateFin());
                 if ("4".equals(annonceACreer.getContenuAnnonce())) {
