@@ -5,6 +5,7 @@
 <%@ page import="ch.globaz.eform.utils.GFSessionDataContainerHelper" %>
 <%@ page import="ch.globaz.eform.business.search.GFDaDossierSearch" %>
 <%@ page import="globaz.eform.vb.suivi.GFSuiviViewBean" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 

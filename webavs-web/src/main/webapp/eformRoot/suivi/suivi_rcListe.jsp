@@ -50,11 +50,11 @@
     <div style="font-weight: bold;font-size: 12px"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
     <div style="font-size: 10px"><%=GFUtils.formatTiers(tiers)%></div>
 </TD>
-<TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1()%></TD>
+<TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1() + " " + caisse.getTiers().getDesignation2()%></TD>
 <TD class="mtd" nowrap><%=GFTypeDADossier.getByCodeSystem(line.getDaDossier().getType()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFStatusDADossier.getByCodeSystem(line.getDaDossier().getStatus()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFUtils.formatSpy(line.getDaDossier().getSpy()).getDate()%></TD>
-<TD class="mtd" nowrap><%= GFFormulaireHelper.getGestionnaireDesignation(line.getDaDossier().getUserGestionnaire()) %></TD>
+<TD class="mtd" nowrap><%=line.getDaDossier().getUserGestionnaire()%></TD>
 <TD class="mtd" nowrap>
     <%
         String urlGED = baseLink + "ged"

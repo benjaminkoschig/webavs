@@ -3,9 +3,15 @@ package globaz.eform.vb.suivi;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +50,7 @@ public class GFSuiviViewBean extends BJadePersistentObjectViewBean {
     }
 
     public void setLikeNss(String likeNss) {
-        if (StringUtils.isBlank(likeNss) || NSSUtils.checkNSS(likeNss)) {
+        if (StringUtils.isBlank(likeNss) || !NSSUtils.checkNSS(likeNss)) {
             daDossier.setNssAffilier(likeNss);
         } else {
             daDossier.setNssAffilier(NSSUtils.unFormatNss(likeNss));
@@ -52,7 +58,26 @@ public class GFSuiviViewBean extends BJadePersistentObjectViewBean {
     }
 
     public String getByCaisse() {
-        return daDossier.getCodeCaisse();
+        try {
+            if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
+                AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+                search.setForCodeAdministration(daDossier.getCodeCaisse());
+                search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+
+                search = TIBusinessServiceLocator.getAdministrationService().find(search);
+
+                if (search.getSearchResults().length == 1) {
+                    AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
+                    return complexModel.getAdmin().getCodeAdministration() + " - " +
+                            complexModel.getTiers().getDesignation1() + " " +
+                            complexModel.getTiers().getDesignation2();
+                }
+            }
+
+            return "";
+        } catch (JadePersistenceException | JadeApplicationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setByCaisse(String codeCaisse) {
