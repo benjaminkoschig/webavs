@@ -2,8 +2,6 @@
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="globaz.eform.helpers.dadossier.GFDADossierHelper" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="ch.globaz.eform.utils.GFSessionDataContainerHelper" %>
-<%@ page import="ch.globaz.eform.business.search.GFDaDossierSearch" %>
 <%@ page import="globaz.eform.vb.suivi.GFSuiviViewBean" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
 
@@ -78,6 +76,7 @@
 		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=viewBean != null ? viewBean.getByCaisse() : ""%>'>
 			<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
 				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 				<ct:widgetJSReturnFunction>

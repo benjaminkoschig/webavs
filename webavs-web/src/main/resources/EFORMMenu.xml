@@ -100,6 +100,23 @@
 		</nodes>
 	</menu>
 
+	<!-- ************************************************ -->
+	<!-- Menu option pour le suivi des demandes Da-dossier -->
+	<!-- ************************************************ -->
+
+	<menu id="dadossier-optionssuivi">
+		<label refId="MENU_OPTIONS_SUIVI" />
+		<nodes>
+			<node>
+				<label refId="MENU_ENVOI_DA_DOSSIER"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.envoi.envoi.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
 	<!-- ************************** -->
 	<!-- Menu Option empty		    -->
 	<!-- ************************** -->
