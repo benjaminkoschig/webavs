@@ -18,6 +18,7 @@ import globaz.osiris.external.IntTiers;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,17 +28,21 @@ import java.util.regex.Pattern;
  */
 public class CAILettrePlanRecouvDecision extends CADocumentManager {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String NUMERO_REFERENCE_INFOROM = "0041GCA";
-    /** Le nom du modèle */
+    /**
+     * Le nom du modèle
+     */
     private static final String TEMPLATE_NAME = "CAIEcheancierLettreDecision";
     private String compteCADesc = "";
     private String dateRef = "";
 
     private String idDocument = "";
-    /** Données du formulaire */
+    /**
+     * Données du formulaire
+     */
     private String idPlanRecouvrement = "";
     private Boolean joindreBVR = new Boolean(false);
     private String observation = "";
@@ -45,11 +50,9 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /**
      * Initialise le document
-     * 
-     * @param parent
-     *            Le processus parent
-     * @throws FWIException
-     *             En cas de problème d'initialisaion
+     *
+     * @param parent Le processus parent
+     * @throws FWIException En cas de problème d'initialisaion
      */
     public CAILettrePlanRecouvDecision(BProcess parent) throws FWIException {
         super(parent, CAILettrePlanRecouvDecision.TEMPLATE_NAME);
@@ -57,11 +60,9 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /**
      * Initialise le document
-     * 
-     * @param parent
-     *            La session parente
-     * @throws FWIException
-     *             En cas de problème d'initialisaion
+     *
+     * @param parent La session parente
+     * @throws FWIException En cas de problème d'initialisaion
      */
     public CAILettrePlanRecouvDecision(BSession parent) throws FWIException {
         super(parent, CAILettrePlanRecouvDecision.TEMPLATE_NAME);
@@ -69,19 +70,19 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.printing.itext.FWIDocumentManager#afterPrintDocument()
      */
     @Override
     public void afterExecuteReport() {
         try {
             createVoiesDroit();
-            super.afterExecuteReport();
         } catch (FWIException e) {
             JadeLogger.error(this, e);
         } catch (Exception e) {
             JadeLogger.error(this, e);
         }
+        super.afterExecuteReport();
     }
 
     @Override
@@ -112,7 +113,7 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeExecuteReport()
      */
     @Override
@@ -203,11 +204,11 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /**
      * Prépare et retourne le document "Voies de droit"
-     * 
-     * @author: sel Créé le : 16 nov. 06
+     *
      * @return le document "Voies de droit"
      * @throws FWIException
      * @throws Exception
+     * @author: sel Créé le : 16 nov. 06
      */
     private CAILettrePlanRecouvVoiesDroit createVoiesDroit() throws FWIException, Exception {
         // Instancie le document : Voies de droit
@@ -229,7 +230,7 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
     /**
      * Formate le texte. Remplace un {0} par la date d'échéance
-     * 
+     *
      * @param paragraphe
      * @return
      */
@@ -351,16 +352,14 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
     }
 
     /**
-     * @param dateRef
-     *            the dateRef to set
+     * @param dateRef the dateRef to set
      */
     public void setDateRef(String dateRef) {
         this.dateRef = dateRef;
     }
 
     /**
-     * @param idDocument
-     *            the idDocument to set
+     * @param idDocument the idDocument to set
      */
     @Override
     public void setIdDocument(String idDocument) {
@@ -373,32 +372,28 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
     }
 
     /**
-     * @param string
-     *            La nouvelle valeur de la propriété
+     * @param string La nouvelle valeur de la propriété
      */
     public void setIdPlanRecouvrement(String string) {
         idPlanRecouvrement = string;
     }
 
     /**
-     * @param string
-     *            La nouvelle valeur de la propriété
+     * @param string La nouvelle valeur de la propriété
      */
     public void setJoindreBVR(Boolean newJoindreBVR) {
         joindreBVR = newJoindreBVR;
     }
 
     /**
-     * @param observation
-     *            the observation to set
+     * @param observation the observation to set
      */
     public void setObservation(String observation) {
         this.observation = observation;
     }
 
     /**
-     * @param plan
-     *            the plan to set
+     * @param plan the plan to set
      */
     public void setPlanRecouvrement(CAPlanRecouvrement plan) {
         this.plan = plan;
