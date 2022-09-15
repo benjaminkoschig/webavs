@@ -68,8 +68,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl>-->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema>-->
  
 <!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
