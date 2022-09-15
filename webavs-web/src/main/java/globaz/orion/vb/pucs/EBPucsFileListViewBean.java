@@ -99,6 +99,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
             manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumnName());
         } else if ("NUMERO_AFFILIE".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumnName());
+        } else if ("TOTAL_CONTROLE".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy(EBPucsFileDefTable.TOTAL_CONTROLE.getColumnName()+ " DESC ");
         }
 
 
