@@ -398,6 +398,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                 ajouteErrorEBillToEMail();
             }
         }
+        super.afterExecuteReport();
     }
 
     private boolean isMaxNumberOfEcheanceEBill() {

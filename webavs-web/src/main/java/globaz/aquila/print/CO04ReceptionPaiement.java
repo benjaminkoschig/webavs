@@ -169,6 +169,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                 }
             }
         }
+        super.afterExecuteReport();
     }
 
     /**

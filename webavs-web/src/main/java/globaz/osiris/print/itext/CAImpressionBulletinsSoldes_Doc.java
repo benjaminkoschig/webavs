@@ -488,6 +488,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 }
             }
         }
+        super.afterExecuteReport();
     }
 
     private void ajouteInfoEBillToEmail() {
