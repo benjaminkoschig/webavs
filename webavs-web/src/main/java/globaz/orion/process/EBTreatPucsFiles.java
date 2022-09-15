@@ -326,6 +326,7 @@ public class EBTreatPucsFiles extends BProcess {
 
             String workDir = Jade.getInstance().getHomeDir() + "work/";
             List<PucsFileMerge> listPucsFile = PucsFileMerge.build(pucsEntrys, pucsToMerge, workDir);
+            List<PucsFile> mergedPucsFiles = new ArrayList<>();
             for (PucsFileMerge pucsFileMerge : listPucsFile) {
                 clearErrorsWarning();
                 boolean exceptionAppend = false;
@@ -335,6 +336,8 @@ public class EBTreatPucsFiles extends BProcess {
                 boolean isForSimultation = isSimulation();
 
                 PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession(), isSimulation());
+                mergedPucsFiles.add(pucsFile);
+
                 // On commit la transaction, on ne sait pas pourquoi mais ça permet d'éviter un deadlock.
                 getSession().getCurrentThreadTransaction().commit();
                 try {
@@ -369,14 +372,14 @@ public class EBTreatPucsFiles extends BProcess {
                     // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
                     if (getIsBatch()) {
                         pucsBatchController.setSession(getSession());
-                        if (pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
+                        if (!pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
                             hasError = true;
                             continue;
                         }
-                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, listPucsFile)) {
+                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, mergedPucsFiles)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);
