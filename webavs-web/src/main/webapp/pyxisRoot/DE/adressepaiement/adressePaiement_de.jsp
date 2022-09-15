@@ -140,8 +140,8 @@ function init(){
 	</td>					
 </tr>
 <tr>
-<td >Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
-	<td >
+	<td>Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
+	<td>
 		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
 			<%
 			Object[] adresseMethodsName = new Object[]{
@@ -150,7 +150,6 @@ function init(){
 			Object[] adresseParams = new Object[]{ new String[]{"critereParam","critere"}};
 		%>
 		<input type="hidden" name="critereParam" value="512006">
-		
 
 		<ct:FWSelectorTag 
 			name="adresseSelector1" 
@@ -164,31 +163,41 @@ function init(){
 
 		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 	</td>
-		<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
-	<td>QR-Referenz</td>
-	<td>
-		<%
-			Object[] referencePaiementMethodsName = new Object[]{
-					new String[]{"forIdAdresse","getIdAdressePmtUnique"},new String[]{"forIdTiers","getIdTiers"}
-			};
-		%>
-		<ct:FWSelectorTag
-				name="referencePaiementSelector1"
+</tr>
 
-				methods="<%=referencePaiementMethodsName%>"
-				providerApplication ="pyxis"
-				providerPrefix="TI"
-				providerAction ="pyxis.tiers.referencePaiement.chercher"
-				providerActionParams ="<%=adresseParams%>"
-		/>
-		<input type="hidden"  name="idTiers" value="<%=viewBean.getIdTiers()%>">
-		<input type="hidden"  name="idAdresse" value="<%=viewBean.getIdAdressePmtUnique()%>">
-	</td>
-		<%}%>
-<tr/>
+<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+	<tr>
+		<td>QR-Referenz</td>
+		<td>
+
+			<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
+			<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOldIdAdressePaiement()%>">
+			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaireFormateIban()%>">
+
+			<%
+				Object[] referencePaiementMethodsName = new Object[]{
+						new String[]{"forIdAdressePaiement","getOldIdAdressePaiement"},new String[]{"forIdTiers","getIdTiers"},new String[]{"forCompteLike","getNumCompteBancaireFormateIban"}
+				};
+				Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+			%>
+			<ct:FWSelectorTag
+					name="referencePaiementSelector1"
+
+					methods="<%=referencePaiementMethodsName%>"
+					providerApplication ="pyxis"
+					providerPrefix="TI"
+					providerAction ="pyxis.tiers.referencePaiement.chercher"
+					providerActionParams ="<%=referencePaiementParams%>"
+			/>
+
+		</td>
+	</tr>
+<%}%>
+
 <tr>
-	<td>Land</td>
-			<td nowrap>			<input type="text" class="libelleLongDisabled" readonly value="<%=viewBean.getNomPays()%>">
+			<td>Land</td>
+			<td nowrap>
+				<input type="text" class="libelleLongDisabled" readonly value="<%=viewBean.getNomPays()%>">
 
 			<%
 				Object[] paysMethodsName = new Object[]{

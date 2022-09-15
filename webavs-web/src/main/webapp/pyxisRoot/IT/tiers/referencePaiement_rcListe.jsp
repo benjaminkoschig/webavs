@@ -25,7 +25,7 @@
     <Th>Data d'inizio</Th>
 	<Th>Data di fine</Th>
     <Th>Numero di conto</Th>
-    <Th>Indirizzo</Th>
+    <Th>Indirizzo di pagamento</Th>
 
     <%
     boolean oldCondition = true;
@@ -40,7 +40,7 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if(!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdAdresse().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdAdresse())){
+				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReference().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReference())) {
 					condition = !oldCondition;
 					oldCondition = condition;
 					sameAdresse = false;
@@ -89,13 +89,9 @@
 	}
 %>
 
-	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><%=entity.getNumCompteBancaire()%>&nbsp;</TD>
+	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><%=entity.getDetailNumCompteBancaire()%>&nbsp;</TD>
 	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" >
-		<i>
-			<%
-				pageContext.getOut().write(entity.getDetailAdresse());
-			%>
-		</i>
+		<i><%pageContext.getOut().write(entity.getDetailAdresseCourt());%></i>
 	</TD>
 
     <%-- /tpl:put --%>

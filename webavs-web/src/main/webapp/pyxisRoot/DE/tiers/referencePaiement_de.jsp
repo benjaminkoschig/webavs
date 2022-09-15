@@ -6,7 +6,10 @@
 	idEcran ="GTI0444";
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean viewBean = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean)session.getAttribute ("viewBean");
 	selectedIdValue = request.getParameter("selectedId");
-
+    if (JadeStringUtil.isBlank(selectedIdValue)) {
+        viewBean.setIdTiers((request.getParameter("forIdTiers")!=null)?request.getParameter("forIdTiers"):"");
+        viewBean.setIdAdressePaiement((request.getParameter("forIdAdressePaiement")!=null)?request.getParameter("forIdAdressePaiement"):"");
+    }
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <SCRIPT language="JavaScript">
@@ -73,30 +76,21 @@ function init(){}
             <TD width="50"></TD>
           </TR>
 
-        <TR>
-            <TD width="119">Zahlungsadresse</TD>
-            <TD nowrap width="211" style="align-content: center">
-                <label>
-                    <TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>
-                </label>
-            </TD>
-            <TD width="50"></TD>
-        </TR>
-
           <TR>
             <TD width="119">Beschriftung</TD>
             <TD nowrap width="211">
-              <INPUT type="text" name="libelle" class="libelleLong" value="<%=viewBean.getLibelle()%>"></TD>
+              <INPUT type="text" name="libelle" class="libelleLong" value="<%=viewBean.getLibelle()%>" maxlength="50"></TD>
             <TD width="50"></TD>
+
             <TD width="180">Konto-Nr.</TD>
             <TD nowrap width="125" align="left">
-                <INPUT type="text" name="numCompteBancaire" class="numero" value="<%=viewBean.getNumCompteBancaire()%>"></TD>
+                <INPUT type="text" name="numCompteBancaire" readonly class="libelleLongDisabled" value="<%=viewBean.getDetailNumCompteBancaire()%>"></TD>
           </TR>
 
           <TR>
             <TD width="119">QR-Referenz</TD>
             <TD nowrap width="211">
-              <INPUT type="text" name="referenceQR" class="numero" value="<%=viewBean.getReferenceQR()%>" maxlength="30"></TD>
+              <INPUT type="text" name="referenceQR" class="libelleLong" value="<%=viewBean.getReferenceQR()%>" maxlength="27"></TD>
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125" align="left"></TD>
@@ -121,12 +115,26 @@ function init(){}
           </TR>
 
           <TR>
+            <TD width="119">Zahlungsadresse</TD>
+            <TD nowrap width="211" style="align-content: center">
+                <label>
+                    <TEXTAREA tabindex="-1" rows="9" cols="25" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresseLong()%></TEXTAREA>
+                </label>
+            </TD>
+            <TD width="50"></TD>
+          </TR>
+
+          <TR>
             <TD width="119">&nbsp;</TD>
             <TD nowrap width="211"></TD>
             <TD width="50"></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
           </TR>
+
+          <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
+          <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
+		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>"
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
