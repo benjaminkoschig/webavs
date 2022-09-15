@@ -124,24 +124,4 @@ public class Rule321 extends Rule {
     private boolean isAnnonceModification(APChampsAnnonce annonce) {
         return "3".equals(annonce.getAction()) || "4".equals(annonce.getAction());
     }
-
-    @Override
-    public String getDetailMessageErreur() {
-        if(isErrorDailyAmountZero){
-            return "Le champs DailyAmount doit être égal à 0 pour une annonce de type Modification.";
-        }
-        String parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();
-        BigDecimal montantMax;
-        try {
-            montantMax = new BigDecimal(
-                    FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "0", parameterName, annonce.getStartOfPeriod(), "", 2));
-        } catch (Exception e) {
-            return super.getDetailMessageErreur();
-        }
-        String errorMessage = "Le taux journalier de l?allocation de base figurant dans le champ « basicDailyAmount » (";
-        errorMessage += annonce.getBasicDailyAmount() + ") ne peut pas être supérieur";
-        errorMessage += " au montant total maximum (" + montantMax + ") de l?allocation journalière (cf. ch. 377).";
-        return errorMessage;
-
-    }
 }
