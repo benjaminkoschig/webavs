@@ -42,6 +42,7 @@ import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -1046,7 +1047,11 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
             }
 
             // formatter l'adresse
-            saViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
+            String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
+            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(source.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            }
+            saViewBean.setAdresseFormattee(adresseLine);
         } else {
             saViewBean.setCcpOuBanqueFormatte("");
             saViewBean.setAdresseFormattee("");
