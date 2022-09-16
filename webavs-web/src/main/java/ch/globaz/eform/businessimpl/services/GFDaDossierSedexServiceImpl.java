@@ -16,18 +16,18 @@ import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.web.application.GFApplication;
-import ch.globaz.eform.web.servlet.GFMainServlet;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.eform.itext.GFDemandeDossier;
 import globaz.eform.itext.GFDocumentPojo;
+import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import org.apache.commons.io.FilenameUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +46,15 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         }
 
         TITiersViewBean tiers = (TITiersViewBean) mgr.getFirstEntity();
+
+        AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+        search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+        search.setForCodeAdministration(model.getCodeCaisse());
+
+        String sedexId = ((AdministrationComplexModel) TIBusinessServiceLocator.getAdministrationService()
+                .find(search).getSearchResults()[0])
+                .getAdmin()
+                .getSedexId();
 
         GFDocumentPojo documentPojo = GFDocumentPojo.builder()
                 .nom(tiers.getDesignation2())
@@ -76,7 +85,7 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         dataMessageSedex.put(GFDaDossierHeaderElementSender.MESSAGE_ID, model.getMessageId());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID, model.getOurBusinessRefId());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SENDER_ID, GFProperties.SENDER_ID.getValue());
-        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, "");//Todo dépendant du ticket injectant le senderId pour les caisses
+        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, sedexId);
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SUBJECT,
                 session.getLabel("SUBJECT_2021_101_SEDEX") + " – " + tiers.getDesignation2() + ", " + tiers.getDesignation1());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.TEST_DELIVERY_FLAG, GFProperties.DA_DOSSIER_MODE_TEST.getValue());
