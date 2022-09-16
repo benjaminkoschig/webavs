@@ -66,9 +66,14 @@ import globaz.pyxis.adresse.datasource.TIAbstractAdressePaiementDataSource;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementManager;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.text.MessageFormat;
@@ -101,6 +106,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private static final Object[] METHODES_SEL_ADRESSE = new Object[]{
             new String[]{"setIdTiersPaiementEmployeurDepuisAdresse", "idTiers"},
             new String[]{"idDomainePaiementEmployeur", "idApplication"}};
+
+    private static final Object[] METHODES_SEL_REFERENCE_QR = new Object[]{
+            new String[]{"setIdReferenceQRDepuisReferenceQR", "idReferenceQR"}};
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -240,6 +248,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public Object[] getMethodesSelectionAdressePaiement() {
         return APSituationProfessionnelleViewBean.METHODES_SEL_ADRESSE;
+    }
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return APSituationProfessionnelleViewBean.METHODES_SEL_REFERENCE_QR;
     }
 
     public String getDomaineAdressePaiementEmployeur() {
@@ -1313,6 +1324,40 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return TypePrestation.TYPE_APG.equals(typePrestation);
     }
 
+    public boolean isQrIban(){
+        TIAdressePaiement adressePaiement = loadAdressePaiement();
+        if(adressePaiement != null){
+            return adressePaiement.isQRIban();
+        }
+        return false;
+    }
+
+    public String getNumeroCompte(){
+        TIAdressePaiement adressePaiement = loadAdressePaiement();
+        if(adressePaiement != null){
+            return adressePaiement.getNumCompteBancaire();
+        }
+        return StringUtils.EMPTY;
+    }
+
+    private TIAdressePaiement loadAdressePaiement(){
+        if(!StringUtils.isEmpty(getIdTiersPaiementEmployeur())) {
+            try {
+                TIAdressePaiementManager mgr = new TIAdressePaiementManager();
+                mgr.setSession(getSession());
+                mgr.setForIdAdressePaiement(getIdTiersPaiementEmployeur());
+                mgr.find(BManager.SIZE_NOLIMIT);
+                if (mgr.size() > 0) {
+                    return (TIAdressePaiement) mgr.get(0);
+                }
+
+            } catch (Exception e) {
+                JadeLogger.error(e, "La reference QR de la situation professionnelle n'a pas pu être rechercher !");
+            }
+        }
+        return null;
+    }
+
     /**
      * DOCUMENT ME!
      */
@@ -1571,6 +1616,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);
+        retourDepuisAdresse = true;
+    }
+
+    public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
+        setIdReferenceQREmployeur(idReferenceQR);
         retourDepuisAdresse = true;
     }
 

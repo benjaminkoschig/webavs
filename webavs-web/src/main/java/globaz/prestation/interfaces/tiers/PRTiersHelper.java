@@ -943,6 +943,27 @@ public class PRTiersHelper {
         }
     }
 
+    public static TIReferencePaiement getReferenceQRData(BSession session,
+                                                         String idReferenceQR) throws Exception {
+        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
+        mgr.setSession(session);
+        if (JadeStringUtil.isBlankOrZero(idReferenceQR)) {
+            return null;
+        }
+
+        if (!JadeStringUtil.isEmpty(idReferenceQR)) {
+            mgr.setSession(session);
+            mgr.setForReferenceQR(idReferenceQR);
+
+            mgr.find(BManager.SIZE_NOLIMIT);
+
+            if (mgr.size() > 0) {
+                return (TIReferencePaiement) mgr.get(0);
+            }
+        }
+        return null;
+    }
+
     private static final String getAdresseRecours(TIAdministrationAdresse admAdr) {
 
         String adresseTribunal = "";

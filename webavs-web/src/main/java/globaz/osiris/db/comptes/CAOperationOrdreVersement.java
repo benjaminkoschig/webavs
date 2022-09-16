@@ -679,6 +679,12 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
         return ordreVersement.getIdAdressePaiement();
     }
 
+    @Override
+    public String getReferencePaiement() {
+        ordreVersement.setSession(getSession());
+        return ordreVersement.getReferenceBVR();
+    }
+
     /**
      * Insérez la description de la méthode ici. Date de création : (07.02.2002 13:35:47)
      * 
@@ -1068,6 +1074,11 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
     @Override
     public void setIdAdressePaiement(String newIdAdressePaiement) {
         ordreVersement.setIdAdressePaiement(newIdAdressePaiement);
+    }
+
+    @Override
+    public void setReferencePaiement(String referencePaiement){
+        ordreVersement.setReferenceBVR(referencePaiement);
     }
 
     /**

@@ -20,6 +20,8 @@ public interface APIOperationOrdreVersement extends APIOperation {
 
     public String getIdAdressePaiement();
 
+    public String getReferencePaiement();
+
     public String getIdOrdreGroupe();
 
     public String getIdOrganeExecution();
@@ -43,6 +45,8 @@ public interface APIOperationOrdreVersement extends APIOperation {
     public void setEstRetire(Boolean newEstRetire);
 
     public void setIdAdressePaiement(String newIdAdressePaiement);
+
+    public void setReferencePaiement(String newReferencePaiement);
 
     public void setIdOrganeExecution(String newIdOrganeExecution);
 

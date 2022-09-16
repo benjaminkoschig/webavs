@@ -196,6 +196,13 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
 	  }
+	  <%if(viewBean.isQrIban()){%>
+		  $('.withoutReferencePaiement').hide();
+		  $('.withReferencePaiement').show();
+	  <%} else{%>
+		  $('.withoutReferencePaiement').show();
+		  $('.withReferencePaiement').hide();
+	  <%}%>
   }
 
   function boutonIndependantChange() {
@@ -737,7 +744,30 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR>
+							<TD class="withoutReferencePaiement" colspan="2">&nbsp;</TD>
+							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
+							<TD class="withReferencePaiement">
+								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
+								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdTiersPaiementEmployeur()%>">
+								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumeroCompte()%>">
+								<%
+									Object[] referencePaiementMethodsName = new Object[]{
+											new String[]{"forIdAdressePaiement","getIdTiersPaiementEmployeur"},new String[]{"forIdTiers","getIdTiersEmployeur"},new String[]{"forCompteLike","getNumeroCompte"}
+									};
+									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+								%>
+								<ct:FWSelectorTag
+										name="referencePaiementSelector1"
+
+										methods="<%=referencePaiementMethodsName%>"
+										providerApplication ="pyxis"
+										providerPrefix="TI"
+										providerAction ="pyxis.tiers.referencePaiement.chercher"
+										providerActionParams ="<%=referencePaiementParams%>"
+								/>
+							</TD>
+						</TR>
 						<TR><TD colspan="6"><HR></TD></TR>
 						<TR>
 							<TD><LABEL for="isCollaborateurAgricole"><ct:FWLabel key="JSP_COLL_AGRICOLE"/></LABEL></TD>

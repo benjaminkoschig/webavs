@@ -364,12 +364,12 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                         || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(repartitionPaiementsJointEmployeur.getGenreService())) {
                          key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", "", false);
 
                     }else{
                          key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", "", false);
                     }
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
