@@ -65,7 +65,7 @@ public class GFApplication extends BApplication {
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_CHANGE_STATUT, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_UPLOAD, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_REMOVEFILE, FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
-        FWAction.registerActionCustom(GFDemandeServletAction.ACTION_PATH + "." + GFDemandeServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
+        FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
+        FWAction.registerActionCustom(GFDemandeServletAction.ACTION_PATH + "." + GFDemandeServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
     }
 }

@@ -4,6 +4,8 @@
 <%@ page import="ch.globaz.eform.properties.GFProperties" %>
 <%@ page import="ch.globaz.eform.constant.GFDocumentTypeDossier" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFEnvoiServletAction" %>
 
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -14,6 +16,7 @@
 <%
 	idEcran = " GFE0101";
 	GFEnvoiViewBean viewBean = (GFEnvoiViewBean) session.getAttribute("viewBean");
+	boolean hasRightAdd = objSession.hasRight(GFEnvoiServletAction.ACTION_PATH, FWSecureConstants.ADD);
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
@@ -43,6 +46,9 @@
 <script>
     $(function() {
         buttonCheck();
+		<%if(!hasRightAdd){%>
+		$("[name=mainForm]").find('input,select,textarea').not(this.$inputsButton).prop('disabled', true);
+		<%}%>
     });
     function init() {
     }
@@ -51,27 +57,31 @@
     var listFileArray = [];
 
 
-    function validate() {
-        document.forms[0].elements('userAction').value = "eform.envoi.envoi.modifier";
-        action(COMMIT);
-    }
-
 	function callBackUpload(data) {
 		document.forms[0].elements('fileNamePersistance').value=data.fileName;
 		zipFileName = document.getElementsByName("filename")[0].value;
 		document.forms[0].elements('filename').value=zipFileName;
-		document.forms[0].elements('userAction').value="eform.envoi.envoi.upload";
+		document.forms[0].elements('userAction').value="<%=GFEnvoiServletAction.ACTION_PATH+"."+GFEnvoiServletAction.ACTION_UPLOAD%>";
 		action(COMMIT);
 		return true;
 	}
 
+	function envoyer() {
+		$('#btnEnvoyer').prop('disabled', 'true');
+		$('#btnCan').prop('disabled', 'true');
+		document.forms[0].elements('userAction').value="<%=GFEnvoiServletAction.ACTION_PATH+"."+GFEnvoiServletAction.ACTION_ENVOYER%>";
+		document.forms[0].submit();
+		return true;
+	}
+
     function buttonCheck(){
+		var hasNoAttachemet = <%=viewBean.getFileNameList().isEmpty()%>;
         var nss =document.getElementsByName("nss")[0].value;
         var typeDefichier=document.getElementsByName("typeDeFichier")[0].value;
         var caisse=document.getElementsByName("caisseDestinatrice")[0].value;
 
 
-        if(nss=="" || typeDefichier=="" || caisse==""){
+        if(hasNoAttachemet || nss=="" || typeDefichier=="" || caisse==""){
             document.getElementsByName("btnEnvoyer")[0].disabled = true;
 		}else{
             document.getElementsByName("btnEnvoyer")[0].disabled = false;
@@ -166,7 +176,7 @@
 				<div style="display: table-cell;width: 140px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 				<div style="display: table-cell;width: 300px;">
 				<ct:widget id='caisseDestinatrice' name='caisseDestinatrice' onchange="buttonCheck()">
-					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+					<ct:widgetService defaultLaunchSize="2" methodName="find" className="<%=AdministrationService.class.getName()%>">
 						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 						<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 						<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
@@ -212,16 +222,16 @@
 					<table id="periodes" name=periode" style="width: 100%">
 
 						<%for (int i = 0; i < viewBean.getFileNameList().size(); i++) {%>
-	<tr>
-		<td><%=viewBean.getFileNameList().get(i)%></td>
-		<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getFileNameList().get(i)%>"><img src="images/small_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
-	</tr>
+						<tr>
+							<td><%=viewBean.getFileNameList().get(i)%></td>
+							<td><a href="<%=request.getContextPath()%>/eform?userAction=<%=GFEnvoiServletAction.ACTION_PATH+"."+GFEnvoiServletAction.ACTION_REMOVEFILE%>&fileName=<%=viewBean.getFileNameList().get(i)%>"><img src="images/small_m_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
+						</tr>
 						<%}%>
 
 						<%for (int i = 0; i < viewBean.getErrorFileNameList().size(); i++) {%>
 						<tr>
 							<td style="color: red"><%=viewBean.getErrorFileNameList().get(i)%></td>
-							<td><a href="http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.removeFile&fileName=<%=viewBean.getErrorFileNameList().get(i)%>"><img height="'+height+'" width="12px" alt="delete" /></a></td>
+							<td><a href="<%=request.getContextPath()%>/eform?userAction=<%=GFEnvoiServletAction.ACTION_PATH+"."+GFEnvoiServletAction.ACTION_REMOVEFILE%>&fileName=<%=viewBean.getFileNameList().get(i)%>"><img src="images/small_m_error.png" height="'+height+'" width="12px" alt="delete" /></a></td>
 						</tr>
 						<%}%>
 
@@ -233,7 +243,9 @@
 				<div class="row-fluid">
 					<div style="float:right;margin-top: 20px">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="Envoyer Dossier" disabled="true" onclick="top.fr_main.location.href='http://localhost:8080/webavs/eform?userAction=eform.envoi.envoi.envoyer'">
+						<%if(hasRightAdd){%>
+						<input id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" disabled="true" onclick="envoyer()">
+						<%}%>
 					</div>
 				</div>
 			</div>
