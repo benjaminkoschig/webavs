@@ -1,6 +1,8 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFDemandeServletAction" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -11,7 +13,7 @@
 <%
 	idEcran="GFE0111";
 	GFDemandeViewBean viewBean = (GFDemandeViewBean) session.getAttribute("viewBean");
-	String btnEnvoyerLabel = "Envoyer";
+	boolean hasRightAdd = objSession.hasRight(GFDemandeServletAction.ACTION_PATH, FWSecureConstants.ADD);
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -37,6 +39,9 @@
 
 	$(function() {
 		buttonCheck();
+		<%if(!hasRightAdd){%>
+		$("[name=mainForm]").find('input,select,textarea').not(this.$inputsButton).prop('disabled', true);
+		<%}%>
 	});
 
 	function init() {
@@ -46,19 +51,20 @@
 		var nss = document.getElementById("nssAffilier").value;
 		var caisse = document.getElementById("codeCaisse").value;
 
-		top.fr_main.location.href='http://localhost:8080/webavs/eform?userAction=eform.demande.demande.envoyer&nssAffilier=' + nss + "&codeCaisse=" + caisse;
+		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse;
 	}
 
 	function buttonCheck(){
 		var nss = document.getElementById("nssAffilier").value;
 		var caisse = document.getElementById("codeCaisse").value;
 
-
+		<%if(hasRightAdd){%>
 		if(nss == "" || caisse == ""){
 			document.getElementById("btnEnvoyer").disabled = true;
 		}else{
 			document.getElementById("btnEnvoyer").disabled = false;
 		}
+		<%}%>
 	}
 	function cancel(){
 		action(ROLLBACK);
@@ -136,7 +142,9 @@
 				<div class="row-fluid">
 					<div style="float:right;">
 						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<%=btnEnvoyerLabel%>" onclick="validate()">
+						<%if(hasRightAdd){%>
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
+						<%}%>
 					</div>
 				</div>
 			</div>
