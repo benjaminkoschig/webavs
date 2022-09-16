@@ -19,6 +19,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -27,6 +28,7 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.util.LinkedList;
 
 /**
@@ -444,7 +446,11 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             }
 
             // formatter l'adresse
-            rpViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
+            String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
+            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            }
+            rpViewBean.setAdresseFormattee(adresseLine);
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
             rpViewBean.setAdresseFormattee("");
