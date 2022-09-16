@@ -3,6 +3,7 @@
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="ch.globaz.eform.properties.GFProperties" %>
 <%@ page import="ch.globaz.eform.constant.GFDocumentTypeDossier" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
 
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -125,8 +126,7 @@
 					<ct:widget id='nss' name='nss' onchange="buttonCheck()">
 						<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 							<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
-							<ct:widgetLineFormatter
-									format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
+							<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
 							<ct:widgetJSReturnFunction>
 								<script type="text/javascript">
 									function(element) {
@@ -168,12 +168,13 @@
 				<ct:widget id='caisseDestinatrice' name='caisseDestinatrice' onchange="buttonCheck()">
 					<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 						<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+						<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 						<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-						<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+						<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 						<ct:widgetJSReturnFunction>
 							<script type="text/javascript">
                                 function(element){
-                                    this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+                                    this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + " " + $(element).attr('tiers.designation2');
                                 }
 							</script>
 						</ct:widgetJSReturnFunction>

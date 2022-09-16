@@ -1,13 +1,26 @@
 package globaz.eform.vb.envoi;
 
+import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.business.models.GFDaDossierModel;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
+import ch.globaz.pyxis.business.service.PersonneEtendueService;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.commons.nss.NSUtil;
+import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeComplexModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +30,7 @@ import java.util.List;
 public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private static final Logger LOG = LoggerFactory.getLogger(GFEnvoiViewBean.class);
 
-    private String id;
-    private String nss = "";
+    private GFDaDossierModel daDossier = new GFDaDossierModel();
     private String filename;
     private String nomGestionnaire;
     private String nomDepartement;
@@ -27,7 +39,6 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     private String nomAssure;
     private String prenomAssure;
     private String dateNaissance;
-    private String caisseDestinatrice;
     private String typeDeFichier;
     private String adresse;
 
@@ -42,19 +53,53 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public String getId() {
-        return id;
+        return daDossier.getId();
     }
     @Override
     public void setId(String newId) {
-        id = newId;
+        daDossier.setId(newId);
+    }
+
+    public GFDaDossierModel getDaDossier() {
+        return daDossier;
+    }
+
+    public void setDaDossier(GFDaDossierModel daDossier) {
+        this.daDossier = daDossier;
     }
 
     public String getNss() {
-        return nss;
+        setAffilier();
+        return NSSUtils.formatNss(daDossier.getNssAffilier());
     }
 
     public void setNss(String nss) {
-        this.nss = nss;
+        daDossier.setNssAffilier(NSSUtils.unFormatNss(nss));
+        nomAssure = null;
+        prenomAssure = null;
+        dateNaissance = null;
+        setAffilier();
+    }
+
+    private void setAffilier() {
+        if (!StringUtils.isBlank(daDossier.getNssAffilier()) && StringUtils.isBlank(nomAssure)) {
+            PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
+            ts.setForNumeroAvsActuel(NSSUtils.formatNss(daDossier.getNssAffilier()));
+            try {
+                ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
+
+                if (ts.getSize() == 1) {
+                    PersonneEtendueComplexModel model = (PersonneEtendueComplexModel) ts.getSearchResults()[0];
+
+                    nomAssure = model.getTiers().getDesignation1();
+                    prenomAssure = model.getTiers().getDesignation2();
+                    dateNaissance = model.getPersonne().getDateNaissance();
+                }
+
+            } catch (JadePersistenceException | JadeApplicationException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public String getFilename() {
@@ -123,11 +168,30 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     }
 
     public String getCaisseDestinatrice() {
-        return caisseDestinatrice;
+        try {
+            if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
+                AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+                search.setForCodeAdministration(daDossier.getCodeCaisse());
+                search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+
+                search = TIBusinessServiceLocator.getAdministrationService().find(search);
+
+                if (search.getSearchResults().length == 1) {
+                    AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
+                    return complexModel.getAdmin().getCodeAdministration() + " - " +
+                            complexModel.getTiers().getDesignation1() + " " +
+                            complexModel.getTiers().getDesignation2();
+                }
+            }
+
+            return "";
+        } catch (JadePersistenceException | JadeApplicationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setCaisseDestinatrice(String caisseDestinatrice) {
-        this.caisseDestinatrice = caisseDestinatrice;
+        //this.caisseDestinatrice = caisseDestinatrice;
     }
 
     public String getTypeDeFichier() {

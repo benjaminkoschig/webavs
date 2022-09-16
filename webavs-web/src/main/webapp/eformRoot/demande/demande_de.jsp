@@ -1,6 +1,7 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -104,11 +105,11 @@
 				</div>
 				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="LASTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>" readonly="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="FIRSTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName"  readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>" readonly="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="BIRTHDAY"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>" readonly="true"/></div>
 				</div>
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
@@ -116,6 +117,7 @@
 						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 							<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+								<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
 								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 								<ct:widgetJSReturnFunction>

@@ -45,16 +45,20 @@ public class GFSuiviViewBean extends BJadePersistentObjectViewBean {
         return daDossier;
     }
 
+    public String getMessageId() {
+        return daDossier.getMessageId();
+    }
+
+    public void setMessageId(String messageId) {
+        daDossier.setMessageId(messageId);
+    }
+
     public String getLikeNss() {
-        return StringUtils.isBlank(daDossier.getNssAffilier()) ? daDossier.getNssAffilier() : NSSUtils.formatNss(daDossier.getNssAffilier());
+        return NSSUtils.formatNss(daDossier.getNssAffilier());
     }
 
     public void setLikeNss(String likeNss) {
-        if (StringUtils.isBlank(likeNss) || !NSSUtils.checkNSS(likeNss)) {
-            daDossier.setNssAffilier(likeNss);
-        } else {
-            daDossier.setNssAffilier(NSSUtils.unFormatNss(likeNss));
-        }
+        daDossier.setNssAffilier(NSSUtils.unFormatNss(likeNss));
     }
 
     public String getByCaisse() {

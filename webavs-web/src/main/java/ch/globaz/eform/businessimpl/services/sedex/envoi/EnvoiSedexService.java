@@ -77,11 +77,7 @@ public class EnvoiSedexService {
         Message message = new Message();
         try {
             Sedex000102 sedex0001021 = new Sedex000102();
-            //todo sprint 18 lier l'id avec une demande
-            String id = "5";
-            GFDaDossierModel model = getModel(id);
-            message = sedex0001021.createMessage(createHeader(model), createContent());
-            updateGFFormulaireStatus(model);
+            message = sedex0001021.createMessage(createHeader(viewBean.getDaDossier()), createContent());
             this.message = message;
 
         } catch (Exception e) {
@@ -94,8 +90,8 @@ public class EnvoiSedexService {
         try {
             HeaderType header = new HeaderType();
             //TODO sprint 18 mapper les 2 données commentées
-//        header.setSenderId();
-//        header.setRecipientId(getSedexId(model.getCodeCaisse()));
+//          header.setSenderId();
+//          header.setRecipientId(getSedexId(model.getCodeCaisse()));
             header.setMessageId(JadeUUIDGenerator.createLongUID().toString());
             header.setReferenceMessageId(Objects.isNull(model) ? "" : model.getMessageId());
             header.setBusinessProcessId(generateBusinessProcessId());
@@ -120,54 +116,8 @@ public class EnvoiSedexService {
         }
     }
 
-    private void reformatViewBean() {
-        viewBean.setNss(viewBean.getNss().replaceAll("\\.", ""));
-        viewBean.setCaisseDestinatrice(viewBean.getCaisseDestinatrice().replaceAll("\\D", ""));
-    }
-
-    private GFDaDossierModel getModel(String id) {
-        try {
-            GFDaDossierSearch search = new GFDaDossierSearch();
-            search.setById(id);
-            GFEFormServiceLocator.getGFDaDossierDBService().search(search);
-            GFDaDossierModel model = Arrays.stream(search.getSearchResults())
-                    .map(o -> (GFDaDossierModel) o)
-                    .findFirst()
-                    .orElse(null);
-            return model;
-        } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private String generateBusinessProcessId() {
         return RandomStringUtils.randomAlphabetic(10);
-    }
-
-    private void updateGFFormulaireStatus(GFDaDossierModel model) {
-
-        try {
-            if (Objects.isNull(model)) {
-                reformatViewBean();
-                GFDaDossierModel gfDaDossierModel = new GFDaDossierModel();
-                gfDaDossierModel.setMessageId(JadeUUIDGenerator.createLongUID().toString());
-                gfDaDossierModel.setNssAffilier(viewBean.getNss());
-                gfDaDossierModel.setCodeCaisse(viewBean.getCaisseDestinatrice());
-                gfDaDossierModel.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
-                gfDaDossierModel.setStatus(GFStatusDADossier.SEND.getCodeSystem());
-                gfDaDossierModel.setUserGestionnaire(viewBean.getSession().getUserInfo().getVisa());
-                gfDaDossierModel.setOurBusinessRefId(UUID.randomUUID().toString());
-                GFEFormServiceLocator.getGFDaDossierDBService().create(gfDaDossierModel);
-            } else {
-                model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
-                model.setStatus(GFStatusDADossier.SEND.getCodeSystem());
-                GFEFormServiceLocator.getGFDaDossierDBService().update(model);
-            }
-        } catch (JadeApplicationServiceNotAvailableException e) {
-            throw new RuntimeException(e);
-        } catch (JadePersistenceException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private List<AttachmentType> getAttachmentTypeList() throws DatatypeConfigurationException {

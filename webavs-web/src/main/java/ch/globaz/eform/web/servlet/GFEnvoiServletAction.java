@@ -14,6 +14,7 @@ import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public final static String ACTION_UPLOAD = "upload";
     public final static String ACTION_REMOVEFILE = "removeFile";
     public final static String ACTION_ENVOYER = "envoyer";
+    public final static String ACTION_AFFICHER = "afficher";
 
     @Override
     protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -42,7 +44,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
         beforeAfficher(session, request, response, (FWViewBeanInterface) session.getAttribute("viewBean"));
         super.actionReAfficher(session, request, response, mainDispatcher);
     }
-
 
     @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
@@ -55,9 +56,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                                 FWDispatcher dispatcher) throws ServletException, IOException {
         String actionPart = getAction().getActionPart();
         String destination;
-
-        // Définition de l'action custom standard pour l'application ARIES
-        // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"
 
         try {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
@@ -73,7 +71,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
                 GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
-                String fileName = (String) request.getParameter("fileName");
+                String fileName = request.getParameter("fileName");
                 GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
             }
 

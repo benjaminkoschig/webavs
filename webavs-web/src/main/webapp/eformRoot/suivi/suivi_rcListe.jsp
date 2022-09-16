@@ -26,6 +26,7 @@
 <%-- /tpl:insert --%>
 
 <tr>
+    <TH></TH>
     <TH><ct:FWLabel key="JSP_DA_DETAIL_ASSURE"/></TH>
     <TH><ct:FWLabel key="JSP_DA_DETAIL_CAISSE"/></TH>
     <TH><ct:FWLabel key="JSP_DA_TYPE_TRAITEMENT"/></TH>
@@ -46,6 +47,13 @@
 
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:insert attribute="zoneList" --%>
+<TD class="mtd" nowrap width="20px">
+    <% if(GFTypeDADossier.SOLICITATION.getCodeSystem().equals(line.getDaDossier().getType())){ %>
+        <ct:menuPopup menu="dadossier-optionssuivi" target="top.fr_main">
+            <ct:menuParam key="selectedId" value="<%=line.getDaDossier().getId()%>" />
+        </ct:menuPopup>
+    <% } %>
+</TD>
 <TD class="mtd" nowrap>
     <div style="font-weight: bold;font-size: 12px"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
     <div style="font-size: 10px"><%=GFUtils.formatTiers(tiers)%></div>
