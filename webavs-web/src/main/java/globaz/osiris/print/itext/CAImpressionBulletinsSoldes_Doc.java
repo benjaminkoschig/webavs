@@ -526,10 +526,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                             lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
                         }
                     }
-                    if (JadeStringUtil.isEmpty(getIdSection())) {
                         setIdSection(sectionCourante.getSection().getIdSection());
                         loadSection();
-                    }
                 }
 
                 super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, new Integer(data.size()));
