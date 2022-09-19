@@ -21,6 +21,7 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -422,6 +423,13 @@ public class RECreancierHelper extends PRAbstractHelper {
                             + adresse.getDesignation2_tiers());
                 }
             }
+
+            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+                String adresseLine = rpViewBean.getCcpOuBanqueFormatte();
+                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+                rpViewBean.setCcpOuBanqueFormatte(adresseLine);
+            }
+
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
 

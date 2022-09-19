@@ -22,6 +22,7 @@ import globaz.ij.vb.process.IJGenererDecisionViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -467,7 +468,6 @@ public class IJGenererDecisionHelper extends FWHelper {
 
     /**
      * Ajoute une copie au fisc si impot à la source
-     * @param viewBean
      * @param session
      * @param vb
      * @param factory
@@ -614,6 +614,11 @@ public class IJGenererDecisionHelper extends FWHelper {
             } else {
                 result = new TIAdressePaiementCppFormater().format(sourcePmtAssure);
             }
+
+            if (CASepaCommonUtils.isQRIban(adressePmt.getCompte())) {
+                result += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            }
+
         }
 
         return result.replaceAll("\n", "<br/>");

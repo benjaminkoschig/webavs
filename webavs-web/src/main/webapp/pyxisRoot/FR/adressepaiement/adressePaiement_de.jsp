@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
@@ -140,7 +141,7 @@ function init(){
 <tr>
 	<td>Adresse<br><br><b><%=viewBean.getAdresseDomaineTypeDesc() %></b></td>
 	<td>
-		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
+		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>
 			<%
 			Object[] adresseMethodsName = new Object[]{
 			new String[]{"setIdAdresse","getIdAdresseUnique"},new String[]{"setIdTiersAdresse","getIdTiers"}
@@ -168,8 +169,8 @@ function init(){
 		<td>Référence QR</td>
 		<td>
 
-            <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
-		    <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOldIdAdressePaiement()%>">
+            <input type="hidden"  name="forIdTiers" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdTiers()) ? viewBean.getIdTiers() : viewBean.getIdTiersAdresse()%>">
+		    <input type="hidden"  name="forIdAdressePaiement" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdAdressePaiement()) ? viewBean.getIdAdressePaiement() : viewBean.getOldIdAdressePaiement()%>">
 		    <input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaireFormateIban()%>">
 
 			<%

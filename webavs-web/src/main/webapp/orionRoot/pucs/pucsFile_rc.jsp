@@ -240,6 +240,7 @@ function postInit() {
 		    <option value = "NUMERO_AFFILIE" <%=Objects.equals(orderBy,"NUMERO_AFFILIE")? "selected" : ""%> ><ct:FWLabel key="PUCS_ORDERBY_NUMERO_AFFILIE"/></option>
 		    <option value = "DATE_RECEPTION" <%=Objects.equals(orderBy,"DATE_RECEPTION")? "selected" : ""%> ><ct:FWLabel key="PUCS_ORDERBY_DATE_RECEPTION"/></option>
 			<option value = "HANDLING_USER" <%=Objects.equals(orderBy, "HANDLING_USER")? "selected" : ""%> ><ct:FWLabel key="PUCS_ORDERBY_USER"/></option>
+			<option value = "TOTAL_CONTROLE" <%=Objects.equals(orderBy, "TOTAL_CONTROLE")? "selected" : ""%> ><ct:FWLabel key="PUCS_ORDERBY_TOTAL_CONTROLE"/></option>
 		</select>
 	</td>
 </tr>
