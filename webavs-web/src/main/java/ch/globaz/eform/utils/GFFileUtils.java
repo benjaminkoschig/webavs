@@ -166,7 +166,7 @@ public class GFFileUtils {
     }
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
-        List<String> fileNames = viewBean.getFileNameList();
+        List<String> fileNames = new ArrayList<>(viewBean.getFileNameList());
         for (String fileName : fileNames) {
             String extension = FilenameUtils.getExtension(fileName);
             if (!extension.equals(FILE_TYPE_PDF) && !extension.equals(FILE_TYPE_TIFF)) {

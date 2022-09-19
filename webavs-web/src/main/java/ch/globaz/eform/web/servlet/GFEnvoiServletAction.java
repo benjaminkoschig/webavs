@@ -4,7 +4,6 @@ import ch.globaz.common.util.NSSUtils;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.utils.GFFileUtils;
-import globaz.eform.vb.demande.GFDemandeViewBean;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -13,8 +12,8 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +70,13 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
                 GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
-                String fileName = request.getParameter("fileName");
-                GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+                String fileName = (String) request.getParameter("fileName");
+                String errorFileName = (String) request.getParameter("errorFileName");
+                if(!JadeStringUtil.isEmpty(fileName)) {
+                    GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+                } else if(!JadeStringUtil.isEmpty(errorFileName)) {
+                    ((GFEnvoiViewBean) viewBean).getErrorFileNameList().remove(errorFileName);
+                }
             }
 
             // Traitement
@@ -87,7 +91,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                 if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
                 } else if(actionPart.equals(ACTION_ENVOYER)) {
-                    destination = "/eform?userAction=eform.suivi.suivi.chercher" +
+                    destination = "/eform?userAction="+GFSuiviServletAction.PATH_EFORM+"."+GFSuiviServletAction.ACTION_CHERCHER+
                     "&likeNss=" + NSSUtils.unFormatNss(((GFEnvoiViewBean) viewBean).getNss()) +
                             "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCaisseDestinatrice() +
                             "&byType=" + GFTypeDADossier.SEND_TYPE.getCodeSystem() +

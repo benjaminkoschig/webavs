@@ -74,15 +74,8 @@ public class EnvoiSedexService {
     }
 
     public Message createSedexMessage() {
-        Message message = new Message();
-        try {
-            Sedex000102 sedex0001021 = new Sedex000102();
-            message = sedex0001021.createMessage(createHeader(viewBean.getDaDossier()), createContent());
-            this.message = message;
-
-        } catch (Exception e) {
-            sendMail();
-        }
+        Sedex000102 sedex0001021 = new Sedex000102();
+        message = sedex0001021.createMessage(createHeader(viewBean.getDaDossier()), createContent());
         return message;
     }
 

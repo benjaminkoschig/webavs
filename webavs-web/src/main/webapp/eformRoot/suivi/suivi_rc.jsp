@@ -3,7 +3,8 @@
 <%@ page import="globaz.eform.helpers.dadossier.GFDADossierHelper" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="globaz.eform.vb.suivi.GFSuiviViewBean" %>
-<%@ page import="globaz.eform.translation.CodeSystem" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFSuiviServletAction" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -15,6 +16,7 @@
 	idEcran="GFE0121";
 	GFSuiviViewBean viewBean = (GFSuiviViewBean) session.getAttribute("viewBean");
 	bButtonNew = false;
+	bButtonFind = objSession.hasRight(GFSuiviServletAction.PATH_EFORM, FWSecureConstants.READ);
 %>
 
 <%-- tpl:insert attribute="zoneInit" --%>
@@ -32,7 +34,7 @@
 <script >
 	var bFind = true;
 	var detailLink = "<%=actionNew%>";
-	var usrAction = "eform.suivi.suivi.lister";
+	var usrAction = "<%=GFSuiviServletAction.PATH_EFORM%>.lister";
 </script>
 <%-- /tpl:insert --%>
 
