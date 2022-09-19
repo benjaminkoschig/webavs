@@ -2089,7 +2089,7 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
         entFactureManager.setForIdTiers(decision.getIdTiers());
         entFactureManager.setForIdPassage(decision.getIdPassage());
         entFactureManager.setLikeIdExterneFacture(decision.getAnneeDecision());
-        entFactureManager.setForIdExterneRole(getAffiliation().getAffilieNumero());
+        entFactureManager.setForIdExterneRole(decision.getNumeroAffilie());
         entFactureManager.setForIdRole(CaisseHelperFactory.getInstance().getRoleForAffiliePersonnel(getSession().getApplication()));
         entFactureManager.find(1);
         FAEnteteFacture entete = null;
