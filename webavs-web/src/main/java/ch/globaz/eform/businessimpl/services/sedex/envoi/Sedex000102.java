@@ -2,15 +2,12 @@ package ch.globaz.eform.businessimpl.services.sedex.envoi;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.exceptions.ValidationException;
-import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
+import ch.globaz.eform.businessimpl.services.sedex.constant.GFManufacturerSedex;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
-import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ObjectFactory;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.HeaderType;
-import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
-import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
-import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.ContactInformationType;
+import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
+import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ObjectFactory;
 import eform.ch.ech.xmlns.ech_0058._4.SendingApplicationType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +16,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 
 public class Sedex000102 implements SedexMessageSender<ContentType> {
@@ -72,9 +67,9 @@ public class Sedex000102 implements SedexMessageSender<ContentType> {
 
     public SendingApplicationType getSendingApplicationType() {
         SendingApplicationType sendingApplicationType = new SendingApplicationType();
-        sendingApplicationType.setManufacturer(SedexType2021Enum.TYPE_102.getManufacturer());
-        sendingApplicationType.setProduct(SedexType2021Enum.TYPE_102.getProduct());
-        sendingApplicationType.setProductVersion(SedexType2021Enum.TYPE_102.getProductVersion());
+        sendingApplicationType.setManufacturer(GFManufacturerSedex.WEBAVS.getManufacturer());
+        sendingApplicationType.setProduct(GFManufacturerSedex.WEBAVS.getProduct());
+        sendingApplicationType.setProductVersion(GFManufacturerSedex.WEBAVS.getProductVersion());
         return sendingApplicationType;
     }
 

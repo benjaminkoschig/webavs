@@ -20,6 +20,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class GFSuiviServletAction extends FWDefaultServletAction {
+
+    public final static String PATH_EFORM = "eform.suivi.suivi";
+    public final static String ACTION_CHERCHER = "chercher";
+
     public GFSuiviServletAction(FWServlet aServlet) {
         super(aServlet);
     }
@@ -28,11 +32,10 @@ public class GFSuiviServletAction extends FWDefaultServletAction {
     protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException {
         FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), mainDispatcher.getPrefix());
         try {
-
             JSPUtils.setBeanProperties(request, viewBean);
 
             mainDispatcher.dispatch(viewBean, getAction());
-
+            session.setAttribute("viewBean", viewBean);
         } catch (Exception e) {
             JadeLogger.error("Failed to prepare viewBean for actionChercher", e);
         }
