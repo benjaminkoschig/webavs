@@ -132,52 +132,56 @@ function init(){}
 						<%-- tpl:put name="zoneMain"  --%> 
 
           
-          <TR> 
-            <TD nowrap width="100">Genre</TD>
-            <TD nowrap> 
-             <ct:FWCodeSelectTag name="genreAdministration"
-            		defaut="<%=viewBean.getGenreAdministration()%>"
-            		codeType="PYGENREADM"/>
-            </TD>
-            <TD width="50" nowrap></TD>
-            <TD nowrap width="100">Pays</TD>
-            <TD nowrap width="125"> 
-               <ct:FWListSelectTag name="idPays" 
-            		defaut="<%=viewBean.getIdPays()%>"
-            		data="<%=globaz.pyxis.db.adressecourrier.TIPays.getPaysList(session)%>"/>
+          <TR>
+              <TD nowrap width="100">Genre</TD>
+              <TD nowrap>
+                  <ct:FWCodeSelectTag name="genreAdministration"
+                                      defaut="<%=viewBean.getGenreAdministration()%>"
+                                      codeType="PYGENREADM"/>
+              </TD>
+              <TD width="50" nowrap></TD>
+              <TD nowrap width="100">Pays</TD>
+              <TD nowrap width="125">
+                  <ct:FWListSelectTag name="idPays"
+            		                  defaut="<%=viewBean.getIdPays()%>"
+            		                  data="<%=globaz.pyxis.db.adressecourrier.TIPays.getPaysList(session)%>"/>
             		
-			<!-- champs caché pour la creation de l'historique -->
-			<input type ="hidden" name="motifModifPays" value="">
-			<input type ="hidden" name="dateModifPays" value="">
-			<input type ="hidden" name="oldPays" value="<%=viewBean.getOldPays()%>">
-
-            </TD>
+			      <!-- champs caché pour la creation de l'historique -->
+			      <input type ="hidden" name="motifModifPays" value="">
+			      <input type ="hidden" name="dateModifPays" value="">
+			      <input type ="hidden" name="oldPays" value="<%=viewBean.getOldPays()%>">
+              </TD>
           </TR>
-	   	   <TR> 
-            <TD nowrap width="125">&nbsp;</TD>
+	   	  <TR>
+              <TD nowrap width="125">&nbsp;</TD>
           </TR>
-		<TR> 
-            <TD nowrap width="100">Code</TD>
-            <TD nowrap><INPUT type="text" name="codeAdministration"  style="text-transform : capitalize;" class="numero" value="<%=viewBean.getCodeAdministration()%>"> *</TD>
-            <TD width="50"></TD>
-            <TD nowrap width="100">Canton</TD>
-            <TD nowrap width="125">
-		       <ct:FWCodeSelectTag name="canton"
-            		defaut="<%=viewBean.getCanton()%>"
-            		codeType="PYCANTON"
-            		wantBlank="true"
-            		/>
-   	   </TD>
+		  <TR>
+              <TD nowrap width="100">Code</TD>
+              <TD nowrap>
+                  <INPUT type="text" name="codeAdministration"  style="text-transform : capitalize;" class="numero" value="<%=viewBean.getCodeAdministration()%>"> *
+              </TD>
+              <TD width="50"></TD>
+              <TD nowrap width="100">Canton</TD>
+              <TD nowrap width="125">
+                  <ct:FWCodeSelectTag name="canton"
+                                      defaut="<%=viewBean.getCanton()%>"
+                                      codeType="PYCANTON"
+                                      wantBlank="true"/>
+              </TD>
           </TR>
           
           <tr>
-          	<td>Code institution</td>
-            <TD nowrap><INPUT type="text" name="codeInstitution"   value="<%=viewBean.getCodeInstitution()%>"></TD>
+              <td>Code institution</td>
+              <TD nowrap>
+                  <INPUT type="text" name="codeInstitution"   value="<%=viewBean.getCodeInstitution()%>">
+              </TD>
           </tr>
-          
-          
-          
-
+          <tr>
+              <td>Identifiant Sedex</td>
+              <TD nowrap>
+                  <INPUT type="text" name="sedexId"   value="<%=viewBean.getSedexId()%>">
+              </TD>
+          </tr>
           <TR> 
             <TD nowrap width="125">&nbsp;</TD>
           </TR>
