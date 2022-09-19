@@ -77,19 +77,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * <H1>Description</H1>
@@ -1325,27 +1314,39 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
 
     public boolean isQrIban(){
-        TIAdressePaiement adressePaiement = loadAdressePaiement();
-        if(adressePaiement != null){
-            return adressePaiement.isQRIban();
+        try {
+            TIAdressePaiement adressePaiement = loadAdressePaiement();
+            if (adressePaiement != null) {
+                return adressePaiement.isQRIban();
+            }
+        }catch(Exception e){
+            JadeLogger.error(e, "Erreur lors de la récupération de l'adresse de paiement");
         }
         return false;
     }
 
-    public String getNumeroCompte(){
-        TIAdressePaiement adressePaiement = loadAdressePaiement();
-        if(adressePaiement != null){
-            return adressePaiement.getNumCompteBancaire();
+    public String getNumeroCompte() {
+        try {
+            TIAdressePaiement adressePaiement = loadAdressePaiement();
+            if (adressePaiement != null) {
+                return adressePaiement.getNumCompteBancaire();
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, "Erreur lors de la récupération de l'adresse de paiement");
         }
         return StringUtils.EMPTY;
     }
 
-    private TIAdressePaiement loadAdressePaiement(){
-        if(!StringUtils.isEmpty(getIdTiersPaiementEmployeur())) {
+    private TIAdressePaiement loadAdressePaiement() throws Exception {
+        TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
+                getSession()
+                        .getCurrentThreadTransaction(), getIdTiersPaiementEmployeur(), getIdDomainePaiementEmployeur(),
+                getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
+        if(Objects.nonNull(detailTiers)) {
             try {
                 TIAdressePaiementManager mgr = new TIAdressePaiementManager();
                 mgr.setSession(getSession());
-                mgr.setForIdAdressePaiement(getIdTiersPaiementEmployeur());
+                mgr.setForIdAdressePaiement(detailTiers.getIdAdressePaiement());
                 mgr.find(BManager.SIZE_NOLIMIT);
                 if (mgr.size() > 0) {
                     return (TIAdressePaiement) mgr.get(0);

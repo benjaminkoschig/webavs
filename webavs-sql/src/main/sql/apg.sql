@@ -11,6 +11,6 @@ reorg table SCHEMA.APSIPRP;
 -- call sysproc.admin_cmd('REORG TABLE APSIPRP');
 
 -- Ajout id Reference QR dans table Repartition de paiement
-ALTER TABLE SCHEMA.APREPAP ADD VIIRQR varchat(27);
+ALTER TABLE SCHEMA.APREPAP ADD VIIRQR varchar(27);
 reorg table SCHEMA.APREPAP;
 -- call sysproc.admin_cmd('REORG TABLE APREPAP');
