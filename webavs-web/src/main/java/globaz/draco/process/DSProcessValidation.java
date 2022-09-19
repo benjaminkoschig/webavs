@@ -153,7 +153,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 pucsBatchController.setSession(getSession());
                 if (pucsBatchController.isValidationsBatchActive()) {
                     if (pucsBatchController.contientPasToutesLesAssurancesRequises(decl)) {
-                        this._addError(getTransaction(), getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES"));
+                        this._addError(getTransaction(), getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES")+ " " + decl.getNumeroAffilie());
                         abort();
                         return false;
                     }
@@ -777,7 +777,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
     /**
      * Permet de signaler à eBusiness que la validation de la déclaration a été réalisé.
      *
-     * @param decl
+     * @param provenance
+     * @param idPucsFile
      * @throws Exception
      */
     private void notificationEBusiness(DeclarationSalaireProvenance provenance, String idPucsFile) throws Exception {

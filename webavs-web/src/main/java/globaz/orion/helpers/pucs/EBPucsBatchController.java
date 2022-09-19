@@ -47,17 +47,15 @@ public class EBPucsBatchController {
      * Contrôle qu'il n'y a pas plus de un fichiers pucs pour l’année en cours avec le même total de contrôle.
      * utilisé lors du processus de mise à jour des PUCS.
      */
-    public boolean contientDeclarationAvecAnneDeclarationEtTotalIdentique(PucsFile pucsFile, List<PucsFileMerge> pucsFileMerges) {
-        boolean alreadyFoundOne = false;
-        for (PucsFileMerge pucsFileMerge : pucsFileMerges) {
-            for (PucsFile nextPucsFile : pucsFileMerge.getPucsFileToMergded()) {
-                if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle()) && pucsFile.getTypeDeclaration() == nextPucsFile.getTypeDeclaration()) {
-                    if(alreadyFoundOne) {
-                        return true;
-                    }
-                    alreadyFoundOne = true;
-                }
+    public boolean contientDeclarationAvecAnneDeclarationEtTotalIdentique(PucsFile pucsFile, List<PucsFile> mergedPucsFiles) {
+        int compteurDoublon = 0;
+        for (PucsFile nextPucsFile : mergedPucsFiles) {
+            if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle()) && pucsFile.getTypeDeclaration() == nextPucsFile.getTypeDeclaration()) {
+                compteurDoublon ++;
             }
+        }
+        if (compteurDoublon > 1) {
+            return true;
         }
 
         return false;
