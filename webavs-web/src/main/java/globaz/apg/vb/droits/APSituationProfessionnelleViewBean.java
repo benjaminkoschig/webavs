@@ -9,6 +9,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.common.sql.converters.LocalDateConverter;
 import ch.globaz.queryexec.bridge.jade.SCM;
+import ch.globaz.vulpecula.external.models.pyxis.AvoirAdressePaiement;
 import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
@@ -36,6 +37,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.api.IAFAssurance;
@@ -191,6 +193,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     @Setter
     private PRTypeDemande typeDemande;
 
+
+    private TIAdressePaiement adressePaiement = null;
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -303,7 +307,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             }
 
             if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(dataSource.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
             }
 
         }
@@ -578,7 +582,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         }
 
         if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-            adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur()); // TODO ESVE REFERENCE QR getIdReferencePaiement()
         }
 
         return adresseLine;
@@ -1348,25 +1352,47 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
 
     private TIAdressePaiement loadAdressePaiement() throws Exception {
-        TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
-                getSession()
-                        .getCurrentThreadTransaction(), getIdTiersPaiementEmployeur(), getIdDomainePaiementEmployeur(),
-                getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
-        if(Objects.nonNull(detailTiers)) {
-            try {
-                TIAdressePaiementManager mgr = new TIAdressePaiementManager();
-                mgr.setSession(getSession());
-                mgr.setForIdAdressePaiement(detailTiers.getIdAdressePaiement());
-                mgr.find(BManager.SIZE_NOLIMIT);
-                if (mgr.size() > 0) {
-                    return (TIAdressePaiement) mgr.get(0);
-                }
 
-            } catch (Exception e) {
-                JadeLogger.error(e, "La reference QR de la situation professionnelle n'a pas pu être rechercher !");
+        String idAdresse = getIdAdressePaiement();
+        if((Objects.isNull(adressePaiement) ||
+                !adressePaiement.getIdTiersAdresse().equals(getIdTiersEmployeur())) &&
+                    StringUtils.isNotEmpty(idAdresse)) {
+            TIAdressePaiementManager mgr = new TIAdressePaiementManager();
+            mgr.setSession(getSession());
+            mgr.setForIdAdressePaiement(idAdresse);
+            mgr.find(BManager.SIZE_NOLIMIT);
+            if (mgr.size() > 0) {
+                adressePaiement = (TIAdressePaiement) mgr.get(0);
             }
         }
-        return null;
+
+        return adressePaiement;
+    }
+
+    public String getIdAdressePaiement() {
+        try {
+            TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                    getSession().getCurrentThreadTransaction(),
+                    getIdTiersPaiementEmployeur(),
+                    APGUtils.getCSDomaineFromTypeDemande(getTypePrestation().toCodeSysteme()),
+                    null, JACalendar.todayJJsMMsAAAA());
+            if(Objects.nonNull(paiementData)){
+                return paiementData.getIdAdressePaiement();
+            }else {
+                paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersPaiementEmployeur(),
+                        AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                        null, JACalendar.todayJJsMMsAAAA());
+                if(Objects.nonNull(paiementData)){
+                    return paiementData.getIdAdressePaiement();
+                }
+            }
+        }catch(Exception e){
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return StringUtils.EMPTY;
+
     }
 
     /**

@@ -320,6 +320,7 @@ public class APRepartitionPaiementsAction extends PRDefaultAction {
         newViewBean.setGenreService(oldViewBean.getGenreService());
         newViewBean.setIdParent(oldViewBean.getIdRepartitionBeneficiairePaiement());
         newViewBean.setIdPrestationApg(oldViewBean.getIdPrestationApg());
+        newViewBean.setIdReferenceQR(oldViewBean.getIdReferenceQR());
         newViewBean.setMontantNet(oldViewBean.getMontantNet());
         newViewBean.setSession((BSession) mainDispatcher.getSession());
         this.saveViewBean(newViewBean, session);
@@ -708,6 +709,7 @@ public class APRepartitionPaiementsAction extends PRDefaultAction {
         newViewBean.setIdDroit(oldViewBean.getIdDroit());
         newViewBean.setGenreService(oldViewBean.getGenreService());
         newViewBean.setIdPrestationApg(oldViewBean.getIdPrestationApg());
+        newViewBean.setIdReferenceQR(oldViewBean.getIdReferenceQR());
         newViewBean.setIdsPrestations(oldViewBean.getIdsPrestations());
         newViewBean.setIdOfIdPrestationCourante(oldViewBean.getIdOfIdPrestationCourante());
 

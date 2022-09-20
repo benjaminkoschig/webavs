@@ -695,7 +695,6 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
                             <%}%>
 						</TR>
 						<TR>
-							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
 							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 
@@ -745,26 +744,26 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR>
-							<TD class="withoutReferencePaiement" colspan="2">&nbsp;</TD>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
-							<TD class="withReferencePaiement">
-								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
-								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdTiersPaiementEmployeur()%>">
+							<TD class="withReferencePaiement" colspan="5">
+								<input type="hidden"  name="forIdTiersEmployeur" value="<%=viewBean.getIdTiersEmployeur()%>">
+								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
 								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumeroCompte()%>">
 								<%
 									Object[] referencePaiementMethodsName = new Object[]{
-											new String[]{"forIdAdressePaiement","getIdTiersPaiementEmployeur"},new String[]{"forIdTiers","getIdTiersEmployeur"},new String[]{"forCompteLike","getNumeroCompte"}
+											new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}
 									};
-									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiersEmployeur","forIdTiersEmployeur"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 								%>
 								<ct:FWSelectorTag
 										name="referencePaiementSelector1"
-
 										methods="<%=referencePaiementMethodsName%>"
 										providerApplication ="pyxis"
 										providerPrefix="TI"
 										providerAction ="pyxis.tiers.referencePaiement.chercher"
 										providerActionParams ="<%=referencePaiementParams%>"
+										target="fr_main"
+										redirectUrl="<%=mainServletPath%>"
 								/>
 							</TD>
 						</TR>

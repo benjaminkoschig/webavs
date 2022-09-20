@@ -945,15 +945,15 @@ public class PRTiersHelper {
 
     public static TIReferencePaiement getReferenceQRData(BSession session,
                                                          String idReferenceQR) throws Exception {
-        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
-        mgr.setSession(session);
+
         if (JadeStringUtil.isBlankOrZero(idReferenceQR)) {
             return null;
         }
 
         if (!JadeStringUtil.isEmpty(idReferenceQR)) {
+            TIReferencePaiementManager mgr = new TIReferencePaiementManager();
             mgr.setSession(session);
-            mgr.setForReferenceQR(idReferenceQR);
+            mgr.setForIdReference(idReferenceQR);
 
             mgr.find(BManager.SIZE_NOLIMIT);
 

@@ -44,6 +44,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+import static globaz.apg.helpers.prestation.APRepartitionPaiementsHelper.getIdReferenceQRFomSituationProfessionnelle;
+
 /**
  * Descpription.
  * 
@@ -1666,6 +1668,7 @@ public class APModuleRepartitionPaiements {
 
                 repartitionBenefPaiement.setDateValeur(JACalendar.todayJJsMMsAAAA());
                 repartitionBenefPaiement.setIdPrestationApg(idPrestation);
+                repartitionBenefPaiement.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, benefPotentiel.getIdSituationProfessionnelle()));
                 // InfoRom531
                 try {
 
@@ -2058,6 +2061,7 @@ public class APModuleRepartitionPaiements {
             repartitionACM.setTauxRJM(element.getTauxRJM());
             repartitionACM.setTypePaiement(element.getTypePaiement());
             repartitionACM.setTypePrestation(element.getTypePrestation());
+            repartitionACM.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, element.getIdSituationProfessionnelle()));
 
             // Le montant des repartitions pour chacun des employeurs est dans
             // la map montants
@@ -2241,6 +2245,7 @@ public class APModuleRepartitionPaiements {
             repartitionLAMat.setTauxRJM(element.getTauxRJM());
             repartitionLAMat.setTypePaiement(element.getTypePaiement());
             repartitionLAMat.setTypePrestation(element.getTypePrestation());
+            repartitionLAMat.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, element.getIdSituationProfessionnelle()));
 
             // Preparation du montant (maximal) de la repartition
             // Dernier enregistrement, pour éviter les erreurs d'arrondi, on
@@ -2535,6 +2540,7 @@ public class APModuleRepartitionPaiements {
                 repartBenefPmt.add(transaction);
                 montantCotisationDesRestitutions(session, transaction,
                         repartBenefPmt.getIdRepartitionBeneficiairePaiement(), repartARestituer);
+                repartBenefPmt.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, repartARestituer.getIdSituationProfessionnelle()));
                 // idParentRepartRestitution =
                 // repartBenefPmt.getIdRepartitionBeneficiairePaiement();
 
