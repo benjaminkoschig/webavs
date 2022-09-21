@@ -5,6 +5,8 @@
 <%@ page import="globaz.eform.vb.suivi.GFSuiviViewBean" %>
 <%@ page import="globaz.framework.secure.FWSecureConstants" %>
 <%@ page import="ch.globaz.eform.web.servlet.GFSuiviServletAction" %>
+<%@ page import="ch.globaz.eform.business.services.GFAdministrationService" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -85,7 +87,7 @@
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
-							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + $(element).attr('tiers.designation2');
+							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
 						}
 					</script>
 				</ct:widgetJSReturnFunction>

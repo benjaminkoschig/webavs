@@ -27,6 +27,16 @@ import java.util.List;
 
 public class GF2021000101Sender extends GFDaDossierSender<Message> {
     @Override
+    protected String getDocumentType() {
+        return "01.01";
+    }
+
+    @Override
+    protected String getDocumentTypeLead() {
+        return "01.01.01.01";
+    }
+
+    @Override
     protected Message createMessage(){
         Message message = new Message();
 
@@ -79,26 +89,21 @@ public class GF2021000101Sender extends GFDaDossierSender<Message> {
 
     private List<AttachmentType> createAttachments() {
         //Il ne peut avoir qu'un seul document de type PDF
-        if (this.attachments.size() != 1) { throw new IllegalArgumentException("Lettre de cession manquante!"); }
+        if (this.leadingAttachment == null) { throw new IllegalArgumentException("Lettre de cession manquante!"); }
         if (!this.attachments.entrySet().stream().allMatch(entry -> StringUtils.endsWith(entry.getKey(), "pdf")))  { throw new IllegalArgumentException("Type de document non conforme!"); }
 
         List<AttachmentType> attachments = new ArrayList<>();
 
-        this.attachments.forEach((filaName, path) -> {
-            Path file = Paths.get(path);
+        Path leadingFile = Paths.get(this.leadingAttachment.getPath());
 
-            AttachmentType attachmentType = new AttachmentType();
-
-            attachmentType.setTitle(elements.get(GFDaDossierAttachmentElementSender.TITLE));
-            attachmentType.setDocumentType("01.01.01.01");
-            attachmentType.setDocumentDate(getDocumentDate());
-            attachmentType.setLeadingDocument(true);
-            attachmentType.setSortOrder(BigInteger.ONE);
-            attachmentType.setDocumentFormat(getDocumentFormat(file));
-            attachmentType.getFile().addAll(createAttachmentFileType(Collections.singletonList(file)));
-
-            attachments.add(attachmentType);
-        });
+        AttachmentType leadingAttachmentType = new AttachmentType();
+        leadingAttachmentType.setTitle(elements.get(GFDaDossierAttachmentElementSender.TITLE));
+        leadingAttachmentType.setDocumentType(getDocumentTypeLead());
+        leadingAttachmentType.setDocumentDate(getDocumentDate());
+        leadingAttachmentType.setLeadingDocument(true);
+        leadingAttachmentType.setSortOrder(BigInteger.ONE);
+        leadingAttachmentType.setDocumentFormat(getDocumentFormat(leadingFile));
+        leadingAttachmentType.getFile().addAll(createAttachmentFileType(Collections.singletonList(leadingFile)));
 
         return attachments;
     }

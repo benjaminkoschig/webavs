@@ -1,5 +1,9 @@
 package globaz.eform.itext;
 
+import globaz.framework.printing.itext.exception.FWIException;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+
 public class GFEnvoiDossier extends GFDocumentDossier {
 
     private static final long serialVersionUID = 1L;
@@ -9,6 +13,16 @@ public class GFEnvoiDossier extends GFDocumentDossier {
 
     public static String FILENAME = "lead_transfert.pdf";
 
+    public GFEnvoiDossier() {
+    }
+
+    public GFEnvoiDossier(BSession session, String rootApplication, String fileName) throws FWIException {
+        super(session, rootApplication, fileName);
+    }
+
+    public GFEnvoiDossier(BProcess parent, String rootApplication, String fileName) throws FWIException {
+        super(parent, rootApplication, fileName);
+    }
 
     @Override
     public void createDataSource() throws Exception {
