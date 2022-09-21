@@ -28,7 +28,7 @@ public class APCotisationJointRepartitionViewBean extends APCotisationJointRepar
      */
     @Override
     public String getMontant() {
-        return JANumberFormatter.fmt(super.getMontant(), true, true, true, 2);
+        return JANumberFormatter.fmt(super.getMontant(), true, true, false, 2);
     }
 
     /**

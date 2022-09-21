@@ -68,6 +68,8 @@ public abstract class COTransitionAction {
     private boolean annulerEcritures = true;
     private JACalendar calendar = new JACalendarGregorian();
     private String dateExecution = "";
+    private String eBillTransactionID = "";
+    private Boolean eBillPrintable = false;
     protected Map<String, String> etapeInfos;
     protected Map<String, String> etapeInfosParLibelle;
     private List frais;
@@ -261,9 +263,9 @@ public abstract class COTransitionAction {
     /**
      * Recherche ou/et calcul des IM
      * 
-     * @param session
+     * @param transaction
      * @param contentieux
-     * @param transition
+     * @param date
      * @return la liste des interets manuel ou null
      * @throws Exception
      */
@@ -476,6 +478,20 @@ public abstract class COTransitionAction {
         }
 
         return dateExecution;
+    }
+
+    /**
+     * @return the eBillTransactionID
+     */
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
     }
 
     /**
@@ -715,6 +731,20 @@ public abstract class COTransitionAction {
      */
     public void setDateExecution(String string) {
         dateExecution = string;
+    }
+
+    /**
+     * @param eBillTransactionID the eBillTransactionID to set
+     */
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    /**
+     * @param eBillPrintable the eBillPrintable to set
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

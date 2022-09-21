@@ -441,7 +441,7 @@ public class APAttestations extends FWIDocumentManager {
                     message.format(new Object[] { totalMontantCoti.toStringFormat() }, buffer, new FieldPosition(0))
                             .toString());
 
-            if (!totalMontantImpot.isZero()) {
+            if (totalMontantImpot.doubleValue() >= 0) {
 
                 parametres.put("PARAM_FIELD_IMPOT", document.getTextes(3).getTexte(12).toString());
 

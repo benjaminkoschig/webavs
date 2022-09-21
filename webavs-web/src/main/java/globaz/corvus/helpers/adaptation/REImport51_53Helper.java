@@ -10,8 +10,10 @@ import globaz.prestation.helpers.PRAbstractHelper;
 /**
  * 
  * @author HPE
- * 
+ *
+ * Cette classe n'est plus utilisée suite à la migration de TRAX
  */
+@Deprecated
 public class REImport51_53Helper extends PRAbstractHelper {
 
     @Override

@@ -16,7 +16,21 @@ import java.util.stream.Collectors;
 
 public class EBillSftpProcessor extends AbstractSepa {
 
-    public EBillSftpProcessor() throws PropertiesException {
+    private static EBillSftpProcessor singletonServiceFtp = null;
+
+    /**
+     * Constructeur privé.
+     */
+    private EBillSftpProcessor() {}
+
+    /**
+     * Initialisation du service ftp.
+     */
+     public static EBillSftpProcessor getInstance() throws PropertiesException {
+        if (singletonServiceFtp == null) {
+            singletonServiceFtp = new EBillSftpProcessor();
+        }
+
         String localInDirPath = Jade.getInstance().getPersistenceDir() + getFolderInName();
         File localInDir = new File(localInDirPath);
         if (!localInDir.exists()) {
@@ -27,9 +41,21 @@ public class EBillSftpProcessor extends AbstractSepa {
         if (!localOutDir.exists()) {
             localOutDir.mkdir();
         }
+
+        return singletonServiceFtp;
     }
 
-    public String getFolderInName() throws PropertiesException {
+    /**
+     * Fermeture du service ftp.
+     */
+    public static void closeServiceFtp() {
+         if (singletonServiceFtp != null) {
+            singletonServiceFtp.disconnectQuietly();
+            singletonServiceFtp = null;
+        }
+    }
+
+    public static String getFolderInName() throws PropertiesException {
         String folder = CAProperties.EBILL_FTP_IN.getValue();
 
         if (!folder.endsWith("/")) {
@@ -39,7 +65,7 @@ public class EBillSftpProcessor extends AbstractSepa {
         return folder;
     }
 
-    public String getFolderOutName() throws PropertiesException {
+    public static String getFolderOutName() throws PropertiesException {
         String folder = CAProperties.EBILL_FTP_OUT.getValue();
 
         if (!folder.endsWith("/")) {

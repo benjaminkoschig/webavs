@@ -12,6 +12,8 @@
 <%@ page import="globaz.osiris.parser.CASelectBlockParser"%>
 <%@ page import="globaz.osiris.db.comptes.CARole" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="globaz.osiris.application.CAApplication" %>
+<%@ page import="globaz.globall.db.BSession" %>
 <%
 idEcran = "GCO3001";
 
@@ -20,6 +22,9 @@ COProcessContentieuxViewBean viewBean = (COProcessContentieuxViewBean) session.g
 userActionValue = "aquila.process.processContentieux.executer";
 
 globaz.globall.db.BSession objSession = (globaz.globall.db.BSession) viewBean.getISession();
+%>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses((BSession) viewBean.getISession());
 %>
 <LINK id="aquilaCSS" rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
 <%-- /tpl:put --%>
@@ -49,6 +54,18 @@ function selectionner(selectedId, value) {
 	}
 }
 
+function refreshEBillInputs(eBillPrintable) {
+    <% if (eBillAquilaActif) {%>
+        if (eBillPrintable) {
+            $("#eBillPrintable").attr("checked", true);
+        } else {
+            $("#eBillPrintable").attr("checked", false);
+        }
+    <%} else {%>
+        $("#eBillPrintable").attr("checked", false);
+    <%}%>
+}
+
 var oldSels = [];
 
 <% for (java.util.Iterator seqIter = viewBean.getSequences().iterator(); seqIter.hasNext();) { %>
@@ -57,19 +74,27 @@ oldSels[<%=((globaz.aquila.db.access.batch.COSequence) seqIter.next()).getIdSequ
 
 function select(select, idSequence, idCreer) {
 	var oldSel = oldSels[idSequence];
-	
+    var eBillPrintable = false;
 	// on itére sur les options du select pour trouver laquelle a été cliquée
-    for (var id = 0; id < select.options.length; id++){
+    for (var id = 0; id < select.options.length; id++) {
+        // si un des modules compatible eBill est sélectionné on coche la case à cocher eBill
+        if (select.options[id].selected) {
+            // 26 = Rappel réclamation frais et intérêts; 31 = Sommation ; 39 = Décision
+            if (select.options[id].value === "26" || select.options[id].value === "31" || select.options[id].value === "39") {
+                eBillPrintable = true;
+            }
+        }
         if (select.options[id].selected != oldSel[id]) {
         	// c'est l'option avec l'index 'id' qui a été cliquée
             oldSel[id] = select.options[id].selected;
-            
+
             if (select.options[id].selected && select.options[id].className == 'mark') {
             	// si l'option cliquée a été sélectionnée et qu'elle est marquée comme dépendante, on sélectionne l'option créer
                 document.getElementById('etape_'+idCreer+'_'+idSequence).selected = true;
             }
-        } 
+        }
     }
+    refreshEBillInputs(eBillPrintable);
 }
 
 function GereControle() {
@@ -134,6 +159,15 @@ function changePrevisionnel() {
               <input type="text" name="libelleJournal" class="libelleLong" value="<%=viewBean.getLibelleJournal()%>">
             </TD>
           </TR>
+          <% if (eBillAquilaActif) {%>
+          <TR>
+              <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
+              <td nowrap>
+                  <input type="checkbox" name="eBillPrintable"
+                         id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+              </td>
+          </TR>
+          <%}%>
           <TR> 
             <TD colspan="4"><HR></TD>
           </TR>

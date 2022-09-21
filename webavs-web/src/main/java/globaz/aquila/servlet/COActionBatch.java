@@ -24,6 +24,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
+import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.db.interets.CADetailInteretMoratoire;
 import globaz.osiris.db.interets.CADetailInteretMoratoireManager;
 import globaz.osiris.db.interets.CAInteretMoratoire;
@@ -411,6 +412,8 @@ public class COActionBatch extends CODefaultServletAction {
 
         if (action != null) {
             JSPUtils.setBeanProperties(request, action);
+
+            action.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(action.getEBillPrintable(), session));
 
             // Boucle qui teste si un des champs requis de l'étape est vide et
             // set la variable isError

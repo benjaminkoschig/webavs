@@ -17,11 +17,13 @@ import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvBVR4;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvDecision;
 import globaz.osiris.print.itext.list.CAILettrePlanRecouvEcheancier;
+import globaz.osiris.process.ebill.EBillHelper;
 import globaz.osiris.utils.CASursisPaiement;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.common.properties.PropertiesException;
 
 /**
@@ -42,6 +44,8 @@ public class CAProcessImpressionPlan extends BProcess {
     private Boolean impAvecBVR = new Boolean(false);
     private String modele = "";
     private String observation = "";
+    private EBillHelper eBillHelper = new EBillHelper();
+    private Boolean eBillPrintable = false;
 
     /**
      * Constructor for CAProcessImpressionPlan.
@@ -79,14 +83,18 @@ public class CAProcessImpressionPlan extends BProcess {
             document = createDecision();
             // CAILettrePlanRecouvVoiesDroit documentVD = this.createVoiesDroit();
             CAPlanRecouvrement plan = (CAPlanRecouvrement) document.currentEntity();
+
+            // On propage la case à coché eBillPrintable du CAImpressionPlanViewBean dans le plan
+            plan.setEBillPrintable(getEBillPrintable());
+
             CAILettrePlanRecouvEcheancier documentE = CASursisPaiement.createEcheancier(this, getTransaction(), plan);
             // Fusionne les documents ci-dessus (Décision, voies de droit et échéancier)
             fusionneDocuments(plan);
 
             List echeances = (ArrayList) documentE.currentEntity();
-            if (!JadeStringUtil.isBlank(documentE.getPlanRecouvrement().getId()) && getImpAvecBVR().booleanValue()
+            if (!JadeStringUtil.isBlank(documentE.getPlanRecouvrement().getId())
+                    && getImpAvecBVR().booleanValue()
                     && (echeances != null)) {
-
                 createBVR(plan, echeances, documentE);
             }
 
@@ -126,6 +134,7 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.addAllEntities(echeances);
         documentBVR.setPlanRecouvrement(plan);
         documentBVR.setCumulSolde(echeancier.getCumulSolde());
+        documentBVR.setDecisionFusionnee(eBillHelper.rechercheDecisionFusionneePourEBill(plan, getSession(), getAttachedDocuments()));
         documentBVR.setImpressionParLot(true);
         documentBVR.setTailleLot(500);
 
@@ -270,6 +279,13 @@ public class CAProcessImpressionPlan extends BProcess {
     }
 
     /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @return the modele
      */
     public String getModele() {
@@ -310,6 +326,14 @@ public class CAProcessImpressionPlan extends BProcess {
 
     public void setImpAvecBVR(Boolean newImpAvecBVR) {
         impAvecBVR = newImpAvecBVR;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+     public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

@@ -558,11 +558,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         statement.writeField(CASection.FIELD_IDMOTCONSUS,
                 this._dbWriteNumeric(statement.getTransaction(), getIdMotifContentieuxSuspendu(), "idMotConSus"));
         statement.writeField(CASection.FIELD_EBILL_TRANSACTION_ID,
-                this._dbWriteString(statement.getTransaction(), geteBillTransactionID(), "eBillTransactionID"));
+                this._dbWriteString(statement.getTransaction(), getEBillTransactionID(), "eBillTransactionID"));
         statement.writeField(CASection.FIELD_EBILL_ETAT,
                 this._dbWriteString(statement.getTransaction(), eBillEtat, "eBillEtat"));
         statement.writeField(CASection.FIELD_EBILL_ERREUR,
-                this._dbWriteString(statement.getTransaction(), geteBillErreur(), "eBillErreur"));
+                this._dbWriteString(statement.getTransaction(), getEBillErreur(), "eBillErreur"));
         statement.writeField(CASection.FIELD_CATEGORIESECTION,
                 this._dbWriteNumeric(statement.getTransaction(), getCategorieSection(), "categorieSection"));
         statement.writeField(CASection.FIELD_IDJOURNAL,
@@ -1577,15 +1577,15 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idMotifContentieuxSuspendu;
     }
 
-    public String geteBillTransactionID() {
+    public String getEBillTransactionID() {
         return eBillTransactionID;
     }
 
-    public CATraitementEtatEBillEnum geteBillEtat() {
+    public CATraitementEtatEBillEnum getEBillEtat() {
         return CATraitementEtatEBillEnum.parValeur(eBillEtat);
     }
 
-    public String geteBillErreur() {
+    public String getEBillErreur() {
         return eBillErreur;
     }
 
@@ -2429,15 +2429,15 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         csMotifContentieuxSuspendu = null;
     }
 
-    public void seteBillTransactionID(String eBillTransactionID) {
+    public void setEBillTransactionID(String eBillTransactionID) {
         this.eBillTransactionID = eBillTransactionID;
     }
 
-    public void seteBillEtat(String eBillEtat) {
+    public void setEBillEtat(String eBillEtat) {
         this.eBillEtat = eBillEtat;
     }
 
-    public void seteBillErreur(String eBillErreur) {
+    public void setEBillErreur(String eBillErreur) {
         this.eBillErreur = eBillErreur;
     }
 

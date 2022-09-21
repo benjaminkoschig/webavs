@@ -69,7 +69,7 @@
         <% } %>
     </ct:menuPopup>
 </TD>
-<TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.geteBillAccountID()%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.getEBillAccountID()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.getTransactionID()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.getNomPrenomOuEntreprise()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.getNumeroAffilie()%></TD>

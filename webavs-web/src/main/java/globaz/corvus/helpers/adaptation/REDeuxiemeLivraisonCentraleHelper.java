@@ -23,6 +23,7 @@ public class REDeuxiemeLivraisonCentraleHelper extends PRAbstractHelper {
         process.setSession(vb.getSession());
         process.setEMailAddress(vb.getEMailAddress());
         process.setMoisAnnee(vb.getMoisAnnee());
+        process.setDateImportation(vb.getDateImportation());
         process.setIdLot(vb.getIdLot());
         process.start();
 

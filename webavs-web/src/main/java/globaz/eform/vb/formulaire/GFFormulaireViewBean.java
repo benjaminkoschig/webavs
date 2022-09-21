@@ -7,6 +7,7 @@ import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.constant.GFTypeEForm;
 import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
+import ch.globaz.eform.web.application.GFApplication;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -72,12 +73,12 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void add() throws Exception {
-        formulaire = GFEFormServiceLocator.getGFEFormService().create(formulaire);
+        formulaire = GFEFormServiceLocator.getGFEFormDBService().create(formulaire);
     }
 
     @Override
     public void delete() throws Exception {
-        GFEFormServiceLocator.getGFEFormService().delete(formulaire.getId());
+        GFEFormServiceLocator.getGFEFormDBService().delete(formulaire.getId());
     }
 
     @Override
@@ -87,10 +88,10 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void retrieve() throws Exception {
-        formulaire = GFEFormServiceLocator.getGFEFormService().read(getId());
+        formulaire = GFEFormServiceLocator.getGFEFormDBService().read(getId());
         try {
-            EFormFileService fileService = EFormFileService.instance();
-            this.attachement = fileService.retrieve(GFFileUtils.generateFilePath(formulaire), formulaire.getAttachementName());
+            EFormFileService fileService = new EFormFileService(GFApplication.EFORM_HOST_FILE_SERVER);
+            this.attachement = fileService.retrieve(GFFileUtils.generateEFormFilePath(formulaire), formulaire.getAttachementName());
         } catch (Exception e) {
             LOG.error("Un problème est survenu lors du chargement de la pièce jointe " + formulaire.getAttachementName(), e);
         }
@@ -111,7 +112,7 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
         formulaire.setStatus(getByStatus());
         formulaire.setUserGestionnaire(getByGestionnaire());
         
-        GFEFormServiceLocator.getGFEFormService().update(formulaire);
+        GFEFormServiceLocator.getGFEFormDBService().update(formulaire);
     }
 
     public BSession getSession() {

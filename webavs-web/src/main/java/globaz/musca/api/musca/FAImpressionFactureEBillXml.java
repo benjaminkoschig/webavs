@@ -5,13 +5,10 @@ import ch.globaz.common.properties.CommonProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.jade.publish.client.JadePublishDocument;
-import globaz.musca.application.FAApplication;
-import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAModuleImpression;
-import globaz.musca.db.facturation.FAPassage;
 import globaz.osiris.api.APISection;
-import globaz.osiris.api.APISectionDescriptor;
+import globaz.osiris.process.ebill.EBillTypeDocument;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +31,13 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Classe permettant de générer la facture eBill au format xml.
@@ -52,18 +55,23 @@ public class FAImpressionFactureEBillXml {
     private static final String BILL_DETAILS_TYPE = "PDFAppendix";
     public static final String APPLICATION_PDF = "x-application/pdfappendix";
 
-    private JadePublishDocument attachedDocument;
-    private String montantBulletinSoldes;
-    private ReferenceEBill eBillFacture;
+    private String eBillAccountID;
     private FAEnteteFacture entete;
     private FAEnteteFacture enteteReference;
-    private FAAfact afact;
-    private List<Map> lignesParPaireIdExterne;
-    private FAPassage passage;
-    private String billerId;
-    private BSession session;
-    private String eBillAccountID;
+    private String montantFacture;
+    private List<Map> lignes;
+    private Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis;
     private String reference;
+    private List<JadePublishDocument> attachedDocuments;
+    private String dateImprOuFactu;
+    private String dateEcheance;
+    private String dateOctroiSursis;
+    private String titreSursis;
+    private BSession session;
+
+    private String billerId;
+    private EBillTypeDocument typeDocument;
+    private ReferenceEBill eBillFacture;
 
     public FAImpressionFactureEBillXml() throws Exception {
     }
@@ -86,7 +94,13 @@ public class FAImpressionFactureEBillXml {
                 }
             });
 
-            marshaller.marshal(content, localFile);
+            try {
+                marshaller.marshal(content, localFile);
+            } catch (MarshalException e) {
+                LOG.error("Une erreur s'est produite lors du marshalling du fichier XML d'après les schémas XSD!", e);
+                throw e;
+            }
+
             LOG.info("Fichier XML rempli et formatté d'après les schémas XSD!");
 
             return localFile;
@@ -101,16 +115,34 @@ public class FAImpressionFactureEBillXml {
         eBillFacture = new ReferenceEBill();
         eBillFacture.setSession(getSession());
 
+        // init du type de facture
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             eBillFacture.setIsQR(true);
         } else {
             eBillFacture.setIsBVR(true);
         }
-        if (enteteReference != null) {
+
+        // init du type de document
+        if (typeDocument == EBillTypeDocument.BULLETIN_DE_SOLDES && enteteReference != null) {
             eBillFacture.setIsBulletinsDeSoldes(true);
         }
-        // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
-        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.geteBillTransactionID())) {
+        if (typeDocument == EBillTypeDocument.SURSIS && lignesSursis != null) {
+            eBillFacture.setIsSursis(true);
+        }
+        if (typeDocument == EBillTypeDocument.SOMMATION) {
+            eBillFacture.setIsSommation(true);
+        }
+        if (typeDocument == EBillTypeDocument.RECLAMATION) {
+            eBillFacture.setIsReclamation(true);
+        }
+        if (typeDocument == EBillTypeDocument.DECISION) {
+            eBillFacture.setIsDecision(true);
+        }
+
+        // init du sous-type de document
+        // si eBillTransactionID de l'enteteReference est vide, la facture originale a été généré sur papier et entre-temps eBill a été activé alors bulletinsDeSoldesAvecFactureEBill(false) et il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
+        // autrement on est sur un bulletinsDeSoldesAvecFactureEBill(true)
+        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.getEBillTransactionID())) {
             eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
         }
         if(entete.getTotalFactureCurrency().getBigDecimalValue().compareTo(BigDecimal.valueOf(0)) < 0) {
@@ -124,7 +156,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // init de la référence eBill
-        eBillFacture.initReferenceEBill(entete, passage.getDateFacturation());
+        eBillFacture.initReferenceEBill(entete, dateImprOuFactu);
     }
 
     /**
@@ -191,25 +223,28 @@ public class FAImpressionFactureEBillXml {
     }
 
     /**
-     * Création de la balise qui vas contenir le fichier original généré
-     * par le processus d'impression classique encodé en base64.
+     * Création de la balise qui vas contenir le ou les fichiers originaux générés
+     * par le processus d'impression classique encodés en base64.
      *
      * @return l'objet de type AppendixType contenant le fichier encodé en base 64
      */
     private AppendixType createAppendix() throws IOException {
-        if (getAttachedDocument() != null) {
-            ObjectFactory of = new ObjectFactory();
-            String pathFile = getAttachedDocument().getDocumentLocation();
+        ObjectFactory of = new ObjectFactory();
+        AppendixType appendixType = of.createAppendixType();
+        for (JadePublishDocument  attachedDocument : getAttachedDocuments()) {
+            String pathFile = attachedDocument.getDocumentLocation();
             byte[] inFileBytes = Files.readAllBytes(Paths.get(pathFile));
             String encoded = Base64.getEncoder().encodeToString(inFileBytes);
-            AppendixType appendixType = of.createAppendixType();
             AppendixType.Document appendixTypeDocument = of.createAppendixTypeDocument();
             appendixTypeDocument.setMimeType(APPLICATION_PDF);
             appendixTypeDocument.setValue(encoded);
             appendixType.getDocument().add(appendixTypeDocument);
-            return appendixType;
         }
-        return null;
+        if (!appendixType.getDocument().isEmpty()) {
+            return appendixType;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -225,9 +260,8 @@ public class FAImpressionFactureEBillXml {
             deliveryInfo.setBillerID(Long.parseLong(billerId));
         }
         deliveryInfo.setEBillAccountID(Long.parseLong(eBillAccountID));
-        XMLGregorianCalendar deliveryDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
-        deliveryInfo.setDeliveryDate(deliveryDate);
-        deliveryInfo.setTransactionID(entete.geteBillTransactionID());
+        deliveryInfo.setDeliveryDate(convertStringDateToXmlCalendarDate(dateImprOuFactu));
+        deliveryInfo.setTransactionID(entete.getEBillTransactionID());
 
         // Dans notre cas, on génère systématiquement une facture PDF Appendix : on ajoute le pdf en Base64 en annexe.
         deliveryInfo.setBillDetailsType(BILL_DETAILS_TYPE);
@@ -287,26 +321,24 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
         InvoiceBillType.Header header = of.createInvoiceBillTypeHeader();
 
-        header.setDocumentType(eBillFacture.getDocumentType());
-        header.setDocumentID(entete.geteBillTransactionID());
+        header.setDocumentType(eBillFacture.getSubTypeDocument());
+        header.setDocumentID(entete.getEBillTransactionID());
 
-        XMLGregorianCalendar documentDate = convertStringDateToXmlCalendarDate(passage.getDateFacturation());
-        header.setDocumentDate(documentDate);
+        header.setDocumentDate(convertStringDateToXmlCalendarDate(dateImprOuFactu));
 
         header.setSenderParty(createSenderParty());
         header.setReceiverParty(createReceiverParty());
 
-        // TODO : determiner les dates dans le header.
-        header.setAchievementDate(createAchievementDate(passage.getDateFacturation(), passage.getDateFacturation()));
+        header.setAchievementDate(createAchievementDate(dateImprOuFactu, dateImprOuFactu));
         header.setCurrency(eBillFacture.getDevise());
         // header.setAccountAssignment(createAccountAssignment());
 
         // Dans le cas d'un bulletin de soldes avec factures eBill, ajoute le transactionID de l'entete de reference dans une balise de type FixedReference
         if (eBillFacture.isBulletinsDeSoldesAvecFactureEBill()) {
-            header.getFixedReference().add(createFixedReference(of, enteteReference.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, enteteReference.getEBillTransactionID()));
         // Dans le cas d'une notes de crédit, ajoute le transactionID de l'entete dans une balise de type FixedReference
         } else if (eBillFacture.isNotesCredit()) {
-            header.getFixedReference().add(createFixedReference(of, entete.geteBillTransactionID()));
+            header.getFixedReference().add(createFixedReference(of, entete.getEBillTransactionID()));
         }
 
         header.setLanguage(entete.getISOLangueTiers().toLowerCase(Locale.ROOT));
@@ -447,8 +479,7 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
         BillHeaderType.PaymentInformation paymentInformation = of.createBillHeaderTypePaymentInformation();
 
-        XMLGregorianCalendar paymentDueDate = convertStringDateToXmlCalendarDate(getDateEcheance());
-        paymentInformation.setPaymentDueDate(paymentDueDate);
+        paymentInformation.setPaymentDueDate(convertStringDateToXmlCalendarDate(getDateEcheance()));
         paymentInformation.setPaymentType(eBillFacture.getPaymentType());
 
         if (eBillFacture.isBulletinNeutre()) {
@@ -469,15 +500,41 @@ public class FAImpressionFactureEBillXml {
             paymentInformation.setIBAN(iban);
         }
 
-        //TODO : voir comment on peut gérer les accomptes.
-//        BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
-//        InstalmentType instalment = of.createInstalmentType();
-//        instalment.setAmount(new BigDecimal(""));
-//        instalment.setPaymentDueDate("");
-//        instalments.getInstalment().add(instalment);
-//        paymentInformation.set(instalments);
+        if (eBillFacture.isSursis()) {
+            BillHeaderType.PaymentInformation.Instalments instalments = createInstalments(of);
+            paymentInformation.getInstalments().add(instalments);
+        }
 
         return paymentInformation;
+    }
+
+    /**
+     * Création du Instalments de la facture eBill
+     *
+     * @return le Instalments de la facture eBill
+     */
+    private BillHeaderType.PaymentInformation.Instalments createInstalments(ObjectFactory of) {
+        BillHeaderType.PaymentInformation.Instalments instalments = of.createBillHeaderTypePaymentInformationInstalments();
+        int counter = 1;
+        for (Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis : lignesSursis.entrySet()) {
+            instalments.getInstalment().add(createInstalment(of, ligneSursis, counter));
+            counter++;
+        }
+        return instalments;
+    }
+
+    /**
+     * Création du Instalment de la facture eBill
+     *
+     * @return le Instalment de la facture eBill
+     */
+    private InstalmentType createInstalment(ObjectFactory of, Map.Entry<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> ligneSursis, int counter) {
+        InstalmentType instalment = of.createInstalmentType();
+        instalment.setDescription(ligneSursis.getValue().get(0).get("COL_1") != null ? String.valueOf(ligneSursis.getValue().get(0).get("COL_1")) : String.valueOf(counter));
+        instalment.setAmount(ligneSursis.getValue().get(0).get("COL_6") != null ? BigDecimal.valueOf((Double) ligneSursis.getValue().get(0).get("COL_6")) : null);
+        instalment.setPaymentDueDate(convertStringDateToXmlCalendarDate(ligneSursis.getKey().getDateExigibilite()));
+        instalment.setESRReferenceNr(reference.replaceAll("\\s", ""));
+        return instalment;
     }
 
     /**
@@ -488,87 +545,181 @@ public class FAImpressionFactureEBillXml {
     private InvoiceBillType.LineItems createLineItems() {
         ObjectFactory of = new ObjectFactory();
         InvoiceBillType.LineItems lineItems = of.createInvoiceBillTypeLineItems();
+        AtomicInteger ligneId = new AtomicInteger(1);
 
-        // Création des LineItems pour les bulletins de soldes
-        if(eBillFacture.isBulletinsDeSoldes() && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemBulletinsDeSoldes(lignesParPaireIdExterne.get(i));
-                lineItems.getLineItem().add(lineItemType);
-            }
-        // Création des LineItems pour les factures
-        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignesParPaireIdExterne != null) {
-            for (int i = 0; i < lignesParPaireIdExterne.size(); i++) {
-                LineItemType lineItemType = createLineItemFactures(lignesParPaireIdExterne.get(i));
-                lineItems.getLineItem().add(lineItemType);
-            }
+        // Création des LineItems pour les Bulletins de Soldes
+        if(eBillFacture.isBulletinsDeSoldes() && lignes != null) {
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemBulletinsDeSoldes(ligne, ligneId.getAndIncrement())));
+        // Création des LineItems pour les Sursis au Paiement
+        } else if (eBillFacture.isSursis()) {
+            lineItems.getLineItem().add(createLineItemSursis(lignesSursis.entrySet().stream().findFirst().get().getValue().get(0), ligneId.getAndIncrement()));
+        // Création des LineItems pour les Sommations
+        } else if (eBillFacture.isSommation()) {
+            // filtre la ligne de TOTAL qui se distingue par la présence de la colonne F4
+            lignes.stream().filter(ligne -> ligne.get("F4") == null).forEach(ligne -> lineItems.getLineItem().add(createLineItemSommation(ligne, ligneId.getAndIncrement())));
+        // Création des LineItems pour les Réclamations de frais et intérêts
+        } else if (eBillFacture.isReclamation()) {
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemReclamation(ligne, ligneId.getAndIncrement())));
+        // Création des LineItems pour les Décisions
+        } else if (eBillFacture.isDecision()) {
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemDecision(ligne, ligneId.getAndIncrement())));
+        // Création des LineItems pour les Factures qui ne sont d'aucun des autres type de document spécifique
+        } else if ((eBillFacture.isQR() || eBillFacture.isBVR()) && lignes != null) {
+            lignes.forEach(ligne -> lineItems.getLineItem().add(createLineItemFactures(ligne, ligneId.getAndIncrement())));
         }
         return lineItems;
     }
 
-    private LineItemType createLineItemFactures(Map lignes) {
-        ObjectFactory of = new ObjectFactory();
-        LineItemType lineItem = of.createLineItemType();
+    private LineItemType createLineItemFactures(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
-        lineItem.setLineItemType(eBillFacture.getLineItemType());
-        lineItem.setLineItemID(lignes.get("COL_ID") != null ? String.valueOf((Integer) lignes.get("COL_ID")) : null);
-
-        String dateDebut = ((String) lignes.get("COL_7_DEBUT"));
-        String dateFin = ((String) lignes.get("COL_7_FIN"));
+        String dateDebut = ((String) ligne.get("COL_7_DEBUT"));
+        String dateFin = ((String) ligne.get("COL_7_FIN"));
         AchievementDateType achievementDate = null;
         if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
             achievementDate = createAchievementDate(dateDebut, dateFin);
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription((String) lignes.get("COL_1"));
+        lineItem.setProductDescription((String) ligne.get("COL_1"));
 
-        String taux = ((String) lignes.get("COL_5"));
+        String taux = ((String) ligne.get("COL_5"));
         lineItem.setQuantity(new BigDecimal(StringUtils.isEmpty(taux) ? "0.00" : taux));
         lineItem.setQuantityDescription("1I");
-
-        Double masse = ((Double) lignes.get("COL_4"));
-        lineItem.setPriceUnit(BigDecimal.valueOf(masse == null ? 0.00 : masse));
-
-        // lineItem.setTax(createTaxLineItem());
-
-        BigDecimal montant = lignes.get("COL_6") != null ? BigDecimal.valueOf((Double) lignes.get("COL_6")) : null;
+        Double masse = ((Double) ligne.get("COL_4"));
+        lineItem.setPriceUnit(BigDecimal.valueOf(masse != null ? masse : 1.00));
+        BigDecimal montant = ligne.get("COL_6") != null ? BigDecimal.valueOf((Double) ligne.get("COL_6")) : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
-
-        // lineItem.setAccountAssignment(createAccountAssignment());
 
         return lineItem;
     }
 
-    private LineItemType createLineItemBulletinsDeSoldes(Map lignes) {
-        ObjectFactory of = new ObjectFactory();
-        LineItemType lineItem = of.createLineItemType();
+    private LineItemType createLineItemSommation(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
 
-        lineItem.setLineItemType(eBillFacture.getLineItemType());
-        lineItem.setLineItemID(lignes.get("COL_ID") != null ? String.valueOf((Integer) lignes.get("COL_ID")) : null);
-
-        String dateDebut = (String) lignes.get("COL_1");
-        String dateFin = (String) lignes.get("COL_2");
+        String dateDebut = (dateImprOuFactu);
+        String dateFin = (dateEcheance);
         AchievementDateType achievementDate = null;
         if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
             achievementDate = createAchievementDate(dateDebut, dateFin);
         }
         lineItem.setAchievementDate(achievementDate);
 
-        lineItem.setProductDescription((String) lignes.get("COL_3"));
+        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
 
         lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
-
-        // lineItem.setTax(createTaxLineItem());
-
-        BigDecimal montant = lignes.get("COL_4") != null ? BigDecimal.valueOf((Double) lignes.get("COL_4")) : null;
+        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
         lineItem.setAmountInclusiveTax(montant);
         lineItem.setAmountExclusiveTax(montant);
 
-        // lineItem.setAccountAssignment(createAccountAssignment());
+        return lineItem;
+    }
 
+    private LineItemType createLineItemReclamation(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
+
+        String dateDebut = (dateImprOuFactu);
+        String dateFin = (dateEcheance);
+        AchievementDateType achievementDate = null;
+        if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
+            achievementDate = createAchievementDate(dateDebut, dateFin);
+        }
+        lineItem.setAchievementDate(achievementDate);
+
+        lineItem.setProductDescription(StringUtils.isNotEmpty((String) ligne.get("F1")) ? (String) ligne.get("F1") : "");
+
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
+        lineItem.setQuantityDescription("1I");
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
+        BigDecimal montant = StringUtils.isNotEmpty((String) ligne.get("F2")) ? new FWCurrency((String) ligne.get("F2")).getBigDecimalValue() : null;
+        lineItem.setAmountInclusiveTax(montant);
+        lineItem.setAmountExclusiveTax(montant);
+
+        return lineItem;
+    }
+
+    private LineItemType createLineItemDecision(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
+
+        String dateDebut = (dateImprOuFactu);
+        String dateFin = (dateEcheance);
+        AchievementDateType achievementDate = null;
+        if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
+            achievementDate = createAchievementDate(dateDebut, dateFin);
+        }
+        lineItem.setAchievementDate(achievementDate);
+
+        lineItem.setProductDescription(ligne.get("F1") != null ? (String) ligne.get("F1") : "");
+
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
+        lineItem.setQuantityDescription("1I");
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
+        BigDecimal montant = ligne.get("F3") != null ? new FWCurrency((String) ligne.get("F3")).getBigDecimalValue() : null;
+        lineItem.setAmountInclusiveTax(montant);
+        lineItem.setAmountExclusiveTax(montant);
+
+        return lineItem;
+    }
+
+
+    private LineItemType createLineItemSursis(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
+
+        String dateDebut = (dateOctroiSursis);
+        String dateFin = (dateEcheance);
+        AchievementDateType achievementDate = null;
+        if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
+            achievementDate = createAchievementDate(dateDebut, dateFin);
+        }
+        lineItem.setAchievementDate(achievementDate);
+
+        lineItem.setProductDescription(titreSursis);
+
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
+        lineItem.setQuantityDescription("1I");
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
+        lineItem.setAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        lineItem.setAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+
+        return lineItem;
+    }
+
+    private LineItemType createLineItemBulletinsDeSoldes(Map ligne, int ligneId) {
+        LineItemType lineItem = createLineItemWithIdAndType(ligne, ligneId);
+
+        String dateDebut = (String) ligne.get("COL_1");
+        String dateFin = (String) ligne.get("COL_2");
+        AchievementDateType achievementDate = null;
+        if (StringUtils.isNotBlank(dateDebut) && StringUtils.isNotBlank(dateFin)) {
+            achievementDate = createAchievementDate(dateDebut, dateFin);
+        }
+        lineItem.setAchievementDate(achievementDate);
+
+        lineItem.setProductDescription((String) ligne.get("COL_3"));
+
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
+        lineItem.setQuantityDescription("1I");
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
+        BigDecimal montant = ligne.get("COL_4") != null ? BigDecimal.valueOf((Double) ligne.get("COL_4")) : null;
+        lineItem.setAmountInclusiveTax(montant);
+        lineItem.setAmountExclusiveTax(montant);
+
+        return lineItem;
+    }
+
+    /**
+     * Création du LineItem de la facture eBill
+     *
+     * @return le LineItem de la facture eBill
+     */
+    private LineItemType createLineItemWithIdAndType(Map ligne, int ligneId) {
+        ObjectFactory of = new ObjectFactory();
+        LineItemType lineItem = of.createLineItemType();
+        lineItem.setLineItemType(eBillFacture.getLineItemType());
+        lineItem.setLineItemID(ligne.get("COL_ID") != null ? String.valueOf(ligne.get("COL_ID")) : String.valueOf(ligneId));
         return lineItem;
     }
 
@@ -583,18 +734,11 @@ public class FAImpressionFactureEBillXml {
 
         summaryType.setTax(createTaxType());
 
-        // TODO : mettre en place montant déjà payé (bulletin de solde ??)
         summaryType.setTotalAmountPaid(BigDecimal.valueOf(0.00));
 
-        if (eBillFacture.isBulletinsDeSoldes()) {
-            summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
-            summaryType.setTotalAmountInclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
-            summaryType.setTotalAmountDue(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
-        } else {
-            summaryType.setTotalAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            summaryType.setTotalAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            summaryType.setTotalAmountDue(entete.getTotalFactureCurrency().getBigDecimalValue());
-        }
+        summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        summaryType.setTotalAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        summaryType.setTotalAmountDue(new FWCurrency(montantFacture).getBigDecimalValue());
 
         return summaryType;
     }
@@ -626,13 +770,8 @@ public class FAImpressionFactureEBillXml {
         taxDetailType.setRate(BigDecimal.valueOf(0.00));
         taxDetailType.setAmount(BigDecimal.valueOf(0.00));
 
-        if (eBillFacture.isBulletinsDeSoldes()) {
-            taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
-            taxDetailType.setBaseAmountExclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
-        } else {
-            taxDetailType.setBaseAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-            taxDetailType.setBaseAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
-        }
+        taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
+        taxDetailType.setBaseAmountExclusiveTax(new FWCurrency(montantFacture).getBigDecimalValue());
 
         return taxDetailType;
     }
@@ -653,12 +792,12 @@ public class FAImpressionFactureEBillXml {
         this.enteteReference = enteteReference;
     }
 
-    public FAPassage getPassage() {
-        return passage;
+    public String getDateImprOuFactu() {
+        return dateImprOuFactu;
     }
 
-    public void setPassage(FAPassage passage) {
-        this.passage = passage;
+    public void setDateImprOuFactu(String dateImprOuFactu) {
+        this.dateImprOuFactu = dateImprOuFactu;
     }
 
     public String getBillerId() {
@@ -669,62 +808,87 @@ public class FAImpressionFactureEBillXml {
         this.billerId = billerId;
     }
 
+    public EBillTypeDocument getTypeDocument() {
+        return typeDocument;
+    }
+
+    public void setTypeDocument(EBillTypeDocument typeDocument) {
+        this.typeDocument = typeDocument;
+    }
+
+    public String getDateEcheance() {
+        return dateEcheance;
+    }
+
+    public void setDateEcheance(String dateEcheance) {
+        this.dateEcheance = dateEcheance;
+    }
+
+    public String getDateOctroiSursis() {
+        return dateOctroiSursis;
+    }
+
+    public void setDateOctroiSursis(String dateOctroiSursis) {
+        this.dateOctroiSursis = dateOctroiSursis;
+    }
+
+    public List<JadePublishDocument> getAttachedDocuments() {
+        return attachedDocuments;
+    }
+
+    public void setAttachedDocuments(List<JadePublishDocument> attachedDocuments) {
+        this.attachedDocuments = attachedDocuments;
+    }
+
+    public String getEBillAccountID() {
+        return eBillAccountID;
+    }
+
+    public void setEBillAccountID(String eBillAccountID) {
+        this.eBillAccountID = eBillAccountID;
+    }
+
+    public String getMontantFacture() {
+        return montantFacture;
+    }
+
+    public void setMontantFacture(String montantFacture) {
+        this.montantFacture = montantFacture;
+    }
+
+    public List<Map> getLignes() {
+        return lignes;
+    }
+
+    public void setLignes(List<Map> lignes) {
+        this.lignes = lignes;
+    }
+
+    public Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> getLignesSursis() {
+        return lignesSursis;
+    }
+
+    public void setLignesSursis(Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis) {
+        this.lignesSursis = lignesSursis;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getTitreSursis() {
+        return titreSursis;
+    }
+
+    public void setTitreSursis(String titreSursis) {
+        this.titreSursis = titreSursis;
+    }
+
     public BSession getSession() {
         return session;
     }
 
     public void setSession(BSession session) {
         this.session = session;
-    }
-
-    public String getDateEcheance() throws Exception {
-        APISectionDescriptor sectionDescriptor = ((FAApplication) getSession().getApplication()).getSectionDescriptor(getSession());
-        sectionDescriptor.setSection(entete.getIdExterneFacture(), entete.getIdTypeFacture(), entete.getIdSousType(), passage
-                .getDateFacturation(), "", "");
-        return sectionDescriptor.getDateEcheanceFacturation();
-    }
-
-    public FAAfact getAfact() {
-        return afact;
-    }
-
-    public void setAfact(FAAfact afact) {
-        this.afact = afact;
-    }
-
-    public JadePublishDocument getAttachedDocument() {
-        return attachedDocument;
-    }
-
-    public void setAttachedDocument(JadePublishDocument attachedDocument) {
-        this.attachedDocument = attachedDocument;
-    }
-
-    public String geteBillAccountID() {
-        return eBillAccountID;
-    }
-
-    public void seteBillAccountID(String eBillAccountID) {
-        this.eBillAccountID = eBillAccountID;
-    }
-
-    public String getMontantBulletinSoldes() {
-        return montantBulletinSoldes;
-    }
-
-    public void setMontantBulletinSoldes(String montantBulletinSoldes) {
-        this.montantBulletinSoldes = montantBulletinSoldes;
-    }
-
-    public List<Map> getLignesParPaireIdExterne() {
-        return lignesParPaireIdExterne;
-    }
-
-    public void setLignesParPaireIdExterne(List<Map> lignesParPaireIdExterne) {
-        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 }

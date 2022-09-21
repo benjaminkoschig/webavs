@@ -68,7 +68,6 @@
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
 	}
 
-
 // stop hiding -->
 </SCRIPT>
 	<%-- /tpl:put --%>

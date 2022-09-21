@@ -68,18 +68,18 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
 
     /**
      * Déterminationd e la rubrique comptable selon le type de l'organe externe
-     * 
+     *
      * @param typeOrganesExternes
      * @param rubriqueRefugie
      * @param rubriqueAssiste
      * @param rubriqueBeneficiaire
      * @param rubriqueBeneficiaireFamille
+     * @param rubriqueBeneficiaireLPTRA
      * @param session
-     * 
      * @throws Exception
      */
     protected void determineRubriqueOrganeExterne(String typeOrganesExternes, String rubriqueRefugie,
-            String rubriqueAssiste, String rubriqueBeneficiaire, String rubriqueBeneficiaireFamille, BSession session)
+                                                  String rubriqueAssiste, String rubriqueBeneficiaire, String rubriqueBeneficiaireFamille, String rubriqueBeneficiaireLPTRA, BSession session)
             throws Exception {
         setRubrique("");
         if (typeOrganesExternes.equals(CodeSystem.PARTIC_AFFILIE_REFUGIE)) {
@@ -90,6 +90,8 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
             setRubrique(rubriqueBeneficiaire);
         } else if (typeOrganesExternes.equals(CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_FAMILLE)) {
             setRubrique(rubriqueBeneficiaireFamille);
+        }else if (typeOrganesExternes.equals(CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_LPTRA)){
+            setRubrique(rubriqueBeneficiaireLPTRA);
         }
         if (JadeStringUtil.isEmpty(getRubrique())) {
             throw new Exception(session.getLabel("RUBRIQUE_NUL") + " " + typeOrganesExternes);
@@ -98,7 +100,7 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
     }
 
     @Override
-    public boolean generer(IFAPassage passage, BProcess context, String idModuleFacturation) throws Exception {
+    public boolean  generer(IFAPassage passage, BProcess context, String idModuleFacturation) throws Exception {
         BTransaction cursorTransaction = null;
         BStatement statement = null;
         AFFacturationOrganesExternesManager manager = null;
@@ -123,6 +125,8 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
                     CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE, "RUBRIQUE3");
             String rubriqueBeneficiaireFamille = AFParticulariteAffiliation.findParameterNaos(context.getTransaction(),
                     CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_FAMILLE, "RUBRIQUE4");
+            String rubriqueBeneficiaireLPTRA= AFParticulariteAffiliation.findParameterNaos(context.getTransaction(),
+                    CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_LPTRA, "RUBRIQUE5");
 
             AFOrganeExternes organesExternes = null;
             String idEnteteFactureTraite = "";
@@ -158,7 +162,7 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
                             && !organesExternes.getDateDebut().equalsIgnoreCase(organesExternes.getDateFin())) {
                         // Détermination de la rubrique comptable de compensation pour l'organe externe
                         determineRubriqueOrganeExterne(organesExternes.getTypeOrgane(), rubriqueRefugie,
-                                rubriqueAssiste, rubriqueBeneficiaire, rubriqueBeneficiaireFamille,
+                                rubriqueAssiste, rubriqueBeneficiaire, rubriqueBeneficiaireFamille,rubriqueBeneficiaireLPTRA,
                                 context.getSession());
                         try {
                             if (haveDoubleParticularite(anneeCotisation, organesExternes.getNumAff(),
@@ -171,7 +175,6 @@ public class AFFacturationOrganesExternes extends AFFacturationGenericImpl imple
                                         this.getClass().getName());
                             }
                             // Sélection maintenant faite dans le manager => test inutile
-                            // if (this.isParticulariteValide(context, organesExternes, entete)) {
                             FWCurrency montant = new FWCurrency(organesExternes.getTotalFacture());
                             if (!montant.isZero()) {
                                 // Création de la compensation pour l'organe externe

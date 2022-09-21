@@ -50,6 +50,8 @@ public class COHistoriqueService {
         historique.setMotif(motif);
         historique.setNumPoursuite(contentieux.getNumPoursuite());
         historique.setIdHistoriquePrecedant(idHistoriquePrecedant);
+        historique.setEBillTransactionID(contentieux.getEBillTransactionID());
+        historique.setEBillPrinted(contentieux.getEBillPrintable());
 
         if (journal != null) {
             journal.renseignerInfosJournal(historique);

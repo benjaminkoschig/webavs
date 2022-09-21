@@ -64,7 +64,6 @@ import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -90,8 +89,8 @@ public class REImportationCalculAcor {
 
     private List<File> listOfSwapFiles = new ArrayList<>();
 
-    public void actionImporterScriptACOR(String idDemande, String idTiers, FCalcul fCalcul,
-                                         final BSession session) throws Exception {
+    public void importCalculAcor(String idDemande, String idTiers, FCalcul fCalcul,
+                                 final BSession session) throws Exception {
         LOG.info("Importation des données calculées.");
         Long idCopieDemande = null;
         BITransaction transaction = null;
@@ -466,10 +465,12 @@ public class REImportationCalculAcor {
     public void deleteSwapXmlFile(){
         listOfSwapFiles.stream().forEach(File::delete);
     }
+
     private void sendMailWarn(BSession session, String object, String content) throws Exception {
         JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), object, content, null);
     }
-    public void actionImporterScriptACOR9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
+
+    public void importCalculAcor9(String idDemande, String idTiers, Resultat9 resultat9, BSession session) throws Exception {
         Long idCopieDemande = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();

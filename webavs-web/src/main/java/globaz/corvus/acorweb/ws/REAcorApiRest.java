@@ -21,10 +21,10 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class REAcorApiRest {
 
-    private final REAcorService service;
+    private final REAcorService reAcorService;
 
     public REAcorApiRest() {
-        service = new REAcorService();
+        reAcorService = new REAcorService();
     }
 
     /**
@@ -38,8 +38,8 @@ public class REAcorApiRest {
     @GET
     @Path(value = "/{idDemande}/import")
     public InHostType importDossierRente(@PathParam("idDemande") String idDemande) {
-        LOG.info("Importation des données.");
-        return service.createInHostJson(idDemande);
+        LOG.info("Importation des données depuis WebAVS vers Acor.");
+        return reAcorService.createInHostJson(idDemande);
     }
 
     /**
@@ -56,10 +56,9 @@ public class REAcorApiRest {
     public Response exportDossierRente10(@PathParam("idDemande") String idDemande,
                                          @PathParam("idTiers") String idTiers,
                                          FCalcul fCalcul) {
-        LOG.info("Exportation du dossier.");
-        service.updateRente10afterAcorCalcul(fCalcul, idDemande, idTiers);
-        return Response.ok("{}")
-                .build();
+        LOG.info("Exportation du dossier depuis Acor vers WebAVS.");
+        reAcorService.updateRente10afterAcorCalcul(fCalcul, idDemande, idTiers);
+        return Response.ok("{}").build();
     }
 
     /**
@@ -76,10 +75,9 @@ public class REAcorApiRest {
     public Response exportDossierRente9(@PathParam("idDemande") String idDemande,
                                         @PathParam("idTiers") String idTiers,
                                         Resultat9 resultat9) {
-        LOG.info("Exportation du dossier de type 9.");
-        service.updateRente9afterAcorCalcul(resultat9, idDemande, idTiers);
-        return Response.ok("{}")
-                .build();
+        LOG.info("Exportation du dossier de type 9 depuis Acor vers WebAVS.");
+        reAcorService.updateRente9afterAcorCalcul(resultat9, idDemande, idTiers);
+        return Response.ok("{}").build();
 
     }
 

@@ -73,7 +73,7 @@ public class FASolde_EBill extends FAImpressionGenerique {
             process.setIdPassage(passage.getIdPassage());
             process.setEMailAddress(context.getEMailAddress());
             process.setDocumentType(FAImpressionFactureEBillProcess.DOCTYPE_LETTER);
-            process.setImpressionClassName(this.getClass().getName()); // TODO ESVE FIGURE IT OUT
+            process.setImpressionClassName(this.getClass().getName());
             process.setEnvoyerGed(((FAGenericProcess) context).getEnvoyerGed());
             process.setCallEcran(((FAGenericProcess) context).getCallEcran());
             process.setUnificationProcess(true);

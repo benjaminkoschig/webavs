@@ -48,6 +48,7 @@ public class RERetenuesPaiement extends BEntity {
     public static final String FIELDNAME_NO_FACTURE = "YQLNFA";
     public static final String FIELDNAME_REF_INTERNE = "YQLRIN";
     public static final String FIELDNAME_ROLE = "YQNROL";
+    public static final String FIELDNAME_REVENU_ANNUEL_DETERMINANT = "REVENU_ANNUEL_DETERMINANT";
     public static final String FIELDNAME_TAUX_IMPOSITION = "YQMTAU";
     public static final String FIELDNAME_TYPE_RETENU = "YQTTYP";
     public static final String TABLE_NAME_RETENUES = "RERETEN";
@@ -74,6 +75,7 @@ public class RERetenuesPaiement extends BEntity {
     private String role = "";
     private transient CASection section = null;
     private String tauxImposition = "";
+    private String revenuAnnuelDeterminant = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -108,6 +110,7 @@ public class RERetenuesPaiement extends BEntity {
                 .dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE));
         referenceInterne = statement.dbReadString(RERetenuesPaiement.FIELDNAME_REF_INTERNE);
         tauxImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TAUX_IMPOSITION);
+        revenuAnnuelDeterminant = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_REVENU_ANNUEL_DETERMINANT);
         cantonImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_CANTON_IMPOSITION);
     }
 
@@ -262,6 +265,8 @@ public class RERetenuesPaiement extends BEntity {
                 this._dbWriteString(statement.getTransaction(), referenceInterne, "referenceInterne"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_TAUX_IMPOSITION,
                 this._dbWriteNumeric(statement.getTransaction(), tauxImposition, "tauxImposition"));
+        statement.writeField(RERetenuesPaiement.FIELDNAME_REVENU_ANNUEL_DETERMINANT,
+                this._dbWriteNumeric(statement.getTransaction(), revenuAnnuelDeterminant, "revenuAnnuelDeterminant"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_CANTON_IMPOSITION,
                 this._dbWriteNumeric(statement.getTransaction(), cantonImposition, "cantonImposition"));
     }
@@ -382,6 +387,10 @@ public class RERetenuesPaiement extends BEntity {
         return tauxImposition;
     }
 
+    public String getRevenuAnnuelDeterminant() {
+        return revenuAnnuelDeterminant;
+    }
+
     @Override
     public boolean hasCreationSpy() {
         return true;
@@ -494,5 +503,9 @@ public class RERetenuesPaiement extends BEntity {
 
     public void setTauxImposition(String string) {
         tauxImposition = string;
+    }
+
+    public void setRevenuAnnuelDeterminant(String string){
+        revenuAnnuelDeterminant = string;
     }
 }

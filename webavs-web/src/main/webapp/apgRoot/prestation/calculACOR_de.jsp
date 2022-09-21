@@ -1,4 +1,7 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.apg.acorweb.ws.token.APAcorTokenServiceImpl" %>
+<%@ page import="globaz.apg.servlet.IAPActions" %>
+<%@ page import="globaz.apg.properties.APProperties" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -31,7 +34,39 @@ selectedIdValue = viewBean.getIdDroit();
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
+<script language="vbscript">
+<% if (viewBean.isAcorV4Web()) { %>
+<%
+	String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor((globaz.globall.db.BSession)controller.getSession());
+	String token = APAcorTokenServiceImpl.createTokenAPG(viewBean, (globaz.globall.db.BSession)controller.getSession());
+	String adresseWebAcor = viewBean.getAdresseWebACOR("import", token);
+%>
+        Set shell = CreateObject ("Shell.Application")
+        Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
+        if fileSystemObj.FileExists("<%=startNavigateurAcorCmd%>") Then
+            shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+        Else
+            shell.Open "<%=adresseWebAcor%>"
+        End If
+<%}%>
+</script>
+
 <script language="JavaScript">
+
+  function callACORWeb() {
+  	document.forms[0].elements['userAction'].value = "<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionCallACORWeb";
+	document.forms[0].submit();
+  }
+
+  $(document).ready(function () {
+
+		$('#lienAcorWeb').one('click', function () {
+			ajaxUtils.addOverlay($('html'));
+			document.forms['mainForm'].userAction.value = "<%=globaz.apg.servlet.IAPActions.ACTION_PRESTATIONS%>.actionValiderPrestationsDepuisACORWeb"; // TODO WS ACOR APG Le lien actuel sur la page qui passe dans des action ACOR puis dans la méthode controllerLesPrestation
+			document.forms['mainForm'].submit();
+		});
+  });
+
   function add() {}
   
   function upd() {}
@@ -138,18 +173,50 @@ selectedIdValue = viewBean.getIdDroit();
 							</TD>
 						</TR>
 						<TR><TD colspan="2"><HR></TD></TR>
+						<% if (APProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>
+						<tr>
+							<td colspan="4">
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_1"/>
+								</h6>
+								<p>
+									<a href="#" onclick="callACORWeb()">
+										<ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/>
+									</a>
+								</p>
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_2"/>
+								</h6>
+								<p>
+									<ct:FWLabel key="JSP_CADR_CALCULER_ACOR"/>
+								</p>
+								<h6>
+									<ct:FWLabel key="JSP_CADR_ETAPE_3"/>
+								</h6>
+								<p>
+									<ct:ifhasright element="<%=IAPActions.ACTION_CALCUL_ACOR %>" crud="u">
+										<a id="lienAcorWeb" href="#" name="lienAcorWeb">
+											<ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+										</a>
+									</ct:ifhasright>
+								</p>
+							</td>
+						</tr>
+						<TR><TD colspan="2"><HR></TD></TR>
+						<% }%>
 						<TR>
 							<TD colspan="2">
+								<p>---------------------------------------------------------------------------------------------</p>
+								<p>ANCIEN ACOR</p>
+								<p>---------------------------------------------------------------------------------------------</p>
 								<H4>
-									<a style="color:black;" href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
-										<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_0"/>										
-									</a>								
+									<H4><u><ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_0"/></u></H4>
 								</H4>
 							</TD>
 						</TR>
 						<TR>
 							<TD valign="top" width="40%" style="margin-right: 40px;">
-								<P><a href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier2&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
+								<P><a href="<%=formAction%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_CALCUL_ACOR%>.actionTelechargerFichier&idDroit=<%=viewBean.getIdDroit()%>&genreService=<%=viewBean.getGenreService()%>">
 									<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_1"/>
 								</a></P>
 								<P><ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_2"/>&nbsp;<ct:FWLabel key="JSP_CALCUL_ACOR_ETAPE_1_3"/></P>
@@ -204,10 +271,13 @@ selectedIdValue = viewBean.getIdDroit();
 								</DIV>
 							</TD>
 						</TR>
+						<tr><td>
+							<INPUT type="button" name="btnImporter" class="btnCtrl" value="<%=viewBean.getLibelleBoutonValidate()%>">
+						</td></tr>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
-				<INPUT type="button" name="btnImporter" class="btnCtrl" value="<%=viewBean.getLibelleBoutonValidate()%>">
+
 				<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%><%-- /tpl:put --%>

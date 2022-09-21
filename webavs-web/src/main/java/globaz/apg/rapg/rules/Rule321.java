@@ -21,6 +21,8 @@ import globaz.pyxis.constantes.IConstantes;
  */
 public class Rule321 extends Rule {
 
+    boolean isErrorDailyAmountZero;
+    APChampsAnnonce annonce;
     private final int montantMiniAllocationJournalier = 62;
     private final int montantMiniAllocationJournalierMaternite = 196;
     private final int montantMiniAllocationJournalierCadre = 245;
@@ -44,7 +46,9 @@ public class Rule321 extends Rule {
         String basicDailyAmount = champsAnnonce.getBasicDailyAmount();
         String numberOfChilren = champsAnnonce.getNumberOfChildren();
         String dateDebut = champsAnnonce.getStartOfPeriod();
-        
+
+        annonce = champsAnnonce;
+
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
             validNotEmpty(serviceType, "serviceType");
@@ -56,7 +60,7 @@ public class Rule321 extends Rule {
         services1.add("15");
         services1.add("21");
         services1.add("41");
-        
+
         List<String> services2 = new ArrayList<String>();
         services2.add("10");
         services2.add("12");
@@ -65,7 +69,7 @@ public class Rule321 extends Rule {
         services2.add("20");
         services2.add("22");
         services2.add("23");
-        
+
         // 1ere condition sur les premiers serviceType
         if (services1.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
@@ -73,24 +77,28 @@ public class Rule321 extends Rule {
             if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalier)) {
                 return false;
             }
-            
+
         }
-        
+
         // Condition sur les deuxièmes serviceType
         if (services2.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
             if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
                 return false;
-            }            
+            }
         }
 
 
+        if (serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) ||
+                serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) ||
+                serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
+            if (serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) && isAnnonceModification(champsAnnonce)) {
+                return true;
+            } else {
+                validNotEmpty(basicDailyAmount, "basicDailyAmount");
+            }
 
-         if(serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) ||
-            serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())  ||
-            serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())){
-            validNotEmpty(basicDailyAmount, "basicDailyAmount");
             String parameterName = null;
             parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();
             try {
@@ -103,7 +111,7 @@ public class Rule321 extends Rule {
                 throw new APRuleExecutionException(e);
             }
 
-        }else if(!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
+        } else if (!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
             if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
@@ -111,5 +119,9 @@ public class Rule321 extends Rule {
             }
         }
         return true;
+    }
+
+    private boolean isAnnonceModification(APChampsAnnonce annonce) {
+        return "3".equals(annonce.getAction()) || "4".equals(annonce.getAction());
     }
 }

@@ -11,6 +11,7 @@
 <%@ page import="globaz.osiris.db.comptes.CASectionManager"%>
 <%@ page import="globaz.osiris.db.comptes.CACompteAnnexeManager"%>
 <%@ page import="globaz.osiris.external.IntRole"%>
+<%@ page import="globaz.corvus.db.rentesaccordees.RERenteAccordee" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -151,7 +152,7 @@
 									<ct:optionsCodesSystems csFamille="<%=IRERetenues.CS_GROUPE_TYPE_RETENUE%>" />
 								</ct:select>
 							</td>
-							<td width="50%" colspan="2" rowspan="4">
+							<td width="50%" colspan="2" rowspan="3">
 								<pre><span class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></pre>
 								<pre><span class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></pre>
 							</td>
@@ -177,6 +178,23 @@
 										value="<%=new FWCurrency(viewBean.getMontantRetenuMensuel()).toStringFormat()%>" 
 										data-g-amount="mandatory:true,unsigned:true" />
 							</td>
+							<%
+								RERenteAccordee rente = viewBean.getRenteAccordee();
+								rente.setSession(viewBean.getSession());
+								rente.setId(idRenteAccordee);
+								rente.retrieve();
+								if(rente.isRAInvalidite()){%>
+							<td class="trOptionnels <%=IRERetenues.CS_TYPE_IMPOT_SOURCE%>">
+								<ct:FWLabel key="JSP_CRE_D_REVENU_ANNUEL_DETERMINANT" />
+							</td>
+							<td class="trOptionnels <%=IRERetenues.CS_TYPE_IMPOT_SOURCE%>">
+								<input	type="text"
+										  name="revenuAnnuelDeterminant"
+										  class="valeursSpecifiques modifiable nonModifiableApresPaiement"
+										  value="<%=new FWCurrency(viewBean.getRevenuAnnuelDeterminant()).toStringFormat()%>"
+										  data-g-amount="mandatory:true,unsigned:true" />
+							</td>
+							<% }%>
 						</tr>
 						<tr>
 							<td colspan="4">

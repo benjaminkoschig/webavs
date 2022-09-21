@@ -10,8 +10,25 @@
 	size = viewBean.size();
 	detailLink = "aquila?userAction=aquila.poursuite.historique.afficher&selectedId=";
 %>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(viewBean.getSession());
+%>
 <%@page import="globaz.aquila.db.access.poursuite.COHistorique"%>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/aquilaRoot/javascript/aquila.js"></SCRIPT>
+<script type="text/javascript">
+
+	function refreshEBillInputs() {
+		<% if (eBillAquilaActif) {%>
+			$('input[name="btnFind"]').click();
+		<%}%>
+	}
+
+	function postInit(){
+		refreshEBillInputs();
+	}
+
+</script>
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
@@ -23,6 +40,7 @@
 	<TH>Ausführungsdatum</TH>
 	<TH>Saldo</TH>
 	<TH>Davon Gebühren</TH>
+	<TH>eBill</TH>
 	<TH>Benutzer</TH>
     <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
@@ -65,6 +83,10 @@
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getDateExecution()%>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" style="text-align: right;" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getSoldeFormate()%>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" style="text-align: right;" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getTaxesFormatte()%>&nbsp;</TD>
+	<TD class="mtd" nowrap="nowrap" style="text-align: center;" onClick="<%=actionDetail%>" <%=styleAndTitle%>>
+		<% if (line.isEBillPrinted()) {%> <IMG src="<%= servletContext %>/images/eBill_black.png" title="TransactionID : <%=line.getEBillTransactionID()%>">
+		<%} else {%> &nbsp; <%}%>
+	</TD>
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" <%=styleAndTitle%>><%=line.getUser()%>&nbsp;</TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>

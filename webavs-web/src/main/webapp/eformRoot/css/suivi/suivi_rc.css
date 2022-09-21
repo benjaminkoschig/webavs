@@ -1,0 +1,25 @@
+select {
+    width: 291px;
+    height: 23px;
+    font-size: 13px !important;
+}
+
+input {
+    font-size: 13px !important;
+}
+
+input[type="text"] {
+    width: 296px;
+}
+
+label {
+    padding-left: 7px;
+}
+
+.corps {
+    background-color: #B3C4DB;
+}
+
+#likeNss, #byCaisse{
+    width: 291px;
+}

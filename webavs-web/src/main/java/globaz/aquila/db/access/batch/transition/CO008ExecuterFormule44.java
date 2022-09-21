@@ -60,7 +60,10 @@ public class CO008ExecuterFormule44 extends COAbstractEnvoyerDocument {
             }
             rp.addContentieux(contentieux);
             rp.setTaxes(taxes);
+            rp.setEBillTransactionID(contentieux.getEBillTransactionID());
+            rp.setEBillPrintable(contentieux.getEBillPrintable());
             rp.setInteretCalcule(getInteretCalcule());
+
             this._envoyerDocument(contentieux, rp);
         } catch (Exception e) {
             throw new COTransitionException(e);

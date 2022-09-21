@@ -49,6 +49,7 @@ import globaz.naos.db.nombreAssures.AFNombreAssures;
 import globaz.naos.db.nombreAssures.AFNombreAssuresManager;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.translation.CodeSystem;
+import globaz.orion.helpers.pucs.EBPucsBatchController;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASectionManager;
@@ -62,6 +63,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
     private final String CS_PARAMETRES_IM = "10800042";
     private boolean forceEnvoiMail = false;
     private String idDeclaration;
+    private boolean isBatch = false;
+    private EBPucsBatchController pucsBatchController = new EBPucsBatchController();
     private List<PucsFile> pucsFileMergded = new ArrayList<PucsFile>();
 
     public String noAffilie = "";
@@ -143,6 +146,18 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 this._addError(getTransaction(), getSession().getLabel("MSG_COMPLEMENT_IMPOSSIBLE"));
                 abort();
                 return false;
+            }
+
+            // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
+            if (getIsBatch()) {
+                pucsBatchController.setSession(getSession());
+                if (pucsBatchController.isValidationsBatchActive()) {
+                    if (pucsBatchController.contientPasToutesLesAssurancesRequises(decl)) {
+                        this._addError(getTransaction(), getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES")+ " " + decl.getNumeroAffilie());
+                        abort();
+                        return false;
+                    }
+                }
             }
 
             // Vérification que les plafonds LTN (affilié et assuré) ne sont pas dépassés
@@ -638,6 +653,10 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
         return idDeclaration;
     }
 
+    public boolean getIsBatch() {
+        return isBatch;
+    }
+
     public Boolean getNotImpressionDecFinalAZero() {
         return notImpressionDecFinalAZero;
     }
@@ -758,7 +777,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
     /**
      * Permet de signaler à eBusiness que la validation de la déclaration a été réalisé.
      *
-     * @param decl
+     * @param provenance
+     * @param idPucsFile
      * @throws Exception
      */
     private void notificationEBusiness(DeclarationSalaireProvenance provenance, String idPucsFile) throws Exception {
@@ -805,6 +825,10 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
      */
     public void setIdDeclaration(String idDeclaration) {
         this.idDeclaration = idDeclaration;
+    }
+
+    public void setIsBatch(boolean isBatch) {
+        this.isBatch = isBatch;
     }
 
     public void setNotImpressionDecFinalAZero(Boolean notImpressionDecFinalAZero) {

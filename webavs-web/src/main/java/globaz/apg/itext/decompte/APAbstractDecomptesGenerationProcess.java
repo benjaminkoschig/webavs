@@ -916,7 +916,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             parametres.put("PARAM_PIED", buffer.toString());
             buffer.setLength(0);
-            if (getFirstForCopy() && getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
+            if (!getFirstForCopy() && getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
                 buffer.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
             } else {
                 buffer.append(document.getTextes(6).getTexte(1).getDescription());
@@ -2051,6 +2051,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
                             totalMontantImpotSource.add((apCot.getMontant()));
                             tauxImpotSource = apCot.getTaux();
+                            impotSource = true;
                             tauxImposition = tauxImpotSource;
                             impotDateDebut = apCot.getDateDebut();
                             impotDateFin = apCot.getDateFin();
@@ -2126,16 +2127,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     // Affichage de l'impôt à la source
-                    if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
-                        impotSource = true;
+                    if (impotSource) {
                         if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
-                                ||  IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
-                                ||  IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()))) {
+                                || IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
+                                || IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())
+                                || IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()))) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
-                                            JANumberFormatter.formatNoRound(tauxImpotSource)));
+                                            JANumberFormatter.formatNoRound(tauxImpotSource)+"%"));
                         } else {
                             champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
                         }
@@ -2148,7 +2149,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                         totalImpotSource.add(totalMontantImpotSource.toString());
                     }
-
 
                     if (isTraitementDesVentilations()) {
                         total.add(repartition.getMontantVentile());
@@ -2562,23 +2562,21 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     }
 
     private void resolveIdCantonImpotSource(String idDroit) throws Exception {
-        if (idCantonImpotSource == "") {
-            if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                if (droit == null) {
-                    droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
-                            idDroit);
-                }
-                idCantonImpotSource = droit.getCsCantonDomicile();
-            } else {
-                // recherche du canton d'impositionm
-                APPeriodeAPGManager mgr = new APPeriodeAPGManager();
-                mgr.setSession(getSession());
-                mgr.setForIdDroit(idDroit);
-                mgr.find(1);
+        if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+            if (droit == null) {
+                droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
+                        idDroit);
+            }
+            idCantonImpotSource = droit.getCsCantonDomicile();
+        } else {
+            // recherche du canton d'impositionm
+            APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+            mgr.setSession(getSession());
+            mgr.setForIdDroit(idDroit);
+            mgr.find(1);
 
-                if (!mgr.isEmpty()) {
-                    idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
-                }
+            if (!mgr.isEmpty()) {
+                idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
             }
         }
     }

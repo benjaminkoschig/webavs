@@ -1,10 +1,17 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACCP;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+import globaz.pyxis.db.tiers.TIReferencePaiementViewBean;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.WebavsDocumentionLocator;
 import java.util.GregorianCalendar;
@@ -198,6 +205,31 @@ public class CASepaCommonUtils {
         if(iban == null || iban.length() < 9) return false;
         int qrIid = Integer.parseInt(iban.substring(4, 9));
         return (qrIid >= QR_IID_MIN && qrIid <= QR_IID_MAX);
+    }
+
+    public static boolean isQRIban(String numCompteBancaire) {
+        Pattern patternRegexQRIban = Pattern.compile("CH\\d{2}3[0-1]\\d{3}\\d{12}");
+        Matcher matcherRegexQRIban = patternRegexQRIban.matcher(numCompteBancaire.replaceAll("\\s+", ""));
+        return matcherRegexQRIban.matches();
+    }
+
+    public static String getReferencePaiementPourAffichage(BSession session, String idReference) {
+        try {
+            if (!JadeStringUtil.isBlank(idReference)) {
+                TIReferencePaiementManager rpm = new TIReferencePaiementManager();
+                rpm.setForIdReference(idReference);
+                rpm.setSession(session);
+                rpm.find(BManager.SIZE_NOLIMIT);
+                if (rpm.size() > 0) {
+                    TIReferencePaiement rp = (TIReferencePaiement) rpm.getFirstEntity();
+                    return session.getLabel("REFERENCE_QR") + " : " + rp.getReferenceQR() + "\n";
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.warn(TIReferencePaiementViewBean.class, e);
+        }
+
+        return "";
     }
 
     private static boolean isXsdRegexIbanValid(String ibanStr) {

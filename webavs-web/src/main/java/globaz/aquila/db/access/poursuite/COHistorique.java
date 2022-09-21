@@ -50,6 +50,8 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
 
     private String solde = "";
     private String taxes = "";
+    private String eBillTransactionID = "";
+    private boolean eBillPrinted = false;
     private String typeJournal = "";
     private String user = "";
 
@@ -115,6 +117,8 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
         dateExecution = statement.dbReadDateAMJ(ICOHistoriqueConstante.FNAME_DATE_EXECUTION);
         solde = statement.dbReadNumeric(ICOHistoriqueConstante.FNAME_SOLDE, 2);
         taxes = statement.dbReadNumeric(ICOHistoriqueConstante.FNAME_TAXES, 2);
+        eBillTransactionID = statement.dbReadString(ICOHistoriqueConstante.FIELD_EBILL_TRANSACTION_ID);
+        eBillPrinted = statement.dbReadBoolean(ICOHistoriqueConstante.FIELD_EBILL_PRINTED);
         user = statement.dbReadString(ICOHistoriqueConstante.FNAME_USERNAME);
         motif = statement.dbReadString(ICOHistoriqueConstante.FNAME_MOTIF);
         idHistoriquePrecedant = statement.dbReadNumeric(ICOHistoriqueConstante.FNAME_ID_HISTORIQUE_PRECEDENT);
@@ -164,6 +168,10 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
                 this._dbWriteNumeric(statement.getTransaction(), solde, "solde"));
         statement.writeField(ICOHistoriqueConstante.FNAME_TAXES,
                 this._dbWriteNumeric(statement.getTransaction(), taxes, "taxes"));
+        statement.writeField(ICOHistoriqueConstante.FIELD_EBILL_TRANSACTION_ID,
+                this._dbWriteString(statement.getTransaction(), getEBillTransactionID(), "eBillTransactionID"));
+        statement.writeField(ICOHistoriqueConstante.FIELD_EBILL_PRINTED,
+                this._dbWriteBoolean(statement.getTransaction(), isEBillPrinted(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrinted"));
         statement.writeField(ICOHistoriqueConstante.FNAME_USERNAME,
                 this._dbWriteString(statement.getTransaction(), user, "respModif"));
         statement.writeField(ICOHistoriqueConstante.FNAME_MOTIF,
@@ -304,6 +312,24 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
      */
     public String getTaxes() {
         return taxes;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
+    public boolean isEBillPrinted() {
+        return eBillPrinted;
     }
 
     /**
@@ -537,6 +563,26 @@ public class COHistorique extends COBEntity implements ICOHistoriqueConstante {
      */
     public void setTaxes(String taxes) {
         this.taxes = taxes;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param eBillTransactionID
+     *            DOCUMENT ME!
+     */
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param eBillPrinted
+     *            DOCUMENT ME!
+     */
+    public void setEBillPrinted(boolean eBillPrinted) {
+        this.eBillPrinted = eBillPrinted;
     }
 
     /**

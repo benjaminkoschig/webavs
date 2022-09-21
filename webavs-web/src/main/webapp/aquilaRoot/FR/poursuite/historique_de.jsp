@@ -18,8 +18,12 @@
 	bButtonValidate = false;
 	bButtonCancel = true;
 %>
+<%
+    boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(viewBean.getSession());
+%>
 <%@page import="globaz.aquila.api.ICOContentieux"%>
 <%@page import="globaz.aquila.api.ICOSequence"%>
+<%@ page import="globaz.osiris.application.CAApplication" %>
 <SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/aquilaRoot/javascript/aquila.js"></SCRIPT>
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/aquilaRoot/theme/aquila.css">
 <%-- /tpl:put --%>
@@ -88,6 +92,10 @@
 				<TD class="control" colspan="3"><INPUT type="text" value="<%=viewBean.getEtape().getLibEtapeLibelle()%>" class="disabled" style="width: 100%" readonly></TD>
 				<TD class="label">Date déclenchement</TD>
 				<TD class="control" colspan="3"><INPUT type="text" value="<%=viewBean.getDateDeclenchement()%>" class="disabled" style="width: 100%" readonly></TD>
+				<% if (eBillAquilaActif) {%>
+					<TD class="label"><ct:FWLabel key="EBILL_PRINTED"/></TD>
+					<TD class="control"><input type="checkbox" name="eBillPrinted" id="eBillPrinted" <%=(viewBean.isEBillPrinted()) ? "checked" : "unchecked"%> ></TD>
+				<%}%>
 			</TR>
 			<TR>
 				<TD class="label">Motif</TD>

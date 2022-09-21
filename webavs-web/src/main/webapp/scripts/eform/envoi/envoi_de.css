@@ -1,0 +1,44 @@
+select {
+    width: 250px;
+}
+
+input{
+    width: 250px !important;
+}
+
+tr{
+    padding-bottom: 13px;
+}
+
+.libelletitre {
+    font-weight: bold;
+}
+
+.libelle {
+    width: 120px;
+    padding-left: 10px;
+}
+
+.separateur {
+    border-top: 2px solid black;
+    height: 15px;
+    margin-right: 20px;
+}
+
+.buttons {
+    float:right;
+    margin-top: 20px;
+    padding-right: 20px;
+}
+
+.listfichiers {
+    width: 600px;
+    background-color:#FFF;
+    height: 200px;
+    overflow-y: scroll;
+    border: 1px solid black;
+}
+
+.buttons input{
+    width:100px !important;
+}

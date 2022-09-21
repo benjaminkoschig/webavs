@@ -24,6 +24,7 @@ import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

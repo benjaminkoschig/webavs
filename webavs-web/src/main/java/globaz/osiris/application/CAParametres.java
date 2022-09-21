@@ -2,11 +2,9 @@ package globaz.osiris.application;
 
 import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.log.JadeLoggerUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.webavs.common.CommonProperties;
 
@@ -416,39 +414,67 @@ public class CAParametres {
                 .booleanValue();
     }
 
-    /// Proprieté à utiliser pour la validation de la chaine complete
-    /// eBill = ACTIVE
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour la facturation
+    /// musca.eBill.activer = true
     /// Caisse avec droits d'utiliser eBill
-    public boolean isEbill(BSession session){
-        // Flag générale eBill (ON/OFF)
-        boolean isEbill = getPropertyEbillActive();
-        if(isEbill){
-            // Vérifier que la caisse avs est dans la liste crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
-            String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
-            List<String> getListCaisses = null;
-            try {
-                getListCaisses = getListCaissesEBill(session);
-            } catch (Exception e) {
-                JadeLogger.warn(this, e.getMessage());
-            }
-            isEbill = getListCaisses.contains(noCaisse);
+    public boolean isEBillMuscaActifEtDansListeCaisses(BSession session){
+        // Flag musca eBill (ON/OFF)
+        boolean eBillMuscaActif = isEBillMuscaActif();
+        if(eBillMuscaActif){
+            eBillMuscaActif = isDansListeCaisse(session);
         }
-        return isEbill;
+        return eBillMuscaActif;
     }
 
-    private List<String> getListCaissesEBill(BSession session) throws Exception {
-        List<String> listCaissesEbill = new ArrayList<>();
-        FWFindParameterManager mgr = getPlageValeurEbill(session);
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour la comptabilité auxiliaire
+    /// osiris.eBill.activer = true
+    /// Caisse avec droits d'utiliser eBill
+    public boolean isEBillOsirisActifEtDansListeCaisses(BSession session){
+        // Flag osiris eBill (ON/OFF)
+        boolean eBillOsirisActifEtDansListeCaisses = isEBillOsirisActif();
+        if(eBillOsirisActifEtDansListeCaisses){
+            eBillOsirisActifEtDansListeCaisses = isDansListeCaisse(session);
+        }
+        return eBillOsirisActifEtDansListeCaisses;
+    }
+
+    /// Proprieté à utiliser pour vérifier si eBill est actif pour les contentieux
+    /// aquila.eBill.activer = true
+    /// Caisse avec droits d'utiliser eBill
+    public boolean isEBillAquilaActifEtDansListeCaisses(BSession session){
+        // Flag aquila eBill (ON/OFF)
+        boolean eBillAquilaActifEtDansListeCaisses = isEBillAquilaActif();
+        if(eBillAquilaActifEtDansListeCaisses){
+            eBillAquilaActifEtDansListeCaisses = isDansListeCaisse(session);
+        }
+        return eBillAquilaActifEtDansListeCaisses;
+    }
+
+    public boolean isDansListeCaisse(BSession session) {
+        // Vérifier que la caisse avs est dans la liste eBill crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
+        String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
+        List<String> listeCaisseEBill = null;
+        try {
+            listeCaisseEBill = getListeCaisseEBill(session);
+        } catch (Exception e) {
+            JadeLogger.warn(this, e.getMessage());
+        }
+        return listeCaisseEBill.contains(noCaisse);
+    }
+
+    private List<String> getListeCaisseEBill(BSession session) throws Exception {
+        List<String> listeCaisseEBill = new ArrayList<>();
+        FWFindParameterManager mgr = getPlageValeureBill(session);
         for(int idx = 0; idx < mgr.size(); idx++){
             FWFindParameter param = (FWFindParameter) mgr.get(idx);
             if(!JadeStringUtil.isBlank(param.getValeurAlphaParametre())){
-                listCaissesEbill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
+                listeCaisseEBill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
             }
         }
-        return listCaissesEbill;
+        return listeCaisseEBill;
     }
 
-    private FWFindParameterManager getPlageValeurEbill(BSession session) throws Exception {
+    private FWFindParameterManager getPlageValeureBill(BSession session) throws Exception {
         FWFindParameterManager mgr = new FWFindParameterManager();
         mgr.setSession(session);
         mgr.setIdApplParametre(caApplication.getName());
@@ -457,16 +483,26 @@ public class CAParametres {
         return mgr;
     }
 
-    public boolean getPropertyEbillActive(){
-        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE, "false"))
-                .booleanValue();
+    public boolean isEBillAquilaActif(){
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_AQUILA_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
     }
 
-    public String getEbillBillerId(){
+    public boolean isEBillOsirisActif(){
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
+    }
+
+    public boolean isEBillMuscaActif(){
+        String property = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_MUSCA_EBILL_ACTIVE);
+        return property != null ? Boolean.parseBoolean(property) : false;
+    }
+
+    public String getEBillBillerId(){
         return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_BILLER_ID, "");
     }
 
-    public List<String> getEbillNotificationEmails(){
+    public List<String> getEBillNotificationEmails(){
         List<String> emailList = new ArrayList<>();
         String emails = caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS, "");
         String sep = ";";

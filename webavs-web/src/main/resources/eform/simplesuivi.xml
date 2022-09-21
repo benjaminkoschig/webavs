@@ -1,0 +1,54 @@
+<model-mapping>
+    <simple-model className="ch.globaz.eform.business.models.GFDaDossierModel" >
+        <description>contient les données pour le suivi des demandes DA-Dossier</description>
+        <table name="GF_DA_DOSSIER" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+        <fields>
+            <primary-key comment="Id technique du formulaire fournis" name="id" column="ID" type="STRING" mandatory="true"/>
+            <field comment="Id de la demande" name="messageId" column="MESSAGE_ID" type="STRING" mandatory="true"/>
+            <field comment="Numéro Nss de l'affilier à transférer" name="nssAffilier" column="NSS_AFFILIER" type="STRING" mandatory="true"/>
+            <field comment="Code de la caisse demandeuse" name="codeCaisse" column="CODE_CAISSE" type="STRING" mandatory="true"/>
+            <field comment="Type de la demande" name="type" column="TYPE" type="STRING" mandatory="true"/>
+            <field comment="Statut de la demande" name="status" column="STATUS" type="STRING" mandatory="true"/>
+            <field comment="Visa du gestionnaire en charge" name="userGestionnaire" column="USER_GESTIONNAIRE" type="STRING" mandatory="false"/>
+            <field comment="Référence id de la caisse demandeuse" name="yourBusinessRefId" column="YOUR_BUSINESS_REFERENCE_ID" type="STRING" mandatory="false"/>
+            <field comment="Référence id de la demande" name="ourBusinessRefId" column="OUR_BUSINESS_REFERENCE_ID" type="STRING" mandatory="true"/>
+        </fields>
+
+        <search-definition name="default">
+            <search-group operator="AND">
+                <search-field name="byId" field-ref="id" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="messageId">
+            <search-group operator="AND">
+                <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="yourBusinessRefId">
+            <search-group operator="AND">
+                <search-field name="byYourBusinessRefId" field-ref="yourBusinessRefId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="tracking">
+            <search-group operator="AND">
+                <search-field name="byType" field-ref="type" operation="EQUALS"/>
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="suivi">
+            <search-group operator="AND">
+                <search-field name="likeNss" field-ref="nssAffilier" operation="LIKE"/>
+                <search-field name="byCaisse" field-ref="codeCaisse" operation="EQUALS"/>
+                <search-field name="byType" field-ref="type" operation="EQUALS"/>
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
+                <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <order-by name="default">
+            <order-field field-ref="id" order="ASC"/>
+        </order-by>
+        <order-by name="orderByCode">
+            <order-field field-ref="codeCaisse" order="ASC"/>
+        </order-by>
+    </simple-model>
+</model-mapping>

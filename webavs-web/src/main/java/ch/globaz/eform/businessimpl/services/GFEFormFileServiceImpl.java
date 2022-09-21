@@ -5,18 +5,18 @@ import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.services.GFEFormFileService;
 import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
+import ch.globaz.eform.web.application.GFApplication;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.File;
-import java.nio.file.Files;
 
 public class GFEFormFileServiceImpl implements GFEFormFileService {
     @Override
     public String getZipFormulaire(String id) throws Exception {
-        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormService().read(id);
+        GFFormulaireModel model = GFEFormServiceLocator.getGFEFormDBService().read(id);
 
         //Chargement du zip
-        EFormFileService fileService = EFormFileService.instance();
-        return fileService.retrieve(GFFileUtils.generateFilePath(model), model.getAttachementName()).getAbsolutePath().replaceAll(StringEscapeUtils.escapeJava(File.separator), "/");
+        EFormFileService fileService = new EFormFileService(GFApplication.EFORM_HOST_FILE_SERVER);
+        return fileService.retrieve(GFFileUtils.generateEFormFilePath(model), model.getAttachementName()).getAbsolutePath().replaceAll(StringEscapeUtils.escapeJava(File.separator), "/");
     }
 }

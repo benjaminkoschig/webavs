@@ -27,7 +27,7 @@ public class REAcorService {
         try {
             BSession session = BSessionUtil.getSessionFromThreadContext();
             REImportationCalculAcor exportProcess = new REImportationCalculAcor();
-            exportProcess.actionImporterScriptACOR(idDemande, idTiers, fCalcul, session);
+            exportProcess.importCalculAcor(idDemande, idTiers, fCalcul, session);
         } catch (Exception e) {
             throw new RETechnicalException(e);
         }
@@ -37,7 +37,7 @@ public class REAcorService {
         try {
             BSession session = BSessionUtil.getSessionFromThreadContext();
             REImportationCalculAcor exportProcess = new REImportationCalculAcor();
-            exportProcess.actionImporterScriptACOR9(idDemande, idTiers, resultat9, session);
+            exportProcess.importCalculAcor9(idDemande, idTiers, resultat9, session);
         } catch (Exception e) {
             throw new RETechnicalException(e);
         }

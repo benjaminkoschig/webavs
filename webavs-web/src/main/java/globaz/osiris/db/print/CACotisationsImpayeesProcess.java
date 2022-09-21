@@ -121,7 +121,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
             tab_ante[3] = total;
 
             for (int i = 0; (i <= 3) && !isAborted(); i++) {
-                tab_tot[i] = round((tab_revue[i] + tab_ante[i]), 2);
+                tab_tot[i] = round((tab_revue[i] + tab_ante[i]), 0);
             }
 
             incProgressCounter();
@@ -131,7 +131,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
 
             // arrondie à deux chiffres après la virugle
             for (int i = 0; (i <= 3) && !isAborted(); i++) {
-                tab_revue[i] = round(tab_revue[i], 2);
+                tab_revue[i] = round(tab_revue[i], 0);
             }
 
             incProgressCounter();
@@ -140,7 +140,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
             }
 
             for (int i = 0; (i <= 3) && !isAborted(); i++) {
-                tab_ante[i] = round(tab_ante[i], 2);
+                tab_ante[i] = round(tab_ante[i], 0);
             }
 
             incProgressCounter();
@@ -216,11 +216,11 @@ public class CACotisationsImpayeesProcess extends BProcess {
             double totalPoursuite = 0.0,totalSommation = 0.0,totalSurcis = 0.0 ,totalAutres = 0.0;
 
             for (int i = 0; (i <= 2) && !isAborted(); i++) {
-                tab_poursuites[i] = round(div(tab_poursuites[i]), 2);
+                tab_poursuites[i] = round(tab_poursuites[i], 0);
                 totalPoursuite += tab_poursuites[i];
-                tab_sommations[i] = round(div(tab_sommations[i]), 2);
+                tab_sommations[i] = round(tab_sommations[i], 0);
                 totalSommation += tab_sommations[i];
-                tab_surcis[i] = round(div(tab_surcis[i]), 2);
+                tab_surcis[i] = round(tab_surcis[i], 0);
                 totalSurcis += tab_surcis[i];
                 tab_autres[i] = tab_tot[i]- tab_poursuites[i]- tab_sommations[i]- tab_surcis[i];
                 totalAutres += tab_autres[i];
@@ -319,19 +319,6 @@ public class CACotisationsImpayeesProcess extends BProcess {
     }
 
     /**
-     * Divise par 1'000'000 le montant passé en paramètre et l'arrondi.
-     * 
-     * @param Montant
-     *            à diviser et arrondir.
-     * @return le montant divisé par 1'000'000 et arrondi à 8 chiffres après la virgule.
-     */
-    public double div(double num) {
-        num /= Math.pow(10, 6);
-        num = round(num, 8);
-        return num;
-    }
-
-    /**
      * @return
      */
     public String getDateValue() {
@@ -372,7 +359,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
      */
     public double round(double num, int scale) {
         BigDecimal bd = new BigDecimal(num);
-        BigDecimal bd2 = bd.setScale(scale, BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal bd2 = bd.setScale(scale, BigDecimal.ROUND_HALF_UP);
         num = bd2.doubleValue();
         return num;
     }
@@ -382,10 +369,6 @@ public class CACotisationsImpayeesProcess extends BProcess {
      */
     public void secteur() {
         total = secteur2 + secteur4_8 + secteur9;
-        secteur2 = div(secteur2);
-        secteur4_8 = div(secteur4_8);
-        secteur9 = div(secteur9);
-        total = div(total);
     }
 
     /**

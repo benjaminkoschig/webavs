@@ -478,20 +478,20 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
      * Mise à jour de la section si on est sur un cas eBill
      *
      * @param entFacture : en-tête de facture
-     * @param sec        : section
+     * @param sec        : la section à mettre à jour
      */
     private void updateSectionEtatEtTransactionID(FAEnteteFacture entFacture, APISection sec) throws Exception {
-        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+        boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
 
-        if (isEBillActive && StringUtils.isNotEmpty(entFacture.geteBillTransactionID())) {
+        if (eBillMuscaActif && StringUtils.isNotEmpty(entFacture.getEBillTransactionID())) {
             CASection sect = new CASection();
             sect.setSession(getSession());
             sect.setIdSection(sec.getIdSection());
             sect.retrieve();
             if (!sect.isNew() && !sect.hasErrors()) {
-                sect.seteBillEtat(CATraitementEtatEBillEnum.NUMERO_ETAT_REJECTED_OR_PENDING);
-                sect.seteBillErreur("");
-                sect.seteBillTransactionID(entFacture.geteBillTransactionID());
+                sect.setEBillEtat(CATraitementEtatEBillEnum.NUMERO_ETAT_REJECTED_OR_PENDING);
+                sect.setEBillErreur("");
+                sect.setEBillTransactionID(entFacture.getEBillTransactionID());
                 sect.update();
             }
         }

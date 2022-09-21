@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>java-superpom</artifactId>
-		<version>3.1.0</version>
+		<version>4.1.0</version>
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.28.1-1</version>
+	<version>1.29.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>WebAVS Parent</name>
 	<description>WebAVS system</description>
@@ -17,7 +17,7 @@
 		<url>${scm.weburl}</url>
 		<connection>${scmConnection}</connection>
 		<developerConnection>${scmConnection}</developerConnection>
-		<tag>1.28.1-1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<properties>
@@ -40,29 +40,27 @@
 
 		<ch.globaz.mercato.notification.version>1.0.6</ch.globaz.mercato.notification.version>
 		<itucana.version>0.0.1</itucana.version>
-		<jade.version>5.7.5</jade.version>
-		<pyxis.version>1.23.9</pyxis.version>
-		<simple-output-list.version>1.3.2</simple-output-list.version>
+		<jade.version>5.7.6-SNAPSHOT</jade.version>
+		<pyxis.version>1.23.10-SNAPSHOT</pyxis.version>
+		<simple-output-list.version>1.3.3-SNAPSHOT</simple-output-list.version>
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
-		<globaz-external-xsd.version>1.2.7</globaz-external-xsd.version>
+		<globaz-external-xsd.version>1.2.8-SNAPSHOT</globaz-external-xsd.version>
 		<ebback-api.version>9.3.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-		<external-xsd.version>1.0.1</external-xsd.version>
-    <jackson.version>2.12.4</jackson.version>
-    <jjwt.version>0.11.2 </jjwt.version>
-
-
+		<external-xsd.version>1.1.0-SNAPSHOT</external-xsd.version>
+		<jackson.version>2.12.4</jackson.version>
+		<jjwt.version>0.11.2 </jjwt.version>
 
 		<anakin.version>4.0.1</anakin.version>
 		<apiguardian-api.version>1.1.2</apiguardian-api.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
 
-    <slf4j.version>1.7.21</slf4j.version>
-    <logback.version>1.1.7</logback.version>
+		<slf4j.version>1.7.21</slf4j.version>
+		<logback.version>1.1.7</logback.version>
 
     <assertj-core.version>3.19.0</assertj-core.version>
     <mockito-core.version>3.10.0</mockito-core.version>
@@ -615,6 +613,47 @@
                 <version>${powermock.version}</version>
                 <scope>test</scope>
             </dependency>
+			<!-- Configure loggers. WARN : you are NOT allowed to declare any compile-time
+                dependency to any logger implementation here (the parent pom). It's up to
+                the final artifact (not even every children of this parent pom!!) to choose
+                to which logger implementation it'd like to bind. But EVERY final artifact
+                MUST at least use slf4j-api (btw, we will encourage everybody to rely on
+                logback). -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- compile time dependency is ok here, since slf4j is the preferred
+                    way to implement logging. but only the slf4j-api :) -->
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<!-- test is mandatory here, will be overriden by final artifacts -->
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

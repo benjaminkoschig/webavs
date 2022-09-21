@@ -98,7 +98,7 @@ public class CATraitementEBill extends BEntity implements Serializable {
         bStatement.writeField(CATraitementEBill.FIELD_ID_FICHIER,
                 this._dbWriteNumeric(bStatement.getTransaction(), getIdFichier(), "idFichier"));
         bStatement.writeField(CATraitementEBill.FIELD_EBILL_ACCOUNT_ID,
-                this._dbWriteString(bStatement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
+                this._dbWriteString(bStatement.getTransaction(), getEBillAccountID(), "eBillAccountID"));
         bStatement.writeField(CATraitementEBill.FIELD_NUMERO_AFFILIE,
                 this._dbWriteString(bStatement.getTransaction(), getNumeroAffilie(), "numeroAffilie"));
         bStatement.writeField(CATraitementEBill.FIELD_NOM,
@@ -149,11 +149,11 @@ public class CATraitementEBill extends BEntity implements Serializable {
         this.idFichier = idFichier;
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         this.eBillAccountID = eBillAccountID;
     }
 

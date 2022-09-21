@@ -37,11 +37,15 @@ import globaz.corvus.db.ordresversements.RESoldePourRestitutionManager;
 import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
+import globaz.corvus.db.retenues.RERetenuesPaiement;
+import globaz.corvus.db.retenues.RERetenuesPaiementManager;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.RENumberFormatter;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.REPrestationUtils;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.decisions.KeyPeriodeInfo;
 import globaz.corvus.vb.decisions.REBeneficiaireInfoVO;
@@ -133,7 +137,7 @@ public class REDecisionOO extends REAbstractJobOO {
     private boolean isCopieFiscTronquee;
     private boolean isCopieOAI;
     public boolean isEnteteAI;
-    private boolean hasCreancierImpotSource = false;
+    private boolean isImpotSource = false;
 
     private boolean isIdTiersBCEqualsIdTiersReqDemande;
     private JADate lastDateDebutRADecision;
@@ -1784,7 +1788,7 @@ public class REDecisionOO extends REAbstractJobOO {
                                     break;
 
                                 case IMPOT_A_LA_SOURCE:
-                                    hasCreancierImpotSource = true;
+                                    isImpotSource = true;
                                     montantImpotSource = montantImpotSource.add(ov.getMontantCompenseOrdreVersement());
                                     break;
 
@@ -2399,7 +2403,60 @@ public class REDecisionOO extends REAbstractJobOO {
 
     }
 
-    private void ajouteTexteImpotSource(StringBuffer buffer, RECreancier creancierImpotSource) {
+    private void ajouteTexteImpotSource(StringBuffer buffer, REDemandeRente demandeRente) throws Exception {
+        // récupérer les créancier et vérifier si un des créanciers est de type impôt source
+        if(!ajouteCreancierImpotSourceTexte(buffer, demandeRente)) {
+            // s'il n'y a pas de créancier, récupérer les retenue et vérifier si une des retenue est de type impôt source
+            ajouteRetenueImpotSourceTexte(buffer, demandeRente);
+        }
+    }
+
+    private boolean ajouteCreancierImpotSourceTexte(StringBuffer buffer, REDemandeRente demandeRente) throws Exception{
+        RECreancierManager creMgr = new RECreancierManager();
+        creMgr.setSession(getSession());
+        creMgr.setForCsType(IRECreancier.CS_IMPOT_SOURCE);
+        creMgr.setForIdDemandeRente(demandeRente.getIdDemandeRente());
+        creMgr.find(getSession().getCurrentThreadTransaction());
+
+        RECreancier creancierImpotSource = (RECreancier) creMgr.getFirstEntity();
+
+        if (creancierImpotSource != null) {
+
+            if (!JadeStringUtil.isBlankOrZero(creancierImpotSource.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlank(creancierImpotSource.getTauxImposition())) {
+                ajouteTexteImpotSource(buffer,
+                        JANumberFormatter.format(creancierImpotSource.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
+                        JANumberFormatter.format(creancierImpotSource.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ajouteRetenueImpotSourceTexte(StringBuffer buffer, REDemandeRente demandeRente) throws Exception{
+        RERenteAccJoinTblTiersJoinDemRenteManager renteManager = new RERenteAccJoinTblTiersJoinDemRenteManager();
+        renteManager.setSession(getSession());
+        renteManager.setForNoDemandeRente(demandeRente.getIdDemandeRente());
+        renteManager.find(BManager.SIZE_USEDEFAULT);
+        for(int i = 0; i < renteManager.size(); i++){
+            // Retenue
+            RERetenuesPaiementManager retenueManager = new RERetenuesPaiementManager();
+            retenueManager.setSession(getSession());
+            retenueManager.setForIdRenteAccordee(renteManager.getEntity(i).getId());
+            retenueManager.find(getSession().getCurrentThreadTransaction());
+
+            RERetenuesPaiement retenue = (RERetenuesPaiement) retenueManager.getFirstEntity();
+
+            if (retenue != null && !JadeStringUtil.isBlankOrZero(retenue.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlank(retenue.getTauxImposition())) {
+                ajouteTexteImpotSource(buffer,
+                        JANumberFormatter.format(retenue.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR),
+                        JANumberFormatter.format(retenue.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void ajouteTexteImpotSource(StringBuffer buffer, String revenuAnnuelDeterminant, String tauxImposition) {
 
         // recherche le texte dans le catalogues
         String texteImpotSource = getTexteOrEmpty(catalogeDeTexteDecision, 6, 30);
@@ -2408,8 +2465,8 @@ public class REDecisionOO extends REAbstractJobOO {
         if (StringUtils.isNotBlank(texteImpotSource)) {
 
             // on insère le taux et le revenu annuel déterminant dans le texte
-            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{revenuAnnuelDeterminant}", JANumberFormatter.format(creancierImpotSource.getRevenuAnnuelDeterminant(), 0.01, 2, JANumberFormatter.NEAR));
-            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{tauxImposition}", JANumberFormatter.format(creancierImpotSource.getTauxImposition(), 0.01, 2, JANumberFormatter.NEAR));
+            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{revenuAnnuelDeterminant}", revenuAnnuelDeterminant);
+            texteImpotSource = PRStringUtils.replaceString(texteImpotSource, "{tauxImposition}", tauxImposition);
             if (buffer.length() > 0) {
                 buffer.append("\r\r");
             }
@@ -2753,22 +2810,8 @@ public class REDecisionOO extends REAbstractJobOO {
         }
 
         // ajoute la remarque impôt source si la demande possède un créancier de type impôt source avec les valeurs nécessaires pour compléter le texte
-        if (hasCreancierImpotSource) {
-            if (typeDecision.startsWith("INV")) {
-
-                // récupérer les créancier et vérifier si un des créanciers est de type impôt source
-                RECreancierManager creMgr = new RECreancierManager();
-                creMgr.setSession(getSession());
-                creMgr.setForCsType(IRECreancier.CS_IMPOT_SOURCE);
-                creMgr.setForIdDemandeRente(demandeRente.getIdDemandeRente());
-                creMgr.find(getSession().getCurrentThreadTransaction());
-
-                RECreancier creancierImpotSource = (RECreancier) creMgr.getFirstEntity();
-
-                if (creancierImpotSource != null && !JadeStringUtil.isBlankOrZero(creancierImpotSource.getRevenuAnnuelDeterminant()) && !JadeStringUtil.isBlankOrZero(creancierImpotSource.getTauxImposition())) {
-                    ajouteTexteImpotSource(buffer, creancierImpotSource);
-                }
-            }
+        if (isImpotSource && typeDecision.startsWith("INV")) {
+            ajouteTexteImpotSource(buffer, demandeRente);
         }
 
         // Rente pour enfants
@@ -3052,16 +3095,9 @@ public class REDecisionOO extends REAbstractJobOO {
                                     line1.addData("genreRente", getTexte(catalogeDeTexteDecision, 2, 12));
 
                                 } else {
-                                        String libelle = RENumberFormatter.codeSystemToLibelle(
-                                                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
-                                                codeIsoLangue, getSession());
-                                    if (Objects.equals("50.0", pourRechercheCodeSysteme) || Objects.equals("70.0", pourRechercheCodeSysteme)) {
-                                        DecimalFormat df = new DecimalFormat(" #.# %");
-                                        String quotite = df.format(Double.valueOf(benefs[inc].getQuotite()));
-                                        line1.addData("genreRente", libelle + quotite);
-                                    } else {
-                                        line1.addData("genreRente", libelle);
-                                    }
+                                    String libelle = REPrestationUtils.getLibelleGenrePrestation(pourRechercheCodeSysteme, benefs[inc].getQuotite(), codeIsoLangue, getSession());
+                                    line1.addData("genreRente", libelle);
+
                                 }
 
                                 line1.addData("montantLigne", JANumberFormatter.format(benefs[inc].getMontant()));

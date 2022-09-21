@@ -68,7 +68,6 @@
 		document.getElementById('idModeRecouvrement').tabIndex=-1;
 	}
 
-
 // stop hiding -->
 </SCRIPT>
 	<%-- /tpl:put --%>
@@ -185,7 +184,6 @@
 		<td nowrap>
               <input type="checkbox" name="partPenale" <%=(viewBean.getPartPenale().booleanValue()) ? "checked" : "unchecked"%> >
         </td>
-		<td></td>
 		<td>
 			<input type="hidden" name="selectedIds" value="<%=viewBean.getSelectedIds()%>">
 			<input type="hidden" name="idCompteAnnexe" value="<%=viewBean.getIdCompteAnnexe()%>">

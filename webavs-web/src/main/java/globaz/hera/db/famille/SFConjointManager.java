@@ -11,6 +11,9 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <H1>Description</H1>
  * 
@@ -35,6 +38,7 @@ public class SFConjointManager extends BManager {
     private String forIdConjoint2 = "";
     // Si on veut retrouver un membre d'après l'idConjoints
     private String forIdDesConjoints = "";
+
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -166,5 +170,6 @@ public class SFConjointManager extends BManager {
         forIdConjoint1 = conjoint1;
         forIdConjoint2 = conjoint2;
     }
+
 
 }

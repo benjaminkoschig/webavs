@@ -42,7 +42,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     private boolean rolePersonnel;
     private String adresse1;
     private String adresse2;
-    private Integer npa;
+    private String npa;
     private String localite;
     private String pays;
     private String email;
@@ -76,7 +76,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         roleParitaire = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PARITAIRE.getColNameSql());
         rolePersonnel = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PERSONNEL.getColNameSql());
         adresse1 = bStatement.dbReadString(CAInscriptionEBillEnum.ADRESSE.getColNameSql());
-        npa = Integer.parseInt(bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getColNameSql()));
+        npa = bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getColNameSql());
         localite = bStatement.dbReadString(CAInscriptionEBillEnum.CITY.getColNameSql());
         pays = bStatement.dbReadString(CAInscriptionEBillEnum.COUNTRY.getColNameSql());
         email = bStatement.dbReadString(CAInscriptionEBillEnum.EMAIL.getColNameSql());
@@ -112,7 +112,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
                 this._dbWriteString(bStatement.getTransaction(), getTexteErreurInterne(), "texteErreurInterne"));
 
         bStatement.writeField(CAInscriptionEBillEnum.RECIPIENT_ID.getColNameSql(),
-                this._dbWriteString(bStatement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
+                this._dbWriteString(bStatement.getTransaction(), getEBillAccountID(), "eBillAccountID"));
         bStatement.writeField(CAInscriptionEBillEnum.CUSTOMER_NBR.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getNumeroAffilie(), "numeroAffilie"));
         bStatement.writeField(CAInscriptionEBillEnum.SUBSCRIPTION_TYPE.getColNameSql(),
@@ -130,7 +130,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         bStatement.writeField(CAInscriptionEBillEnum.ADRESSE.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getAdresse1(), "adresse1"));
         bStatement.writeField(CAInscriptionEBillEnum.ZIP.getColNameSql(),
-                this._dbWriteNumeric(bStatement.getTransaction(), getNpa().toString(), "npa"));
+                this._dbWriteNumeric(bStatement.getTransaction(), getNpa(), "npa"));
         bStatement.writeField(CAInscriptionEBillEnum.CITY.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getLocalite(), "localite"));
         bStatement.writeField(CAInscriptionEBillEnum.EMAIL.getColNameSql(),
@@ -163,11 +163,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.idFichier = idFichier;
     }
 
-    public String geteBillAccountID() {
+    public String getEBillAccountID() {
         return eBillAccountID;
     }
 
-    public void seteBillAccountID(String eBillAccountID) {
+    public void setEBillAccountID(String eBillAccountID) {
         this.eBillAccountID = eBillAccountID;
     }
 
@@ -286,11 +286,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.statut = statut;
     }
 
-    public Integer getNpa() {
+    public String getNpa() {
         return npa;
     }
 
-    public void setNpa(Integer npa) {
+    public void setNpa(String npa) {
         this.npa = npa;
     }
 
@@ -350,11 +350,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.idInscription = idInscription;
     }
 
-    public String geteBillAccountType() {
+    public String getEBillAccountType() {
         return eBillAccountType;
     }
 
-    public void seteBillAccountType(String eBillAccountType) {
+    public void setEBillAccountType(String eBillAccountType) {
         this.eBillAccountType = eBillAccountType;
     }
 

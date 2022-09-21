@@ -181,6 +181,9 @@ public class COExecuteTransitionService extends COAbstractTransitionService {
 
         // Effectue la transition
         contentieux.setPrevisionnel(((journal != null) && journal.isPrevisionnel()) ? Boolean.TRUE : Boolean.FALSE);
+        contentieux.setEBillTransactionID(action.getEBillTransactionID());
+        contentieux.setEBillPrintable(action.getEBillPrintable());
+
         action.execute(contentieux, transaction);
 
         if ((journal == null) || !journal.isPrevisionnel()) {

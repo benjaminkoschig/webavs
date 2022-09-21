@@ -421,45 +421,9 @@ public abstract class APBasesCalculBuilder {
         if (!(droit instanceof APDroitPaternite)
                 && droit.getIsSoumisImpotSource().booleanValue()) {
 
-            // si pas de date fin mettre la fin du mois en cours pour le calcul
-            String dateFinDuDroit = droit.getDateFinDroit();
-            if(JadeStringUtil.isEmpty(dateFinDuDroit)) {
-                Calendar cal = Calendar.getInstance();
-                cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-                dateFinDuDroit = JadeDateUtil.getGlobazFormattedDate(cal.getTime());
-            }
-
-            // on va rechercher tous les taux pour ce canton et pour la période
-            // du droit
-            String cantonImposition = PRTiersHelper.getCanton(session, droit.getNpa());
-            List<PRTauxImposition> tauxImpots = findTauxImposition(droit.getDateDebutDroit(), dateFinDuDroit, cantonImposition);
-
-            /*
-             * remarque: s'il n'y a pas de taux d'impositions definis pour ce canton et qu'on n'en a pas saisi à la
-             * main, aucune cotisation n'est creee...
-             */
-            if (((tauxImpots == null) || tauxImpots.isEmpty())
-                    && JadeStringUtil.isDecimalEmpty(droit.getTauxImpotSource())) {
-                return;
-            }
-
-            if (JadeStringUtil.isDecimalEmpty(droit.getTauxImpotSource())) {
-                /*
-                 * Si l'utilisateur n'a pas redefini de taux d'imposition on va rechercher tous les taux pour la periode
-                 * du droit et segmenter eventuellement le droit s'il y a plusieurs taux differents.
-                 */
-                // il y a des taux d'imposition, on ajoute des commandes qui
-                // vont renseigner la base de calcul
-                for (int idTaux = tauxImpots.size(); --idTaux >= 0;) {
-                    PRTauxImposition taux = tauxImpots.get(idTaux);
-
-                    commands.add(new TauxImpositionCommand(taux.getDateDebut(), true, taux));
-                }
-            } else {
-                PRTauxImposition taux = new PRTauxImposition();
-                taux.setTaux(droit.getTauxImpotSource());
-                commands.add(new TauxImpositionCommand(droit.getDateDebutDroit(), true, taux));
-            }
+            PRTauxImposition taux = new PRTauxImposition();
+            taux.setTaux(droit.getTauxImpotSource());
+            commands.add(new TauxImpositionCommand(droit.getDateDebutDroit(), true, taux));
         }
     }
 
@@ -468,33 +432,10 @@ public abstract class APBasesCalculBuilder {
     }
 
     protected void ajouterTauxImposition(String tauxForce, String dateDebut, String dateFin, String canton) throws Exception {
-
-        if(!JadeStringUtil.isBlankOrZero(tauxForce)){
-            PRTauxImposition taux = new PRTauxImposition();
-            taux.setTaux(tauxForce);
-            commands.add(new TauxImpositionCommand(dateDebut, true, taux));
-            commands.add(new TauxImpositionCommand(dateFin, false, taux));
-        } else {
-            // on va rechercher tous les taux pour ce canton et pour la période
-            List<PRTauxImposition> tauxImpots = findTauxImposition(dateDebut, dateFin, canton);
-            if (tauxImpots == null || tauxImpots.isEmpty()){
-                return;
-            }
-
-            // il y a des taux d'imposition, on ajoute des commandes qui
-            // vont renseigner la base de calcul
-            PRTauxImposition lastTaux = null;
-            for (int idTaux = tauxImpots.size(); --idTaux >= 0;) {
-                PRTauxImposition taux = tauxImpots.get(idTaux);
-                String dateDebutEncompte = dateDebut;
-                if(JadeDateUtil.isDateAfter(taux.getDateDebut(), dateDebutEncompte)) {
-                    dateDebutEncompte = taux.getDateDebut();
-                }
-                commands.add(new TauxImpositionCommand(dateDebutEncompte, true, taux));
-                lastTaux = taux;
-            }
-            commands.add(new TauxImpositionCommand(dateFin, false, lastTaux));
-        }
+        PRTauxImposition taux = new PRTauxImposition();
+        taux.setTaux(tauxForce);
+        commands.add(new TauxImpositionCommand(dateDebut, true, taux));
+        commands.add(new TauxImpositionCommand(dateFin, false, taux));
     }
 
     /**

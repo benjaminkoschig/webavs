@@ -1,9 +1,15 @@
 package globaz.corvus.vb.process;
 
+import globaz.corvus.api.arc.downloader.REAnnoncesDateAugmentation5153;
+import globaz.corvus.db.annonces.REAnnoncesService;
 import globaz.hermes.db.gestion.HELotListViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -19,6 +25,10 @@ public class REComparaisonCentraleViewBean extends PRAbstractViewBeanSupport {
     private String eMailAddress = "";
     private String idLot = "";
     private String moisAnnee = "";
+
+    @Getter
+    @Setter
+    private String dateImportation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -59,6 +69,10 @@ public class REComparaisonCentraleViewBean extends PRAbstractViewBeanSupport {
 
         return lotList;
 
+    }
+
+    public List<REAnnoncesDateAugmentation5153> loadListDateImportation() {
+        return REAnnoncesService.loadDateAugmentationRente5153(getSession());
     }
 
     public String getMoisAnnee() {

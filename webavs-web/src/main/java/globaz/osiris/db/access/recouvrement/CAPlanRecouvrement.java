@@ -89,6 +89,7 @@ public class CAPlanRecouvrement extends CABEntity {
     public static final String FIELD_IDTYPEECHEANCE = "IDTYPEECHEANCE";
     public static final String FIELD_LIBELLE = "LIBELLE";
     public static final String FIELD_PARTPENALE = "PARTPENALE";
+    public static final String FIELD_EBILL_PRINTABLE = "EBILLPRINTABLE";
     public static final String FIELD_PLAFOND = "PLAFOND";
     public static final String FIELD_POURCENTAGE = "POURCENTAGE";
 
@@ -462,6 +463,8 @@ public class CAPlanRecouvrement extends CABEntity {
 
     private Boolean partPenale = new Boolean(false);
 
+    private Boolean eBillPrintable = new Boolean(false);
+
     private String plafond = "";
 
     private String pourcentage = "";
@@ -557,6 +560,7 @@ public class CAPlanRecouvrement extends CABEntity {
         // idAdressePaiement = statement.dbReadNumeric(FIELD_IDADRESSEPAIEMENT);
         idRubrique = statement.dbReadNumeric(CAPlanRecouvrement.FIELD_IDRUBRIQUE);
         partPenale = statement.dbReadBoolean(CAPlanRecouvrement.FIELD_PARTPENALE);
+        eBillPrintable = statement.dbReadBoolean(CAPlanRecouvrement.FIELD_EBILL_PRINTABLE);
     }
 
     /**
@@ -722,6 +726,8 @@ public class CAPlanRecouvrement extends CABEntity {
                 this._dbWriteNumeric(statement.getTransaction(), getIdRubrique(), "idRubrique"));
         statement.writeField(CAPlanRecouvrement.FIELD_PARTPENALE, this._dbWriteBoolean(statement.getTransaction(),
                 getPartPenale(), BConstants.DB_TYPE_BOOLEAN_CHAR, "partPenale"));
+        statement.writeField(CAPlanRecouvrement.FIELD_EBILL_PRINTABLE, this._dbWriteBoolean(statement.getTransaction(),
+                getEBillPrintable(), BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrintable"));
     }
 
     /**
@@ -974,7 +980,7 @@ public class CAPlanRecouvrement extends CABEntity {
 
     /**
      * Cette méthode indique si le sursis au paiement concerne une part pénale
-     * 
+     *
      * @return Boolean partPenale
      */
     public Boolean getPartPenale() {
@@ -982,8 +988,17 @@ public class CAPlanRecouvrement extends CABEntity {
     }
 
     /**
+     * Cette méthode indique si le sursis au paiement doit être imprimé avec eBill
+     *
+     * @return Boolean eBill
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * Retourne "on" si la partPenale est à true
-     * 
+     *
      * @return "on" si la partPenale est à true
      */
     public String getPartPenaleJsp() {
@@ -1220,11 +1235,19 @@ public class CAPlanRecouvrement extends CABEntity {
 
     /**
      * Cette méthode permet de setter la part pénale
-     * 
+     *
      * @param newPartPenale
      */
     public void setPartPenale(Boolean newPartPenale) {
         partPenale = newPartPenale;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

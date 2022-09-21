@@ -2,7 +2,11 @@ package globaz.osiris.db.print;
 
 import globaz.babel.api.ICTDocument;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BManager;
 import globaz.jade.log.JadeLogger;
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrementManager;
+import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.process.CAProcessImpressionPlan;
 import globaz.osiris.translation.CACodeSystem;
 import java.util.Collections;
@@ -26,6 +30,28 @@ public class CAImpressionPlanViewBean extends CAProcessImpressionPlan implements
      */
     public CAImpressionPlanViewBean() throws Exception {
         super();
+    }
+
+    /**
+     * @return un compte annexe avec un id de plan de facturation
+     */
+    public CACompteAnnexe getCompteAnnexe() {
+        CACompteAnnexe compteAnnexe = new CACompteAnnexe();
+
+        CAPlanRecouvrementManager planManager = new CAPlanRecouvrementManager();
+        planManager.setSession(getSession());
+        planManager.setForIdPlanRecouvrement(getIdPlanRecouvrement());
+
+        try {
+            planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            if (planManager.size() > 0) {
+                compteAnnexe = ((CAPlanRecouvrement) planManager.getFirstEntity()).getCompteAnnexe();
+            }
+        } catch (Exception e) {
+             JadeLogger.error(this, e);
+        }
+
+        return compteAnnexe;
     }
 
     /**
@@ -98,6 +124,15 @@ public class CAImpressionPlanViewBean extends CAProcessImpressionPlan implements
     }
 
     /**
+     * @param idDocument
+     *            the idDocument to set
+     */
+    @Override
+    public void setIdDocument(String idDocument) {
+        this.idDocument = idDocument;
+    }
+
+    /**
      * Retourne le code iso de la langue pour ce document.
      * 
      * @return la valeur courante de l'attribut langue
@@ -108,15 +143,6 @@ public class CAImpressionPlanViewBean extends CAProcessImpressionPlan implements
         }
 
         return langueDoc;
-    }
-
-    /**
-     * @param idDocument
-     *            the idDocument to set
-     */
-    @Override
-    public void setIdDocument(String idDocument) {
-        this.idDocument = idDocument;
     }
 
 }

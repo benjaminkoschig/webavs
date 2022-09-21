@@ -46,6 +46,7 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliationManager;
 import globaz.naos.translation.CodeSystem;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.prestation.api.IPRDemande;
@@ -300,6 +301,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                 adresseLine += getDomaineAdressePaiementEmployeur();
                 adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
             }
+
+            if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
+                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(dataSource.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            }
+
         }
 
         lineAdressePaiementEmployeur = adresseLine;
@@ -569,6 +575,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         } else {
             adresseLine += getDomaineLibelle(detailTiers.getIdApplication());
             adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
+        }
+
+        if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
+            adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
         }
 
         return adresseLine;
@@ -1567,7 +1577,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * fait que l'on revient depuis pyxis, il est necessaire de reinitialiser ce champ a la fin.
      * </p>
      *
-     * @param idTiersEmployeur une nouvelle valeur pour cet attribut
+     * @param idTiersPaiement une nouvelle valeur pour cet attribut
      */
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);

@@ -6,7 +6,7 @@
 <%@ page import="globaz.osiris.translation.*" %>
 <%@ page import="globaz.jade.client.util.*" %>
 <%
-idEcran="GCA60007";
+	idEcran="GCA60007";
 	CAPlanRecouvrementViewBean viewBean = (globaz.osiris.db.recouvrement.CAPlanRecouvrementViewBean)session.getAttribute("viewBean");
 	selectedIdValue = viewBean.getIdPlanRecouvrement();
 	String collaborateur = viewBean.getCollaborateur();

@@ -325,6 +325,7 @@ public class CodeSystem {
     public final static String PARTIC_AFFILIE_NON_ACTIF_ASSISSTE = "818014";
     public final static String PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE = "818015";
     public final static String PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_FAMILLE = "818027";
+    public final static String PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_LPTRA = "818031";
     public final static String PARTIC_AFFILIE_OPPOSITION = "818007";
     public final static String PARTIC_AFFILIE_PERIODE_AFFILIATION = "818017";
     public final static String PARTIC_AFFILIE_PERSONNEL_MAISON = "818018";

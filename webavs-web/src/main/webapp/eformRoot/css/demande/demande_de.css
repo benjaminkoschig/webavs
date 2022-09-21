@@ -1,0 +1,15 @@
+input {
+    font-size: 13px !important;
+}
+
+input[type="text"] {
+    width: 296px;
+}
+
+.corps {
+    background-color: #B3C4DB;
+}
+
+#nssAffilier, #codeCaisse{
+    width: 291px;
+}

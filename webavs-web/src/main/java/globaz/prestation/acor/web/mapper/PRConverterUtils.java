@@ -182,6 +182,20 @@ public final class PRConverterUtils {
         }
     }
 
+    /**
+     * Format la date en AA
+     *
+     * @param value la date à formatter
+     * @return une chaîne de caractère représentant la date sous la forme AA
+     */
+    public static String formatDateToAA(XMLGregorianCalendar value) {
+        if (value == null) {
+            return StringUtils.EMPTY;
+        } else {
+           return formatAAAAtoAA(formatIntegerToString(value.getYear()));
+        }
+    }
+
     public static long formatNssToLong(String strNss) {
         long nss = 0l;
         if (!JadeStringUtil.isBlankOrZero(strNss)) {
@@ -225,7 +239,7 @@ public final class PRConverterUtils {
      */
     public static String formatMMtoAxMM(Integer mois) {
         if (Objects.nonNull(mois)) {
-            LocalDate now = LocalDate.now().withDayOfMonth(1);
+            LocalDate now = LocalDate.now();
             LocalDate delay = now.plusMonths(mois);
             Period period = Period.between(now, delay);
             return String.format(FORMAT_S_S, period.getYears(), formatIntToStringWithTwoChar(period.getMonths()));
@@ -276,6 +290,14 @@ public final class PRConverterUtils {
     }
 
     public static String formatShortToString(Short value) {
+        if (value == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return String.valueOf(value);
+        }
+    }
+
+    public static String formatLongToString(Long value) {
         if (value == null) {
             return StringUtils.EMPTY;
         } else {

@@ -22,16 +22,17 @@ import java.nio.file.Paths;
 public class EFormFileService {
     public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
 
-    private static EFormFileService instance;
-
     private String type;
     private String server;
     private String pathRoot;
 
+    private String nameConfiguration;
+
     private JadeSFtpServer ftpServer;
     private JadeFsServer fileService;
 
-    private EFormFileService() {
+    public EFormFileService(String nameConfiguration) {
+        this.nameConfiguration = nameConfiguration;
         loadConfigurationFile();
         if ("sftp".equals(type)) {
             ftpServer = JadeSFtpServer.client(server);
@@ -42,18 +43,9 @@ public class EFormFileService {
         }
     }
 
-    public static EFormFileService instance() {
-        if (instance == null) {
-            instance = new EFormFileService();
-        }
-
-        return instance;
-    }
-
     private void loadConfigurationFile() {
         /* try fetching a private ssh key from legacy config files, mimic Jade behavior */
         final InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
-        String NAME_CONFIG = "EFormHostService";
 
         if (jadeFsServerConfig == null) {
             LOG.error("config file {} not found.",
@@ -71,7 +63,7 @@ public class EFormFileService {
             for (int j = 0; j < allProtocol.getLength(); j++) {
                 Element protocol = (Element) allProtocol.item(j);
 
-                if (NAME_CONFIG.equals(protocol.getAttribute("name"))) {
+                if (nameConfiguration.equals(protocol.getAttribute("name"))) {
                     this.type = protocol.getAttribute("type");
 
                     NodeList protocolChildren = protocol.getChildNodes();
@@ -101,9 +93,12 @@ public class EFormFileService {
     }
 
     public void send(String path, String pathFile){
-        Path file = Paths.get(path);
+        send(Paths.get(path), pathFile);
+    }
+
+    public void send(Path file, String pathFile){
         if (ftpServer == null) {
-           fileService.write(file, getPathRoot(pathFile));
+            fileService.write(file, getPathRoot(pathFile));
         } else {
             ftpServer.send(file, getPathRoot(pathFile));
         }

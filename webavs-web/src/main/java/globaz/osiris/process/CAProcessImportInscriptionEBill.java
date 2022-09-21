@@ -65,7 +65,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private final StringBuilder error = new StringBuilder();
     private final List<String> filesToSend = new ArrayList<>();
     private boolean isPlusieursTypeAffilie;
-    private EBillSftpProcessor serviceFtp;
     private int inscriptionOK = 0;
     private int inscriptionKO = 0;
     private int resiliationOK = 0;
@@ -87,13 +86,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             this.setSendMailOnError(false);
 
             initBsession();
-            initServiceFtp();
+            EBillSftpProcessor.getInstance();
             initIdReferenceParameter();
 
             isPlusieursTypeAffilie = Boolean.parseBoolean(CAApplication.getApplicationOsiris().getProperty(CaisseHelperFactory.PLUSIEURS_TYPE_AFFILIE, "false"));
-            boolean isActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+            boolean eBillMuscaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillMuscaActifEtDansListeCaisses(getSession());
 
-            if (isActive) {
+            if (eBillMuscaActif) {
                 importFiles();
                 generationProtocol();
             }
@@ -106,7 +105,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         } finally {
             closeBsession();
-            closeServiceFtp();
+            EBillSftpProcessor.closeServiceFtp();
         }
 
         return true;
@@ -144,15 +143,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Fermeture du service ftp.
-     */
-    private void closeServiceFtp() {
-        if (serviceFtp != null) {
-            serviceFtp.disconnectQuietly();
-        }
-    }
-
-    /**
      * Initialisation des paramètres de Id référence dans le Numéro de référence BVR
      */
     private void initIdReferenceParameter() {
@@ -163,15 +153,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     }
 
     /**
-     * Initialisation du service ftp.
-     */
-    private void initServiceFtp() throws PropertiesException {
-        if (serviceFtp == null) {
-            serviceFtp = new EBillSftpProcessor();
-        }
-    }
-
-    /**
      * Récupération et traitement des fichiers d'inscription eBill
      */
     private void importFiles() {
@@ -179,7 +160,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             LOG.info("Importation des fichiers d'inscription...");
 
             // Nous recherchons tous les fichiers d'inscriptions déposés sur le serveur FTP PostFinance
-            List<String> files = serviceFtp.getListFiles(CAProcessImportInscriptionEBill.CSV_EXTENSION);
+            List<String> files = EBillSftpProcessor.getInstance().getListFiles(CAProcessImportInscriptionEBill.CSV_EXTENSION);
 
             for (final String nomFichierDistant : files) {
                 importFile(nomFichierDistant);
@@ -203,14 +184,14 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite pas et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichierInscription)) {
 
-            String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
+            String localPath = Jade.getInstance().getPersistenceDir() + EBillSftpProcessor.getFolderInName() + nomFichierDistant;
             File localFile = new File(localPath);
             try {
 
                 // Download du fichier CSV
                 try (FileOutputStream retrievedFile = new FileOutputStream(localFile)) {
-                    serviceFtp.retrieveFile(nomFichierDistant, retrievedFile);
-                    serviceFtp.deleteFile(nomFichierDistant);
+                    EBillSftpProcessor.getInstance().retrieveFile(nomFichierDistant, retrievedFile);
+                    EBillSftpProcessor.getInstance().deleteFile(nomFichierDistant);
                 }
 
                 // Traitement du fichier CSV
@@ -325,7 +306,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             eachInscription.add(getTransaction());
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_ENREGISTRE_FAILED"), eachInscription.getNumeroAffilie(), eachInscription.geteBillAccountID());
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_ENREGISTRE_FAILED"), eachInscription.getNumeroAffilie(), eachInscription.getEBillAccountID());
             LOG.error(erreurInterne, e);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
@@ -382,10 +363,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     inscriptionEBill.setBillerId(datasTemp[index]);
                     break;
                 case RECIPIENT_ID:
-                    inscriptionEBill.seteBillAccountID(datasTemp[index]);
+                    inscriptionEBill.setEBillAccountID(datasTemp[index]);
                     break;
                 case RECIPIENT_TYPE:
-                    inscriptionEBill.seteBillAccountType(datasTemp[index]);
+                    inscriptionEBill.setEBillAccountType(datasTemp[index]);
                     break;
                 case GIVEN_NAME:
                     inscriptionEBill.setPrenom(datasTemp[index]);
@@ -400,9 +381,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     inscriptionEBill.setAdresse1(datasTemp[index]);
                     break;
                 case ZIP:
-                    if (StringUtils.isNumeric(datasTemp[index])) {
-                        inscriptionEBill.setNpa(Integer.parseInt(datasTemp[index]));
-                    }
+                    inscriptionEBill.setNpa(datasTemp[index]);
                     break;
                 case CITY:
                     inscriptionEBill.setLocalite(datasTemp[index]);
@@ -458,7 +437,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             if (Objects.nonNull(enumInscriptionEBill)) {
                 switch (enumInscriptionEBill) {
                     case RECIPIENT_ID:
-                        inscriptionEBill.seteBillAccountID(datasTemp[i]);
+                        inscriptionEBill.setEBillAccountID(datasTemp[i]);
                         break;
                     case GIVEN_NAME:
                         inscriptionEBill.setPrenom(datasTemp[i]);
@@ -476,9 +455,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         inscriptionEBill.setAdresse2(datasTemp[i]);
                         break;
                     case ZIP:
-                        if (StringUtils.isNumeric(datasTemp[i])) {
-                            inscriptionEBill.setNpa(Integer.parseInt(datasTemp[i]));
-                        }
+                        inscriptionEBill.setNpa(datasTemp[i]);
                         break;
                     case CITY:
                         inscriptionEBill.setLocalite(datasTemp[i]);
@@ -529,7 +506,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
             boolean result;
             boolean resultInscription;
-            if (StringUtils.isNotEmpty(eachInscription.geteBillAccountID())) {
+            if (StringUtils.isNotEmpty(eachInscription.getEBillAccountID())) {
                 switch (typeEBillEnum) {
                     case INSCRIPTION:
                         result = updateCompteAnnexeTitulariseCasInscription(eachInscription);
@@ -586,12 +563,12 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         // Récupération du compte annexe.
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(getSession());
-        manager.setForEBillAccountID(eachInscription.geteBillAccountID());
+        manager.setForEBillAccountID(eachInscription.getEBillAccountID());
 
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED"), eachInscription.geteBillAccountID());
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED"), eachInscription.getEBillAccountID());
             LOG.error(erreurInterne, e);
             eachInscription.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
@@ -608,7 +585,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             }
             return inscriptionParitairePersonelSucces;
         } else {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED"), eachInscription.geteBillAccountID());
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED"), eachInscription.getEBillAccountID());
             LOG.warn(erreurInterne);
             eachInscription.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n");
@@ -789,27 +766,27 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      */
     private boolean majCompteAnnexe(CAInscriptionEBill inscriptionEBill, final CACompteAnnexe compteAnnexe) {
         if (inscriptionEBill.getType().estResiliation()) {
-            compteAnnexe.seteBillAccountID(null);
-            compteAnnexe.seteBillMail(null);
-            compteAnnexe.seteBillDateInscription(null);
+            compteAnnexe.setEBillAccountID(null);
+            compteAnnexe.setEBillMail(null);
+            compteAnnexe.setEBillDateInscription(null);
         } else {
-            if (!StringUtils.isEmpty(compteAnnexe.geteBillAccountID())) {
-                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_ALREADY_REGISTERED"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
+            if (!StringUtils.isEmpty(compteAnnexe.getEBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_ALREADY_REGISTERED"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.getEBillAccountID());
                 LOG.error(erreurInterne);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n");
                 return false;
             }
 
-            compteAnnexe.seteBillAccountID(inscriptionEBill.geteBillAccountID());
-            compteAnnexe.seteBillMail(inscriptionEBill.getEmail());
-            compteAnnexe.seteBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            compteAnnexe.setEBillAccountID(inscriptionEBill.getEBillAccountID());
+            compteAnnexe.setEBillMail(inscriptionEBill.getEmail());
+            compteAnnexe.setEBillDateInscription(JadeDateUtil.getGlobazFormattedDate(new Date()));
         }
 
         try {
             compteAnnexe.update();
         } catch (Exception e) {
-            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.getEBillAccountID());
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
             error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
@@ -821,8 +798,8 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private boolean sendMail(CAInscriptionEBill inscriptionEBill, CACompteAnnexe compteAnnexe) {
         // envoie un mail pour les inscriptions seulement
         if(!inscriptionEBill.getType().estResiliation()) {
-            if (JadeStringUtil.isEmpty(inscriptionEBill.getEmail()) || JadeStringUtil.isEmpty(inscriptionEBill.geteBillAccountID())) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.geteBillAccountID());
+            if (JadeStringUtil.isEmpty(inscriptionEBill.getEmail()) || JadeStringUtil.isEmpty(inscriptionEBill.getEBillAccountID())) {
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_MANQUANTE), compteAnnexe.getIdCompteAnnexe(), inscriptionEBill.getEBillAccountID());
                 LOG.error(erreurInterne);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n");
@@ -831,7 +808,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             try {
                 EBillMail.sendMailConfirmation(inscriptionEBill.getEmail(), compteAnnexe.getTiers().getLangueISO());
             } catch (Exception e) {
-                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), inscriptionEBill.geteBillAccountID());
+                String erreurInterne = String.format(getSession().getLabel(COMPTE_ANNEXE_EMAIL_FAILED), compteAnnexe.getIdExterneRole(), inscriptionEBill.getEBillAccountID());
                 LOG.error(erreurInterne, e);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");

@@ -70,6 +70,7 @@ public class COEffectuerTransitions {
     private COImprimerListeDeclenchement listeDeclenchement;
     private COImprimerListPourOP listePourOP;
     private boolean previsionnel;
+    private boolean eBillPrintable = false;
 
     private List roles;
 
@@ -529,6 +530,10 @@ public class COEffectuerTransitions {
         return previsionnel;
     }
 
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
     /**
      * Effectue la transition pour le contentieux donné.
      * 
@@ -557,7 +562,7 @@ public class COEffectuerTransitions {
             COTransition transition = (COTransition) transitions.next();
 
             COTransitionAction action = COProcessContentieuxUtils.getTransitionAction(parent, selection, transition,
-                    getDateSurDocument(), getDateDelaiPaiement());
+                    getDateSurDocument(), getDateDelaiPaiement(), getEBillPrintable());
 
             if (action != null) {
                 try {
@@ -760,6 +765,10 @@ public class COEffectuerTransitions {
 
     public void setPrevisionnel(boolean previsionnel) {
         this.previsionnel = previsionnel;
+    }
+
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     public void setRoles(List roles) {

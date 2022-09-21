@@ -29,6 +29,7 @@ import globaz.aquila.util.CODateUtils;
 import globaz.aquila.util.COEtapeBlocage;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.BConstants;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -102,6 +103,8 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     private String nbDelaiMute = "";
     private String oldIdEtape = "";
     private Boolean previsionnel = Boolean.FALSE;
+    private String eBillTransactionID = "";
+    private Boolean eBillPrintable = Boolean.FALSE;
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
     private String prochaineDateDeclenchement = "";
@@ -217,6 +220,8 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
         idSection = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_ID_SECTION);
         nbDelaiMute = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_NB_DELAI_MUTE);
         idCompteAnnexePrincipal = statement.dbReadNumeric(ICOContentieuxConstante.FNAME_ID_COMPTE_ANNEXE_PRINCIPAL);
+        eBillTransactionID = statement.dbReadString(ICOContentieuxConstante.FNAME_EBILL_TRANSACTION_ID);
+        eBillPrintable = statement.dbReadBoolean(ICOContentieuxConstante.FNAME_EBILL_PRINTABLE);
     }
 
     /**
@@ -274,6 +279,10 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
                 this._dbWriteNumeric(statement.getTransaction(), nbDelaiMute, "nbDelaiMute"));
         statement.writeField(ICOContentieuxConstante.FNAME_ID_COMPTE_ANNEXE_PRINCIPAL,
                 this._dbWriteNumeric(statement.getTransaction(), idCompteAnnexePrincipal, "idCompteAnnexePrincipal"));
+        statement.writeField(ICOContentieuxConstante.FNAME_EBILL_TRANSACTION_ID,
+                this._dbWriteString(statement.getTransaction(), eBillTransactionID, "eBillTransactionID"));
+        statement.writeField(ICOContentieuxConstante.FNAME_EBILL_PRINTABLE,
+                this._dbWriteBoolean(statement.getTransaction(), eBillPrintable, BConstants.DB_TYPE_BOOLEAN_CHAR, "eBillPrintable"));
     }
 
     /**
@@ -1120,6 +1129,20 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     }
 
     /**
+     * @return the eBillTransactionID
+     */
+    public String getEBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    /**
+     * @return the eBillPrintable
+     */
+    public Boolean getEBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @return La valeur courante de la propriété
      */
     public String getRemarque() {
@@ -1563,6 +1586,22 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
         }
 
         prochaineDateDeclenchement = string;
+    }
+
+    /**
+     * @param eBillTransactionID
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    /**
+     * @param eBillPrintable
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 
     /**

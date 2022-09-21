@@ -450,14 +450,14 @@ public class REReaderAnnonces51_53 extends REAbstractDownloader {
         return i;
     }
 
-    private boolean containsCodeSpecial(REAnnoncesAbstractLevel3A ann, String codeSpecial) {
+    protected boolean containsCodeSpecial(REAnnoncesAbstractLevel3A ann, String codeSpecial) {
         if(ann.getCasSpecial1().equals(codeSpecial)|| ann.getCasSpecial2().equals(codeSpecial)
                 ||ann.getCasSpecial3().equals(codeSpecial)||ann.getCasSpecial4().equals(codeSpecial)||ann.getCasSpecial5().equals(codeSpecial)){
             return true;
         }
         return false;
     }
-    private boolean containsCodeSpecial(REAnnoncesAbstractLevel3B ann, String codeSpecial) {
+    protected boolean containsCodeSpecial(REAnnoncesAbstractLevel3B ann, String codeSpecial) {
         if(ann.getCasSpecial1().equals(codeSpecial)|| ann.getCasSpecial2().equals(codeSpecial)
                 ||ann.getCasSpecial3().equals(codeSpecial)||ann.getCasSpecial4().equals(codeSpecial)||ann.getCasSpecial5().equals(codeSpecial)){
             return true;

@@ -318,7 +318,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // Calcul des prestations standard, LAMat et ACM_ALFA
             final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-            pViewBean = calculateur.calculPrestationAMAT_ACM(session, transaction, droit, action);
+            pViewBean = calculateur.calculPrestationAMAT_ACM(session, transaction, droit);
 
             calculerComplement(session, transaction, droit);
 
@@ -556,7 +556,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @see{APProperties.PROPERTY_IS_FERCIAB
      * @see{APProperties.TYPE_DE_PRESTATION_ACM
      */
-    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
+    public static void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
             throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
@@ -622,7 +622,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @see APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID
      * @see Plage valeur montant max APG MATCIABBEM/MATCIABJUM
      */
-    private void calculerComplementMATCIAB1(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
+    public static void calculerComplementMATCIAB1(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
             throws Exception {
 
         if (!isCalculDisponibleMATCIAB(droit))  {
@@ -761,7 +761,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @param listEmployeur
      * @throws Exception
      */
-    private void setMontantMaxSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur, Map<String, FWCurrency> mapRMD)
+    private static void setMontantMaxSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur, Map<String, FWCurrency> mapRMD)
             throws Exception {
         Map<IAFAssurance, String> listAssurance;
         Integer montantMax = 0;
@@ -802,7 +802,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private boolean isComplement(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
+    private static boolean isComplement(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
             throws Exception {
         List<IAFAssurance> listAssurance;
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
@@ -856,7 +856,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      * @see{APProperties.TYPE_DE_PRESTATION_ACM
      */
-    private void calculerPrestationsAcmNe(final BSession session, final BTransaction transaction,
+    public static void calculerPrestationsAcmNe(final BSession session, final BTransaction transaction,
                                           final APDroitLAPG droit) throws Exception {
 
         /**
@@ -922,7 +922,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @see APProperties.PRESTATION_ACM_2_ACTIF
      * @see APProperties#PRESTATION_ACM_2_NOMBRE_JOURS
      */
-    private void calculerPrestationsAcm2(final BSession session, final BTransaction transaction,
+    public static void calculerPrestationsAcm2(final BSession session, final BTransaction transaction,
                                          final APDroitLAPG droitLAPG) throws Exception {
 
         if (droitLAPG == null) {
@@ -1154,7 +1154,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
     }
 
-    private void genererLesCotisations(final BSession session,
+    private static void genererLesCotisations(final BSession session,
                                        List<APPrestationCalculeeAPersister> resultatCalculAPersister) throws Exception {
 
         // Nous allons générer pour chaque répartition de la prestation des cotisations ACM ou MATCIAB
@@ -1177,7 +1177,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private void genererCotisationsPourRepartition(final BSession session, final APPrestationCalculee prestation,
+    private static void genererCotisationsPourRepartition(final BSession session, final APPrestationCalculee prestation,
                                                    final APRepartitionPaiements repartition) throws Exception {
 
         // Récupère la situation professionelle
@@ -1197,7 +1197,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         repartition.update(session.getCurrentThreadTransaction());
     }
 
-    private FWCurrency getMontantTotalCotisation(BSession session, APRepartitionPaiements repa) throws Exception {
+    private static FWCurrency getMontantTotalCotisation(BSession session, APRepartitionPaiements repa) throws Exception {
         FWCurrency result = new FWCurrency(0);
         APCotisationManager mgr = new APCotisationManager();
 
@@ -1658,7 +1658,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private APCalculateurComplementDonneesPersistence getDonneesPersistancePourCalculComplementaire(
+    private static APCalculateurComplementDonneesPersistence getDonneesPersistancePourCalculComplementaire(
             final String idDroit, final BISession iSession, final BITransaction iTransaction) throws Exception {
         final APPrestationManager mgr = new APPrestationManager();
         final BSession session = (BSession) iSession;
@@ -1724,7 +1724,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
 
-    private APCalculateurComplementDonneesPersistence getDonneesPersistancePourCalculComplementaireMATCIAB1(
+    private static APCalculateurComplementDonneesPersistence getDonneesPersistancePourCalculComplementaireMATCIAB1(
             final String idDroit, final BISession iSession, final BITransaction iTransaction) throws Exception {
         final APPrestationManager mgr = new APPrestationManager();
         final BSession session = (BSession) iSession;
@@ -1821,7 +1821,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return donneesPersistence;
     }
 
-    private HashMap<String, Map<String, BigDecimal[]>> getTauxParPrestationsEtSitPro(BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, List<APSitProJointEmployeur> apSitProJointEmployeurs, List<APPrestation> apPrestationsIsDateFinContrat) throws Exception {
+    private static HashMap<String, Map<String, BigDecimal[]>> getTauxParPrestationsEtSitPro(BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, List<APSitProJointEmployeur> apSitProJointEmployeurs, List<APPrestation> apPrestationsIsDateFinContrat) throws Exception {
         HashMap<String, Map<String, BigDecimal[]>> tauxParPrestation = new HashMap<String, Map<String, BigDecimal[]>>();
 
         for (APPrestation apPrestation : apPrestationsIsDateFinContrat) {
@@ -1851,7 +1851,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return tauxParPrestation;
     }
 
-    private void setDateFinContrat(BSession session, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) throws Exception {
+    private static void setDateFinContrat(BSession session, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) throws Exception {
         for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
             APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
             sitPro.setSession(session);
@@ -1861,7 +1861,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private List<APPrestation> filterAPPrestationsIsDateFinContratMATCIAB1(List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur, List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations) {
+    private static List<APPrestation> filterAPPrestationsIsDateFinContratMATCIAB1(List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur, List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations) {
         List<APPrestation> apPrestationsIsDateFinContrat = new ArrayList<>();
 
         APSitProJointEmployeur apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeursIsVersementEmployeur.get(0);
@@ -1914,7 +1914,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apRepJointPrestationIsDateFinContrat;
     }
 
-    private List<APPrestation> filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab, List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement) {
+    private static List<APPrestation> filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab, List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement) {
         List<APPrestation> apPrestationsIsCotisationComplementaireAvantDebutPrestations = new ArrayList<>();
 
         APSitProJointEmployeur apSitProJointEmployeurMinDateDebut = apSitProJointEmployeursIsComplement.get(0);
@@ -1941,7 +1941,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apPrestationsIsCotisationComplementaireAvantDebutPrestations;
     }
 
-    private  List<APPrestation> filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB1(APPrestationManager mgr) {
+    private static  List<APPrestation> filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB1(APPrestationManager mgr) {
         final List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab = new ArrayList<>();
 
         // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
@@ -1989,7 +1989,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apRepJointPrestationsIsDateDebutAvantProprieteFerciab;
     }
 
-    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplementMATCIAB1(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
+    private static List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplementMATCIAB1(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -2051,7 +2051,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apSitProJointEmployeursIsComplement;
     }
 
-    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplement(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
+    private static List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplement(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -2123,7 +2123,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apSitProJointEmployeursIsComplement;
     }
 
-    private List<APRepartitionJointPrestation> filtrerApRepJointPrestationsIsAllocation(String idDroit, BSession session, BTransaction transaction, APEntityService servicePersistance) throws Exception {
+    private static List<APRepartitionJointPrestation> filtrerApRepJointPrestationsIsAllocation(String idDroit, BSession session, BTransaction transaction, APEntityService servicePersistance) throws Exception {
         // Récupération de toutes les restations joint repartitions
         final List<APRepartitionJointPrestation> apRepJointPrestations = servicePersistance
                 .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
@@ -2142,7 +2142,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apRepJointPrestationsIsAllocation;
     }
 
-    private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplementMATCIAB1(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
+    private static List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplementMATCIAB1(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -2201,7 +2201,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return null;
     }
 
-    private void putMontantMax(BSession session, String date, Map<EMontantsMax, BigDecimal> montantsMax,
+    private static void putMontantMax(BSession session, String date, Map<EMontantsMax, BigDecimal> montantsMax,
                                EMontantsMax eMontantMax) throws Exception {
         montantsMax.put(eMontantMax, new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
                 "1", eMontantMax.name(), date, "", 0)));
@@ -2214,7 +2214,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @return
      * @throws Exception
      */
-    private APCalculateurAcmAlphaDonnesPersistence getDonneesPersistancePourCalculAcmNE(final String idDroit,
+    private static APCalculateurAcmAlphaDonnesPersistence getDonneesPersistancePourCalculAcmNE(final String idDroit,
                                                                                         final BISession iSession, final BITransaction iTransaction) throws Exception {
 
         final BSession session = (BSession) iSession;
@@ -2279,7 +2279,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @return
      * @throws Exception
      */
-    private ACM2PersistenceInputData getDonneesPersistancePourCalculAcm2(final APDroitMaternite droit,
+    private static ACM2PersistenceInputData getDonneesPersistancePourCalculAcm2(final APDroitMaternite droit,
                                                                          final BSession session, final BTransaction transaction) throws Exception {
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
@@ -2426,7 +2426,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apSitProJointEmployeursIsActive;
     }
 
-    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsVersementEmployeur(List<APSitProJointEmployeur> apSitProJointEmployeurs) {
+    private static List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsVersementEmployeur(List<APSitProJointEmployeur> apSitProJointEmployeurs) {
         return apSitProJointEmployeurs.stream().filter(APSitProJointEmployeur::getIsVersementEmployeur).collect(Collectors.toList());
     }
 
@@ -2484,7 +2484,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @return
      * @throws Exception
      */
-    private FWCurrency getFraisDeGarde(final BSession session, final APDroitLAPG droit) throws Exception {
+    private static FWCurrency getFraisDeGarde(final BSession session, final APDroitLAPG droit) throws Exception {
         if (droit instanceof APDroitAPG) {
             return new FWCurrency(((APDroitAPG) droit).loadSituationFamilliale().getFraisGarde());
         } else {
@@ -2492,7 +2492,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private BigDecimal getTauxAssurance(final String idAssurance, final String date, final BISession session)
+    private static BigDecimal getTauxAssurance(final String idAssurance, final String date, final BISession session)
             throws Exception {
 
         final AFTauxAssuranceManager afTauAssMgr = new AFTauxAssuranceManager();
@@ -2561,7 +2561,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @param persist
      * @throws Exception
      */
-    private void persisterResultatCalculPrestation(final List<APPrestationCalculeeAPersister> resultatCalcul,
+    private static void persisterResultatCalculPrestation(final List<APPrestationCalculeeAPersister> resultatCalcul,
                                                    final BSession session, final BTransaction transaction, boolean persist) throws Exception {
 
         for (final APPrestationCalculeeAPersister prestationCalculee : resultatCalcul) {
@@ -2587,7 +2587,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    private void supprimerPrestationsDuDroit(final BSession session, String idDroit) throws Exception {
+    public static void supprimerPrestationsDuDroit(final BSession session, String idDroit) throws Exception {
         BITransaction transactionSupPreSta = null;
         try {
             transactionSupPreSta = session.newTransaction();
