@@ -2,6 +2,7 @@ package globaz.naos.web.service;
 
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeDateUtil;
