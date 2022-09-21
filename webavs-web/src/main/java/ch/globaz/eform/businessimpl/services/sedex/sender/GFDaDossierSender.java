@@ -23,13 +23,21 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class GFDaDossierSender<T> {
 
+    protected final Pattern page = Pattern.compile("(.*)(_[pP][1-9]+)$");
+    protected final Pattern multi = Pattern.compile("(.*)(_[pP][1-9]+)$");
+
     protected Map<GFDaDossierElementSender, String> elements = new HashMap<>();
     protected Map<String, String> attachments = new HashMap<>();
+    protected GFAttachment leadingAttachment;
     protected GFIdentifiantSedexGenerator identifiantGenerator = new GFIdentifiantGeneratorDefault();
+
+    protected abstract String getDocumentType();
+    protected abstract String getDocumentTypeLead();
 
     private DatePartiallyKnownType getDate(String stringDate) {
         try {
@@ -137,6 +145,14 @@ public abstract class GFDaDossierSender<T> {
 
     public void addAttachments(List<Path> attachments) {
         attachments.forEach(attachment -> this.attachments.put(attachment.getFileName().toString(), attachment.toAbsolutePath().toString()));
+    }
+
+    public void setLeadingAttachment(String fileName, String path) {
+        this.leadingAttachment = new GFAttachment(fileName, path);
+    }
+
+    public void setLeadingAttachment(Path path) {
+        this.leadingAttachment = new GFAttachment(path.getFileName().toString(), path.toAbsolutePath().toString());
     }
 
     public GFIdentifiantSedexGenerator getIdentifiantGenerator() {
