@@ -1288,7 +1288,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
         final APIOperationOrdreVersement ordreVersement = compta.createOperationOrdreVersement();
         ordreVersement.setIdAdressePaiement(idAdressePaiement);
-        ordreVersement.setReferencePaiement(referencePaiement);
         ordreVersement.setDate(dateComptable);
         ordreVersement.setIdCompteAnnexe(idCompteAnnexe);
         ordreVersement.setIdSection(idSection);

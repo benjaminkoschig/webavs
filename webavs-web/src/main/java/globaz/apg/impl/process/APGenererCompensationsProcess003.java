@@ -383,6 +383,7 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
+                    key.referencePaiement = repartitionPaiementsJointEmployeur.getReferenceQR();
 
                     // On ne prend que les répartition parente. Les répartitions
                     // enfants (montant ventilé) correspondent à une adresse de

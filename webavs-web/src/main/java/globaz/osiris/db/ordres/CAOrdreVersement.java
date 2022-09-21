@@ -293,7 +293,7 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
             }
 
             // Vérifie le QR IBAN
-            if (CAOrdreVersement.QR.equals(getTypeVirement()) && !CASepaCommonUtils.isQRIBAN(getAdressePaiement())) {
+            if (!(CAOrdreVersement.QR.equals(getTypeVirement()) && CASepaCommonUtils.isQRIban(getAdressePaiement().getNumCompte()))) {
                 getMemoryLog().logMessage("NOT_QR_IBAN", null, FWMessage.ERREUR, this.getClass().getName());
             }
 

@@ -456,6 +456,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
             // repartition.getGenrePrestationPrestation(), isEmployeur, isIndependant, "", false);
             key.idDomaineAdressePaiement = repartition.getIdDomaineAdressePaiement();
             key.idTiersAdressePaiement = repartition.getIdTiersAdressePaiement();
+            key.referencePaiement = repartition.getReferenceQR();
 
             final FWCurrency montantRepartition = new FWCurrency(repartition.getMontantNet());
             montantRepartition.sub(getMontantVentile(session, repartition.getIdRepartitionBeneficiairePaiement()));
