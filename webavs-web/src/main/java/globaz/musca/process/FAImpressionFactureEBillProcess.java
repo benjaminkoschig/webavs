@@ -629,8 +629,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             success = _createDocumentFromManager(manager);
             if ((success)
                     && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_PRINT_DECISIONMORATOIRE))
-                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES)
-                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL)))) {
+                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES))
+                    && !(passage.getModuleEnCours().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL))) {
                 imprimable = false;
                 isNewDocument = true;
                 manager.setForNonImprimable(Boolean.TRUE); // imprimer seulement
