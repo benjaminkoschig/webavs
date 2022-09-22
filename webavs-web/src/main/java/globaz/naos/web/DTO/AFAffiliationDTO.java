@@ -1,11 +1,17 @@
 package globaz.naos.web.DTO;
 
+import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Periode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
+
+import java.util.Vector;
 
 @Data
 public class AFAffiliationDTO {
 
+    private String id;
     private String idTiers = "";
     private String raisonSocialeLong;
     private String numeroAffilie;
@@ -94,7 +100,13 @@ public class AFAffiliationDTO {
 
     @JsonIgnore
     public Boolean isValidForUpdate() {
-        return true;
+
+        Vector<String> mandatoryParameters = new Vector<>();
+        if (!JadeStringUtil.isEmpty(this.getId()))
+            mandatoryParameters.add(this.getId());
+
+        return !mandatoryParameters.isEmpty() &&
+                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
     }
 
     @JsonIgnore

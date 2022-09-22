@@ -5,12 +5,16 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.web.DTO.AFAffiliationDTO;
 import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.naos.web.exceptions.AFInternalException;
+import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TITiers;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -88,7 +92,7 @@ public class AFExecuteService extends BProcess {
 //            affiliation.setEnvoiAutomatiqueLPP();
 //            affiliation.setFacturationAccompteCarte
             affiliation.setCodeFacturation(dto.getFacturationCodeFacturation());
-            affiliation.setExonerationGenerale(dto.getExoneration());
+            affiliation.setExonerationGenerale(dto.getExoneration() != null ? dto.getExoneration() : Boolean.FALSE);
 //            affiliation.setPersonnelOccasionnel
 //            affiliation.setAffiliationProvisoire
             affiliation.setDateDemandeAffiliation(dto.getDateDemandeAffiliation());
@@ -97,7 +101,6 @@ public class AFExecuteService extends BProcess {
             affiliation.setNumeroIDE(dto.getNumeroIDE());
 //            affiliation.setEntiteIDENonAnnoncante
             affiliation.setAccesSecurite(dto.getAffiliationSecurisee());
-
 
             affiliation.add(transaction);
 
@@ -119,7 +122,7 @@ public class AFExecuteService extends BProcess {
     }
 
     /**
-     * Modification d'une affiliation.
+     * Modification d'une affiliation (page 1 et 2)
      *
      * @param dto
      * @param token
@@ -127,9 +130,10 @@ public class AFExecuteService extends BProcess {
      */
     public final AFAffiliationDTO updateAffiliation(AFAffiliationDTO dto, String token) {
         try {
-            updateAffiliation(getSession(), dto);
+            updateAffiliationPage1(getSession(), dto);
+            updateAffiliationPage2(getSession(), dto);
         } catch (AFBadRequestException e) {
-            LOG.error("Une erreur de paramtre est survenue lors de la modification de l'affiliation " + e);
+            LOG.error("Une erreur de parametre est survenue lors de la modification de l'affiliation " + e);
             throw e;
         } catch (AFInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la modification de l'affiliation: " + e);
@@ -142,15 +146,123 @@ public class AFExecuteService extends BProcess {
     }
 
     /**
-     * Mthode pour modifier une adresse.
+     * Methode pour modifier une affiliation (page 1).
      *
      * @param session
      * @param dto
      * @throws Exception
      */
-
-    private void updateAffiliation(BSession session, AFAffiliationDTO dto) throws Exception {
+    private void updateAffiliationPage1(BSession session, AFAffiliationDTO dto) throws Exception {
         //TODO update affililiation
+        AFAffiliation affiliation = new AFAffiliation();
+        affiliation.setSession(session);
+        affiliation.setAffiliationId(dto.getId());
+        affiliation.retrieve(session.getCurrentThreadTransaction());
+
+        if (affiliation.isNew()) {
+            throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - L'affiliation à modifier n'a pas été trouvée");
+        }
+
+        if (!JadeStringUtil.isEmpty(dto.getIdTiers())) {
+            affiliation.setIdTiers(dto.getIdTiers());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getRaisonSocialeLong())) {
+            affiliation.setRaisonSociale(dto.getRaisonSocialeLong());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getRaisonSocialeCourt())) {
+            affiliation.setRaisonSocialeCourt(dto.getRaisonSocialeCourt());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getNumeroAffilie())) {
+            affiliation.setAffilieNumero(dto.getNumeroAffilie());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getAncien_numero_affilie())) {
+            affiliation.setAncienAffilieNumero(dto.getAncien_numero_affilie());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getDateDebutAffiliation())) {
+            affiliation.setDateDebut(dto.getDateDebutAffiliation());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getDateFinAffiliation()) && !JadeStringUtil.isEmpty(dto.getMotifFin())) {
+            affiliation.setDateFin(dto.getDateFinAffiliation());
+            affiliation.setMotifFin(dto.getMotifFin());
+        } else if (!JadeStringUtil.isEmpty(dto.getDateFinAffiliation())) {
+            affiliation.setDateFin(dto.getDateFinAffiliation());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getGenreAffiliation())) {
+            affiliation.setTypeAffiliation(dto.getGenreAffiliation());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getMotifCreation())) {
+            affiliation.setMotifCreation(dto.getMotifCreation());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getPersonnaliteJuridique())) {
+            affiliation.setPersonnaliteJuridique(dto.getPersonnaliteJuridique());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getPeriodicite())) {
+            affiliation.setPeriodicite(dto.getPeriodicite());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getBrancheEconomique())) {
+            affiliation.setBrancheEconomique(dto.getBrancheEconomique());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getCodeNoga())) {
+            affiliation.setCodeNoga(dto.getCodeNoga());
+        }
+        if (dto.getFacturationParReleve() != null) {
+            affiliation.setReleveParitaire(dto.getFacturationParReleve());
+        }
+        if (dto.getFacturationAcompteCarte() != null) {
+            affiliation.setRelevePersonnel(dto.getFacturationAcompteCarte());
+        }
+        if (dto.getFacturationCodeFacturation() != null) {
+            affiliation.setCodeFacturation(dto.getFacturationCodeFacturation());
+        }
+        if (dto.getExoneration()!= null) {
+            affiliation.setExonerationGenerale(dto.getExoneration());
+        }
+        if (dto.getPersonnelOccasionnel() != null) {
+            affiliation.setOccasionnel(dto.getPersonnelOccasionnel());
+        }
+        if (dto.getAffiliationProvisoire() != null) {
+            affiliation.setTraitement(dto.getAffiliationProvisoire());
+        }
+        //Affiliation EBusiness -> ne pas traiter
+        if (!JadeStringUtil.isEmpty(dto.getDateDemandeAffiliation())) {
+            affiliation.setDateDemandeAffiliation(dto.getDateDemandeAffiliation());
+        }
+        // TODO Type d'associé ?
+        if (!JadeStringUtil.isEmpty(dto.getDeclarationSalaire())) {
+            affiliation.setDeclarationSalaire(dto.getDeclarationSalaire());
+        }
+        if (!JadeStringUtil.isEmpty(dto.getNumeroIDE())) {
+            affiliation.setNumeroIDE(dto.getNumeroIDE());
+        }
+        // TODO Raison sociale IDE ?
+        if (dto.getEntiteIDENonAnnoncante() != null) {
+            affiliation.setIdeNonAnnoncante(dto.getEntiteIDENonAnnoncante());
+        }
+        // Make the actual transaction with the database in order to update the tiers
+        affiliation.update(session.getCurrentThreadTransaction());
+        checkForErrorsAndThrow(session, "AFExecuteService#updateAffiliationPage1 - Erreur rencontrée lors de l'update de l'affiliation");
+    }
+
+    /**
+     * Methode pour modifier une affiliation (page 2).
+     *
+     * @param session
+     * @param dto
+     * @throws Exception
+     */
+    private void updateAffiliationPage2(BSession session, AFAffiliationDTO dto) throws Exception {
+        AFAffiliation affiliation = new AFAffiliation();
+        affiliation.setSession(session);
+        affiliation.setAffiliationId(dto.getId());
+        affiliation.retrieve(session.getCurrentThreadTransaction());
+
+        if (!JadeStringUtil.isEmpty(dto.getAffiliationSecurisee())) {
+            affiliation.setAccesSecurite(dto.getAffiliationSecurisee());
+        }
+
+        // Make the actual transaction with the database in order to update the tiers
+        affiliation.update(session.getCurrentThreadTransaction());
+        checkForErrorsAndThrow(session, "AFExecuteService#updateAffiliationPage2 - Erreur rencontrée lors de l'update de l'affiliation");
     }
 
     /**
@@ -180,6 +292,22 @@ public class AFExecuteService extends BProcess {
         //TODO delete affiliation
     }
 
+    /**
+     * Vérifie si JadeThread log et la transaction ont des erreurs, et lance une exception si besoin.
+     *
+     * @param session
+     * @param message
+     * @throws Exception
+     */
+    private void checkForErrorsAndThrow(BSession session, String message) throws Exception {
+        if (!JadeStringUtil.isEmpty(String.valueOf(session.getCurrentThreadTransaction().getErrors()))) {
+            LOG.error(message);
+            throw new AFBadRequestException(message + ": " + session.getCurrentThreadTransaction().getErrors().toString());
+        } else if (!JadeThread.logIsEmpty()) {
+            LOG.error(message);
+            throw new AFBadRequestException(message + ": " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()));
+        }
+    }
 
     @Override
     protected void _executeCleanUp() {
