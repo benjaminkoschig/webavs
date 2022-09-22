@@ -6,42 +6,22 @@ import lombok.Data;
 
 import java.util.Vector;
 
+/**
+ * DTO utilisé pour la création et l'update avec toutes les données d'un tiers (y.c. adresses, adresses de paiement, contacts...).
+ * <p>
+ * Il est préférable d'utiliser les updates "atomiques" pour mettre à jour les tables du tiers une à une, au lieu de toutes à la fois avec cette classe.
+ *
+ * @see PYTiersPage1DTO
+ * @see PYAddressDTO
+ * @see PYPaymentAddressDTO
+ * @see PYContactDTO
+ * @see PYMeanOfCommunicationDTO
+ */
 @Data
-public class PYTiersDTO {
-
-    private String id = "";
-
-    // Mandatory fields
-    private String surname;
-    private String language;
-
-    // Physical person's mandatory fields
-    private Boolean isPhysicalPerson;
-    private String title;
-    private String name;
-
-    // Mandatory for a physical person, impossible for a legal person
-    private String nss;
-    private String birthDate;
-    private String civilStatus;
-
-    // Physical person's optional fields (not possible for a legal person)
-    private String deathDate;
-    private String sex;
-    private String maidenName;
-    private String nationality;
-
-    // Optional fields
-    private String name1;
-    private String name2;
-    private String taxpayerNumber;
-    private Boolean isInactive;
-    private String modificationDate;
-
-    private Vector<PYContactDTO> contacts = new Vector();
+public class PYTiersDTO extends PYTiersPage1DTO {
+    private Vector<PYContactCreateDTO> contacts = new Vector();
     private Vector<PYAddressDTO> addresses = new Vector();
     private Vector<PYPaymentAddressDTO> paymentAddress = new Vector<>();
-
     // CCVS-only fields
     // Optional fields
     private String tiersName;
@@ -61,11 +41,6 @@ public class PYTiersDTO {
     private String partnershipFrom;
     private String partnershipTo;
 
-
-    public PYTiersDTO() {
-
-    }
-
     /**
      * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
      * <p>
@@ -73,37 +48,48 @@ public class PYTiersDTO {
      *
      * @return false si isPhysicalPerson est null, true si les données du DTO sont bonnes pour une création
      */
+    @Override
     @JsonIgnore
-    public Boolean isValid() {
-        // TODO: Decide how we're doing it for page 2 and other fields
-
+    public Boolean isValidForCreation() {
         Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(surname);
-        mandatoryParameters.add(language);
-        mandatoryParameters.add(isPhysicalPerson.toString());
+        mandatoryParameters.add(this.getSurname());
+        mandatoryParameters.add(this.getLanguage());
+        mandatoryParameters.add(this.getIsPhysicalPerson().toString());
 
-
-        //Il faut surement pas faire ça ici. L'objet est vide du coup... isValid sera toujours bon
         PYAddressDTO pyAddressDTO = new PYAddressDTO();
         PYPaymentAddressDTO pyPaymentAddressDTO = new PYPaymentAddressDTO();
 
-        if (Boolean.FALSE.equals(isPhysicalPerson)) {
+        Boolean isValidContact = true, isValidMeansOfCommunication = true;
+        contacts = this.getContacts();
+        for (PYContactCreateDTO contactCreateDTO : contacts) {
+            isValidContact = contactCreateDTO.isValid();
+            Vector<PYMeanOfCommunicationDTO> meanOfCommunicationDTOS = contactCreateDTO.getMeansOfCommunication();
+            for (PYMeanOfCommunicationDTO meanOfCommunicationDTO : meanOfCommunicationDTOS) {
+                isValidMeansOfCommunication = meanOfCommunicationDTO.isValid();
+            }
+        }
+
+        if (Boolean.FALSE.equals(this.getIsPhysicalPerson())) {
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                             && pyAddressDTO.isValid(this)
                             && pyPaymentAddressDTO.isValid(this)
+                            && isValidContact
+                            && isValidMeansOfCommunication
                             && PYValidateDTO.isValidForCreation(this)
             );
-        } else if (Boolean.TRUE.equals(isPhysicalPerson)) {
-            mandatoryParameters.add(title);
-            mandatoryParameters.add(name);
-            mandatoryParameters.add(nss);
-            mandatoryParameters.add(birthDate);
-            mandatoryParameters.add(civilStatus);
+        } else if (Boolean.TRUE.equals(this.getIsPhysicalPerson())) {
+            mandatoryParameters.add(this.getTitle());
+            mandatoryParameters.add(this.getName());
+            mandatoryParameters.add(this.getNss());
+            mandatoryParameters.add(this.getBirthDate());
+            mandatoryParameters.add(this.getCivilStatus());
             return (
                     mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
                             && pyAddressDTO.isValid(this)
                             && pyPaymentAddressDTO.isValid(this)
+                            && isValidContact
+                            && isValidMeansOfCommunication
                             && PYValidateDTO.isValidForCreation(this)
             );
         }

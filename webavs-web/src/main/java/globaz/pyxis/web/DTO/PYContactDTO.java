@@ -13,14 +13,15 @@ import java.util.Vector;
 @Data
 public class PYContactDTO {
     private String id;
+    private String idTiers;
     private String firstName;
     private String lastName;
-    private Vector<PYMeanOfCommunicationDTO> meansOfCommunication = new Vector();
 
     @JsonIgnore
     public Boolean isValid() {
         Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getId());
+        if (this.getId() != null)
+            mandatoryParameters.add(this.getId());
 
         return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
     }

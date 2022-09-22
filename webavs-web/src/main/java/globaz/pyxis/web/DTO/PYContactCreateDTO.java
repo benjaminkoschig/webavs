@@ -11,7 +11,7 @@ import java.util.Vector;
  */
 @Data
 public class PYContactCreateDTO extends PYContactDTO{
-    private String idTiers;
+    private Vector<PYMeanOfCommunicationDTO> meansOfCommunication = new Vector();
 
     @JsonIgnore
     public Boolean isValidForCreation() {

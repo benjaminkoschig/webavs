@@ -1,21 +1,11 @@
 package globaz.pyxis.web.ws;
 
-import globaz.pyxis.web.DTO.PYContactCreateDTO;
-import globaz.pyxis.web.DTO.PYContactDTO;
-import globaz.pyxis.web.DTO.PYMeanOfCommunicationCreationDTO;
-import globaz.pyxis.web.DTO.PYTiersDTO;
-import globaz.pyxis.web.DTO.PYTiersUpdateDTO;
+import globaz.pyxis.web.DTO.*;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.service.PYExecuteService;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.function.BiFunction;
@@ -32,7 +22,7 @@ public class PYApiRestExecute {
     public PYApiRestExecute() { service = new PYExecuteService(); }
 
     /**
-     * Web Service exposé pour la création de tiers.
+     * Web Service exposé pour la création de tiers (y.c. adresses, adresses de paiement, contacts et moyens de communication).
      *
      * @param token header d'authentification
      * @param dto JSON mappé en objet qui contient des informations sur les tiers
@@ -42,14 +32,21 @@ public class PYApiRestExecute {
     @Path(value = "create_tiers")
     public Response createTiers(@HeaderParam("authorization") String token, PYTiersDTO dto) {
         LOG.info("create_tiers");
-        return execute(token, dto, service::createTiers, dto::isValid);
+        return execute(token, dto, service::createTiers, dto::isValidForCreation);
     }
 
     @PUT
-    @Path(value = "update_tiers")
-    public Response updateTiers(@HeaderParam("authorization") String token, PYTiersUpdateDTO dto) {
-        LOG.info("update_tiers");
-        return execute(token, dto, service::updateTiers, dto::isValid);
+    @Path(value = "tiers")
+    public Response updateTiersPage1(@HeaderParam("authorization") String token, PYTiersPage1DTO dto) {
+        LOG.info("update_tiers_page_1");
+        return execute(token, dto, service::updateTiersPage1, dto::isValidForUpdate);
+    }
+
+    @POST
+    @Path(value = "tiers")
+    public Response createTiersPage1(@HeaderParam("authorization") String token, PYTiersPage1DTO dto) {
+        LOG.info("update_tiers_page_1");
+        return execute(token, dto, service::createTiersPage1, dto::isValidForCreation);
     }
 
     @PUT
@@ -75,32 +72,75 @@ public class PYApiRestExecute {
 
     @PUT
     @Path(value = "mean_of_communication")
-    public Response updateMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
-        LOG.info("create_mean_of_communication");
+    public Response updateMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
+        LOG.info("update_mean_of_communication");
         return execute(token, dto, service::updateMeanOfCommunication, dto::isValid);
     }
 
     @POST
     @Path(value = "mean_of_communication")
-    public Response createMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+    public Response createMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
         LOG.info("create_mean_of_communication");
         return execute(token, dto, service::createMeanOfCommunication, dto::isValid);
     }
 
     @DELETE
     @Path(value = "mean_of_communication")
-    public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationCreationDTO dto) {
+    public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
         LOG.info("delete_mean_of_communication");
         return execute(token, dto, service::deleteMeanOfCommunication, dto::isValid);
     }
 
+    @PUT
+    @Path(value = "address")
+    public Response updateAddress(@HeaderParam("authorization") String token, PYAddressDTO dto) {
+        LOG.info("update_address");
+        return execute(token, dto, service::updateAddress, dto::isValidForUpdate);
+    }
+
+    @POST
+    @Path(value = "address")
+    public Response createAddress(@HeaderParam("authorization") String token, PYAddressDTO dto) {
+        LOG.info("create_address");
+        return execute(token, dto, service::createAddress, dto::isValidForCreation);
+    }
+
+    @DELETE
+    @Path(value = "address")
+    public Response deleteAddress(@HeaderParam("authorization") String token, PYAddressDTO dto) {
+        LOG.info("delete_address");
+        return execute(token, dto, service::deleteAddress, dto::isValidForDelete);
+    }
+
+    @PUT
+    @Path(value = "payment_address")
+    public Response updatePaymentAddress(@HeaderParam("authorization") String token, PYPaymentAddressDTO dto) {
+        LOG.info("update_payment_address");
+        return execute(token, dto, service::updatePaymentAddress, dto::isValidForUpdate);
+    }
+
+    @POST
+    @Path(value = "payment_address")
+    public Response createPaymentAddress(@HeaderParam("authorization") String token, PYPaymentAddressDTO dto) {
+        LOG.info("create_payment_address");
+        return execute(token, dto, service::createPaymentAddress, dto::isValidForCreation);
+    }
+
+    @DELETE
+    @Path(value = "payment_address")
+    public Response deletePaymentAddress(@HeaderParam("authorization") String token, PYPaymentAddressDTO dto) {
+        LOG.info("delete_payment_address");
+        return execute(token, dto, service::deletePaymentAddress, dto::isValidForDeletion);
+    }
+
+
     /**
      * Execution de l'action du web service, exécution de la validation et création de la réponse.
      *
-     * @param token header d'identification
-     * @param dto json mappé en objet qui contient des informations sur les informations voulue par la requête
+     * @param token    header d'identification
+     * @param dto      json mappé en objet qui contient des informations sur les informations voulue par la requête
      * @param function méthode d'exécution à appeler
-     * @param isValid méthode de validation à appeler
+     * @param isValid  méthode de validation à appeler
      * @return Response
      */
     private <T, U, R> Response execute(U token, T dto, BiFunction<T, U, R> function, Supplier<Boolean> isValid) {
