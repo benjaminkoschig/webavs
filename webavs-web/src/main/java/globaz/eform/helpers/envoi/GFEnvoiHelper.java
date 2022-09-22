@@ -8,6 +8,7 @@ import ch.globaz.eform.businessimpl.services.sedex.envoi.EnvoiSedexService;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
+import ch.globaz.eform.utils.GFFileUtils;
 import ch.globaz.eform.web.servlet.GFEnvoiServletAction;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -17,6 +18,7 @@ import globaz.globall.api.BISession;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Paths;
@@ -50,8 +52,14 @@ public class GFEnvoiHelper extends FWHelper {
             try {
                 GFDaDossierSedexService sedexService = GFEFormServiceLocator.getGFDaDossierSedexService();
                 sedexService.envoyerReponse(((GFEnvoiViewBean) viewBean).getDaDossier(),
-                        GFDocumentTypeDossier.valueOf(((GFEnvoiViewBean) viewBean).getTypeDeFichier()),
-                        ((GFEnvoiViewBean) viewBean).getFileNameList().stream().map(Paths::get).collect(Collectors.toList()),
+                        GFDocumentTypeDossier.getDocumentTypeDossierByDocumentType(((GFEnvoiViewBean) viewBean).getTypeDeFichier()),
+                        ((GFEnvoiViewBean) viewBean).getFileNameList().stream()
+                                .map(fileName -> Paths.get(
+                                        GFFileUtils.WORK_PATH +
+                                                ((GFEnvoiViewBean) viewBean).getFolderUid() + "/" +
+                                                FilenameUtils.removeExtension(((GFEnvoiViewBean) viewBean).getFileNamePersistance()) + "/" +
+                                                fileName))
+                                .collect(Collectors.toList()),
                         ((GFEnvoiViewBean) viewBean).getSession());
             } catch (Exception e) {
                 throw new RuntimeException(e);

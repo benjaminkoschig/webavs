@@ -111,6 +111,7 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
         leadingAttachmentType.setSortOrder(BigInteger.ONE);
         leadingAttachmentType.setDocumentFormat(getDocumentFormat(leadingFile));
         leadingAttachmentType.getFile().addAll(createAttachmentFileType(Collections.singletonList(leadingFile)));
+
         attachments.add(leadingAttachmentType);
 
         Map<String, List<Path>> attachmentsGroup = new HashMap<>();
@@ -129,18 +130,20 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
             }
         });
 
-        BigInteger counter = BigInteger.valueOf(2);
+        this.attachments.put(this.leadingAttachment.getFileName(), this.leadingAttachment.getPath());
+
+        BigInteger[] counter = {BigInteger.valueOf(2)};
         attachmentsGroup.forEach((key, value) -> {
             AttachmentType attachmentType = new AttachmentType();
             attachmentType.setTitle(key);
             attachmentType.setDocumentType(getDocumentType());
             attachmentType.setDocumentDate(getDocumentDate());
             attachmentType.setLeadingDocument(false);
-            attachmentType.setSortOrder(counter);
+            attachmentType.setSortOrder(counter[0]);
             attachmentType.setDocumentFormat(getDocumentFormat(key));
             attachmentType.getFile().addAll(createAttachmentFileType(value));
             attachments.add(attachmentType);
-            counter.add(BigInteger.ONE);
+            counter[0] = counter[0].add(BigInteger.ONE);
         });
 
         return attachments;

@@ -46,7 +46,7 @@
 	$(function() {
 		buttonCheck();
 		<%if(!hasRightAdd){%>
-		$("[name=mainForm]").find('input,select,textarea').not(this.$inputsButton).prop('disabled', true);
+			$("[name=mainForm]").find('input,select,textarea').not(this.$inputsButton).prop('disabled', true);
 		<%}%>
 	});
 	function init() {
@@ -78,7 +78,7 @@
 		var hasNoAttachemet = <%=viewBean.getFileNameList().isEmpty()%>;
 		var nss =document.getElementsByName("nss")[0].value;
 		var typeDefichier=document.getElementsByName("typeDeFichier")[0].value;
-		var caisse=document.getElementsByName("caisseDestinatrice")[0].value;
+		var caisse=document.getElementsByName("codeCaisse")[0].value;
 
 		if(hasNoAttachemet || nss=="" || typeDefichier=="" || caisse==""){
 			document.getElementsByName("btnEnvoyer")[0].disabled = true;
@@ -158,8 +158,8 @@
 </tr><tr>
 	<td><div class="libelle"><ct:FWLabel key="CAISSE_DEST"/></div></td>
 	<td>
-		<ct:widget id='caisseDestinatrice' name='caisseDestinatrice' onchange="buttonCheck()">
-			<ct:widgetService defaultLaunchSize="2" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
+		<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
+			<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>

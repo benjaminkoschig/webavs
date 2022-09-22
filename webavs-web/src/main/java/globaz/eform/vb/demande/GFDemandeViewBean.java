@@ -84,7 +84,7 @@ public class GFDemandeViewBean extends BJadePersistentObjectViewBean {
     }
 
     public void setCodeCaisse(String codeCaisse) {
-        daDossier.setCodeCaisse(org.apache.commons.lang3.StringUtils.isBlank(codeCaisse) ? null : codeCaisse.split(" - ")[0]);
+        daDossier.setCodeCaisse(StringUtils.isBlank(codeCaisse) ? null : codeCaisse.split(" - ")[0]);
     }
 
     @Override

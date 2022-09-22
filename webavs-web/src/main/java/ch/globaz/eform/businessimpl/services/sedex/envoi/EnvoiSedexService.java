@@ -1,13 +1,9 @@
 package ch.globaz.eform.businessimpl.services.sedex.envoi;
 
-import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
-import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFActionSedex;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
-import ch.globaz.eform.constant.GFStatusDADossier;
-import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.utils.GFFileUtils;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
@@ -20,13 +16,11 @@ import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import eform.ch.ech.xmlns.ech_0044_f._4.DatePartiallyKnownType;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.client.util.JadeUUIDGenerator;
-import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.sedex.JadeSedexService;
 import globaz.jade.sedex.message.JadeSedexMessageNotSentException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +39,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -192,7 +185,7 @@ public class EnvoiSedexService {
     private AttachmentType createAttachmentLead(String fileName, List<AttachmentFileType> attachmentTypeList) throws DatatypeConfigurationException {
         AttachmentType attachmentLead = createAttachment(fileName, attachmentTypeList, BigInteger.valueOf(1));
         attachmentLead.setLeadingDocument(true);
-        attachmentLead.setDocumentType(GFDocumentTypeDossier.getStatusByDocumentType(viewBean.getTypeDeFichier()).getDocumentTypeLead());
+        attachmentLead.setDocumentType(GFDocumentTypeDossier.getDocumentTypeDossierByDocumentType(viewBean.getTypeDeFichier()).getDocumentTypeLead());
         return attachmentLead;
     }
 

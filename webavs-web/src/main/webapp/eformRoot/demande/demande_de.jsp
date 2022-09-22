@@ -122,7 +122,7 @@
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 					<div style="display: table-cell;width: 300px;">
 						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
-							<ct:widgetService methodName="find" className="<%=GFAdministrationService.class.getName()%>">
+							<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 								<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 								<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
