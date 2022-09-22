@@ -93,7 +93,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                 } else if(actionPart.equals(ACTION_ENVOYER)) {
                     destination = "/eform?userAction="+GFSuiviServletAction.PATH_EFORM+"."+GFSuiviServletAction.ACTION_CHERCHER+
                     "&likeNss=" + NSSUtils.unFormatNss(((GFEnvoiViewBean) viewBean).getNss()) +
-                            "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCaisseDestinatrice() +
+                            "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCodeCaisse() +
                             "&byType=" + GFTypeDADossier.SEND_TYPE.getCodeSystem() +
                             "&byStatus=" + GFStatusDADossier.SEND.getCodeSystem();
                 }

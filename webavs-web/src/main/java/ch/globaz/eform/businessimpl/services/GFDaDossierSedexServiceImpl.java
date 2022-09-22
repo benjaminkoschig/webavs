@@ -32,6 +32,7 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -211,6 +212,10 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         sender.addAttachments(attachments);
         sender.send();
 
-        GFEFormServiceLocator.getGFDaDossierDBService().create(model);
+        if (StringUtils.isBlank(model.getId())) {
+            GFEFormServiceLocator.getGFDaDossierDBService().create(model);
+        } else {
+            GFEFormServiceLocator.getGFDaDossierDBService().update(model);
+        }
     }
 }

@@ -30,16 +30,9 @@ public enum GFDocumentTypeDossier {
         return session.getLabel(code);
     }
 
-    public static GFDocumentTypeDossier getStatusByDocumentType(String documentType) {
+    public static GFDocumentTypeDossier getDocumentTypeDossierByDocumentType(String documentType) {
         return Arrays.stream(GFDocumentTypeDossier.values())
                 .filter(type -> type.documentType.equals(documentType))
-                .findFirst()
-                .orElse(GENERAL);
-    }
-
-    public static GFDocumentTypeDossier getStatusByCode(String code) {
-        return Arrays.stream(GFDocumentTypeDossier.values())
-                .filter(type -> type.code.equals(code))
                 .findFirst()
                 .orElse(GENERAL);
     }

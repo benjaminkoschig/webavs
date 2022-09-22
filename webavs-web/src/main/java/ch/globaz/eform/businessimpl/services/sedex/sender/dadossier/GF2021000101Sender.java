@@ -105,6 +105,9 @@ public class GF2021000101Sender extends GFDaDossierSender<Message> {
         leadingAttachmentType.setDocumentFormat(getDocumentFormat(leadingFile));
         leadingAttachmentType.getFile().addAll(createAttachmentFileType(Collections.singletonList(leadingFile)));
 
+        attachments.add(leadingAttachmentType);
+        this.attachments.put(this.leadingAttachment.getFileName(), this.leadingAttachment.getPath());
+
         return attachments;
     }
 

@@ -167,7 +167,7 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
         this.dateNaissance = dateNaissance;
     }
 
-    public String getCaisseDestinatrice() {
+    public String getCodeCaisse() {
         try {
             if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
                 AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
@@ -190,8 +190,8 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
         }
     }
 
-    public void setCaisseDestinatrice(String caisseDestinatrice) {
-        //this.caisseDestinatrice = caisseDestinatrice;
+    public void setCodeCaisse(String codeCaisse) {
+        daDossier.setCodeCaisse(StringUtils.isBlank(codeCaisse) ? null : codeCaisse.split(" - ")[0]);
     }
 
     public String getTypeDeFichier() {

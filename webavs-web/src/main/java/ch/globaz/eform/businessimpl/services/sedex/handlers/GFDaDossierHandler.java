@@ -13,9 +13,14 @@ import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.utils.GFFileUtils;
 import ch.globaz.eform.web.application.GFApplication;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
+import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.common.Jade;
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -54,10 +59,23 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         model.setType(GFTypeDADossier.SOLICITATION.getCodeSystem());
         model.setStatus(GFStatusDADossier.TO_SEND.getCodeSystem());
         model.setCreationSpy(Dates.formatSwiss(getMessageDate()));
-        //todo recherche de la caisse pas son id Sedex modification
-        //if(getSenderId() != null) {
-        model.setCodeCaisse("000000");
-        //}
+
+        AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+        search.setForSedexId(getSenderId());
+        search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+
+        try {
+            search = TIBusinessServiceLocator.getAdministrationService().find(search);
+        } catch (JadePersistenceException | JadeApplicationException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (search.getSize() > 0) {
+            AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
+            model.setCodeCaisse(complexModel.getAdmin().getCodeAdministration());
+        } else {
+            model.setCodeCaisse("000000");
+        }
         if(getInsuredPerson() != null) {
             model.setNssAffilier(getInsuredPerson().getVn().toString());
         }
@@ -65,8 +83,8 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
 
     protected  void initReceptionModel() {
         GFDaDossierSearch search = new GFDaDossierSearch();
-        search.setByYourBusinessRefId(getYourBusinessReferenceId());
-        search.setWhereKey("yourBusinessRefId");
+        search.setByOurBusinessRefId(getYourBusinessReferenceId());
+        search.setWhereKey("ourBusinessRefId");
 
         try {
             GFEFormServiceLocator.getGFDaDossierDBService().search(search);
@@ -101,7 +119,6 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         initReceptionModel();
 
         model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
-        model.setSpy(Dates.formatSwiss(getMessageDate()));
 
         String sftpPath = GFFileUtils.generateDaDossierFilePath(model);
 
