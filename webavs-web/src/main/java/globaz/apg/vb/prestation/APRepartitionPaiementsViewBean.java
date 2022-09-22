@@ -1,13 +1,17 @@
 package globaz.apg.vb.prestation;
 
+import ch.globaz.vulpecula.external.models.pyxis.AvoirAdressePaiement;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.apg.utils.APGUtils;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -16,8 +20,12 @@ import globaz.osiris.external.IntRole;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <H1>Description</H1>
@@ -454,6 +462,32 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     }
 
+    public String getIdAdressePaiement() {
+        try {
+            TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                    getSession().getCurrentThreadTransaction(),
+                    getIdTiersAdressePaiement(),
+                    APGUtils.getCSDomaineFromTypeDemande(getTypePrestation()),
+                    null, JACalendar.todayJJsMMsAAAA());
+            if(Objects.nonNull(paiementData)){
+                return paiementData.getIdAdressePaiement();
+            }else {
+                paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersAdressePaiement(),
+                        AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                        null, JACalendar.todayJJsMMsAAAA());
+                if(Objects.nonNull(paiementData)){
+                    return paiementData.getIdAdressePaiement();
+                }
+            }
+        }catch(Exception e){
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return StringUtils.EMPTY;
+
+    }
+
     /**
      * @return
      */
@@ -780,6 +814,16 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     public void setIdTiersAdressePaiementDepuisPyxis(String idTiersAdressePaiement) {
         super.setIdTiersAdressePaiement(idTiersAdressePaiement);
         retourDepuisPyxis = true;
+    }
+
+
+    public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
+        super.setIdReferenceQR(idReferenceQR);
+        retourDepuisPyxis = true;
+    }
+
+    public boolean hasAdressePaiement() {
+        return !JadeStringUtil.isEmpty(ccpOuBanqueFormatte);
     }
 
     /**

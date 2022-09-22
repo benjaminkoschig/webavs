@@ -146,6 +146,32 @@ bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && !viewBean.isRestitut
 								<% } %>
 								</TD>
 							</TR>
+							<% if (viewBean.isModifiable() && viewBean.isVentilation() && viewBean.hasAdressePaiement()) { %>
+							<TR>
+
+								<TD><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
+								<TD class="IJAfficheText">
+									<input type="hidden"  name="forIdTiersEmployeur" value="<%=viewBean.getIdTiersAdressePaiement()%>">
+									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
+									<input type="hidden"  name="forCompteLike" value="<%=viewBean.getCcpOuBanqueFormatte()%>">
+									<%
+										Object[] referencePaiementMethodsName = new Object[]{
+												new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}
+										};
+										Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiersEmployeur","forIdTiersEmployeur"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+									%>
+									<ct:FWSelectorTag
+											name="referencePaiementSelector1"
+											methods="<%=referencePaiementMethodsName%>"
+											providerApplication ="pyxis"
+											providerPrefix="TI"
+											providerAction ="pyxis.tiers.referencePaiement.chercher"
+											providerActionParams ="<%=referencePaiementParams%>"
+											target="fr_main"
+											redirectUrl="<%=mainServletPath%>"/>
+								</TD>
+							</TR>
+							<% } %>
 						<% } %>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
