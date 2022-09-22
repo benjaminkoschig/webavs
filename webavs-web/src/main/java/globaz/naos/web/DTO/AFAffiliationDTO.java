@@ -20,6 +20,7 @@ public class AFAffiliationDTO {
     private String brancheEconomique;
     private String codeNoga;
     private Boolean facturationParReleve;
+    private Boolean envoieAutomatiqueReleve;
     private Boolean facturationAcompteCarte;
     private String facturationCodeFacturation;
     private Boolean exoneration;
