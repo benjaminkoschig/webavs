@@ -12,6 +12,8 @@ import java.util.Vector;
  */
 @Data
 public class PYPaymentAddressDTO {
+    private String idTiers;
+    private String modificationDate;
     private String idPaymentAddress;
     private String idAddressRelatedToPaymentAddress;
     private String domainPaymentAddress;
@@ -42,5 +44,43 @@ public class PYPaymentAddressDTO {
             }
         }
         return (mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty));
+    }
+
+    @JsonIgnore
+    public Boolean isValidForCreation() {
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getIdTiers());
+        mandatoryParameters.add(this.getModificationDate());
+        if (this.getAccountNumber() != null) {
+            mandatoryParameters.add(this.getAccountNumber());
+            mandatoryParameters.add(this.getClearingNumber());
+            mandatoryParameters.add(this.getBranchOfficePostalCode());
+        } else if (this.getCcpNumber() != null)
+            mandatoryParameters.add(this.getCcpNumber());
+
+        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+    }
+
+    @JsonIgnore
+    public Boolean isValidForUpdate() {
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getIdTiers());
+        mandatoryParameters.add(this.getModificationDate());
+        if (this.getAccountNumber() != null) {
+            mandatoryParameters.add(this.getAccountNumber());
+            mandatoryParameters.add(this.getClearingNumber());
+            mandatoryParameters.add(this.getBranchOfficePostalCode());
+        } else if (this.getCcpNumber() != null)
+            mandatoryParameters.add(this.getCcpNumber());
+
+        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+    }
+
+    @JsonIgnore
+    public Boolean isValidForDeletion() {
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(this.getIdPaymentAddress());
+
+        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
     }
 }

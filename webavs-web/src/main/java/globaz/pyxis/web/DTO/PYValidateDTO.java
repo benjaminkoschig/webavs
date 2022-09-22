@@ -34,8 +34,6 @@ public class PYValidateDTO {
      * @return true si toutes les vérifications passent sans encombres
      */
     public static Boolean isValidForCreation(PYTiersDTO dto) {
-        // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
-
         checkValidity(dto);
 
         return true;
@@ -47,7 +45,7 @@ public class PYValidateDTO {
      * @param dto
      * @return true si toutes les vérifications passent sans encombres
      */
-    public static Boolean isValidForUpdate(PYTiersUpdateDTO dto) throws PYBadRequestException {
+    public static Boolean isValidForUpdate(PYTiersDTO dto) throws PYBadRequestException {
         // TODO: Implement validation on PYTiersDTO's fields for page 2, etc. (maybe in other methods ?)
 
         checkValidity(dto);
@@ -68,6 +66,23 @@ public class PYValidateDTO {
         return true;
     }
 
+    public static Boolean isValidForAddress(PYAddressDTO pyAddressDTO) throws PYBadRequestException {
+        if (pyAddressDTO.getDomainAddress() != null)
+            getDomainAddressAsSystemCode(pyAddressDTO);
+        if (pyAddressDTO.getTypeAddress() != null)
+            getTypeAddressAsSystemCode(pyAddressDTO);
+        if (pyAddressDTO.getCountry() != null)
+            getCountryAsSystemCode(pyAddressDTO);
+
+        return true;
+    }
+
+    public static Boolean isValidPage1(PYTiersPage1DTO dto) {
+        checkValidityPage1(dto);
+
+        return true;
+    }
+
     /**
      * Méthode pour s'assurer de la validité des données du DTO.
      * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
@@ -78,6 +93,16 @@ public class PYValidateDTO {
      * @param dto
      */
     private static void checkValidity(PYTiersDTO dto) {
+        checkValidityPage1(dto);
+        checkValidityAddresses(dto);
+        checkValidityContacts(dto);
+    }
+
+    /**
+     *
+     * @param dto
+     */
+    public static void checkValidityPage1(PYTiersPage1DTO dto) {
         if (dto.getTitle() != null)
             getTitleAsSystemCode(dto);
         if (dto.getLanguage() != null)
@@ -111,10 +136,32 @@ public class PYValidateDTO {
             if (dto.getNationality() != null)
                 throw new PYBadRequestException("La nationalité ne doit pas être renseignée pour une personne morale.");
 
-            //bypass Pyxis auto set nationality for non physical person
-            dto.setNationality("0");
+            // (Re)set those fields to 0 for a legal person
+            resetFieldsForLegalPerson(dto);
         }
+    }
 
+    /**
+     * Méthode pour reset les champs pour une personne morale.
+     * <p>Le changement d'une personne physique à personne morale nécessite de reset certains champs.</p>
+     *
+     * @param dto
+     */
+    public static void resetFieldsForLegalPerson(PYTiersPage1DTO dto) {
+        dto.setNss("");
+        dto.setBirthDate("");
+        dto.setDeathDate("");
+        dto.setSex("0");
+        dto.setCivilStatus("");
+        dto.setMaidenName("");
+        //bypass Pyxis auto set nationality for non physical person
+        dto.setNationality("0");
+    }
+
+    /**
+     * @param dto
+     */
+    private static void checkValidityAddresses(PYTiersDTO dto) {
         for (PYAddressDTO addressDTO : dto.getAddresses()) {
             if (addressDTO.getDomainAddress() != null)
                 getDomainAddressAsSystemCode(addressDTO);
@@ -128,8 +175,15 @@ public class PYValidateDTO {
             if (paymentAddressDTO.getCcpNumber() != null)
                 checkCCP(paymentAddressDTO.getCcpNumber());
         }
+    }
 
-        for (PYContactDTO contactDTO : dto.getContacts()) {
+    /**
+     * Contrôle la validité des moyens de communication dans les contacts
+     *
+     * @param dto
+     */
+    private static void checkValidityContacts(PYTiersDTO dto) {
+        for (PYContactCreateDTO contactDTO : dto.getContacts()) {
             for (PYMeanOfCommunicationDTO meanDTO : contactDTO.getMeansOfCommunication()) {
                 if (meanDTO.getApplicationDomain() != null)
                     checkApplicationDomain(meanDTO.getApplicationDomain());
@@ -144,7 +198,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getTitleAsSystemCode(PYTiersDTO dto) throws PYBadRequestException {
+    private static final void getTitleAsSystemCode(PYTiersPage1DTO dto) throws PYBadRequestException {
         switch ((dto.getTitle() != null) ? JadeStringUtil.toLowerCase(dto.getTitle()) : "") {
             case "monsieur":
             case "m":
@@ -174,7 +228,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkNSS(PYTiersDTO dto) {
+    private static final void checkNSS(PYTiersPage1DTO dto) {
         if (!dto.getIsPhysicalPerson()) {
             dto.setNss("");
         } else {
@@ -191,7 +245,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkBirthdate(PYTiersDTO dto) {
+    private static final void checkBirthdate(PYTiersPage1DTO dto) {
         String birthDate = dto.getBirthDate();
         if (birthDate == "0" || birthDate == null || birthDate == ""){
             dto.setBirthDate("0");
@@ -211,7 +265,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkDeathdate(PYTiersDTO dto) {
+    private static final void checkDeathdate(PYTiersPage1DTO dto) {
         String deathDate = dto.getDeathDate();
         if (deathDate == "0" || deathDate == null || deathDate == ""){
             dto.setDeathDate("0");
@@ -258,7 +312,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkAndSetSexAsSystemCode(PYTiersDTO dto) {
+    private static final void checkAndSetSexAsSystemCode(PYTiersPage1DTO dto) {
         switch ((dto.getSex() != null) ? JadeStringUtil.toLowerCase(dto.getSex()) : "") {
             case "m":
             case "homme":
@@ -290,7 +344,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkAndSetCivilStatusAsSystemCode(PYTiersDTO dto) {
+    private static final void checkAndSetCivilStatusAsSystemCode(PYTiersPage1DTO dto) {
         try {
             if (dto.getIsPhysicalPerson()) {
                 EtatCivil.parse(dto.getCivilStatus()); // If this goes through without error, civilStatus is a valid civil status
@@ -349,7 +403,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void checkAndSetLanguageAsSystemCode(PYTiersDTO dto) {
+    private static final void checkAndSetLanguageAsSystemCode(PYTiersPage1DTO dto) {
         switch ((dto.getLanguage() != null) ? JadeStringUtil.toLowerCase(dto.getLanguage()) : "") {
             case "fr":
             case "français":
@@ -414,7 +468,7 @@ public class PYValidateDTO {
      *
      * @param dto
      */
-    private static final void getNationalityAsSystemCode(PYTiersDTO dto) {
+    private static final void getNationalityAsSystemCode(PYTiersPage1DTO dto) {
         if (dto.getNationality() != null && dto.getNationality() != "") {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getNationality());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
@@ -433,6 +487,7 @@ public class PYValidateDTO {
      */
     private static final void getCountryAsSystemCode(PYAddressDTO dto) {
         if (dto.getCountry() != null && dto.getCountry() != "") {
+
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
                 dto.setCountry(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
