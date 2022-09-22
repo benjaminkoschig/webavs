@@ -21,6 +21,8 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Hashtable;
@@ -88,6 +90,10 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     // infos relatives a la prestation
     private String tauxPrestation = "";
     private boolean tiersBeneficiaireChange = false;
+
+    @Getter
+    @Setter
+    private boolean isQRIban = false;
 
     /**
      * getter pour l'attribut adresse formattee
@@ -822,8 +828,8 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
         retourDepuisPyxis = true;
     }
 
-    public boolean hasAdressePaiement() {
-        return !JadeStringUtil.isEmpty(ccpOuBanqueFormatte);
+    public boolean hasAdressePaiementQRIban() {
+        return !JadeStringUtil.isEmpty(ccpOuBanqueFormatte) && isQRIban;
     }
 
     /**

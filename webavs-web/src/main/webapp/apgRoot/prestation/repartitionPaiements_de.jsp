@@ -146,7 +146,7 @@ bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && !viewBean.isRestitut
 								<% } %>
 								</TD>
 							</TR>
-							<% if (viewBean.isModifiable() && viewBean.isVentilation() && viewBean.hasAdressePaiement()) { %>
+							<% if (viewBean.isModifiable() && viewBean.isVentilation() && viewBean.hasAdressePaiementQRIban()) { %>
 							<TR>
 
 								<TD><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
