@@ -12,9 +12,7 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.web.DTO.AFAffiliationDTO;
 import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.naos.web.exceptions.AFInternalException;
-import globaz.pyxis.db.tiers.TIContact;
 import globaz.pyxis.db.tiers.TITiers;
-import globaz.pyxis.web.exceptions.PYBadRequestException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
