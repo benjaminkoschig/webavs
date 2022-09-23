@@ -340,6 +340,7 @@ public final class IJPrestationRegles {
             nouvelleRepartition.setNom(repartition.getNom());
             nouvelleRepartition.setIdSituationProfessionnelle(repartition.getIdSituationProfessionnelle());
             nouvelleRepartition.setTypePaiement(repartition.getTypePaiement());
+            nouvelleRepartition.setIdReferenceQR(repartition.getIdReferenceQR());
 
             // inversion des montants
             nouvelleRepartition.setMontantBrut(String.valueOf(-JadeStringUtil.toDouble(repartition.getMontantBrut())));
