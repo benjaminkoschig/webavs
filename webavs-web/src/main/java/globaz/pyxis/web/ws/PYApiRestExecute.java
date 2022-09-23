@@ -132,6 +132,43 @@ public class PYApiRestExecute {
         LOG.info("delete_payment_address");
         return execute(token, dto, service::deletePaymentAddress, dto::isValidForDeletion);
     }
+    @POST
+    @Path(value = "conjoint")
+    public Response createConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("create_conjoint");
+        return execute(token, dto, service::createConjoint, dto::isValidForCreationConjoint);
+    }
+    @PUT
+    @Path(value = "conjoint")
+    public Response updateConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("update_conjoint");
+        return execute(token, dto, service::updateConjoint, dto::isValidForUpdateConjoint);
+    }
+    @DELETE
+    @Path(value = "conjoint")
+    public Response deleteConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("delete_conjoint");
+        return execute(token, dto, service::deleteConjoint, dto::isValidForDeletionLienEntreTiers);
+    }
+    @POST
+    @Path(value = "lienTiers")
+    public Response createLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("create_conjoint");
+        return execute(token, dto, service::createLienEntreTiers, dto::isValidForCreationLienEntreTiers);
+    }
+    @PUT
+    @Path(value = "lienTiers")
+    public Response updateLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("update_conjoint");
+        return execute(token, dto, service::updateLienEntreTiers, dto::isValidForUpdateLienEntreTiers);
+    }
+    @DELETE
+    @Path(value = "lienTiers")
+    public Response deleteLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+        LOG.info("delete_conjoint");
+        return execute(token, dto, service::deleteLienEntreTiers, dto::isValidForDeletionLienEntreTiers);
+    }
+
 
 
     /**
@@ -145,7 +182,7 @@ public class PYApiRestExecute {
      */
     private <T, U, R> Response execute(U token, T dto, BiFunction<T, U, R> function, Supplier<Boolean> isValid) {
 
-        if (!isValid.get()) {
+        if (Boolean.FALSE.equals(isValid.get())) {
             LOG.error("Une erreur de paramètres s'est produite lors de la validation de la requête. Un paramètre obligatoire est manquant ?");
             throw new PYBadRequestException("Une erreur de paramètre s'est produite lors de la validation de la requête. Un paramètre obligatoire est manquant ?");
         }
