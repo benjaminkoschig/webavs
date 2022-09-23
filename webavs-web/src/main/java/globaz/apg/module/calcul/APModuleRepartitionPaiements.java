@@ -2537,10 +2537,10 @@ public class APModuleRepartitionPaiements {
                 repartBenefPmt.setTypePaiement(repartARestituer.getTypePaiement());
                 repartBenefPmt.setTypePrestation(repartARestituer.getTypePrestation());
                 repartBenefPmt.setNombreJoursSoldes(repartARestituer.getNombreJoursSoldes());
+                repartBenefPmt.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, repartARestituer.getIdSituationProfessionnelle()));
                 repartBenefPmt.add(transaction);
                 montantCotisationDesRestitutions(session, transaction,
                         repartBenefPmt.getIdRepartitionBeneficiairePaiement(), repartARestituer);
-                repartBenefPmt.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, repartARestituer.getIdSituationProfessionnelle()));
                 // idParentRepartRestitution =
                 // repartBenefPmt.getIdRepartitionBeneficiairePaiement();
 

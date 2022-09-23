@@ -360,19 +360,20 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
                                     repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
-                                    "",false);
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(),false);
                         }
                         // Cas ou le bénéficiaire est un affilié
                         else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
                                     repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
-                                    "",
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(),
                                     isPorteEnCompte);
                         } else {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", "",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(),
                                     false);
 
                         }
@@ -382,18 +383,19 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
                                     repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
-                                    "", false);
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                         }
                         // Cas ou le bénéficiaire est un affilié
                         else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
                                     repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
-                                    "", isPorteEnCompte);
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(), isPorteEnCompte);
                         } else {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", "",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    repartitionPaiementsJointEmployeur.getReferenceQR(),
                                     false);
 
                         }
