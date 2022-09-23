@@ -153,19 +153,19 @@ public class PYApiRestExecute {
     @POST
     @Path(value = "lienTiers")
     public Response createLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
-        LOG.info("create_conjoint");
+        LOG.info("create_lien_entre_tiers");
         return execute(token, dto, service::createLienEntreTiers, dto::isValidForCreationLienEntreTiers);
     }
     @PUT
     @Path(value = "lienTiers")
     public Response updateLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
-        LOG.info("update_conjoint");
+        LOG.info("update_lien_entre_tiers");
         return execute(token, dto, service::updateLienEntreTiers, dto::isValidForUpdateLienEntreTiers);
     }
     @DELETE
     @Path(value = "lienTiers")
     public Response deleteLienEntreTiers(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
-        LOG.info("delete_conjoint");
+        LOG.info("delete_lien_entre_tiers");
         return execute(token, dto, service::deleteLienEntreTiers, dto::isValidForDeletionLienEntreTiers);
     }
 
