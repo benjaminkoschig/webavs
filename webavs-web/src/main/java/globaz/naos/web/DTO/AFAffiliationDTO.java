@@ -45,12 +45,7 @@ public class AFAffiliationDTO {
     private String affiliationSecurisee;
 
 
-    //Controle LAA LPP ?
-    //TODO valider par le client
-    private Boolean LAA = true;
-    private Boolean LPP = false;
-
-    // Famille de codes systèmes pour vérification
+    // Famille de codes systmes pour vrification
     public static final String FAMILLE_CS_MOTIF_CREATION = "VEMOTIFAFF";
     public static final String FAMILLE_CS_GENRE_AFFILIATION = "VETYPEAFFI";
     public static final String FAMILLE_CS_PERSONNALITE_JURIDIQUE = "VEPERSONNA";
@@ -61,7 +56,6 @@ public class AFAffiliationDTO {
     public static final String FAMILLE_CS_MOTIF_FIN = "VEMOTIFFIN";
     public static final String FAMILLE_CS_DECLARATION_SALAIRE = "VEDECLARAT";
     public static final String FAMILLE_CS_ACCESS_SECURISE = "CISECURI";
-
 
     public AFAffiliationDTO() {
 
@@ -76,39 +70,32 @@ public class AFAffiliationDTO {
      */
     @JsonIgnore
     public Boolean isValidForCreation() {
-        //TODO
+        Vector<String> mandatoryParameters = new Vector<>();
+        mandatoryParameters.add(idTiers);
+        mandatoryParameters.add(numeroAffilie);
+        mandatoryParameters.add(dateDebutAffiliation);
+        mandatoryParameters.add(genreAffiliation);
+        mandatoryParameters.add(motifCreation);
+        mandatoryParameters.add(personnaliteJuridique);
+        mandatoryParameters.add(periodicite);
+        mandatoryParameters.add(brancheEconomique);
+        mandatoryParameters.add(affiliationSecurisee);
 
-//        Vector<String> mandatoryParameters = new Vector<>();
-//        mandatoryParameters.add(surname);
-//        mandatoryParameters.add(language);
-//        mandatoryParameters.add(isPhysicalPerson.toString());
-//
-//
-//        //Il faut surement pas faire ça ici. L'objet est vide du coup... isValid sera toujours bon
-//        PYAddressDTO pyAddressDTO = new PYAddressDTO();
-//        PYPaymentAddressDTO pyPaymentAddressDTO = new PYPaymentAddressDTO();
-//
-//        if (Boolean.FALSE.equals(isPhysicalPerson)) {
-//            return (
-//                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-//                            && pyAddressDTO.isValid(this)
-//                            && pyPaymentAddressDTO.isValid(this)
-//                            && PYValidateDTO.isValidForCreation(this)
-//            );
-//        } else if (Boolean.TRUE.equals(isPhysicalPerson)) {
-//            mandatoryParameters.add(title);
-//            mandatoryParameters.add(name);
-//            mandatoryParameters.add(nss);
-//            mandatoryParameters.add(birthDate);
-//            mandatoryParameters.add(civilStatus);
-//            return (
-//                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-//                            && pyAddressDTO.isValid(this)
-//                            && pyPaymentAddressDTO.isValid(this)
-//                            && PYValidateDTO.isValidForCreation(this)
-//            );
-//        }
-//        return false;
+        return (mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty) && isValidCodesSystem());
+    }
+
+    private Boolean isValidCodesSystem() {
+        verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
+        verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
+        verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
+        verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
+        verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
+        verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
+        verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
+        verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
+        verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
+        verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
+
         return true;
     }
 

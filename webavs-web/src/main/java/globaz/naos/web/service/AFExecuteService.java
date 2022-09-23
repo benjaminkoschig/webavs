@@ -5,8 +5,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.web.DTO.AFAffiliationDTO;
@@ -16,6 +16,7 @@ import globaz.pyxis.db.tiers.TITiers;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Slf4j
 public class AFExecuteService extends BProcess {
@@ -53,8 +54,12 @@ public class AFExecuteService extends BProcess {
      */
 
     public final AFAffiliationDTO createAffiliation(BSession session, AFAffiliationDTO dto) throws Exception {
-        //TODO Création d'une affiliation pour un tiers en particulier
         TITiers tiers = AFApplication.retrieveTiers(session, dto.getIdTiers());
+
+        if (tiers.isNew()) {
+            throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
 
         BTransaction transaction = new BTransaction(session);
         try {
@@ -65,13 +70,13 @@ public class AFExecuteService extends BProcess {
             affiliation.setIdTiers(dto.getIdTiers());
             affiliation.setRaisonSociale(tiers.getDesignation1() + " " + tiers.getDesignation2());
             affiliation.setAffilieNumero(dto.getNumeroAffilie());
+            affiliation.setAncienAffilieNumero(dto.getAncien_numero_affilie());
             affiliation.setDateCreation(JadeDateUtil.getGlobazFormattedDate(new Date())); //Today
             affiliation.setDateDebut(dto.getDateDebutAffiliation());
             if (dto.getDateFinAffiliation() != null) {
                 affiliation.setDateFin(dto.getDateFinAffiliation());
                 affiliation.setMotifFin(dto.getMotifFin());
             }
-            //Genre affiliation
             affiliation.setTypeAffiliation(dto.getGenreAffiliation());
             String raisonSocialeCourt = tiers.getDesignation1() + " " + tiers.getDesignation2();
             if (raisonSocialeCourt.length() > 30) {
@@ -83,22 +88,34 @@ public class AFExecuteService extends BProcess {
             affiliation.setPeriodicite(dto.getPeriodicite());
             affiliation.setBrancheEconomique(dto.getBrancheEconomique());
 
-            //Fields non-mandatory
-            affiliation.setCodeNoga(dto.getCodeNoga());
-//            affiliation.setFacturationParReleve
-//            affiliation.setEnvoiAutomatiqueLAA();
-//            affiliation.setEnvoiAutomatiqueLPP();
-//            affiliation.setFacturationAccompteCarte
-            affiliation.setCodeFacturation(dto.getFacturationCodeFacturation());
-            affiliation.setExonerationGenerale(dto.getExoneration() != null ? dto.getExoneration() : Boolean.FALSE);
-//            affiliation.setPersonnelOccasionnel
-//            affiliation.setAffiliationProvisoire
-            affiliation.setDateDemandeAffiliation(dto.getDateDemandeAffiliation());
-            affiliation.setDeclarationSalaire(dto.getDeclarationSalaire());
-            affiliation.setActivite(dto.getActivite());
-            affiliation.setNumeroIDE(dto.getNumeroIDE());
-//            affiliation.setEntiteIDENonAnnoncante
             affiliation.setAccesSecurite(dto.getAffiliationSecurisee());
+
+            //Fields non-mandatory
+            if (!JadeStringUtil.isEmpty(dto.getCodeNoga()))
+                affiliation.setCodeNoga(dto.getCodeNoga());
+            if (!Objects.isNull(dto.getFacturationParReleve()))
+                affiliation.setReleveParitaire(dto.getFacturationParReleve());
+            if (!Objects.isNull(dto.getFacturationAcompteCarte()))
+                affiliation.setRelevePersonnel(dto.getFacturationAcompteCarte());
+            if (!JadeStringUtil.isEmpty(dto.getFacturationCodeFacturation()))
+                affiliation.setCodeFacturation(dto.getFacturationCodeFacturation());
+            if (!Objects.isNull(dto.getExoneration()))
+                affiliation.setExonerationGenerale(dto.getExoneration() != null ? dto.getExoneration() : Boolean.FALSE);
+            if (!Objects.isNull(dto.getPersonnelOccasionnel()))
+                affiliation.setOccasionnel(dto.getPersonnelOccasionnel());
+            if (!Objects.isNull(dto.getAffiliationProvisoire()))
+                affiliation.setTraitement(dto.getAffiliationProvisoire());
+            if (!JadeStringUtil.isEmpty(dto.getDateDemandeAffiliation()))
+                affiliation.setDateDemandeAffiliation(dto.getDateDemandeAffiliation());
+            if (!JadeStringUtil.isEmpty(dto.getDeclarationSalaire()))
+                affiliation.setDeclarationSalaire(dto.getDeclarationSalaire());
+            if (!JadeStringUtil.isEmpty(dto.getActivite()))
+                affiliation.setActivite(dto.getActivite());
+            if (!JadeStringUtil.isEmpty(dto.getNumeroIDE()))
+                affiliation.setNumeroIDE(dto.getNumeroIDE());
+            if (!Objects.isNull(dto.getEntiteIDENonAnnoncante()))
+                affiliation.setIdeNonAnnoncante(dto.getEntiteIDENonAnnoncante());
+
 
             affiliation.add(transaction);
 
@@ -108,9 +125,11 @@ public class AFExecuteService extends BProcess {
             }
 
             transaction.commit();
-            transaction.closeTransaction();
+
+            //set champs pour la réponse
+            dto.setRaisonSocialeLong(affiliation.getRaisonSociale());
+            dto.setRaisonSocialeCourt(affiliation.getRaisonSocialeCourt());
         } catch (Exception e) {
-//            throw new RuntimeException(e);
             throw new Exception(transaction.getErrors().toString());
         } finally {
             transaction.closeTransaction();
