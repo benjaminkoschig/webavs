@@ -401,13 +401,13 @@
 								</span>
 							</td>
 
-						<%if(TIAdressePaiement.isQRIban(viewBean.getAdressePaiementPersonalisee() != null ? viewBean.getAdressePaiementPersonalisee().getCompte() : "")){%>
+						<%if(TIAdressePaiement.isQRIban(viewBean.getAdressePaiementPersonnaliseeData().getCompte())){%>
 							<td valign="top" align="right">
 								<span class="adressePaiement assure employeur personnalise">
 
 									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>">
-									<input type="hidden"  name="forIdAdressePaiement" value="<%=!Objects.isNull(viewBean.getAdressePaiementPersonalisee()) ? viewBean.getAdressePaiementPersonalisee().getIdAdressePaiement() : ""%>">
-									<input type="hidden"  name="forCompteLike" value="<%=!Objects.isNull(viewBean.getAdressePaiementPersonalisee()) ? viewBean.getAdressePaiementPersonalisee().getCompte() : ""%>">
+									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getAdressePaiementPersonnaliseeData().getIdAdressePaiement()%>">
+									<input type="hidden"  name="forCompteLike" value="<%=viewBean.getAdressePaiementPersonnaliseeData().getCompte()%>">
 
 									<ct:FWSelectorTag	name="selecteurReferencePaiement"
 														methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"

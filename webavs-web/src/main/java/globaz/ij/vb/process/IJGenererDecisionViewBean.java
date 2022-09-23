@@ -14,6 +14,7 @@ import globaz.ij.db.decisions.IJDecisionIJAI;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIJCalculeeManager;
 import globaz.ij.db.prononces.IJPrononce;
+import globaz.ij.helpers.prestations.IJRepartitionJointPrestationHelper;
 import globaz.ij.utils.IJGestionnaireHelper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
@@ -233,17 +234,8 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         return idTierEmployeurAdressePaiement;
     }
 
-    public TIAdressePaiementData getAdressePaiementPersonalisee() throws Exception {
-        if (!JadeStringUtil.isBlank(this.getIdTiersAdressePaiementPersonnalisee())) {
-            TIAdressePaiementData adressePmtEmp = PRTiersHelper.getAdressePaiementData(getSession(),
-                    (getSession()).getCurrentThreadTransaction(), this.getIdTiersAdressePaiementPersonnalisee(),
-                    this.getIdDomaineApplicationAdressePaiementPersonnalisee(),
-                    this.getNumAffilieAdressePaiementPersonnalisee(), JACalendar.todayJJsMMsAAAA());
-
-            return adressePmtEmp;
-        }
-
-        return null;
+    public TIAdressePaiementData getAdressePaiementPersonnaliseeData() throws Exception {
+        return IJRepartitionJointPrestationHelper.getAdressePaiementData(this.getIdTiersAdressePaiementPersonnalisee(), this.getIdDomaineApplicationAdressePaiementPersonnalisee(), null, this.getSession());
     }
 
     public String getIdReferenceQR() {

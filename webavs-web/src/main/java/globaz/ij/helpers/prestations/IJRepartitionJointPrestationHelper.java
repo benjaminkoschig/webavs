@@ -830,6 +830,19 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
         return deleguerExecute(viewBean, action, session);
     }
 
+    public static TIAdressePaiementData getAdressePaiementData(String idTiers, String idDomaine, String idAffilie, BSession session) throws Exception {
+        if (!JadeStringUtil.isBlank(idTiers) && !JadeStringUtil.isBlank(idDomaine) && !JadeStringUtil.isBlank(idAffilie)) {
+            TIAdressePaiementData adressePmtEmp = PRTiersHelper.getAdressePaiementData(session,
+                    (session).getCurrentThreadTransaction(), idTiers,
+                    idDomaine,
+                    idAffilie, JACalendar.todayJJsMMsAAAA());
+
+            return adressePmtEmp;
+        }
+
+        return new TIAdressePaiementData();
+    }
+
     /**
      * 
      * Charge l'etat de la prestation courante

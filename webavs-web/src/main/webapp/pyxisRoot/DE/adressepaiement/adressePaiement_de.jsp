@@ -165,14 +165,14 @@ function init(){
 	</td>
 </tr>
 
-<%if(TIAdressePaiement.isQRIban(viewBean.getNumCompteBancaireFormateIban()) && !viewBean.isNew()){%>
+<%if(TIAdressePaiement.isQRIban(viewBean.getNumCompteBancaire()) && !viewBean.isNew()){%>
 	<tr>
 		<td>QR-Referenz</td>
 		<td>
 
 			<input type="hidden"  name="forIdTiers" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdTiers()) ? viewBean.getIdTiers() : viewBean.getIdTiersAdresse()%>">
 		    <input type="hidden"  name="forIdAdressePaiement" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdAdressePaiement()) ? viewBean.getIdAdressePaiement() : viewBean.getOldIdAdressePaiement()%>">
-			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaireFormateIban()%>">
+			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaire()%>">
 
 			<%
 				Object[] referencePaiementSelectionMethodsName = new Object[]{ new String[]{ }};

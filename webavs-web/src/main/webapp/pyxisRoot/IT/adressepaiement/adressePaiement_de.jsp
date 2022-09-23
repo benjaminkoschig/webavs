@@ -170,16 +170,16 @@ function init(){
 
 			<input type="hidden"  name="forIdTiers" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdTiers()) ? viewBean.getIdTiers() : viewBean.getIdTiersAdresse()%>">
 		    <input type="hidden"  name="forIdAdressePaiement" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdAdressePaiement()) ? viewBean.getIdAdressePaiement() : viewBean.getOldIdAdressePaiement()%>">
-			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaireFormateIban()%>">
+			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaire()%>">
 
 			<%
-				Object[] referencePaiementMethodsName = new Object[]{ new String[]{ }};
+				Object[] referencePaiementSelectionMethodsName = new Object[]{ new String[]{ }};
 				Object[] referencePaiementChercherParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 			%>
 			<ct:FWSelectorTag
 					name="referencePaiementSelector1"
 
-					methods="<%=referencePaiementMethodsName%>"
+					methods="<%=referencePaiementSelectionMethodsName%>"
 					providerApplication ="pyxis"
 					providerPrefix="TI"
 					providerAction ="pyxis.tiers.referencePaiement.chercher"

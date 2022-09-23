@@ -581,10 +581,6 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
         }
 
-        if (TIAdressePaiement.isQRIban(detailTiers.getCompte())) {
-            adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
-        }
-
         return adresseLine;
     }
 
