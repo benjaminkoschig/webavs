@@ -1,5 +1,9 @@
 package globaz.corvus.anakin;
 
+import ch.admin.ofit.anakin.commum.Session;
+import ch.admin.ofit.anakin.donnee.Annonce10eme;
+import ch.admin.ofit.anakin.donnee.AnnonceAbstraite;
+import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationRente;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.globall.api.BISession;
@@ -7,12 +11,9 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.prestation.tools.PRDateFormater;
+import org.slf4j.LoggerFactory;
+
 import java.rmi.RemoteException;
-import org.apache.log4j.Logger;
-import ch.admin.ofit.anakin.commum.Session;
-import ch.admin.ofit.anakin.donnee.Annonce10eme;
-import ch.admin.ofit.anakin.donnee.AnnonceAbstraite;
-import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationRente;
 
 public class TestAnakinAdaptation {
 
@@ -50,7 +51,7 @@ public class TestAnakinAdaptation {
         // Passage dans le module de revalorisation
 
         ControleurAugmentationRente revalorisation = new ControleurAugmentationRente(
-                Logger.getLogger(ControleurAugmentationRente.class.getName()));
+                LoggerFactory.getLogger(ControleurAugmentationRente.class.getName()));
 
         Session.getInstance().setParametre(ControleurAugmentationRente.class.getName(), "dateActuelle",
                 PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM("12.2010")));
