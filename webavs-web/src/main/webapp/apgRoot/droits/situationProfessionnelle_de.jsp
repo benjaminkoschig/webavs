@@ -743,9 +743,10 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR><TD class="withReferencePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
-							<TD class="withReferencePaiement" colspan="5">
+							<TD class="withReferencePaiement" colspan="6">
 								<input type="hidden"  name="forIdTiersEmployeur" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
 								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumeroCompte()%>">

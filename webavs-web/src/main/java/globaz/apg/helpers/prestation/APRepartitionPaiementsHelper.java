@@ -453,6 +453,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             // formatter l'adresse
             String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
             if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+                rpViewBean.setQRIban(true);
                 adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR()); // TODO ESVE REFERENCE QR getIdReferencePaiement()
             }
             rpViewBean.setAdresseFormattee(adresseLine);

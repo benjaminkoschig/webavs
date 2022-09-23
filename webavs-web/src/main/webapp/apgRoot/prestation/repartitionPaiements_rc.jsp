@@ -8,7 +8,7 @@ idEcran="PAP0039";
 globaz.apg.vb.prestation.APRepartitionPaiementsViewBean viewBean = (globaz.apg.vb.prestation.APRepartitionPaiementsViewBean) request.getAttribute("viewBean");
 
 IFrameListHeight = "100";
-IFrameDetailHeight = "300";
+IFrameDetailHeight = "400";
 bButtonNew = false;
 %>
 <%-- /tpl:put --%>
