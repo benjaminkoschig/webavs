@@ -6,10 +6,7 @@ import ch.globaz.pyxis.business.services.AdresseService;
 import ch.globaz.pyxis.businessimpl.services.AdresseServiceImpl;
 import ch.globaz.pyxis.domaine.DomaineApplication;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -26,10 +23,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiementManager;
 import globaz.pyxis.db.divers.TICodeSystemRightChecker;
-import globaz.pyxis.db.tiers.TIAvoirContact;
-import globaz.pyxis.db.tiers.TIContact;
-import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
-import globaz.pyxis.db.tiers.TIMoyenCommunication;
+import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.pyxis.web.DTO.*;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
@@ -46,7 +40,7 @@ public class PYExecuteService extends BProcess {
     /**
      * Création de tiers
      *
-     * @param dto JSON mappé en objet qui contient des informations sur les tiers
+     * @param dto   JSON mappé en objet qui contient des informations sur les tiers
      * @param token header d'authentification
      * @return dto JSON contenant l'id du tiers créé
      */
@@ -66,16 +60,13 @@ public class PYExecuteService extends BProcess {
                 addTiersPaymentAddresses(getSession(), idAddress, null, true, dto);
             }
             addTiersPage2(getSession(), dto);
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la création du tiers: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la création du tiers: " + e);
             throw new PYInternalException(e);
         }
@@ -87,16 +78,13 @@ public class PYExecuteService extends BProcess {
     public final PYTiersPage1DTO createTiersPage1(PYTiersPage1DTO dto, String token) {
         try {
             createTiersPage1(getSession(), dto);
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du tiers page 1: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la création du tiers page 1: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la création du tiers page 1: " + e);
             throw new PYInternalException(e);
         }
@@ -150,23 +138,20 @@ public class PYExecuteService extends BProcess {
     /**
      * Modification de tiers page 1
      *
-     * @param dto JSON mappé en objet qui contient des informations sur les tiers
+     * @param dto   JSON mappé en objet qui contient des informations sur les tiers
      * @param token header d'authentification
      * @return dto JSON contenant l'id du tiers créé et la date de mise à jour
      */
     public final PYTiersPage1DTO updateTiersPage1(PYTiersPage1DTO dto, String token) {
         try {
             updateTiersPage1(getSession(), dto);
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du tiers page 1: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la modification du tiers page 1: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la modification du tiers page 1: " + e);
             throw new PYInternalException(e);
         }
@@ -261,16 +246,13 @@ public class PYExecuteService extends BProcess {
     public final PYContactDTO updateContact(PYContactDTO dto, String token) {
         try {
             updateContact(getSession(), dto.getId(), dto.getLastName(), dto.getFirstName());
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du contact: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la modification du contact: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la modification du contact: " + e);
             throw new PYInternalException(e);
         }
@@ -281,8 +263,8 @@ public class PYExecuteService extends BProcess {
      * Méthode pour mettre à jour un contact (table TICONTP).
      *
      * @param session
-     * @param idContact clé primaire
-     * @param newLastName valeur à mettre à jour
+     * @param idContact    clé primaire
+     * @param newLastName  valeur à mettre à jour
      * @param newFirstName valeur à mettre à jour
      * @throws Exception
      */
@@ -291,9 +273,9 @@ public class PYExecuteService extends BProcess {
         tiContact.setIdContact(idContact);
         tiContact.retrieve(session.getCurrentThreadTransaction());
 
-        if(newLastName != null && !newLastName.isEmpty())
+        if (newLastName != null && !newLastName.isEmpty())
             tiContact.setNom(newLastName);
-        if(newFirstName != null && !newFirstName.isEmpty())
+        if (newFirstName != null && !newFirstName.isEmpty())
             tiContact.setPrenom(newFirstName);
 
         tiContact.update(session.getCurrentThreadTransaction());
@@ -309,16 +291,13 @@ public class PYExecuteService extends BProcess {
     public final PYMeanOfCommunicationDTO updateMeanOfCommunication(PYMeanOfCommunicationDTO dto, String token) {
         try {
             updateMeanOfCommunication(getSession(), dto.getIdContact(), dto.getMeanOfCommunicationType(), dto.getApplicationDomain(), dto.getMeanOfCommunicationValue());
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la modification du moyen de communication: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la modification du moyen de communication: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la modification du moyen de communication: " + e);
             throw new PYInternalException(e);
         }
@@ -331,10 +310,10 @@ public class PYExecuteService extends BProcess {
      * Seul la valeur (newMoyen) peut être modifiée.
      *
      * @param session
-     * @param idContact clé composite
-     * @param typeCommunication clé composite
+     * @param idContact          clé composite
+     * @param typeCommunication  clé composite
      * @param domaineApplication clé composite
-     * @param newMoyen valeur à mettre à jour
+     * @param newMoyen           valeur à mettre à jour
      * @throws Exception
      */
     private void updateMeanOfCommunication(BSession session, String idContact, String typeCommunication, String domaineApplication, String newMoyen) throws Exception {
@@ -346,7 +325,7 @@ public class PYExecuteService extends BProcess {
         tiMoyenCommunication.retrieve(session.getCurrentThreadTransaction());
 
         // Update the contact
-        if(!newMoyen.isEmpty() && newMoyen != null)
+        if (!newMoyen.isEmpty() && newMoyen != null)
             tiMoyenCommunication.setMoyen(newMoyen);
         //tiMoyenCommunication.setIdApplication(newDomaineApplication);         // Those two don't seem to work
         //tiMoyenCommunication.setTypeCommunication(newTypeCommunication);      // Maybe because they're part of the composite key ?
@@ -364,19 +343,16 @@ public class PYExecuteService extends BProcess {
         try {
             String idContact = createContact(getSession(), dto.getIdTiers(), dto.getLastName(), dto.getFirstName());
             dto.setId(idContact);
-            for (PYMeanOfCommunicationDTO mean: dto.getMeansOfCommunication()) {
+            for (PYMeanOfCommunicationDTO mean : dto.getMeansOfCommunication()) {
                 createMeanOfCommunication(getSession(), dto.getId(), mean.getApplicationDomain(), mean.getMeanOfCommunicationType(), mean.getMeanOfCommunicationValue());
             }
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du contact: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la création du contact: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la création du contact: " + e);
             throw new PYInternalException(e);
         }
@@ -417,16 +393,13 @@ public class PYExecuteService extends BProcess {
     public final String deleteContact(PYContactCreateDTO dto, String token) {
         try {
             deleteContact(getSession(), dto.getId(), dto.getIdTiers());
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la suppression du contact: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la suppression du contact: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la suppression du contact: " + e);
             throw new PYInternalException(e);
         }
@@ -458,16 +431,13 @@ public class PYExecuteService extends BProcess {
     public final PYMeanOfCommunicationDTO createMeanOfCommunication(PYMeanOfCommunicationDTO dto, String token) {
         try {
             createMeanOfCommunication(getSession(), dto);
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la création du moyen de communication: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la création du moyen de communication: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la création du moyen de communication: " + e);
             throw new PYInternalException(e);
         }
@@ -519,16 +489,13 @@ public class PYExecuteService extends BProcess {
     public final String deleteMeanOfCommunication(PYMeanOfCommunicationDTO dto, String token) {
         try {
             deleteMeanOfCommunication(getSession(), dto);
-        }
-        catch (PYBadRequestException e) {
+        } catch (PYBadRequestException e) {
             LOG.error("Une erreur de paramètre est survenue lors de la suppression du moyen de communication: " + e);
             throw e;
-        }
-        catch (PYInternalException e) {
+        } catch (PYInternalException e) {
             LOG.error("Une erreur interne est survenue lors de la suppression du moyen de communication: " + e);
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Une erreur est survenue lors de la suppression du moyen de communication: " + e);
             throw new PYInternalException(e);
         }
@@ -559,7 +526,7 @@ public class PYExecuteService extends BProcess {
      * @throws Exception
      */
     private void addTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-        for (PYContactCreateDTO contactDTO: dto.getContacts()) {
+        for (PYContactCreateDTO contactDTO : dto.getContacts()) {
             TIContact contact = new TIContact();
             contact.setSession(session);
             contact.setNom(contactDTO.getLastName());
@@ -596,7 +563,7 @@ public class PYExecuteService extends BProcess {
      * @throws Exception
      */
     private void updateTiersPage2(BSession session, PYTiersDTO dto) throws Exception {
-        for (PYContactCreateDTO contact: dto.getContacts()) {
+        for (PYContactCreateDTO contact : dto.getContacts()) {
             TIContact tiContact = new TIContact();
             tiContact.setIdContact(contact.getId());
             tiContact.retrieve(session.getCurrentThreadTransaction());
@@ -607,7 +574,7 @@ public class PYExecuteService extends BProcess {
             updateContact(session, contact.getId(), contact.getLastName(), contact.getFirstName());
 
             Vector<PYMeanOfCommunicationDTO> meansOfCommunication = contact.getMeansOfCommunication();
-            for (PYMeanOfCommunicationDTO mean: meansOfCommunication) {
+            for (PYMeanOfCommunicationDTO mean : meansOfCommunication) {
                 // Check that mean's id belongs to the contact (i.e. check that a Contact/TICONTP with HLICON same as MoyenDeCommunication/TIMCOMP exists)
                 TIMoyenCommunication tiMoyenCommunication = new TIMoyenCommunication();
                 tiMoyenCommunication.setIdApplication(mean.getApplicationDomain());
@@ -987,7 +954,7 @@ public class PYExecuteService extends BProcess {
 
         } else if (!JadeThread.logIsEmpty()) {
             LOG.error("PRTiersHelper#updateTiersMailAddress - Erreur rencontrée lors de la modification de l'adresse pour l'assuré");
-            throw new PYBadRequestException("PRTiersHelper#updateTiersMailAddress - Erreur rencontrée lors de la modification de l'adresse pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            throw new PYBadRequestException("PRTiersHelper#updateTiersMailAddress - Erreur rencontrée lors de la modification de l'adresse pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()));
         }
     }
 
@@ -1187,7 +1154,7 @@ public class PYExecuteService extends BProcess {
 
         } else if (!JadeThread.logIsEmpty()) {
             LOG.error("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré");
-            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Erreur rencontrée lors de la création de l'adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()));
         }
 
         return pyPaymentAddressDTO;
@@ -1373,7 +1340,7 @@ public class PYExecuteService extends BProcess {
 
             } else if (!JadeThread.logIsEmpty()) {
                 LOG.error("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré");
-                throw new PYBadRequestException("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+                throw new PYBadRequestException("PRTiersHelper#updateTiersPaymentAddress - Erreur rencontrée lors de la màj d'une adresse de paiement pour l'assuré: " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()));
             }
         }
     }
@@ -1429,10 +1396,107 @@ public class PYExecuteService extends BProcess {
             throw new PYBadRequestException(message + ": " + session.getCurrentThreadTransaction().getErrors().toString());
         } else if (!JadeThread.logIsEmpty()) {
             LOG.error(message);
-            throw new PYBadRequestException(message + ": " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()).toString());
+            throw new PYBadRequestException(message + ": " + JadeThread.getMessage(JadeThread.logMessages()[0].getMessageId()));
         }
     }
 
+    /**
+     *
+     */
+    public final PYLienEntreTiersDTO createConjoint(PYLienEntreTiersDTO dto, String token) {
+        PYValidateDTO.checkIfExist(dto);
+        TICompositionTiers composition = createLienEntreTiers(dto,token);
+        dto.setIdComposition(composition.getId());
+        dto.setEtatCivil(TICompositionTiers.CS_CONJOINT);
+        return dto;
+    }
+
+    public TICompositionTiers createLienEntreTiers(PYLienEntreTiersDTO dto, String token) {
+        TICompositionTiers composition = new TICompositionTiers();
+        composition.setSession(getSession());
+        composition.setIdTiersParent(dto.getIdTiersPrincipal());
+        setValuesLienEntreTiers(dto, composition);
+        try {
+            composition.add();
+            updateEtatCivil(dto);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new PYInternalException(e + ": " + getSession().getCurrentThreadTransaction().getErrors().toString());
+        }
+        return composition;
+    }
+
+
+
+    public final PYLienEntreTiersDTO updateConjoint(PYLienEntreTiersDTO dto, String token) {
+        updateLienEntreTiers(dto,token);
+        return dto;
+    }
+
+    public final PYLienEntreTiersDTO updateLienEntreTiers(PYLienEntreTiersDTO dto,String token) {
+        TICompositionTiers composition = new TICompositionTiers();
+        composition.setSession(getSession());
+        composition.setId(dto.getIdComposition());
+        try {
+            composition.retrieve();
+            if (!composition.isNew()) {
+                setValuesLienEntreTiers(dto, composition);
+                composition.update();
+                updateEtatCivil(dto);
+            } else {
+                LOG.error("Tiers non trouvé");
+                throw new PYInternalException("Tiers non trouvé" + getSession().getCurrentThreadTransaction().getErrors().toString());
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new PYInternalException(e + ": " + getSession().getCurrentThreadTransaction().getErrors().toString());
+        }
+        return dto;
+    }
+    public String deleteConjoint(PYLienEntreTiersDTO dto, String token) {
+        deleteLienEntreTiers(dto,token);
+        return "Deletion successful";
+    }
+    public String deleteLienEntreTiers(PYLienEntreTiersDTO dto, String token) {
+        TICompositionTiers composition = new TICompositionTiers();
+        composition.setSession(getSession());
+        composition.setId(dto.getIdComposition());
+        try {
+            composition.retrieve();
+            if (!composition.isNew()) {
+                composition.delete();
+            } else {
+                LOG.error("Tiers non trouvé");
+                throw new PYInternalException("Tiers non trouvé" + getSession().getCurrentThreadTransaction().getErrors().toString());
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new PYInternalException(e + ": " + getSession().getCurrentThreadTransaction().getErrors().toString());
+        }
+        return "Deletion successful";
+    }
+    private static void setValuesLienEntreTiers(PYLienEntreTiersDTO dto, TICompositionTiers composition) {
+        composition.setIdTiersEnfant(dto.getIdTiersSecondaire());
+        composition.setTypeLien(!JadeStringUtil.isBlankOrZero(dto.getTypeLien() ) ? dto.getTypeLien() : TICompositionTiers.CS_CONJOINT);
+        composition.setDebutRelation(!JadeStringUtil.isBlankOrZero(dto.getDebutRelation()) ? dto.getDebutRelation() : "");
+        composition.setFinRelation(!JadeStringUtil.isBlankOrZero(dto.getFinRelation()) ? dto.getFinRelation() : "");
+    }
+
+    private void updateEtatCivil(PYLienEntreTiersDTO dto) throws Exception {
+        TITiersViewBean t1 = new TITiersViewBean();
+        t1.setSession(getSession());
+        t1.setIdTiers(dto.getIdTiersPrincipal());
+        t1.retrieve();
+        t1.setEtatCivil(dto.getEtatCivil());
+        t1.update();
+
+        TITiersViewBean t2 = new TITiersViewBean();
+        t2.setSession(getSession());
+        t2.setIdTiers(dto.getIdTiersSecondaire());
+        t2.retrieve();
+        t2.setEtatCivil(dto.getEtatCivil());
+        t2.update();
+    }
     @Override
     protected void _executeCleanUp() {
 
@@ -1452,4 +1516,6 @@ public class PYExecuteService extends BProcess {
     public GlobazJobQueue jobQueue() {
         return null;
     }
+
+
 }
