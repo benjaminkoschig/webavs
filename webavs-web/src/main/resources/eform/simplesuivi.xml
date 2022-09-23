@@ -29,6 +29,17 @@
                 <search-field name="byYourBusinessRefId" field-ref="yourBusinessRefId" operation="EQUALS"/>
             </search-group>
         </search-definition>
+        <search-definition name="ourBusinessRefId">
+            <search-group operator="AND">
+                <search-field name="byOurBusinessRefId" field-ref="ourBusinessRefId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="tracking">
+            <search-group operator="AND">
+                <search-field name="byType" field-ref="type" operation="EQUALS"/>
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
         <search-definition name="suivi">
             <search-group operator="AND">
                 <search-field name="likeNss" field-ref="nssAffilier" operation="LIKE"/>

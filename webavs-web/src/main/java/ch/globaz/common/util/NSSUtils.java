@@ -32,12 +32,12 @@ public final class NSSUtils {
     }
 
     public static String unFormatNss(String nss) {
-        if (StringUtils.isEmpty(nss)) {throw new IllegalArgumentException();}
+        if (StringUtils.isEmpty(nss)) { return nss;}
         return nss.replaceAll("\\.", "");
     }
 
     public static String formatNss(String nss) {
-        if (StringUtils.isEmpty(nss) || !checkNSS(nss)) {throw new IllegalArgumentException();}
+        if (StringUtils.isEmpty(nss)) { return nss;}
 
         return unFormatNss(nss).replaceAll("^(\\d{3})(\\d{4})(\\d{4})(\\d{2})$", "$1.$2.$3.$4");
     }

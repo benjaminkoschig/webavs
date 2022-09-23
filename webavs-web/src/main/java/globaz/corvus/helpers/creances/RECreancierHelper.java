@@ -24,7 +24,10 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.math.BigDecimal;
 
 /**
@@ -424,9 +427,9 @@ public class RECreancierHelper extends PRAbstractHelper {
                 }
             }
 
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
                 String adresseLine = rpViewBean.getCcpOuBanqueFormatte();
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
                 rpViewBean.setCcpOuBanqueFormatte(adresseLine);
             }
 

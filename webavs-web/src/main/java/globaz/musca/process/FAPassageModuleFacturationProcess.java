@@ -90,6 +90,7 @@ public class FAPassageModuleFacturationProcess extends FAGenericProcess {
                 FAModuleFacturation moduleFact = (FAModuleFacturation) moduleFacturationManager.getEntity(0);
                 if (moduleFact.getIdTypeModule().equals(FAModuleFacturation.CS_MODULE_PRINT_DECISIONMORATOIRE)
                         || moduleFact.getIdTypeModule().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES)
+                        || moduleFact.getIdTypeModule().equals(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL)
                         || moduleFact.getIdTypeModule().equals(FAModuleFacturation.CS_MODULE_LETTRE_TAXE_CO2)) {
                     passage.setModuleEnCours(moduleFact.getIdTypeModule());
                 }

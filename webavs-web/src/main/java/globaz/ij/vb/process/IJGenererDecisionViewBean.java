@@ -1,6 +1,5 @@
 package globaz.ij.vb.process;
 
-import ch.globaz.common.util.Dates;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.babel.api.doc.impl.CTScalableDocumentAbstractViewBeanDefaultImpl;
@@ -15,6 +14,7 @@ import globaz.ij.db.decisions.IJDecisionIJAI;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIJCalculeeManager;
 import globaz.ij.db.prononces.IJPrononce;
+import globaz.ij.helpers.prestations.IJRepartitionJointPrestationHelper;
 import globaz.ij.utils.IJGestionnaireHelper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
@@ -22,6 +22,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -41,7 +42,10 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
             new String[] { "idTiersAdressePaiementPersonnalisee", "idTiers" },
             new String[] { "idDomaineApplicationAdressePaiementPersonnalisee", "idApplication" },
             new String[] { "numAffilieAdressePaiementPersonnalisee", "idExterneAvoirPaiement" } };
-
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
+            new String[] { "idReferenceQR", "idReference" }};
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
     private String adresseCourrierAssureFormatee = "";
     private String adresseCourrierEmployeurFormatee = "";
     // pour la gestion de l'adresse de courrier
@@ -70,6 +74,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
     private String idTierDemandeDecision = "";
     private String idTierEmployeurAdressePaiement = "";
     private String idTiersAdressePaiementPersonnalisee = "";
+    private String idReferenceQR = "";
     private boolean isRetourDepuisPyxis = false;
     private Boolean isSendToGed = Boolean.FALSE;
     private String numAffilieAdressePaiementPersonnalisee = "";
@@ -229,6 +234,14 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         return idTierEmployeurAdressePaiement;
     }
 
+    public TIAdressePaiementData getAdressePaiementPersonnaliseeData() throws Exception {
+        return IJRepartitionJointPrestationHelper.getAdressePaiementData(this.getIdTiersAdressePaiementPersonnalisee(), this.getIdDomaineApplicationAdressePaiementPersonnalisee(), null, this.getSession());
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
     public String getIdTiersAdressePaiementPersonnalisee() {
         return idTiersAdressePaiementPersonnalisee;
     }
@@ -266,6 +279,14 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
 
     public Object[] getMethodesSelectionAdressePaiement() {
         return IJGenererDecisionViewBean.METHODES_SEL_ADRESSE_PAIEMENT;
+    }
+
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return IJGenererDecisionViewBean.METHODES_SEL_REFERENCE_PAIEMENT;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return IJGenererDecisionViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
     }
 
     public String getNumAffilieAdressePaiementPersonnalisee() {
@@ -571,6 +592,10 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
                     idTiersAdresseCourrierPyxis, "", IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI);
         } catch (Exception e) {
         }
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 
     public void setIdTiersAdressePaiementPersonnalisee(String idTiersAdressePaiementPersonnalisee) {

@@ -2,8 +2,11 @@
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="globaz.eform.helpers.dadossier.GFDADossierHelper" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="ch.globaz.eform.utils.GFSessionDataContainerHelper" %>
-<%@ page import="ch.globaz.eform.business.search.GFDaDossierSearch" %>
+<%@ page import="globaz.eform.vb.suivi.GFSuiviViewBean" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFSuiviServletAction" %>
+<%@ page import="ch.globaz.eform.business.services.GFAdministrationService" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
 
 <%@ page errorPage="/errorPage.jsp" %>
 
@@ -13,8 +16,9 @@
 
 <%
 	idEcran="GFE0121";
-	GFDaDossierSearch gfSuiviSearch = GFSessionDataContainerHelper.getGFDaDossierSearchFromSession(session);
+	GFSuiviViewBean viewBean = (GFSuiviViewBean) session.getAttribute("viewBean");
 	bButtonNew = false;
+	bButtonFind = objSession.hasRight(GFSuiviServletAction.PATH_EFORM, FWSecureConstants.READ);
 %>
 
 <%-- tpl:insert attribute="zoneInit" --%>
@@ -32,7 +36,7 @@
 <script >
 	var bFind = true;
 	var detailLink = "<%=actionNew%>";
-	var usrAction = "eform.suivi.suivi.lister";
+	var usrAction = "<%=GFSuiviServletAction.PATH_EFORM%>.lister";
 </script>
 <%-- /tpl:insert --%>
 
@@ -52,14 +56,14 @@
 		</LABEL>
 	</td>
 	<td>
-		<ct:widget id='likeNss' name='likeNss' defaultValue='<%=gfSuiviSearch != null ? gfSuiviSearch.getLikeNss() : ""%>'>
+		<ct:widget id='likeNss' name='likeNss' defaultValue='<%=viewBean != null ? viewBean.getLikeNss() : ""%>'>
 			<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 				<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 				<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
-							this.value=$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2');
+							this.value=$(element).attr('personneEtendue.numAvsActuel');
 						}
 					</script>
 				</ct:widgetJSReturnFunction>
@@ -72,15 +76,18 @@
 		</LABEL>
 	</td>
 	<td>
-		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=gfSuiviSearch != null ? gfSuiviSearch.getByCaisse() : ""%>'>
-			<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+
+		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=viewBean != null ? viewBean.getByCaisse() : ""%>'>
+			<ct:widgetService methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
+				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
-							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
 						}
 					</script>
 				</ct:widgetJSReturnFunction>
@@ -94,7 +101,7 @@
 	</td>
 	<td>
 		<ct:FWCodeSelectTag name="byType"
-							defaut='<%=gfSuiviSearch != null ? gfSuiviSearch.getByType() : ""%>'
+							defaut='<%=viewBean != null ? viewBean.getByType() : ""%>'
 							wantBlank="true"
 							codeType="GFDATYPE"/>
 	</td>
@@ -107,7 +114,7 @@
 	</td>
 	<td>
 		<ct:FWCodeSelectTag name="byStatus"
-							defaut='<%=gfSuiviSearch != null ? gfSuiviSearch.getByStatus() : ""%>'
+							defaut='<%=viewBean != null ? viewBean.getByStatus() : ""%>'
 							wantBlank="true"
 							codeType="GFDASTATUS"/>
 	</td>

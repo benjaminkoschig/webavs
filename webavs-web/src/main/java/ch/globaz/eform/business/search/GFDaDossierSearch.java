@@ -16,6 +16,7 @@ public class GFDaDossierSearch extends JadeSearchSimpleModel {
     private String byStatus = null;
     private String byGestionnaire = null;
     private String byYourBusinessRefId = null;
+    private String byOurBusinessRefId = null;
 
     public GFDaDossierSearch() {
         super(JadeSearchSimpleModel.SIZE_NOLIMIT);

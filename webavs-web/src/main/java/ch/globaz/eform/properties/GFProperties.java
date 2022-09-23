@@ -13,7 +13,9 @@ public enum GFProperties implements IProperties {
     GESTIONNAIRE_USER_DEFAULT("user.gestionnaire.default", "Gestionnaire par défaut"),
     EMAIL_RECAP_FORMULAIRE("email.recap.formulaire", "Email d'envoie du fichier récapitulatif des formulaires au statut reçu"),
     GESTIONNAIRE_USER_DEPARTEMENT("dadossier.envoi.departement", "Departement du gestionnaire"),
-    GESTIONNAIRE_USER_TELEPHONE("dadossier.envoi.telephone", "Telephone du gestionnaire");
+    GESTIONNAIRE_USER_TELEPHONE("dadossier.envoi.telephone", "Telephone du gestionnaire"),
+    DA_DOSSIER_MODE_TEST("dadossier.mode.test", "Identification de livraison en test"),
+    SENDER_ID("sedex.sender.id", "Identifiant Sedex");
 
     private final String description;
     private final String propertyName;
