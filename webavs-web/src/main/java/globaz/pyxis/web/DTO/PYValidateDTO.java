@@ -5,16 +5,21 @@ import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.domaine.*;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.external.models.pyxis.TypeContact;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.db.tiers.TICompositionTiersManager;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PYValidateDTO {
 
@@ -53,7 +58,7 @@ public class PYValidateDTO {
             checkModificationDate(dto.getModificationDate());
         }
 
-        if (!dto.getIsPhysicalPerson()) {
+        if (Boolean.FALSE.equals(dto.getIsPhysicalPerson())) {
             // Set those fields to "" since they are not possible for a legal person. They will be reseted to a default value in PRTiersHelper
             dto.setNss("");
             dto.setBirthDate("");
@@ -83,6 +88,7 @@ public class PYValidateDTO {
         return true;
     }
 
+
     /**
      * Méthode pour s'assurer de la validité des données du DTO.
      * Attention: Certains check peuvent set des données du DTO à des valeurs par défaut et des codes systèmes !
@@ -99,7 +105,6 @@ public class PYValidateDTO {
     }
 
     /**
-     *
      * @param dto
      */
     public static void checkValidityPage1(PYTiersPage1DTO dto) {
@@ -229,7 +234,7 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void checkNSS(PYTiersPage1DTO dto) {
-        if (!dto.getIsPhysicalPerson()) {
+        if (Boolean.FALSE.equals(dto.getIsPhysicalPerson())) {
             dto.setNss("");
         } else {
             if (!NSSUtils.checkNSS(dto.getNss())) {
@@ -247,13 +252,12 @@ public class PYValidateDTO {
      */
     private static final void checkBirthdate(PYTiersPage1DTO dto) {
         String birthDate = dto.getBirthDate();
-        if (birthDate == "0" || birthDate == null || birthDate == ""){
+        if (JadeStringUtil.isBlankOrZero(birthDate)) {
             dto.setBirthDate("0");
         } else {
             try {
                 checkDate(birthDate);
-            }
-            catch (PYInternalException e) {
+            } catch (PYInternalException e) {
                 throw new PYInternalException("Erreur lors de la validation de la date de naissance du tiers.", e);
             }
         }
@@ -267,13 +271,12 @@ public class PYValidateDTO {
      */
     private static final void checkDeathdate(PYTiersPage1DTO dto) {
         String deathDate = dto.getDeathDate();
-        if (deathDate == "0" || deathDate == null || deathDate == ""){
+        if (JadeStringUtil.isBlankOrZero(deathDate)) {
             dto.setDeathDate("0");
         } else {
             try {
                 checkDate(deathDate);
-            }
-            catch (PYInternalException e) {
+            } catch (PYInternalException e) {
                 throw new PYInternalException("Erreur lors de la validation de la date de décès du tiers.", e);
             }
         }
@@ -285,7 +288,7 @@ public class PYValidateDTO {
      * @param date
      */
     private static final void checkDate(String date) throws PYBadRequestException {
-        String pattern = "(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
+        String pattern = "(0[1-9]|[12]\\d|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}";
         if (!Pattern.matches(pattern, date)) {
             logger.error("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
             throw new PYBadRequestException("Erreur lors de la validation d'une date du tiers. Elle doit être au format dd.mm.yyyy.");
@@ -298,7 +301,7 @@ public class PYValidateDTO {
      * @param date
      */
     private static final void checkModificationDate(String date) throws PYBadRequestException {
-        String pattern = "(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{4}";
+        String pattern = "(0[1-9]|[12]\\d|3[01])(0[1-9]|1[0-2])\\d{4}";
         if (!Pattern.matches(pattern, date)) {
             logger.error("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
             throw new PYBadRequestException("Erreur lors de la validation de la date de modification. Elle doit être au format ddmmyyyy.");
@@ -330,8 +333,7 @@ public class PYValidateDTO {
             default: // If sex isn't anything standard, check that it's a valid system code
                 try {
                     Sexe.parse(dto.getSex()); // If this goes through without error, sex is a valid sex
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     logger.error("Erreur lors de l'assignation du sexe du tiers.");
                     throw new PYBadRequestException("Erreur lors de l'assignation du sexe du tiers.", e);
                 }
@@ -346,7 +348,7 @@ public class PYValidateDTO {
      */
     private static final void checkAndSetCivilStatusAsSystemCode(PYTiersPage1DTO dto) {
         try {
-            if (dto.getIsPhysicalPerson()) {
+            if (Boolean.TRUE.equals(dto.getIsPhysicalPerson())) {
                 EtatCivil.parse(dto.getCivilStatus()); // If this goes through without error, civilStatus is a valid civil status
             } else {
                 dto.setCivilStatus("0");
@@ -359,7 +361,7 @@ public class PYValidateDTO {
 
     /**
      * Méthode pour vérifier que status est un code système valide
-     *
+     * TODO : Est'il dispensable ?
      * @param status
      */
     private static final void checkStatusPaymentAddress(String status) {
@@ -377,7 +379,7 @@ public class PYValidateDTO {
      * @param type
      */
     private static final void checkMeanOfCommuncationType(String type) {
-        if(!TypeContact.isValid(type)){
+        if (!TypeContact.isValid(type)) {
             logger.error("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
             throw new PYBadRequestException("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
         }
@@ -440,7 +442,7 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getDomainAddressAsSystemCode(PYAddressDTO dto) {
-        if (dto.getDomainAddress() != null && dto.getDomainAddress() != "") {
+        if (!JadeStringUtil.isBlankOrZero(dto.getDomainAddress())) {
             dto.setDomainAddress(DomaineApplication.parse(dto.getDomainAddress()).getSystemCode().toString());
         } else {
             logger.error("Erreur lors de l'assignation du domaine");
@@ -454,7 +456,7 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getTypeAddressAsSystemCode(PYAddressDTO dto) {
-        if (dto.getTypeAddress() != null && dto.getTypeAddress() != "") {
+        if (!JadeStringUtil.isBlankOrZero(dto.getTypeAddress())) {
             if (dto.getTypeAddress().equals(AdresseService.CS_TYPE_COURRIER) || dto.getTypeAddress().equals(AdresseService.CS_TYPE_DOMICILE))
                 dto.setTypeAddress(dto.getTypeAddress());
         } else {
@@ -469,7 +471,7 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getNationalityAsSystemCode(PYTiersPage1DTO dto) {
-        if (dto.getNationality() != null && dto.getNationality() != "") {
+        if (!JadeStringUtil.isBlankOrZero(dto.getNationality())) {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getNationality());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
                 dto.setNationality(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
@@ -486,8 +488,7 @@ public class PYValidateDTO {
      * @param dto
      */
     private static final void getCountryAsSystemCode(PYAddressDTO dto) {
-        if (dto.getCountry() != null && dto.getCountry() != "") {
-
+        if (!JadeStringUtil.isBlankOrZero(dto.getCountry())) {
             CodesSysPays codeSystemPays = CodesSysPays.parse(dto.getCountry());
             if (codeSystemPays != CodesSysPays.NATIONALITÉINCONNUE) {
                 dto.setCountry(codeSystemPays.getCodeSystem().substring(codeSystemPays.getCodeSystem().length() - 3));
@@ -508,6 +509,37 @@ public class PYValidateDTO {
         if (!Pattern.matches(pattern, ccp)) {
             logger.error("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
             throw new PYBadRequestException("Erreur lors de la validation du CCP. Elle doit être au format xx-xxxxxx-x.");
+        }
+    }
+
+
+    public static void checkIfExist(PYLienEntreTiersDTO pyLienEntreTiersDTO) {
+        TICompositionTiersManager manager = new TICompositionTiersManager();
+        manager.setForIdTiersParent(pyLienEntreTiersDTO.getIdTiersPrincipal());
+        manager.setForIdTiersEnfant(pyLienEntreTiersDTO.getIdTiersSecondaire());
+        try {
+            manager.find(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction(), 10, true);
+        } catch (Exception e) {
+            logger.error(MessageFormat.format("PYValidateDTO.checkIfExist() : {0}",e.getMessage()));
+            throw new PYInternalException(e);
+        }
+        if (!manager.isEmpty()) {
+            logger.error("Lien avec le conjoint existant");
+            throw new PYInternalException("Lien avec le conjoint existant");
+        }
+    }
+    public static void checkIfEmpty(Map<String,String> mapForValidator){
+        List<String> listEmptyValuesMandatory = mapForValidator.entrySet().stream().filter(sets -> JadeStringUtil.isEmpty(sets.getValue())).map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        StringBuilder stringBuilder = new StringBuilder("field :");
+        for( int i = 0; i < listEmptyValuesMandatory.size();i++){
+            stringBuilder.append(listEmptyValuesMandatory.get(i));
+            if(i+1 ==listEmptyValuesMandatory.size()){
+                stringBuilder.append(",");
+            }
+        }
+        if(!listEmptyValuesMandatory.isEmpty()){
+            throw new PYBadRequestException("Champs manquant(s) - "+stringBuilder.toString());
         }
     }
 }
