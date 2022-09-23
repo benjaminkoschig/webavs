@@ -5,6 +5,8 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAException;
@@ -45,6 +47,17 @@ public class GFDocumentDossier extends FWIDocumentManager {
     private GFDocumentPojo documentPojo;
 
     private boolean isFirst = true;
+
+    public GFDocumentDossier() {
+    }
+
+    public GFDocumentDossier(BSession session, String rootApplication, String fileName) throws FWIException {
+        super(session, rootApplication, fileName);
+    }
+
+    public GFDocumentDossier(BProcess parent, String rootApplication, String fileName) throws FWIException {
+        super(parent, rootApplication, fileName);
+    }
 
     @Override
     public void beforeBuildReport() throws FWIException {

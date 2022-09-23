@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -166,7 +168,7 @@ public class GFFileUtils {
     }
 
     public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
-        List<String> fileNames = viewBean.getFileNameList();
+        List<String> fileNames = new ArrayList<>(viewBean.getFileNameList());
         for (String fileName : fileNames) {
             String extension = FilenameUtils.getExtension(fileName);
             if (!extension.equals(FILE_TYPE_PDF) && !extension.equals(FILE_TYPE_TIFF)) {
@@ -234,6 +236,20 @@ public class GFFileUtils {
 
     public static String renameFileWithSameName(String fileName) {
         counterMap.merge(fileName, 1, Integer::sum);
-        return FilenameUtils.removeExtension(fileName) + "_" + counterMap.get(fileName) + "." + FilenameUtils.getExtension(fileName);
+        String name = FilenameUtils.removeExtension(fileName);
+        String extension = FilenameUtils.getExtension(fileName);
+        String rename;
+        if ("pdf".equalsIgnoreCase(extension)) {
+            rename = name + "_" + counterMap.get(fileName) + "." + extension;
+        } else {
+            Pattern page = Pattern.compile("(.*)(_[pP][1-9]+)$");
+            Matcher mPage = page.matcher(name);
+            if (mPage.find()) {
+                rename = mPage.group(1) + "_" + counterMap.get(fileName) + mPage.group(2) + "." + extension;
+            } else {
+                rename = name + "_" + counterMap.get(fileName) + "." + extension;
+            }
+        }
+        return rename;
     }
 }
