@@ -23,7 +23,6 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -31,7 +30,9 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.LinkedList;
@@ -452,9 +453,9 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
 
             // formatter l'adresse
             String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
                 rpViewBean.setQRIban(true);
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR()); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR());
             }
             rpViewBean.setAdresseFormattee(adresseLine);
         } else {

@@ -306,8 +306,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                 adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
             }
 
-            if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
+            if (TIAdressePaiement.isQRIban(detailTiers.getCompte())) {
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
             }
 
         }
@@ -581,8 +581,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
         }
 
-        if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-            adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur()); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+        if (TIAdressePaiement.isQRIban(detailTiers.getCompte())) {
+            adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
         }
 
         return adresseLine;
@@ -1331,9 +1331,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         try {
             TIAdressePaiement adressePaiement = loadAdressePaiement();
             if (adressePaiement != null) {
-                return adressePaiement.isQRIban();
+                return TIAdressePaiement.isQRIban(adressePaiement.getNumCompteBancaire());
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             JadeLogger.error(e, "Erreur lors de la récupération de l'adresse de paiement");
         }
         return false;

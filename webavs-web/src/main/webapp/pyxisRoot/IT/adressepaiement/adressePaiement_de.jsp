@@ -1,5 +1,6 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ page import="globaz.jade.client.util.JadeStringUtil" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
@@ -143,9 +144,7 @@ function init(){
 	<td>
 		<TEXTAREA rows="5" align="left" readonly class="libelleLongDisabled"><%=viewBean.getDetailAdresse()%></TEXTAREA>							
 			<%
-			Object[] adresseMethodsName = new Object[]{
-			new String[]{"setIdAdresse","getIdAdresseUnique"},new String[]{"setIdTiersAdresse","getIdTiers"}
-			};
+			Object[] adresseMethodsName = new Object[]{ new String[]{"setIdAdresse","getIdAdresseUnique"},new String[]{"setIdTiersAdresse","getIdTiers"}};
 			Object[] adresseParams = new Object[]{ new String[]{"critereParam","critere"}};
 		%>
 		<input type="hidden" name="critereParam" value="512006">
@@ -164,7 +163,7 @@ function init(){
 	</td>
 </tr>
 
-<%if(viewBean.isQRIban() && !viewBean.isNew()){%>
+<%if(TIAdressePaiement.isQRIban(viewBean.getNumCompteBancaire()) && !viewBean.isNew()){%>
 	<tr>
 		<td>Riferimento QR</td>
 		<td>
@@ -174,10 +173,8 @@ function init(){
 			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaireFormateIban()%>">
 
 			<%
-				Object[] referencePaiementMethodsName = new Object[]{
-						new String[]{"forIdAdressePaiement","getOldIdAdressePaiement"},new String[]{"forIdTiers","getIdTiers"},new String[]{"forCompteLike","getNumCompteBancaireFormateIban"}
-				};
-				Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+				Object[] referencePaiementMethodsName = new Object[]{ new String[]{ }};
+				Object[] referencePaiementChercherParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 			%>
 			<ct:FWSelectorTag
 					name="referencePaiementSelector1"
@@ -186,7 +183,7 @@ function init(){
 					providerApplication ="pyxis"
 					providerPrefix="TI"
 					providerAction ="pyxis.tiers.referencePaiement.chercher"
-					providerActionParams ="<%=referencePaiementParams%>"
+					providerActionParams ="<%=referencePaiementChercherParams%>"
 			/>
 
 		</td>

@@ -8,6 +8,8 @@
 
 <%@ page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.ij.itext.IJDecision" %>
+<%@ page import="java.util.Objects" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -398,6 +400,28 @@
 									&nbsp;
 								</span>
 							</td>
+
+						<%if(TIAdressePaiement.isQRIban(viewBean.getAdressePaiementPersonalisee() != null ? viewBean.getAdressePaiementPersonalisee().getCompte() : "")){%>
+							<td valign="top" align="right">
+								<span class="adressePaiement assure employeur personnalise">
+
+									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>">
+									<input type="hidden"  name="forIdAdressePaiement" value="<%=!Objects.isNull(viewBean.getAdressePaiementPersonalisee()) ? viewBean.getAdressePaiementPersonalisee().getIdAdressePaiement() : ""%>">
+									<input type="hidden"  name="forCompteLike" value="<%=!Objects.isNull(viewBean.getAdressePaiementPersonalisee()) ? viewBean.getAdressePaiementPersonalisee().getCompte() : ""%>">
+
+									<ct:FWSelectorTag	name="selecteurReferencePaiement"
+														methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"
+														providerApplication="pyxis"
+														providerPrefix="TI"
+														providerAction="pyxis.tiers.referencePaiement.chercher"
+														providerActionParams="<%=viewBean.getParamsChercherReferencePaiement()%>"
+														target="fr_main"
+														redirectUrl="<%=mainServletPath%>" />
+									&nbsp;
+								</span>
+							</td>
+						<%}%>
+
 							<td valign="top" align="left">
 								<span class="IJAfficheText">
 									<span class="adressePaiement assure standard">
@@ -441,6 +465,9 @@
 								<input	type="hidden" 
 										name="numAffilieAdressePaiementPersonnalisee" 
 										value="<%=viewBean.getNumAffilieAdressePaiementPersonnalisee()%>" />
+								<input	type="hidden"
+										name="idReferenceQR"
+										value="<%=viewBean.getIdReferenceQR()%>" />
 							</td>
 						</tr>
 						<tr>

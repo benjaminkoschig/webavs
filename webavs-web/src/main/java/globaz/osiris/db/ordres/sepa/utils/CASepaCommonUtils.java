@@ -207,31 +207,6 @@ public class CASepaCommonUtils {
         return (qrIid >= QR_IID_MIN && qrIid <= QR_IID_MAX);
     }
 
-    public static boolean isQRIban(String numCompteBancaire) {
-        Pattern patternRegexQRIban = Pattern.compile("CH\\d{2}3[0-1]\\d{3}\\d{12}");
-        Matcher matcherRegexQRIban = patternRegexQRIban.matcher(numCompteBancaire.replaceAll("\\s+", ""));
-        return matcherRegexQRIban.matches();
-    }
-
-    public static String getReferencePaiementPourAffichage(BSession session, String idReference) {
-        try {
-            if (!JadeStringUtil.isBlank(idReference)) {
-                TIReferencePaiementManager rpm = new TIReferencePaiementManager();
-                rpm.setForIdReference(idReference);
-                rpm.setSession(session);
-                rpm.find(BManager.SIZE_NOLIMIT);
-                if (rpm.size() > 0) {
-                    TIReferencePaiement rp = (TIReferencePaiement) rpm.getFirstEntity();
-                    return session.getLabel("REFERENCE_QR") + " : " + rp.getReferenceQR() + "\n";
-                }
-            }
-        } catch (Exception e) {
-            JadeLogger.warn(TIReferencePaiementViewBean.class, e);
-        }
-
-        return "";
-    }
-
     private static boolean isXsdRegexIbanValid(String ibanStr) {
         Pattern pat = Pattern.compile(IBAN_REGEX_PAIN);
         Matcher mat = pat.matcher(ibanStr);
