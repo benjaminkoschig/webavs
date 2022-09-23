@@ -1,14 +1,12 @@
 package globaz.naos.web.service;
 
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.web.DTO.AFAffiliationDTO;
 import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.naos.web.exceptions.AFInternalException;
@@ -170,15 +168,7 @@ public class AFExecuteService extends BProcess {
      * @throws Exception
      */
     private void updateAffiliationPage1(BSession session, AFAffiliationDTO dto) throws Exception {
-        //TODO update affililiation
-        AFAffiliation affiliation = new AFAffiliation();
-        affiliation.setSession(session);
-        affiliation.setAffiliationId(dto.getId());
-        affiliation.retrieve(session.getCurrentThreadTransaction());
-
-        if (affiliation.isNew()) {
-            throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - L'affiliation à modifier n'a pas été trouvée");
-        }
+        AFAffiliation affiliation = retrieveAffiliation(session, dto);
 
         if (!JadeStringUtil.isEmpty(dto.getIdTiers())) {
             affiliation.setIdTiers(dto.getIdTiers());
@@ -261,6 +251,42 @@ public class AFExecuteService extends BProcess {
     }
 
     /**
+     * Récupère l'affiliation avec son numéro d'affilié ou son id.
+     * Si on a les 2 informations, c'est l'id qui prend le dessus.
+     *
+     * @param session
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    private static AFAffiliation retrieveAffiliation(BSession session, AFAffiliationDTO dto) throws Exception {
+        // On part du principe qu'on a forcément l'id ET/OU le numéro d'affilié --> validé dans isValidForUpdate
+        AFAffiliation affiliation = new AFAffiliation();
+        if (!JadeStringUtil.isEmpty(dto.getId())) {
+            affiliation.setSession(session);
+            affiliation.setAffiliationId(dto.getId());
+            affiliation.retrieve(session.getCurrentThreadTransaction());
+        } else {
+            AFAffiliationManager afAffiliationManager = new AFAffiliationManager();
+            afAffiliationManager.setSession(session);
+            afAffiliationManager.setForAffilieNumero(dto.getNumeroAffilie());
+            afAffiliationManager.find(BManager.SIZE_NOLIMIT);
+            if (afAffiliationManager.getSize() == 1) {
+                affiliation = (AFAffiliation) afAffiliationManager.getFirstEntity();
+            } else if (afAffiliationManager.getSize() == 0) {
+                throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - L'affiliation à modifier n'a pas été trouvée");
+            } else {
+                throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - Plusieurs affiliation trouvées pour le numéro " + dto.getNumeroAffilie());
+            }
+        }
+
+        if (affiliation.isNew()) {
+            throw new AFBadRequestException("AFExecuteService#updateAffiliationPage1 - L'affiliation à modifier n'a pas été trouvée");
+        }
+        return affiliation;
+    }
+
+    /**
      * Methode pour modifier une affiliation (page 2).
      *
      * @param session
@@ -268,10 +294,7 @@ public class AFExecuteService extends BProcess {
      * @throws Exception
      */
     private void updateAffiliationPage2(BSession session, AFAffiliationDTO dto) throws Exception {
-        AFAffiliation affiliation = new AFAffiliation();
-        affiliation.setSession(session);
-        affiliation.setAffiliationId(dto.getId());
-        affiliation.retrieve(session.getCurrentThreadTransaction());
+        AFAffiliation affiliation = retrieveAffiliation(session, dto);
 
         if (!JadeStringUtil.isEmpty(dto.getAffiliationSecurisee())) {
             affiliation.setAccesSecurite(dto.getAffiliationSecurisee());

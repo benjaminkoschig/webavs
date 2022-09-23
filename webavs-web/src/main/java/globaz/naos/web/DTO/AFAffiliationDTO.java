@@ -101,10 +101,11 @@ public class AFAffiliationDTO {
 
     @JsonIgnore
     public Boolean isValidForUpdate() {
-
         Vector<String> mandatoryParameters = new Vector<>();
         if (!JadeStringUtil.isEmpty(this.getId()))
             mandatoryParameters.add(this.getId());
+        if (!JadeStringUtil.isEmpty(this.getNumeroAffilie()))
+            mandatoryParameters.add(this.getNumeroAffilie());
 
         verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
         verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
@@ -124,7 +125,8 @@ public class AFAffiliationDTO {
     private void verifyCodeSystem(String idCodeSystem, String famille) {
         if (!JadeStringUtil.isEmpty(idCodeSystem)) {
             try {
-                //TODO Faut-il accepter de mettre un code système plus actif ? (FWCOSP.PCODFI = 1)
+                //Validation avec MMO et EVID le 23.09.2022 : la méthode getFamilleCodeSystem ne va remonter que les
+                // codes actifs ! Ce qui fait que si on passe un code inactif (FWCOSP.PCODFI = 1), il ne sera pas retrouvé.
                 JadeBusinessServiceLocator.getCodeSystemeService()
                         .getFamilleCodeSysteme(famille).stream()
                         .filter(cs -> idCodeSystem.equals(cs.getIdCodeSysteme()))
