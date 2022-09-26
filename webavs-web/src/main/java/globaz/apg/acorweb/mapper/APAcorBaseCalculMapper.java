@@ -82,7 +82,7 @@ public class APAcorBaseCalculMapper {
             GarantieIJ garantie = new GarantieIJ();
             garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
             garantie.setSource(Integer.parseInt(session.getCode(droit.getCsProvenanceDroitAcquis())));
-//  TODO            garantie.setNumeroReference(); --> obligatoire !
+            garantie.setNumeroReference(droit.getReference());
             basesCalcul.setGarantieIJ(garantie);
         }
     }
