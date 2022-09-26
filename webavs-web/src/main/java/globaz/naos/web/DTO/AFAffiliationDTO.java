@@ -1,14 +1,11 @@
 package globaz.naos.web.DTO;
 
-import ch.globaz.jade.JadeBusinessServiceLocator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.naos.web.exceptions.AFBadRequestException;
-import globaz.naos.web.exceptions.AFInternalException;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 @Data
@@ -45,7 +42,7 @@ public class AFAffiliationDTO {
     private String affiliationSecurisee;
 
 
-    // Famille de codes systmes pour vrification
+    // Famille de codes systèmes pour vérification
     public static final String FAMILLE_CS_MOTIF_CREATION = "VEMOTIFAFF";
     public static final String FAMILLE_CS_GENRE_AFFILIATION = "VETYPEAFFI";
     public static final String FAMILLE_CS_PERSONNALITE_JURIDIQUE = "VEPERSONNA";
@@ -85,60 +82,51 @@ public class AFAffiliationDTO {
     }
 
     private Boolean isValidCodesSystem() {
-        verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
-        verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
-        verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
-        verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
-        verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
-        verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
-        verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
-        verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
-        verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
-        verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
+        AFValidateDTO.verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
+        AFValidateDTO.verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
+        AFValidateDTO.verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
+        AFValidateDTO.verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
+        AFValidateDTO.verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
+        AFValidateDTO.verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
+        AFValidateDTO.verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
+        AFValidateDTO.verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
+        AFValidateDTO.verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
+        AFValidateDTO.verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
 
         return true;
     }
 
     @JsonIgnore
     public Boolean isValidForUpdate() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        if (!JadeStringUtil.isEmpty(this.getId()))
-            mandatoryParameters.add(this.getId());
-        if (!JadeStringUtil.isEmpty(this.getNumeroAffilie()))
-            mandatoryParameters.add(this.getNumeroAffilie());
-
-        verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
-        verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
-        verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
-        verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
-        verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
-        verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
-        verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
-        verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
-        verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
-        verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
-
-        return !mandatoryParameters.isEmpty() &&
-                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
-    }
-
-    private void verifyCodeSystem(String idCodeSystem, String famille) {
-        if (!JadeStringUtil.isEmpty(idCodeSystem)) {
-            try {
-                //Validation avec MMO et EVID le 23.09.2022 : la méthode getFamilleCodeSystem ne va remonter que les
-                // codes actifs ! Ce qui fait que si on passe un code inactif (FWCOSP.PCODFI = 1), il ne sera pas retrouvé.
-                JadeBusinessServiceLocator.getCodeSystemeService()
-                        .getFamilleCodeSysteme(famille).stream()
-                        .filter(cs -> idCodeSystem.equals(cs.getIdCodeSysteme()))
-                        .findFirst()
-                        .orElseThrow(() -> new AFBadRequestException("Le code \"" + idCodeSystem + "\" ne fait pas partie de la famille \"" + famille + "\""));
-            } catch (JadePersistenceException e) {
-                throw new AFInternalException("Erreur lors de la vérification du code system \" " + idCodeSystem + " \" => ", e);
-            } catch (JadeApplicationServiceNotAvailableException e) {
-                throw new AFInternalException("Erreur lors de la vérification du code system \" " + idCodeSystem + " \" => ", e);
-            }
+        // On vérifie que l'on aie bien un id OU un numéro d'affilié
+        // Si on a les 2, c'est l'id qui prendra le dessus (voir dans AFExecuteService.retrieveAffiliation())
+        Map<String, String> mapForValidator = new HashMap<>();
+        if (!JadeStringUtil.isEmpty(this.getId())) {
+            mapForValidator.put("id", this.getId());
+        } else if (!JadeStringUtil.isEmpty(this.getNumeroAffilie())) {
+            mapForValidator.put("numeroAffilie", this.getNumeroAffilie());
+        } else {
+            mapForValidator.put("id", this.getId());
+            mapForValidator.put("numeroAffilie", this.getNumeroAffilie());
         }
+        AFValidateDTO.checkIfEmpty(mapForValidator);
+
+        // On vérifie que les codes systèmes passés correspondent aux bonnes familles de CS
+        AFValidateDTO.verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
+        AFValidateDTO.verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
+        AFValidateDTO.verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
+        AFValidateDTO.verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
+        AFValidateDTO.verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
+        AFValidateDTO.verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
+        AFValidateDTO.verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
+        AFValidateDTO.verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
+        AFValidateDTO.verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
+        AFValidateDTO.verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
+
+        return true;
     }
+
+
 
     @JsonIgnore
     public Boolean isValidForDeletion() {
