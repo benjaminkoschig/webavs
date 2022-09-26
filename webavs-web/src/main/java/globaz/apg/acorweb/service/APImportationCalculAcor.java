@@ -165,24 +165,51 @@ public class APImportationCalculAcor {
         List<APPrestationAcor> prestations = new ArrayList<>();
         for (VersementMoisComptableApgType versementMoisComptable:
              fCalcul.getVersementMoisComptable()) {
-            Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg().getPeriodeService().stream().filter(p -> {
-                try {
-                    return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), versementMoisComptable.getMoisComptable());
-                } catch (JAException e) {
-                    throw new PRAcorTechnicalException(e);
-                }
-            }).findFirst();
-            if(periodeServiceApgTypeOptional.isPresent()) {
-                PeriodeServiceApgType periodeServiceApgType = periodeServiceApgTypeOptional.get();
-                JADate dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
-                JADate dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
-                APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
-                if(Objects.nonNull(baseCalcul)) {
-                    prestations.add(createAndMapPrestation(fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
-                }
-            }
+            fCalcul.getCarteApg().getPeriodeService().stream().filter(p -> {
+                        try {
+                            return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), versementMoisComptable.getMoisComptable());
+                        } catch (JAException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .forEach(periodeServiceApgType ->
+                                createAndMapPrestationByPeriod(fCalcul,
+                                                               droit,
+                                                               basesCalcul,
+                                                               prestations,
+                                                               versementMoisComptable,
+                                                               periodeServiceApgType));
+
         }
         return prestations;
+    }
+
+    private void createAndMapPrestationByPeriod(FCalcul fCalcul,
+                                                APDroitLAPG droit,
+                                                List<APBaseCalcul> basesCalcul,
+                                                List<APPrestationAcor> prestations,
+                                                VersementMoisComptableApgType versementMoisComptable,
+                                                PeriodeServiceApgType periodeServiceApgType) {
+        JADate dateDebutPeriode;
+        try {
+            dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+        }
+        JADate dateFinPeriode;
+        try {
+            dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+        }
+        APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
+        if(Objects.nonNull(baseCalcul)) {
+            try {
+                prestations.add(createAndMapPrestation(fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
+            } catch (Exception e) {
+                throw new PRAcorTechnicalException("Erreur lors de la récupération des information de prestations.", e);
+            }
+        }
     }
 
     private APPrestationAcor createAndMapPrestation(FCalcul fCalcul,
