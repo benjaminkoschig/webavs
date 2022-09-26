@@ -22,8 +22,8 @@ public class APAcorService {
 
     public void importCalculAcor(FCalcul fCalcul, String idDroit, String genreService) {
         try {
-            APImportationCalculAcor importer = new APImportationCalculAcor();
-            importer.importCalculAcor(idDroit, fCalcul);
+            APImportationCalculAcor importer = new APImportationCalculAcor(fCalcul);
+            importer.importCalculAcor(idDroit);
         } catch (Exception e) {
             throw new APTechnicalRuntimeException(e);
         }
