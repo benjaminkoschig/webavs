@@ -27,10 +27,10 @@ public class PYLienEntreTiersDTO {
         mapForValidator.put("IdTiersSecondaire", this.getIdTiersSecondaire());
         mapForValidator.put("TypeLien", this.getTypeLien());
         PYValidateDTO.checkIfEmpty(mapForValidator);
-        if(!JadeStringUtil.isBlankOrZero(this.getDebutRelation()) && !JadeDateUtil.isGlobazDate(this.getDebutRelation())){
+        if(!JadeDateUtil.isGlobazDate(this.getDebutRelation())){
             throw new PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_DEB_ERRONEE"));
         }
-        if(!JadeStringUtil.isBlankOrZero(this.getFinRelation()) && !JadeDateUtil.isGlobazDate(this.getFinRelation())){
+        if(!JadeDateUtil.isGlobazDate(this.getFinRelation())){
             throw new  PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_FIN_ERRONEE"));
         }
         return true;
@@ -43,10 +43,10 @@ public class PYLienEntreTiersDTO {
         mapForValidator.put("IdTiersSecondaire", this.getIdTiersSecondaire());
         mapForValidator.put("TypeLien", this.getTypeLien());
         PYValidateDTO.checkIfEmpty(mapForValidator);
-        if(!JadeStringUtil.isBlankOrZero(this.getDebutRelation()) && !JadeDateUtil.isGlobazDate(this.getDebutRelation())){
+        if( !JadeDateUtil.isGlobazDate(this.getDebutRelation())){
             throw new  PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_DEB_ERRONEE"));
         }
-        if(!JadeStringUtil.isBlankOrZero(this.getFinRelation()) && !JadeDateUtil.isGlobazDate(this.getFinRelation())){
+        if( !JadeDateUtil.isGlobazDate(this.getFinRelation())){
             throw new  PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_FIN_ERRONEE"));
         }
         return true;

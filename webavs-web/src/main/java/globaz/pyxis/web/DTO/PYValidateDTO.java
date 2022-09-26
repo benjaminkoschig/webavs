@@ -1,16 +1,22 @@
 package globaz.pyxis.web.DTO;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.domaine.*;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.external.models.pyxis.TypeContact;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.naos.web.exceptions.AFBadRequestException;
+import globaz.naos.web.exceptions.AFInternalException;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYInternalException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -531,15 +537,26 @@ public class PYValidateDTO {
     public static void checkIfEmpty(Map<String,String> mapForValidator){
         List<String> listEmptyValuesMandatory = mapForValidator.entrySet().stream().filter(sets -> JadeStringUtil.isEmpty(sets.getValue())).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        StringBuilder stringBuilder = new StringBuilder("field :");
-        for( int i = 0; i < listEmptyValuesMandatory.size();i++){
-            stringBuilder.append(listEmptyValuesMandatory.get(i));
-            if(i+1 ==listEmptyValuesMandatory.size()){
-                stringBuilder.append(",");
-            }
-        }
         if(!listEmptyValuesMandatory.isEmpty()){
-            throw new PYBadRequestException("Champs manquant(s) - "+stringBuilder.toString());
+            throw new PYBadRequestException("Champs manquant(s) - "+ StringUtils.join(listEmptyValuesMandatory, ","));
+        }
+    }
+    public static void verifyCodeSystem(String idCodeSystem, String famille) {
+        if (!JadeStringUtil.isEmpty(idCodeSystem)) {
+            try {
+                //Validation avec MMO et EVID le 23.09.2022 : la méthode getFamilleCodeSystem ne va remonter que les
+                // codes actifs ! Ce qui fait que si on passe un code inactif (FWCOSP.PCODFI = 1), il ne sera pas
+                // retrouvé et une exception sera remontée.
+                JadeBusinessServiceLocator.getCodeSystemeService()
+                        .getFamilleCodeSysteme(famille).stream()
+                        .filter(cs -> idCodeSystem.equals(cs.getIdCodeSysteme()))
+                        .findFirst()
+                        .orElseThrow(() -> new AFBadRequestException("Le code \"" + idCodeSystem + "\" ne fait pas partie de la famille \"" + famille + "\""));
+            } catch (JadePersistenceException e) {
+                throw new AFInternalException("Erreur lors de la vérification du code system \" " + idCodeSystem + " \" => ", e);
+            } catch (JadeApplicationServiceNotAvailableException e) {
+                throw new AFInternalException("Erreur lors de la vérification du code system \" " + idCodeSystem + " \" => ", e);
+            }
         }
     }
 }
