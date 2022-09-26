@@ -21,6 +21,7 @@ bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && !viewBean.isRestitut
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 <script language="JavaScript">
 
   function add() {
@@ -151,13 +152,11 @@ bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && !viewBean.isRestitut
 
 								<TD><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
 								<TD class="IJAfficheText">
-									<input type="hidden"  name="forIdTiersEmployeur" value="<%=viewBean.getIdTiersAdressePaiement()%>">
-									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
+									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiement()%>">
+									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
 									<input type="hidden"  name="forCompteLike" value="<%=viewBean.getCcpOuBanqueFormatte()%>">
 									<%
-										Object[] referencePaiementMethodsName = new Object[]{
-												new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}
-										};
+										Object[] referencePaiementMethodsName = new Object[]{ new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}};
 										Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiersEmployeur","forIdTiersEmployeur"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 									%>
 									<ct:FWSelectorTag

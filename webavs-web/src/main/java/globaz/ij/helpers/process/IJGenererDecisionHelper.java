@@ -93,6 +93,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 ((BSession) session).getCurrentThreadTransaction(), decision.getIdTiersAdrPmt(),
                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
                         vb.setAdressePaiementFormatee(getAdressePmtFormatee((BSession) session, adressePmt, vb));
+                        vb.setAdressePaiementData(adressePmt);
 
                         if (vb.isRetourDepuisPyxis()) {
                             // BZ 7645 : dans le cas d'un changement d'adresse de courrier, cette adresse est stockées dans le
@@ -131,7 +132,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                             }
 
                             vb.setIdTiersAdressePaiementPersonnalisee(decision.getIdTiersAdressePaiementPersonnalisee());
-                            vb.setIdReferenceQR(decision.getIdReferenceQR());
+                            vb.setIdReferenceQRDepuisReferenceQR(decision.getIdReferenceQR());
                             vb.setIdDomaineApplicationAdressePaiementPersonnalisee(decision
                                     .getIdDomaineAdressePaiementPersonnalisee());
                             vb.setNumAffilieAdressePaiementPersonnalisee(decision.getNumeroAffilieAdressePaiementPersonnalisee());

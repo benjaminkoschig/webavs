@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -256,6 +257,27 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 							</TD>
 						</TR>
 						<% } %>
+<%}%>
+
+<%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+	<td valign="top" align="right">
+		<span class="adressePaiement assure employeur personnalise">
+
+			<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiement()%>">
+			<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
+			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+
+			<ct:FWSelectorTag	name="selecteurReferencePaiement"
+								methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"
+								providerApplication="pyxis"
+								providerPrefix="TI"
+								providerAction="pyxis.tiers.referencePaiement.chercher"
+								providerActionParams="<%=viewBean.getParamsChercherReferencePaiement()%>"
+								target="fr_main"
+								redirectUrl="<%=mainServletPath%>" />
+			&nbsp;
+		</span>
+	</td>
 <%}%>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

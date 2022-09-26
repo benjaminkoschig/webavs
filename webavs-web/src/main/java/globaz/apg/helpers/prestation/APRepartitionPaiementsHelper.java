@@ -436,6 +436,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
         }
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -454,7 +455,6 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             // formatter l'adresse
             String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
             if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
-                rpViewBean.setQRIban(true);
                 adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR());
             }
             rpViewBean.setAdresseFormattee(adresseLine);

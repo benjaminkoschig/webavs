@@ -10,7 +10,9 @@
 <%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 
-<%@page import="globaz.framework.util.FWMessageFormat"%><script language="JavaScript">
+<%@page import="globaz.framework.util.FWMessageFormat"%>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
+<script language="JavaScript">
 
 </script>
 <%
@@ -196,7 +198,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
 	  }
-	  <%if(viewBean.isQrIban()){%>
+	  <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
 		  $('.withoutReferencePaiement').hide();
 		  $('.withReferencePaiement').show();
 	  <%} else{%>
@@ -743,17 +745,15 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD class="withReferencePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR><TD class="withoutReferencePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
 							<TD class="withReferencePaiement" colspan="6">
-								<input type="hidden"  name="forIdTiersEmployeur" value="<%=viewBean.getIdTiersEmployeur()%>">
-								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
-								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumeroCompte()%>">
+								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
+								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
+								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
 								<%
-									Object[] referencePaiementMethodsName = new Object[]{
-											new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}
-									};
+									Object[] referencePaiementMethodsName = new Object[]{ new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}};
 									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiersEmployeur","forIdTiersEmployeur"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 								%>
 								<ct:FWSelectorTag

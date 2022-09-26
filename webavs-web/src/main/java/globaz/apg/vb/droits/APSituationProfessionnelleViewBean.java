@@ -6,9 +6,6 @@ package globaz.apg.vb.droits;
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.sql.SQLWriter;
-import ch.globaz.common.sql.converters.LocalDateConverter;
-import ch.globaz.queryexec.bridge.jade.SCM;
 import ch.globaz.vulpecula.external.models.pyxis.AvoirAdressePaiement;
 import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -17,8 +14,6 @@ import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.menu.MenuPrestation;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
@@ -37,7 +32,6 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.api.IAFAssurance;
@@ -48,7 +42,6 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliationManager;
 import globaz.naos.translation.CodeSystem;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.prestation.api.IPRDemande;
@@ -71,14 +64,10 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementManager;
-import globaz.pyxis.db.tiers.TIReferencePaiement;
 import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 
-import java.sql.PreparedStatement;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -100,7 +89,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             new String[]{"idDomainePaiementEmployeur", "idApplication"}};
 
     private static final Object[] METHODES_SEL_REFERENCE_QR = new Object[]{
-            new String[]{"setIdReferenceQRDepuisReferenceQR", "idReferenceQR"}};
+            new String[]{"setIdReferenceQRDepuisReferenceQR", "getIdReference"}};
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -193,8 +182,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     @Setter
     private PRTypeDemande typeDemande;
 
+    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
 
-    private TIAdressePaiement adressePaiement = null;
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -292,6 +281,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             }
 
             setAdressePaiementEmployeur(detailTiers);
+            setAdressePaiementData(detailTiers);
 
             final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
             dataSource.load(detailTiers);
@@ -1323,71 +1313,44 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return TypePrestation.TYPE_APG.equals(typePrestation);
     }
 
-    public boolean isQrIban(){
-        try {
-            TIAdressePaiement adressePaiement = loadAdressePaiement();
-            if (adressePaiement != null) {
-                return TIAdressePaiement.isQRIban(adressePaiement.getNumCompteBancaire());
-            }
-        } catch (Exception e) {
-            JadeLogger.error(e, "Erreur lors de la récupération de l'adresse de paiement");
-        }
-        return false;
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
     }
 
-    public String getNumeroCompte() {
+    /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+    public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            TIAdressePaiement adressePaiement = loadAdressePaiement();
-            if (adressePaiement != null) {
-                return adressePaiement.getNumCompteBancaire();
-            }
-        } catch (Exception e) {
-            JadeLogger.error(e, "Erreur lors de la récupération de l'adresse de paiement");
-        }
-        return StringUtils.EMPTY;
-    }
-
-    private TIAdressePaiement loadAdressePaiement() throws Exception {
-
-        String idAdresse = getIdAdressePaiement();
-        if((Objects.isNull(adressePaiement) ||
-                !adressePaiement.getIdTiersAdresse().equals(getIdTiersEmployeur())) &&
-                    StringUtils.isNotEmpty(idAdresse)) {
-            TIAdressePaiementManager mgr = new TIAdressePaiementManager();
-            mgr.setSession(getSession());
-            mgr.setForIdAdressePaiement(idAdresse);
-            mgr.find(BManager.SIZE_NOLIMIT);
-            if (mgr.size() > 0) {
-                adressePaiement = (TIAdressePaiement) mgr.get(0);
-            }
-        }
-
-        return adressePaiement;
-    }
-
-    public String getIdAdressePaiement() {
-        try {
-            TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
-                    getSession().getCurrentThreadTransaction(),
-                    getIdTiersPaiementEmployeur(),
-                    APGUtils.getCSDomaineFromTypeDemande(getTypePrestation().toCodeSysteme()),
-                    null, JACalendar.todayJJsMMsAAAA());
-            if(Objects.nonNull(paiementData)){
-                return paiementData.getIdAdressePaiement();
-            }else {
-                paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+            if (adressePaiementData.isNew()
+                    && !JadeStringUtil.isBlank(getIdTiersPaiementEmployeur())
+                    && !JadeStringUtil.isBlank(getIdDomainePaiementEmployeur())
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersPaiementEmployeur())) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersPaiementEmployeur(),
-                        AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                        getIdDomainePaiementEmployeur(),
                         null, JACalendar.todayJJsMMsAAAA());
-                if(Objects.nonNull(paiementData)){
-                    return paiementData.getIdAdressePaiement();
+                if (Objects.nonNull(paiementData)) {
+                    setAdressePaiementData(paiementData);
+                } else {
+                    paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                            getSession().getCurrentThreadTransaction(),
+                            getIdTiersPaiementEmployeur(),
+                            AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                            null, JACalendar.todayJJsMMsAAAA());
+                    if (Objects.nonNull(paiementData)) {
+                        setAdressePaiementData(paiementData);
+                    }
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
         }
-        return StringUtils.EMPTY;
+        return adressePaiementData;
 
     }
 
@@ -1944,7 +1907,5 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         super._afterUpdate(transaction);
         updateJourEmployeurIdentique(transaction, this.isJoursIdentiques);
     }
-
-
 
 }
