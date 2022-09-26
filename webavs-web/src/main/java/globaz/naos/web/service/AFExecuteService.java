@@ -2,8 +2,8 @@ package globaz.naos.web.service;
 
 import globaz.globall.db.*;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
@@ -170,46 +170,47 @@ public class AFExecuteService extends BProcess {
     private void updateAffiliationPage1(BSession session, AFAffiliationDTO dto) throws Exception {
         AFAffiliation affiliation = retrieveAffiliation(session, dto);
 
+        //idTiers initialisé à "" (empty string)
         if (!JadeStringUtil.isEmpty(dto.getIdTiers())) {
             affiliation.setIdTiers(dto.getIdTiers());
         }
-        if (!JadeStringUtil.isEmpty(dto.getRaisonSocialeLong())) {
+        if (!JadeStringUtil.isNull(dto.getRaisonSocialeLong())) {
             affiliation.setRaisonSociale(dto.getRaisonSocialeLong());
         }
-        if (!JadeStringUtil.isEmpty(dto.getRaisonSocialeCourt())) {
+        if (!JadeStringUtil.isNull(dto.getRaisonSocialeCourt())) {
             affiliation.setRaisonSocialeCourt(dto.getRaisonSocialeCourt());
         }
-        if (!JadeStringUtil.isEmpty(dto.getNumeroAffilie())) {
+        if (!JadeStringUtil.isNull(dto.getNumeroAffilie())) {
             affiliation.setAffilieNumero(dto.getNumeroAffilie());
         }
-        if (!JadeStringUtil.isEmpty(dto.getAncien_numero_affilie())) {
+        if (!JadeStringUtil.isNull(dto.getAncien_numero_affilie())) {
             affiliation.setAncienAffilieNumero(dto.getAncien_numero_affilie());
         }
-        if (!JadeStringUtil.isEmpty(dto.getDateDebutAffiliation())) {
+        if (!JadeStringUtil.isNull(dto.getDateDebutAffiliation())) {
             affiliation.setDateDebut(dto.getDateDebutAffiliation());
         }
-        if (!JadeStringUtil.isEmpty(dto.getDateFinAffiliation()) && !JadeStringUtil.isEmpty(dto.getMotifFin())) {
-            affiliation.setDateFin(dto.getDateFinAffiliation());
-            affiliation.setMotifFin(dto.getMotifFin());
-        } else if (!JadeStringUtil.isEmpty(dto.getDateFinAffiliation())) {
+        if (!JadeStringUtil.isNull(dto.getDateFinAffiliation())) {
             affiliation.setDateFin(dto.getDateFinAffiliation());
         }
-        if (!JadeStringUtil.isEmpty(dto.getGenreAffiliation())) {
+        if (!JadeStringUtil.isNull(dto.getMotifFin())) {
+            affiliation.setMotifFin(dto.getMotifFin());
+        }
+        if (!JadeStringUtil.isNull(dto.getGenreAffiliation())) {
             affiliation.setTypeAffiliation(dto.getGenreAffiliation());
         }
-        if (!JadeStringUtil.isEmpty(dto.getMotifCreation())) {
+        if (!JadeStringUtil.isNull(dto.getMotifCreation())) {
             affiliation.setMotifCreation(dto.getMotifCreation());
         }
-        if (!JadeStringUtil.isEmpty(dto.getPersonnaliteJuridique())) {
+        if (!JadeStringUtil.isNull(dto.getPersonnaliteJuridique())) {
             affiliation.setPersonnaliteJuridique(dto.getPersonnaliteJuridique());
         }
-        if (!JadeStringUtil.isEmpty(dto.getPeriodicite())) {
+        if (!JadeStringUtil.isNull(dto.getPeriodicite())) {
             affiliation.setPeriodicite(dto.getPeriodicite());
         }
-        if (!JadeStringUtil.isEmpty(dto.getBrancheEconomique())) {
+        if (!JadeStringUtil.isNull(dto.getBrancheEconomique())) {
             affiliation.setBrancheEconomique(dto.getBrancheEconomique());
         }
-        if (!JadeStringUtil.isEmpty(dto.getCodeNoga())) {
+        if (!JadeStringUtil.isNull(dto.getCodeNoga())) {
             affiliation.setCodeNoga(dto.getCodeNoga());
         }
         if (dto.getFacturationParReleve() != null) {
@@ -231,14 +232,14 @@ public class AFExecuteService extends BProcess {
             affiliation.setTraitement(dto.getAffiliationProvisoire());
         }
         //Affiliation EBusiness -> ne pas traiter
-        if (!JadeStringUtil.isEmpty(dto.getDateDemandeAffiliation())) {
+        if (!JadeStringUtil.isNull(dto.getDateDemandeAffiliation())) {
             affiliation.setDateDemandeAffiliation(dto.getDateDemandeAffiliation());
         }
         // TODO Type d'associé ?
-        if (!JadeStringUtil.isEmpty(dto.getDeclarationSalaire())) {
+        if (!JadeStringUtil.isNull(dto.getDeclarationSalaire())) {
             affiliation.setDeclarationSalaire(dto.getDeclarationSalaire());
         }
-        if (!JadeStringUtil.isEmpty(dto.getNumeroIDE())) {
+        if (!JadeStringUtil.isNull(dto.getNumeroIDE())) {
             affiliation.setNumeroIDE(dto.getNumeroIDE());
         }
         // TODO Raison sociale IDE ?
