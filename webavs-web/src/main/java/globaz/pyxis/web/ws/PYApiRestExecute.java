@@ -134,19 +134,19 @@ public class PYApiRestExecute {
     }
     @POST
     @Path(value = "conjoint")
-    public Response createConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+    public Response createConjoint(@HeaderParam("authorization") String token, PYConjointDTO dto) {
         LOG.info("create_conjoint");
         return execute(token, dto, service::createConjoint, dto::isValidForCreationConjoint);
     }
     @PUT
     @Path(value = "conjoint")
-    public Response updateConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+    public Response updateConjoint(@HeaderParam("authorization") String token, PYConjointDTO dto) {
         LOG.info("update_conjoint");
         return execute(token, dto, service::updateConjoint, dto::isValidForUpdateConjoint);
     }
     @DELETE
     @Path(value = "conjoint")
-    public Response deleteConjoint(@HeaderParam("authorization") String token, PYLienEntreTiersDTO dto) {
+    public Response deleteConjoint(@HeaderParam("authorization") String token, PYConjointDTO dto) {
         LOG.info("delete_conjoint");
         return execute(token, dto, service::deleteConjoint, dto::isValidForDeletionLienEntreTiers);
     }

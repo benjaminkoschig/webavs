@@ -7,41 +7,38 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.web.exceptions.PYInternalException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashMap;
 import java.util.Map;
 @Slf4j
 @Data
-public class PYLienEntreTiersDTO {
-    public String idComposition;
-    public String idTiersPrincipal;
-    public String idTiersSecondaire;
-    public String typeLien;
-    public String debutRelation;
-    public String finRelation;
+public class PYConjointDTO extends PYLienEntreTiersDTO{
+    public String etatCivil;
     @JsonIgnore
-
-
-    public Boolean isValidForCreationLienEntreTiers() {
+    public Boolean isValidForCreationConjoint() {
         Map<String, String> mapForValidator = new HashMap<>();
         mapForValidator.put("idTiersPrincipal", this.getIdTiersPrincipal());
         mapForValidator.put("IdTiersSecondaire", this.getIdTiersSecondaire());
-        mapForValidator.put("TypeLien", this.getTypeLien());
+        mapForValidator.put("EtatCivil", this.getEtatCivil());
         PYValidateDTO.checkIfEmpty(mapForValidator);
         if(!JadeStringUtil.isBlankOrZero(this.getDebutRelation()) && !JadeDateUtil.isGlobazDate(this.getDebutRelation())){
-            throw new PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_DEB_ERRONEE"));
+            String msgError = BSessionUtil.getSessionFromThreadContext().getLabel("DATE_DEB_ERRONEE");
+            LOG.error(msgError);
+            throw new  PYInternalException(msgError);
         }
         if(!JadeStringUtil.isBlankOrZero(this.getFinRelation()) && !JadeDateUtil.isGlobazDate(this.getFinRelation())){
-            throw new  PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_FIN_ERRONEE"));
+            String msgError = BSessionUtil.getSessionFromThreadContext().getLabel("DATE_FIN_ERRONEE");
+            LOG.error(msgError);
+            throw new  PYInternalException(msgError);
         }
         return true;
     }
     @JsonIgnore
-    public Boolean isValidForUpdateLienEntreTiers() {
+    public Boolean isValidForUpdateConjoint() {
         Map<String, String> mapForValidator = new HashMap<>();
-        mapForValidator.put("IdComposition", this.getIdComposition());
         mapForValidator.put("idTiersPrincipal", this.getIdTiersPrincipal());
         mapForValidator.put("IdTiersSecondaire", this.getIdTiersSecondaire());
-        mapForValidator.put("TypeLien", this.getTypeLien());
+        mapForValidator.put("EtatCivil", this.getEtatCivil());
         PYValidateDTO.checkIfEmpty(mapForValidator);
         if(!JadeStringUtil.isBlankOrZero(this.getDebutRelation()) && !JadeDateUtil.isGlobazDate(this.getDebutRelation())){
             throw new  PYInternalException(BSessionUtil.getSessionFromThreadContext().getLabel("DATE_DEB_ERRONEE"));
@@ -51,14 +48,4 @@ public class PYLienEntreTiersDTO {
         }
         return true;
     }
-    @JsonIgnore
-    public Boolean isValidForDeletionLienEntreTiers() {
-        Map<String, String> mapForValidator = new HashMap<>();
-        mapForValidator.put("idComposition", this.getIdComposition());
-        PYValidateDTO.checkIfEmpty(mapForValidator);
-        return true;
-    }
-
-
-
 }
