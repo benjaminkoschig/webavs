@@ -18,7 +18,7 @@
 	idEcran="GFE0121";
 	GFSuiviViewBean viewBean = (GFSuiviViewBean) session.getAttribute("viewBean");
 	bButtonNew = false;
-	bButtonFind = objSession.hasRight(GFSuiviServletAction.PATH_EFORM, FWSecureConstants.READ);
+	bButtonFind = objSession.hasRight(GFSuiviServletAction.ACTION_PATH, FWSecureConstants.READ);
 %>
 
 <%-- tpl:insert attribute="zoneInit" --%>
@@ -36,7 +36,15 @@
 <script >
 	var bFind = true;
 	var detailLink = "<%=actionNew%>";
-	var usrAction = "<%=GFSuiviServletAction.PATH_EFORM%>.lister";
+	var usrAction = "<%=GFSuiviServletAction.ACTION_PATH%>.lister";
+
+	function clearFields() {
+		document.getElementsByName("likeNss")[0].value = "";
+		document.getElementsByName("byCaisse")[0].value = "";
+		document.getElementsByName("byType")[0].value = "";
+		document.getElementsByName("byStatus")[0].value = "";
+		document.getElementsByName("byGestionnaire")[0].value = "";
+	}
 </script>
 <%-- /tpl:insert --%>
 
@@ -78,7 +86,7 @@
 	<td>
 
 		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=viewBean != null ? viewBean.getByCaisse() : ""%>'>
-			<ct:widgetService methodName="find" className="<%=GFAdministrationService.class.getName()%>">
+			<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
@@ -105,6 +113,9 @@
 							wantBlank="true"
 							codeType="GFDATYPE"/>
 	</td>
+</tr>
+<tr>
+	<td colspan="6" style="height: 10px"></td>
 </tr>
 <tr>
 	<td style="width:150px">
@@ -135,6 +146,13 @@
 		</ct:select>
 	</td>
 	<td style="width:10px" colspan="2"></td>
+</tr>
+<tr>
+	<td colspan="6" style="height: 10px"></td>
+</tr>
+<tr>
+	<td></td>
+	<td><input type="button" onclick="clearFields()" accesskey="C" value="<ct:FWLabel key="EFFACER"/>"> [ALT+C]</td>
 </tr>
 
 <%-- /tpl:insert --%>

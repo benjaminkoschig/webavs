@@ -216,10 +216,8 @@ public class GFFileUtils {
         return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator;
     }
 
-    public static String generateDaDossierFilePath(GFDaDossierModel dbModel) {
-        LocalDate date = Dates.extractSpyDate(dbModel.getCreationSpy());
-
-        return date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(dbModel.getNssAffilier()) + File.separator;
+    public static String generateDaDossierFilePath(LocalDate date, String nssAffilier) {
+        return date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(nssAffilier) + File.separator;
     }
 
     public static String generateDaDossierFilePath(GFSedexModel model) {

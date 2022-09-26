@@ -1,6 +1,7 @@
 package ch.globaz.eform.utils;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.constant.GFSexeDaDossier;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -41,11 +42,15 @@ public final class GFUtils {
         return null;
     }
 
-    public static String formatTiers(TITiersViewBean tiers) {
-        return tiers.getDesignation1() + " " + tiers.getDesignation2() + "/" + tiers.getNumAffilieActuel() + "/" + tiers.getSexe() + "/" + tiers.getPays().getLibelle();
+    public static String formatTiers(TITiersViewBean tiers, BSession session) {
+        return tiers.getDesignation1() + " " + tiers.getDesignation2() + " / " + tiers.getDateNaissance() + " / " + formatSexe(tiers.getSexe(), session) + " / " + tiers.getPays().getLibelle();
     }
 
     public static BSpy formatSpy(String spy) {
         return new BSpy(spy);
+    }
+
+    public static String formatSexe(String codeSexe, BSession session) {
+        return GFSexeDaDossier.getByCodeSystem(codeSexe).getDesignation(session);
     }
 }

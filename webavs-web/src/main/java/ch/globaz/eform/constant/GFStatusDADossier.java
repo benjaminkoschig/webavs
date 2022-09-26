@@ -10,7 +10,8 @@ public enum GFStatusDADossier {
     SEND("82000012", "SEND"),
     WAITING("82000013", "WAITING"),
     TREAT("82000014", "TREAT"),
-    ENDED("82000015", "ENDED");
+    ENDED("82000015", "ENDED"),
+    REJECTED("82000016", "REJECTED");
 
     String codeSystem;
     String code;

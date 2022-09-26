@@ -57,7 +57,7 @@ public class GFDemandeServletAction extends FWDefaultServletAction {
             // Choix de la destination avec prise en compte des éventuelles erreurs
             if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
                 if (actionPart.equals(ACTION_ENVOYER)) {
-                    destination = "/eform?userAction="+GFSuiviServletAction.PATH_EFORM+"."+GFSuiviServletAction.ACTION_CHERCHER+
+                    destination = "/eform?userAction="+GFSuiviServletAction.ACTION_PATH+"."+GFSuiviServletAction.ACTION_CHERCHER+
                             "&likeNss=" + NSSUtils.unFormatNss(((GFDemandeViewBean) viewBean).getNssAffilier()) +
                             "&byCaisse=" + ((GFDemandeViewBean) viewBean).getCodeCaisse() +
                             "&byType=" + GFTypeDADossier.RECEPTION.getCodeSystem() +

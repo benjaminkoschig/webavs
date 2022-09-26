@@ -67,6 +67,17 @@
 		}
 		<%}%>
 	}
+
+	function clearNss(){
+		var nss = document.getElementById("nssAffilier").value;
+
+		if(nss == ""){
+			document.getElementById("lastName").value = "";
+			document.getElementById("firstName").value = "";
+			document.getElementById("birthday").value = "";
+		}
+	}
+
 	function cancel(){
 		action(ROLLBACK);
 	}
@@ -75,7 +86,7 @@
 <TITLE><%=idEcran%></TITLE>
 </HEAD>
 	<body style="margin: 5px;">
-		<div class="title thDetail text-center" style="margin-top: 20px;">
+		<div class="thDetail" style="text-align: center;font-size: small;">
 			<ct:FWLabel key="DEMANDE_DOSSIER_TITRE"/>
 			<span class="idEcran"><%=idEcran%></span>
 		</div>
@@ -92,7 +103,7 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck()">
+						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck();clearNss();">
 							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 								<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
@@ -112,11 +123,11 @@
 				</div>
 				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="LASTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="FIRSTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="BIRTHDAY"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/></div>
 				</div>
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>

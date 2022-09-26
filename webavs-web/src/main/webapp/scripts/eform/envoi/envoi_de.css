@@ -42,3 +42,7 @@ tr{
 .buttons input{
     width:100px !important;
 }
+
+#codeCaisse{
+    width: 586px !important;
+}
