@@ -1403,32 +1403,36 @@ public class PYExecuteService extends BProcess {
     /**
      *
      */
-    public final PYLienEntreTiersDTO createConjoint(PYLienEntreTiersDTO dto, String token) {
+    public final PYConjointDTO createConjoint(PYConjointDTO dto, String token) {
         PYValidateDTO.checkIfExist(dto);
-        TICompositionTiers composition = createLienEntreTiers(dto,token);
-        dto.setIdComposition(composition.getId());
-        dto.setEtatCivil(TICompositionTiers.CS_CONJOINT);
+        dto.setTypeLien(TICompositionTiers.CS_CONJOINT);
+        dto = (PYConjointDTO) createLienEntreTiers(dto,token);
         return dto;
     }
 
-    public TICompositionTiers createLienEntreTiers(PYLienEntreTiersDTO dto, String token) {
+    public PYLienEntreTiersDTO createLienEntreTiers(PYLienEntreTiersDTO dto, String token) {
         TICompositionTiers composition = new TICompositionTiers();
         composition.setSession(getSession());
         composition.setIdTiersParent(dto.getIdTiersPrincipal());
         setValuesLienEntreTiers(dto, composition);
         try {
             composition.add();
-            updateEtatCivil(dto);
+            if(dto instanceof PYConjointDTO && !JadeStringUtil.isBlankOrZero( ((PYConjointDTO) dto).getEtatCivil())){
+                updateEtatCivil((PYConjointDTO) dto);
+            }
+
         } catch (Exception e) {
             LOG.error(e.getMessage());
             throw new PYInternalException(e + ": " + getSession().getCurrentThreadTransaction().getErrors().toString());
         }
-        return composition;
+        dto.setIdComposition(composition.getIdComposition());
+        return dto;
     }
 
 
 
-    public final PYLienEntreTiersDTO updateConjoint(PYLienEntreTiersDTO dto, String token) {
+    public final PYConjointDTO updateConjoint(PYConjointDTO dto, String token) {
+        dto.setTypeLien(TICompositionTiers.CS_CONJOINT);
         updateLienEntreTiers(dto,token);
         return dto;
     }
@@ -1442,7 +1446,9 @@ public class PYExecuteService extends BProcess {
             if (!composition.isNew()) {
                 setValuesLienEntreTiers(dto, composition);
                 composition.update();
-                updateEtatCivil(dto);
+                if(dto instanceof PYConjointDTO && !JadeStringUtil.isBlankOrZero( ((PYConjointDTO) dto).getEtatCivil())){
+                    updateEtatCivil((PYConjointDTO) dto);
+                }
             } else {
                 LOG.error("Tiers non trouvé");
                 throw new PYInternalException("Tiers non trouvé" + getSession().getCurrentThreadTransaction().getErrors().toString());
@@ -1482,7 +1488,7 @@ public class PYExecuteService extends BProcess {
         composition.setFinRelation(!JadeStringUtil.isBlankOrZero(dto.getFinRelation()) ? dto.getFinRelation() : "");
     }
 
-    private void updateEtatCivil(PYLienEntreTiersDTO dto) throws Exception {
+    private void updateEtatCivil(PYConjointDTO dto) throws Exception {
         TITiersViewBean t1 = new TITiersViewBean();
         t1.setSession(getSession());
         t1.setIdTiers(dto.getIdTiersPrincipal());
