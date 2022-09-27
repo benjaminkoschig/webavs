@@ -93,7 +93,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 ((BSession) session).getCurrentThreadTransaction(), decision.getIdTiersAdrPmt(),
                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
                         vb.setAdressePaiementFormatee(getAdressePmtFormatee((BSession) session, adressePmt, vb));
-                        vb.setAdressePaiementData(adressePmt);
+                        vb.setAdressePaiementDataPersonnalise(adressePmt);
 
                         if (vb.isRetourDepuisPyxis()) {
                             // BZ 7645 : dans le cas d'un changement d'adresse de courrier, cette adresse est stockées dans le
@@ -353,6 +353,13 @@ public class IJGenererDecisionHelper extends FWHelper {
                         vb.setMsgType(FWViewBeanInterface.ERROR);
                         vb.setMessage(session.getLabel("ADR_COURR_ERR"));
                         session.addError(session.getLabel("ADR_COURR_ERR"));
+                    }
+
+                    // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+                    if (JadeStringUtil.isBlankOrZero(vb.getIdReferenceQR()) && TIAdressePaiement.isQRIban(vb.getOrReloadAdressePaiementData().getCompte())) {
+                        vb.setMsgType(FWViewBeanInterface.ERROR);
+                        vb.setMessage(session.getLabel("JSP_REFERENCE_QR_EMPTY"));
+                        session.addError(session.getLabel("JSP_REFERENCE_QR_EMPTY"));
                     }
 
                     // Ajout des copies par défauts - la caisse qui prend la décision - l'agence communale AVS (si celle-ci est

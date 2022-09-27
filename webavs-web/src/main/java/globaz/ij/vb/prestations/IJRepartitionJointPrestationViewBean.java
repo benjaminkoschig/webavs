@@ -22,6 +22,7 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.util.Hashtable;
@@ -788,5 +789,15 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         }
         return adressePaiementData;
 
+    }
+
+    @Override
+    protected void _validate(globaz.globall.db.BStatement statement) throws Exception {
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
     }
 }

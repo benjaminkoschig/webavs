@@ -12,7 +12,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_REP_R'
 idEcran="PIJ0016";
 globaz.ij.vb.prestations.IJRepartitionJointPrestationViewBean viewBean = (globaz.ij.vb.prestations.IJRepartitionJointPrestationViewBean) request.getAttribute("viewBean");
 IFrameListHeight = "100";
-IFrameDetailHeight = "320";
+IFrameDetailHeight = "400";
 actionNew+="&idPrestation=" + viewBean.getIdPrestation();
 
 globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");

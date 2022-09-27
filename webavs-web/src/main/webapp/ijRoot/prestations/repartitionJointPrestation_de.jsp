@@ -260,6 +260,7 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 <%}%>
 
 <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+	<td><ct:FWLabel key="JSP_REFERENCE_QR"/></td>
 	<td valign="top" align="right">
 		<span class="adressePaiement assure employeur personnalise">
 

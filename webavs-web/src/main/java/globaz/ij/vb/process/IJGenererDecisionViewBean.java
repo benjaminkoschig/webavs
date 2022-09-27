@@ -76,7 +76,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
     private String idTierEmployeurAdressePaiement = "";
     private String idTiersAdressePaiementPersonnalisee = "";
     private String idReferenceQR = "";
-    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
+    private TIAdressePaiementData adressePaiementDataPersonnalise = new TIAdressePaiementData();
     private boolean isRetourDepuisPyxis = false;
     private Boolean isSendToGed = Boolean.FALSE;
     private String numAffilieAdressePaiementPersonnalisee = "";
@@ -244,17 +244,17 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if (adressePaiementData.isNew()
+            if (adressePaiementDataPersonnalise.isNew()
                     && !JadeStringUtil.isBlank(getIdTiersAdressePaiementPersonnalisee())
                     && !JadeStringUtil.isBlank(getIdDomaineApplicationAdressePaiementPersonnalisee())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiementPersonnalisee())) {
+                    && !adressePaiementDataPersonnalise.getIdTiers().equals(getIdTiersAdressePaiementPersonnalisee())) {
                 TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersAdressePaiementPersonnalisee(),
                         getIdDomaineApplicationAdressePaiementPersonnalisee(),
                         null, JACalendar.todayJJsMMsAAAA());
                 if (Objects.nonNull(paiementData)) {
-                    setAdressePaiementData(paiementData);
+                    setAdressePaiementDataPersonnalise(paiementData);
                 } else {
                     paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
                             getSession().getCurrentThreadTransaction(),
@@ -262,14 +262,14 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI,
                             null, JACalendar.todayJJsMMsAAAA());
                     if (Objects.nonNull(paiementData)) {
-                        setAdressePaiementData(paiementData);
+                        setAdressePaiementDataPersonnalise(paiementData);
                     }
                 }
             }
         } catch (Exception e) {
             JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
         }
-        return adressePaiementData;
+        return adressePaiementDataPersonnalise;
 
     }
 
@@ -277,8 +277,8 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         return idReferenceQR;
     }
 
-    public TIAdressePaiementData getAdressePaiementData() {
-        return adressePaiementData;
+    public TIAdressePaiementData getAdressePaiementDataPersonnalise() {
+        return adressePaiementDataPersonnalise;
     }
 
     public String getIdTiersAdressePaiementPersonnalisee() {
@@ -642,8 +642,8 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         this.idReferenceQR = idReferenceQR;
     }
 
-    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
-        this.adressePaiementData = adressePaiementData;
+    public void setAdressePaiementDataPersonnalise(TIAdressePaiementData adressePaiementDataPersonnalise) {
+        this.adressePaiementDataPersonnalise = adressePaiementDataPersonnalise;
     }
 
     public void setIdTiersAdressePaiementPersonnalisee(String idTiersAdressePaiementPersonnalisee) {

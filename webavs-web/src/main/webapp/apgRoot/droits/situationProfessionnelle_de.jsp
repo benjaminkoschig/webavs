@@ -749,9 +749,11 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 						<TR>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
 							<TD class="withReferencePaiement" colspan="6">
+
 								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
 								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+
 								<%
 									Object[] referencePaiementMethodsName = new Object[]{ new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReference"}};
 									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiersEmployeur","forIdTiersEmployeur"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};

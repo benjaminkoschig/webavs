@@ -149,7 +149,6 @@ bButtonUpdate = bButtonUpdate && viewBean.isModifiable() && !viewBean.isRestitut
 							</TR>
 							<% if (viewBean.isModifiable() && viewBean.isVentilation() && viewBean.hasAdressePaiementQRIban()) { %>
 							<TR>
-
 								<TD><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
 								<TD class="IJAfficheText">
 									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiement()%>">
