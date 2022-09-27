@@ -19,6 +19,7 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.NaturalPersonsOASIDIType;
 import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -42,6 +43,7 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
     protected GFDaDossierModel model;
     protected Object message;
     protected ZipFile zipFile;
+    protected GFTypeDADossier typeTreatment;
 
     protected abstract String getMessageId();
     protected abstract String getYourBusinessReferenceId();
@@ -50,12 +52,13 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
     protected abstract String getSenderId();
     protected abstract NaturalPersonsOASIDIType getInsuredPerson();
 
-    protected void initSollicitationModel() {
+    protected void createSollicitationModel() {
         model = new GFDaDossierModel();
 
         model.setMessageId(getMessageId());
-        model.setOurBusinessRefId(UUID.randomUUID().toString());
+        model.setOurBusinessRefId(JadeUUIDGenerator.createLongUID().toString());
         model.setYourBusinessRefId(getOurBusinessReferenceId());
+        model.setOriginalType(GFTypeDADossier.SOLICITATION.getCodeSystem());
         model.setType(GFTypeDADossier.SOLICITATION.getCodeSystem());
         model.setStatus(GFStatusDADossier.TO_SEND.getCodeSystem());
         model.setCreationSpy(Dates.formatSwiss(getMessageDate()));
@@ -81,6 +84,37 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         }
     }
 
+    protected void createReceptionModel() {
+        model = new GFDaDossierModel();
+
+        model.setMessageId(getMessageId());
+        model.setOurBusinessRefId(JadeUUIDGenerator.createLongUID().toString());
+        model.setYourBusinessRefId(getOurBusinessReferenceId());
+        model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
+
+        AdministrationSearchComplexModel administrationSearch = new AdministrationSearchComplexModel();
+        administrationSearch.setForSedexId(getSenderId());
+        administrationSearch.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+
+        try {
+            administrationSearch = TIBusinessServiceLocator.getAdministrationService().find(administrationSearch);
+        } catch (JadePersistenceException | JadeApplicationException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (administrationSearch.getSize() > 0) {
+            AdministrationComplexModel complexModel = (AdministrationComplexModel) administrationSearch.getSearchResults()[0];
+            model.setCodeCaisse(complexModel.getAdmin().getCodeAdministration());
+        } else {
+            model.setCodeCaisse("000000");
+        }
+        if(getInsuredPerson() != null) {
+            model.setNssAffilier(getInsuredPerson().getVn().toString());
+        }
+    }
+
     protected  void initReceptionModel() {
         GFDaDossierSearch search = new GFDaDossierSearch();
         search.setByOurBusinessRefId(getYourBusinessReferenceId());
@@ -93,6 +127,8 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
                     .map(o -> (GFDaDossierModel) o)
                     .findFirst()
                     .orElseThrow(() -> new NotFoundException("Sollicitation non trouvé pour le message Id : " + getMessageId()));
+
+            model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
         } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
             throw new RuntimeException(e);
         }
@@ -101,12 +137,22 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
     @Override
     public void setData(Map<String, Object> externData) throws RuntimeException {
         zipFile = (ZipFile) externData.get("zipFile");
+        typeTreatment = (GFTypeDADossier) externData.get("typeTreat");
     }
 
     @Override
     public void create(ValidationResult result) throws RuntimeException {
         try {
-            initSollicitationModel();
+            switch (typeTreatment) {
+                case RECEPTION:
+                    createReceptionModel();
+                    sendToSftp();
+                    break;
+                case SOLICITATION:
+                    createSollicitationModel();
+                    break;
+                default:
+            }
             GFEFormServiceLocator.getGFDaDossierDBService().create(model, result);
         } catch (Exception e) {
             LOG.error("GFDaDossierHandler#create - Erreur lors de l'ajout de la demande en DB : {}", model.getMessageId(), e);
@@ -117,10 +163,18 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
     @Override
     public void update(ValidationResult result) {
         initReceptionModel();
+        sendToSftp();
 
-        model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
+        //persistence des informations en base
+        try {
+            GFEFormServiceLocator.getGFDaDossierDBService().update(model, result);
+        } catch (JadePersistenceException | JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        String sftpPath = GFFileUtils.generateDaDossierFilePath(model);
+    private void sendToSftp() {
+        StringBuilder sftpPath = new StringBuilder(GFFileUtils.generateDaDossierFilePath(LocalDate.now(), model.getNssAffilier()));
 
         EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_HOST_FILE_SERVER);
 
@@ -133,20 +187,28 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
             Files.createDirectories(zipTmpPath);
             ZipUtils.unZip(zipFilepath, zipTmpPath);
 
+            //Calcul du path gestion de la réception muliple pour un NSS
+            boolean created = false;
+            Integer index = 1;
+            while (!created){
+                if (!fileService.exist(sftpPath + File.separator + index + File.separator)) {
+                    sftpPath.append(File.separator).append(index).append(File.separator);
+                    created = true;
+                } else {
+                    index++;
+                }
+            }
             //Préparation du dossier de destination sur le hostFile
-            fileService.createFolder(sftpPath);
+            fileService.createFolder(sftpPath.toString());
 
             //Envoie des fichiers dans le dossier sftp à plat
-            sendDirectory(zipTmpPath, sftpPath, fileService);
-
-            //persistence des informations en base
-            GFEFormServiceLocator.getGFDaDossierDBService().update(model, result);
+            sendDirectory(zipTmpPath, sftpPath.toString(), fileService);
 
         } catch (Exception e) {
-            LOG.error("GFDaDossierHandler#update - Erreur lors de la mise à jour de la demande en DB  : {}", model.getMessageId(), e);
-            //Si le dossier sur le hostFile a ét créé alors on le purge
-            if (fileService.exist(sftpPath)) {
-                fileService.remove(sftpPath);
+            LOG.error("GFDaDossierHandler#sendToSftp - Erreur lors de l'envoi sur le hosting file : {}", model.getMessageId(), e);
+            //Si le dossier sur le hostFile a été créé alors on le purge
+            if (fileService.exist(sftpPath.toString())) {
+                fileService.remove(sftpPath.toString());
             }
 
             throw new JadeApplicationRuntimeException(e);

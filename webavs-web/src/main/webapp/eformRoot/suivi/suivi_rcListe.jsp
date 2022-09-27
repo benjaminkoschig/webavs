@@ -48,15 +48,24 @@
 <%@ include file="/theme/list/lineStyle.jspf" %>
 <%-- tpl:insert attribute="zoneList" --%>
 <TD class="mtd" nowrap width="20px">
-    <% if(GFTypeDADossier.SOLICITATION.getCodeSystem().equals(line.getDaDossier().getType())){ %>
+    <% if(GFTypeDADossier.SOLICITATION.getCodeSystem().equals(line.getDaDossier().getOriginalType())){ %>
         <ct:menuPopup menu="dadossier-optionssuivi" target="top.fr_main">
             <ct:menuParam key="selectedId" value="<%=line.getDaDossier().getId()%>" />
+            <% if (GFStatusDADossier.TO_SEND.getCodeSystem().equals(line.getDaDossier().getStatus())) {%>
+            <ct:menuExcludeNode nodeId="STATUT_TO_SEND"/>
+            <% } else if (GFStatusDADossier.SEND.getCodeSystem().equals(line.getDaDossier().getStatus())) {%>
+            <ct:menuExcludeNode nodeId="STATUT_TO_SEND"/>
+            <ct:menuExcludeNode nodeId="STATUT_REJECTED"/>
+            <% } else {%>
+            <ct:menuExcludeNode nodeId="SEND_SOLLICITION"/>
+            <ct:menuExcludeNode nodeId="STATUT_REJECTED"/>
+            <% } %>
         </ct:menuPopup>
     <% } %>
 </TD>
 <TD class="mtd" nowrap>
-    <div style="font-weight: bold;font-size: 12px"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
-    <div style="font-size: 10px"><%=GFUtils.formatTiers(tiers)%></div>
+    <div style="font-weight: bold;"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
+    <div><%=GFUtils.formatTiers(tiers, objSession)%></div>
 </TD>
 <TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1() + " " + caisse.getTiers().getDesignation2()%></TD>
 <TD class="mtd" nowrap><%=GFTypeDADossier.getByCodeSystem(line.getDaDossier().getType()).getDesignation(objSession)%></TD>

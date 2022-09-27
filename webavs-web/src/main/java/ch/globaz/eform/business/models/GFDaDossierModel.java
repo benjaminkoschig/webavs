@@ -20,6 +20,7 @@ public class GFDaDossierModel extends JadeSimpleModel {
     private String messageId;
     private String nssAffilier;
     private String codeCaisse;
+    private String originalType;
     private String type;
     private String status;
     private String userGestionnaire;
@@ -53,6 +54,25 @@ public class GFDaDossierModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(codeCaisse)) {
             result.addError("codeCaisse", ValidationError.MANDATORY);
+        }
+
+        if (JadeStringUtil.isBlank(originalType)) {
+            result.addError("originalType", ValidationError.MANDATORY);
+        } else {
+            FWParametersSystemCodeManager gfDaDossierType = new FWParametersSystemCodeManager();
+            gfDaDossierType.setForActif(true);
+            gfDaDossierType.setForCodeUtilisateur(GFTypeDADossier.getByCodeSystem(originalType).getCode());
+            gfDaDossierType.setForIdGroupe("GFDATYPE");
+            gfDaDossierType.setSession(BSessionUtil.getSessionFromThreadContext());
+
+            try {
+                gfDaDossierType.find(BManager.SIZE_NOLIMIT);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if (gfDaDossierType.isEmpty()) {
+                result.addError("originalType", ValidationError.ILLEGAL_VALUE);
+            }
         }
 
         if (JadeStringUtil.isBlank(type)) {

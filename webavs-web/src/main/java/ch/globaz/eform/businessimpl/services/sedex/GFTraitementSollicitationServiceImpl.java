@@ -4,6 +4,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -27,6 +28,8 @@ import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -181,6 +184,10 @@ public class GFTraitementSollicitationServiceImpl {
             if (!result.hasError()) {
                 GFSedexhandler handler = objectFactory.getSedexHandler(currentSimpleMessage, session);
                 if (handler != null) {
+                    Map<String, Object> extraData = new HashMap<>();
+                    extraData.put("typeTreat", GFTypeDADossier.SOLICITATION);
+                    handler.setData(extraData);
+
                     handler.create(result);
 
                     LOG.info("GFTraitementSollicitationServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);

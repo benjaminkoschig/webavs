@@ -16,6 +16,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,6 +67,31 @@ public abstract class GFDaDossierSender<T> {
         if (elements.containsKey(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID)) {
             elements.put(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID, identifiantGenerator.generateBusinessReferenceId());
         }
+    }
+
+    private Map<String, String> prepareAttachment() {
+        return this.attachments.entrySet().stream()
+                .peek(entry -> convertToPdfA(Paths.get(entry.getValue())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Path convertToPdfA(Path pdfSource) {
+        /*
+        Path pathPdfConverted = Paths.get( Jade.getInstance().getPersistenceDir() + File.separator + "converted" + File.separator + pdfSource.getFileName());
+
+        PdfStandardsConverter converter = new PdfStandardsConverter(pdfSource.toAbsolutePath().toString());
+
+        converter.toPdfA3B(pathPdfConverted.toAbsolutePath().toString());
+
+        try {
+            Files.delete(pdfSource);
+            Files.move(pathPdfConverted, pdfSource);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        */
+
+        return pdfSource;
     }
 
     //Todo péréniser pour tout WebAVS (Tache technique)
@@ -161,11 +187,9 @@ public abstract class GFDaDossierSender<T> {
 
     public void send() {
         try {
-            JadeSedexService.getInstance().sendSimpleMessage(generateMessage(), attachments);
+            JadeSedexService.getInstance().sendSimpleMessage(generateMessage(), prepareAttachment());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
 }

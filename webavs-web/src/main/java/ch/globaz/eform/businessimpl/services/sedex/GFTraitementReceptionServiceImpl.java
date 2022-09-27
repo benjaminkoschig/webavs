@@ -4,6 +4,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -26,6 +27,7 @@ import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -161,16 +163,21 @@ public class GFTraitementReceptionServiceImpl {
      */
     private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
         try {
-            GFDaDossierValidator.sedexMessage101(currentSimpleMessage, result);
+            GFDaDossierValidator.sedexMessage102(currentSimpleMessage, result);
             if (!result.hasError()) {
                 GFSedexhandler handler = objectFactory.getSedexHandler(currentSimpleMessage, session);
                 if (handler != null) {
                     Map<String, Object> extraData = new HashMap<>();
                     extraData.put("zipFile", zipFile);
+                    extraData.put("typeTreat", GFTypeDADossier.RECEPTION);
 
                     handler.setData(extraData);
-                    handler.update(result);
 
+                    if (result.hasInfo() && result.getInfos().containsKey("yourBusinessReferenceId")) {
+                        handler.update(result);
+                    } else {
+                        handler.create(result);
+                    }
                     LOG.info("GFTraitementReceptionServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
             }

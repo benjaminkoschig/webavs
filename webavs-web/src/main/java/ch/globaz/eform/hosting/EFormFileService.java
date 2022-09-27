@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Slf4j
 public class EFormFileService {
@@ -83,6 +84,13 @@ public class EFormFileService {
                 }
             }
         }
+    }
+
+    public List<String> list(String path) {
+        if (ftpServer == null) {
+            fileService.list(path);
+        }
+        return ftpServer.list(path);
     }
 
     public File retrieve(String path, String filename){

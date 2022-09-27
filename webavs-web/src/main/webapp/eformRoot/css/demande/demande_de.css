@@ -10,6 +10,10 @@ input[type="text"] {
     background-color: #B3C4DB;
 }
 
-#nssAffilier, #codeCaisse{
+#nssAffilier{
     width: 291px;
+}
+
+#codeCaisse{
+    width: 586px;
 }
