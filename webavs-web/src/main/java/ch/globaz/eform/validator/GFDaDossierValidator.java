@@ -6,6 +6,9 @@ import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.business.search.GFFormulaireSearch;
+import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -174,6 +177,13 @@ public class GFDaDossierValidator {
             } else if (!NSSUtils.checkNSS(nss)) {
                 result.addError("nss", ValidationError.MALFORMED);
             }
+            PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
+            ts.setForNumeroAvsActuel(nss);
+            ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
+            if (0 == ts.getSize()) {
+                result.addError("nss", ValidationError.UNKNOWN);
+            }
+
         } catch (ParserConfigurationException e) {
             LOG.error("Erreur dans la configuration du parceur XML", e);
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
@@ -188,6 +198,9 @@ public class GFDaDossierValidator {
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         } catch (JadeApplicationServiceNotAvailableException e) {
             LOG.error("Erreur dans le chargement du service eform", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (JadeApplicationException e) {
+            LOG.error("Erreur dans la recherche du tier cible", e);
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         }
 
