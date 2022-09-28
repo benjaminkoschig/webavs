@@ -227,7 +227,7 @@ public class GFTraitementSollicitationServiceImpl {
 
     private String[] getMailsProtocole() {
         try {
-            return GFProperties.EMAIL_EFORM.getValue().split(";");
+            return GFProperties.EMAIL_DADOSSIER.getValue().split(";");
         } catch (PropertiesException e) {
             LOG.error("GFTraitementSollicitationServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }
