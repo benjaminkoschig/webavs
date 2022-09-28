@@ -3,31 +3,15 @@ package ch.globaz.eform.utils;
 import ch.globaz.common.util.Dates;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.util.ZipUtils;
-import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.models.sedex.GFSedexModel;
-
-import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.Message;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -35,17 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.stream.Stream;
 
 @Slf4j
 public class GFFileUtils {
@@ -54,7 +31,6 @@ public class GFFileUtils {
     public final static String FILE_TYPE_PDF = "pdf";
     public final static String FILE_TYPE_TIFF = "tiff";
     public final static String FILE_TYPE_ZIP = "zip";
-    public static Map<String, Integer> counterMap = new HashMap<>();
 
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
         OutputStream os = response.getOutputStream();
@@ -64,144 +40,203 @@ public class GFFileUtils {
     }
 
     public static void uploadFile(GFEnvoiViewBean viewBean) throws Exception {
-        String path = viewBean.getFilename();
-        Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
-        String filename = path.substring(path.lastIndexOf("\\") + 1);
-        String destDir = WORK_PATH + viewBean.getFolderUid();
-        if (!JadeStringUtil.isNull(filename)) {
-            String extension = FilenameUtils.getExtension(filename);
-            if (extension.equals(FILE_TYPE_ZIP)) {
-                viewBean.getFileNameList().addAll(unZipFile(viewBean));
-                checkUnZippedFiles(viewBean);
+        Path filePath = Paths.get(PERSISTANCE_PATH + viewBean.getFileNamePersistance());
+        Path workDir = Paths.get(WORK_PATH + viewBean.getFolderUid());
+
+        Files.createDirectories(workDir);
+
+        if (Files.exists(filePath))
+        {
+            String extension = FilenameUtils.getExtension(filePath.getFileName().toString());
+            if (FILE_TYPE_ZIP.equalsIgnoreCase(extension)) {
+                Path zipDir = Paths.get(workDir.toAbsolutePath() + File.separator + FilenameUtils.removeExtension(filePath.getFileName().toString()));
+
+                Files.createDirectories(zipDir);
+
+                ZipUtils.unZip(filePath, zipDir);
+
+                checkFile(viewBean, zipDir);
+                injectFiles(viewBean, workDir, zipDir);
+
+                Files.delete(zipDir);
             } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
-                if (isFileExist(filename, viewBean.getFileNameList())) {
-                    filename = renameFileWithSameName(filename);
+                String originalFilename = Paths.get(viewBean.getFilename()).getFileName().toString();
+
+                if (isContains(viewBean.getFileNameList(), originalFilename)) {
+                    List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), originalFilename);
+
+                    if (allIndex.size() == 1) {
+                        String renamedFileName = renameFile(1, viewBean.getFileNameList().get(allIndex.get(0)));
+
+                        Path existantFile = Paths.get(workDir.toAbsolutePath() + File.separator + viewBean.getFileNameList().get(allIndex.get(0)));
+                        Path renamedFile = Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName);
+
+                        Files.move(existantFile, renamedFile);
+
+                        viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
+                    } else {
+                        String renamedFileName = renameFile(allIndex.size() + 1, originalFilename);
+
+                        Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
+                        viewBean.getFileNameList().add(renamedFileName);
+                    };
+                } else {
+                    Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + originalFilename));
+                    viewBean.getFileNameList().add(originalFilename);
                 }
-                JadeFsFacade.copyFile(path, destDir + File.separator + filename);
-                viewBean.getFileNameList().add(filename);
             } else {
                 viewBean.getSession().getCurrentThreadTransaction().addErrors("mauvais type de fichier");
-                return;
             }
-            // suppression des doublons
-            viewBean.setFileNameList(viewBean.getFileNameList().stream().distinct().collect(Collectors.toList()));
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
         }
     }
 
-    public static List<String> unZipFile(GFEnvoiViewBean viewBean) throws Exception {
-        String filename = viewBean.getFileNamePersistance();
-        String pathWork = PERSISTANCE_PATH + filename;
-        List<String> fileNameList = new LinkedList<>();
-        if (!JadeStringUtil.isNull(pathWork)) {
-            //creation des directories pour extraire les fichiers contenus dans le zip
-            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid()));
-            Files.createDirectories(Paths.get(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename)));
-            File destDir = new File(WORK_PATH + viewBean.getFolderUid() + "/" + FilenameUtils.removeExtension(filename));
-            fileNameList = unzip(new File(pathWork), destDir, viewBean);
-        }
-        return fileNameList;
-    }
-
-    public static List<String> unzip(File srcZipFile, File destDir, GFEnvoiViewBean viewBean) {
-        final int bufferSize = 2048;
-        List<String> unzipFiles = new ArrayList<>();
-
+    private static void checkFile(GFEnvoiViewBean viewBean, Path zipDir) {
         try {
-            BufferedOutputStream bufferedOutputStream;
-            FileInputStream fis = new FileInputStream(srcZipFile);
-            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-            File newFile;
-            ZipEntry entry;
+            try (Stream<Path> streamZipDir = Files.list(zipDir)) {
+                streamZipDir.forEach(extractFilePath -> {
+                    String extension = FilenameUtils.getExtension(extractFilePath.getFileName().toString());
 
-            while ((entry = zis.getNextEntry()) != null) {
-                int count;
-                byte[] data = new byte[bufferSize];
-                if (isFileExist(entry.getName(), viewBean.getFileNameList())) {
-                    newFile = renameFileWithSameNameInZip(entry.getName(), destDir);
-                } else {
-                    newFile = new File(destDir + File.separator + entry.getName());
-                }
-                // création des répertoires parents du fichier si ceux-ci n'existent pas
-                new File(newFile.getParent()).mkdirs();
-
-                FileOutputStream fos = new FileOutputStream(newFile);
-                bufferedOutputStream = new BufferedOutputStream(fos, bufferSize);
-                while ((count = zis.read(data, 0, bufferSize)) != -1) {
-                    bufferedOutputStream.write(data, 0, count);
-                }
-                bufferedOutputStream.flush();
-                bufferedOutputStream.close();
-                unzipFiles.add(newFile.getName());
+                    switch (extension) {
+                        case "pdf":
+                        case "tiff":
+                            break;
+                        default:
+                            viewBean.getErrorFileNameList().add(extractFilePath.getFileName().toString());
+                            try {
+                                Files.delete(extractFilePath);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                    }
+                });
             }
-            zis.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return unzipFiles;
     }
 
-    public static boolean isFileExist(String fileName, List<String> fileNamesList) {
-        return fileNamesList.contains(fileName);
-    }
-
-    public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
-        String pathFileNameToRemove = null;
-        Collection<File> files = listFile(GFFileUtils.WORK_PATH + viewBean.getFolderUid());
-
-        for (Iterator iterator = files.iterator(); iterator.hasNext(); ) {
-            File file = (File) iterator.next();
-            if (file.getName().equals(fileNameToRemove)) {
-                pathFileNameToRemove = file.getAbsolutePath();
-                JadeFsFacade.delete(pathFileNameToRemove);
-                if (file.getParentFile().listFiles().length == 0) {
-                    JadeFsFacade.delete(file.getParentFile().toString());
-                }
-            }
-        }
-        viewBean.getFileNameList().remove(fileNameToRemove);
-    }
-
-    public static Collection<File> listFile(String path) {
-        File directory = new File(String.valueOf(Paths.get(path)));
-        Collection<File> files = FileUtils.listFiles(directory, null, true);
-        return files;
-    }
-
-    public static void checkUnZippedFiles(GFEnvoiViewBean viewBean) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
-        List<String> fileNames = new ArrayList<>(viewBean.getFileNameList());
-        for (String fileName : fileNames) {
-            String extension = FilenameUtils.getExtension(fileName);
-            if (!extension.equals(FILE_TYPE_PDF) && !extension.equals(FILE_TYPE_TIFF)) {
-                viewBean.getErrorFileNameList().add(fileName);
-                viewBean.getFileNameList().remove(fileName);
-                deleteFile(viewBean, fileName);
-            }
-        }
-        // suppression des doublons
-        viewBean.setErrorFileNameList(viewBean.getErrorFileNameList().stream().distinct().collect(Collectors.toList()));
-        if (viewBean.getErrorFileNameList().size() > 0) {
-            viewBean.getSession().getCurrentThreadTransaction().addErrors(("les documents en rouges ne respectent pas le format requis et ne seront pas pris en compte pour l'envoi."));
-        }
-    }
-
-    public static void createSedexXml(Message message, String sedexOutPut) {
+    private static void injectFiles(GFEnvoiViewBean viewBean, Path workDir, Path zipDir) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Message.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            try (Stream<Path> streamZipDir = Files.list(zipDir)) {
+                streamZipDir.forEach(extractFile -> {
+                    try {
+                        String fileName = extractFile.getFileName().toString();
+                        if (isContains(viewBean.getFileNameList(), fileName)) {
+                            List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), fileName);
+                            String renamedFileName;
 
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            // Chemin en dur à changer
-            File file = new File(sedexOutPut + "/message_00102.xml");
-            jaxbMarshaller.marshal(message, file);
+                            //Renommage du fichier
+                            if (allIndex.size() == 1) {
+                                renamedFileName = renameFile(1, viewBean.getFileNameList().get(allIndex.get(0)));
 
-        } catch (JAXBException e) {
-//            LOGGER.error("Error : impossible de créer le fichier xml.");
+                                Path existantFile = Paths.get(workDir.toAbsolutePath() + File.separator + viewBean.getFileNameList().get(allIndex.get(0)));
+                                Path renamedFile = Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName);
+
+                                Files.move(existantFile, renamedFile);
+
+                                viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
+                            }
+                            renamedFileName = renameFile(allIndex.size() + 1, fileName);
+                            viewBean.getFileNameList().add(renamedFileName);
+
+                            Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
+                        } else {
+                            viewBean.getFileNameList().add(fileName);
+                            Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + fileName));
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    private static boolean isContains(List<String> fileList, String file) {
+        String extention = FilenameUtils.getExtension(file);
+        String name = FilenameUtils.removeExtension(file);
 
-    public static void zipSedexFile(Path destDir) {
-        ZipUtils.zip(Paths.get(destDir + ".zip"), destDir);
+        if (fileList.contains(file)) {
+            return true;
+        } else {
+            Pattern pdfFilePattern;
+            if ("pdf".equalsIgnoreCase(extention)) {
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)\\.pdf$");
+            } else {
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\.tiff$");
+            }
+
+            return fileList.stream().anyMatch(fileInjected -> {
+                Matcher mFileInjected = pdfFilePattern.matcher(fileInjected);
+                return mFileInjected.find();
+            });
+        }
+    }
+
+    private static List<Integer> indexOfAll(List<String> fileList, String file){
+        List<Integer> index = new ArrayList<>();
+
+        if (fileList.contains(file)) {
+            index.add(fileList.indexOf(file));
+        } else {
+            String extention = FilenameUtils.getExtension(file);
+            String name = FilenameUtils.removeExtension(file);
+
+            Pattern pdfFilePattern;
+            if ("pdf".equalsIgnoreCase(extention)) {
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)\\.pdf$");
+            } else {
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\.tiff$");
+            }
+
+            fileList.forEach(fileInjected -> {
+                Matcher mFileInjected = pdfFilePattern.matcher(fileInjected);
+
+                if (mFileInjected.find()) {
+                    index.add(fileList.indexOf(fileInjected));
+                }
+            });
+        }
+
+        return index;
+    }
+
+    private static String renameFile(Integer index, String file) {
+        String extention = FilenameUtils.getExtension(file);
+
+        Pattern pdfFilePattern;
+        if ("pdf".equalsIgnoreCase(extention)) {
+            pdfFilePattern = Pattern.compile("(.*)\\.pdf$");
+            Matcher mFileInjected = pdfFilePattern.matcher(file);
+
+            if (mFileInjected.find()) {
+                return mFileInjected.group(1) + "_" + index + ".pdf";
+            }
+        } else {
+            pdfFilePattern = Pattern.compile("(.*)(_[pP][1-9]+)\\.tiff$");
+            Matcher mFileInjected = pdfFilePattern.matcher(file);
+
+            if (mFileInjected.find()) {
+                return mFileInjected.group(1) + "_" + index + mFileInjected.group(2) + ".tiff";
+            }
+        }
+
+        return file;
+    }
+
+    public static void deleteFile(GFEnvoiViewBean viewBean, String fileNameToRemove) throws Exception {
+        Path deletedFile = Paths.get(GFFileUtils.WORK_PATH + viewBean.getFolderUid() + File.separator + fileNameToRemove);
+
+        if (Files.exists(deletedFile)) {
+            Files.delete(deletedFile);
+        }
+
+        viewBean.getFileNameList().remove(fileNameToRemove);
     }
 
     public static String generateEFormFilePath(GFFormulaireModel dbModel) {
@@ -218,36 +253,5 @@ public class GFFileUtils {
 
     public static String generateDaDossierFilePath(LocalDate date, String nssAffilier) {
         return date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(nssAffilier) + File.separator;
-    }
-
-    public static String generateDaDossierFilePath(GFSedexModel model) {
-        LocalDate date = model.getMessageDate();
-
-        return date == null ? "" : date.getYear() + File.separator + date.getMonth().getValue() + File.separator + date.getDayOfMonth() + File.separator + NSSUtils.formatNss(model.getNssBeneficiaire()) + File.separator;
-    }
-
-    public static File renameFileWithSameNameInZip(String fileName, File destDir) {
-        counterMap.merge(fileName, 1, Integer::sum);
-        File newFile = new File(destDir + File.separator + FilenameUtils.removeExtension(fileName) + "_" + counterMap.get(fileName) + "." + FilenameUtils.getExtension(fileName));
-        return newFile;
-    }
-
-    public static String renameFileWithSameName(String fileName) {
-        counterMap.merge(fileName, 1, Integer::sum);
-        String name = FilenameUtils.removeExtension(fileName);
-        String extension = FilenameUtils.getExtension(fileName);
-        String rename;
-        if ("pdf".equalsIgnoreCase(extension)) {
-            rename = name + "_" + counterMap.get(fileName) + "." + extension;
-        } else {
-            Pattern page = Pattern.compile("(.*)(_[pP][1-9]+)$");
-            Matcher mPage = page.matcher(name);
-            if (mPage.find()) {
-                rename = mPage.group(1) + "_" + counterMap.get(fileName) + mPage.group(2) + "." + extension;
-            } else {
-                rename = name + "_" + counterMap.get(fileName) + "." + extension;
-            }
-        }
-        return rename;
     }
 }

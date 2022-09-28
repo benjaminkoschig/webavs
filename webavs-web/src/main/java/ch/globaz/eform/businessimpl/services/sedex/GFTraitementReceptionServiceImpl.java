@@ -199,14 +199,14 @@ public class GFTraitementReceptionServiceImpl {
     }
 
     private String getMailSubjet() {
-        return session.getLabel("MAIL_SUBJECT_DEMANDE_SEDEX");
+        return session.getLabel("MAIL_SUBJECT_RECEPTION_SEDEX");
     }
 
     private String getMailBody(ZipFile zipFile, ValidationResult validationResult) {
-        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_DEMANDE_SEDEX"), zipFile.getName()));
+        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_RECEPTION_SEDEX"), zipFile.getName()));
 
         if (Objects.nonNull(validationResult)) {
-            body.append(session.getLabel("MAIL_BODY_DEMANDE_ERROR_SECTION_SEDEX"));
+            body.append(session.getLabel("MAIL_BODY_RECEPTION_ERROR_SECTION_SEDEX"));
             validationResult.getErrors().forEach(error -> body.append("\n").append(error.getDesignation(session)));
         }
 
@@ -215,7 +215,7 @@ public class GFTraitementReceptionServiceImpl {
 
     private String[] getMailsProtocole() {
         try {
-            return GFProperties.EMAIL_EFORM.getValue().split(";");
+            return GFProperties.EMAIL_DADOSSIER.getValue().split(";");
         } catch (PropertiesException e) {
             LOG.error("GFTraitementReceptionServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }

@@ -70,8 +70,8 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
                 GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
-                String fileName = (String) request.getParameter("fileName");
-                String errorFileName = (String) request.getParameter("errorFileName");
+                String fileName = request.getParameter("fileName");
+                String errorFileName = request.getParameter("errorFileName");
                 if(!JadeStringUtil.isEmpty(fileName)) {
                     GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
                 } else if(!JadeStringUtil.isEmpty(errorFileName)) {

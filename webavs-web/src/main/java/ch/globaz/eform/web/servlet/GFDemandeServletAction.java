@@ -1,15 +1,9 @@
 package ch.globaz.eform.web.servlet;
 
 import ch.globaz.common.util.NSSUtils;
-import ch.globaz.eform.business.GFEFormServiceLocator;
-import ch.globaz.eform.business.services.GFDaDossierSedexService;
-import ch.globaz.eform.businessimpl.services.sedex.envoi.EnvoiSedexService;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
-import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.demande.GFDemandeViewBean;
-import globaz.eform.vb.envoi.GFEnvoiViewBean;
-import globaz.eform.vb.suivi.GFSuiviViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -18,7 +12,6 @@ import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
