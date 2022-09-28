@@ -513,7 +513,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             DSApplication app = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
                     .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
             DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession());
-            if(app != null && app.isValidationControlesSupplemtaires()) {
+            if(app != null && app.isValidationControlesSupplementaires()) {
 
                 if (controlesSup.masseAFetAVScorrespondentPas(decl)) {
                     return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_AVS_MASSE_AF") + " " + decl.getNumeroAffilie());

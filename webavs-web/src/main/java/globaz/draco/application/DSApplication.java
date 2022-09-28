@@ -339,7 +339,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
         return Boolean.valueOf(this.getProperty(DSApplication.EXCLURE_IMPORT_LIGNE_A_ZERO, "false").trim()).booleanValue();
     }
 
-    public boolean isValidationControlesSupplemtaires() {
+    public boolean isValidationControlesSupplementaires() {
         return Boolean.valueOf(this.getProperty(DSApplication.VALIDATION_CONTROLES_SUPPLEMENTAIRES, "false").trim()).booleanValue();
     }
 
