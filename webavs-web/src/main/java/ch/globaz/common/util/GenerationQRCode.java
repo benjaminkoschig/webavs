@@ -103,7 +103,7 @@ public class GenerationQRCode {
 
         BufferedImage swissCrossImage = ImageIO.read(swissCrossPath.toFile());
 
-        BufferedImage combindedQrCodeImage = new BufferedImage(qrCodeImage.getWidth(), qrCodeImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combindedQrCodeImage = new BufferedImage(qrCodeImage.getWidth(), qrCodeImage.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
         // paint both images, preserving the alpha channels
         Graphics g = combindedQrCodeImage.getGraphics();

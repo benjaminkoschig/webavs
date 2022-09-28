@@ -107,11 +107,27 @@
 	<menu id="dadossier-optionssuivi">
 		<label refId="MENU_OPTIONS_SUIVI" />
 		<nodes>
-			<node>
+			<node id="SEND_SOLLICITION">
 				<label refId="MENU_ENVOI_DA_DOSSIER"/>
 				<action command="/eform" responseTarget="fr_main">
 					<parameter name="userAction" value="eform.envoi.envoi.afficher"/>
 					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="STATUT_REJECTED">
+				<label refId="MENU_DA_DOSSIER_STATUT_REJECTED"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.suivi.suivi.statut"/>
+					<parameter name="selectedId"/>
+					<parameter name="statut" value="REJECTED"/>
+				</action>
+			</node>
+			<node id="STATUT_TO_SEND">
+				<label refId="MENU_DA_DOSSIER_STATUT_TRAIT"/>
+				<action command="/eform" responseTarget="fr_main">
+					<parameter name="userAction" value="eform.suivi.suivi.statut"/>
+					<parameter name="selectedId"/>
+					<parameter name="statut" value="TO_SEND"/>
 				</action>
 			</node>
 		</nodes>

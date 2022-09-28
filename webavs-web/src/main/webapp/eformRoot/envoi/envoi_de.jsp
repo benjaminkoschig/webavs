@@ -88,6 +88,16 @@
 		<%}%>
 
 	}
+
+	function clearNss(){
+		var nss = document.getElementById("nss").value;
+
+		if(nss == ""){
+			document.getElementById("nomAssure").value = "";
+			document.getElementById("prenomAssure").value = "";
+			document.getElementById("dateNaissance").value = "";
+		}
+	}
 	function cancel(){
 		action(ROLLBACK);
 	}

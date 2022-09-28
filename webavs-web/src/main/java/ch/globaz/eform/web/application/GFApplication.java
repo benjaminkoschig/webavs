@@ -3,6 +3,7 @@ package ch.globaz.eform.web.application;
 import ch.globaz.eform.web.servlet.GFDemandeServletAction;
 import ch.globaz.eform.web.servlet.GFEnvoiServletAction;
 import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
+import ch.globaz.eform.web.servlet.GFSuiviServletAction;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
@@ -67,5 +68,6 @@ public class GFApplication extends BApplication {
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_REMOVEFILE, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
         FWAction.registerActionCustom(GFDemandeServletAction.ACTION_PATH + "." + GFDemandeServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
+        FWAction.registerActionCustom(GFSuiviServletAction.ACTION_PATH + "." + GFSuiviServletAction.ACTION_STATUT, FWSecureConstants.UPDATE);
     }
 }

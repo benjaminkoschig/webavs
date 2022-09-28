@@ -37,13 +37,14 @@ import static globaz.apg.acorweb.mapper.APAcorImportationUtils.*;
 
 @Slf4j
 public class APImportationCalculAcor {
-
+    private final FCalcul fCalcul;
     private final EntityService entityService;
-    public APImportationCalculAcor() {
+    public APImportationCalculAcor(FCalcul fCalcul) {
+        this.fCalcul = fCalcul;
         entityService = EntityService.of(BSessionUtil.getSessionFromThreadContext());
     }
 
-    public void importCalculAcor(String idDroit, FCalcul fCalcul) throws Exception {
+    public void importCalculAcor(String idDroit) throws Exception {
         LOG.info("Importation des données calculées.");
         BSession session = entityService.getSession();
         BTransaction transaction = null;
@@ -56,7 +57,7 @@ public class APImportationCalculAcor {
                     idDroit);
             checkAndGetNssIntegrite(session, fCalcul, droit);
             final List<APBaseCalcul> basesCalcul = retrieveBasesCalcul(session, droit);
-            Collection<APPrestationWrapper> pw = createAPPrestationWrappers(session, fCalcul, droit, basesCalcul);
+            Collection<APPrestationWrapper> pw = createAPPrestationWrappers(session, droit, basesCalcul);
             calculerPrestationsComplementaires(session, transaction, droit, pw, basesCalcul);
 
             if (!hasErrors(session, transaction)) {
@@ -81,11 +82,10 @@ public class APImportationCalculAcor {
     }
 
     private List<APPrestationWrapper> createAPPrestationWrappers(BSession session,
-                                                                 FCalcul fCalcul,
                                                                  APDroitLAPG droit,
                                                                  List<APBaseCalcul> basesCalcul) throws Exception {
         List<APPrestationWrapper> wrappers = new ArrayList<>();
-        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(fCalcul, droit, basesCalcul);
+        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(session, droit, basesCalcul);
         for (APPrestationAcor prestation:
                 prestationsAcor) {
             APPrestationWrapper prestationWrapper = new APPrestationWrapper();
@@ -159,42 +159,120 @@ public class APImportationCalculAcor {
         return rc;
     }
 
-    private List<APPrestationAcor> createAndMapPrestationsAcor(FCalcul fCalcul,
+    private List<APPrestationAcor> createAndMapPrestationsAcor(BSession session,
                                                                APDroitLAPG droit,
-                                                               List<APBaseCalcul> basesCalcul) throws Exception {
+                                                               List<APBaseCalcul> basesCalcul) throws PRACORException {
         List<APPrestationAcor> prestations = new ArrayList<>();
-        for (VersementMoisComptableApgType versementMoisComptable:
-             fCalcul.getVersementMoisComptable()) {
-            Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg().getPeriodeService().stream().filter(p -> {
-                try {
-                    return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), versementMoisComptable.getMoisComptable());
-                } catch (JAException e) {
-                    throw new PRAcorTechnicalException(e);
+        for (PeriodeServiceApgType periodeServiceApgType:
+                fCalcul.getCarteApg().getPeriodeService()) {
+            List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
+            JADate dateDebutPeriode;
+            try {
+                dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
+            } catch (JAException e) {
+                throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+            }
+            JADate dateFinPeriode;
+            try {
+                dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
+            } catch (JAException e) {
+                throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+            }
+            APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
+            for (VersementMoisComptableApgType moisComptableApgType :
+                    fCalcul.getVersementMoisComptable()) {
+                for (VersementApgType versementApgType :
+                        moisComptableApgType.getVersement()) {
+                    createAndMapRepartitionsByVersementApg(session, periodeServiceApgType, repartitions, baseCalcul, versementApgType);
                 }
-            }).findFirst();
-            if(periodeServiceApgTypeOptional.isPresent()) {
-                PeriodeServiceApgType periodeServiceApgType = periodeServiceApgTypeOptional.get();
-                JADate dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
-                JADate dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
-                APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
-                if(Objects.nonNull(baseCalcul)) {
-                    prestations.add(createAndMapPrestation(fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
+                if (!repartitions.isEmpty()) {
+                    try {
+                        APPrestationAcor prestationAcor = createAndMapPrestation( droit,
+                                                                                  moisComptableApgType,
+                                                                                  periodeServiceApgType,
+                                                                                  baseCalcul);
+                        for (APRepartitionPaiementAcor repartition :
+                                repartitions) {
+                            prestationAcor.getRepartitionPaiements().add(repartition);
+                        }
+                        prestations.add(prestationAcor);
+                    } catch (Exception e) {
+                        throw new PRAcorTechnicalException("Erreur lors de la création de la prestation.", e);
+                    }
                 }
             }
         }
         return prestations;
     }
 
-    private APPrestationAcor createAndMapPrestation(FCalcul fCalcul,
-                                                    APDroitLAPG droit,
+    private void createAndMapRepartitionsByVersementApg(BSession session,
+                                                        PeriodeServiceApgType periodeServiceApgType,
+                                                        List<APRepartitionPaiementAcor> repartitions,
+                                                        APBaseCalcul baseCalcul,
+                                                        VersementApgType versementApgType) throws PRACORException {
+        VersementsInstanceAdminApgType versementGenevois = versementApgType.getVersementsGenevois();
+        if(Objects.nonNull(versementGenevois)) {
+            VersementBeneficiaireApgType versementAssure = versementGenevois.getVersementAssure();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementAssure);
+            VersementBeneficiaireApgType versementEmployeur = versementGenevois.getVersementEmployeur();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementEmployeur);
+        }
+        VersementsInstanceAdminApgType versementFederal = versementApgType.getVersementsFederal();
+        if(Objects.nonNull(versementFederal)) {
+            VersementBeneficiaireApgType versementEmployeur = versementFederal.getVersementEmployeur();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementEmployeur);
+            VersementBeneficiaireApgType versementAssure = versementFederal.getVersementAssure();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementAssure);
+        }
+    }
+
+    private void createAndMapRepartitionByBeneficiaire(BSession session, FCalcul fCalcul,
+                                                       PeriodeServiceApgType periodeServiceApgType,
+                                                       List<APRepartitionPaiementAcor> repartitions,
+                                                       APBaseCalcul baseCalcul,
+                                                       VersementBeneficiaireApgType versementAssure) throws PRACORException {
+        if(Objects.nonNull(versementAssure)) {
+            APRepartitionPaiementAcor repartitionPaiementAcor = createAndMapRepartitionByBeneficiaire(session,
+                                                                                                               periodeServiceApgType,
+                                                                                                               baseCalcul,
+                                                                                                               versementAssure);
+            if(Objects.nonNull(repartitionPaiementAcor)){
+                repartitions.add(repartitionPaiementAcor);
+            }
+        }
+    }
+
+    private APRepartitionPaiementAcor createAndMapRepartitionByBeneficiaire(BSession session,
+                                                                            PeriodeServiceApgType periodeServiceApgType,
+                                                                            APBaseCalcul baseCalcul,
+                                                                            VersementBeneficiaireApgType versementBeneficiaireApgType)
+                                                                                throws PRACORException {
+        for (DecompteApgType decompteApgType :
+                versementBeneficiaireApgType.getDecompte()) {
+            for (PeriodeDecompteApgType periodeDecompteApgType :
+                    decompteApgType.getPeriodeDecompte()) {
+                if (periodeDecompteApgType.getDebut().equals(periodeServiceApgType.getDebut()) &&
+                        periodeDecompteApgType.getFin().equals(periodeServiceApgType.getFin())) {
+                    return APPrestationAcor.createRepartitionPaiement(session,
+                            baseCalcul,
+                            versementBeneficiaireApgType,
+                            periodeDecompteApgType,
+                            fCalcul);
+                }
+            }
+        }
+        return null;
+    }
+
+    private APPrestationAcor createAndMapPrestation(APDroitLAPG droit,
                                                     VersementMoisComptableApgType versementMoisComptable,
                                                     PeriodeServiceApgType periodeServiceApgType,
                                                     APBaseCalcul baseCalcul) throws Exception {
         BSession session = entityService.getSession();
         APPrestationAcor prestation = new APPrestationAcor();
         AssureApgType assure = fCalcul.getAssure().stream()
-                                                    .filter(a -> a.getFonction() == FonctionApgType.REQUERANT)
-                                                    .collect(Collectors.toList()).get(0);
+                .filter(a -> a.getFonction() == FonctionApgType.REQUERANT)
+                .collect(Collectors.toList()).get(0);
         String genreService = session.getCode(droit.getGenreService());
         if (Objects.nonNull(fCalcul.getFraisGarde())) {
             prestation.setFraisGarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
@@ -207,8 +285,6 @@ public class APImportationCalculAcor {
         prestation.mapInformationFromPeriodeServiceApg(session, genreService, periodeServiceApgType);
         prestation.mapInformationFromMontantJournalierApg(droit, fCalcul);
         prestation.mapInformationFromBaseCalcul(baseCalcul);
-        prestation.createAndMapRepartitionPaiementsDecomptes(session, baseCalcul, fCalcul, versementMoisComptable);
-
         return prestation;
     }
 

@@ -88,6 +88,7 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
 
         //Définition des informations complémentaire en vue de la persistence de la demande
+        model.setOriginalType(GFTypeDADossier.RECEPTION.getCodeSystem());
         model.setType(GFTypeDADossier.RECEPTION.getCodeSystem());
         model.setStatus(GFStatusDADossier.WAITING.getCodeSystem());
         model.setUserGestionnaire(session.getUserInfo().getVisa());
@@ -173,8 +174,8 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
 
         //Définition des informations complémentaire en vue de la persistence de la demande
-        model.setType(GFTypeDADossier.RECEPTION.getCodeSystem());
-        model.setStatus(GFStatusDADossier.WAITING.getCodeSystem());
+        model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        model.setStatus(GFStatusDADossier.SEND.getCodeSystem());
         model.setUserGestionnaire(session.getUserInfo().getVisa());
 
         dataMessageSedex.put(GFDaDossierHeaderElementSender.MESSAGE_ID, model.getMessageId());
@@ -213,6 +214,7 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         sender.send();
 
         if (StringUtils.isBlank(model.getId())) {
+            model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
             GFEFormServiceLocator.getGFDaDossierDBService().create(model);
         } else {
             GFEFormServiceLocator.getGFDaDossierDBService().update(model);

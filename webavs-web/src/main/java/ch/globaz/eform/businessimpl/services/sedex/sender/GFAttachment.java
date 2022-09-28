@@ -12,4 +12,6 @@ public class GFAttachment {
         this.fileName = fileName;
         this.path = path;
     }
+
+
 }

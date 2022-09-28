@@ -4,7 +4,6 @@ import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.business.services.GFDaDossierSedexService;
-import ch.globaz.eform.businessimpl.services.sedex.envoi.EnvoiSedexService;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;

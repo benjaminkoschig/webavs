@@ -9,5 +9,6 @@ public enum ValidationError {
     MALFORMED,
     ILLEGAL_VALUE,
     INTERNAL_ERROR,
-    ALREADY_EXIST
+    ALREADY_EXIST,
+    UNKNOWN
 }

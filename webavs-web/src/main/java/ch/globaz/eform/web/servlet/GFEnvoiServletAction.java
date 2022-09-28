@@ -70,8 +70,8 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
                 GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
-                String fileName = (String) request.getParameter("fileName");
-                String errorFileName = (String) request.getParameter("errorFileName");
+                String fileName = request.getParameter("fileName");
+                String errorFileName = request.getParameter("errorFileName");
                 if(!JadeStringUtil.isEmpty(fileName)) {
                     GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
                 } else if(!JadeStringUtil.isEmpty(errorFileName)) {
@@ -91,7 +91,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                 if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
                 } else if(actionPart.equals(ACTION_ENVOYER)) {
-                    destination = "/eform?userAction="+GFSuiviServletAction.PATH_EFORM+"."+GFSuiviServletAction.ACTION_CHERCHER+
+                    destination = "/eform?userAction="+GFSuiviServletAction.ACTION_PATH+"."+GFSuiviServletAction.ACTION_CHERCHER+
                     "&likeNss=" + NSSUtils.unFormatNss(((GFEnvoiViewBean) viewBean).getNss()) +
                             "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCodeCaisse() +
                             "&byType=" + GFTypeDADossier.SEND_TYPE.getCodeSystem() +
