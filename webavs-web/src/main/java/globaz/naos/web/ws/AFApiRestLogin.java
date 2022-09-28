@@ -1,5 +1,6 @@
 package globaz.naos.web.ws;
 
+import globaz.naos.web.exceptions.AFUnauthorizedException;
 import globaz.naos.web.service.AFLoginService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,10 @@ public class AFApiRestLogin {
      * @return Response
      */
     private <T, R> Response execute(T authorization, Function<T, R> function) {
-        return Response.ok(function.apply(authorization)).build();
+        try {
+            return Response.ok(function.apply(authorization)).build();
+        } catch (AFUnauthorizedException pue) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
 }
