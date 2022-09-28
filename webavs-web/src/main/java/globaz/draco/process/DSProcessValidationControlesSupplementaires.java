@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 public class DSProcessValidationControlesSupplementaires {
 
+    public static final String CS_CANTON_VAUD = "505022";
+
     BSession session = null;
 
     public BSession getSession() {
@@ -115,7 +117,7 @@ public class DSProcessValidationControlesSupplementaires {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal montantCotVd = listLigne.stream()
                 .filter(l ->l.getCotisation() != null)
-                .filter(l -> "505022".equals(l.getCotisation().getAssurance().getAssuranceCanton()))
+                .filter(l -> CS_CANTON_VAUD.equals(l.getCotisation().getAssurance().getAssuranceCanton()))
                 .filter(l -> TypeAssurance.COTISATION_AF.getValue().equals(l.getCotisation().getAssurance().getTypeAssurance()))
                 .map(l -> new BigDecimal(JANumberFormatter.deQuote(l.getMontantDeclaration())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
