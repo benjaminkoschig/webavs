@@ -10,6 +10,10 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.webavs.common.CommonProperties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Application DRACO
  *
@@ -53,6 +57,10 @@ public class DSApplication extends globaz.globall.db.BApplication {
     public final static String VALIDATION_SPY_COMPLEMENT = "validationSpyComplement";
     public final static String EXCLURE_IMPORT_LIGNE_A_ZERO = "exclure.importation.ligne.a.zero";
     public final static String COMPLEMENT_USER_VALIDATION_DS = "ValideDS";
+
+    public final static String VALIDATION_CONTROLES_SUPPLEMENTAIRES = "validation.controles.supplementaires";
+
+    public final static String VALIDATIONS_ASSURANCES = "validation.assurances";
     private IFormatData affileFormater = null;
     private BIApplication appMusca = null;
     private BIApplication appNaos = null;
@@ -329,5 +337,17 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     public boolean isRemiseAZeroDAN() {
         return Boolean.valueOf(this.getProperty(DSApplication.EXCLURE_IMPORT_LIGNE_A_ZERO, "false").trim()).booleanValue();
+    }
+
+    public boolean isValidationControlesSupplemtaires() {
+        return Boolean.valueOf(this.getProperty(DSApplication.VALIDATION_CONTROLES_SUPPLEMENTAIRES, "false").trim()).booleanValue();
+    }
+
+    public List<String> listValidationAssurances() {
+        String listAssurance = this.getProperty(DSApplication.VALIDATIONS_ASSURANCES, "");
+        if(listAssurance.isEmpty()){
+            return new ArrayList<>();
+        }
+        return Arrays.asList(listAssurance.replaceAll("\\s+", "").split("[,;:]"));
     }
 }
