@@ -48,7 +48,7 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
             new String[] { "idDomaineAdressePaiement", "idApplication" },
             new String[] { "numAffilieEmployeur", "idExterneAvoirPaiement" } };
     private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
-            new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReference" }};
+            new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
             new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
     private static final Object[] METHODES_SEL_BENEFICIAIRE = new Object[] {

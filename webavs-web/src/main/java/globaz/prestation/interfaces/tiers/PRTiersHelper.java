@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import globaz.apg.properties.APProperties;
 import globaz.corvus.properties.REProperties;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
@@ -943,17 +942,11 @@ public class PRTiersHelper {
         }
     }
 
-    public static TIReferencePaiement getReferenceQRData(BSession session,
-                                                         String idReferenceQR) throws Exception {
-
-        if (JadeStringUtil.isBlankOrZero(idReferenceQR)) {
-            return null;
-        }
-
-        if (!JadeStringUtil.isEmpty(idReferenceQR)) {
+    public static TIReferencePaiement getReferenceQR(BSession session, String idReferenceQR) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idReferenceQR)) {
             TIReferencePaiementManager mgr = new TIReferencePaiementManager();
             mgr.setSession(session);
-            mgr.setForIdReference(idReferenceQR);
+            mgr.setForIdReferenceQR(idReferenceQR);
 
             mgr.find(BManager.SIZE_NOLIMIT);
 

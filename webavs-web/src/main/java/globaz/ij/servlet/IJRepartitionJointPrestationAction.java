@@ -348,7 +348,6 @@ public class IJRepartitionJointPrestationAction extends PRDefaultAction {
         newViewBean.setIdParent(oldViewBean.getIdRepartitionPaiement());
         newViewBean.setIdBaseIndemnisation(oldViewBean.getIdBaseIndemnisation());
         newViewBean.setIdPrestation(oldViewBean.getIdPrestation());
-        newViewBean.setIdReferenceQRDepuisReferenceQR(oldViewBean.getIdReferenceQR());
         newViewBean.setMontantNet(oldViewBean.getMontantNet());
         newViewBean.setSession((BSession) mainDispatcher.getSession());
 

@@ -595,7 +595,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
     public String getReferenceQR() throws Exception {
         TIReferencePaiementManager mgr = new TIReferencePaiementManager();
         mgr.setSession(getSession());
-        mgr.setForIdReference(idReferenceQR);
+        mgr.setForIdReferenceQR(idReferenceQR);
         mgr.find(BManager.SIZE_NOLIMIT);
 
         if(mgr.size() > 0){

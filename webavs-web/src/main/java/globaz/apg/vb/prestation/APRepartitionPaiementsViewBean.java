@@ -832,10 +832,10 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
         retourDepuisPyxis = true;
     }
 
-
     public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
         super.setIdReferenceQR(idReferenceQR);
         retourDepuisPyxis = true;
+        tiersBeneficiaireChange = true;
     }
 
     public boolean hasAdressePaiementQRIban() {
@@ -978,5 +978,15 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
         this.adressePaiementData = adressePaiementData;
+    }
+
+    @Override
+    protected void _validate(globaz.globall.db.BStatement statement) throws Exception {
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
     }
 }

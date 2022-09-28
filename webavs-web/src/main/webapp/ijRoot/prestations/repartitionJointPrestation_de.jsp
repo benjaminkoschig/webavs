@@ -261,7 +261,7 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 
 <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
 	<td><ct:FWLabel key="JSP_REFERENCE_QR"/></td>
-	<td valign="top" align="right">
+	<td valign="top" align="left">
 		<span class="adressePaiement assure employeur personnalise">
 
 			<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiement()%>">

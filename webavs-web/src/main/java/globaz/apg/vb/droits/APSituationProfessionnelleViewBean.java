@@ -89,7 +89,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             new String[]{"idDomainePaiementEmployeur", "idApplication"}};
 
     private static final Object[] METHODES_SEL_REFERENCE_QR = new Object[]{
-            new String[]{"setIdReferenceQRDepuisReferenceQR", "getIdReference"}};
+            new String[]{"setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR"}};
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -1617,7 +1617,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
         setIdReferenceQREmployeur(idReferenceQR);
-        retourDepuisAdresse = true;
+        retourDepuisPyxis = true; // TODO ESVE ESSAYER retourDepuisAdresse
     }
 
     /**
@@ -1906,6 +1906,16 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     protected void _afterUpdate(BTransaction transaction) throws Exception {
         super._afterUpdate(transaction);
         updateJourEmployeurIdentique(transaction, this.isJoursIdentiques);
+    }
+
+    @Override
+    protected void _validate(BStatement statement) throws Exception {
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQREmployeur()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
     }
 
 }
