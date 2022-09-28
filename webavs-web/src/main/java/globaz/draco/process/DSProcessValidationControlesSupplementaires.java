@@ -139,7 +139,7 @@ public class DSProcessValidationControlesSupplementaires {
 
         List<String> listCodeCantonAffilie = listeMasseForAffilie.stream().map(m -> m.getCodeCanton()).distinct().collect(Collectors.toList());
         List<String> listCodeCantonDeclaration = listLigne.stream().map(m -> m.getAssurance().getAssuranceCanton()).distinct().collect(Collectors.toList());
-        return !listCodeCantonAffilie.containsAll(listCodeCantonAffilie);
+        return !listCodeCantonDeclaration.containsAll(listCodeCantonAffilie);
     }
 
     public Optional<DSInscriptionsIndividuelles> inscriptionsMontantACetAVSneCorrespondentPas(DSDeclarationViewBean decl) throws FWIException {

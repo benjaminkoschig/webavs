@@ -536,8 +536,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 }
             }
 
-            if(app != null && !app.listValidationAssurances().isEmpty()
-                && controlesSup.contientPasToutesLesAssurancesRequises(decl, app.listValidationAssurances())) {
+            if(app != null && controlesSup.contientPasToutesLesAssurancesRequises(decl, app.listValidationAssurances())) {
                 return returnError(getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES") + " " + decl.getNumeroAffilie());
             }
 
