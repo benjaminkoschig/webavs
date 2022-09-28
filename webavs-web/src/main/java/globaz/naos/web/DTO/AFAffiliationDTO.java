@@ -2,6 +2,7 @@ package globaz.naos.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.naos.web.exceptions.AFBadRequestException;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Vector;
 @Data
 public class AFAffiliationDTO {
     private String id;
-    private String idTiers = "";
+    private String idTiers;
     private String raisonSocialeLong;
     private String numeroAffilie;
     private String ancien_numero_affilie;
@@ -109,6 +110,7 @@ public class AFAffiliationDTO {
             mapForValidator.put("id", this.getId());
             mapForValidator.put("numeroAffilie", this.getNumeroAffilie());
         }
+        mapForValidator.put("idTiers", this.getIdTiers());
         AFValidateDTO.checkIfEmpty(mapForValidator);
 
         // On vérifie que les codes systèmes passés correspondent aux bonnes familles de CS

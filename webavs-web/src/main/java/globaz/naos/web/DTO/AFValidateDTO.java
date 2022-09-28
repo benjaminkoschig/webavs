@@ -21,7 +21,7 @@ public class AFValidateDTO {
         List<String> listeErrors = mapForValidator
                 .entrySet()
                 .stream()
-                .filter(e -> JadeStringUtil.isEmpty(e.getValue()))
+                .filter(e -> JadeStringUtil.isEmpty(e.getValue().trim()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
