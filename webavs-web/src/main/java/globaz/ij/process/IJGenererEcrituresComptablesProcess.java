@@ -46,6 +46,8 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
+import org.apache.commons.lang.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,6 +160,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
         public String fraisAdministration = "";
         public String genrePrestation = "";
         public String idAdressePaiement = "";
+        public String referencePaiement = "";
         public String idCompensation = "";
         public String idDepartement = "";
         public String idRepartitionPaiement = "";
@@ -182,15 +185,17 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
         // --------------------------------------------------------------------------------------------
 
         public String idAdressePaiement = "";
+        public String referencePaiement = "";
         public String montant = "";
         public String referenceInterne = "";
 
         // ~ Constructors
         // -----------------------------------------------------------------------------------------------
 
-        public Ventilation(String montant, String idAdressePaiement, String referenceInterne) {
+        public Ventilation(String montant, String idAdressePaiement, String referencePaiement, String referenceInterne) {
             this.montant = montant;
             this.idAdressePaiement = idAdressePaiement;
+            this.referencePaiement = referencePaiement;
             this.referenceInterne = referenceInterne;
         }
     }
@@ -601,6 +606,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
                     repartition.ventilations
                             .add(new Ventilation(repartitionPaiementFille.getMontantVentile(), repartitionPaiementFille
                                     .loadAdressePaiement(getDateComptable()).getIdAvoirPaiementUnique(),
+                                    repartitionPaiementFille.getReferenceQR(),
                                     repartitionPaiementFille.getReferenceInterne()));
                 }
             }
@@ -729,7 +735,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
      *             DOCUMENT ME!
      */
     private void doOrdreVersement(APIGestionComptabiliteExterne compta, String idCompteAnnexe, String idSection,
-            String montant, String idAdressePaiement, String nomPrenomRequerant, String referenceInterne)
+            String montant, String idAdressePaiement, String referencePaiement, String nomPrenomRequerant, String referenceInterne)
             throws Exception {
         if (new FWCurrency(montant).isNegative()) {
             throw new IllegalArgumentException(getSession().getLabel("MONTANT_NEG_VERSEMENT_ERR"));
@@ -745,7 +751,12 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
                 IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(getSession()
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
-        ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+        if (StringUtils.isEmpty(referencePaiement)) {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+        } else {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.QR);
+            ordreVersement.setReferencePaiement(referencePaiement);
+        }
 
         getMemoryLog().logMessage(
                 java.text.MessageFormat.format(getSession().getLabel("ECR_COM_ORDRE_VERSEMENT"), new Object[] {
@@ -917,6 +928,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
         Map ecrituresRubriquesConcerneesRestitution = new HashMap();
         FWCurrency totalCotisations = new FWCurrency(0);
         String idAdressePaiementBeneficiaireDeBase = "";
+        String referencePaiementBeneficiaireDeBase = "";
 
         Iterator repartitionsIterator = repartitions.iterator();
 
@@ -932,6 +944,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
 
             // recup de l'idAdressePaiement
             idAdressePaiementBeneficiaireDeBase = repartition.idAdressePaiement;
+            referencePaiementBeneficiaireDeBase = repartition.referencePaiement;
 
             boolean isRestitution = repartition.isRestitution;
 
@@ -1138,7 +1151,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
                     // Les ventilations négatives ne sont pas versées.
                     if (mnt.isPositive()) {
                         doOrdreVersement(compta, compteAnnexeIJ.getIdCompteAnnexe(), sectionNormale.getIdSection(),
-                                ventilation.montant, ventilation.idAdressePaiement, nomPrenom,
+                                ventilation.montant, ventilation.idAdressePaiement, ventilation.referencePaiement, nomPrenom,
                                 ventilation.referenceInterne);
                     }
                 }
@@ -1337,7 +1350,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
 
         if (versement.isPositive()) {
             doOrdreVersement(compta, compteAnnexeIJ.getIdCompteAnnexe(), sectionNormale.getIdSection(),
-                    versement.toString(), idAdressePaiementBeneficiaireDeBase, null, null);
+                    versement.toString(), idAdressePaiementBeneficiaireDeBase, referencePaiementBeneficiaireDeBase, null, null);
         }
 
         if (getTransaction().hasErrors()) {
@@ -1464,6 +1477,8 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
                     try {
                         repartition.idAdressePaiement = repartJointCotJointPrest
                                 .loadAdressePaiement(getDateComptable()).getIdAvoirPaiementUnique();
+                        repartition.referencePaiement = repartJointCotJointPrest.getReferenceQR();
+
                     } catch (NullPointerException e) {
                         throw new Exception(getSession().getLabel("ADR_PMT_ERREUR_TIERS") + " "
                                 + repartJointCotJointPrest.getIdTiers() + " idAff : "
@@ -1556,7 +1571,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
 
                 // key = new Key(idTiers, idAffilie,
                 // repartition.idAdressePaiement, repartition.idDepartement);
-                key = new Key(idTiers, idAffilie, "0", "0");
+                key = new Key(idTiers, idAffilie, "0", "0", repartition.referencePaiement);
 
             }
             // Cas ou le bénéficiaire est un affilié
@@ -1566,7 +1581,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
 
                 // key = new Key(idTiers, idAffilie,
                 // repartition.idAdressePaiement, repartition.idDepartement);
-                key = new Key(idTiers, idAffilie, "0", "0");
+                key = new Key(idTiers, idAffilie, "0", "0", repartition.referencePaiement);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -1581,7 +1596,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
 
                 // key = new Key(idAssureDeBase, idAffilie,
                 // repartition.idAdressePaiement, repartition.idDepartement);
-                key = new Key(idAssureDeBase, "0", idTiers, "0");
+                key = new Key(idAssureDeBase, "0", idTiers, "0", repartition.referencePaiement);
             }
 
             if (repartitions.containsKey(key)) {
