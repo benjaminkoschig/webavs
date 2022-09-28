@@ -170,8 +170,7 @@ public class AFExecuteService extends BProcess {
     private void updateAffiliationPage1(BSession session, AFAffiliationDTO dto) throws Exception {
         AFAffiliation affiliation = retrieveAffiliation(session, dto);
 
-        //idTiers initialisé à "" (empty string)
-        if (!JadeStringUtil.isEmpty(dto.getIdTiers())) {
+        if (!JadeStringUtil.isNull(dto.getIdTiers())) {
             affiliation.setIdTiers(dto.getIdTiers());
         }
         if (!JadeStringUtil.isNull(dto.getRaisonSocialeLong())) {
