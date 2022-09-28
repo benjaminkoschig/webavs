@@ -28,6 +28,7 @@ public enum CommonProperties implements IProperties {
      */
     ADD_COMMUNE_POLITIQUE("liste.ajouter.commune.politique",
                           "Enrichit une partie des listes PC, RFM, IJ et rentes avec le commune politiques"),
+    TAUX_PAR_TRANCHE("isTauxParTranche","Permet de traiter les assurances par tranche"),
     WIRRWEBSERVICE_NAMESPACE("wirr.webservice.namespace", "name space du web service wirr"),
     WIRRWEBSERVICE_NAME("wirr.webservice.name", "name du web service wirr"),
     WIRRWEBSERVICE_SEDEX_SENDER_ID("wirr.webservice.sedex.sender.id", "sedex sender id pour le web service wirr"),
