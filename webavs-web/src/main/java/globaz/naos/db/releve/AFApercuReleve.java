@@ -865,7 +865,7 @@ public class AFApercuReleve extends BEntity {
 
         if (CodeSystem.ETATS_RELEVE_SAISIE.equals(getEtat())) {
             AFApercuReleveLineFacturation releveAssCotiAvsAi = null;
-            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+            if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false")) && !cotisationList.stream().anyMatch(e -> AFApplication.isTauxParTranche(e.getAssuranceId()))) {
                 //ESVE récupération de la masse des cotisatoins avs/ai pour le calcul du taux moyen à la FERCIAM
                 for (int j = 0; j < cotisationList.size(); j++) {
                     if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
@@ -989,7 +989,7 @@ public class AFApercuReleve extends BEntity {
                                 findAndSetTauxVariable(line, String.valueOf(newLine.getMasse()), masseGeneral);
 
                                 if ("true".equals(getSession().getApplication().getProperty(
-                                        AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+                                        AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)) && !AFApplication.isTauxParTranche(line.getAssuranceId())){
 
                                 } else {
                                     FWCurrency montantCal = new FWCurrency((newLine.getMasse() * line.getTaux())
@@ -1081,7 +1081,7 @@ public class AFApercuReleve extends BEntity {
                             findAndSetTauxVariable(line, String.valueOf(newLine.getMasse()), masseGeneral);
 
                             //ESVE calculer le taux moyen spécifique à la FERCIAM
-                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false")) && !AFApplication.isTauxParTranche(line.getAssuranceId())) {
                                 line.setMasse(newLine.getMasse());
                                 Double massReveleAccCotiAvsAi = new Double(0);
                                 if(releveAssCotiAvsAi != null){
@@ -1258,7 +1258,8 @@ public class AFApercuReleve extends BEntity {
         if ("true".equals(affApp.getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))
                 && !CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(getType())
                 && !CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(getType())
-                && !CodeSystem.TYPE_RELEVE_DECOMP_FINAL.equals(getType())) {
+                && !CodeSystem.TYPE_RELEVE_DECOMP_FINAL.equals(getType())
+                && !AFApplication.isTauxParTranche(line.getAssuranceId())) {
             // si taux var par palier et différent de bouclement acomptes ou
             // final -> taux moyen
             // TODO, à voir si cette partie est utilisé car pour un taux moyen,

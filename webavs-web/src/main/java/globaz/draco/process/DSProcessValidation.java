@@ -346,7 +346,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 return false;
             }
             if (DSDeclarationViewBean.CS_PRINCIPALE.equals(decl.getTypeDeclaration())) {
-                if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+                if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)) && !AFApplication.isTauxParTranche(ligneManager.getForAssuranceId())) {
                     for (int i = 0; i < ligneManager.size(); i++) {
                         DSLigneDeclarationViewBean ligne = (DSLigneDeclarationViewBean) ligneManager.get(i);
                         String annee = "";

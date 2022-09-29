@@ -533,7 +533,8 @@ public class DSValideMontantDeclarationProcess extends BProcess {
                             }
                         } else {
                             //ESVE calculer le taux moyen spécifique à la FERCIAM
-                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
+                            && !AFApplication.isTauxParTranche(ligneDec.getAssuranceId())) {
                                 AFCalculAssurance.updateTauxMoyen(getSession()
                                         , declaration.getAffiliation().getAffiliationId()
                                         , ligneDec.getAssuranceId()
