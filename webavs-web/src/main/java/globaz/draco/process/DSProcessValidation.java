@@ -1,17 +1,10 @@
 package globaz.draco.process;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import com.google.common.base.Splitter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.service.EBEbusinessInterface;
 import ch.globaz.orion.service.EBPucsFileService;
+import com.google.common.base.Splitter;
 import globaz.commons.nss.NSUtil;
 import globaz.draco.application.DSApplication;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
@@ -49,11 +42,19 @@ import globaz.naos.db.nombreAssures.AFNombreAssures;
 import globaz.naos.db.nombreAssures.AFNombreAssuresManager;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.translation.CodeSystem;
-import globaz.orion.helpers.pucs.EBPucsBatchController;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.pavo.db.inscriptions.CIJournal;
+
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class DSProcessValidation extends BProcess implements FWViewBeanInterface {
 
@@ -64,7 +65,6 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
     private boolean forceEnvoiMail = false;
     private String idDeclaration;
     private boolean isBatch = false;
-    private EBPucsBatchController pucsBatchController = new EBPucsBatchController();
     private List<PucsFile> pucsFileMergded = new ArrayList<PucsFile>();
 
     public String noAffilie = "";
@@ -146,18 +146,6 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 this._addError(getTransaction(), getSession().getLabel("MSG_COMPLEMENT_IMPOSSIBLE"));
                 abort();
                 return false;
-            }
-
-            // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
-            if (getIsBatch()) {
-                pucsBatchController.setSession(getSession());
-                if (pucsBatchController.isValidationsBatchActive()) {
-                    if (pucsBatchController.contientPasToutesLesAssurancesRequises(decl)) {
-                        this._addError(getTransaction(), getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES")+ " " + decl.getNumeroAffilie());
-                        abort();
-                        return false;
-                    }
-                }
             }
 
             // Vérification que les plafonds LTN (affilié et assuré) ne sont pas dépassés
@@ -518,6 +506,40 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 return false;
             }
 
+            /**
+             *  Controles supplemetaires
+             */
+
+            DSApplication app = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
+                    .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
+            DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession());
+            if(app != null && app.isValidationControlesSupplementaires()) {
+
+                if (controlesSup.masseAFetAVScorrespondentPas(decl)) {
+                    return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_AVS_MASSE_AF") + " " + decl.getNumeroAffilie());
+                }
+
+                // Vérifier que la masse PC Familles soit identique à celle de la masse AF VD
+                if (controlesSup.massePCFamilleEtMasseAFVDNeCorrespondentPas(decl)) {
+                    return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_PC_FAMILLE_MASSE_AFVD") + " " + decl.getNumeroAffilie());
+                }
+
+                // S’il y a différents cantons, les masses doivent être indiquées dans chaque assurance
+                if (controlesSup.masseCantonPasDansAssurance(decl)) {
+                    return returnError( getSession().getLabel("ERREUR_VALIDATION_ASSURANCE_CANTON") + " " + decl.getNumeroAffilie());
+                }
+
+                // Le montant AC + AC2 = le montant AVS pour toutes les saisies individuelles ayant de l’AC
+                Optional<DSInscriptionsIndividuelles> dsind = controlesSup.inscriptionsMontantACetAVSneCorrespondentPas(decl);
+                if (dsind.isPresent()) {
+                    return returnError(getSession().getLabel("ERREUR_VALIDATION_MONTANTAC_AC2_MONTANTAVS") + " " + decl.getNumeroAffilie() + " / " + dsind.get().getNssFormate());
+                }
+            }
+
+            if(app != null && controlesSup.contientPasToutesLesAssurancesRequises(decl, app.listValidationAssurances())) {
+                return returnError(getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES") + " " + decl.getNumeroAffilie());
+            }
+
             // ------------------------
             // Notification EBusiness
             // ------------------------
@@ -547,6 +569,12 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             setSendCompletionMail(false);
         }
         return !isOnError();
+    }
+
+    private boolean returnError(String msg) {
+        this._addError(getTransaction(), msg);
+        abort();
+        return false;
     }
 
     /**

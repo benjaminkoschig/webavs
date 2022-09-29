@@ -15,7 +15,9 @@ import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +26,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
-    public static final List<String> TYPE_FILE = Collections.unmodifiableList(Arrays.asList("AHV", "MIX", "CAF"));
     public static final String CODE_FAILLITE_FPV = "19803042";
 
     @Override
@@ -50,16 +51,15 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         EBPucsFileManager manager = new EBPucsFileManager();
         manager.setStatut(EtatPucsFile.A_TRAITER.getValue());
         List<EBPucsFileEntity> filterList = manager.search().stream()
-                .filter(this::validateFile)
-                .filter(this::validateAffilie)
+                .filter(this::validate)
                 .collect(Collectors.toList());
         List<PucsFile> pucsFiles = EBPucsFileService.entitiesToPucsFile(filterList);
         importFile(pucsFiles);
     }
 
-    private boolean validateFile(EBPucsFileEntity ebPucsFileEntity) {
+    private boolean validate(EBPucsFileEntity ebPucsFileEntity) {
         return !ebPucsFileEntity.isAfSeul()
-                && TYPE_FILE.contains(ebPucsFileEntity.getIdFileName().substring(0,3));
+                && validateAffilie(ebPucsFileEntity);
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
@@ -79,8 +79,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         process.setSendCompletionMail(true);
         process.setEmailAdress(getEMailAddress());
         process.setIsBatch(true);
-        // TODO activer le mode miseajour au lieu de simulation : process.setMode("miseajour")
-        process.setMode("simulation");
+        process.setMode("miseajour");
         process.setIdMiseEnGed(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));
         process.setIdValidationDeLaDs(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));
         process.setPucsEntrys(pucsFiles);
