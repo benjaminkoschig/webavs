@@ -1631,7 +1631,7 @@ public class AFCotisation extends BEntity {
     // public List getTauxList(String date) throws Exception {
     public AFTauxAssurance findTaux(String date, String masse, boolean checkTauxParPalier) throws Exception {
         if (checkTauxParPalier
-                && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+                && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)) && !AFApplication.isTauxParTranche(assuranceId)) {
             return findTauxWithRecalcul(date, null, true, false, "");
         } else {
             return findTauxWithRecalcul(date, masse, true, false, "");
@@ -1934,7 +1934,7 @@ public class AFCotisation extends BEntity {
             } else {
                 if ((masse == null)
                         || (!wantRecalcul && "true".equals(getSession().getApplication().getProperty(
-                                AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)))) {
+                        AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) && !AFApplication.isTauxParTranche(getAssuranceId())) {
                     // pas de masse, recherche du taux moyen
                     taux = tauxVarUtil.getTauxMoyen(getSession(), getAffiliation().getAffiliationId(), dateCriteria);
                 } else {

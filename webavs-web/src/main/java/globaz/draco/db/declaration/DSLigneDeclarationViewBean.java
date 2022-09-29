@@ -281,7 +281,7 @@ public class DSLigneDeclarationViewBean extends BEntity {
             // montant de la décl avec le compteur
             if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(taux.getGenreValeur())
                     && "true".equals(getSession().getApplication().getProperty(
-                            AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+                            AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)) && !AFApplication.isTauxParTranche(getAssuranceId())) {
                 if (DSDeclarationViewBean.CS_COMPLEMENTAIRE.equals(getDeclaration().getTypeDeclaration())
                         || DSDeclarationViewBean.CS_CONTROLE_EMPLOYEUR.equals(getDeclaration().getTypeDeclaration())
                         || DSDeclarationViewBean.CS_SALAIRE_DIFFERES.equals(getDeclaration().getTypeDeclaration())) {
@@ -1174,7 +1174,8 @@ public class DSLigneDeclarationViewBean extends BEntity {
             //ESVE afficher le taux moyen spécifique à la FERCIAM
             if (DSDeclarationViewBean.CS_PRINCIPALE.equals(getDeclaration().getTypeDeclaration())
                     && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(getAssurance().getAssuranceGenre())
-                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
+                    && !AFApplication.isTauxParTranche(getAssuranceId())) {
                 wantRecalcul = false;
             }
             return getCotisation().findTaux(dateFin, montant, getDeclaration().getTypeDeclaration(), wantRecalcul,
