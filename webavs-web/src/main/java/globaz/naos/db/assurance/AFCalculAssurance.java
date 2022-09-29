@@ -171,7 +171,8 @@ public class AFCalculAssurance {
                 || DSDeclarationViewBean.CS_PRINCIPALE.equals(typeDocument))
                 && "true".equals(session.getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
                 && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(tauxGenre)
-                && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(typeAssurance) && CodeSystem.GENRE_ASS_PARITAIRE.equals(assuranceGenre)) {
+                && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(typeAssurance) && CodeSystem.GENRE_ASS_PARITAIRE.equals(assuranceGenre)
+                && !AFApplication.isTauxParTranche(assuranceId)) {
             return AFCalculAssurance.calculTauxMoyen((BSession) DSProcessValidation.getSessionNaos(session)
                     , affiliationId
                     , assuranceId

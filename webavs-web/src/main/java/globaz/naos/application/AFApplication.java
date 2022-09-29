@@ -8,6 +8,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.parameters.FWParameters;
 import globaz.globall.parameters.FWParametersManager;
@@ -23,6 +24,11 @@ import globaz.osiris.api.OsirisDef;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonProperties;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Application NAOS
@@ -60,6 +66,8 @@ public class AFApplication extends BApplication {
     public static final String PROPERTY_IS_TAUX_COTISATION_MIN = "isCotisationMinimale";
     /** Le nom de la propriété qui permet de calculer le taux par palier ou non */
     public static final String PROPERTY_IS_TAUX_PAR_PALIER = "isTauxParPalier";
+
+    public static final String PROPERTY_IS_TAUX_PAR_TRANCHE = "isTauxParTranche";
     public static final String PROPERTY_MODIFIER_TAG_AMATGENEVOISE = "modifierTagAmatGenevoise";
     public static final String PROPERTY_AFFICHE_TAUX_PAR_PALIER = "afficheTauxParPalier";
 
@@ -588,6 +596,31 @@ public class AFApplication extends BApplication {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean isTauxParTranche(String assuranceId) {
+        try {
+            return loadAllTranches().contains(assuranceId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static List loadAllTranches() throws Exception {
+        List tranchesList = new ArrayList();
+        String tranches =((AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                AFApplication.DEFAULT_APPLICATION_NAOS)).getProperty(PROPERTY_IS_TAUX_PAR_TRANCHE);
+        if (tranches == null || JadeStringUtil.isEmpty(tranches)) {
+
+        } else {
+            StringTokenizer st = new StringTokenizer(tranches, ",");
+            String listM[] = new String[st.countTokens()];
+            while (st.hasMoreTokens()) {
+                listM[st.countTokens() - 1] = st.nextToken();
+            }
+            tranchesList = Arrays.asList(listM);
+        }
+        return tranchesList;
     }
 
 }
