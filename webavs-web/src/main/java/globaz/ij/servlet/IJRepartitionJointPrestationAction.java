@@ -584,6 +584,7 @@ public class IJRepartitionJointPrestationAction extends PRDefaultAction {
 
         newViewBean.setIdPrononce(oldViewBean.getIdPrononce());
         newViewBean.setCsTypeIJ(oldViewBean.getCsTypeIJ());
+        newViewBean.setIdReferenceQRDepuisReferenceQR(oldViewBean.getIdReferenceQR());
         newViewBean.setIdPrestation(oldViewBean.getIdPrestation());
         newViewBean.setIdBaseIndemnisation(oldViewBean.getIdBaseIndemnisation());
 

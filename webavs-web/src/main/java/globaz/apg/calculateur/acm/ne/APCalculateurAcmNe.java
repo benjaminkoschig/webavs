@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static globaz.apg.helpers.prestation.APRepartitionPaiementsHelper.getIdReferenceQRFomSituationProfessionnelle;
+
 /**
  * Calcul les prestations ACM NE (avec répartitions et cotisations) en fonction des prestations standard et des
  * situations professionnelles

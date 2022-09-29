@@ -345,18 +345,18 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                         }
                         // Cas ou le bénéficiaire est un affilié
                         else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(),
                                     isPorteEnCompte);
                         } else {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                         }
 
 
@@ -365,24 +365,25 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                         }
                         // Cas ou le bénéficiaire est un affilié
                         else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(),
                                     isPorteEnCompte);
                         } else {
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                     repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                         }
                     }
 
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
+                    key.referencePaiement = repartitionPaiementsJointEmployeur.getReferenceQR();
 
                     // On ne prend que les répartition parente. Les répartitions
                     // enfants (montant ventilé) correspondent à une adresse de

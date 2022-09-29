@@ -349,25 +349,27 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
                     for (int i = 0; i < ligneManager.size(); i++) {
                         DSLigneDeclarationViewBean ligne = (DSLigneDeclarationViewBean) ligneManager.get(i);
-                        String annee = "";
-                        if (JadeStringUtil.isBlankOrZero(decl.getAnnee())) {
-                            annee = ligne.getAnneCotisation();
-                        } else {
-                            annee = decl.getAnnee();
-                        }
-                        AFTauxAssurance taux = ligne.getTauxLigne("31.12." + annee);
+                        if (!AFApplication.isTauxParTranche(ligne.getAssuranceId())) {
+                            String annee = "";
+                            if (JadeStringUtil.isBlankOrZero(decl.getAnnee())) {
+                                annee = ligne.getAnneCotisation();
+                            } else {
+                                annee = decl.getAnnee();
+                            }
+                            AFTauxAssurance taux = ligne.getTauxLigne("31.12." + annee);
 
-                        //ESVE calculer le taux moyen spécifique à la FERCIAM
-                        AFCalculAssurance.updateTauxMoyen(getSession()
-                                , decl.getAffiliation().getAffiliationId()
-                                , ligne.getAssuranceId()
-                                , ligne.getAssurance().getTypeAssurance()
-                                , ligne.getAssurance().getAssuranceGenre()
-                                , taux.getGenreValeur()
-                                , decl.getMasseSalTotal()
-                                , annee
-                                , decl.getTypeDeclaration());
-                        //ligne.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
+                            //ESVE calculer le taux moyen spécifique à la FERCIAM
+                            AFCalculAssurance.updateTauxMoyen(getSession()
+                                    , decl.getAffiliation().getAffiliationId()
+                                    , ligne.getAssuranceId()
+                                    , ligne.getAssurance().getTypeAssurance()
+                                    , ligne.getAssurance().getAssuranceGenre()
+                                    , taux.getGenreValeur()
+                                    , decl.getMasseSalTotal()
+                                    , annee
+                                    , decl.getTypeDeclaration());
+                            //ligne.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
+                        }
                     }
                 }
 
