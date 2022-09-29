@@ -49,7 +49,10 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -923,6 +926,7 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
                         rpViewBean.getIdAffilieAdrPmt(), JACalendar.todayJJsMMsAAAA());
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -939,7 +943,11 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
             }
 
             // formatter l'adresse
-            rpViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
+            String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR());
+            }
+            rpViewBean.setAdresseFormattee(adresseLine);
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
             rpViewBean.setAdresseFormattee("");

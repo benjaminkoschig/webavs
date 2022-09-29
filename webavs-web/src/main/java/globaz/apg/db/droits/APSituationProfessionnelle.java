@@ -22,10 +22,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.clone.factory.IPRCloneable;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.With;
 
 /**
  * <H1>Bentity de la situation professionnelle</H1>
@@ -73,6 +71,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public static final String FIELDNAME_IDDOMAINE_PAIEMENT = "VFIDDOP";
 
     public static final String FIELDNAME_IDTIERS_PAIEMENT = "VFIDTIP";
+
+    public static final String FIELDNAME_IDREFERENCE_QR = "VFIDRQR";
 
     public static final String FIELDNAME_IDEMPLOYEUR = "VFIEMP";
 
@@ -164,6 +164,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     protected String idDomainePaiementEmployeur = "";
 
     protected String idTiersPaiementEmployeur = "";
+
+    protected  String idReferenceQREmployeur = "";
 
     protected String idEmployeur = "";
 
@@ -326,7 +328,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
         idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
         idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
-
+        idReferenceQREmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
         dateDebut = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEDEBUT);
         autreOuPourcentRemuneration = statement
                 .dbReadNumeric(APSituationProfessionnelle.FIELDNAME_POURCENTAUTRREMUN, 2);
@@ -588,6 +590,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 this._dbWriteNumeric(statement.getTransaction(), idDomainePaiementEmployeur, "idDomainePaiement"));
         statement.writeField(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT,
                 this._dbWriteNumeric(statement.getTransaction(), idTiersPaiementEmployeur, "idTiersPaiement"));
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR,
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQREmployeur, "idReferenceQR"));
 
         statement.writeField(APSituationProfessionnelle.FIELDNAME_DATEDEBUT,
                 this._dbWriteDateAMJ(statement.getTransaction(), dateDebut, "dateDebut"));
@@ -1638,6 +1642,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
     }
 
+    public void setIdReferenceQREmployeur(String idReferenceQREmployeur) {
+        this.idReferenceQREmployeur = idReferenceQREmployeur;
+    }
+
     @Override
     public String getIdDomainePaiementEmployeur() {
         return idDomainePaiementEmployeur;
@@ -1646,6 +1654,11 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Override
     public String getIdTiersPaiementEmployeur() {
         return idTiersPaiementEmployeur;
+    }
+
+    @Override
+    public String getIdReferenceQREmployeur() {
+        return idReferenceQREmployeur;
     }
 
     /**

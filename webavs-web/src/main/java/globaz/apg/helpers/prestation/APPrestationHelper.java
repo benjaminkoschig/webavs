@@ -96,6 +96,8 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static globaz.apg.helpers.prestation.APRepartitionPaiementsHelper.getIdReferenceQRFomSituationProfessionnelle;
+
 /**
  * <H1>Description</H1> Créé le 3 juin 05
  *
@@ -2575,6 +2577,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                 final APRepartitionPaiements repartition = repartitions.getRepartitionPaiements();
                 repartition.setSession(session);
                 repartition.setIdPrestationApg(prestation.getIdPrestationApg());
+                repartition.setIdReferenceQR(getIdReferenceQRFomSituationProfessionnelle(session, repartition.getIdSituationProfessionnelle()));
                 if(persist) { repartition.add(transaction); };
 
                 for (final APCotisation cotisation : repartitions.getCotisations()) {

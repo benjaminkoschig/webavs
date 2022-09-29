@@ -25,6 +25,10 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRHierarchique;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+import org.apache.commons.lang.StringUtils;
+
 import java.math.BigDecimal;
 
 /**
@@ -96,6 +100,10 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
 
     /**
      */
+    public static final String FIELDNAME_IDREFERENCE_QR = "XRIRQR";
+
+    /**
+     */
     public static final String FIELDNAME_MONTANTBRUT = "XRMMBR";
 
     /**
@@ -138,6 +146,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
     private String idSituationProfessionnelle = "";
     private String idTiers = "";
     private String idTiersAdressePaiement = "";
+    private String idReferenceQR = "";
     private boolean miseAJourLot = false;
     private String montantBrut = "";
     private String montantNet = "";
@@ -278,6 +287,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
         montantVentile = statement.dbReadNumeric(FIELDNAME_MONTANTVENTILE, 2);
         idInscriptionCI = statement.dbReadNumeric(FIELDNAME_IDINSCRIPTIONCI);
         idTiersAdressePaiement = statement.dbReadNumeric(FIELDNAME_IDTIERSADRESSEPAIEMENT);
+        idReferenceQR = statement.dbReadNumeric(FIELDNAME_IDREFERENCE_QR);
         idCompensation = statement.dbReadNumeric(FIELDNAME_IDCOMPENSATION);
         idDomaineAdressePaiement = statement.dbReadNumeric(FIELDNAME_IDDOMAINEADRESSEPAIEMENT);
         idSituationProfessionnelle = statement.dbReadNumeric(FIELDNAME_IDSITUATIONPROFESSIONNELLE);
@@ -400,6 +410,8 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
                 _dbWriteNumeric(statement.getTransaction(), idInscriptionCI, "idInscriptionCI"));
         statement.writeField(FIELDNAME_IDTIERSADRESSEPAIEMENT,
                 _dbWriteNumeric(statement.getTransaction(), idTiersAdressePaiement, "idTiersAdressePaiement"));
+        statement.writeField(FIELDNAME_IDREFERENCE_QR,
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
         statement.writeField(FIELDNAME_IDCOMPENSATION,
                 _dbWriteNumeric(statement.getTransaction(), idCompensation, "idCompensation"));
         statement.writeField(FIELDNAME_IDDOMAINEADRESSEPAIEMENT,
@@ -437,6 +449,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
         clone.setIdSituationProfessionnelle(getIdSituationProfessionnelle());
         clone.setIdTiers(getIdTiers());
         clone.setIdTiersAdressePaiement(getIdTiersAdressePaiement());
+        clone.setIdReferenceQR(getIdReferenceQR());
         clone.setMontantBrut(getMontantBrut());
         clone.setMontantNet(getMontantNet());
         clone.setMontantVentile(getMontantVentile());
@@ -573,6 +586,23 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
      */
     public String getIdTiersAdressePaiement() {
         return idTiersAdressePaiement;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public String getReferenceQR() throws Exception {
+        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
+        mgr.setSession(getSession());
+        mgr.setForIdReferenceQR(idReferenceQR);
+        mgr.find(BManager.SIZE_NOLIMIT);
+
+        if(mgr.size() > 0){
+            TIReferencePaiement referencePaiement = (TIReferencePaiement) mgr.get(0);
+            return referencePaiement.getReferenceQR();
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -893,6 +923,10 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
      */
     public void setIdTiersAdressePaiement(String idAdressePaiement) {
         idTiersAdressePaiement = idAdressePaiement;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR){
+        this.idReferenceQR = idReferenceQR;
     }
 
     /**

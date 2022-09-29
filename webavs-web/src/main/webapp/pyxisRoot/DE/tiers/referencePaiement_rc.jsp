@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/find.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@ page import="globaz.globall.util.JACalendar" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%> 
@@ -30,8 +31,15 @@ usrAction = "pyxis.tiers.referencePaiement.lister";
 		<tr>
 			<td align="right" style="padding-left:0.5cm">Konto-Nr.&nbsp;</td>
 			<td><input name="forCompteLike" type="text" readonly class="disabled" value='<%=(request.getParameter("forCompteLike")==null)?"":request.getParameter("forCompteLike") %>'/></td>
+
 			<td align="right" style="padding-left:0.5cm">QR-Referenz&nbsp;</td>
 			<td><input name="forReferenceQR" type="text"></td>
+
+			<td align="right" style="padding-left:0.5cm">Zeigt alle AR-Referenzen einschlieﬂlich inaktiver an&nbsp;</td>
+			<td><input type="checkbox" value="true" name="afficheToutes"/></td>
+
+			<input type="hidden"  name="forDateDebut" value='<%= JACalendar.todayJJsMMsAAAA() %>'/>
+			<input type="hidden"  name="forDateFin" value='<%= JACalendar.todayJJsMMsAAAA() %>'/>
 			<input type="hidden"  name="forIdTiers" value='<%=(request.getParameter("forIdTiers")==null)?"":request.getParameter("forIdTiers") %>'/>
 			<input type="hidden"  name="forIdAdressePaiement" value='<%=(request.getParameter("forIdAdressePaiement")==null)?"":request.getParameter("forIdAdressePaiement") %>'/>
 		</tr>

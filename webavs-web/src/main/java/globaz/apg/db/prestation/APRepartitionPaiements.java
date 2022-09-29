@@ -23,6 +23,8 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRHierarchique;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +55,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     public static final String FIELDNAME_IDSITUATIONPROFESSIONNELLE = "VIISIT";
     public static final String FIELDNAME_IDTIERS = "VIITIE";
     public static final String FIELDNAME_IDTIERSADRESSEPAIEMENT = "VIITAP";
+    public static final String FIELDNAME_IDREFERENCE_QR = "VIIRQR";
     public static final String FIELDNAME_MONTANTBRUT = "VIMMOB";
     public static final String FIELDNAME_MONTANTNET = "VIMMON";
     public static final String FIELDNAME_MONTANTVENTILE = "VIMMOV";
@@ -72,6 +75,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     private String idAffilieAdrPmt = "";
     private String idCompensation = "";
     private String idDomaineAdressePaiement = "";
+    private String idReferenceQR = "";
     private String idInscriptionCI = "";
     private String idParent = "";
     protected String idPrestationApg = "";
@@ -197,6 +201,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         typePrestation = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_TYPEPRESTATION);
         idTiersAdressePaiement = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDTIERSADRESSEPAIEMENT);
         idDomaineAdressePaiement = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDDOMAINE);
+        idReferenceQR = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDREFERENCE_QR);
         tauxRJM = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_TAUXRJM);
         idSituationProfessionnelle = statement
                 .dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDSITUATIONPROFESSIONNELLE);
@@ -384,6 +389,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                 this._dbWriteNumeric(statement.getTransaction(), idTiersAdressePaiement, "idTiersAdressePaiement"));
         statement.writeField(APRepartitionPaiements.FIELDNAME_IDDOMAINE,
                 this._dbWriteNumeric(statement.getTransaction(), idDomaineAdressePaiement, "idDomaineAdressePaiement"));
+        statement.writeField(APRepartitionPaiements.FIELDNAME_IDREFERENCE_QR,
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
         statement.writeField(APRepartitionPaiements.FIELDNAME_TAUXRJM,
                 this._dbWriteNumeric(statement.getTransaction(), tauxRJM, "tauxRJM"));
         statement.writeField(APRepartitionPaiements.FIELDNAME_IDSITUATIONPROFESSIONNELLE, this._dbWriteNumeric(
@@ -426,6 +433,10 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                 } else {
                     idTiersPaiement = idTiersAdressePaiement;
                 }
+
+                if (!JadeStringUtil.isBlankOrZero(situation.getIdReferenceQREmployeur())) {
+                    idReferenceQR = situation.getIdReferenceQREmployeur();
+                }
             }
         }
 
@@ -439,6 +450,11 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
         setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
                 idDomainePaiement, idAffilie, JACalendar.todayJJsMMsAAAA()));
+
+        TIReferencePaiement referencePaiement = PRTiersHelper.getReferenceQR(getSession(), idReferenceQR); // TODO ESVE WHAT IS THAT?
+        if(referencePaiement == null){
+            idReferenceQR = "";
+        }
     }
 
     private String giveDomaineDefaut(BTransaction transaction) throws Exception {
@@ -504,6 +520,23 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
      */
     public String getIdDomaineAdressePaiement() {
         return idDomaineAdressePaiement;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public String getReferenceQR() throws Exception {
+        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
+        mgr.setSession(getSession());
+        mgr.setForIdReferenceQR(idReferenceQR);
+        mgr.find(BManager.SIZE_NOLIMIT);
+
+        if(mgr.size() > 0){
+            TIReferencePaiement referencePaiement = (TIReferencePaiement) mgr.get(0);
+            return referencePaiement.getReferenceQR();
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -847,6 +880,10 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         idDomaineAdressePaiement = string;
     }
 
+    public void setIdReferenceQR(String idReferenceQR){
+        this.idReferenceQR = idReferenceQR;
+    }
+
     /**
      * setter pour l'attribut id inscription CI.
      * 
@@ -1005,5 +1042,4 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     public void wantMiseAJourLot(boolean b) {
         miseAJourLot = b;
     }
-
 }

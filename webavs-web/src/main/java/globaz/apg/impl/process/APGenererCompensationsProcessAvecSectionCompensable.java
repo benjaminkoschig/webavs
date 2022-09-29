@@ -364,16 +364,17 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                         || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(repartitionPaiementsJointEmployeur.getGenreService())) {
                          key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", repartitionPaiementsJointEmployeur.getReferenceQR(), false);
 
                     }else{
                          key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",  repartitionPaiementsJointEmployeur.getReferenceQR(), false);
                     }
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
+                    key.referencePaiement =  repartitionPaiementsJointEmployeur.getReferenceQR();
 
                     // On ne prend que les répartition parente. Les répartitions enfants (montant ventilé) correspondent
                     // à une adresse de paiement au niveau comptable. Le bénéficiaire en compta est celui de la
