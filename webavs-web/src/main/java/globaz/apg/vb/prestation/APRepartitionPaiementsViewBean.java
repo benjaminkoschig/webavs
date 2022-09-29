@@ -1,9 +1,9 @@
 package globaz.apg.vb.prestation;
 
-import ch.globaz.vulpecula.external.models.pyxis.AvoirAdressePaiement;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
@@ -486,7 +486,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
                     paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                             getSession().getCurrentThreadTransaction(),
                             getIdTiersAdressePaiement(),
-                            AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_DEFAULT,
                             null, JACalendar.todayJJsMMsAAAA());
                     if (Objects.nonNull(paiementData)) {
                         setAdressePaiementData(paiementData);
