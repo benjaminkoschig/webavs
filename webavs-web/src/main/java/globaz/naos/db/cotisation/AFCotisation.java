@@ -1934,7 +1934,7 @@ public class AFCotisation extends BEntity {
             } else {
                 if ((masse == null)
                         || (!wantRecalcul && "true".equals(getSession().getApplication().getProperty(
-                        AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) || !AFApplication.isTauxParTranche(getAssuranceId())) {
+                        AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) && !AFApplication.isTauxParTranche(getAssuranceId())) {
                     // pas de masse, recherche du taux moyen
                     taux = tauxVarUtil.getTauxMoyen(getSession(), getAffiliation().getAffiliationId(), dateCriteria);
                 } else {

@@ -608,11 +608,9 @@ public class AFApplication extends BApplication {
 
     private static List loadAllTranches() throws Exception {
         List tranchesList = new ArrayList();
-        String tranches =((AFApplication) GlobazServer.getCurrentSystem().getApplication(
+        String tranches = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
                 AFApplication.DEFAULT_APPLICATION_NAOS)).getProperty(PROPERTY_IS_TAUX_PAR_TRANCHE);
-        if (tranches == null || JadeStringUtil.isEmpty(tranches)) {
-
-        } else {
+        if (tranches != null && !JadeStringUtil.isEmpty(tranches)) {
             StringTokenizer st = new StringTokenizer(tranches, ",");
             String listM[] = new String[st.countTokens()];
             while (st.hasMoreTokens()) {
