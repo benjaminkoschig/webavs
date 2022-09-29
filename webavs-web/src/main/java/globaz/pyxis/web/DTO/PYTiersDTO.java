@@ -1,9 +1,10 @@
 package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -51,10 +52,12 @@ public class PYTiersDTO extends PYTiersPage1DTO {
     @Override
     @JsonIgnore
     public Boolean isValidForCreation() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getSurname());
-        mandatoryParameters.add(this.getLanguage());
-        mandatoryParameters.add(this.getIsPhysicalPerson().toString());
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("surname", this.getSurname());
+        mapForValidator.put("language", this.getLanguage());
+        mapForValidator.put("isPhysicalPerson", this.getIsPhysicalPerson().toString());
+
+        PYValidateDTO.checkIfEmpty(mapForValidator);
 
         PYAddressDTO pyAddressDTO = new PYAddressDTO();
         PYPaymentAddressDTO pyPaymentAddressDTO = new PYPaymentAddressDTO();
@@ -71,22 +74,23 @@ public class PYTiersDTO extends PYTiersPage1DTO {
 
         if (Boolean.FALSE.equals(this.getIsPhysicalPerson())) {
             return (
-                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                            && pyAddressDTO.isValid(this)
+                    pyAddressDTO.isValid(this)
                             && pyPaymentAddressDTO.isValid(this)
                             && isValidContact
                             && isValidMeansOfCommunication
                             && PYValidateDTO.isValidForCreation(this)
             );
         } else if (Boolean.TRUE.equals(this.getIsPhysicalPerson())) {
-            mandatoryParameters.add(this.getTitle());
-            mandatoryParameters.add(this.getName());
-            mandatoryParameters.add(this.getNss());
-            mandatoryParameters.add(this.getBirthDate());
-            mandatoryParameters.add(this.getCivilStatus());
+            mapForValidator.put("title", this.getTitle());
+            mapForValidator.put("name", this.getName());
+            mapForValidator.put("nss", this.getNss());
+            mapForValidator.put("birthDate", this.getBirthDate());
+            mapForValidator.put("civilStatus", this.getCivilStatus());
+
+            PYValidateDTO.checkIfEmpty(mapForValidator);
+
             return (
-                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                            && pyAddressDTO.isValid(this)
+                    pyAddressDTO.isValid(this)
                             && pyPaymentAddressDTO.isValid(this)
                             && isValidContact
                             && isValidMeansOfCommunication

@@ -125,6 +125,7 @@ public class AFExecuteService extends BProcess {
             transaction.commit();
 
             //set champs pour la réponse
+            dto.setId(affiliation.getAffiliationId());
             dto.setRaisonSocialeLong(affiliation.getRaisonSociale());
             dto.setRaisonSocialeCourt(affiliation.getRaisonSocialeCourt());
         } catch (Exception e) {

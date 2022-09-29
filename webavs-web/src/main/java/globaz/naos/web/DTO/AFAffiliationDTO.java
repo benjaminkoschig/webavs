@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 @Data
 public class AFAffiliationDTO {
@@ -68,18 +67,21 @@ public class AFAffiliationDTO {
      */
     @JsonIgnore
     public Boolean isValidForCreation() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(idTiers);
-        mandatoryParameters.add(numeroAffilie);
-        mandatoryParameters.add(dateDebutAffiliation);
-        mandatoryParameters.add(genreAffiliation);
-        mandatoryParameters.add(motifCreation);
-        mandatoryParameters.add(personnaliteJuridique);
-        mandatoryParameters.add(periodicite);
-        mandatoryParameters.add(brancheEconomique);
-        mandatoryParameters.add(affiliationSecurisee);
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("idTiers", this.idTiers);
+        mapForValidator.put("numeroAffilie", this.numeroAffilie);
+        mapForValidator.put("dateDebutAffiliation", this.dateDebutAffiliation);
+        mapForValidator.put("genreAffiliation", this.genreAffiliation);
+        mapForValidator.put("motifCreation", this.motifCreation);
+        mapForValidator.put("personnaliteJuridique", this.personnaliteJuridique);
+        mapForValidator.put("periodicite", this.periodicite);
+        mapForValidator.put("brancheEconomique", this.brancheEconomique);
+        mapForValidator.put("affiliationSecurisee", this.affiliationSecurisee);
 
-        return (mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty) && isValidCodesSystem());
+        AFValidateDTO.checkIfEmpty(mapForValidator);
+
+        // On vérifie que les codes systèmes passés correspondent aux bonnes familles de CS
+        return isValidCodesSystem();
     }
 
     private Boolean isValidCodesSystem() {
@@ -114,18 +116,7 @@ public class AFAffiliationDTO {
         AFValidateDTO.checkIfEmpty(mapForValidator);
 
         // On vérifie que les codes systèmes passés correspondent aux bonnes familles de CS
-        AFValidateDTO.verifyCodeSystem(this.getGenreAffiliation(), FAMILLE_CS_GENRE_AFFILIATION);
-        AFValidateDTO.verifyCodeSystem(this.getMotifCreation(), FAMILLE_CS_MOTIF_CREATION);
-        AFValidateDTO.verifyCodeSystem(this.getPersonnaliteJuridique(), FAMILLE_CS_PERSONNALITE_JURIDIQUE);
-        AFValidateDTO.verifyCodeSystem(this.getPeriodicite(), FAMILLE_CS_PERIODICITE);
-        AFValidateDTO.verifyCodeSystem(this.getBrancheEconomique(), FAMILLE_CS_BRANCHE_ECONOMIQUE);
-        AFValidateDTO.verifyCodeSystem(this.getCodeNoga(), FAMILLE_CS_CODE_NOGA);
-        AFValidateDTO.verifyCodeSystem(this.getFacturationCodeFacturation(), FAMILLE_CS_CODE_FACTURATION);
-        AFValidateDTO.verifyCodeSystem(this.getMotifFin(), FAMILLE_CS_MOTIF_FIN);
-        AFValidateDTO.verifyCodeSystem(this.getDeclarationSalaire(), FAMILLE_CS_DECLARATION_SALAIRE);
-        AFValidateDTO.verifyCodeSystem(this.getAffiliationSecurisee(), FAMILLE_CS_ACCESS_SECURISE);
-
-        return true;
+        return isValidCodesSystem();
     }
 
 

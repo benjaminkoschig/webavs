@@ -1,10 +1,10 @@
 package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * On utilise cette classe comme un struct simplement pour contenir les données
@@ -19,10 +19,12 @@ public class PYContactDTO {
 
     @JsonIgnore
     public Boolean isValid() {
-        Vector<String> mandatoryParameters = new Vector<>();
+        Map<String, String> mapForValidator = new HashMap<>();
         if (this.getId() != null)
-            mandatoryParameters.add(this.getId());
+            mapForValidator.put("id", this.getId());
 
-        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return true;
     }
 }

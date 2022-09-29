@@ -1,10 +1,10 @@
 package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class PYTiersPage1DTO {
@@ -48,15 +48,14 @@ public class PYTiersPage1DTO {
      */
     @JsonIgnore
     public Boolean isValidForUpdate() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(id);
-        mandatoryParameters.add(modificationDate);
-        mandatoryParameters.add(isPhysicalPerson.toString());
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("id", this.id);
+        mapForValidator.put("modificationDate", this.modificationDate);
+        mapForValidator.put("isPhysicalPerson", this.isPhysicalPerson.toString());
 
-        return (
-                mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                && PYValidateDTO.isValidPage1(this)
-        );
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return PYValidateDTO.isValidPage1(this);
     }/**
      * Méthode pour valider la présence/absence de champs dans le DTO et appeler la méthode de validation des données.
      * <p>
@@ -66,26 +65,25 @@ public class PYTiersPage1DTO {
      */
     @JsonIgnore
     public Boolean isValidForCreation() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getSurname());
-        mandatoryParameters.add(this.getLanguage());
-        mandatoryParameters.add(this.getIsPhysicalPerson().toString());
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("surname", this.getSurname());
+        mapForValidator.put("language", this.getLanguage());
+        mapForValidator.put("isPhysicalPerson", this.getIsPhysicalPerson().toString());
+
+        PYValidateDTO.checkIfEmpty(mapForValidator);
 
         if (Boolean.FALSE.equals(this.getIsPhysicalPerson())) {
-            return (
-                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                            && PYValidateDTO.isValidPage1(this)
-            );
+            return PYValidateDTO.isValidPage1(this);
         } else if (Boolean.TRUE.equals(this.getIsPhysicalPerson())) {
-            mandatoryParameters.add(this.getTitle());
-            mandatoryParameters.add(this.getName());
-            mandatoryParameters.add(this.getNss());
-            mandatoryParameters.add(this.getBirthDate());
-            mandatoryParameters.add(this.getCivilStatus());
-            return (
-                    mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty)
-                            && PYValidateDTO.isValidPage1(this)
-            );
+            mapForValidator.put("title", this.getTitle());
+            mapForValidator.put("name", this.getName());
+            mapForValidator.put("nss", this.getNss());
+            mapForValidator.put("birthDate", this.getBirthDate());
+            mapForValidator.put("civilStatus", this.getCivilStatus());
+
+            PYValidateDTO.checkIfEmpty(mapForValidator);
+
+            return PYValidateDTO.isValidPage1(this);
         }
         return false;
     }

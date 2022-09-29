@@ -1,9 +1,10 @@
 package globaz.pyxis.web.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import globaz.jade.client.util.JadeStringUtil;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -15,20 +16,30 @@ public class PYContactCreateDTO extends PYContactDTO{
 
     @JsonIgnore
     public Boolean isValidForCreation() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getIdTiers());
-        mandatoryParameters.add(this.getFirstName());
-        mandatoryParameters.add(this.getLastName());
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("idTiers", this.getIdTiers());
+        mapForValidator.put("firstName", this.getFirstName());
+        mapForValidator.put("lastName", this.getLastName());
 
-        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+        for (PYMeanOfCommunicationDTO meanOfCommunicationDTO : this.getMeansOfCommunication()) {
+            mapForValidator.put("meanOfCommunicationType", meanOfCommunicationDTO.getMeanOfCommunicationType());
+            mapForValidator.put("applicationDomain", meanOfCommunicationDTO.getApplicationDomain());
+            mapForValidator.put("meanOfCommunicationValue", meanOfCommunicationDTO.getMeanOfCommunicationValue());
+        }
+
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return true;
     }
 
     @JsonIgnore
     public Boolean isValidForDeletion() {
-        Vector<String> mandatoryParameters = new Vector<>();
-        mandatoryParameters.add(this.getIdTiers());
-        mandatoryParameters.add(this.getId());
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("idTiers", this.getIdTiers());
+        mapForValidator.put("id", this.getId());
 
-        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return true;
     }
 }

@@ -74,21 +74,21 @@ public class PYApiRestExecute {
     @Path(value = "mean_of_communication")
     public Response updateMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
         LOG.info("update_mean_of_communication");
-        return execute(token, dto, service::updateMeanOfCommunication, dto::isValid);
+        return execute(token, dto, service::updateMeanOfCommunication, dto::isValidForCreationAndUpdate);
     }
 
     @POST
     @Path(value = "mean_of_communication")
     public Response createMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
         LOG.info("create_mean_of_communication");
-        return execute(token, dto, service::createMeanOfCommunication, dto::isValid);
+        return execute(token, dto, service::createMeanOfCommunication, dto::isValidForCreationAndUpdate);
     }
 
     @DELETE
     @Path(value = "mean_of_communication")
     public Response deleteMeanOfCommunication(@HeaderParam("authorization") String token, PYMeanOfCommunicationDTO dto) {
         LOG.info("delete_mean_of_communication");
-        return execute(token, dto, service::deleteMeanOfCommunication, dto::isValid);
+        return execute(token, dto, service::deleteMeanOfCommunication, dto::isValidForDeletion);
     }
 
     @PUT

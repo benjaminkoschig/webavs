@@ -6,12 +6,17 @@ import ch.globaz.pyxis.business.services.AdresseService;
 import ch.globaz.pyxis.businessimpl.services.AdresseServiceImpl;
 import ch.globaz.pyxis.domaine.DomaineApplication;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.*;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.naos.application.AFApplication;
+import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
@@ -53,9 +58,6 @@ public class PYExecuteService extends BProcess {
             if (dto.getAddresses().size() != 0) {
                 idAddress = addTiersAddresses(getSession(), dto);
             }
-            // TODO: This is kinda wrong, we probably shouldn't be relying on mail address creation for payment address creation. Better check for payment info's fields.
-            //  NO, the link between payment address and domicile/courrier address is mandatory. Define which address should be linked.
-            //  So, check for address AND payment infos
             if (idAddress != null) {
                 addTiersPaymentAddresses(getSession(), idAddress, null, true, dto);
             }
@@ -167,6 +169,13 @@ public class PYExecuteService extends BProcess {
      * @throws Exception
      */
     private void updateTiersPage1(BSession session, PYTiersPage1DTO dto) throws Exception {
+        //Vérifier si le tiers est existant
+        TITiers existingTiers = AFApplication.retrieveTiers(session, dto.getId());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#updateTiersPage1 - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
         ITIPersonneAvs avsPerson = (ITIPersonneAvs) session.getAPIFor(ITIPersonneAvs.class);
 
         String reason = TIHistoriqueContribuable.CS_CREATION; // TODO: This should probably be given by the user, maybe extend the DTO to add this
@@ -370,6 +379,13 @@ public class PYExecuteService extends BProcess {
      * @throws Exception
      */
     private String createContact(BSession session, String idTiers, String lastName, String firstName) throws Exception {
+        TITiers existingTiers = AFApplication.retrieveTiers(session, idTiers);
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#createContact- L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
+
         TIContact tiContact = new TIContact();
         tiContact.setNom(lastName);
         tiContact.setPrenom(firstName);
@@ -627,6 +643,13 @@ public class PYExecuteService extends BProcess {
     private String addTiersAddresses(BSession session, PYTiersDTO dto) throws Exception {
         Boolean hasCourrierStandard = false;
         String idAddress = null;
+
+        TITiers existingTiers = AFApplication.retrieveTiers(session, dto.getId());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#addTiersAddresses - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, dto.getId());
 
         AdresseComplexModel homeAddress = null;
@@ -717,6 +740,13 @@ public class PYExecuteService extends BProcess {
 
 
     private void addTiersAddress(BSession session, PYAddressDTO addressDTO) throws Exception {
+
+        TITiers existingTiers = AFApplication.retrieveTiers(session, addressDTO.getIdTiers());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#addTiersAddress - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, addressDTO.getIdTiers());
 
         AdresseComplexModel homeAddress = null;
@@ -816,6 +846,13 @@ public class PYExecuteService extends BProcess {
 
 
     private void updateTiersAddress(BSession session, PYAddressDTO pyAddressDTO) throws Exception {
+        TITiers existingTiers = AFApplication.retrieveTiers(session, pyAddressDTO.getIdTiers());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#updateTiersAddress - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
+
         //Special need for CCVS. The domain is not always set to "Default".
         if (pyAddressDTO.getDomainAddress() != null) {
             pyAddressDTO.setDomainAddress(pyAddressDTO.getDomainAddress());
@@ -1038,6 +1075,12 @@ public class PYExecuteService extends BProcess {
         // Sinon on prend l'adresse de domicile, sinon, la création d'une adresse de paiement n'est pas possible.
 
 
+        TITiers existingTiers = AFApplication.retrieveTiers(session, dto.getId());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#addTiersPaymentAddresses - L'id renseigné ne correspond à aucun Tiers.");
+        }
+
         List<TIAdressePaiement> adressePaiementList = new ArrayList<>();
 
         TIAdressePaiement adressePaiement = null;
@@ -1107,6 +1150,12 @@ public class PYExecuteService extends BProcess {
     }
 
     private static PYPaymentAddressDTO addTiersPaymentAddress(BSession session, boolean withAvoirPaymentAddress, PYPaymentAddressDTO pyPaymentAddressDTO) throws Exception {
+        TITiers existingTiers = AFApplication.retrieveTiers(session, pyPaymentAddressDTO.getIdTiers());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#addTiersPaymentAddress - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
         TIAdressePaiement adressePaiement = null;
 
 
@@ -1249,6 +1298,12 @@ public class PYExecuteService extends BProcess {
      * @throws Exception
      */
     public static final void updateTiersPaymentAddress(BSession session, PYPaymentAddressDTO pyPaymentAddressDTO) throws Exception {
+        TITiers existingTiers = AFApplication.retrieveTiers(session, pyPaymentAddressDTO.getIdTiers());
+
+        if (existingTiers.isNew()) {
+            throw new AFBadRequestException("PYExecuteService#updateTiersPaymentAddress - L'idTiers renseigné ne correspond à aucun Tiers.");
+        }
+
         //Special need for CCVS. The domain is not always set to "Default".
         pyPaymentAddressDTO.setDomainPaymentAddress(setDomainPaymentAddress(pyPaymentAddressDTO));
 
