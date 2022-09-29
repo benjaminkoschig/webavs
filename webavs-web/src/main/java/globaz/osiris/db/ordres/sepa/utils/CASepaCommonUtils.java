@@ -1,17 +1,10 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
 import globaz.globall.util.JACCP;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
-import globaz.pyxis.db.tiers.TIReferencePaiement;
-import globaz.pyxis.db.tiers.TIReferencePaiementManager;
-import globaz.pyxis.db.tiers.TIReferencePaiementViewBean;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.WebavsDocumentionLocator;
 import java.util.GregorianCalendar;
