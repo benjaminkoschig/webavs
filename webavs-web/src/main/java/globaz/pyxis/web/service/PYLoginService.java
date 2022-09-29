@@ -7,6 +7,7 @@ import globaz.pyxis.web.DTO.PYTokenDTO;
 import globaz.pyxis.web.exceptions.PYBadRequestException;
 import globaz.pyxis.web.exceptions.PYUnauthorizedException;
 import globaz.pyxis.web.token.PYTokenServiceImpl;
+import globaz.webavs.common.ws.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,6 +50,10 @@ public class PYLoginService {
             }
 
             session = tryConnect(authorizationSplitted[0], authorizationSplitted[1]);
+
+            if (!SecurityUtils.hasAccessToWS(session)) {
+                throw new PYUnauthorizedException("Accès au WebService refusé !");
+            }
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération du token :", e);
             throw new PYUnauthorizedException(e);

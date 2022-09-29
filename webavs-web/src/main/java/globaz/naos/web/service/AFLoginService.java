@@ -7,6 +7,7 @@ import globaz.naos.web.DTO.AFTokenDTO;
 import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.naos.web.exceptions.AFUnauthorizedException;
 import globaz.naos.web.token.AFTokenServiceImpl;
+import globaz.webavs.common.ws.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,6 +50,10 @@ public class AFLoginService {
             }
 
             session = tryConnect(authorizationSplitted[0], authorizationSplitted[1]);
+
+            if (!SecurityUtils.hasAccessToWS(session)) {
+                throw new AFUnauthorizedException("Accès au WebService refusé !");
+            }
         } catch (Exception e) {
             LOG.error("Une erreur s'est produite lors de la récupération du token :", e);
             throw new AFUnauthorizedException(e);

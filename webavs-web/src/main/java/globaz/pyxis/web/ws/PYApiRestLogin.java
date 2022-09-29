@@ -1,5 +1,6 @@
 package globaz.pyxis.web.ws;
 
+import globaz.pyxis.web.exceptions.PYUnauthorizedException;
 import globaz.pyxis.web.service.PYLoginService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,10 @@ public class PYApiRestLogin {
      * @return Response
      */
     private <T, R> Response execute(T authorization, Function<T, R> function) {
-        return Response.ok(function.apply(authorization)).build();
+        try {
+            return Response.ok(function.apply(authorization)).build();
+        } catch (PYUnauthorizedException pue) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
 }
