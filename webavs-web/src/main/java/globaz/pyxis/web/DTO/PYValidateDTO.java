@@ -368,6 +368,7 @@ public class PYValidateDTO {
     /**
      * Méthode pour vérifier que status est un code système valide
      * TODO : Est'il dispensable ?
+     *
      * @param status
      */
     private static final void checkStatusPaymentAddress(String status) {
@@ -526,7 +527,7 @@ public class PYValidateDTO {
         try {
             manager.find(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction(), 10, true);
         } catch (Exception e) {
-            logger.error(MessageFormat.format("PYValidateDTO.checkIfExist() : {0}",e.getMessage()));
+            logger.error(MessageFormat.format("PYValidateDTO.checkIfExist() : {0}", e.getMessage()));
             throw new PYInternalException(e);
         }
         if (!manager.isEmpty()) {
@@ -534,13 +535,19 @@ public class PYValidateDTO {
             throw new PYInternalException("Lien avec le conjoint existant");
         }
     }
-    public static void checkIfEmpty(Map<String,String> mapForValidator){
-        List<String> listEmptyValuesMandatory = mapForValidator.entrySet().stream().filter(sets -> JadeStringUtil.isEmpty(sets.getValue())).map(Map.Entry::getKey)
+
+    public static void checkIfEmpty(Map<String, String> mapForValidator) {
+        List<String> listEmptyValuesMandatory = mapForValidator
+                .entrySet()
+                .stream()
+                .filter(sets -> JadeStringUtil.isEmpty(sets.getValue().trim()))
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        if(!listEmptyValuesMandatory.isEmpty()){
-            throw new PYBadRequestException("Champs manquant(s) - "+ StringUtils.join(listEmptyValuesMandatory, ","));
+        if (!listEmptyValuesMandatory.isEmpty()) {
+            throw new PYBadRequestException("Champs manquant(s) - " + StringUtils.join(listEmptyValuesMandatory, ","));
         }
     }
+
     public static void verifyCodeSystem(String idCodeSystem, String famille) {
         if (!JadeStringUtil.isEmpty(idCodeSystem)) {
             try {

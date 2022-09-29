@@ -1,10 +1,15 @@
 package globaz.pyxis.web.DTO;
 
+import ch.globaz.pyxis.domaine.DomaineApplication;
+import ch.globaz.vulpecula.external.models.pyxis.TypeContact;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import globaz.jade.client.util.JadeStringUtil;
+import globaz.pyxis.web.exceptions.PYBadRequestException;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * On utilise cette classe comme un struct simplement pour contenir les données
@@ -17,16 +22,70 @@ public class PYMeanOfCommunicationDTO {
     private String meanOfCommunicationValue;
     private String applicationDomain;
 
+    private static final Logger logger = LoggerFactory.getLogger(PYValidateDTO.class);
+
     @JsonIgnore
     public Boolean isValid() {
-        Vector<String> mandatoryParameters = new Vector<>();
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("meanOfCommunicationType", this.getMeanOfCommunicationType());
+        mapForValidator.put("applicationDomain", this.getApplicationDomain());
+        mapForValidator.put("meanOfCommunicationValue", this.getMeanOfCommunicationValue());
 
-        if (this.getMeanOfCommunicationType() != null || this.getApplicationDomain() != null || this.getIdContact() != null) {
-            mandatoryParameters.add(this.getMeanOfCommunicationType());
-            mandatoryParameters.add(this.getApplicationDomain());
-            mandatoryParameters.add(this.getIdContact());
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return true;
+    }
+
+    @JsonIgnore
+    public Boolean isValidForCreationAndUpdate() {
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("idContact", this.getIdContact());
+        mapForValidator.put("meanOfCommunicationType", this.getMeanOfCommunicationType());
+        mapForValidator.put("applicationDomain", this.getApplicationDomain());
+        mapForValidator.put("meanOfCommunicationValue", this.getMeanOfCommunicationValue());
+
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+        checkApplicationDomain(this.getApplicationDomain());
+        checkMeanOfCommuncationType(this.getMeanOfCommunicationType());
+
+        return true;
+    }
+
+    @JsonIgnore
+    public Boolean isValidForDeletion() {
+        Map<String, String> mapForValidator = new HashMap<>();
+        mapForValidator.put("idContact", this.getIdContact());
+        mapForValidator.put("meanOfCommunicationType", this.getMeanOfCommunicationType());
+        mapForValidator.put("applicationDomain", this.getApplicationDomain());
+
+        PYValidateDTO.checkIfEmpty(mapForValidator);
+
+        return true;
+    }
+
+    /**
+     * Méthode pour vérifier que applicationDomain est un code système valide
+     *
+     * @param applicationDomain
+     */
+    private static final void checkApplicationDomain(String applicationDomain) {
+        try {
+            DomaineApplication.parse(applicationDomain); // If this goes through without error, applicationDomain has a valid value
+        } catch (IllegalArgumentException e) {
+            logger.error("Erreur dans le domaine d'application lors de l'ajout d'un contact.");
+            throw new PYBadRequestException("Erreur dans le domaine d'application lors de l'ajout d'un contact.", e);
         }
+    }
 
-        return mandatoryParameters.stream().noneMatch(JadeStringUtil::isEmpty);
+    /**
+     * Méthode pour vérifier que type est un code système valide
+     *
+     * @param type
+     */
+    private static final void checkMeanOfCommuncationType(String type) {
+        if (!TypeContact.isValid(type)) {
+            logger.error("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
+            throw new PYBadRequestException("Erreur dans le type de moyen de communication lors de l'ajout d'un contact.");
+        }
     }
 }
