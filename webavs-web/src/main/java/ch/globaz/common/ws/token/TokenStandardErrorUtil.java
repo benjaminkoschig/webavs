@@ -14,6 +14,8 @@ public final class TokenStandardErrorUtil {
     public static final String ERROR_ACOR_GLOBAL = "error.acor.global";
     public static final String ERROR_ES_TOKEN = "error.es.token";
     public static final String ERROR_ES_RETRIEVE = "error.es.retrieve";
+    public static final String ERROR_PY_TOKEN = "error.py.token";
+    public static final String ERROR_PY_EXECUTE = "error.py.execute";
     public static final String TOKEN_INVALIDE = "Token invalide.";
 
     private TokenStandardErrorUtil() {
