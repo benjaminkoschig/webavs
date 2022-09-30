@@ -54,8 +54,6 @@ public class HEAnnoncesCentrale extends BEntity {
     /**
      * @param transaction
      * @param limiteNbDemandes
-     * @param listArc
-     * @param listeReferences
      * @param outputAnnonceListViewBean
      * @return
      * @throws Exception
@@ -113,8 +111,7 @@ public class HEAnnoncesCentrale extends BEntity {
         outputAnnonceListViewBean.wantCallMethodAfter(false);
         outputAnnonceListViewBean.setOrder("RNIANN");
         HELoadFields load = new HELoadFields();
-        return load.extraireAnnoncesAndLoadfields(transaction, new Integer(0), outputAnnonceListViewBean);
-        // return this.extraireAnnonces(transaction, new Integer(0), outputAnnonceListViewBean);
+        return load.extraireAnnoncesAndLoadfields(transaction, new Integer(0), outputAnnonceListViewBean, false);
     }
 
     public IHEOutputAnnonce[] getAnnoncesAdaptationRentesPCForCentrale(BTransaction transaction) throws Exception {
@@ -128,8 +125,7 @@ public class HEAnnoncesCentrale extends BEntity {
         outputAnnonceListViewBean.setOrder("RNIANN");
         outputAnnonceListViewBean.setAddConditionToReceiveCentrale(true);
         HELoadFields load = new HELoadFields();
-        return load.extraireAnnoncesAndLoadfields(transaction, new Integer(0), outputAnnonceListViewBean);
-        // return this.extraireAnnonces(transaction, new Integer(0), outputAnnonceListViewBean);
+        return load.extraireAnnoncesAndLoadfields(transaction, new Integer(0), outputAnnonceListViewBean, true);
     }
 
     public IHEOutputAnnonce[] getAnnoncesRentes(BTransaction transaction) throws Exception {
