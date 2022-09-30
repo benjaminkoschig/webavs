@@ -1,22 +1,32 @@
 package globaz.corvus.process.cron;
 
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolAntwortVonZAS;
+import acor.ch.admin.zas.rc.annonces.rente.rc.ELRueckMeldungType;
 import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung10Type;
 import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung9Type;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.lots.SimpleLot;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import globaz.corvus.db.annonces.REAnnonce51;
 import globaz.corvus.db.annonces.REAnnonce53;
+import globaz.corvus.db.annonces.REAnnonce61;
 import globaz.corvus.db.annonces.REFicheAugmentation;
 import globaz.corvus.properties.REProperties;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces51Mapper;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces53Mapper;
+import globaz.corvus.utils.adaptation.rentes.REAnnonces61Mapper;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.hermes.api.IHEAnnoncesViewBean;
+import globaz.hermes.db.gestion.HEInputAnnonceViewBean;
+import globaz.hermes.db.gestion.HELotViewBean;
+import globaz.hermes.service.HELoadFields;
+import globaz.hermes.utils.DateUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
@@ -25,6 +35,9 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.smtp.JadeSmtpClient;
+import globaz.prestation.acor.web.mapper.PRConverterUtils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,16 +48,14 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * CRON permettant d'importer les annonces 51 et 53
  */
 @Slf4j
 public class REImportAnnoncesAdaptationsRentes extends BProcess {
+
 
     private static final String XML_EXTENSION = ".xml";
     private static final String ANNONCES_SCHEMA = "acor.ch.admin.zas.rc.annonces.rente.pool";
@@ -56,6 +67,11 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     private JADate datePmtMensuel;
     private LocalDateTime dateDuTraitement;
     private List<REProtocoleErreurAdaptationsRentes> protocoles = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private boolean isCreationHEAnnonce = false;
+
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -99,7 +115,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         return errors;
     }
 
-    private void importFiles() throws PropertiesException, JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException {
+    private void importFiles() throws PropertiesException, JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException, AdaptationException {
         LOG.info("Récupération des fichiers xml de la CdC");
         // récupération des fichiers distants
         String urlFtpCdC = REProperties.URL_CENTRALE_ADAPTATIONS_RENTES.getValue();
@@ -123,13 +139,15 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         }
     }
 
-    private boolean traitementFichier(String localFile) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException {
+    private boolean traitementFichier(String localFile) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException, AdaptationException {
         String tmpLocalWorkFile = JadeFsFacade.readFile(localFile);
         File annonce51ou53File = new File(tmpLocalWorkFile);
+        File annonce61File = new File(tmpLocalWorkFile);
+        datePmtMensuel = new JADate(REPmtMensuel.getDateProchainPmt(getSession()));
+        dateDuTraitement = LocalDateTime.now();
         if (annonce51ou53File.isFile()) {
             PoolAntwortVonZAS annonces = getAnnonces(annonce51ou53File);
-            datePmtMensuel = new JADate(REPmtMensuel.getDateProchainPmt(getSession()));
-            dateDuTraitement = LocalDateTime.now();
+
             REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce51ou53File.getName());
             // Traitement des annonces 53
             traitementAnnonces53(annonces, protocole);
@@ -140,6 +158,18 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 protocoles.add(protocole);
             } else {
                 return true;
+            }
+        }
+        if (annonce61File.isFile()) {
+            PoolAntwortVonZAS annonces = getAnnonces(annonce61File);
+            REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce61File.getName());
+
+            // Traitement
+            String dateAnnonce = PRConverterUtils.formatDateToAAAAMMdd(annonces.getLot().get(0).getPoolKopf().getErstellungsdatum());
+            try {
+                traitementAnnonces61(annonces, protocole, dateAnnonce);
+            } catch (Exception e) {
+                throw new AdaptationException("Impossibilité de traiter les annonces 61", e);
             }
         }
         return false;
@@ -166,6 +196,57 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 .map(o -> (RRBestandesmeldung9Type) o)
                 .forEach((each) -> createAnnonce51(each, protocole));
     }
+
+    private void traitementAnnonces61(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole, String dateAnnonce) {
+        annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
+                .flatMap(Collection::stream)
+                .filter(o -> o instanceof ELRueckMeldungType)
+                .map(o -> (ELRueckMeldungType) o)
+                .forEach(each -> createAnnonce61(each, dateAnnonce));
+    }
+
+    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce) {
+        REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper(getSession().getCurrentThreadTransaction());
+
+        REAnnonce61 ann61;
+        try {
+            ann61 = annonces61Mapper.createAnnonce61(each, dateAnnonce);
+            ann61.add(getTransaction());
+
+            // On créé également une ligne dans la table des annonces comme le faisait Trax
+            // Pour une mise à jour futur, il faudrait reprendre cette inscription, qui serait inutile
+            // si le process de reception des rentes PC ne s'appuyait pas sur cette table
+            // Pour forcer la creation de l'annonce, il faudra mettre le paramétre à true
+            if (isCreationHEAnnonce) {
+                creationLigneHEAnnonce(ann61, dateAnnonce);
+            }
+        } catch (Exception e) {
+             LOG.error("Erreur durant la creation de l'annonce : {}", each.getVNrLeistungsberechtigtePerson());
+        }
+
+    }
+
+    private void creationLigneHEAnnonce(REAnnonce61 ann61, String dateAnnonce) throws Exception {
+        HEInputAnnonceViewBean annonce = new HEInputAnnonceViewBean(getSession());
+        annonce.wantCallValidate(false);
+        annonce.setDateAnnonce(PRConverterUtils.formatAAAAMMddToddMMAAAA(dateAnnonce));
+        annonce.setTypeLot(HELotViewBean.CS_TYPE_ADAPTATION_RENTES_PC);
+
+        // y'a des records, on créé le lot
+        LOG.info(JadeDateUtil.now() + "Reading record ");
+
+        //
+        annonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, ann61.getCodeApplication());
+        annonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, ann61.getCodeEnregistrement01());
+        annonce.setRefUnique("");
+
+        annonce = HELoadFields.loadFields(annonce, ann61);
+
+        annonce.add(getTransaction());
+        LOG.info("and adding to lot :" + annonce.getIdLot() + " with ref : "
+                + annonce.getRefUnique());
+    }
+
 
     /**
      * @param bestandesmeldung10Type
