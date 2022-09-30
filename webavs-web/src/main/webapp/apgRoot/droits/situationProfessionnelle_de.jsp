@@ -190,21 +190,23 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   	document.forms[0].elements('montantVerse').value = '';
   }
 
+  var isQRIban = TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte());
+
   function manageAdressePaiement(){
 	  if(document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>){
 		  $(".withoutAdressePaiement").hide();
 		  $(".withAdressePaiement").show();
+		  if(isQRIban) {
+			  $('.withoutReferencePaiement').hide();
+			  $('.withReferencePaiement').show();
+		  } else {
+			  $('.withoutReferencePaiement').show();
+			  $('.withReferencePaiement').hide();
+		  }
 	  } else {
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
 	  }
-	  <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
-		  $('.withoutReferencePaiement').hide();
-		  $('.withReferencePaiement').show();
-	  <%} else{%>
-		  $('.withoutReferencePaiement').show();
-		  $('.withReferencePaiement').hide();
-	  <%}%>
   }
 
   function boutonIndependantChange() {
