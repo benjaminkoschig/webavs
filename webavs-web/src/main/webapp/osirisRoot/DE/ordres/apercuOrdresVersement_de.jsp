@@ -307,9 +307,9 @@ function postInit() {
             <TD width="5">&nbsp;</TD>
             <TD width="20">&nbsp; </TD>
             <TD width="7">&nbsp;</TD>
-            <TD width="100">ESR-Nr.</TD>
+            <TD width="100">QR-Referenz</TD>
             <TD colspan="5">
-              <input type="text" name="referenceBVR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" class="inputDisabled" tabindex=-1 readonly >
+              <input type="text" name="referenceQR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" class="inputDisabled" tabindex=-1 readonly >
             </TD>
             <TD width="15"></TD>
           </TR>

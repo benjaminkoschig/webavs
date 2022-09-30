@@ -471,10 +471,10 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if(adressePaiementData.isNew()
-                    && !JadeStringUtil.isBlank(getIdTiersAdressePaiement())
+            if (adressePaiementData.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiement())
                     && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement())) {
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
                 TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersAdressePaiement(),

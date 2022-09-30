@@ -2,6 +2,10 @@ package globaz.osiris.db.comptes;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiementManager;
 import globaz.pyxis.db.divers.TIApplication;
@@ -127,6 +131,52 @@ public class CAOperationOrdreVersementViewBean extends CAOperationOrdreVersement
      */
     public void setRetourDepuisPyxis(boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
+    }
+
+     /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+     public TIAdressePaiementData getOrReloadAdressePaiementData() {
+         TIAdressePaiementData adressePaiementData = super.getAdressePaiementData();
+
+         if (adressePaiementData != null && !adressePaiementData.getIdAdressePaiement().equals(getIdAdressePaiement())) {
+
+             // Instancier une nouvelle adresse de paiement
+             try {
+                 TIAdressePaiementDataManager manager = new TIAdressePaiementDataManager();
+                 manager.setSession(getSession());
+                 manager.setForIdUnique(getIdAdressePaiement());
+                 manager.find(getSession().getCurrentThreadTransaction());
+
+                 if (manager.size() > 0) {
+                     adressePaiementData = (TIAdressePaiementData) manager.getFirstEntity();
+                 }
+
+             } catch (Exception e) {
+                 _addError(null, e.getMessage());
+             }
+
+         } else if (adressePaiementData == null) {
+             adressePaiementData = new TIAdressePaiementData();
+         }
+
+         return adressePaiementData;
+     }
+
+    @Override
+    protected void _validate(globaz.globall.db.BStatement statement) {
+
+        // Laisser la superclasse effectuer son traitement
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getReferenceBVR()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
+
     }
 
 }

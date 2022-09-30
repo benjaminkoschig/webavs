@@ -12,6 +12,7 @@
 <%@ page import="globaz.osiris.db.ordres.*" %>
 <%@ page import="globaz.framework.util.*" %>
 <%@ page import="globaz.globall.util.*" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 <%
 	CAOperationOrdreVersementViewBean viewBean = (CAOperationOrdreVersementViewBean) session.getAttribute (globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
 	userActionValue = "osiris.comptes.journalOperationOrdreVersement.modifier";
@@ -447,10 +448,12 @@ function updateNatureOrdre(){
               </SELECT>
             </TD>
             <TD width="7">&nbsp;</TD>
-            <TD width="100">ESR-Nr.</TD>
-            <TD colspan="2">
-              <input type="text" name="referenceBVR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
-            </TD>
+            <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+                <TD width="100">QR-Referenz</TD>
+                <TD colspan="2">
+                  <input type="text" name="referenceQR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
+                </TD>
+            <%}%>
           </TR>
           <TR>
             <TD nowrap width="129">Auszahlung sperren</TD>
