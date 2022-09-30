@@ -167,7 +167,7 @@
 	<td><div class="libelletitre"><ct:FWLabel key="CAISSE_DESTINATRICE"/></div></td>
 </tr><tr>
 	<td><div class="libelle"><ct:FWLabel key="CAISSE_DEST"/></div></td>
-	<td>
+	<td colspan="3">
 		<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 			<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>

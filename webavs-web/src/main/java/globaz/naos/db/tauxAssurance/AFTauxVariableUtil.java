@@ -69,7 +69,7 @@ public class AFTauxVariableUtil {
          */
         public String getMontantCotisation(BSession session, String masse, boolean cotiMinim) throws Exception {
             BigDecimal masseAFacturer = new BigDecimal(JANumberFormatter.deQuote(masse));
-            if ("true".equals(session.getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+            if ("true".equals(session.getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER)) && !AFApplication.isTauxParTranche(assuranceId)) {
                 // enlever la partie des rangs inférieurs
                 masseAFacturer = masseAFacturer.subtract(masseMinimum.getBigDecimalValue());
 
@@ -367,7 +367,7 @@ public class AFTauxVariableUtil {
         if (calcul == null) {
             return null;
         }
-        if (!app.isTauxParPalier()) {
+        if (!app.isTauxParPalier() || AFApplication.isTauxParTranche(assuranceId)) {
             return calcul.tauxRang;
         } else {
             // on retourne un taux moyen calculé
@@ -477,7 +477,7 @@ public class AFTauxVariableUtil {
                     AFTauxAssurance taux = (AFTauxAssurance) manager.getEntity(i);
                     // ne pas afficher le taux si taux par palier (exception
                     // pour cot min et premier rang)
-                    if (app.isTauxParPalier()) {
+                    if (app.isTauxParPalier() && !AFApplication.isTauxParTranche(assuranceId)) {
                         if ((i != 0) || !app.isCotisationMinimale()) {
                             taux.setAffichageTaux(false);
                         }
@@ -499,7 +499,7 @@ public class AFTauxVariableUtil {
                             / Double.parseDouble(JANumberFormatter.deQuote(taux.getFraction()));
                     // calcul de la contribution minimum pour le rang suivant,
                     // ainsi que la masse à soustraire
-                    if (app.isTauxParPalier()) {
+                    if (app.isTauxParPalier() && !AFApplication.isTauxParTranche(assuranceId)) {
                         masse.sub(masseMinimum);
                         contriMinimum = new FWCurrency(contriMinimum.doubleValue());
                         contriMinimum.add(new FWCurrency(masse.doubleValue() * tauxCalcul));

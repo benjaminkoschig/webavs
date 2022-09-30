@@ -6,7 +6,6 @@ package globaz.apg.vb.droits;
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.vulpecula.external.models.pyxis.AvoirAdressePaiement;
 import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
@@ -23,6 +22,7 @@ import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
@@ -1340,7 +1340,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                             getSession().getCurrentThreadTransaction(),
                             getIdTiersPaiementEmployeur(),
-                            AvoirAdressePaiement.CS_DOMAINE_STANDARD,
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_DEFAULT,
                             null, JACalendar.todayJJsMMsAAAA());
                     if (Objects.nonNull(paiementData)) {
                         setAdressePaiementData(paiementData);
@@ -1617,7 +1617,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
         setIdReferenceQREmployeur(idReferenceQR);
-        retourDepuisPyxis = true; // TODO ESVE ESSAYER retourDepuisAdresse
+        retourDepuisPyxis = true;
     }
 
     /**

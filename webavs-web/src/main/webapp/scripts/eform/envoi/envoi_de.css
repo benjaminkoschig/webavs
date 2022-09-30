@@ -4,6 +4,7 @@ select {
 
 input{
     width: 250px !important;
+    height: 25px;
 }
 
 tr{
