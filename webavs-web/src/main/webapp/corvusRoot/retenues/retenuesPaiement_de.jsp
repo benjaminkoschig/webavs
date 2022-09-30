@@ -12,6 +12,7 @@
 <%@ page import="globaz.osiris.db.comptes.CACompteAnnexeManager"%>
 <%@ page import="globaz.osiris.external.IntRole"%>
 <%@ page import="globaz.corvus.db.rentesaccordees.RERenteAccordee" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -218,6 +219,27 @@
 <%	
 		}
 %>							</td>
+							<%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+								<td><ct:FWLabel key="JSP_REFERENCE_QR"/></td>
+								<td valign="top" align="left">
+									<span class="adressePaiement assure employeur personnalise">
+
+										<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePmt()%>">
+										<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
+										<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+
+										<ct:FWSelectorTag	name="selecteurReferencePaiement"
+															methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"
+															providerApplication="pyxis"
+															providerPrefix="TI"
+															providerAction="pyxis.tiers.referencePaiement.chercher"
+															providerActionParams="<%=viewBean.getParamsChercherReferencePaiement()%>"
+															target="fr_main"
+															redirectUrl="<%=mainServletPath%>" />
+										&nbsp;
+									</span>
+								</td>
+							<%}%>
 						</tr>
 						<tr class="trOptionnels <%=IRERetenues.CS_TYPE_ADRESSE_PMT%>">
 							<td colspan="4">
