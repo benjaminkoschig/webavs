@@ -46,18 +46,21 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.compta.PRRubriqueComptableResolver;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.corvus.domaine.Decision;
 import ch.globaz.corvus.domaine.RenteAccordee;
 import ch.globaz.pyxis.domaine.PersonneAVS;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Module comptable de gestion des écritures comptable Traitement des cas écriture comptable pour le mois en cours, 1
  * seul bénéficiaire : l'assuré principal. Cas #21
- * 
+ *
  * @author : scr
  */
 public abstract class AREModuleComptable implements Comparator<IREModuleComptable> {
@@ -75,7 +78,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Retourne le code récap en fonction du genre de rente accordée
-     * 
+     *
      * @return le code récap
      */
     protected synchronized static int getCodeRecap(final String genrePrestation, final int genreRecap) throws Exception {
@@ -297,7 +300,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     }
 
     public synchronized static String getLibelleRubrique(final BSession session, final String genrePrestation,
-            String isoLangue) throws Exception {
+                                                         String isoLangue) throws Exception {
 
         String labelId = "";
 
@@ -381,11 +384,11 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     /**
      * Retourne la rubrique concernée, suivant le genre de prestation Ceci uniquement pour les cas standard. Les
      * rubriques pour Extourne, Restitution, Retro, IS, .... seront traitées dans les modules concerné.
-     * 
+     *
      * @return la rubrique concernée, ou null si non trouvé
      */
     public synchronized static APIRubrique getRubrique(final String genrePrestation,
-            final String sousTypeGenrePrestation, final int typeRubrique) throws Exception {
+                                                       final String sousTypeGenrePrestation, final int typeRubrique) throws Exception {
 
         if (AREModuleComptable.TYPE_RUBRIQUE_COMPENSATION == typeRubrique) {
 
@@ -444,9 +447,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 default:
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);
             }
-        }
-
-        else if (REGenresPrestations.GENRE_50.equals(genrePrestation)
+        } else if (REGenresPrestations.GENRE_50.equals(genrePrestation)
                 || REGenresPrestations.GENRE_53.equals(genrePrestation)
                 || REGenresPrestations.GENRE_54.equals(genrePrestation)
                 || REGenresPrestations.GENRE_55.equals(genrePrestation)
@@ -583,9 +584,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);
             }
             // }
-        }
-
-        else if (REGenresPrestations.GENRE_85.equals(genrePrestation)
+        } else if (REGenresPrestations.GENRE_85.equals(genrePrestation)
                 || REGenresPrestations.GENRE_86.equals(genrePrestation)
                 || REGenresPrestations.GENRE_87.equals(genrePrestation)
                 || REGenresPrestations.GENRE_89.equals(genrePrestation)
@@ -652,7 +651,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     }
 
     public synchronized static APIRubrique getRubriqueWithInit(final BISession sessionOsiris,
-            final String genrePrestation, final String sousTypeCodePrestation, final int typeRubrique) throws Exception {
+                                                               final String genrePrestation, final String sousTypeCodePrestation, final int typeRubrique) throws Exception {
 
         if (REModuleComptableFactory.getInstance().RO_AVS == null) {
             REModuleComptableFactory.getInstance().initIdsRubriques(sessionOsiris);
@@ -679,27 +678,19 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * écrit une écriture en compta. Ne fait rien si le montant est nul.
-     * 
-     * @param session
-     *            session orisis
-     * @param compta
-     *            une instance de APIProcessComptabilisation
-     * @param memoryLog
-     *            log des msg.
-     * @param montantSigne
-     *            Le montant a écrire, signé
-     * @param rubrique
-     *            l'id de la rubrique
-     * @param idCompteAnnexe
-     *            l'id du compta annexe
-     * @param idSection
-     *            l'id de la section
-     * @param dateComptable
-     *            date valeur comptable
+     *
+     * @param session        session orisis
+     * @param compta         une instance de APIProcessComptabilisation
+     * @param memoryLog      log des msg.
+     * @param montantSigne   Le montant a écrire, signé
+     * @param rubrique       l'id de la rubrique
+     * @param idCompteAnnexe l'id du compta annexe
+     * @param idSection      l'id de la section
+     * @param dateComptable  date valeur comptable
      */
     protected BIMessage doEcriture(final BSession session, final APIGestionComptabiliteExterne compta,
-            final String montantSigne, final APIRubrique rubrique, final String idCompteAnnexe, final String idSection,
-            final String dateComptable, final String libelle) {
+                                   final String montantSigne, final APIRubrique rubrique, final String idCompteAnnexe, final String idSection,
+                                   final String dateComptable, final String libelle) {
 
         FWMemoryLog log = new FWMemoryLog();
         if (compta == null) {
@@ -754,7 +745,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     }
 
     protected BIMessage doEcritureRecap(final BSession session, final BTransaction transaction, final int codeRecap,
-            final FWCurrency montant, final String idTiers, final String dateRecap, final String idLot)
+                                        final FWCurrency montant, final String idTiers, final String dateRecap, final String idLot)
             throws Exception {
 
         FWMemoryLog log = new FWMemoryLog();
@@ -783,15 +774,14 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * @param codeRecap
      * @param montant
      * @param idTiers
-     * @param dateRecap
-     *            Peut être null. Format mm.aaaa. Si non renseignée, sera calculée avec plus grande date
-     *            (dateDernierPmt, ddDroit)
+     * @param dateRecap      Peut être null. Format mm.aaaa. Si non renseignée, sera calculée avec plus grande date
+     *                       (dateDernierPmt, ddDroit)
      * @return
      * @throws Exception
      */
     protected BIMessage doEcritureRecap(final BSession session, final BTransaction transaction,
-            final String idDecision, final int codeRecap, final FWCurrency montant, final String idTiers,
-            final String idLot) throws Exception {
+                                        final String idDecision, final int codeRecap, final FWCurrency montant, final String idTiers,
+                                        final String idLot) throws Exception {
 
         FWMemoryLog log = new FWMemoryLog();
 
@@ -868,16 +858,16 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * Effectue un ordre de versement, lance une Exception si le montant est négatif
      */
     protected BIMessage doOrdreVersement(final BSession session, final APIGestionComptabiliteExterne compta,
-            final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
-            final String motifVersement, final String dateComptable, final boolean isAvance) throws Exception {
+                                         final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
+                                         final String motifVersement, final String referenceQR, final String dateComptable, final boolean isAvance) throws Exception {
 
-        return doOrdreVersement(session, compta, idCompteAnnexe, idSection, montant, idAdressePaiement, motifVersement,
+        return doOrdreVersement(session, compta, idCompteAnnexe, idSection, montant, idAdressePaiement, motifVersement, referenceQR,
                 dateComptable, isAvance, null);
     }
 
     protected BIMessage doOrdreVersement(final BSession session, final APIGestionComptabiliteExterne compta,
-            final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
-            final String motifVersement, final String dateComptable, final boolean isAvance, String idOrganeExecution)
+                                         final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
+                                         final String motifVersement, final String referenceQR, final String dateComptable, final boolean isAvance, String idOrganeExecution)
             throws Exception {
 
         FWMemoryLog log = new FWMemoryLog();
@@ -932,10 +922,17 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             ordreVersement.setIdTypeOperation(APIOperation.CAOPERATIONORDREVERSEMENTAVANCE);
         }
 
+
         ordreVersement.setCodeISOMonnaieBonification(session
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(session.getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
-        ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+
+        if (StringUtils.isEmpty(referenceQR)) {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+        } else {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.QR);
+            ordreVersement.setReferencePaiement(referenceQR);
+        }
 
         String idOrganeExecutionToTake = idOrganeExecution;
         if (JadeStringUtil.isBlankOrZero(idOrganeExecutionToTake)) {
@@ -968,7 +965,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Retourne le montant mensuel en cours pour la décision. 0 pour du rétro pure.
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -976,7 +973,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * @throws Exception
      */
     protected FWCurrency getMontantCourant(final BSession session, final BTransaction transaction,
-            final REDecisionEntity decision) throws Exception {
+                                           final REDecisionEntity decision) throws Exception {
 
         RenteAccordeeInfo rasEnCours = getRentesAccordeesEnCours(session, transaction, decision);
 
@@ -990,7 +987,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Calcul du montant rétroactif de la décision
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -998,7 +995,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * @throws Exception
      */
     protected FWCurrency getMontantRetro(final BSession session, final BTransaction transaction,
-            final REDecisionEntity decision) throws Exception {
+                                         final REDecisionEntity decision) throws Exception {
 
         RenteAccordeeInfo rasEnCours = getRentesAccordeesEnCours(session, transaction, decision);
         REPrestations prestation = decision.getPrestation(transaction);
@@ -1063,7 +1060,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
             if (dateDebut.isEmpty()
                     || JadeDateUtil.getGlobazCalendar(JadeDateUtil.getFirstDateOfMonth(tmpDebut)).getTimeInMillis() < JadeDateUtil
-                            .getGlobazCalendar(JadeDateUtil.getFirstDateOfMonth(dateDebut)).getTimeInMillis()) {
+                    .getGlobazCalendar(JadeDateUtil.getFirstDateOfMonth(dateDebut)).getTimeInMillis()) {
                 dateDebut = elem.getDateDebutDroit();
             }
 
@@ -1072,7 +1069,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             } else {
                 if (dateFin.isEmpty()
                         || JadeDateUtil.getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(tmpFin)).getTimeInMillis() > JadeDateUtil
-                                .getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(dateFin)).getTimeInMillis()) {
+                        .getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(dateFin)).getTimeInMillis()) {
                     dateFin = elem.getDateFinDroit();
                 }
             }
@@ -1092,7 +1089,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     }
 
     protected String getMotifVersementDeblocage(final BSession session, final PRTiersWrapper tw, final String refPmt,
-            final String genrePrestation, final String idTiersAdrPmt) throws Exception {
+                                                final String genrePrestation, final String idTiersAdrPmt) throws Exception {
 
         String idTiersPrincipal = idTiersAdrPmt;
 
@@ -1119,7 +1116,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Retourne 1 RA faisant partie de la décision
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -1127,7 +1124,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * @throws Exception
      */
     protected RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions getRenteAccordee(final BSession session,
-            final BTransaction transaction, final REDecisionEntity decision) throws Exception {
+                                                                                      final BTransaction transaction, final REDecisionEntity decision) throws Exception {
 
         // Récupération d'une des RA de la décision.
         // Pour une décision, les RA sont obligatoirement sur la même rubrique -> on prend la première que l'on trouve.
@@ -1145,7 +1142,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Retourne la 1ère RA trouvée sans date de fin, cad une RA en cours.
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -1153,7 +1150,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
      * @throws Exception
      */
     protected RenteAccordeeInfo getRentesAccordeesEnCours(final BSession session, final BTransaction transaction,
-            final REDecisionEntity decision) throws Exception {
+                                                          final REDecisionEntity decision) throws Exception {
 
         RenteAccordeeInfo result = new RenteAccordeeInfo();
 
@@ -1185,13 +1182,12 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * charge l'adresse de paiement.
-     * 
+     *
      * @return une adresse de paiement ou null.
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public TIAdressePaiementData loadAdressePaiement(final BSession session, final BTransaction transaction,
-            final String dateValeurCompta, final String idTiersAdressePaiement, final String idDomaine)
+                                                     final String dateValeurCompta, final String idTiersAdressePaiement, final String idDomaine)
             throws Exception {
 
         TIAdressePaiementData retValue = PRTiersHelper.getAdressePaiementData(session, transaction,

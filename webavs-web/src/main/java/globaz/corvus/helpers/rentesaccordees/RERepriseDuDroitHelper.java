@@ -487,6 +487,7 @@ public class RERepriseDuDroitHelper extends PRAbstractHelper {
         newRA.setPrescriptionAppliquee(ra.getPrescriptionAppliquee());
         newRA.setReductionFauteGrave(ra.getReductionFauteGrave());
         newRA.setReferencePmt(ra.getReferencePmt());
+        newRA.setIdReferenceQR(ra.getIdReferenceQR());
         newRA.setRemarques(ra.getRemarques());
 
         REInformationsComptabilite newIC = new REInformationsComptabilite();

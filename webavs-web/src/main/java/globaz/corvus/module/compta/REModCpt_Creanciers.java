@@ -26,6 +26,7 @@ import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APISection;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRAssert;
 import java.math.BigDecimal;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
@@ -33,6 +34,8 @@ import ch.globaz.corvus.domaine.Decision;
 import ch.globaz.corvus.domaine.OrdreVersement;
 import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
 import ch.globaz.pyxis.domaine.PersonneAVS;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import org.apache.commons.lang.StringUtils;
 
 public class REModCpt_Creanciers extends AREModuleComptable implements IREModuleComptable {
 
@@ -111,6 +114,8 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
                     String refPmt = creancier.getRefPaiement();
                     String motifVersement = getMotifVersement(session, refPmt, decision);
 
+                    String referenceQR = PRTiersHelper.getReferenceQR(session, creancier.getIdReferenceQR());
+
                     memoryLog.logMessage(doOrdreVersement(
                             session,
                             compta,
@@ -119,7 +124,7 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
                             ov.getMontantCompense().toString(),
                             loadAdressePaiement(session, transaction, dateEcheance, creancier.getIdTiersAdressePmt(),
                                     REApplication.CS_DOMAINE_ADRESSE_CORVUS).getIdAvoirPaiementUnique(),
-                            motifVersement, dateEcheance, false, idOrganeExecution));
+                            motifVersement, referenceQR, dateEcheance, false, idOrganeExecution));
                 }
             }
 

@@ -40,6 +40,7 @@ public class REAvance extends BEntity {
     public static final String FIELDNAME_ID_TIERS_ADR_PMT = "WIITAP";
     public static final String FIELDNAME_ID_TIERS_BENEFICIAIRE = "WIITBE";
     public static final String FIELDNAME_LIBELLE = "WILLIB";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "ID_REF_QR";
     public static final String FIELDNAME_MONTANT_1ER_ACOMPTE = "WIM1AC";
     public static final String FIELDNAME_MONTANT_MENSUEL = "WIMMEN";
 
@@ -59,6 +60,7 @@ public class REAvance extends BEntity {
     private String idTiersAdrPmt;
     private String idTiersBeneficiaire;
     private String libelle;
+    private String idReferenceQR;
     private String montant1erAcompte;
     private String montantMensuel;
     private String nationalite;
@@ -84,6 +86,7 @@ public class REAvance extends BEntity {
         idTiersAdrPmt = "";
         idTiersBeneficiaire = "";
         libelle = "";
+        idReferenceQR = "";
         montant1erAcompte = "";
         montantMensuel = "";
         nationalite = "";
@@ -153,6 +156,7 @@ public class REAvance extends BEntity {
         idTiersAdrPmt = statement.dbReadNumeric(REAvance.FIELDNAME_ID_TIERS_ADR_PMT);
         idTiersBeneficiaire = statement.dbReadNumeric(REAvance.FIELDNAME_ID_TIERS_BENEFICIAIRE);
         libelle = statement.dbReadString(REAvance.FIELDNAME_LIBELLE);
+        idReferenceQR = statement.dbReadString(REAvance.FIELDNAME_ID_REFERENCE_QR);
         montantMensuel = statement.dbReadNumeric(REAvance.FIELDNAME_MONTANT_MENSUEL);
         montant1erAcompte = statement.dbReadNumeric(REAvance.FIELDNAME_MONTANT_1ER_ACOMPTE);
         nom = statement.dbReadString(ITITiersDefTable.DESIGNATION_1);
@@ -266,6 +270,8 @@ public class REAvance extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), idAffilie, "idAffilie"));
         statement.writeField(REAvance.FIELDNAME_LIBELLE,
                 this._dbWriteString(statement.getTransaction(), libelle, "libelle"));
+        statement.writeField(REAvance.FIELDNAME_ID_REFERENCE_QR,
+                this._dbWriteString(statement.getTransaction(), idReferenceQR, "referenceQR"));
         statement.writeField(REAvance.FIELDNAME_DOMAINE_AVANCE,
                 this._dbWriteNumeric(statement.getTransaction(), csDomaineAvance, "csDomaineAvance"));
     }
@@ -446,5 +452,13 @@ public class REAvance extends BEntity {
 
     public void setSexe(String sexe) {
         this.sexe = sexe;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 }

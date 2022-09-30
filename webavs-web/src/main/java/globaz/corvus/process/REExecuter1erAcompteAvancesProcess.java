@@ -125,11 +125,13 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
                 final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
+                final String referenceQR = PRTiersHelper.getReferenceQR(sessionOsiris, avance.getIdReferenceQR());
+
                 getMemoryLog().logMessage(
                         REModuleComptablePmtAvance.getInstance(sessionOsiris).payerAvance(this, getSession(),
                                 (BTransaction) transaction, compta, avance.getIdTiersBeneficiaire(),
                                 avance.getIdTiersAdrPmt(), avance.getCsDomaine(),
-                                new FWCurrency(avance.getMontant1erAcompte()), motifVersement, dateValeurComptable,
+                                new FWCurrency(avance.getMontant1erAcompte()), motifVersement, referenceQR, dateValeurComptable,
                                 avance.getCsDomaineAvance(), getIdOrganeExecution()));
             }
 
