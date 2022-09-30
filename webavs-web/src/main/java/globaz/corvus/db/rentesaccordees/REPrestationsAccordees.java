@@ -46,6 +46,7 @@ public class REPrestationsAccordees extends BEntity {
     public static final String FIELDNAME_MONTANT_PRESTATION = "ZTMPRE";
 
     public static final String FIELDNAME_REFERENCE_PMT = "ZTLRFP";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "ID_REF_QR";
     public static final String FIELDNAME_SOUS_TYPE_GENRE_PRESTATION = "ZTLSCP";
 
     public static final String FIELDNAME_TYPE_MAJ = "ZTTTMA";
@@ -142,6 +143,7 @@ public class REPrestationsAccordees extends BEntity {
     private String montantPrestation = "";
 
     private String referencePmt = "";
+    private String idReferenceQR = "";
     private String sousTypeGenrePrestation;
 
     // ~ Methods
@@ -209,10 +211,10 @@ public class REPrestationsAccordees extends BEntity {
         idEnteteBlocage = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_ENTETE_BLOCAGE);
         dateEcheance = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
                 .dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_ECHEANCE));
-
         isAttenteMajBlocage = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_ATTENTE_MAJ_BLOCAGE);
         isAttenteMajRetenue = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_ATTENTE_MAJ_RETENUE);
         typeDeMiseAJours = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_TYPE_MAJ);
+        idReferenceQR = statement.dbReadString(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
     }
 
     /**
@@ -328,6 +330,9 @@ public class REPrestationsAccordees extends BEntity {
 
         statement.writeField(REPrestationsAccordees.FIELDNAME_SOUS_TYPE_GENRE_PRESTATION,
                 this._dbWriteString(statement.getTransaction(), sousTypeGenrePrestation, "sousTypeGenrePrestation"));
+
+        statement.writeField(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR,
+                this._dbWriteString(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
 
     }
 
@@ -676,4 +681,11 @@ public class REPrestationsAccordees extends BEntity {
         this.typeDeMiseAJours = typeDeMiseAJours;
     }
 
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
 }

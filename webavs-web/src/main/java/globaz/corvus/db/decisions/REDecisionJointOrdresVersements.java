@@ -72,6 +72,9 @@ public class REDecisionJointOrdresVersements extends BEntity {
     public static final String ALIAS_PRENOM_TIERS_BENEFICIAIRE_PRESTATION_ACCORDEE_ORDRE_VERSEMENT = "ti_prac_ov_prenom";
     public static final String ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_DECISION = "ref_pmt_prac_dec";
     public static final String ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_ORDRE_VERSEMENT = "ref_pmt_prac_ov";
+    public static final String ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_DECISION = "ref_qr_prac_dec";
+    public static final String ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_ORDRE_VERSEMENT = "ref_qr_prac_ov";
+
     public static final String ALIAS_TABLE_INFORMATION_COMPTABILITE_PRESTATION_ACCORDEE_DECISION = "inf_com_prac_dec";
     public static final String ALIAS_TABLE_INFORMATION_COMPTABILITE_PRESTATION_ACCORDEE_ORDRE_VERSEMENT = "inf_com_prac_ov";
     public static final String ALIAS_TABLE_PERSONNE_AVS_BENEFICIAIRE_DECISION = "pavs_dec";
@@ -159,6 +162,8 @@ public class REDecisionJointOrdresVersements extends BEntity {
     private String prenomBeneficiairePrincipalDecision;
     private String referencePourLePaiementPrestationAccordeeDecision;
     private String referencePourLePaiementPrestationAccordeeOrdreVersement;
+    private String idReferenceQRPrestationAccordeeDecision;
+    private String idReferenceQRPrestationAccordeeOrdreVersement;
     private String remarqueDecision;
     private TypeDecisionRente typeDecision;
     private TypeOrdreVersement typeOrdreVersement;
@@ -280,6 +285,10 @@ public class REDecisionJointOrdresVersements extends BEntity {
                 .append(REPrestationsAccordees.FIELDNAME_REFERENCE_PMT).append(" AS ")
                 .append(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_DECISION)
                 .append(",");
+        sql.append(REDecisionJointOrdresVersements.ALIAS_TABLE_PRESTATION_ACCORDE_DECISION).append(".")
+                .append(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR).append(" AS ")
+                .append(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_DECISION)
+                .append(",");
 
         sql.append(REDecisionJointOrdresVersements.ALIAS_TABLE_INFORMATION_COMPTABILITE_PRESTATION_ACCORDEE_DECISION)
                 .append(".").append(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE).append(" AS ")
@@ -313,6 +322,10 @@ public class REDecisionJointOrdresVersements extends BEntity {
         sql.append(REDecisionJointOrdresVersements.ALIAS_TABLE_PRESTATION_ACCORDE_ORDRE_VERSEMENT).append(".")
                 .append(REPrestationsAccordees.FIELDNAME_REFERENCE_PMT).append(" AS ")
                 .append(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_ORDRE_VERSEMENT)
+                .append(",");
+        sql.append(REDecisionJointOrdresVersements.ALIAS_TABLE_PRESTATION_ACCORDE_ORDRE_VERSEMENT).append(".")
+                .append(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR).append(" AS ")
+                .append(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_ORDRE_VERSEMENT)
                 .append(",");
 
         sql.append(
@@ -707,6 +720,8 @@ public class REDecisionJointOrdresVersements extends BEntity {
                     .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_CS_ETAT_PRESTATION_ACCORDEE_ORDRE_VERSEMENT));
             referencePourLePaiementPrestationAccordeeOrdreVersement = statement
                     .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_ORDRE_VERSEMENT);
+            idReferenceQRPrestationAccordeeOrdreVersement = statement
+                    .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_ORDRE_VERSEMENT);
 
             idCompteAnnexePrestationAccordeeOrdreVersement = Long
                     .parseLong(statement
@@ -730,6 +745,8 @@ public class REDecisionJointOrdresVersements extends BEntity {
                 .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_CS_ETAT_PRESTATION_ACCORDEE_DECISION));
         referencePourLePaiementPrestationAccordeeDecision = statement
                 .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_DECISION);
+        idReferenceQRPrestationAccordeeDecision = statement
+                .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_DECISION);
 
         idCompteAnnexePrestationAccordeeDecision = Long.parseLong(statement
                 .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_ID_COMPTE_ANNEXE_PRESTATION_ACCORDEE_DECISION));
@@ -1062,5 +1079,13 @@ public class REDecisionJointOrdresVersements extends BEntity {
 
     public boolean isCompense() {
         return isCompense;
+    }
+
+    public String getIdReferenceQRPrestationAccordeeDecision() {
+        return idReferenceQRPrestationAccordeeDecision;
+    }
+
+    public String getIdReferenceQRPrestationAccordeeOrdreVersement() {
+        return idReferenceQRPrestationAccordeeOrdreVersement;
     }
 }

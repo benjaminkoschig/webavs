@@ -48,7 +48,7 @@
 	bButtonNew = bButtonNew && viewBean.isModifiable() && controller.getSession().hasRight(IREActions.ACTION_CREANCIER, FWSecureConstants.UPDATE);
 
 	IFrameListHeight = "150";
-	IFrameDetailHeight = "400";
+	IFrameDetailHeight = "500";
 %>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%

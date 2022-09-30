@@ -419,6 +419,8 @@ public class REGroupOperationCAUtil {
 
                     String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
 
+                    String referenceQR = PRTiersHelper.getReferenceQR(session, retenue.getIdReferenceQR());
+
                     doOrdreVersement(
                             session,
                             process.initComptaExterne(transaction, true),
@@ -431,7 +433,7 @@ public class REGroupOperationCAUtil {
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), datePmtEnCours,
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NOM),
                                     tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM), retenue.getReferenceInterne(),
-                                    ra.getCodePrestation(), isoLangFromIdTiers), dateEcheance);
+                                    ra.getCodePrestation(), isoLangFromIdTiers), referenceQR, dateEcheance);
 
                     cppr = new RECumulPrstParRubrique();
                     cppr.setType(RECumulPrstParRubrique.TYPE_BLOCAGE_RETENUE);
@@ -681,7 +683,7 @@ public class REGroupOperationCAUtil {
      * @throws IllegalArgumentException
      */
     protected BIMessage doOrdreVersement(BSession session, APIGestionComptabiliteExterne compta, String idCompteAnnexe,
-            String idSection, String montant, String idAdressePaiement, String motifVersement, String dateComptable)
+            String idSection, String montant, String idAdressePaiement, String motifVersement, String referenceQR, String dateComptable)
             throws Exception {
 
         if (new FWCurrency(montant).isNegative()) {
@@ -705,6 +707,7 @@ public class REGroupOperationCAUtil {
 
         ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_RENTES_AVS_AI);
         ordreVersement.setMotif(motifVersement);
+        ordreVersement.setReferencePaiement(referenceQR);
         compta.addOperation(ordreVersement);
 
         return null;
@@ -942,13 +945,16 @@ public class REGroupOperationCAUtil {
 
                     String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
 
+                    // TODO : valider qu'on doit utiliser la ref de la RA
+                    String referenceQR = PRTiersHelper.getReferenceQR(session, ra.getIdReferenceQR());
+
                     doOrdreVersement(session, process.initComptaExterne(transaction, true),
                             compteAnnexe.getIdCompteAnnexe(), sectionStandard.getIdSection(), ov.montant.toString(),
                             ov.idAdrPmt, process.getMotifVersement(
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), datePmtEnCours,
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NOM),
                                     tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM), ra.getReferencePmt(),
-                                    ra.getCodePrestation(), isoLangFromIdTiers), process.getDateEcheancePaiement());
+                                    ra.getCodePrestation(), isoLangFromIdTiers), referenceQR, process.getDateEcheancePaiement());
 
                     this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD,
                             RECumulPrstParRubrique.RUBRIQUE_FICTIVE_OV_PMT_BLOCAGE_RETENUE, ov.montant);
