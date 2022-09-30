@@ -8,11 +8,7 @@ import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.lots.RELotManager;
-import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRente;
-import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
-import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
-import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.utils.decisions.REDecisionsUtil;
 import globaz.corvus.vb.lots.RELotViewBean;
 import globaz.externe.IPRConstantesExternes;
@@ -36,19 +32,17 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+
+import java.util.*;
 
 /**
  * @author bsc
- * 
- *         scr
+ * <p>
+ * scr
  * @deprecated, replaced by RERenteAccJoinTblTiersJoinDemandeRenteViewBean
  */
 public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblTiersJoinDemandeRente implements
@@ -58,12 +52,17 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-    private static final Object[] METHODES_SEL_ADRESSE_PAIEMENT = new Object[] { new String[] {
-            "idTiersAdressePmtICDepuisPyxis", "getIdTiers" } };
+    private static final Object[] METHODES_SEL_ADRESSE_PAIEMENT = new Object[]{new String[]{
+            "idTiersAdressePmtICDepuisPyxis", "getIdTiers"}};
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT_QR = new Object[]{
+            new String[]{"setIdReferenceQRDepuisPyxis", "getIdReferenceQR"}};
+
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[]{
+            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteLike", "forCompteLike"}};
 
     private String adresseFormattee = "";
     private List attachedDocuments = null;
@@ -71,6 +70,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     // private String idDomaineAdressePmt = "";
     // infos relatives a l'adresse de paiement
     private String ccpOuBanqueFormatte = "";
+    private String referenceQRFormattee = "";
     private String forCsEtat = "";
     private String forGenre = "";
     private String forIdTiersLiant = "";
@@ -81,6 +81,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     private String idTiersAdressePmtIC = "";
     // Depuis Pyxis
     private String idTiersAdressePmtICDepuisPyxis = "";
+    private String idReferenceQRDepuisPyxis = "";
     private String isAdresseModifiee = "false";
     private String isChangeBeneficiaire = "";
     private Boolean isPreparationDecisionValide = null;
@@ -95,10 +96,13 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     private String numAffilieDepuisPyxis = "";
     // champs supplementaires.
     private boolean retourDepuisPyxis = false;
+    private boolean retourReferenceQrDepuisPyxis = false;
     private PRTiersWrapper tiersBeneficiaire = null;
     private boolean tiersBeneficiaireChange = false;
     private PRTiersWrapper tiersCompl1 = null;
     private PRTiersWrapper tiersCompl2 = null;
+
+    private TIAdressePaiementData adressePaiementData = null;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -190,7 +194,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         mgr.setSession(getSession());
         mgr.find();
 
-        for (Iterator iterator = mgr.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr.iterator(); iterator.hasNext(); ) {
             REDecisionJointDemandeRente entity = (REDecisionJointDemandeRente) iterator.next();
 
             JADate dateDecision = new JADate(entity.getDateDecision());
@@ -236,7 +240,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne le détail du requérant formaté pour les listes
-     * 
+     *
      * @return le détail du requérant formaté
      */
     public String getDetailRequerant() {
@@ -250,7 +254,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
         if (!JadeStringUtil.isEmpty(getDateDecesBenef())) {
             return PRNSSUtil.formatDetailRequerantListeDecede(getNumeroAvsBenef(), getNomBenef() + " "
-                    + getPrenomBenef(), getDateNaissanceBenef(), getSexeBenef(), getNationaliteBenef(),
+                            + getPrenomBenef(), getDateNaissanceBenef(), getSexeBenef(), getNationaliteBenef(),
                     getDateDecesBenef());
         } else {
             return getDetailRequerant();
@@ -259,7 +263,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne le détail du requérant formaté pour les listes
-     * 
+     *
      * @return le détail du requérant formaté
      */
     public String getDetailRequerantDetail() {
@@ -321,6 +325,10 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         return idTiersAdressePmtICDepuisPyxis;
     }
 
+    public String getIdReferenceQRDepuisPyxis() {
+        return idReferenceQRDepuisPyxis;
+    }
+
     /**
      * @return
      */
@@ -345,7 +353,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne le libellé court du sexe par rapport au csSexe qui est dans le vb
-     * 
+     *
      * @return le libellé court du sexe (Homme ou Femme)
      */
     public String getLibelleCourtSexe() {
@@ -356,7 +364,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne le libellé de la nationalité par rapport au csNationalité qui est dans le vb
-     * 
+     *
      * @return le libellé du pays (retourne une chaîne vide si pays inconnu)
      */
     public String getLibellePays() {
@@ -386,11 +394,19 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     /**
      * retourne un tableau de correspondance entre methodes client et provider pour le retour depuis pyxis avec le
      * bouton de selection d'une adresse de paiement.
-     * 
+     *
      * @return la valeur courante de l'attribut methodes selection adresse
      */
     public Object[] getMethodesSelectionAdressePaiement() {
         return RERenteAccordeeJointDemandeRenteViewBean.METHODES_SEL_ADRESSE_PAIEMENT;
+    }
+
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return RERenteAccordeeJointDemandeRenteViewBean.METHODES_SEL_REFERENCE_PAIEMENT_QR;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return RERenteAccordeeJointDemandeRenteViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
     }
 
     public String getMontantReducationAnticipationJSP() {
@@ -714,7 +730,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /***
      * Permet de savoir si un lot de déblocage est en traitement
-     * 
+     *
      * @return
      */
     public boolean isLotDeblocageEnTraitement() {
@@ -737,7 +753,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne une string avec true si le NSS dans le vb est un NNSS, sinon false
-     * 
+     *
      * @return String (true ou false)
      */
     public String isNNSS() {
@@ -755,7 +771,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne une string avec true si le NSS dans le vb est un NNSS, sinon false
-     * 
+     *
      * @return String (true ou false)
      */
     public String isNNSSTiersBeneficiaire() {
@@ -771,7 +787,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne une string avec true si le NSS dans le vb est un NNSS, sinon false
-     * 
+     *
      * @return String (true ou false)
      */
     public String isNNSSTiersCompl1() {
@@ -786,7 +802,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui retourne une string avec true si le NSS dans le vb est un NNSS, sinon false
-     * 
+     *
      * @return String (true ou false)
      */
     public String isNNSSTiersCompl2() {
@@ -801,7 +817,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * Méthode qui contrôle si la préparation de la décision peut s'effectuer
-     * 
+     *
      * @return true or false
      */
     public boolean isPreparationDecisionValide(String dateDernierPaiement) {
@@ -854,7 +870,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
                     // charcher une adresse de paiement pour ce beneficiaire
                     TIAdressePaiementData adresse = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                            .getCurrentThreadTransaction(), idTiersMF,
+                                    .getCurrentThreadTransaction(), idTiersMF,
                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
 
                     REAdressePmtUtil adpmt = new REAdressePmtUtil();
@@ -873,6 +889,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
                         // formatter l'adresse
                         adpmt.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
 
+                        adpmt.setEligibleQrReference(TIAdressePaiement.isQRIban(adresse.getCompte()));
                         adpmt.setIdTiers(idTiersMF);
                         adpmt.setNom(nom);
                         adpmt.setPrenom(prenom);
@@ -939,7 +956,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
             return true;
         }
 
-        for (Iterator iterator = mgr.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr.iterator(); iterator.hasNext(); ) {
             REDecisionJointDemandeRente entity = (REDecisionJointDemandeRente) iterator.next();
             RELotViewBean viewBean = new RELotViewBean();
             viewBean.setIdLot(entity.getIdLot());
@@ -964,15 +981,19 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
     /**
      * setter pour l'attribut adresse paiement.
-     * 
-     * @param adressePaiement
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param adressePaiement une nouvelle valeur pour cet attribut
      * @throws Exception
      */
     public void setAdressePaiement(TIAdressePaiementData adressePaiement) throws Exception {
         if (adressePaiement != null) {
+            adressePaiementData = adressePaiement;
             idTiersAdressePmtIC = adressePaiement.getIdTiers();
         }
+    }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
     }
 
     public void setAttachedDocuments(List attachedDocuments) {
@@ -1035,7 +1056,16 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         idTiersAdressePmtICDepuisPyxis = string;
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
+    }
 
+    /**
+     * @param string
+     */
+    public void setIdReferenceQRDepuisPyxis(String string) {
+        setIdReferenceQR(string);
+        idReferenceQRDepuisPyxis = string;
+        retourDepuisPyxis = true;
+        retourReferenceQrDepuisPyxis = true;
     }
 
     /**
@@ -1105,4 +1135,20 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         tiersBeneficiaireChange = b;
     }
 
+
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
+    }
+
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
+    }
+
+    public boolean isRetourReferenceQrDepuisPyxis() {
+        return retourReferenceQrDepuisPyxis;
+    }
+
+    public void setRetourReferenceQrDepuisPyxis(boolean retourReferenceQrDepuisPyxis) {
+        this.retourReferenceQrDepuisPyxis = retourReferenceQrDepuisPyxis;
+    }
 }

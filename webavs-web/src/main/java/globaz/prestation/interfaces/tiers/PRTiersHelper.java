@@ -942,7 +942,7 @@ public class PRTiersHelper {
         }
     }
 
-    public static TIReferencePaiement getReferenceQR(BSession session, String idReferenceQR) throws Exception {
+    public static String getReferenceQR(BSession session, String idReferenceQR) throws Exception {
         if (!JadeStringUtil.isBlankOrZero(idReferenceQR)) {
             TIReferencePaiementManager mgr = new TIReferencePaiementManager();
             mgr.setSession(session);
@@ -951,10 +951,10 @@ public class PRTiersHelper {
             mgr.find(BManager.SIZE_NOLIMIT);
 
             if (mgr.size() > 0) {
-                return (TIReferencePaiement) mgr.get(0);
+                return  ((TIReferencePaiement) mgr.get(0)).getReferenceQR();
             }
         }
-        return null;
+        return "";
     }
 
     private static final String getAdresseRecours(TIAdministrationAdresse admAdr) {

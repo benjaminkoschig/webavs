@@ -126,6 +126,7 @@ public class RenteAccordeeCrudServiceJadeImpl extends CanevasCrudService<RenteAc
                     objetDeDomaine.setMoisFin(uneLigne.getMoisFinDroitPrestationAccordee());
                     objetDeDomaine.setMontant(uneLigne.getMontantPrestationAccordee());
                     objetDeDomaine.setReferencePourLePaiement(uneLigne.getReferencePourLePaiementPrestationAccordee());
+                    objetDeDomaine.setIdReferenceQR(uneLigne.getIdReferenceQRPrestationAccordee());
 
                     Tiers adresseDePaiement = new Tiers();
                     adresseDePaiement.setId(uneLigne.getIdTiersAdresseDePaiement());

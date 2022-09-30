@@ -10,6 +10,7 @@ public class REAdressePmtUtil {
     private String idTiers = "";
     private String nom = "";
     private String prenom = "";
+    private boolean eligibleQrReference;
 
     public String getAdresseFormattee() {
         String r = JadeStringUtil.change(adresseFormattee, '"', '\'');
@@ -63,4 +64,11 @@ public class REAdressePmtUtil {
         this.prenom = prenom;
     }
 
+    public boolean isEligibleQrReference() {
+        return eligibleQrReference;
+    }
+
+    public void setEligibleQrReference(boolean eligibleQrReference) {
+        this.eligibleQrReference = eligibleQrReference;
+    }
 }

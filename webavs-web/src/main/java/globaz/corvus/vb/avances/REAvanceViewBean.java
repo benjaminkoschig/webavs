@@ -15,7 +15,10 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,14 +38,23 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
             new String[] { "idTiersAdressePmtDepuisPyxis", "idTiers" }, new String[] { "csDomaine", "idApplication" },
             new String[] { "numAffilie", "idExterneAvoirPaiement" } };
 
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT_QR = new Object[]{
+            new String[]{"setIdReferenceQRDepuisPyxis", "getIdReferenceQR"}};
+
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[]{
+            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteLike", "forCompteLike"}};
+
     private REAdressePmtUtil adressePaiement;
     private String idTiersAdressePmtDepuisPyxis;
+    private String idReferenceQRDepuisPyxis;
     private String infoDuTierFormatee;
     private Map<String, REAdressePmtUtil> mapAdressePaiementMembresFamille;
     private Set<PRTiersWrapper> membresFamilles;
     private String numAffilie;
     private boolean retourDepuisPyxis;
     private PRTiersWrapper tiersBeneficiaire;
+    private String referenceQRFormattee = "";
+    private TIAdressePaiementData adressePaiementData = null;
 
     public REAvanceViewBean() {
         super();
@@ -126,6 +138,14 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
         return REAvanceViewBean.METHODES_SEL_ADRESSE;
     }
 
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return REAvanceViewBean.METHODES_SEL_REFERENCE_PAIEMENT_QR;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return REAvanceViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
+    }
+
     @Override
     public String getNom() {
         if (tiersBeneficiaire == null) {
@@ -200,6 +220,8 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
 
         setCsDomaine(adresse.getIdApplication());
 
+        setAdressePaiementData(adresse);
+
         REAdressePmtUtil adpmt = new REAdressePmtUtil();
         if ((adresse != null) && !adresse.isNew()) {
             TIAdressePaiementDataSource source = new TIAdressePaiementDataSource();
@@ -214,6 +236,12 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
             adpmt.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
             adpmt.setNom(getTiersWrapper().getProperty(PRTiersWrapper.PROPERTY_NOM));
             adpmt.setPrenom(getTiersWrapper().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQR()));
+            } else {
+                setReferenceQRFormattee("");
+            }
         }
 
         return adpmt;
@@ -226,6 +254,7 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
     public void setIdTiersAdressePmtDepuisPyxis(String idt) {
         idTiersAdressePmtDepuisPyxis = idt;
         setIdTiersAdrPmt(idTiersAdressePmtDepuisPyxis);
+        setIdReferenceQR("");
         retourDepuisPyxis = true;
     }
 
@@ -262,5 +291,31 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
 
     public void setTiersBeneficiaireWrapper(PRTiersWrapper tiersBeneficiaire) {
         this.tiersBeneficiaire = tiersBeneficiaire;
+    }
+
+    public String getIdReferenceQRDepuisPyxis() {
+        return idReferenceQRDepuisPyxis;
+    }
+
+    public void setIdReferenceQRDepuisPyxis(String value) {
+        this.idReferenceQRDepuisPyxis = value;
+        setIdReferenceQR(value);
+        retourDepuisPyxis = true;
+    }
+
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
+    }
+
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
+    }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
+    }
+
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
     }
 }

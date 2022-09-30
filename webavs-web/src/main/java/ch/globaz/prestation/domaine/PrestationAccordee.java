@@ -40,6 +40,7 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
     private String moisFin;
     private BigDecimal montant;
     private String referencePourLePaiement;
+    private String idReferenceQR;
     private Set<RepartitionCreance> repartitionsCreance;
     private boolean hasCodeSpecial60 = false;
     private String idTiersNssCompl1;
@@ -61,6 +62,7 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
         moisFin = "";
         montant = BigDecimal.ZERO;
         referencePourLePaiement = "";
+        idReferenceQR = "";
         repartitionsCreance = new HashSet<RepartitionCreance>();
         idTiersNssCompl1 ="";
         idTiersNssCompl2  ="";
@@ -277,5 +279,14 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
 
     public void setIdTiersNssCompl2(String idTiersNssCompl2) {
         this.idTiersNssCompl2 = idTiersNssCompl2;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        Checkers.checkNotNull(idReferenceQR, "prestationAccordee.idReferenceQR");
+        this.idReferenceQR = idReferenceQR;
     }
 }
