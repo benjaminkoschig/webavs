@@ -1,6 +1,7 @@
 package ch.globaz.eform.businessimpl.services.sedex.sender;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.common.xml.JaxbHandler;
 import ch.globaz.eform.businessimpl.services.sedex.generator.GFIdentifiantGeneratorDefault;
 import ch.globaz.eform.businessimpl.services.sedex.generator.GFIdentifiantSedexGenerator;
 import eform.ch.eahv_iv.xmlns.eahv_iv_common._4.AttachmentFileType;
@@ -39,6 +40,16 @@ public abstract class GFDaDossierSender<T> {
 
     protected abstract String getDocumentType();
     protected abstract String getDocumentTypeLead();
+
+    private final Class<T> messageClass;
+
+    public GFDaDossierSender(Class<T> messageClass) {
+        this.messageClass = messageClass;
+    }
+
+    public Class<T> getMessageClass() {
+        return this.messageClass;
+    }
 
     private DatePartiallyKnownType getDate(String stringDate) {
         try {
@@ -139,10 +150,10 @@ public abstract class GFDaDossierSender<T> {
 
     protected abstract T createMessage();
 
-    public String generateMessage() throws Exception{
+    public String generateMessage() {
         T message = createMessage();
-        JAXBServices jaxb = JAXBServices.getInstance();
-        return jaxb.marshal(message, false, false);
+        JaxbHandler<T> jaxb = JaxbHandler.build(getMessageClass());
+        return jaxb.marshal(message).toAbsolutePath().toString();
     }
 
     public void setIdentifiantGenerator(GFIdentifiantSedexGenerator identifiantGenerator) {

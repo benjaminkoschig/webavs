@@ -26,6 +26,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class GF2021000101Sender extends GFDaDossierSender<Message> {
+    public GF2021000101Sender() {
+        super(Message.class);
+    }
+
     @Override
     protected String getDocumentType() {
         return "01.01";

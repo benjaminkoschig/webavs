@@ -30,6 +30,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 public class GF2021000102Sender extends GFDaDossierSender<Message> {
+    public GF2021000102Sender() {
+        super(Message.class);
+    }
+
     @Override
     protected String getDocumentType() {
         return GFDocumentTypeDossier.valueOf(elements.get(GFDaDossierAttachmentElementSender.DOCUMENT_TYPE))
