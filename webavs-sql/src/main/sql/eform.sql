@@ -60,8 +60,6 @@ CREATE TABLE SCHEMA.GF_DA_DOSSIER
     PRIMARY KEY(ID)
 );
 
-ALTER TABLE SCHEMA.TIADMIP ADD COLUMN HBSEID VARCHAR(14);
-
 INSERT INTO SCHEMA.FWSGRPP (KGROUP, FRIGHT, FCOMMENT, PSPY) VALUES ('gDaDossierUser', 'ADMINISTRATOR', 'Gestionnaires da-dossier', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('eform.dadossier.envoi.departement','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
