@@ -21,8 +21,14 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
 
     private static final Object[] METHODES_SEL_ADRESSE_PAIEMENT = new Object[] { new String[] {
             "idTiersAdressePmtICDepuisPyxis", "getIdTiers" } };
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT_QR = new Object[] {
+            new String[] { "setIdReferenceQRDepuisPyxis", "getIdReferenceQR" }};
+
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 
     private String adresseFormattee = "";
+    private String referenceQRFormattee = "";
     private String anneeNiveauBasesCalcul = "";
     private String anneesAnticipationDemandeRente = "";
     private String anneesAssistanceBasesCalcul = "";
@@ -67,6 +73,7 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
     private String idTierRequerant = "";
     private String idTiersAdressePmtIC = "";
     private String idTiersAdressePmtICDepuisPyxis = "";
+    private String idReferenceQRDepuisPyxis = "";
     private String idTiersBeneficiaire = "";
     private String idTiersDemandeRente = "";
     private Boolean invaliditePrecoceBasesCalcul = Boolean.FALSE;
@@ -81,6 +88,7 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
     private String RAMBasesCalcul = "";
     private String reductionAnticipationRenteAccordee = "";
     private String referencePmt = "";
+    private String idReferenceQR = "";
     private Boolean retourDepuisPyxis = Boolean.FALSE;
     private String suppAIRAMBasesCalcul = "";
     private String supplementAjournementRenteAccordee = "";
@@ -88,6 +96,7 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
     private String tauxReductionAnticipation = "";
     private PRTiersWrapper tiersBeneficiaire = null;
     private Boolean tiersBeneficiaireChange = Boolean.FALSE;
+    private TIAdressePaiementData adressePaiementData = null;
 
     public RESaisieManuelleRABCPDViewBean() {
         super();
@@ -374,6 +383,14 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
         return RESaisieManuelleRABCPDViewBean.METHODES_SEL_ADRESSE_PAIEMENT;
     }
 
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return RESaisieManuelleRABCPDViewBean.METHODES_SEL_REFERENCE_PAIEMENT_QR;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return RESaisieManuelleRABCPDViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
+    }
+
     public String getMoisAppAp73BasesCalcul() {
         if (moisAppAp73BasesCalcul.length() == 2) {
             return moisAppAp73BasesCalcul;
@@ -570,6 +587,7 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
 
     public void setAdressePaiement(TIAdressePaiementData adressePaiement) throws Exception {
         if (adressePaiement != null) {
+            adressePaiementData = adressePaiement;
             idTiersAdressePmtIC = adressePaiement.getIdTiers();
         } else {
             idTiersAdressePmtIC = "";
@@ -750,10 +768,17 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
 
     public void setIdTiersAdressePmtICDepuisPyxis(String string) {
         setIdTiersAdressePmtIC(string);
+        setIdReferenceQRDepuisPyxis("");
         idTiersAdressePmtICDepuisPyxis = string;
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
+    }
 
+    public void setIdReferenceQRDepuisPyxis(String value) {
+        setIdReferenceQR(value);
+        idReferenceQRDepuisPyxis = value;
+        retourDepuisPyxis = true;
+        tiersBeneficiaireChange = true;
     }
 
     public void setIdTiersBeneficiaire(String string) {
@@ -836,8 +861,34 @@ public class RESaisieManuelleRABCPDViewBean extends PRAbstractViewBeanSupport {
         tiersBeneficiaireChange = b;
     }
 
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
+
     @Override
     public boolean validate() {
         return false;
     }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
+    }
+
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
+    }
+
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
+    }
+
+    public String getIdReferenceQRDepuisPyxis() {
+        return idReferenceQRDepuisPyxis;
+    }
+
+
 }

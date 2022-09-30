@@ -18,7 +18,8 @@ public enum RELigneDeblocageTableDef implements TableDefinition {
     CS_TYPE_DEBLOCAGE("CS_TYPE_DEBLOCAGE", Integer.class),
     CS_ETAT("CS_ETAT", Integer.class),
     MONTANT("MONTANT", BigDecimal.class),
-    REFERENCE_PAIEMENT("REFERENCE_PAIEMENT", String.class);
+    REFERENCE_PAIEMENT("REFERENCE_PAIEMENT", String.class),
+    ID_REFERENCE_QR("ID_REF_QR", String.class);
 
     public static final String TABLE_NAME = "RE_LIGNE_DEBLOCAGE";
     private String columnName;

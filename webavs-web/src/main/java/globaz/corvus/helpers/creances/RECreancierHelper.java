@@ -398,6 +398,7 @@ public class RECreancierHelper extends PRAbstractHelper {
                 rpViewBean.getIdDomaineApplicatif(), rpViewBean.getIdAffilieAdressePmt(), JACalendar.todayJJsMMsAAAA());
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -428,9 +429,9 @@ public class RECreancierHelper extends PRAbstractHelper {
             }
 
             if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
-                String adresseLine = rpViewBean.getCcpOuBanqueFormatte();
-                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
-                rpViewBean.setCcpOuBanqueFormatte(adresseLine);
+                rpViewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR()));
+            } else {
+                rpViewBean.setReferenceQRFormattee("");
             }
 
         } else {

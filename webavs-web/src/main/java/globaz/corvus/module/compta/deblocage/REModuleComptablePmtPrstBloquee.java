@@ -40,6 +40,10 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 /**
  * Description Génère les écritures comptables pour le déblocage d'une rente accordée
@@ -170,11 +174,13 @@ public class REModuleComptablePmtPrstBloquee extends AREModuleComptable {
         String motifVersement = getMotifVersementDeblocage((BSession) session, tw, refPmt, ra.getCodePrestation(),
                 idTiersAdrPmt);
 
+        String referenceQR = PRTiersHelper.getReferenceQR((BSession)session, ra.getIdReferenceQR());
+
         String dateValeurComptable = getDateValeurComptable((BSession) session, cal);
 
         if (doOV) {
             memoryLog.logMessage(doOrdreVersement((BSession) session, compta, compteAnnexe.getIdCompteAnnexe(),
-                    idSection, montant.toString(), adr.getIdAvoirPaiementUnique(), motifVersement, dateValeurComptable,
+                    idSection, montant.toString(), adr.getIdAvoirPaiementUnique(), motifVersement, referenceQR, dateValeurComptable,
                     false));
 
         } else {

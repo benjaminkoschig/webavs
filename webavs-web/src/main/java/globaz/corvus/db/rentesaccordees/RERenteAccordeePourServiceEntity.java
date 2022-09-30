@@ -125,6 +125,7 @@ public final class RERenteAccordeePourServiceEntity extends BEntity {
     private String traductionPaysTiersCreancierEnFrancais;
     private String traductionPaysTiersCreancierEnItalien;
     private TypePrestationDue typePrestationDue;
+    private String idReferenceQRPrestationAccordee;
 
     public RERenteAccordeePourServiceEntity() {
         super();
@@ -454,6 +455,9 @@ public final class RERenteAccordeePourServiceEntity extends BEntity {
                 statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION));
         referencePourLePaiementPrestationAccordee = statement
                 .dbReadString(REPrestationsAccordees.FIELDNAME_REFERENCE_PMT);
+
+        idReferenceQRPrestationAccordee = statement
+                .dbReadString(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
 
         idCompteAnnexePrestationAccordee = RERenteAccordeePourServiceEntity.parseLong(
                 statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE),
@@ -785,5 +789,9 @@ public final class RERenteAccordeePourServiceEntity extends BEntity {
 
     public boolean laPrestationEstBloquee() {
         return laPrestationEstBloquee;
+    }
+
+    public String getIdReferenceQRPrestationAccordee() {
+        return idReferenceQRPrestationAccordee;
     }
 }

@@ -451,7 +451,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
                 idDomainePaiement, idAffilie, JACalendar.todayJJsMMsAAAA()));
 
-        TIReferencePaiement referencePaiement = PRTiersHelper.getReferenceQR(getSession(), idReferenceQR); // TODO ESVE WHAT IS THAT?
+        String referencePaiement = PRTiersHelper.getReferenceQR(getSession(), idReferenceQR); // TODO ESVE WHAT IS THAT?
         if(referencePaiement == null){
             idReferenceQR = "";
         }

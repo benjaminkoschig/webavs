@@ -1,6 +1,7 @@
 package globaz.corvus.db.retenues;
 
 import globaz.corvus.api.retenues.IRERetenues;
+import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.util.FWCurrency;
@@ -51,6 +52,7 @@ public class RERetenuesPaiement extends BEntity {
     public static final String FIELDNAME_REVENU_ANNUEL_DETERMINANT = "REVENU_ANNUEL_DETERMINANT";
     public static final String FIELDNAME_TAUX_IMPOSITION = "YQMTAU";
     public static final String FIELDNAME_TYPE_RETENU = "YQTTYP";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "ID_REF_QR";
     public static final String TABLE_NAME_RETENUES = "RERETEN";
 
     private String cantonImposition = "";
@@ -76,6 +78,7 @@ public class RERetenuesPaiement extends BEntity {
     private transient CASection section = null;
     private String tauxImposition = "";
     private String revenuAnnuelDeterminant = "";
+    private String idReferenceQR = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -112,6 +115,7 @@ public class RERetenuesPaiement extends BEntity {
         tauxImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TAUX_IMPOSITION);
         revenuAnnuelDeterminant = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_REVENU_ANNUEL_DETERMINANT);
         cantonImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_CANTON_IMPOSITION);
+        idReferenceQR = statement.dbReadString(RERetenuesPaiement.FIELDNAME_ID_REFERENCE_QR);
     }
 
     @Override
@@ -269,6 +273,8 @@ public class RERetenuesPaiement extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), revenuAnnuelDeterminant, "revenuAnnuelDeterminant"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_CANTON_IMPOSITION,
                 this._dbWriteNumeric(statement.getTransaction(), cantonImposition, "cantonImposition"));
+        statement.writeField(RERetenuesPaiement.FIELDNAME_ID_REFERENCE_QR,
+                this._dbWriteString(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
     }
 
     public String getCantonImposition() {
@@ -507,5 +513,13 @@ public class RERetenuesPaiement extends BEntity {
 
     public void setRevenuAnnuelDeterminant(String string){
         revenuAnnuelDeterminant = string;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 }

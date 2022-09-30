@@ -101,6 +101,7 @@ public class DecisionServiceImpl implements DecisionService {
         renteAccordee.setMoisFin(uneLigne.getMoisFinPrestationAccordeeDecision());
         renteAccordee.setMontant(uneLigne.getMontantPrestationAccordeeDecision());
         renteAccordee.setReferencePourLePaiement(uneLigne.getReferencePourLePaiementPrestationAccordeeDecision());
+        renteAccordee.setIdReferenceQR(uneLigne.getIdReferenceQRPrestationAccordeeDecision());
 
         PersonneAVS beneficiaire = new PersonneAVS();
         beneficiaire.setId(uneLigne.getIdTiersBeneficiairePrestationAccordeeDecision());
@@ -137,6 +138,7 @@ public class DecisionServiceImpl implements DecisionService {
         renteAccordee.setMoisFin(uneLigne.getMoisFinPrestationAccordeeOrdreVersement());
         renteAccordee.setMontant(uneLigne.getMontantPrestationAccordeeOrdreVersement());
         renteAccordee.setReferencePourLePaiement(uneLigne.getReferencePourLePaiementPrestationAccordeeOrdreVersement());
+        renteAccordee.setIdReferenceQR(uneLigne.getIdReferenceQRPrestationAccordeeOrdreVersement());
 
         PersonneAVS beneficiaire = new PersonneAVS();
         beneficiaire.setId(uneLigne.getIdTiersBeneficiairePrestationAccordeeOrdreVersement());

@@ -44,6 +44,7 @@ public class RECreancier extends BEntity {
     public static final String FIELDNAME_REVENU_ANNUEL_DETERMINANT = "YSRAND";
     public static final String FIELDNAME_TAUX_IMPOSITION = "YSRTIM";
     public static final String FIELDNAME_REF_PAIEMENT = "YSLRPA";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "ID_REF_QR";
     public static final String TABLE_NAME_CREANCIER = "RECREAN";
 
     // ~ Instance fields
@@ -67,6 +68,7 @@ public class RECreancier extends BEntity {
     private String revenuAnnuelDeterminant = "";
     private String tauxImposition = "";
     private String refPaiement = "";
+    private String idReferenceQR = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -124,6 +126,7 @@ public class RECreancier extends BEntity {
         refPaiement = statement.dbReadString(FIELDNAME_REF_PAIEMENT);
         idTiersRegroupement = statement.dbReadNumeric(FIELDNAME_ID_TIERS_REGROUPEMENT);
         isBloque = statement.dbReadBoolean(FIELDNAME_IS_BLOQUE);
+        idReferenceQR = statement.dbReadString(FIELDNAME_REF_PAIEMENT);
     }
 
     /**
@@ -191,6 +194,8 @@ public class RECreancier extends BEntity {
                 _dbWriteNumeric(statement.getTransaction(), idTiersRegroupement, "idTiersRegroupement"));
         statement.writeField(FIELDNAME_IS_BLOQUE,
                 _dbWriteBoolean(statement.getTransaction(), isBloque, BConstants.DB_TYPE_BOOLEAN_CHAR, "isBloque"));
+        statement.writeField(FIELDNAME_ID_REFERENCE_QR,
+                _dbWriteString(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
     }
 
     /**
@@ -314,7 +319,7 @@ public class RECreancier extends BEntity {
 
     /**
      * setter pour l'attribut adresse paiement.
-     * 
+     *
      * @param adressePaiement
      *            une nouvelle valeur pour cet attribut
      */
@@ -437,4 +442,11 @@ public class RECreancier extends BEntity {
         refPaiement = string;
     }
 
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
 }

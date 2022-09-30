@@ -25,7 +25,10 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,6 +108,8 @@ public class REAvanceHelper extends PRAbstractHelper {
                 JACalendar.todayJJsMMsAAAA());
         viewBean.setCsDomaine(adresse.getIdApplication());
 
+        viewBean.setAdressePaiementData(adresse);
+
         REAdressePmtUtil adressePaiementUtils = new REAdressePmtUtil();
         if ((adresse != null) && !adresse.isNew()) {
             TIAdressePaiementDataSource source = new TIAdressePaiementDataSource();
@@ -119,6 +124,12 @@ public class REAvanceHelper extends PRAbstractHelper {
             adressePaiementUtils.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
             adressePaiementUtils.setNom(viewBean.getNom());
             adressePaiementUtils.setPrenom(viewBean.getPrenom());
+
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                viewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, viewBean.getIdReferenceQR()));
+            } else {
+                viewBean.setReferenceQRFormattee("");
+            }
         }
         viewBean.setAdpmt(adressePaiementUtils);
     }
