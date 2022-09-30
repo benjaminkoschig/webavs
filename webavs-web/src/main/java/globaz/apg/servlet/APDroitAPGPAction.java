@@ -2,9 +2,11 @@ package globaz.apg.servlet;
 
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
+import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.util.APGSeodorServiceCallUtil;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
+import globaz.apg.vb.droits.APDroitMatPViewBean;
 import globaz.apg.vb.prestation.APValidationPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -125,6 +127,15 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         }
 
         FWViewBeanInterface viewBean = this.loadViewBean(session);
+
+        String[] methods = request.getParameterValues("_method");
+        if(methods != null && methods.length > 0 && "corrigerFromAcorWeb".equals(methods[0])){
+            try {
+                APPrestationHelper.supprimerPrestationsDuDroit((BSession) viewBean.getISession(), ((APDroitAPGPViewBean) viewBean).getIdDroit());
+            }catch (Exception e){
+                throw new ServletException(e);
+            }
+        }
 
         APDroitAPGDTO dto = new APDroitAPGDTO(((APDroitAPGPViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);

@@ -8,6 +8,7 @@ package globaz.apg.servlet;
 
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
+import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.droits.APDroitDTO;
 import globaz.apg.vb.droits.APDroitMatPViewBean;
@@ -16,6 +17,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BSession;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -124,6 +126,15 @@ public class APDroitMatPAction extends APAbstractDroitPAction {
         }
 
         FWViewBeanInterface viewBean = this.loadViewBean(session);
+
+        String[] methods = request.getParameterValues("_method");
+        if(methods != null && methods.length > 0 && "corrigerFromAcorWeb".equals(methods[0])){
+            try {
+                APPrestationHelper.supprimerPrestationsDuDroit((BSession) viewBean.getISession(), ((APDroitMatPViewBean) viewBean).getIdDroit());
+            }catch (Exception e){
+                throw new ServletException(e);
+            }
+        }
 
         APDroitDTO dto = new APDroitDTO();
         dto.setDateDebutDroit(((APDroitMatPViewBean) viewBean).getDateDebutDroit());
