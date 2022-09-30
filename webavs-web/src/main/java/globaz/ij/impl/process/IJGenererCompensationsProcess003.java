@@ -302,7 +302,7 @@ public class IJGenererCompensationsProcess003 extends BProcess implements IIJGen
 
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite());
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), repartitionPaiementsJointEmployeur.getReferenceQR());
 
                     // Key key = new
                     // Key(repartitionPaiementsJointEmployeur.getIdTiers(),
@@ -311,6 +311,7 @@ public class IJGenererCompensationsProcess003 extends BProcess implements IIJGen
                     // repartitionPaiementsJointEmployeur.getIdParticularite());
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
+                    key.referencePaiement = repartitionPaiementsJointEmployeur.getReferenceQR();
 
                     // On ne prend que les répartition parente. Les répartitions
                     // enfants (montant ventilé) correspondent à une adresse de

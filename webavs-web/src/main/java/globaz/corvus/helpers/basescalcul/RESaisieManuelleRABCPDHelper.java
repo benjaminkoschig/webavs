@@ -42,7 +42,6 @@ import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -51,10 +50,12 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import ch.globaz.prestation.domaine.CodePrestation;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 
 /**
  * @author HPE
@@ -1048,8 +1049,8 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
 
             // formatter l'adresse
             String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(source.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(source.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
             }
             saViewBean.setAdresseFormattee(adresseLine);
         } else {

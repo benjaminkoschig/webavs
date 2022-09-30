@@ -334,6 +334,8 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
 
             decision.setIdTiersAdressePaiementPersonnalisee(documentProperties
                     .getParameter("idTiersAdressePaiementPersonnalisee"));
+            decision.setIdReferenceQR(documentProperties
+                    .getParameter("idReferenceQR"));
             decision.setIdDomaineAdressePaiementPersonnalisee(documentProperties
                     .getParameter("idDomaineApplicationAdressePaiementPersonnalisee"));
             decision.setNumeroAffilieAdressePaiementPersonnalisee(documentProperties
@@ -411,6 +413,8 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
 
             decision.setIdTiersAdressePaiementPersonnalisee(documentProperties
                     .getParameter("idTiersAdressePaiementPersonnalisee"));
+            decision.setIdReferenceQR(documentProperties
+                    .getParameter("idReferenceQR"));
             decision.setIdDomaineAdressePaiementPersonnalisee(documentProperties
                     .getParameter("idDomaineApplicationAdressePaiementPersonnalisee"));
             decision.setNumeroAffilieAdressePaiementPersonnalisee(documentProperties

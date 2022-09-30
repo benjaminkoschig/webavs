@@ -10,7 +10,9 @@
 <%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 
-<%@page import="globaz.framework.util.FWMessageFormat"%><script language="JavaScript">
+<%@page import="globaz.framework.util.FWMessageFormat"%>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
+<script language="JavaScript">
 
 </script>
 <%
@@ -196,6 +198,13 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
 	  }
+	  <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+		  $('.withoutReferencePaiement').hide();
+		  $('.withReferencePaiement').show();
+	  <%} else{%>
+		  $('.withoutReferencePaiement').show();
+		  $('.withReferencePaiement').hide();
+	  <%}%>
   }
 
   function boutonIndependantChange() {
@@ -688,7 +697,6 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
                             <%}%>
 						</TR>
 						<TR>
-							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
 							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 
@@ -737,7 +745,31 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR><TD class="withoutReferencePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR>
+							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
+							<TD class="withReferencePaiement" colspan="6">
+
+								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
+								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
+								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+
+								<%
+									Object[] referencePaiementMethodsName = new Object[]{ new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReferenceQR"}};
+									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+								%>
+								<ct:FWSelectorTag
+										name="referencePaiementSelector1"
+										methods="<%=referencePaiementMethodsName%>"
+										providerApplication ="pyxis"
+										providerPrefix="TI"
+										providerAction ="pyxis.tiers.referencePaiement.chercher"
+										providerActionParams ="<%=referencePaiementParams%>"
+										target="fr_main"
+										redirectUrl="<%=mainServletPath%>"
+								/>
+							</TD>
+						</TR>
 						<TR><TD colspan="6"><HR></TD></TR>
 						<TR>
 							<TD><LABEL for="isCollaborateurAgricole"><ct:FWLabel key="JSP_COLL_AGRICOLE"/></LABEL></TD>

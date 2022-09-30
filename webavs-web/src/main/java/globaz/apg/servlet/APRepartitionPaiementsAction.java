@@ -708,6 +708,7 @@ public class APRepartitionPaiementsAction extends PRDefaultAction {
         newViewBean.setIdDroit(oldViewBean.getIdDroit());
         newViewBean.setGenreService(oldViewBean.getGenreService());
         newViewBean.setIdPrestationApg(oldViewBean.getIdPrestationApg());
+        newViewBean.setIdReferenceQR(oldViewBean.getIdReferenceQR());
         newViewBean.setIdsPrestations(oldViewBean.getIdsPrestations());
         newViewBean.setIdOfIdPrestationCourante(oldViewBean.getIdOfIdPrestationCourante());
 

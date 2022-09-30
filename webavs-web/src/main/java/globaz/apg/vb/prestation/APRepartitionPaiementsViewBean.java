@@ -3,11 +3,14 @@ package globaz.apg.vb.prestation;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -16,8 +19,12 @@ import globaz.osiris.external.IntRole;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <H1>Description</H1>
@@ -80,6 +87,8 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     // infos relatives a la prestation
     private String tauxPrestation = "";
     private boolean tiersBeneficiaireChange = false;
+
+    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
 
     /**
      * getter pour l'attribut adresse formattee
@@ -455,6 +464,43 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     }
 
     /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+    public TIAdressePaiementData getOrReloadAdressePaiementData() {
+        try {
+            if(adressePaiementData.isNew()
+                    && !JadeStringUtil.isBlank(getIdTiersAdressePaiement())
+                    && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement())) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersAdressePaiement(),
+                        getIdDomaineAdressePaiement(),
+                        null, JACalendar.todayJJsMMsAAAA());
+                if (Objects.nonNull(paiementData)) {
+                    setAdressePaiementData(paiementData);
+                } else {
+                    paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                            getSession().getCurrentThreadTransaction(),
+                            getIdTiersAdressePaiement(),
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_DEFAULT,
+                            null, JACalendar.todayJJsMMsAAAA());
+                    if (Objects.nonNull(paiementData)) {
+                        setAdressePaiementData(paiementData);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return adressePaiementData;
+
+    }
+
+    /**
      * @return
      */
     public String getNomPrenomAssure() {
@@ -467,7 +513,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * getter pour l'attribut taux prestation
-     * 
+     *
      * @return la valeur courante de l'attribut taux prestation
      */
     public String getTauxPrestation() {
@@ -476,7 +522,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai s'il y a plus d'une prestation pour ce droit et que la prestation courante n'est pas la premiere.
-     * 
+     *
      * @return DOCUMENT ME!
      */
     public boolean hasPrestationPrecedante() {
@@ -485,7 +531,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai s'il y a plus d'une prestation pour ce droit et que la prestation courante n'est pas la derniere.
-     * 
+     *
      * @return DOCUMENT ME!
      */
     public boolean hasPrestationSuivante() {
@@ -501,7 +547,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai si la prestation courante est dans l'etat definitif.
-     * 
+     *
      * @return vrai si la prestation courante est dans l'etat definitif
      */
     public boolean isDefinitif() {
@@ -510,7 +556,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai si la repartition de paiement peut etre modifiee.
-     * 
+     *
      * @return la valeur courante de l'attribut modifiable
      */
     public boolean isModifiable() {
@@ -539,7 +585,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * getter pour l'attribut restitution.
-     * 
+     *
      * @return la valeur courante de l'attribut restitution
      */
     public boolean isRestitution() {
@@ -565,7 +611,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * getter pour l'attribut retour depuis pyxis
-     * 
+     *
      * @return la valeur courante de l'attribut retour depuis pyxis
      */
     public boolean isRetourDepuisPyxis() {
@@ -581,7 +627,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai si la prestation courante est dans l'etat valide.
-     * 
+     *
      * @return la valeur courante de l'attribut validee
      */
     public boolean isValidee() {
@@ -590,11 +636,15 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * retourne vrai si la repartition courante est une ventilation du montant d'une repartition.
-     * 
+     *
      * @return la valeur courante de l'attribut ventilation
      */
     public boolean isVentilation() {
         return !JadeStringUtil.isIntegerEmpty(getIdParent());
+    }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
     }
 
     /** passe a la prestation precedante pour ce droit s'il en existe une */
@@ -609,7 +659,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut adresse formattee
-     * 
+     *
      * @param adresseFormattee
      *            une nouvelle valeur pour cet attribut
      */
@@ -637,7 +687,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut ccp formatte
-     * 
+     *
      * @param ccpFormatte
      *            une nouvelle valeur pour cet attribut
      */
@@ -647,7 +697,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut date debut droit
-     * 
+     *
      * @param dateDebutDroit
      *            une nouvelle valeur pour cet attribut
      */
@@ -657,7 +707,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut date debut prestation
-     * 
+     *
      * @param dateDebutPrestation
      *            une nouvelle valeur pour cet attribut
      */
@@ -667,7 +717,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut date fin prestation
-     * 
+     *
      * @param dateFinPrestation
      *            une nouvelle valeur pour cet attribut
      */
@@ -677,7 +727,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut droit acquis
-     * 
+     *
      * @param droitAcquis
      *            une nouvelle valeur pour cet attribut
      */
@@ -687,7 +737,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut etat prestation
-     * 
+     *
      * @param etatPrestation
      *            une nouvelle valeur pour cet attribut
      */
@@ -704,7 +754,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut genre indemnite
-     * 
+     *
      * @param genreIndemnite
      *            une nouvelle valeur pour cet attribut
      */
@@ -718,7 +768,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut id droit
-     * 
+     *
      * @param idDroit
      *            une nouvelle valeur pour cet attribut
      */
@@ -728,7 +778,7 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
 
     /**
      * setter pour l'attribut id prestation courante
-     * 
+     *
      * @param idOfIdPrestationCourante
      *            une nouvelle valeur pour cet attribut
      */
@@ -780,6 +830,16 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     public void setIdTiersAdressePaiementDepuisPyxis(String idTiersAdressePaiement) {
         super.setIdTiersAdressePaiement(idTiersAdressePaiement);
         retourDepuisPyxis = true;
+    }
+
+    public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
+        super.setIdReferenceQR(idReferenceQR);
+        retourDepuisPyxis = true;
+        tiersBeneficiaireChange = true;
+    }
+
+    public boolean hasAdressePaiementQRIban() {
+        return !JadeStringUtil.isEmpty(ccpOuBanqueFormatte) && TIAdressePaiement.isQRIban(getOrReloadAdressePaiementData().getCompte());
     }
 
     /**
@@ -916,4 +976,17 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
         tiersBeneficiaireChange = b;
     }
 
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
+    }
+
+    @Override
+    protected void _validate(globaz.globall.db.BStatement statement) throws Exception {
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
+    }
 }

@@ -14,6 +14,7 @@ import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.application.IJApplication;
 import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
+import globaz.ij.db.decisions.IJDecisionIJAI;
 import globaz.ij.db.prestations.*;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJSituationProfessionnelle;
@@ -443,6 +444,14 @@ public class IJRepartitionPaiementBuilder {
         repartition.setMontantNet(prestation.getMontantBrut());
         repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
 
+        // reprends la référenceQR de la décisions si il y a en a une
+        IJDecisionIJAI ijDecisionIJAI = new IJDecisionIJAI();
+        ijDecisionIJAI.setIdDecision(prononce.getIdDecision());
+        ijDecisionIJAI.retrieve();
+        if (!ijDecisionIJAI.isNew()) {
+            repartition.setIdReferenceQR(ijDecisionIJAI.getIdReferenceQR());
+        }
+
         // sauver dans la base
         repartition.setSession(session);
         repartition.add(transaction);
@@ -589,6 +598,14 @@ public class IJRepartitionPaiementBuilder {
         repartition.setMontantBrut(prestation.getMontantBrut());
         repartition.setMontantNet(prestation.getMontantBrut());
         repartition.setTypePaiement(IIJRepartitionPaiements.CS_PAIEMENT_DIRECT);
+
+        // reprends la référenceQR de la décisions si il y a en a une
+        IJDecisionIJAI ijDecisionIJAI = new IJDecisionIJAI();
+        ijDecisionIJAI.setIdDecision(prononce.getIdDecision());
+        ijDecisionIJAI.retrieve();
+        if (!ijDecisionIJAI.isNew()) {
+            repartition.setIdReferenceQR(ijDecisionIJAI.getIdReferenceQR());
+        }
 
         // Dans le cas des AIT uniquement, mais a priori cette methode est
         // appelée uniquement

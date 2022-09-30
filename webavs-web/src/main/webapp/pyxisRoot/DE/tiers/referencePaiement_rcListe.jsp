@@ -40,7 +40,7 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReference().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReference())) {
+				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReferenceQR().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReferenceQR())) {
 					condition = !oldCondition;
 					oldCondition = condition;
 					sameAdresse = false;
@@ -56,16 +56,16 @@
 	<%-- tpl:put name="zoneList"  --%>
 <%
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean entity = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean) viewBean.getEntity(i);
-	actionDetail = "parent.location.href='"+detailLink+entity.getIdReference()+"'";
+	actionDetail = "parent.location.href='"+detailLink+entity.getIdReferenceQR()+"'";
 %>
 <%
 	if  (!sameAdresse) {
 		pos ++;
 %>
       <TD class="mtd" width="16" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">
-			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReference();%>
+			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReferenceQR();%>
 			<ct:menuPopup menu="reference-paiement" detailLabelId="Detail" detailLink="<%=url%>">
-	 			<ct:menuParam key="idReference" value="<%=entity.getIdReference()%>"/>
+	 			<ct:menuParam key="idReference" value="<%=entity.getIdReferenceQR()%>"/>
 			</ct:menuPopup>
       </TD>
 
