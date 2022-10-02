@@ -35,6 +35,7 @@ import globaz.prestation.tools.PRSession;
 import java.util.List;
 import ch.globaz.common.domaine.AdressePaiement;
 import com.google.common.base.Joiner;
+import org.apache.commons.lang3.StringUtils;
 
 public class REComptabiliseDebloquage extends AREModuleComptable {
 
@@ -74,7 +75,9 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
 
                 AdressePaiement adr = versement.loadAdressePaiement();
 
-                String referenceQR = PRTiersHelper.getReferenceQR(session, versement.getLigneDeblocage().getIdReferenceQR());
+                // TODO EBSC : dans le cadre des déblocages, on ne gère pas les références QR.
+//                String referenceQR = PRTiersHelper.getReferenceQR(session, versement.getLigneDeblocage().getIdReferenceQR());
+                String referenceQR = StringUtils.EMPTY;
 
                 String idSection = versement.getLigneDeblocageVentilation().getIdSectionSource().toString();
                 CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();

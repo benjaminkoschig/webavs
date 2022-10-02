@@ -25,7 +25,6 @@ public class RELigneDeblocage extends JadeEntity {
     private RELigneDeblocageEtat etat;
     private Montant montant;
     private String refPaiement;
-    private String idReferenceQR;
     private String idCompteAnnexe;
 
     @Override
@@ -41,7 +40,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
         this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
-        this.write(RELigneDeblocageTableDef.ID_REFERENCE_QR, idReferenceQR);
     }
 
     @Override
@@ -58,7 +56,6 @@ public class RELigneDeblocage extends JadeEntity {
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
         refPaiement = this.read(RELigneDeblocageTableDef.REFERENCE_PAIEMENT);
-        idReferenceQR = this.read(RELigneDeblocageTableDef.ID_REFERENCE_QR);
     }
 
     @Override
@@ -227,13 +224,4 @@ public class RELigneDeblocage extends JadeEntity {
         this.idCompteAnnexe = idCompteAnnexe;
     }
 
-    // TODO mapper les champs Reference QR
-
-    public String getIdReferenceQR() {
-        return idReferenceQR;
-    }
-
-    public void setIdReferenceQR(String idReferenceQR) {
-        this.idReferenceQR = idReferenceQR;
-    }
 }
