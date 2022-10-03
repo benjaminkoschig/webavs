@@ -4,6 +4,7 @@ import acor.ch.admin.zas.rc.annonces.rente.pool.PoolAntwortVonZAS;
 import acor.ch.admin.zas.rc.annonces.rente.rc.ELRueckMeldungType;
 import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung10Type;
 import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung9Type;
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
@@ -118,7 +119,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     private void importFiles() throws PropertiesException, JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException, AdaptationException {
         LOG.info("Récupération des fichiers xml de la CdC");
         // récupération des fichiers distants
-        String urlFtpCdC = REProperties.URL_CENTRALE_ADAPTATIONS_RENTES.getValue();
+        String urlFtpCdC = CommonProperties.URL_CENTRALE_ADAPTATIONS_RENTES.getValue();
         List<String> repositoryFtpCdc = JadeFsFacade.getFolderChildren(urlFtpCdC);
         // création du répertoire de travail local
         String localFolder = Jade.getInstance().getPersistenceDir() + DOSSIER_ANNONCES_51_53_61;
@@ -328,7 +329,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     }
 
     private String getEMailAddressAdaptationRentes() throws PropertiesException {
-        String eMailAddress = REProperties.DESTINATAIRE_MAIL_ERREURS_ADAPTATIONS_RENTES.getValue();
+        String eMailAddress = CommonProperties.DESTINATAIRE_MAIL_ERREURS_ADAPTATIONS_RENTES.getValue();
 
         if (((eMailAddress == null) || (eMailAddress.length() == 0)) && getSession() != null) {
             return getSession().getUserEMail();

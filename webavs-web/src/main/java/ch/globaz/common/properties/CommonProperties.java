@@ -81,7 +81,10 @@ public enum CommonProperties implements IProperties {
     ACOR_NAVIGATEUR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web"),
     ACOR_TOKEN_DURATION("acor.token.duration", "Indique la duré en heure de validité du token"),
     ES_TOKEN_DURATION("es.token.duration", "Indique la duré en heure de validité du token"),
-    PY_TOKEN_DURATION("py.token.duration", "Indique la duré en heure de validité du token");
+    PY_TOKEN_DURATION("py.token.duration", "Indique la duré en heure de validité du token"),
+
+    DESTINATAIRE_MAIL_ERREURS_ADAPTATIONS_RENTES("mail.erreur.adaptation.rentes","propriété pour définir l'adresse mail d'erreur lors du traitement des adaptations de rente."),
+    URL_CENTRALE_ADAPTATIONS_RENTES("centrale.url.adaptation.rentes","propriété pour définir l'url de la centrale où récupérer les fichiers de traitement des adaptations de rente.");;
 
     private String description;
     private String propertyName;
