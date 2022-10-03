@@ -5,6 +5,7 @@ import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.business.search.GFAdministrationSearch;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -49,6 +50,9 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     @Getter
     @Setter
     private String fileNamePersistance;
+    @Getter
+    @Setter
+    private String idTiersCaisse = "";
 
     @Override
     public String getId() {
@@ -168,7 +172,18 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public String getCodeCaisse() {
         try {
-            if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
+            if(!StringUtils.isBlank(idTiersCaisse)) {
+                AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+                search.setForIdTiersAdministration(idTiersCaisse);
+                search = TIBusinessServiceLocator.getAdministrationService().find(search);
+
+                if (search.getSearchResults().length == 1) {
+                    AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
+                    return complexModel.getAdmin().getCodeAdministration() + " - " +
+                            complexModel.getTiers().getDesignation1() + " " +
+                            complexModel.getTiers().getDesignation2();
+                }
+            } else if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
                 GFAdministrationSearch search = new GFAdministrationSearch();
                 search.setForCodeAdministrationLike(daDossier.getCodeCaisse());
                 search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
@@ -185,7 +200,7 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
             }
 
             return "";
-        } catch (JadeApplicationException e) {
+        } catch (JadePersistenceException | JadeApplicationException e) {
             throw new RuntimeException(e);
         }
     }
