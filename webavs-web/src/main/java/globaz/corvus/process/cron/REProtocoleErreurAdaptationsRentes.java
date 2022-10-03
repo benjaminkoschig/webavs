@@ -7,11 +7,13 @@ public class REProtocoleErreurAdaptationsRentes {
 
     List<String> annonces53enErreur;
     List<String> annonces51enErreur;
+    List<String> annonces61enErreur;
     String fichier;
 
     public REProtocoleErreurAdaptationsRentes(String aFile) {
         annonces53enErreur = new ArrayList<>();
         annonces51enErreur = new ArrayList<>();
+        annonces61enErreur = new ArrayList<>();
         fichier = aFile;
     }
 
@@ -21,6 +23,10 @@ public class REProtocoleErreurAdaptationsRentes {
 
     public void addAnnonces51enErreur(String annonce51) {
         annonces51enErreur.add(annonce51);
+    }
+
+    public void addAnnonces61enErreur(String annonce61) {
+        annonces61enErreur.add(annonce61);
     }
 
     public boolean hasErrors() {
@@ -43,6 +49,17 @@ public class REProtocoleErreurAdaptationsRentes {
         for (int i = 0 ; i < annonces51enErreur.size(); i++) {
             annonces.append(annonces51enErreur.get(i));
             if (i < annonces51enErreur.size() - 1) {
+                annonces.append(", ");
+            }
+        }
+        return annonces.toString();
+    }
+
+    public String getAnnonces61enErreur() {
+        StringBuilder annonces = new StringBuilder();
+        for (int i = 0 ; i < annonces61enErreur.size(); i++) {
+            annonces.append(annonces61enErreur.get(i));
+            if (i < annonces61enErreur.size() - 1) {
                 annonces.append(", ");
             }
         }

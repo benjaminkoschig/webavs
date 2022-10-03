@@ -159,6 +159,51 @@ public final class PRConverterUtils {
         }
     }
 
+    public static String formatDateToAAAAMMdd(XMLGregorianCalendar date) {
+        if (date == null) {
+            return StringUtils.EMPTY;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(date.getYear());
+            if (date.getMonth() < 10) {
+                sb.append("0");
+            }
+            sb.append(date.getMonth());
+            if (date.getDay() < 10) {
+                sb.append("0");
+            }
+            sb.append(date.getDay());
+            return sb.toString();
+        }
+    }
+
+
+    public static String formatddMMAAAAToAAAAMMdd(String date) {
+        if (date == null ||date.length() < 10) {
+            return StringUtils.EMPTY;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(date.substring(6,10));
+            sb.append(date.substring(3,5));
+            sb.append(date.substring(0,2));
+            return sb.toString();
+        }
+    }
+
+    public static String formatAAAAMMddToddMMAAAA(String date) {
+        if (date == null ||date.length() < 8) {
+            return StringUtils.EMPTY;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(date.substring(6,8));
+            sb.append(date.substring(4,6));
+            sb.append(date.substring(0,4));
+
+
+            return sb.toString();
+        }
+    }
+
     /**
      * Format la date en MMAA
      *
