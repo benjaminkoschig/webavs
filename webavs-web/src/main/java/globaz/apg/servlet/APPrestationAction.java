@@ -298,14 +298,13 @@ public class APPrestationAction extends PRDefaultAction {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new APEmptyIdException(APDroitLAPG.class, idDroit);
         }
-        boolean isCalculAcor = ((APPrestationViewBean) vb).isCalculACOR();
 
         APValidationPrestationViewBean newViewBean = new APValidationPrestationViewBean();
         newViewBean.setIdDroit(idDroit);
         getAction().changeActionPart(APPrestationHelper.ACTION_CONTROLE_PRESTATION_CALCULEES);
         newViewBean.setCalculMATCIAB2(((APPrestationViewBean) vb).isCalculMATCIAB2());
         newViewBean = (APValidationPrestationViewBean) mainDispatcher.dispatch(newViewBean, getAction());
-        newViewBean.setIsFromAcorWeb(isCalculAcor);
+        newViewBean.setIsFromAcorWeb(((APPrestationViewBean) vb).isCalculACOR());
 
         if (FWViewBeanInterface.ERROR.equals(newViewBean.getMsgType())) {
             this.saveViewBean(newViewBean, session);
