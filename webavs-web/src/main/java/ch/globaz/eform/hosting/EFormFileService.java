@@ -126,9 +126,9 @@ public class EFormFileService {
         Path path = Paths.get(getPathRoot(stringPath));
         if (ftpServer == null) {
             fileService.deleteDirectories(path, true);
+        } else {
+            ftpServer.deleteFolder(stringPath);
         }
-        ftpServer.deleteFolder(stringPath);
-
     }
 
     public boolean exist(String path) {
