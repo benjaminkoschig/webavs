@@ -66,6 +66,7 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
             new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 
     private String adresseFormattee = "";
+    private String referenceQRFormattee = "";
     private String ccpOuBanqueFormatte = "";
     private String forIdRenteAccordee = "";
     private String forIdTiersBeneficiaire = "";
@@ -120,7 +121,7 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
             }
 
             // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
-            if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+            if (IRERetenues.CS_TYPE_ADRESSE_PMT.equals(getCsTypeRetenue()) && JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
                 _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
             }
 
@@ -717,41 +718,11 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
         tiersBeneficiaireChange = b;
     }
 
-    /**
-     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
-     * ou si l'adresse chargé ne correspond pas au tiers
-     *
-     * @return l'adresse de paiement
-     */
-    public TIAdressePaiementData getOrReloadAdressePaiementData() {
-        try {
-            if (adressePaiementData.isNew() ||
-                    (!JadeStringUtil.isBlank(getIdTiersAdressePmt()))
-                    && !JadeStringUtil.isBlank(getIdDomaineApplicatif())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePmt())) {
-                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
-                        getSession().getCurrentThreadTransaction(),
-                        getIdTiersAdressePmt(),
-                        getIdDomaineApplicatif(),
-                        null, JACalendar.todayJJsMMsAAAA());
-                if (Objects.nonNull(paiementData)) {
-                    setAdressePaiementData(paiementData);
-                } else {
-                    paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
-                            getSession().getCurrentThreadTransaction(),
-                            getIdTiersAdressePmt(),
-                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
-                            null, JACalendar.todayJJsMMsAAAA());
-                    if (Objects.nonNull(paiementData)) {
-                        setAdressePaiementData(paiementData);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
-        }
-        return adressePaiementData;
-
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
     }
 
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
+    }
 }

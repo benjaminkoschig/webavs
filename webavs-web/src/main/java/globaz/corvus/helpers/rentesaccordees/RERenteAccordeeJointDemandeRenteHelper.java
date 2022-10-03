@@ -1328,6 +1328,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         } else {
             raViewBean.setCcpOuBanqueFormatte("");
             raViewBean.setAdresseFormattee("");
+            raViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve
             // d'adresse

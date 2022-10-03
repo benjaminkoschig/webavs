@@ -334,19 +334,6 @@ public class RERetenuesPaiement extends BEntity {
         return idReferenceQR;
     }
 
-    public String getReferenceQR() throws Exception {
-        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
-        mgr.setSession(getSession());
-        mgr.setForIdReferenceQR(idReferenceQR);
-        mgr.find(BManager.SIZE_NOLIMIT);
-
-        if(mgr.size() > 0){
-            TIReferencePaiement referencePaiement = (TIReferencePaiement) mgr.get(0);
-            return referencePaiement.getReferenceQR();
-        }
-        return StringUtils.EMPTY;
-    }
-
     public String getIdTypeSection() {
         return idTypeSection;
     }

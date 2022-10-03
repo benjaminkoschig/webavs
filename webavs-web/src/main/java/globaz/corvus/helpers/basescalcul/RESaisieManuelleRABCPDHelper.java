@@ -1059,6 +1059,7 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
         } else {
             saViewBean.setCcpOuBanqueFormatte("");
             saViewBean.setAdresseFormattee("");
+            saViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve d'adresse
             // on enleve l'idTiersAdresseDePaiement
