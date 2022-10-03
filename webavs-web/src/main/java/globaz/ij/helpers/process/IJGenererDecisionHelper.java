@@ -93,7 +93,6 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 ((BSession) session).getCurrentThreadTransaction(), decision.getIdTiersAdrPmt(),
                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
                         vb.setAdressePaiementFormatee(getAdressePmtFormatee((BSession) session, adressePmt, vb));
-                        vb.setAdressePaiementDataPersonnalise(adressePmt);
 
                         if (vb.isRetourDepuisPyxis()) {
                             // BZ 7645 : dans le cas d'un changement d'adresse de courrier, cette adresse est stockées dans le
@@ -249,6 +248,8 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 vb.getNumAffilieAdressePaiementPersonnalisee(), JACalendar.todayJJsMMsAAAA());
 
                         vb.setAdressePaiementPersonnaliseeFormatee(getAdressePmtFormatee((BSession) session, adressePmtEmp, vb));
+                        vb.setAdressePaiementDataPersonnalise(adressePmtEmp);
+
                         // pour éviter d'avoir le texte "Aucune adresse trouvée" si l'utilisateur n'a jamais rentrée
                         // d'adresse de paiement personnalisée
                         if ((adressePmtEmp != null) && !adressePmtEmp.isNew()) {

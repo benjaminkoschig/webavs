@@ -12,6 +12,8 @@
 <%@ page import="globaz.osiris.db.comptes.CACompteAnnexeManager"%>
 <%@ page import="globaz.osiris.external.IntRole"%>
 <%@ page import="globaz.corvus.db.rentesaccordees.RERenteAccordee" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
+<%@ page import="java.util.Objects" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -155,6 +157,7 @@
 							<td width="50%" colspan="2" rowspan="3">
 								<pre><span class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></pre>
 								<pre><span class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></pre>
+								<pre><span class="IJAfficheText"><%=viewBean.getReferenceQRFormattee()%></span></pre>
 							</td>
 						</tr>
 						<tr>
@@ -205,7 +208,7 @@
 							<td>
 								<ct:FWLabel key="JSP_RET_D_ADRESSE_DE_PAIEMENT" />
 							</td>
-							<td colspan="3">
+							<td colspan="1">
 <%
 		if (viewBean.isModifiable()) {
 %>								<ct:FWSelectorTag	name="selecteurAdresses" 
@@ -218,6 +221,30 @@
 <%	
 		}
 %>							</td>
+							<%if (Objects.nonNull(viewBean.getAdressePaiementData()) && TIAdressePaiement.isQRIban(viewBean.getAdressePaiementData().getCompte())) {%>
+							<td valign="middle" align="left">
+								<span><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
+								<span class="TEST">
+
+                									<input type="hidden" name="forIdTiers"
+														   value="<%=viewBean.getIdTiersAdressePmt()%>">
+                									<input type="hidden" name="forIdAdressePaiement"
+														   value="<%=viewBean.getAdressePaiementData().getIdAdressePaiement()%>">
+                									<input type="hidden" name="forCompteLike"
+														   value="<%=viewBean.getAdressePaiementData().getCompte()%>">
+
+                									 <ct:FWSelectorTag name="selecteurReferencePaiement"
+																	   methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"
+																	   providerApplication="pyxis"
+																	   providerPrefix="TI"
+																	   providerAction="pyxis.tiers.referencePaiement.chercher"
+																	   providerActionParams="<%=viewBean.getParamsChercherReferencePaiement()%>"
+																	   target="fr_main"
+																	   redirectUrl="<%=mainServletPath%>"/>
+                									&nbsp;
+                								</span>
+							</td>
+							<%}%>
 						</tr>
 						<tr class="trOptionnels <%=IRERetenues.CS_TYPE_ADRESSE_PMT%>">
 							<td colspan="4">

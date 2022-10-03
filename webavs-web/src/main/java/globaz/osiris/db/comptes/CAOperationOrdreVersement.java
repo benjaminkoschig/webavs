@@ -543,7 +543,7 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
         return ordreVersement.getAdressePaiement();
     }
 
-    public TIAdressePaiementData getAdressePaiementData() throws Exception {
+    public TIAdressePaiementData getAdressePaiementData() {
         ordreVersement.setSession(getSession());
         return ordreVersement.getAdressePaiementData();
     }

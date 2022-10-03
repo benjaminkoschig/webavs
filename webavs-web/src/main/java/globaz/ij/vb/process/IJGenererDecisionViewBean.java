@@ -244,10 +244,10 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if (adressePaiementDataPersonnalise.isNew()
-                    && !JadeStringUtil.isBlank(getIdTiersAdressePaiementPersonnalisee())
+            if (adressePaiementDataPersonnalise.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiementPersonnalisee())
                     && !JadeStringUtil.isBlank(getIdDomaineApplicationAdressePaiementPersonnalisee())
-                    && !adressePaiementDataPersonnalise.getIdTiers().equals(getIdTiersAdressePaiementPersonnalisee())) {
+                    && !adressePaiementDataPersonnalise.getIdTiers().equals(getIdTiersAdressePaiementPersonnalisee()))) {
                 TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersAdressePaiementPersonnalisee(),

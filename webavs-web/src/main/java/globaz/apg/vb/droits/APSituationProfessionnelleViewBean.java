@@ -1325,10 +1325,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if (adressePaiementData.isNew()
-                    && !JadeStringUtil.isBlank(getIdTiersPaiementEmployeur())
+            if (adressePaiementData.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersPaiementEmployeur())
                     && !JadeStringUtil.isBlank(getIdDomainePaiementEmployeur())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersPaiementEmployeur())) {
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersPaiementEmployeur()))) {
                 TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersPaiementEmployeur(),

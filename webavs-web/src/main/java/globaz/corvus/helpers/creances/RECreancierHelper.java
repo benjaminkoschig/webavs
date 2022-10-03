@@ -436,6 +436,7 @@ public class RECreancierHelper extends PRAbstractHelper {
 
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
+            rpViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve
             // d'adresse

@@ -32,13 +32,11 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
 
 /**
  * ViewBean pour les filtres de recherche de l'écran des créanciers
@@ -86,7 +84,13 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
             if (JadeStringUtil.isEmpty(getTiersNomPrenom())) {
                 _addError(statement.getTransaction(), getSession().getLabel("JSP_CRE_D_ERREUR_CREANCIER"));
             }
+
+            // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+            if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+                _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+            }
         }
+
     }
 
     /**
