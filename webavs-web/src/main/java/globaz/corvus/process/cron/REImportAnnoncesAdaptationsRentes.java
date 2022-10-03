@@ -59,7 +59,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
     private static final String XML_EXTENSION = ".xml";
     private static final String ANNONCES_SCHEMA = "acor.ch.admin.zas.rc.annonces.rente.pool";
-    public static final String DOSSIER_ANNONCES_51_53 = "annonces51_53/";
+    public static final String DOSSIER_ANNONCES_51_53_61 = "annonces51_53/";
     private static final String MAIL_ERROR_CONTENT = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT";
     private static final String MAIL_ERROR_CONTENT_51 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_51";
     private static final String MAIL_ERROR_CONTENT_53 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_53";
@@ -121,7 +121,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         String urlFtpCdC = REProperties.URL_CENTRALE_ADAPTATIONS_RENTES.getValue();
         List<String> repositoryFtpCdc = JadeFsFacade.getFolderChildren(urlFtpCdC);
         // création du répertoire de travail local
-        String localFolder = Jade.getInstance().getPersistenceDir() + DOSSIER_ANNONCES_51_53;
+        String localFolder = Jade.getInstance().getPersistenceDir() + DOSSIER_ANNONCES_51_53_61;
         if (!JadeFsFacade.exists(localFolder)) {
             JadeFsFacade.createFolder(localFolder);
         }
@@ -141,35 +141,30 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
     private boolean traitementFichier(String localFile) throws JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException, JAXBException, JAException, AdaptationException {
         String tmpLocalWorkFile = JadeFsFacade.readFile(localFile);
-        File annonce51ou53File = new File(tmpLocalWorkFile);
-        File annonce61File = new File(tmpLocalWorkFile);
+        File annonce51ou53ou61File = new File(tmpLocalWorkFile);
         datePmtMensuel = new JADate(REPmtMensuel.getDateProchainPmt(getSession()));
         dateDuTraitement = LocalDateTime.now();
-        if (annonce51ou53File.isFile()) {
-            PoolAntwortVonZAS annonces = getAnnonces(annonce51ou53File);
+        if (annonce51ou53ou61File.isFile()) {
+            PoolAntwortVonZAS annonces = getAnnonces(annonce51ou53ou61File);
 
-            REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce51ou53File.getName());
+            REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce51ou53ou61File.getName());
             // Traitement des annonces 53
             traitementAnnonces53(annonces, protocole);
             // Traitement des annonces 51
             traitementAnnonces51(annonces, protocole);
 
+            // Traitement des annonces 61
+            String dateAnnonce = PRConverterUtils.formatDateToAAAAMMdd(annonces.getLot().get(0).getPoolKopf().getErstellungsdatum());
+            try {
+                traitementAnnonces61(annonces, dateAnnonce);
+            } catch (Exception e) {
+                throw new AdaptationException("Impossibilité de traiter les annonces 61", e);
+            }
+
             if (protocole.hasErrors()) {
                 protocoles.add(protocole);
             } else {
                 return true;
-            }
-        }
-        if (annonce61File.isFile()) {
-            PoolAntwortVonZAS annonces = getAnnonces(annonce61File);
-            REProtocoleErreurAdaptationsRentes protocole = new REProtocoleErreurAdaptationsRentes(annonce61File.getName());
-
-            // Traitement
-            String dateAnnonce = PRConverterUtils.formatDateToAAAAMMdd(annonces.getLot().get(0).getPoolKopf().getErstellungsdatum());
-            try {
-                traitementAnnonces61(annonces, protocole, dateAnnonce);
-            } catch (Exception e) {
-                throw new AdaptationException("Impossibilité de traiter les annonces 61", e);
             }
         }
         return false;
@@ -197,7 +192,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 .forEach((each) -> createAnnonce51(each, protocole));
     }
 
-    private void traitementAnnonces61(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole, String dateAnnonce) {
+    private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce) {
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof ELRueckMeldungType)
