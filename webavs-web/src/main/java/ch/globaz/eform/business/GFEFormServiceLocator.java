@@ -1,5 +1,6 @@
 package ch.globaz.eform.business;
 
+import ch.globaz.eform.business.services.GFAdministrationService;
 import ch.globaz.eform.business.services.GFDaDossierDBService;
 import ch.globaz.eform.business.services.GFDaDossierSedexService;
 import ch.globaz.eform.business.services.GFEFormDBService;
@@ -17,5 +18,9 @@ public abstract class GFEFormServiceLocator {
 
     public static GFDaDossierSedexService getGFDaDossierSedexService() throws JadeApplicationServiceNotAvailableException {
         return (GFDaDossierSedexService) JadeApplicationServiceLocator.getInstance().getServiceImpl(GFDaDossierSedexService.class);
+    }
+
+    public static GFAdministrationService getGFAdministrationService() throws JadeApplicationServiceNotAvailableException {
+        return (GFAdministrationService) JadeApplicationServiceLocator.getInstance().getServiceImpl(GFAdministrationService.class);
     }
 }
