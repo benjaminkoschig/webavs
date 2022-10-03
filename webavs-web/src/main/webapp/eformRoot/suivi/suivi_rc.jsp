@@ -88,7 +88,7 @@
 		<ct:widget id='byCaisse' name='byCaisse' defaultValue='<%=viewBean != null ? viewBean.getByCaisse() : ""%>'>
 			<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
-				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
+				<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
 				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
