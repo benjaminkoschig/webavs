@@ -136,8 +136,12 @@
 		});
 		$('#boutonCorriger').click(function(){
 			document.forms[0].elements('userAction').value = actionCorriger;
-			document.forms[0].elements('_method').value = '';
-	  		document.forms[0].submit();
+			<%if(viewBean.getIsFromAcorWeb()){%>
+				document.forms[0].elements('_method').value = 'corrigerFromAcorWeb';
+			<%}else{%>
+				document.forms[0].elements('_method').value = '';
+			<%}%>
+			document.forms[0].submit();
 		});
 		
 		$('#boutonSelectAll').click(function(){

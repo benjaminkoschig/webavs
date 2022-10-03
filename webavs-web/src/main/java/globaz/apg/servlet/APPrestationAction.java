@@ -304,6 +304,7 @@ public class APPrestationAction extends PRDefaultAction {
         getAction().changeActionPart(APPrestationHelper.ACTION_CONTROLE_PRESTATION_CALCULEES);
         newViewBean.setCalculMATCIAB2(((APPrestationViewBean) vb).isCalculMATCIAB2());
         newViewBean = (APValidationPrestationViewBean) mainDispatcher.dispatch(newViewBean, getAction());
+        newViewBean.setIsFromAcorWeb(((APPrestationViewBean) vb).isCalculACOR());
 
         if (FWViewBeanInterface.ERROR.equals(newViewBean.getMsgType())) {
             this.saveViewBean(newViewBean, session);
