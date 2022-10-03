@@ -196,7 +196,7 @@ selectedIdValue = viewBean.getIdDroit();
 								<p>
 									<ct:ifhasright element="<%=IAPActions.ACTION_CALCUL_ACOR %>" crud="u">
 										<a id="lienAcorWeb" href="#" name="lienAcorWeb">
-											<ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+											<ct:FWLabel key="JSP_VALIDER_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
 										</a>
 									</ct:ifhasright>
 								</p>
