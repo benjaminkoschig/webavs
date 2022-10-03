@@ -1,12 +1,13 @@
 package globaz.eform.vb.envoi;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
+import ch.globaz.eform.business.search.GFAdministrationSearch;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
-import ch.globaz.pyxis.business.service.PersonneEtendueService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.commons.nss.NSUtil;
 import globaz.eform.translation.CodeSystem;
@@ -17,7 +18,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeComplexModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +50,9 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     @Getter
     @Setter
     private String fileNamePersistance;
+    @Getter
+    @Setter
+    private String idTiersCaisse = "";
 
     @Override
     public String getId() {
@@ -169,12 +172,24 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public String getCodeCaisse() {
         try {
-            if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
+            if(!StringUtils.isBlank(idTiersCaisse)) {
                 AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
-                search.setForCodeAdministration(daDossier.getCodeCaisse());
-                search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
-
+                search.setForIdTiersAdministration(idTiersCaisse);
                 search = TIBusinessServiceLocator.getAdministrationService().find(search);
+
+                if (search.getSearchResults().length == 1) {
+                    AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
+                    return complexModel.getAdmin().getCodeAdministration() + " - " +
+                            complexModel.getTiers().getDesignation1() + " " +
+                            complexModel.getTiers().getDesignation2();
+                }
+            } else if (!StringUtils.isBlank(daDossier.getCodeCaisse())) {
+                GFAdministrationSearch search = new GFAdministrationSearch();
+                search.setForCodeAdministrationLike(daDossier.getCodeCaisse());
+                search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
+                search.setNotNull("true");
+
+                search = GFEFormServiceLocator.getGFAdministrationService().find(search);
 
                 if (search.getSearchResults().length == 1) {
                     AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];

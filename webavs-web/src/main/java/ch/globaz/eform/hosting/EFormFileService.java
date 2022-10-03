@@ -15,6 +15,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -112,11 +113,22 @@ public class EFormFileService {
         }
     }
 
-    public void remove(String path) {
+    public void remove(String stringPath) {
+        Path path = Paths.get(getPathRoot(stringPath));
         if (ftpServer == null) {
-            fileService.delete(Paths.get(getPathRoot(path)));
+            fileService.delete(path);
         }
-        ftpServer.delete(getPathRoot(path));
+        ftpServer.delete(stringPath);
+
+    }
+
+    public void removeFolder(String stringPath) {
+        Path path = Paths.get(getPathRoot(stringPath));
+        if (ftpServer == null) {
+            fileService.deleteDirectories(path, true);
+        }
+        ftpServer.deleteFolder(stringPath);
+
     }
 
     public boolean exist(String path) {

@@ -24,6 +24,7 @@ public class GFApplication extends BApplication {
     public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
     public static final String EFORM_HOST_FILE_SERVER = "EFormHostService";
     public static final String DA_DOSSIER_HOST_FILE_SERVER = "DaDossierHostService";
+    public static final String DA_DOSSIER_PARTAGE_FILE = "DaDossierPartageFile";
 
     /**
      * Constructeur

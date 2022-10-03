@@ -171,7 +171,7 @@
 		<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 			<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 				<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
-				<ct:widgetCriteria criteria="forGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP%>"/>
+				<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
 				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} "/>
@@ -179,12 +179,13 @@
 					<script type="text/javascript">
 						function(element){
 							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
+							$('#idTiersCaisse').val($(element).attr('admin.idTiersAdministration'));
 						}
 					</script>
 				</ct:widgetJSReturnFunction>
 			</ct:widgetService>
 		</ct:widget>
-
+		<INPUT type="hidden" id="idTiersCaisse" name="idTiersCaisse" value="<%=viewBean.getIdTiersCaisse()%>">
 	</td>
 </tr><tr>
 	<td colspan="6"><div class="separateur"/></td>

@@ -23,6 +23,9 @@ public class GFAdministrationServiceImpl implements GFAdministrationService {
         if (!StringUtils.isBlank(search.getForSedexIdLike())) {
             searchComplexModel.setForDesignation1Like(search.getForSedexIdLike());
         }
+        if (!search.getInGenreAdministration().isEmpty()) {
+            searchComplexModel.setInGenreAdministration(search.getInGenreAdministration());
+        }
 
         try {
             searchComplexModel = TIBusinessServiceLocator.getAdministrationService().find(searchComplexModel);

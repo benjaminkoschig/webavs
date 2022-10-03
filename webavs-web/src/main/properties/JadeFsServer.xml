@@ -21,5 +21,8 @@
 			<server>DaDossierServer</server><!-- [REQUIRED] for type: sftp -->
 			<pathroot>PRODUCT</pathroot><!-- [REQUIRED] for type: filesystem, [OPTIONNAL] for type: sftp -->
 		</protocol>
+		<protocol name="DaDossierPartageFile" type="filesystem"><!-- type: sftp|filesystem-->
+			<pathroot>dadossier/partage</pathroot><!-- [REQUIRED] for type: filesystem, [OPTIONNAL] for type: sftp -->
+		</protocol>
 	</protocols>
 </globaz.jade.fs.service.JadeFsServer>
