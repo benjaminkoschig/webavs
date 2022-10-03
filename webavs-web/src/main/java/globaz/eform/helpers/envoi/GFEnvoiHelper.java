@@ -56,7 +56,6 @@ public class GFEnvoiHelper extends FWHelper {
                                 .map(fileName -> Paths.get(
                                         GFFileUtils.WORK_PATH +
                                                 ((GFEnvoiViewBean) viewBean).getFolderUid() + "/" +
-                                                FilenameUtils.removeExtension(((GFEnvoiViewBean) viewBean).getFileNamePersistance()) + "/" +
                                                 fileName))
                                 .collect(Collectors.toList()),
                         ((GFEnvoiViewBean) viewBean).getSession());
