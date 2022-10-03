@@ -15,12 +15,12 @@ import ch.globaz.eform.businessimpl.services.sedex.sender.GFSenderFactory;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
 import ch.globaz.eform.constant.GFStatusDADossier;
 import ch.globaz.eform.constant.GFTypeDADossier;
+import ch.globaz.eform.hosting.EFormFileService;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.web.application.GFApplication;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
-import globaz.eform.itext.GFDemandeDossier;
 import globaz.eform.itext.GFDocumentPojo;
 import globaz.eform.itext.GFEnvoiDossier;
 import globaz.eform.translation.CodeSystem;
@@ -37,11 +37,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Process qui effectue un envoi SEDEX des documents Da Dossier
@@ -55,11 +58,13 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
     private GFDaDossierModel model;
     private GFDocumentTypeDossier documentType;
-    private List<Path> attachments;
+    private List<String> attachments;
 
     @Override
     protected void _executeCleanUp() {
-
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+        String partageDir = model.getMessageId() + File.separator;
+        //fileService.removeFolder(partageDir);
     }
 
     @Override
@@ -70,7 +75,24 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         this.setSendMailOnError(true);
         this.setSendCompletionMail(false);
 
-        envoyerReponse(model, documentType, attachments, getSession());
+        List<Path> attachmentsPath;
+
+        //Transfère des fichiers joint dans le dossier work
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+
+        String partageDir = model.getMessageId() + File.separator;
+
+        if (fileService.exist(partageDir)) {
+            attachmentsPath = attachments.stream()
+                    .map(filename -> fileService.retrieve(partageDir, filename).toPath())
+                    .collect(Collectors.toList());
+        } else {
+            attachmentsPath = new ArrayList<>();
+        }
+
+        envoyerReponse(model, documentType, attachmentsPath, getSession());
+
+        //suppression du sous dossier de partage
 
         closeBsession();
         LOG.info("Fin du process d'information.");
@@ -117,7 +139,9 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         Map<GFDaDossierElementSender, String> dataMessageSedex = new HashMap<>();
 
         //Attribution des identifiants
-        model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
+        if (StringUtils.isBlank(model.getMessageId())) {
+            model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
+        }
         model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
 
         //Définition des informations complémentaire en vue de la persistence de la demande

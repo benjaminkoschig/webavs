@@ -19,7 +19,7 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
     }
 
     @Override
-    public void envoyerReponse(GFDaDossierModel model, GFDocumentTypeDossier documentType, List<Path> attachments, BSession session) throws Exception {
+    public void envoyerReponse(GFDaDossierModel model, GFDocumentTypeDossier documentType, List<String> attachments, BSession session) throws Exception {
         GFDaDossierSedexEnvoiReponseProcess process = new GFDaDossierSedexEnvoiReponseProcess();
         process.setModel(model);
         process.setDocumentType(documentType);

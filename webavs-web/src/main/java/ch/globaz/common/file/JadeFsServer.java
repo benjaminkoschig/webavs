@@ -22,7 +22,7 @@ public class JadeFsServer {
             FileUtils.copyInputStreamToFile(source, file);
             write(file, path);
         } catch (Throwable e) {
-            throw new FSOperationException("JadeFtpServer#write : error in the write file operation", e);
+            throw new FSOperationException("JadeFsServer#write : error in the write file operation", e);
         }
     }
 
@@ -31,7 +31,7 @@ public class JadeFsServer {
             File dest = new File(path + source.getName());
             FileUtils.copyFile(source, dest);
         } catch (Throwable e) {
-            throw new FSOperationException("JadeFtpServer#write : error in the write file operation", e);
+            throw new FSOperationException("JadeFsServer#write : error in the write file operation", e);
         }
     }
 
@@ -39,7 +39,7 @@ public class JadeFsServer {
         try {
             write(source.toFile(), path);
         } catch (Throwable e) {
-            throw new FSOperationException("JadeFtpServer#write : error in the write file operation", e);
+            throw new FSOperationException("JadeFsServer#write : error in the write file operation", e);
         }
     }
 
@@ -49,7 +49,7 @@ public class JadeFsServer {
                 oldFile.renameTo(newFile);
             }
         } catch (Throwable e) {
-            throw new FSOperationException("JadeFsService#rename : Unable to rename the file " + oldFile.getName() + " to " + newFile.getName() + ": ", e);
+            throw new FSOperationException("JadeFsServer#rename : Unable to rename the file " + oldFile.getName() + " to " + newFile.getName() + ": ", e);
         }
     }
 
@@ -68,7 +68,7 @@ public class JadeFsServer {
         if (Files.exists(path) && !Files.isDirectory(path)) {
             return path.toFile();
         }
-        throw new FSOperationException("JadeFtpServer#read : Unable to read file");
+        throw new FSOperationException("JadeFsServer#read : Unable to read file");
     }
 
     public File read(String path, String fileName) {
@@ -81,7 +81,7 @@ public class JadeFsServer {
                 Files.delete(path);
             }
         } catch (Throwable e) {
-            throw new FSOperationException("JadeFtpServer#delete : Unable to delete file");
+            throw new FSOperationException("JadeFsServer#delete : Unable to delete file");
         }
     }
 
@@ -106,10 +106,9 @@ public class JadeFsServer {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
-                throw new FSOperationException("JadeFtpServer#createFolder : Unable to create directory", e);
+                throw new FSOperationException("JadeFsServer#createFolder : Unable to create directory", e);
             }
         }
-        throw new FSOperationException("JadeFtpServer#createFolder : Unable to create directory");
     }
 
     @SuppressWarnings("unchecked")
@@ -131,12 +130,12 @@ public class JadeFsServer {
                     Files.deleteIfExists(path);
                     return;
                 } catch (IOException e) {
-                    throw new FSOperationException("JadeFtpServer#delete : Unable to delete directory", e);
+                    throw new FSOperationException("JadeFsServer#delete : Unable to delete directory", e);
                 }
             }
-            throw new FSOperationException("JadeFtpServer#delete : this path is not a directory");
+            throw new FSOperationException("JadeFsServer#delete : this path is not a directory");
         }
-        throw new FSOperationException("JadeFtpServer#delete : directory is not found");
+        throw new FSOperationException("JadeFsServer#delete : directory is not found");
     }
 
     public void deleteDirectories(String path, boolean recursive) {
@@ -150,11 +149,11 @@ public class JadeFsServer {
                     oldName.toFile().renameTo(newName.toFile());
                     return;
                 }
-                throw new FSOperationException("JadeFtpServer#renameFolder : the directory already exist");
+                throw new FSOperationException("JadeFsServer#renameFolder : the directory already exist");
             }
-            throw new FSOperationException("JadeFtpServer#renameFolder : this path is not a directory");
+            throw new FSOperationException("JadeFsServer#renameFolder : this path is not a directory");
         }
-        throw new FSOperationException("JadeFtpServer#renameFolder : directory is not found");
+        throw new FSOperationException("JadeFsServer#renameFolder : directory is not found");
     }
 
     public void renameFolder(String oldName, String newName) {
@@ -175,7 +174,7 @@ public class JadeFsServer {
                 return dirStream.map(subPath -> subPath.getFileName().toString()).collect(Collectors.toList());
             }
         } catch (IOException e) {
-            throw new FSOperationException("JadeFtpServer#list : directory is not found");
+            throw new FSOperationException("JadeFsServer#list : directory is not found");
         }
     }
 
