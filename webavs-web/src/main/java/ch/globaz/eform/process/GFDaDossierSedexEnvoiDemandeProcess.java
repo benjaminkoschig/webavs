@@ -92,8 +92,8 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
                 .getSedexId();
 
         GFDocumentPojo documentPojo = GFDocumentPojo.builder()
-                .nom(tiers.getDesignation2())
-                .prenom(tiers.getDesignation1())
+                .nom(tiers.getDesignation1())
+                .prenom(tiers.getDesignation2())
                 .nss(NSSUtils.formatNss(model.getNssAffilier()))
                 .dateNaissance(tiers.getDateNaissance())
                 .build();
