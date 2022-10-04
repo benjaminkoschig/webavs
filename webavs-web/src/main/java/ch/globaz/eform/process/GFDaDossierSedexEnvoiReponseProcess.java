@@ -62,7 +62,7 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_SHARE_FILE);
         String partageDir = model.getMessageId() + File.separator;
         fileService.removeFolder(partageDir);
     }
@@ -78,7 +78,7 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         List<Path> attachmentsPath;
 
         //Transfère des fichiers joint dans le dossier work
-        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_SHARE_FILE);
 
         String partageDir = model.getMessageId() + File.separator;
 
