@@ -376,7 +376,7 @@ En matière d'allocations familiales, l'amende s'élève à Fr. 75.- au maximum 
 					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Pour la bonne règle, nous vous informons que vous avez la possibilité de faire opposition à la présente décision en vous adressant, dans un délai de 30 jours dès sa notification, auprès de notre caisse FER CIAM, 98 rue de Saint-Jean, case postale 5278, 1211 Genève 11. L'opposition doit contenir un exposé succinct des motifs invoqués, ainsi que des conclusions. Une telle opposition n'aura pas d'effet suspensif.]]></text>
+				<text><![CDATA[Pour la bonne règle, nous vous informons que vous avez la possibilité de faire opposition à la présente décision en vous adressant, dans un délai de 30 jours dès sa notification, auprès de notre caisse FER CIAM, 98 rue de Saint-Jean, case postale, 1211 Genève 3. L'opposition doit contenir un exposé succinct des motifs invoqués, ainsi que des conclusions. Une telle opposition n'aura pas d'effet suspensif.]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
