@@ -187,12 +187,18 @@
 		</ct:widget>
 		<INPUT type="hidden" id="idTiersCaisse" name="idTiersCaisse" value="<%=viewBean.getIdTiersCaisse()%>">
 	</td>
-</tr><tr>
+</tr>
+<tr>
 	<td colspan="6"><div class="separateur"/></td>
-</tr><tr>
+</tr>
+<tr>
+	<td colspan="6"><div class="separateur"/></td>
+</tr>
+<tr>
 	<%--        Partie sur les fichiers--%>
 	<td><div class="libelletitre"><ct:FWLabel key="DOCUMENT_A_ENVOYER"/></div></td>
-</tr><tr>
+</tr>
+<tr>
 	<td><div class="libelle"><ct:FWLabel key="TYPE_DE_FICHIER"/></div></td>
 	<td>
 		<ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
@@ -202,11 +208,15 @@
 		</ct:select>
 
 	</td>
-</tr><tr>
+</tr>
+<tr>
 	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="FICHIER_SOURCE"/></div></td>
 	<td><div style="width: 0px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
-</tr><tr>
-
+</tr>
+<tr>
+	<td colspan="6"><ct:FWLabel key="WARNING_MESSAGE"/></td>
+</tr>
+><tr>
 	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></div></td>
 	<td colspan="5">
 		<div class="listfichiers">
