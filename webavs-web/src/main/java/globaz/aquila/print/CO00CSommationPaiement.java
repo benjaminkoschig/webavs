@@ -199,7 +199,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
                 //  - le compte annexe possède un eBillAccountID
                 //  - eBillPrintable est sélectioné sur l'écran d'impression
                 //  - l'impression prévisionel n'est pas activée
-                if (eBillAquilaActif && getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+                if (eBillAquilaActif && getEBillPrintable() && !getPrevisionnel()) {
                     if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                         try {
                             EBillSftpProcessor.getInstance();
