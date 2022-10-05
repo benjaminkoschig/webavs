@@ -209,7 +209,8 @@
 	<td><div style="width: 0px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
 </tr>
 <tr>
-	<td colspan="6" class="libelle"><ct:FWLabel key="WARNING_MESSAGE"/></td>
+	<td></td>
+	<td colspan="5"><ct:FWLabel key="WARNING_MESSAGE"/></td>
 </tr>
 <tr>
 	<td style="vertical-align: top" class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></td>

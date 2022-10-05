@@ -46,3 +46,7 @@ tr{
 #codeCaisse{
     width: 586px !important;
 }
+
+.ui-widget INPUT {
+    font-size: x-small !important;
+}
