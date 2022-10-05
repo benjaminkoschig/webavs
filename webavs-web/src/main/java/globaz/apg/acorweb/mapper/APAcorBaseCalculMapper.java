@@ -15,6 +15,7 @@ import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
+import globaz.prestation.acor.PRAcorTechnicalException;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import globaz.prestation.db.tauxImposition.PRTauxImposition;
 import globaz.prestation.db.tauxImposition.PRTauxImpositionManager;
@@ -32,7 +33,7 @@ public class APAcorBaseCalculMapper {
     private final APDroitAPG droit;
     private final List<APSituationProfessionnelle> situationsProfessionnelles;
 
-    public BasesCalculAPG map(final BSession session) throws Exception {
+    public BasesCalculAPG map(final BSession session) {
         BasesCalculAPG basesCalcul = new BasesCalculAPG();
 
         basesCalcul.setGenreCarte(1);
@@ -56,7 +57,7 @@ public class APAcorBaseCalculMapper {
             basesCalcul.setFraisGarde(Double.valueOf(situationFamilialeAPG.getFraisGarde()));
         } catch (Exception e) {
             LOG.error("Impossible de récupérer la situation familliale.", e);
-            throw new CommonTechnicalException("Impossible de récupérer la situation familliale" , e);
+            throw new PRAcorTechnicalException("Impossible de récupérer la situation familliale" , e);
         }
 
         List<APBaseCalcul> apBases = loadBasesCalcul(session);
@@ -80,22 +81,35 @@ public class APAcorBaseCalculMapper {
     public static void mapDroitAcquisInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(!JadeStringUtil.isBlankOrZero(droit.getDroitAcquis())) {
             GarantieIJ garantie = new GarantieIJ();
-            garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
-            garantie.setSource(Integer.parseInt(session.getCode(droit.getCsProvenanceDroitAcquis())));
-            garantie.setNumeroReference(droit.getReference());
-            basesCalcul.setGarantieIJ(garantie);
+            try {
+                garantie.setMontant(Double.parseDouble(droit.getDroitAcquis()));
+                if(!JadeStringUtil.isEmpty(droit.getCsProvenanceDroitAcquis())) {
+                    String code = session.getCode(droit.getCsProvenanceDroitAcquis());
+                    if(!JadeStringUtil.isEmpty(code)) {
+                        garantie.setSource(Integer.parseInt(code));
+                    }
+                }
+                garantie.setNumeroReference(droit.getReference());
+                basesCalcul.setGarantieIJ(garantie);
+            } catch (NumberFormatException e){
+                throw new PRAcorTechnicalException("Erreur lors du mapping des droits acquis du droit APG ou Maternité.", e);
+            }
         }
     }
 
-    public static void mapImpotSourceInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) throws Exception {
+    public static void mapImpotSourceInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
             if(Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
                 if(Double.parseDouble(droit.getTauxImpotSource()) != 0){
                     basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
                 }else{
-                    List tauxImpots = findTauxImposition(session, droit.getDateDebutDroit(), droit.getDateFinDroit(),
-                                        droit.getCsCantonDomicile());
-
+                    List tauxImpots;
+                    try {
+                        tauxImpots = findTauxImposition(session, droit.getDateDebutDroit(), droit.getDateFinDroit(),
+                                droit.getCsCantonDomicile());
+                    } catch(Exception e) {
+                        throw new PRAcorTechnicalException("Erreur lors du mapping de l'impôt source du droit APG ou maternité.", e);
+                    }
                     // remarque: s'il n'y a pas de taux d'impositions definis pour ce
                     // canton et qu'on n'en a pas saisi à la main,
                     // aucune cotisation n'est creee...

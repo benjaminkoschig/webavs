@@ -17,13 +17,12 @@ public class APAcorBaseCalculAmatMapper {
 
     private final APDroitMaternite droit;
 
-    public BasesCalculAMat map(final BSession session) throws Exception {
+    public BasesCalculAMat map(final BSession session) {
         BasesCalculAMat basesCalcul = new BasesCalculAMat();
 
         basesCalcul.setGenreCarte(1);
         APAcorBaseCalculMapper.mapImpotSourceInformation(session, basesCalcul, droit );
-//        basesCalcul.setAFac();
-//        basesCalcul.setExemptionCotisation();
+
         APAcorBaseCalculMapper.mapDroitAcquisInformation(session, basesCalcul, droit);
         APAcorBaseCalculMapper.mapLimiteTransferInformation(session, basesCalcul);
 
