@@ -6,6 +6,7 @@ import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierAttachmentE
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierHeaderElementSender;
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierSender;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
+import ch.globaz.eform.utils.GFFileUtils;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
@@ -102,7 +103,9 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
         //Le docuement principal est forcéemnt un
         if (this.leadingAttachment == null) { throw new IllegalArgumentException("Lettre de transfère manquante!"); }
         if (!this.attachments.entrySet().stream()
-                .allMatch(entry -> StringUtils.endsWith(entry.getKey(), "pdf") || StringUtils.endsWith(entry.getKey(), "tiff")))  { throw new IllegalArgumentException("Type de document attaché non conforme!"); }
+                .allMatch(entry -> StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_PDF)
+                        || StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_TIFF)
+                        || StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_TIF)))  { throw new IllegalArgumentException("Type de document attaché non conforme!"); }
 
         List<AttachmentType> attachments = new ArrayList<>();
 

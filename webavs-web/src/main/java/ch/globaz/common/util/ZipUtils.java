@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,7 +91,8 @@ public final class ZipUtils {
             int count;
             BufferedOutputStream bufferedOutputStream;
             FileInputStream fis =new FileInputStream(zipFile.toFile());
-            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis), Charset.forName("ISO-8859-1"));
+
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {

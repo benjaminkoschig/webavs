@@ -159,11 +159,11 @@
 	<td><ct:inputText name="prenomAssure" id="prenomAssure" disabled="true"/></td>
 	<td><div class="libelle"><ct:FWLabel key="BIRTHDAY"/></div></td>
 	<td><ct:inputText name="dateNaissance" id="dateNaissance" disabled="true"/></td>
-</tr><tr>
-	<td colspan="6"><div class="separateur"/></td>
+</tr>
+<tr><td colspan="6"><hr/></td></tr>
 
 	<%--        Partie sur la caisse--%>
-</tr><tr>
+<tr>
 	<td><div class="libelletitre"><ct:FWLabel key="CAISSE_DESTINATRICE"/></div></td>
 </tr><tr>
 	<td><div class="libelle"><ct:FWLabel key="CAISSE_DEST"/></div></td>
@@ -188,12 +188,7 @@
 		<INPUT type="hidden" id="idTiersCaisse" name="idTiersCaisse" value="<%=viewBean.getIdTiersCaisse()%>">
 	</td>
 </tr>
-<tr>
-	<td colspan="6"><div class="separateur"/></td>
-</tr>
-<tr>
-	<td colspan="6"><div class="separateur"/></td>
-</tr>
+<tr><td colspan="6"><hr/></td></tr>
 <tr>
 	<%--        Partie sur les fichiers--%>
 	<td><div class="libelletitre"><ct:FWLabel key="DOCUMENT_A_ENVOYER"/></div></td>
@@ -214,10 +209,11 @@
 	<td><div style="width: 0px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
 </tr>
 <tr>
-	<td colspan="6"><ct:FWLabel key="WARNING_MESSAGE"/></td>
+	<td></td>
+	<td colspan="5"><ct:FWLabel key="WARNING_MESSAGE"/></td>
 </tr>
-><tr>
-	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></div></td>
+<tr>
+	<td style="vertical-align: top" class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></td>
 	<td colspan="5">
 		<div class="listfichiers">
 			<table id="periodes" name=periode" style="width: 100%">

@@ -30,6 +30,7 @@ public class GFFileUtils {
     public final static String PERSISTANCE_PATH = Jade.getInstance().getPersistenceDir();
     public final static String FILE_TYPE_PDF = "pdf";
     public final static String FILE_TYPE_TIFF = "tiff";
+    public final static String FILE_TYPE_TIF = "tif";
     public final static String FILE_TYPE_ZIP = "zip";
 
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
@@ -47,7 +48,7 @@ public class GFFileUtils {
 
         if (Files.exists(filePath))
         {
-            String extension = FilenameUtils.getExtension(filePath.getFileName().toString());
+            String extension = FilenameUtils.getExtension(filePath.getFileName().toString()).toLowerCase();
             if (FILE_TYPE_ZIP.equalsIgnoreCase(extension)) {
                 Path zipDir = Paths.get(workDir.toAbsolutePath() + File.separator + FilenameUtils.removeExtension(filePath.getFileName().toString()));
 
@@ -59,8 +60,8 @@ public class GFFileUtils {
                 injectFiles(viewBean, workDir, zipDir);
 
                 Files.delete(zipDir);
-            } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
-                String originalFilename = Paths.get(viewBean.getFilename()).getFileName().toString();
+            } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF) || extension.equals(FILE_TYPE_TIF)) {
+                String originalFilename = Paths.get(viewBean.getFilename().replaceAll("\\\\", "/")).getFileName().toString();
 
                 if (isContains(viewBean.getFileNameList(), originalFilename)) {
                     List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), originalFilename);
@@ -99,9 +100,10 @@ public class GFFileUtils {
                 streamZipDir.forEach(extractFilePath -> {
                     String extension = FilenameUtils.getExtension(extractFilePath.getFileName().toString());
 
-                    switch (extension) {
-                        case "pdf":
-                        case "tiff":
+                    switch (extension.toLowerCase()) {
+                        case FILE_TYPE_PDF:
+                        case FILE_TYPE_TIFF:
+                        case FILE_TYPE_TIF:
                             break;
                         default:
                             viewBean.getErrorFileNameList().add(extractFilePath.getFileName().toString());
@@ -165,10 +167,10 @@ public class GFFileUtils {
             return true;
         } else {
             Pattern pdfFilePattern;
-            if ("pdf".equalsIgnoreCase(extention)) {
+            if (FILE_TYPE_PDF.equalsIgnoreCase(extention)) {
                 pdfFilePattern = Pattern.compile(name + "_([1-9]+)\\.pdf$");
             } else {
-                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\.tiff$");
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\."+extention+"$");
             }
 
             return fileList.stream().anyMatch(fileInjected -> {
@@ -207,7 +209,7 @@ public class GFFileUtils {
     }
 
     private static String renameFile(Integer index, String file) {
-        String extention = FilenameUtils.getExtension(file);
+        String extention = FilenameUtils.getExtension(file).toLowerCase();
 
         Pattern pdfFilePattern;
         if ("pdf".equalsIgnoreCase(extention)) {
@@ -218,11 +220,11 @@ public class GFFileUtils {
                 return mFileInjected.group(1) + "_" + index + ".pdf";
             }
         } else {
-            pdfFilePattern = Pattern.compile("(.*)(_[pP][1-9]+)\\.tiff$");
+            pdfFilePattern = Pattern.compile("(.*)(_[pP][1-9]+)\\."+extention+"$");
             Matcher mFileInjected = pdfFilePattern.matcher(file);
 
             if (mFileInjected.find()) {
-                return mFileInjected.group(1) + "_" + index + mFileInjected.group(2) + ".tiff";
+                return mFileInjected.group(1) + "_" + index + mFileInjected.group(2) + "."+extention;
             }
         }
 

@@ -8,7 +8,7 @@ input{
 }
 
 tr{
-    padding-bottom: 13px;
+    padding-bottom: 5px;
 }
 
 .libelletitre {
@@ -16,12 +16,11 @@ tr{
 }
 
 .libelle {
-    width: 120px;
     padding-left: 10px;
 }
 
 .separateur {
-    border-top: 2px solid black;
+    border-top: 1px solid black;
     height: 15px;
     margin-right: 20px;
 }
@@ -46,4 +45,8 @@ tr{
 
 #codeCaisse{
     width: 586px !important;
+}
+
+.ui-widget INPUT {
+    font-size: x-small !important;
 }
