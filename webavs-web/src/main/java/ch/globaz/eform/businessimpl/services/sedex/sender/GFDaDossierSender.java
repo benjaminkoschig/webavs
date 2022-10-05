@@ -59,11 +59,8 @@ public abstract class GFDaDossierSender<T> {
             gregorianCalendar.setTime(date);
             XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
 
-
             DatePartiallyKnownType datePartiallyKnownType = new DatePartiallyKnownType();
-            datePartiallyKnownType.setYearMonth(xmlGregorianCalendar);
             datePartiallyKnownType.setYearMonthDay(xmlGregorianCalendar);
-            datePartiallyKnownType.setYear(xmlGregorianCalendar);
             return datePartiallyKnownType;
         } catch (ParseException | DatatypeConfigurationException e) {
             throw new RuntimeException(e);

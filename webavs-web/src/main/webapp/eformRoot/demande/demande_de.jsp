@@ -49,6 +49,8 @@
 	}
 
 	function validate() {
+		$('#btnEnvoyer').prop('disabled', 'true');
+		$('#btnCan').prop('disabled', 'true');
 		var nss = document.getElementById("nssAffilier").value;
 		var caisse = document.getElementById("codeCaisse").value;
 
