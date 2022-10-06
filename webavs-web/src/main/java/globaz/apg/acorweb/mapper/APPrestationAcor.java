@@ -109,8 +109,14 @@ public class APPrestationAcor {
         }
     }
 
-    public void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul) {
-        PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().get(0);
+    public void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul, PeriodeServiceApgType periode) {
+        PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().stream().filter(b ->
+                comparePeriod2IsInsidePeriod1(
+                        b.getDebut(),
+                        b.getFin(), periode.getDebut(),
+                        periode.getFin())
+                ).findFirst()
+                .orElse(null);
         if(Objects.nonNull(periodeMontantJournApgType)){
             setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));

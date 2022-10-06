@@ -229,6 +229,42 @@ public final class APAcorImportationUtils {
         return name.replaceFirst("^\\[\\d+\\]", "");
     }
 
+    public static boolean comparePeriod2IsInsidePeriod1(Integer startDatePeriod1, Integer endDatePeriode1,
+                                                        Integer startDatePeriod2, Integer endDatePeriode2) {
+        JADate startDatePeriod1JADate;
+        try {
+            startDatePeriod1JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod1));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+        }
+        JADate endDatePeriode1JADate;
+        try {
+            endDatePeriode1JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode1));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+        }
+        JADate startDatePeriod2JADate;
+        try {
+            startDatePeriod2JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod2));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+        }
+        JADate endDatePeriode2JADate;
+        try {
+            endDatePeriode2JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode2));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+        }
+        LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1JADate);
+        LocalDate localDateFinPeriode1 = Dates.toDate(endDatePeriode1JADate);
+        LocalDate localDateDebutPeriod2 = Dates.toDate(startDatePeriod2JADate);
+        LocalDate localDateFinPeriod2 = Dates.toDate(endDatePeriode2JADate);
+        return (localDateDebutPeriod1.isBefore(localDateDebutPeriod2) ||
+                localDateDebutPeriod1.isEqual(localDateDebutPeriod2)) &&
+                (localDateFinPeriode1.isAfter(localDateFinPeriod2) ||
+                        localDateFinPeriode1.isEqual(localDateFinPeriod2));
+    }
+
     public static boolean comparePeriod2IsInsidePeriod1(JADate startDatePeriod1, JADate endDatePeriode1,
                                                         JADate startDatePeriod2, JADate endDatePeriode2) {
         LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1);
