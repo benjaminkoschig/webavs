@@ -165,7 +165,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     protected String idTiersPaiementEmployeur = "";
 
-    protected  String idReferenceQREmployeur = "";
+    protected  String idReferenceQR = "";
 
     protected String idEmployeur = "";
 
@@ -328,7 +328,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
         idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
         idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
-        idReferenceQREmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
+        idReferenceQR = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
         dateDebut = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEDEBUT);
         autreOuPourcentRemuneration = statement
                 .dbReadNumeric(APSituationProfessionnelle.FIELDNAME_POURCENTAUTRREMUN, 2);
@@ -591,7 +591,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         statement.writeField(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT,
                 this._dbWriteNumeric(statement.getTransaction(), idTiersPaiementEmployeur, "idTiersPaiement"));
         statement.writeField(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR,
-                this._dbWriteNumeric(statement.getTransaction(), idReferenceQREmployeur, "idReferenceQR"));
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
 
         statement.writeField(APSituationProfessionnelle.FIELDNAME_DATEDEBUT,
                 this._dbWriteDateAMJ(statement.getTransaction(), dateDebut, "dateDebut"));
@@ -1642,8 +1642,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
     }
 
-    public void setIdReferenceQREmployeur(String idReferenceQREmployeur) {
-        this.idReferenceQREmployeur = idReferenceQREmployeur;
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 
     @Override
@@ -1657,8 +1657,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     }
 
     @Override
-    public String getIdReferenceQREmployeur() {
-        return idReferenceQREmployeur;
+    public String getIdReferenceQR() {
+        return idReferenceQR;
     }
 
     /**

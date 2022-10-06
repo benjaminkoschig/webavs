@@ -83,5 +83,5 @@ public interface SituationProfessionnelle {
 
     public String getIdTiersPaiementEmployeur();
 
-    public String getIdReferenceQREmployeur();
+    public String getIdReferenceQR();
 }
