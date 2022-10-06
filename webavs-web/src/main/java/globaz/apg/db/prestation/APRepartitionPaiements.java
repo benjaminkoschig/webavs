@@ -434,8 +434,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                     idTiersPaiement = idTiersAdressePaiement;
                 }
 
-                if (!JadeStringUtil.isBlankOrZero(situation.getIdReferenceQREmployeur())) {
-                    idReferenceQR = situation.getIdReferenceQREmployeur();
+                if (!JadeStringUtil.isBlankOrZero(situation.getIdReferenceQR())) {
+                    idReferenceQR = situation.getIdReferenceQR();
                 }
             }
         }

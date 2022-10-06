@@ -297,7 +297,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             }
 
             if (TIAdressePaiement.isQRIban(detailTiers.getCompte())) {
-                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQREmployeur());
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQR());
             }
 
         }
@@ -1616,7 +1616,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
 
     public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
-        setIdReferenceQREmployeur(idReferenceQR);
+        setIdReferenceQR(idReferenceQR);
         retourDepuisPyxis = true;
     }
 
@@ -1913,7 +1913,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         super._validate(statement);
 
         // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
-        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQREmployeur()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
             _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
         }
     }

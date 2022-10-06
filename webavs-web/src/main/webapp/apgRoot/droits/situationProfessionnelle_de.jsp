@@ -190,13 +190,13 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   	document.forms[0].elements('montantVerse').value = '';
   }
 
-  var isQRIban = TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte());
+  var isQRIban = <%=TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())%>
 
-  function manageAdressePaiement(){
-	  if(document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>){
+  function manageAdressePaiement() {
+	  if (document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>) {
 		  $(".withoutAdressePaiement").hide();
 		  $(".withAdressePaiement").show();
-		  if(isQRIban) {
+		  if (isQRIban) {
 			  $('.withoutReferencePaiement').hide();
 			  $('.withReferencePaiement').show();
 		  } else {
@@ -206,6 +206,8 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 	  } else {
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
+		  $('.withoutReferencePaiement').show();
+		  $('.withReferencePaiement').hide();
 	  }
   }
 

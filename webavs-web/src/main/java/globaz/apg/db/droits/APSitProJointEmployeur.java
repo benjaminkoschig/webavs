@@ -160,7 +160,7 @@ public class APSitProJointEmployeur extends BEntity {
     private String montantJournalierAcmNe = "";
     private String idDomainePaiementEmployeur = "";
     private String idTiersPaiementEmployeur = "";
-    private String idReferenceQREmployeur = "";
+    private String idReferenceQR = "";
     private Boolean isIndependant = Boolean.FALSE;
 
     // ~ Methods
@@ -256,7 +256,7 @@ public class APSitProJointEmployeur extends BEntity {
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
         idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
         idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
-        idReferenceQREmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
+        idReferenceQR = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
         isIndependant = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT);
     }
 
@@ -458,8 +458,8 @@ public class APSitProJointEmployeur extends BEntity {
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
     }
 
-    public void setIdReferenceQREmployeur(String idReferenceQREmployeur) {
-        this.idReferenceQREmployeur = idReferenceQREmployeur;
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 
     public String getIdDomainePaiementEmployeur() {
@@ -470,8 +470,8 @@ public class APSitProJointEmployeur extends BEntity {
         return idTiersPaiementEmployeur;
     }
 
-    public String getIdReferenceQREmployeur() {
-        return idReferenceQREmployeur;
+    public String getIdReferenceQR() {
+        return idReferenceQR;
     }
 
     public Boolean getIndependant() {
