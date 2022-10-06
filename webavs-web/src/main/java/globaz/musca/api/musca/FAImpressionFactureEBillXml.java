@@ -132,7 +132,7 @@ public class FAImpressionFactureEBillXml {
         if (typeDocument == EBillTypeDocument.SOMMATION) {
             eBillFacture.setIsSommation(true);
         }
-        if (typeDocument == EBillTypeDocument.RECLAMATION) {
+        if (typeDocument == EBillTypeDocument.RECLAMATION_FRAIS_ET_INTERET) {
             eBillFacture.setIsReclamation(true);
         }
         if (typeDocument == EBillTypeDocument.DECISION) {

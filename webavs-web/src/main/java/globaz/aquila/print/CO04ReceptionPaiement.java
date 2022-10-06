@@ -154,7 +154,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             //  - le compte annexe possède un eBillAccountID
             //  - eBillPrintable est sélectioné sur l'écran d'impression
             //  - l'impression prévisionel n'est pas activée
-            if (eBillAquilaActif && getEBillPrintable() && !curContentieux.getPrevisionnel()) {
+            if (eBillAquilaActif && getEBillPrintable() && !getPrevisionnel()) {
                 if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
                     try {
                         EBillSftpProcessor.getInstance();
@@ -186,7 +186,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
                 List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
 
                 if (!attachedDocuments.isEmpty()) {
-                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection(), EBillTypeDocument.RECLAMATION);
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection(), EBillTypeDocument.RECLAMATION_FRAIS_ET_INTERET);
                 }
             }
         }

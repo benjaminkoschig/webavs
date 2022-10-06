@@ -86,7 +86,7 @@
 	}
 
 	function refreshEBillInputs() {
-		<% if (eBillAquilaActif && eBillAccountID) {%>
+		<% if (eBillAquilaActif && eBillAccountID && viewBean.isEtapeContentieuxEbill(transitionViewBean)) {%>
 			$("#eBillPrintable").attr("checked", true);
 		<%} else {%>
 			$("#eBillPrintable").attr("checked", false);
@@ -124,11 +124,11 @@
 									<TD class="control" colspan="3"><INPUT type="text" value="<%=viewBean.getProchaineDateDeclenchement()%>" class="dateDisabled" readonly></TD>
 								</TR>
 
-								<% if (eBillAquilaActif && eBillAccountID) {%>
+								<% if (eBillAquilaActif && eBillAccountID && viewBean.isEtapeContentieuxEbill(transitionViewBean)) {%>
 									<tr>
 									  <td nowrap><ct:FWLabel key="EBILL_PRINTABLE"/></td>
 									  <td nowrap>
-										<input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.getEBillPrintable()) ? "checked" : "unchecked"%> >
+									    <input type="checkbox" name="eBillPrintable" id="eBillPrintable" <%=(viewBean.isEtapeContentieuxEbill(transitionViewBean)) ? "checked" : ""%> >
 									  </td>
 									  <td>&nbsp;</td>
 									  <td nowrap>&nbsp;</td>
