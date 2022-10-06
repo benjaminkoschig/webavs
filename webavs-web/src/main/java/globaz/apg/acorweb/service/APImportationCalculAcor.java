@@ -283,7 +283,7 @@ public class APImportationCalculAcor {
         prestation.setIdAssure(assure.getId());
         prestation.setGenre(genreService);
         prestation.mapInformationFromPeriodeServiceApg(session, genreService, periodeServiceApgType);
-        prestation.mapInformationFromMontantJournalierApg(droit, fCalcul);
+        prestation.mapInformationFromMontantJournalierApg(droit, fCalcul, periodeServiceApgType);
         prestation.mapInformationFromBaseCalcul(baseCalcul);
         return prestation;
     }
@@ -364,67 +364,72 @@ public class APImportationCalculAcor {
                                                         Collection<APPrestationWrapper> wrappers) throws PRACORException {
         for (EmployeurApgType employeur:
             fCalcul.getEmployeur()) {
-            Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
-                    fCalcul.getPeriodeMontantJourn().get(0)
-                           .getPeriodeRepartition().get(0)
-                           .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
-            if(periodeRepartitionEmployeurOptional.isPresent()) {
-                PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
-                for (APPrestationWrapper wrapper : wrappers) {
-                    for (APResultatCalculSituationProfessionnel sitPro : wrapper.getPrestationBase().getResultatsCalculsSitProfessionnelle()) {
-                        /*
-                         * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '['
-                         * suivi d'un minimum de un ou de plusieurs chiffres ([0-9] signifie les caractères valide,
-                         * donc les chiffres, le '+' dit que çà doit correspondre au moins une fois) et qui est
-                         * suivit d'un ']' Si je n'est pas été assez claire :
-                         * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
-                         */
+            for ( PeriodeMontantJournApgType periodeMontantJournApgType:
+            fCalcul.getPeriodeMontantJourn()) {
+                for (PeriodeRepartitionApgType periodeRepartitionApgType :
+                        periodeMontantJournApgType.getPeriodeRepartition()) {
+                    Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
+                            periodeRepartitionApgType
+                                    .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
+                    if (periodeRepartitionEmployeurOptional.isPresent()) {
+                        PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
+                        for (APPrestationWrapper wrapper : wrappers) {
+                            for (APResultatCalculSituationProfessionnel sitPro : wrapper.getPrestationBase().getResultatsCalculsSitProfessionnelle()) {
+                                /*
+                                 * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '['
+                                 * suivi d'un minimum de un ou de plusieurs chiffres ([0-9] signifie les caractères valide,
+                                 * donc les chiffres, le '+' dit que çà doit correspondre au moins une fois) et qui est
+                                 * suivit d'un ']' Si je n'est pas été assez claire :
+                                 * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
+                                 */
 
-                        String idAffilie;
-                        String idTiers;
-                        if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
-                            idAffilie = "0"; // sauve dans la base puis recharge, donc 0
-                            idTiers = PRAbstractEmployeur.extractIdTiers(employeur.getNoAffilie());
-                        } else {
-                            try {
-                                IPRAffilie affilie = APRepartitionPaiementAcor.getIprAffilie(session, employeur.getNoAffilie(), employeur.getNom());
+                                String idAffilie;
+                                String idTiers;
+                                if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
+                                    idAffilie = "0"; // sauve dans la base puis recharge, donc 0
+                                    idTiers = PRAbstractEmployeur.extractIdTiers(employeur.getNoAffilie());
+                                } else {
+                                    try {
+                                        IPRAffilie affilie = APRepartitionPaiementAcor.getIprAffilie(session, employeur.getNoAffilie(), employeur.getNom());
 
-                                idAffilie = affilie.getIdAffilie();
-                                idTiers = affilie.getIdTiers();
-                            } catch (Exception e) {
-                                throw new PRACORException("Impossible de trouver l'affilie", e);
-                            }
-                        }
-                        String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
-                        String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
-                        if (idAffilie.equals(sitPro.getIdAffilie())
-                                && idTiers.equals(sitPro.getIdTiers())
-                                && nomEmployeur.equals(nomSitProEmployeur)) {
-                            FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
-                            sitPro.setTauxProRata(taux);
+                                        idAffilie = affilie.getIdAffilie();
+                                        idTiers = affilie.getIdTiers();
+                                    } catch (Exception e) {
+                                        throw new PRACORException("Impossible de trouver l'affilie", e);
+                                    }
+                                }
+                                String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
+                                String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
+                                if (idAffilie.equals(sitPro.getIdAffilie())
+                                        && idTiers.equals(sitPro.getIdTiers())
+                                        && nomEmployeur.equals(nomSitProEmployeur)) {
+                                    FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
+                                    sitPro.setTauxProRata(taux);
 
-                            // Il s'agit d'une situation profesionnelle
-                            // créer entièrement à partir de la base de
-                            // calcul.
-                            // newRcSitPro on va donc y rajouter le montant
-                            // et salaire journalier en le recalculant à
-                            // partir
-                            // du montant total de la prestation au prorata.
+                                    // Il s'agit d'une situation profesionnelle
+                                    // créer entièrement à partir de la base de
+                                    // calcul.
+                                    // newRcSitPro on va donc y rajouter le montant
+                                    // et salaire journalier en le recalculant à
+                                    // partir
+                                    // du montant total de la prestation au prorata.
 
-                            // Ceci est nécessaire pour le calcul du montant
-                            // des cotisations, afin de determiner
-                            // si la part salariale est supérieure à la part
-                            // de l'indépendant, le cas échéant.
-                            if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
-                                    || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
-                                    .toString())) {
-                                BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
-                                        .multiply(taux.getBigDecimalValue());
+                                    // Ceci est nécessaire pour le calcul du montant
+                                    // des cotisations, afin de determiner
+                                    // si la part salariale est supérieure à la part
+                                    // de l'indépendant, le cas échéant.
+                                    if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
+                                            || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
+                                            .toString())) {
+                                        BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
+                                                .multiply(taux.getBigDecimalValue());
 
-                                double salaireJ = PRCalcul.quotient(montant.toString(),
-                                        String.valueOf(fCalcul.getCarteApg().getSommeJoursService()));
-                                sitPro.setMontant(new FWCurrency(montant.toString()));
-                                sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
+                                        double salaireJ = PRCalcul.quotient(montant.toString(),
+                                                String.valueOf(fCalcul.getCarteApg().getSommeJoursService()));
+                                        sitPro.setMontant(new FWCurrency(montant.toString()));
+                                        sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
+                                    }
+                                }
                             }
                         }
                     }
