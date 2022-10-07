@@ -6,6 +6,8 @@ import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.business.search.GFFormulaireSearch;
+import ch.globaz.eform.utils.GFUtils;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.jade.exception.JadeApplicationException;
@@ -67,6 +69,20 @@ public class GFDaDossierValidator {
                 result.addError("messageId", ValidationError.MANDATORY);
             }
 
+            //Validation de la connaissance de la caisse
+            Node nodeSenderId = (Node) xPath.compile("/message/header/senderId").evaluate(xmlDocument, XPathConstants.NODE);
+            String senderId = nodeSenderId.getFirstChild().getNodeValue();
+
+            if (StringUtils.isEmpty(senderId)) {
+                result.addError("senderId", ValidationError.MANDATORY);
+            } else {
+                AdministrationComplexModel caisse = GFUtils.getCaisseBySedexId(senderId);
+
+                if (caisse == null) {
+                    result.addError("senderId", ValidationError.UNKNOWN);
+                }
+            }
+
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
             String ourBusinessReferenceId = nodeMessageId.getFirstChild().getNodeValue();
@@ -124,6 +140,20 @@ public class GFDaDossierValidator {
                     result.addError("attachment", ValidationError.MISSING);
                 }
                 i++;
+            }
+
+            //Validation de la connaissance de la caisse
+            Node nodeSenderId = (Node) xPath.compile("/message/header/senderId").evaluate(xmlDocument, XPathConstants.NODE);
+            String senderId = nodeSenderId.getFirstChild().getNodeValue();
+
+            if (StringUtils.isEmpty(senderId)) {
+                result.addError("senderId", ValidationError.MANDATORY);
+            } else {
+                AdministrationComplexModel caisse = GFUtils.getCaisseBySedexId(senderId);
+
+                if (caisse == null) {
+                    result.addError("senderId", ValidationError.UNKNOWN);
+                }
             }
 
             //Validation du doublon du message ID
