@@ -86,6 +86,8 @@ public class COTransition extends COBEntity implements ICOExportableSQL {
     private Boolean manuel = new Boolean(false);
     private String priorite = "";
     private String transitionAction = "";
+    private String eBillTransactionID = "";
+    private Boolean eBillPrintable = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -458,6 +460,20 @@ public class COTransition extends COBEntity implements ICOExportableSQL {
     }
 
     /**
+     * @return the eBillTransactionID
+     */
+    public String geteBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    /**
+     * @return the eBillPrintable
+     */
+    public Boolean geteBillPrintable() {
+        return eBillPrintable;
+    }
+
+    /**
      * @see #getAuto()
      */
     public boolean isAuto() {
@@ -589,5 +605,19 @@ public class COTransition extends COBEntity implements ICOExportableSQL {
      */
     public void setTransitionAction(String string) {
         transitionAction = string;
+    }
+
+    /**
+     * @param eBillTransactionID the eBillTransactionID to set
+     */
+    public void setEBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    /**
+     * @param eBillPrintable the eBillPrintable to set
+     */
+    public void setEBillPrintable(Boolean eBillPrintable) {
+        this.eBillPrintable = eBillPrintable;
     }
 }

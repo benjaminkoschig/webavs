@@ -64,7 +64,12 @@ public class COProcessContentieuxUtils {
         // instancier l'action de transition a effectuer
         COTransitionAction action = COServiceLocator.getActionService().getTransitionAction(transition);
 
-        action.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(eBillPrintable, transition.getSession()));
+        String eBillTransactionID  = eBillPrintable ? FAEnteteFacture.incrementAndGetEBillTransactionID(eBillPrintable, transition.getSession()) : "";
+
+        transition.setEBillTransactionID(eBillTransactionID);
+        transition.setEBillPrintable(eBillPrintable);
+
+        action.setEBillTransactionID(eBillTransactionID);
         action.setEBillPrintable(eBillPrintable);
         action.setDateExecution(dateSurDocument);
         action.setParent(parent);

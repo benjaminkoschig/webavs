@@ -398,8 +398,6 @@ public class COActionBatch extends CODefaultServletAction {
      *            la requête depuis laquelle récupérer les choix de l'utilisateur
      * @param session
      *            la session de l'application
-     * @param transaction
-     *            la transaction
      * @param contentieux
      *            le contentieux courant
      * @return
@@ -413,7 +411,12 @@ public class COActionBatch extends CODefaultServletAction {
         if (action != null) {
             JSPUtils.setBeanProperties(request, action);
 
-            action.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(action.getEBillPrintable(), session));
+            String eBillTransactionID  = action.getEBillPrintable() ? FAEnteteFacture.incrementAndGetEBillTransactionID(action.getEBillPrintable(), session) : "";
+
+            action.getTransition().setEBillPrintable(action.getEBillPrintable());
+            action.getTransition().setEBillTransactionID(eBillTransactionID);
+
+            action.setEBillTransactionID(eBillTransactionID);
 
             // Boucle qui teste si un des champs requis de l'étape est vide et
             // set la variable isError

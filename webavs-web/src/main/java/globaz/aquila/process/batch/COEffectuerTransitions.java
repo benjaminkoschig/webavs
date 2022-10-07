@@ -36,6 +36,10 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APISection;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
+import globaz.osiris.process.ebill.EBillHelper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,6 +75,7 @@ public class COEffectuerTransitions {
     private COImprimerListPourOP listePourOP;
     private boolean previsionnel;
     private boolean eBillPrintable = false;
+    private EBillHelper eBillHelper = new EBillHelper();
 
     private List roles;
 
@@ -128,6 +133,7 @@ public class COEffectuerTransitions {
             Boolean transitionEffectuee = false;
             COContentieux contentieux = null;
             int lastDocNumber = 0;
+            int factureEBill = 0;
             while (((contentieux = (COContentieux) contentieuxMan.cursorReadNext(statement)) != null)
                     && !parent.isAborted()) {
 
@@ -149,6 +155,18 @@ public class COEffectuerTransitions {
 
                         transitionEffectuee = true;
                         lastDocNumber = parent.getAttachedDocuments().size();
+
+                        if (getEBillPrintable()) {
+                            CASection section = contentieux.getSection();
+                            section.setSession(session);
+                            section.retrieve();
+                            if (CATraitementEtatEBillEnum.REJECTED_OR_PENDING.equals(section.getEBillEtat())
+                                    && !JadeStringUtil.isBlank(section.getEBillTransactionID())
+                                    && !JadeStringUtil.isBlank(transition.geteBillTransactionID())
+                                    && transition.geteBillTransactionID().equals(section.getEBillTransactionID())) {
+                                factureEBill++;
+                            }
+                        }
 
                         enregistrerTransitionPourImpression(session, contentieux, transition);
                     } else if (transaction.hasErrors()) {
@@ -220,6 +238,11 @@ public class COEffectuerTransitions {
                 parent.getMemoryLog().logMessage(session.getLabel("AQUILA_WARN_PAS_TRANSITIONS"),
                         FWViewBeanInterface.WARNING, this.getClass().getName());
             }
+
+            if (getEBillPrintable() && factureEBill != 0) {
+                eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, parent.getMemoryLog(), null, session, this.getClass().getName());
+            }
+
         } catch (Exception e) {
             parent.getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
 
