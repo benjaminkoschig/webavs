@@ -6,9 +6,6 @@ package globaz.apg.vb.droits;
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.sql.SQLWriter;
-import ch.globaz.common.sql.converters.LocalDateConverter;
-import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
@@ -16,8 +13,6 @@ import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.menu.MenuPrestation;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
@@ -27,6 +22,7 @@ import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
@@ -46,7 +42,6 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliation;
 import globaz.naos.db.lienAffiliation.AFLienAffiliationManager;
 import globaz.naos.translation.CodeSystem;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.prestation.api.IPRDemande;
@@ -67,25 +62,15 @@ import globaz.pyxis.adresse.datasource.TIAbstractAdressePaiementDataSource;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.PreparedStatement;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * <H1>Description</H1>
@@ -102,6 +87,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private static final Object[] METHODES_SEL_ADRESSE = new Object[]{
             new String[]{"setIdTiersPaiementEmployeurDepuisAdresse", "idTiers"},
             new String[]{"idDomainePaiementEmployeur", "idApplication"}};
+
+    private static final Object[] METHODES_SEL_REFERENCE_QR = new Object[]{
+            new String[]{"setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR"}};
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -194,6 +182,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     @Setter
     private PRTypeDemande typeDemande;
 
+    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -242,6 +232,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public Object[] getMethodesSelectionAdressePaiement() {
         return APSituationProfessionnelleViewBean.METHODES_SEL_ADRESSE;
     }
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return APSituationProfessionnelleViewBean.METHODES_SEL_REFERENCE_QR;
+    }
 
     public String getDomaineAdressePaiementEmployeur() {
         return getDomaineLibelle(idDomainePaiementEmployeur);
@@ -288,6 +281,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             }
 
             setAdressePaiementEmployeur(detailTiers);
+            setAdressePaiementData(detailTiers);
 
             final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
             dataSource.load(detailTiers);
@@ -302,8 +296,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                 adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
             }
 
-            if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(dataSource.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            if (TIAdressePaiement.isQRIban(detailTiers.getCompte())) {
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(getSession(), getIdReferenceQR());
             }
 
         }
@@ -575,10 +569,6 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         } else {
             adresseLine += getDomaineLibelle(detailTiers.getIdApplication());
             adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
-        }
-
-        if (CASepaCommonUtils.isQRIban(detailTiers.getCompte())) {
-            adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
         }
 
         return adresseLine;
@@ -1323,6 +1313,47 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return TypePrestation.TYPE_APG.equals(typePrestation);
     }
 
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
+    }
+
+    /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+    public TIAdressePaiementData getOrReloadAdressePaiementData() {
+        try {
+            if (adressePaiementData.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersPaiementEmployeur())
+                    && !JadeStringUtil.isBlank(getIdDomainePaiementEmployeur())
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersPaiementEmployeur()))) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersPaiementEmployeur(),
+                        getIdDomainePaiementEmployeur(),
+                        null, JACalendar.todayJJsMMsAAAA());
+                if (Objects.nonNull(paiementData)) {
+                    setAdressePaiementData(paiementData);
+                } else {
+                    paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
+                            getSession().getCurrentThreadTransaction(),
+                            getIdTiersPaiementEmployeur(),
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_DEFAULT,
+                            null, JACalendar.todayJJsMMsAAAA());
+                    if (Objects.nonNull(paiementData)) {
+                        setAdressePaiementData(paiementData);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return adressePaiementData;
+
+    }
+
     /**
      * DOCUMENT ME!
      */
@@ -1582,6 +1613,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);
         retourDepuisAdresse = true;
+    }
+
+    public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
+        setIdReferenceQR(idReferenceQR);
+        retourDepuisPyxis = true;
     }
 
     /**
@@ -1872,6 +1908,14 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         updateJourEmployeurIdentique(transaction, this.isJoursIdentiques);
     }
 
+    @Override
+    protected void _validate(BStatement statement) throws Exception {
+        super._validate(statement);
 
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
+    }
 
 }

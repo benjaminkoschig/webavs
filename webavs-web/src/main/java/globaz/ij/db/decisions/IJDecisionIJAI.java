@@ -32,6 +32,7 @@ public class IJDecisionIJAI extends BEntity {
     public static final String FIELDNAME_ID_TIERS_ADR_COURRIER = "XAITAC";
     public static final String FIELDNAME_ID_TIERS_ADR_PMT = "XAITAP";
     public static final String FIELDNAME_ID_TIERS_ADRESSE_PAIEMENT_PERSONNALISEE = "XAITPP";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "XRIRQR";
     public static final String FIELDNAME_ID_TIERS_PRINCIPAL = "XAITPR";
     public static final String FIELDNAME_IS_DECISION_VALIDE = "XABVAL";
     public static final String FIELDNAME_IS_SEND_TO_GEND = "XABGED";
@@ -60,6 +61,7 @@ public class IJDecisionIJAI extends BEntity {
     private String idPrononce = "";
     private String idTiersAdrCourrier = "";
     private String idTiersAdressePaiementPersonnalisee = "";
+    private String idReferenceQR = "";
     private String idTiersAdrPmt = "";
     private String idTiersPrincipal = "";
     private Boolean isDecisionValidee = null;
@@ -102,6 +104,7 @@ public class IJDecisionIJAI extends BEntity {
         idTiersAdrPmt = statement.dbReadNumeric(IJDecisionIJAI.FIELDNAME_ID_TIERS_ADR_PMT);
         idTiersAdressePaiementPersonnalisee = statement
                 .dbReadNumeric(IJDecisionIJAI.FIELDNAME_ID_TIERS_ADRESSE_PAIEMENT_PERSONNALISEE);
+        idReferenceQR = statement.dbReadNumeric(FIELDNAME_ID_REFERENCE_QR);
         idTiersPrincipal = statement.dbReadNumeric(IJDecisionIJAI.FIELDNAME_ID_TIERS_PRINCIPAL);
         isDecisionValidee = statement.dbReadBoolean(IJDecisionIJAI.FIELDNAME_IS_DECISION_VALIDE);
         isSendToGed = statement.dbReadBoolean(IJDecisionIJAI.FIELDNAME_IS_SEND_TO_GEND);
@@ -165,6 +168,8 @@ public class IJDecisionIJAI extends BEntity {
                 .writeField(IJDecisionIJAI.FIELDNAME_ID_TIERS_ADRESSE_PAIEMENT_PERSONNALISEE, this._dbWriteNumeric(
                         statement.getTransaction(), idTiersAdressePaiementPersonnalisee,
                         "idTiersAdressePaiementPersonnalisee"));
+        statement.writeField(IJDecisionIJAI.FIELDNAME_ID_REFERENCE_QR,
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
         statement.writeField(IJDecisionIJAI.FIELDNAME_ID_TIERS_PRINCIPAL,
                 this._dbWriteNumeric(statement.getTransaction(), idTiersPrincipal, "idTiersPrincipal"));
         statement.writeField(IJDecisionIJAI.FIELDNAME_NO_REV_A_GARANTIR,
@@ -257,6 +262,10 @@ public class IJDecisionIJAI extends BEntity {
 
     public String getIdTiersAdressePaiementPersonnalisee() {
         return idTiersAdressePaiementPersonnalisee;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
     }
 
     public String getIdTiersAdrPmt() {
@@ -366,6 +375,10 @@ public class IJDecisionIJAI extends BEntity {
 
     public void setIdTiersAdressePaiementPersonnalisee(String idTiersAdressePaiementPersonnalisee) {
         this.idTiersAdressePaiementPersonnalisee = idTiersAdressePaiementPersonnalisee;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
     }
 
     public void setIdTiersAdrPmt(String idTiersAdrPmt) {

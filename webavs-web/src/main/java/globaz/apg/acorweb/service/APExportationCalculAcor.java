@@ -48,22 +48,27 @@ public class APExportationCalculAcor {
 
     public InHostType createInHost() {
         LOG.info("Création du inHost.");
-        InHostType inHost = new InHostType();
+
 
         try {
             droit = loadDroit();
             PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(session, transaction,
                     droit.getIdDroit());
             tiersRequerant = demande.loadTiers();
-
-            PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE, tiersRequerant, APGUtils.getCSDomaineFromTypeDemande(droit.getGenreService()), session);
-            AssureType assureType = new APAcorAssureTypeMapper(prAcorMapper, droit, session).createAssureType();
-            inHost.getAssure().add(completeMappingAssure(inHost, assureType));
-            inHost.setDemande(toDemande());
-            inHost.setVersionSchema("7.0");
         } catch (Exception e) {
-            LOG.error("Erreur lors de la construction du inHost.", e);
+            throw new PRAcorTechnicalException("Erreur lors de la construction du inHost.", e);
         }
+
+        PRAcorMapper prAcorMapper = new PRAcorMapper(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE,
+                                                     tiersRequerant,
+                                                     APGUtils.getCSDomaineFromTypeDemande(droit.getGenreService()),
+                                                     session);
+        AssureType assureType = new APAcorAssureTypeMapper(prAcorMapper, droit, session).createAssureType();
+        InHostType inHost = new InHostType();
+        inHost.getAssure().add(completeMappingAssure(inHost, assureType));
+        inHost.setDemande(toDemande());
+        inHost.setVersionSchema("7.0");
+
         return inHost;
     }
 
@@ -72,17 +77,13 @@ public class APExportationCalculAcor {
 
         AllocationPerteGainAPG allocationPerteGainAPG = new AllocationPerteGainAPG();
         List<APSituationProfessionnelle> situationsProfessionnelles = APLoader.loadSituationsProfessionnelles(idDroit, session);
-        // TODO : splitter gestion APG et maternité ?
-        try {
-            if (droit instanceof APDroitAPG) {
-                allocationPerteGainAPG.setBasesCalculAPG(new APAcorBaseCalculMapper((APDroitAPG) droit, situationsProfessionnelles).map(session));
-            } else if (droit instanceof APDroitMaternite) {
-                allocationPerteGainAPG.setBasesCalculAMat(new APAcorBaseCalculAmatMapper((APDroitMaternite) droit).map(session));
-                inHost.getEnfant().addAll(new APAcorEnfantTypeMapper(tiersRequerant, APLoader.loadSituationFamillialeMat(idDroit, session)).map());
-                inHost.getAssure().add(createPereInconnu());
-            }
-        } catch (Exception e) {
-            throw new PRAcorTechnicalException("Une erreur est survenue lors de l'exportation d'un calcul ACOR", e);
+
+        if (droit instanceof APDroitAPG) {
+            allocationPerteGainAPG.setBasesCalculAPG(new APAcorBaseCalculMapper((APDroitAPG) droit, situationsProfessionnelles).map(session));
+        } else if (droit instanceof APDroitMaternite) {
+            allocationPerteGainAPG.setBasesCalculAMat(new APAcorBaseCalculAmatMapper((APDroitMaternite) droit).map(session));
+            inHost.getEnfant().addAll(new APAcorEnfantTypeMapper(tiersRequerant, APLoader.loadSituationFamillialeMat(idDroit, session)).map());
+            inHost.getAssure().add(createPereInconnu());
         }
         allocationPerteGainAPG.getRevenu().addAll(new APAcorRevenuMapper(situationsProfessionnelles, droit).map(session));
         assureType.setAllocationPerteGain(allocationPerteGainAPG);

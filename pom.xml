@@ -54,7 +54,8 @@
 		<jackson.version>2.12.4</jackson.version>
 		<jjwt.version>0.11.2 </jjwt.version>
 
-		<anakin.version>4.0.1</anakin.version>
+		<arena.version>1.9.0</arena.version>
+		<anakin.version>4.2.0</anakin.version>
 		<apiguardian-api.version>1.1.2</apiguardian-api.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
@@ -403,7 +404,7 @@
 			<dependency>
 				<groupId>ch.admin.ofit.anakin</groupId>
 				<artifactId>Arena</artifactId>
-				<version>1.4.4</version>
+				<version>${arena.version}</version>
 			</dependency>
 
 			<dependency>
@@ -660,6 +661,16 @@
 
   <build>
     <plugins>
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>versions-maven-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>check-dependencies-updates</id>
+					<phase>none</phase>
+				</execution>
+			</executions>
+		</plugin>
       <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>

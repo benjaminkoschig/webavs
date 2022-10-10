@@ -1,6 +1,7 @@
 package ch.globaz.eform.utils;
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.constant.GFSexeDaDossier;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -8,8 +9,11 @@ import ch.globaz.vulpecula.business.services.administration.AdministrationServic
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import org.apache.commons.lang3.StringUtils;
 
 public final class GFUtils {
     private GFUtils() {}
@@ -41,11 +45,39 @@ public final class GFUtils {
         return null;
     }
 
-    public static String formatTiers(TITiersViewBean tiers) {
-        return tiers.getDesignation1() + " " + tiers.getDesignation2() + "/" + tiers.getNumAffilieActuel() + "/" + tiers.getSexe() + "/" + tiers.getPays().getLibelle();
+    public static AdministrationComplexModel getCaisseBySedexId(String sedexIdCaisse){
+        AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+        search.setForSedexId(sedexIdCaisse);
+
+        try {
+            search = TIBusinessServiceLocator.getAdministrationService().find(search);
+
+            if (search.getSize() == 1) {
+                return (AdministrationComplexModel) search.getSearchResults()[0];
+            }
+        } catch (JadePersistenceException | JadeApplicationException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    public static String formatTiers(TITiersViewBean tiers, BSession session) {
+        if (tiers != null) {
+            String nationality = tiers.getPays() == null ? "" : tiers.getPays().getLibelle();
+            return tiers.getDesignation1() + " " + tiers.getDesignation2() + " / " + tiers.getDateNaissance() + " / " + formatSexe(tiers.getSexe(), session) + " / " + nationality;
+        }
+        return "";
     }
 
     public static BSpy formatSpy(String spy) {
         return new BSpy(spy);
+    }
+
+    public static String formatSexe(String codeSexe, BSession session) {
+        if (StringUtils.isBlank(codeSexe)) {
+            return "";
+        }
+        return GFSexeDaDossier.getByCodeSystem(codeSexe).getDesignation(session);
     }
 }

@@ -109,8 +109,14 @@ public class APPrestationAcor {
         }
     }
 
-    public void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul) {
-        PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().get(0);
+    public void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul, PeriodeServiceApgType periode) {
+        PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().stream().filter(b ->
+                comparePeriod2IsInsidePeriod1(
+                        b.getDebut(),
+                        b.getFin(), periode.getDebut(),
+                        periode.getFin())
+                ).findFirst()
+                .orElse(null);
         if(Objects.nonNull(periodeMontantJournApgType)){
             setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
@@ -197,7 +203,7 @@ public class APPrestationAcor {
         }
     }
 
-    private APRepartitionPaiementAcor createRepartitionPaiement(BSession session,
+    public static APRepartitionPaiementAcor createRepartitionPaiement(BSession session,
                                                                 APBaseCalcul baseCalcul,
                                                                 VersementBeneficiaireApgType beneficiare,
                                                                 PeriodeDecompteApgType periodeDecompte, FCalcul fCalcul) throws PRACORException {
@@ -242,9 +248,17 @@ public class APPrestationAcor {
                 repartitionPaiementAcor.mapSituationProfessionnel(bcSitPro);
                 return repartitionPaiementAcor;
             }
-
         }
-        return null;
+        APRepartitionPaiementAcor repartitionPaiementAcor = new APRepartitionPaiementAcor(beneficiare.getIdBeneficiaire());
+        repartitionPaiementAcor.setMontantNet(new FWCurrency(periodeDecompte.getMontantPeriode()));
+        repartitionPaiementAcor.setSalaireJournalier(new FWCurrency(periodeDecompte.getMontantJourn()));
+        repartitionPaiementAcor.setVersementEmployeur(false);
+        repartitionPaiementAcor.setIndependant(false);
+        repartitionPaiementAcor.setTravailleurSansEmployeur(false);
+        repartitionPaiementAcor.setCollaborateurAgricole(false);
+        repartitionPaiementAcor.setTravailleurAgricole(false);
+        repartitionPaiementAcor.setSoumisCotisation(true);
+        return repartitionPaiementAcor;
     }
 
     public void createAndMapResultatCalculSituationProfessionnelleWithRepartitionPaiement(APResultatCalcul rc) {

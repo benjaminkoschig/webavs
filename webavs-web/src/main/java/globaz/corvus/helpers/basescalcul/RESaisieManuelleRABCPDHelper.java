@@ -42,7 +42,6 @@ import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -51,10 +50,12 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import ch.globaz.prestation.domaine.CodePrestation;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 
 /**
  * @author HPE
@@ -377,6 +378,7 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
             ra.setIdTiersBaseCalcul(saisieRABCPDVb.getIdTierRequerant());
             ra.setIdInfoCompta(saisieRABCPDVb.getIdInfoComptaIC());
             ra.setReferencePmt(saisieRABCPDVb.getReferencePmt());
+            ra.setIdReferenceQR(saisieRABCPDVb.getIdReferenceQR());
             ra.setAnneeMontantRAM(saisieRABCPDVb.getAnneeTraitementBasesCalcul());
 
             // /////////////////////////////////////////////////////////////////////////////////////
@@ -1014,6 +1016,7 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
 
             saViewBean.setIdTiersAdressePmtIC(saViewBean.getIdTiersAdressePmtICDepuisPyxis());
             // saViewBean.setIdDomaineApplicationIC(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
+            saViewBean.setIdReferenceQR(saViewBean.getIdReferenceQRDepuisPyxis());
         }
 
         // si le tiers beneficiaire est null, il ne sert a rien de faire une recherche
@@ -1046,15 +1049,17 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
                 saViewBean.setCcpOuBanqueFormatte(new TIAdressePaiementCppFormater().format(source));
             }
 
-            // formatter l'adresse
-            String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(source.getSession(), "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                saViewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, saViewBean.getIdReferenceQR()));
+            } else {
+                saViewBean.setReferenceQRFormattee("");
             }
-            saViewBean.setAdresseFormattee(adresseLine);
+            // formatter l'adresse
+            saViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
         } else {
             saViewBean.setCcpOuBanqueFormatte("");
             saViewBean.setAdresseFormattee("");
+            saViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve d'adresse
             // on enleve l'idTiersAdresseDePaiement

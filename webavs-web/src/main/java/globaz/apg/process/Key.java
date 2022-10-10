@@ -29,6 +29,7 @@ public final class Key implements Comparable {
     public Boolean isIndependant = false;
     public Boolean isEmployeur = false;
     public String idAdressePaiement = "";
+    public String referencePaiement = "";
     public Boolean isPorteEnCompte = false;
 
     /**
@@ -42,7 +43,7 @@ public final class Key implements Comparable {
     public String idTiersAdressePaiement = "";
 
     public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2, String genrePrestation,
-            boolean isEmployeur, boolean isIndependant, String idAdressePaiement, boolean isPorteEnCompte) {
+            boolean isEmployeur, boolean isIndependant, String idAdressePaiement, String referencePaiement, boolean isPorteEnCompte) {
         this.idTiers = idTiers;
         this.idAffilie = idAffilie;
         this.idExtra1 = idExtra1;
@@ -51,6 +52,7 @@ public final class Key implements Comparable {
         this.isEmployeur = isEmployeur;
         this.isIndependant = isIndependant;
         this.idAdressePaiement = idAdressePaiement;
+        this.referencePaiement = referencePaiement;
         this.isPorteEnCompte = isPorteEnCompte;
     }
 
@@ -74,6 +76,8 @@ public final class Key implements Comparable {
             return isIndependant.compareTo(key.isIndependant);
         } else if (idAdressePaiement.compareTo(key.idAdressePaiement) != 0) {
             return idAdressePaiement.compareTo(key.idAdressePaiement);
+        } else if (referencePaiement.compareTo(key.referencePaiement) != 0) {
+            return referencePaiement.compareTo(key.referencePaiement);
         } else if (isPorteEnCompte.compareTo(key.isPorteEnCompte) != 0) {
             return isPorteEnCompte.compareTo(key.isPorteEnCompte);
         } else {
@@ -95,7 +99,9 @@ public final class Key implements Comparable {
                 && (key.idExtra2.equals(idExtra2)) && key.genrePrestation.equals(genrePrestation))
                 && key.isEmployeur.equals(isEmployeur)
                 && key.isIndependant.equals(isIndependant)
-                && key.idAdressePaiement.equals(idAdressePaiement) && key.isPorteEnCompte.equals(isPorteEnCompte);
+                && key.idAdressePaiement.equals(idAdressePaiement)
+                && key.referencePaiement.equals(referencePaiement)
+                && key.isPorteEnCompte.equals(isPorteEnCompte);
     }
 
 
@@ -103,6 +109,6 @@ public final class Key implements Comparable {
     @Override
     public int hashCode() {
         return (idTiers + idAffilie + idExtra1 + idExtra2 + genrePrestation + isEmployeur + isIndependant
-                + idAdressePaiement + isPorteEnCompte).hashCode();
+                + idAdressePaiement + referencePaiement + isPorteEnCompte).hashCode();
     }
 }

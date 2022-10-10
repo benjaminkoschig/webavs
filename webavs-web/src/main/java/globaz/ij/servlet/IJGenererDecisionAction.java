@@ -128,6 +128,7 @@ public class IJGenererDecisionAction extends PRDefaultAction {
             scalableProperties.setParameter("idTierAdresseCourrier", request.getParameter("idTierAdresseCourrier"));
             scalableProperties.setParameter("beneficiaire", request.getParameter("beneficiaire"));
             scalableProperties.setParameter("idTierAdressePaiement", request.getParameter("idTierAdressePaiement"));
+            scalableProperties.setParameter("idReferenceQR", request.getParameter("idReferenceQR"));
             scalableProperties.setParameter("idTierEmployeurAdressePaiement",
                     request.getParameter("idTierEmployeurAdressePaiement"));
             scalableProperties.setParameter("idTierAssureAdressePaiement",

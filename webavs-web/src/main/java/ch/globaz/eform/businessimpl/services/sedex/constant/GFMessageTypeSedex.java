@@ -1,23 +1,18 @@
-package ch.globaz.eform.businessimpl.services.sedex.envoi;
+package ch.globaz.eform.businessimpl.services.sedex.constant;
 
-public enum SedexType2021Enum {
-    TYPE_101("101"),
-    TYPE_102("102");
-    private String messageType = "2021";
+public enum GFMessageTypeSedex {
+    TYPE_2021_DEMANDE("2021", "000101"),
+    TYPE_2021_TRANSFERE("2021", "000102");
+    private String messageType;
     private String subMessageType;
-    private String action = "6";
     private boolean testDeliveryFlag = true;
     private boolean responseExpected = false;
     private boolean businessCaseClosed = true;
     private boolean leadingDocument = false;
-    private int order = 1;
     private boolean pensionRecipient = false;
-    private String manufacturer = "Globaz SA";
-    private String product = "WEBAVS";
-    private String productVersion = "1.29";
 
-
-    SedexType2021Enum(String subMessageType) {
+    GFMessageTypeSedex(String messageType, String subMessageType) {
+        this.messageType = messageType;
         this.subMessageType = subMessageType;
     }
 
@@ -27,10 +22,6 @@ public enum SedexType2021Enum {
 
     public String getSubMessageType() {
         return subMessageType;
-    }
-
-    public String getAction() {
-        return action;
     }
 
     public boolean isTestDeliveryFlag() {
@@ -49,23 +40,7 @@ public enum SedexType2021Enum {
         return leadingDocument;
     }
 
-    public int getOrder() {
-        return order;
-    }
-
     public boolean isPensionRecipient() {
         return pensionRecipient;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public String getProductVersion() {
-        return productVersion;
     }
 }

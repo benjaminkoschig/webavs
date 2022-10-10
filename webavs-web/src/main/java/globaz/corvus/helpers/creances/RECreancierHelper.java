@@ -24,7 +24,10 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.math.BigDecimal;
 
 /**
@@ -395,6 +398,7 @@ public class RECreancierHelper extends PRAbstractHelper {
                 rpViewBean.getIdDomaineApplicatif(), rpViewBean.getIdAffilieAdressePmt(), JACalendar.todayJJsMMsAAAA());
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -424,14 +428,15 @@ public class RECreancierHelper extends PRAbstractHelper {
                 }
             }
 
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
-                String adresseLine = rpViewBean.getCcpOuBanqueFormatte();
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
-                rpViewBean.setCcpOuBanqueFormatte(adresseLine);
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                rpViewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR()));
+            } else {
+                rpViewBean.setReferenceQRFormattee("");
             }
 
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
+            rpViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve
             // d'adresse

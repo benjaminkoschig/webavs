@@ -19,10 +19,15 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.external.IntRole;
 import java.math.BigDecimal;
+import java.util.Objects;
+
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.Decision;
 import ch.globaz.corvus.domaine.RenteAccordee;
 import ch.globaz.corvus.domaine.constantes.TypeTraitementDecisionRente;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
@@ -147,6 +152,8 @@ public class REModCpt_Normal extends AREModuleComptable implements IREModuleComp
                 String motifVersement = getMotifVersement(session,
                         renteAccordeePrincipale.getReferencePourLePaiement(), decision);
 
+                String referenceQR = PRTiersHelper.getReferenceQR(session, renteAccordeePrincipale.getIdReferenceQR());
+
                 memoryLog.logMessage(doOrdreVersement(
                         session,
                         compta,
@@ -155,7 +162,7 @@ public class REModCpt_Normal extends AREModuleComptable implements IREModuleComp
                         decision.getSolde().toString(),
                         loadAdressePaiement(session, transaction, dateEcheance,
                                 renteAccordeePrincipale.getAdresseDePaiement().getId().toString(),
-                                REApplication.CS_DOMAINE_ADRESSE_CORVUS).getIdAvoirPaiementUnique(), motifVersement,
+                                REApplication.CS_DOMAINE_ADRESSE_CORVUS).getIdAvoirPaiementUnique(), motifVersement, referenceQR,
                         dateEcheance, false, idOrganeExecution));
             }
         } catch (Exception ex) {

@@ -80,7 +80,7 @@ public class REModuleComptablePmtAvance extends AREModuleComptable {
 
     public FWMemoryLog payerAvance(BProcess process, BISession session, BTransaction transaction,
             APIGestionComptabiliteExterne compta, String idTiersBeneficiaire, String idTiersAdrPmt, String csDomaine,
-            FWCurrency montant, String libelle, String date, String csDomaineApplicatifAvance, String idOrganeExecution)
+            FWCurrency montant, String libelle, String referenceQR, String date, String csDomaineApplicatifAvance, String idOrganeExecution)
             throws Exception {
 
         // creation de l'idExterneRole (le numéro AVS)
@@ -122,7 +122,7 @@ public class REModuleComptablePmtAvance extends AREModuleComptable {
         memoryLog.logMessage(doOrdreVersement((BSession) session, compta, compteAnnexe.getIdCompteAnnexe(), section
                 .getIdSection(), montant.toString(),
                 loadAdressePaiement((BSession) session, transaction, date, idTiersAdrPmt, csDomaine)
-                        .getIdAvoirPaiementUnique(), libelle, date, true, idOrganeExecution));
+                        .getIdAvoirPaiementUnique(), libelle, referenceQR, date, true, idOrganeExecution));
         return memoryLog;
     }
 

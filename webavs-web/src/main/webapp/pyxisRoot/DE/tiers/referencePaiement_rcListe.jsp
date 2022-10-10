@@ -19,7 +19,6 @@
 	<%-- tpl:put name="zoneHeaders"  --%>
 
 	<Th nowrap width="16">&nbsp;</Th>
-
     <Th>Beschriftung</Th>
     <Th>QR-Referenz</Th>
     <Th>Anfangsdatum</Th>
@@ -30,7 +29,7 @@
     <%
     boolean oldCondition = true;
     boolean sameAdresse = false;
-    int pos = -1;
+    int pos = 0;
     %>
 
     <%-- /tpl:put --%>
@@ -40,7 +39,7 @@
        	String subLineColor="";
 	    	if (i==0) { oldCondition = condition; }
 			else {
-				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReference().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReference())) {
+				if (!((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i-1)).getIdReferenceQR().equals(((globaz.pyxis.db.tiers.TIReferencePaiementViewBean)viewBean.getEntity(i)).getIdReferenceQR())) {
 					condition = !oldCondition;
 					oldCondition = condition;
 					sameAdresse = false;
@@ -56,16 +55,16 @@
 	<%-- tpl:put name="zoneList"  --%>
 <%
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean entity = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean) viewBean.getEntity(i);
-	actionDetail = "parent.location.href='"+detailLink+entity.getIdReference()+"'";
+	actionDetail = "parent.location.href='"+detailLink+entity.getIdReferenceQR()+"&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection")+"'";
 %>
 <%
 	if  (!sameAdresse) {
 		pos ++;
 %>
       <TD class="mtd" width="16" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">
-			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReference();%>
+			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection");%>
 			<ct:menuPopup menu="reference-paiement" detailLabelId="Detail" detailLink="<%=url%>">
-	 			<ct:menuParam key="idReference" value="<%=entity.getIdReference()%>"/>
+	 			<ct:menuParam key="idReference" value="<%=entity.getIdReferenceQR()%>"/>
 			</ct:menuPopup>
       </TD>
 
@@ -90,9 +89,7 @@
 %>
 
 	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><%=entity.getDetailNumCompteBancaire()%>&nbsp;</TD>
-	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" >
-		<i><%pageContext.getOut().write(entity.getDetailAdresseCourt());%></i>
-	</TD>
+	<TD class="mtd" onClick="<%=actionDetail%>" style="<%=(sameAdresse)?"border-top:solid 1px "+subLineColor:"border-top:solid 1px silver"%>;" ><i><%pageContext.getOut().write(entity.getDetailAdresseCourt());%></i></TD>
 
     <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>

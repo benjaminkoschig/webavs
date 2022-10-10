@@ -7,6 +7,7 @@
             <field comment="Id de la demande" name="messageId" column="MESSAGE_ID" type="STRING" mandatory="true"/>
             <field comment="Numéro Nss de l'affilier à transférer" name="nssAffilier" column="NSS_AFFILIER" type="STRING" mandatory="true"/>
             <field comment="Code de la caisse demandeuse" name="codeCaisse" column="CODE_CAISSE" type="STRING" mandatory="true"/>
+            <field comment="Type original de la demande" name="originalType" column="ORIGINAL_TYPE" type="STRING" mandatory="true"/>
             <field comment="Type de la demande" name="type" column="TYPE" type="STRING" mandatory="true"/>
             <field comment="Statut de la demande" name="status" column="STATUS" type="STRING" mandatory="true"/>
             <field comment="Visa du gestionnaire en charge" name="userGestionnaire" column="USER_GESTIONNAIRE" type="STRING" mandatory="false"/>
@@ -27,6 +28,16 @@
         <search-definition name="yourBusinessRefId">
             <search-group operator="AND">
                 <search-field name="byYourBusinessRefId" field-ref="yourBusinessRefId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="ourBusinessRefId">
+            <search-group operator="AND">
+                <search-field name="byOurBusinessRefId" field-ref="ourBusinessRefId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="tracking">
+            <search-group operator="AND">
+                <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
             </search-group>
         </search-definition>
         <search-definition name="suivi">

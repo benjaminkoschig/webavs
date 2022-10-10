@@ -37,13 +37,14 @@ import static globaz.apg.acorweb.mapper.APAcorImportationUtils.*;
 
 @Slf4j
 public class APImportationCalculAcor {
-
+    private final FCalcul fCalcul;
     private final EntityService entityService;
-    public APImportationCalculAcor() {
+    public APImportationCalculAcor(FCalcul fCalcul) {
+        this.fCalcul = fCalcul;
         entityService = EntityService.of(BSessionUtil.getSessionFromThreadContext());
     }
 
-    public void importCalculAcor(String idDroit, FCalcul fCalcul) throws Exception {
+    public void importCalculAcor(String idDroit) throws Exception {
         LOG.info("Importation des données calculées.");
         BSession session = entityService.getSession();
         BTransaction transaction = null;
@@ -56,7 +57,7 @@ public class APImportationCalculAcor {
                     idDroit);
             checkAndGetNssIntegrite(session, fCalcul, droit);
             final List<APBaseCalcul> basesCalcul = retrieveBasesCalcul(session, droit);
-            Collection<APPrestationWrapper> pw = createAPPrestationWrappers(session, fCalcul, droit, basesCalcul);
+            Collection<APPrestationWrapper> pw = createAPPrestationWrappers(session, droit, basesCalcul);
             calculerPrestationsComplementaires(session, transaction, droit, pw, basesCalcul);
 
             if (!hasErrors(session, transaction)) {
@@ -81,11 +82,10 @@ public class APImportationCalculAcor {
     }
 
     private List<APPrestationWrapper> createAPPrestationWrappers(BSession session,
-                                                                 FCalcul fCalcul,
                                                                  APDroitLAPG droit,
                                                                  List<APBaseCalcul> basesCalcul) throws Exception {
         List<APPrestationWrapper> wrappers = new ArrayList<>();
-        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(fCalcul, droit, basesCalcul);
+        List<APPrestationAcor> prestationsAcor = createAndMapPrestationsAcor(session, droit, basesCalcul);
         for (APPrestationAcor prestation:
                 prestationsAcor) {
             APPrestationWrapper prestationWrapper = new APPrestationWrapper();
@@ -159,42 +159,120 @@ public class APImportationCalculAcor {
         return rc;
     }
 
-    private List<APPrestationAcor> createAndMapPrestationsAcor(FCalcul fCalcul,
+    private List<APPrestationAcor> createAndMapPrestationsAcor(BSession session,
                                                                APDroitLAPG droit,
-                                                               List<APBaseCalcul> basesCalcul) throws Exception {
+                                                               List<APBaseCalcul> basesCalcul) throws PRACORException {
         List<APPrestationAcor> prestations = new ArrayList<>();
-        for (VersementMoisComptableApgType versementMoisComptable:
-             fCalcul.getVersementMoisComptable()) {
-            Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg().getPeriodeService().stream().filter(p -> {
-                try {
-                    return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), versementMoisComptable.getMoisComptable());
-                } catch (JAException e) {
-                    throw new PRAcorTechnicalException(e);
+        for (PeriodeServiceApgType periodeServiceApgType:
+                fCalcul.getCarteApg().getPeriodeService()) {
+            List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
+            JADate dateDebutPeriode;
+            try {
+                dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
+            } catch (JAException e) {
+                throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+            }
+            JADate dateFinPeriode;
+            try {
+                dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
+            } catch (JAException e) {
+                throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+            }
+            APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
+            for (VersementMoisComptableApgType moisComptableApgType :
+                    fCalcul.getVersementMoisComptable()) {
+                for (VersementApgType versementApgType :
+                        moisComptableApgType.getVersement()) {
+                    createAndMapRepartitionsByVersementApg(session, periodeServiceApgType, repartitions, baseCalcul, versementApgType);
                 }
-            }).findFirst();
-            if(periodeServiceApgTypeOptional.isPresent()) {
-                PeriodeServiceApgType periodeServiceApgType = periodeServiceApgTypeOptional.get();
-                JADate dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
-                JADate dateFinPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()));
-                APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
-                if(Objects.nonNull(baseCalcul)) {
-                    prestations.add(createAndMapPrestation(fCalcul, droit, versementMoisComptable, periodeServiceApgType, baseCalcul));
+                if (!repartitions.isEmpty()) {
+                    try {
+                        APPrestationAcor prestationAcor = createAndMapPrestation( droit,
+                                                                                  moisComptableApgType,
+                                                                                  periodeServiceApgType,
+                                                                                  baseCalcul);
+                        for (APRepartitionPaiementAcor repartition :
+                                repartitions) {
+                            prestationAcor.getRepartitionPaiements().add(repartition);
+                        }
+                        prestations.add(prestationAcor);
+                    } catch (Exception e) {
+                        throw new PRAcorTechnicalException("Erreur lors de la création de la prestation.", e);
+                    }
                 }
             }
         }
         return prestations;
     }
 
-    private APPrestationAcor createAndMapPrestation(FCalcul fCalcul,
-                                                    APDroitLAPG droit,
+    private void createAndMapRepartitionsByVersementApg(BSession session,
+                                                        PeriodeServiceApgType periodeServiceApgType,
+                                                        List<APRepartitionPaiementAcor> repartitions,
+                                                        APBaseCalcul baseCalcul,
+                                                        VersementApgType versementApgType) throws PRACORException {
+        VersementsInstanceAdminApgType versementGenevois = versementApgType.getVersementsGenevois();
+        if(Objects.nonNull(versementGenevois)) {
+            VersementBeneficiaireApgType versementAssure = versementGenevois.getVersementAssure();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementAssure);
+            VersementBeneficiaireApgType versementEmployeur = versementGenevois.getVersementEmployeur();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementEmployeur);
+        }
+        VersementsInstanceAdminApgType versementFederal = versementApgType.getVersementsFederal();
+        if(Objects.nonNull(versementFederal)) {
+            VersementBeneficiaireApgType versementEmployeur = versementFederal.getVersementEmployeur();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementEmployeur);
+            VersementBeneficiaireApgType versementAssure = versementFederal.getVersementAssure();
+            createAndMapRepartitionByBeneficiaire(session, fCalcul, periodeServiceApgType, repartitions, baseCalcul, versementAssure);
+        }
+    }
+
+    private void createAndMapRepartitionByBeneficiaire(BSession session, FCalcul fCalcul,
+                                                       PeriodeServiceApgType periodeServiceApgType,
+                                                       List<APRepartitionPaiementAcor> repartitions,
+                                                       APBaseCalcul baseCalcul,
+                                                       VersementBeneficiaireApgType versementAssure) throws PRACORException {
+        if(Objects.nonNull(versementAssure)) {
+            APRepartitionPaiementAcor repartitionPaiementAcor = createAndMapRepartitionByBeneficiaire(session,
+                                                                                                               periodeServiceApgType,
+                                                                                                               baseCalcul,
+                                                                                                               versementAssure);
+            if(Objects.nonNull(repartitionPaiementAcor)){
+                repartitions.add(repartitionPaiementAcor);
+            }
+        }
+    }
+
+    private APRepartitionPaiementAcor createAndMapRepartitionByBeneficiaire(BSession session,
+                                                                            PeriodeServiceApgType periodeServiceApgType,
+                                                                            APBaseCalcul baseCalcul,
+                                                                            VersementBeneficiaireApgType versementBeneficiaireApgType)
+                                                                                throws PRACORException {
+        for (DecompteApgType decompteApgType :
+                versementBeneficiaireApgType.getDecompte()) {
+            for (PeriodeDecompteApgType periodeDecompteApgType :
+                    decompteApgType.getPeriodeDecompte()) {
+                if (periodeDecompteApgType.getDebut().equals(periodeServiceApgType.getDebut()) &&
+                        periodeDecompteApgType.getFin().equals(periodeServiceApgType.getFin())) {
+                    return APPrestationAcor.createRepartitionPaiement(session,
+                            baseCalcul,
+                            versementBeneficiaireApgType,
+                            periodeDecompteApgType,
+                            fCalcul);
+                }
+            }
+        }
+        return null;
+    }
+
+    private APPrestationAcor createAndMapPrestation(APDroitLAPG droit,
                                                     VersementMoisComptableApgType versementMoisComptable,
                                                     PeriodeServiceApgType periodeServiceApgType,
                                                     APBaseCalcul baseCalcul) throws Exception {
         BSession session = entityService.getSession();
         APPrestationAcor prestation = new APPrestationAcor();
         AssureApgType assure = fCalcul.getAssure().stream()
-                                                    .filter(a -> a.getFonction() == FonctionApgType.REQUERANT)
-                                                    .collect(Collectors.toList()).get(0);
+                .filter(a -> a.getFonction() == FonctionApgType.REQUERANT)
+                .collect(Collectors.toList()).get(0);
         String genreService = session.getCode(droit.getGenreService());
         if (Objects.nonNull(fCalcul.getFraisGarde())) {
             prestation.setFraisGarde(new FWCurrency(fCalcul.getFraisGarde().getMontantGardeOctroye()));
@@ -205,10 +283,8 @@ public class APImportationCalculAcor {
         prestation.setIdAssure(assure.getId());
         prestation.setGenre(genreService);
         prestation.mapInformationFromPeriodeServiceApg(session, genreService, periodeServiceApgType);
-        prestation.mapInformationFromMontantJournalierApg(droit, fCalcul);
+        prestation.mapInformationFromMontantJournalierApg(droit, fCalcul, periodeServiceApgType);
         prestation.mapInformationFromBaseCalcul(baseCalcul);
-        prestation.createAndMapRepartitionPaiementsDecomptes(session, baseCalcul, fCalcul, versementMoisComptable);
-
         return prestation;
     }
 
@@ -288,67 +364,72 @@ public class APImportationCalculAcor {
                                                         Collection<APPrestationWrapper> wrappers) throws PRACORException {
         for (EmployeurApgType employeur:
             fCalcul.getEmployeur()) {
-            Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
-                    fCalcul.getPeriodeMontantJourn().get(0)
-                           .getPeriodeRepartition().get(0)
-                           .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
-            if(periodeRepartitionEmployeurOptional.isPresent()) {
-                PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
-                for (APPrestationWrapper wrapper : wrappers) {
-                    for (APResultatCalculSituationProfessionnel sitPro : wrapper.getPrestationBase().getResultatsCalculsSitProfessionnelle()) {
-                        /*
-                         * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '['
-                         * suivi d'un minimum de un ou de plusieurs chiffres ([0-9] signifie les caractères valide,
-                         * donc les chiffres, le '+' dit que çà doit correspondre au moins une fois) et qui est
-                         * suivit d'un ']' Si je n'est pas été assez claire :
-                         * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
-                         */
+            for ( PeriodeMontantJournApgType periodeMontantJournApgType:
+            fCalcul.getPeriodeMontantJourn()) {
+                for (PeriodeRepartitionApgType periodeRepartitionApgType :
+                        periodeMontantJournApgType.getPeriodeRepartition()) {
+                    Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
+                            periodeRepartitionApgType
+                                    .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
+                    if (periodeRepartitionEmployeurOptional.isPresent()) {
+                        PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
+                        for (APPrestationWrapper wrapper : wrappers) {
+                            for (APResultatCalculSituationProfessionnel sitPro : wrapper.getPrestationBase().getResultatsCalculsSitProfessionnelle()) {
+                                /*
+                                 * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '['
+                                 * suivi d'un minimum de un ou de plusieurs chiffres ([0-9] signifie les caractères valide,
+                                 * donc les chiffres, le '+' dit que çà doit correspondre au moins une fois) et qui est
+                                 * suivit d'un ']' Si je n'est pas été assez claire :
+                                 * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
+                                 */
 
-                        String idAffilie;
-                        String idTiers;
-                        if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
-                            idAffilie = "0"; // sauve dans la base puis recharge, donc 0
-                            idTiers = PRAbstractEmployeur.extractIdTiers(employeur.getNoAffilie());
-                        } else {
-                            try {
-                                IPRAffilie affilie = APRepartitionPaiementAcor.getIprAffilie(session, employeur.getNoAffilie(), employeur.getNom());
+                                String idAffilie;
+                                String idTiers;
+                                if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
+                                    idAffilie = "0"; // sauve dans la base puis recharge, donc 0
+                                    idTiers = PRAbstractEmployeur.extractIdTiers(employeur.getNoAffilie());
+                                } else {
+                                    try {
+                                        IPRAffilie affilie = APRepartitionPaiementAcor.getIprAffilie(session, employeur.getNoAffilie(), employeur.getNom());
 
-                                idAffilie = affilie.getIdAffilie();
-                                idTiers = affilie.getIdTiers();
-                            } catch (Exception e) {
-                                throw new PRACORException("Impossible de trouver l'affilie", e);
-                            }
-                        }
-                        String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
-                        String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
-                        if (idAffilie.equals(sitPro.getIdAffilie())
-                                && idTiers.equals(sitPro.getIdTiers())
-                                && nomEmployeur.equals(nomSitProEmployeur)) {
-                            FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
-                            sitPro.setTauxProRata(taux);
+                                        idAffilie = affilie.getIdAffilie();
+                                        idTiers = affilie.getIdTiers();
+                                    } catch (Exception e) {
+                                        throw new PRACORException("Impossible de trouver l'affilie", e);
+                                    }
+                                }
+                                String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
+                                String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
+                                if (idAffilie.equals(sitPro.getIdAffilie())
+                                        && idTiers.equals(sitPro.getIdTiers())
+                                        && nomEmployeur.equals(nomSitProEmployeur)) {
+                                    FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
+                                    sitPro.setTauxProRata(taux);
 
-                            // Il s'agit d'une situation profesionnelle
-                            // créer entièrement à partir de la base de
-                            // calcul.
-                            // newRcSitPro on va donc y rajouter le montant
-                            // et salaire journalier en le recalculant à
-                            // partir
-                            // du montant total de la prestation au prorata.
+                                    // Il s'agit d'une situation profesionnelle
+                                    // créer entièrement à partir de la base de
+                                    // calcul.
+                                    // newRcSitPro on va donc y rajouter le montant
+                                    // et salaire journalier en le recalculant à
+                                    // partir
+                                    // du montant total de la prestation au prorata.
 
-                            // Ceci est nécessaire pour le calcul du montant
-                            // des cotisations, afin de determiner
-                            // si la part salariale est supérieure à la part
-                            // de l'indépendant, le cas échéant.
-                            if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
-                                    || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
-                                    .toString())) {
-                                BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
-                                        .multiply(taux.getBigDecimalValue());
+                                    // Ceci est nécessaire pour le calcul du montant
+                                    // des cotisations, afin de determiner
+                                    // si la part salariale est supérieure à la part
+                                    // de l'indépendant, le cas échéant.
+                                    if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
+                                            || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
+                                            .toString())) {
+                                        BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
+                                                .multiply(taux.getBigDecimalValue());
 
-                                double salaireJ = PRCalcul.quotient(montant.toString(),
-                                        String.valueOf(fCalcul.getCarteApg().getSommeJoursService()));
-                                sitPro.setMontant(new FWCurrency(montant.toString()));
-                                sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
+                                        double salaireJ = PRCalcul.quotient(montant.toString(),
+                                                String.valueOf(fCalcul.getCarteApg().getSommeJoursService()));
+                                        sitPro.setMontant(new FWCurrency(montant.toString()));
+                                        sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
+                                    }
+                                }
                             }
                         }
                     }

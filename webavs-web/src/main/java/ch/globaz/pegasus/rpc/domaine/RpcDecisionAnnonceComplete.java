@@ -101,7 +101,7 @@ public class RpcDecisionAnnonceComplete {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
                 // PLAT2-1396 - conjoint survivant -> COUPLE et non ALONE
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null && !personsElementsCalcul.hasMembreDeces() || isVeuf(personData)) {
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData)) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;

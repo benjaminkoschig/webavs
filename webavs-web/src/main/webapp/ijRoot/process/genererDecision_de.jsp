@@ -8,6 +8,8 @@
 
 <%@ page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page import="globaz.ij.itext.IJDecision" %>
+<%@ page import="java.util.Objects" %>
+<%@ page import="globaz.pyxis.db.adressepaiement.TIAdressePaiement" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -360,8 +362,8 @@
 							<td valign="top">
 								<ct:FWLabel key="JSP_PAYER_A" />
 								&nbsp;
-								<select	id="beneficiaire" 
-										name="beneficiaire" 
+								<select	id="beneficiaire"
+										name="beneficiaire"
 										value="<%=viewBean.getBeneficiaire()%>">
 									<option	value="<%=IJDecision.BENEFICIAIRE_ASSURE%>" <%=IJDecision.BENEFICIAIRE_ASSURE.equals(viewBean.getBeneficiaire()) ? "selected=\"selected\"" : ""%>>
 										<ct:FWLabel key="JSP_ASSURE" />
@@ -372,8 +374,8 @@
 								</select>
 							</td>
 							<td valign="top" align="left">
-								<select	id="personnalisationAdressePaiement" 
-										name="personnalisationAdressePaiement" 
+								<select	id="personnalisationAdressePaiement"
+										name="personnalisationAdressePaiement"
 										value="<%=viewBean.getPersonnalisationAdressePaiement()%>">
 									<option value="standard" <%="standard".equals(viewBean.getPersonnalisationAdressePaiement()) ? "selected=\"selected\"" : ""%>>
 										<ct:FWLabel key="JSP_STANDARD" />
@@ -388,16 +390,39 @@
 							</td>
 							<td valign="top" align="right">
 								<span class="adressePaiement assure employeur personnalise">
-									<ct:FWSelectorTag	name="selecteurAdressePaiement" 
-														methods="<%=viewBean.getMethodesSelectionAdressePaiement()%>" 
-														providerApplication="pyxis" 
-														providerPrefix="TI" 
-														providerAction="pyxis.adressepaiement.adressePaiement.chercher" 
-														target="fr_main" 
+									<ct:FWSelectorTag	name="selecteurAdressePaiement"
+														methods="<%=viewBean.getMethodesSelectionAdressePaiement()%>"
+														providerApplication="pyxis"
+														providerPrefix="TI"
+														providerAction="pyxis.adressepaiement.adressePaiement.chercher"
+														target="fr_main"
 														redirectUrl="<%=mainServletPath%>" />
 									&nbsp;
 								</span>
 							</td>
+
+						<%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
+							<td valign="top" align="left">
+								<span><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
+								<span class="adressePaiement assure employeur personnalise">
+
+									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>">
+									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
+									<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+
+									<ct:FWSelectorTag	name="selecteurReferencePaiement"
+														methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"
+														providerApplication="pyxis"
+														providerPrefix="TI"
+														providerAction="pyxis.tiers.referencePaiement.chercher"
+														providerActionParams="<%=viewBean.getParamsChercherReferencePaiement()%>"
+														target="fr_main"
+														redirectUrl="<%=mainServletPath%>" />
+									&nbsp;
+								</span>
+							</td>
+						<%}%>
+
 							<td valign="top" align="left">
 								<span class="IJAfficheText">
 									<span class="adressePaiement assure standard">
@@ -426,21 +451,24 @@
 										<%=viewBean.getAdressePaiementPersonnaliseeFormatee()%>
 									</span>
 								</span>
-								<input	type="hidden" 
-										name="idTierAssureAdressePaiement" 
+								<input	type="hidden"
+										name="idTierAssureAdressePaiement"
 										value="<%=viewBean.getIdTierAssureAdressePaiement()%>" />
-								<input	type="hidden" 
-										name="idTierEmployeurAdressePaiement" 
+								<input	type="hidden"
+										name="idTierEmployeurAdressePaiement"
 										value="<%=viewBean.getIdTierEmployeurAdressePaiement()%>" />
-								<input	type="hidden" 
-										name="idTiersAdressePaiementPersonnalisee" 
+								<input	type="hidden"
+										name="idTiersAdressePaiementPersonnalisee"
 										value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>" />
-								<input	type="hidden" 
-										name="idDomaineApplicationAdressePaiementPersonnalisee" 
+								<input	type="hidden"
+										name="idDomaineApplicationAdressePaiementPersonnalisee"
 										value="<%=viewBean.getIdDomaineApplicationAdressePaiementPersonnalisee()%>" />
-								<input	type="hidden" 
-										name="numAffilieAdressePaiementPersonnalisee" 
+								<input	type="hidden"
+										name="numAffilieAdressePaiementPersonnalisee"
 										value="<%=viewBean.getNumAffilieAdressePaiementPersonnalisee()%>" />
+								<input	type="hidden"
+										name="idReferenceQR"
+										value="<%=viewBean.getIdReferenceQR()%>" />
 							</td>
 						</tr>
 						<tr>

@@ -134,7 +134,8 @@ function init(){}
 
           <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
           <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
-		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>"
+		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>">
+          <input type="hidden"  name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
@@ -148,7 +149,7 @@ function init(){}
 <%}%>
 
 <ct:menuChange displayId="options" menuId="reference-paiement" showTab="options">
-	<ct:menuSetAllParams key="idReference" value="<%=viewBean.getIdReference()%>"/>
+	<ct:menuSetAllParams key="idReferenceQR" value="<%=viewBean.getIdReferenceQR()%>"/>
 </ct:menuChange>
 
 <%-- /tpl:put --%>

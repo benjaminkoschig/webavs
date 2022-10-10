@@ -543,7 +543,7 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
         return ordreVersement.getAdressePaiement();
     }
 
-    public TIAdressePaiementData getAdressePaiementData() throws Exception {
+    public TIAdressePaiementData getAdressePaiementData() {
         ordreVersement.setSession(getSession());
         return ordreVersement.getAdressePaiementData();
     }
@@ -677,6 +677,12 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
     public String getIdAdressePaiement() {
         ordreVersement.setSession(getSession());
         return ordreVersement.getIdAdressePaiement();
+    }
+
+    @Override
+    public String getReferencePaiement() {
+        ordreVersement.setSession(getSession());
+        return ordreVersement.getReferenceBVR();
     }
 
     /**
@@ -1068,6 +1074,11 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
     @Override
     public void setIdAdressePaiement(String newIdAdressePaiement) {
         ordreVersement.setIdAdressePaiement(newIdAdressePaiement);
+    }
+
+    @Override
+    public void setReferencePaiement(String referencePaiement){
+        ordreVersement.setReferenceBVR(referencePaiement);
     }
 
     /**

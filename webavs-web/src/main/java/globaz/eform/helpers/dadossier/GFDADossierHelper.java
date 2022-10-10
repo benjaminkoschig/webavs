@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class GFDADossierHelper extends FWHelper {
     private static final String ERREUR_GESTIONNAIRES_INTROUVABLE = "GESTIONNAIRES_INTROUVABLE";
 
-    public static final String PROPERTY_GROUPE_GESTIONNAIRE = "groupe.eform.gestionnaire";
+    public static final String PROPERTY_GROUPE_GESTIONNAIRE = "groupe.dadossier.gestionnaire";
 
     private static Map<String, String> gestionnaires = null;
 

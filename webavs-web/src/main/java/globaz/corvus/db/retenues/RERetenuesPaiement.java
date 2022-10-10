@@ -5,6 +5,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
@@ -19,6 +20,10 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import globaz.pyxis.db.tiers.TIReferencePaiement;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+import org.apache.commons.lang.StringUtils;
+
 import java.math.BigDecimal;
 
 /**
@@ -41,6 +46,7 @@ public class RERetenuesPaiement extends BEntity {
     public static final String FIELDNAME_ID_RETENUE = "YQIRET";
     public static final String FIELDNAME_ID_RUBRIQUE = "YQIRUB";
     public static final String FIELDNAME_ID_TIERS_ADR_PMT = "YQITAP";
+    public static final String FIELDNAME_ID_REFERENCE_QR = "ID_REF_QR";
     public static final String FIELDNAME_ID_TYPE_SECTION = "YQITSC";
     public static final String FIELDNAME_MONTANT_DEJA_RETENU = "YQMMDR";
     public static final String FIELDNAME_MONTANT_RETENU_MENS = "YQMREM";
@@ -51,6 +57,7 @@ public class RERetenuesPaiement extends BEntity {
     public static final String FIELDNAME_REVENU_ANNUEL_DETERMINANT = "REVENU_ANNUEL_DETERMINANT";
     public static final String FIELDNAME_TAUX_IMPOSITION = "YQMTAU";
     public static final String FIELDNAME_TYPE_RETENU = "YQTTYP";
+
     public static final String TABLE_NAME_RETENUES = "RERETEN";
 
     private String cantonImposition = "";
@@ -76,6 +83,7 @@ public class RERetenuesPaiement extends BEntity {
     private transient CASection section = null;
     private String tauxImposition = "";
     private String revenuAnnuelDeterminant = "";
+    private String idReferenceQR = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -95,6 +103,7 @@ public class RERetenuesPaiement extends BEntity {
         idTypeSection = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_TYPE_SECTION);
         csTypeRetenue = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TYPE_RETENU);
         idTiersAdressePmt = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_TIERS_ADR_PMT);
+        idReferenceQR = statement.dbReadNumeric(FIELDNAME_ID_REFERENCE_QR);
         idDomaineApplicatif = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_DOMAINE_APPLICATIF);
         noFacture = statement.dbReadString(RERetenuesPaiement.FIELDNAME_NO_FACTURE);
         idExterne = statement.dbReadString(RERetenuesPaiement.FIELDNAME_ID_EXTERNE);
@@ -235,6 +244,8 @@ public class RERetenuesPaiement extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), csTypeRetenue, "csTypeRetenue"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_ID_TIERS_ADR_PMT,
                 this._dbWriteNumeric(statement.getTransaction(), idTiersAdressePmt, "idTiersAdressePmt"));
+        statement.writeField(RERetenuesPaiement.FIELDNAME_ID_REFERENCE_QR,
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_ID_DOMAINE_APPLICATIF,
                 this._dbWriteNumeric(statement.getTransaction(), idDomaineApplicatif, "idDomaineApplicatif"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_NO_FACTURE,
@@ -317,6 +328,10 @@ public class RERetenuesPaiement extends BEntity {
 
     public String getIdTiersAdressePmt() {
         return idTiersAdressePmt;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
     }
 
     public String getIdTypeSection() {
@@ -471,6 +486,10 @@ public class RERetenuesPaiement extends BEntity {
 
     public void setIdTiersAdressePmt(String string) {
         idTiersAdressePmt = string;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR){
+        this.idReferenceQR = idReferenceQR;
     }
 
     public void setIdTypeSection(String idTypeSection) {

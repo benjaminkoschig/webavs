@@ -1,5 +1,8 @@
 package ch.globaz.eform.web.servlet;
 
+import ch.globaz.common.util.NSSUtils;
+import ch.globaz.eform.constant.GFStatusDADossier;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.utils.GFFileUtils;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -9,6 +12,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +34,7 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
     public final static String ACTION_UPLOAD = "upload";
     public final static String ACTION_REMOVEFILE = "removeFile";
     public final static String ACTION_ENVOYER = "envoyer";
+    public final static String ACTION_AFFICHER = "afficher";
 
     @Override
     protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -38,7 +43,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
         beforeAfficher(session, request, response, (FWViewBeanInterface) session.getAttribute("viewBean"));
         super.actionReAfficher(session, request, response, mainDispatcher);
     }
-
 
     @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
@@ -51,9 +55,6 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
                                 FWDispatcher dispatcher) throws ServletException, IOException {
         String actionPart = getAction().getActionPart();
         String destination;
-
-        // Définition de l'action custom standard pour l'application ARIES
-        // Attention, si appel de custom action, on passe le paramètre "id" au lieu de "selectedId"
 
         try {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
@@ -69,8 +70,13 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
             if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_UPLOAD)) {
                 GFFileUtils.uploadFile((GFEnvoiViewBean) viewBean);
             } else if (viewBean instanceof GFEnvoiViewBean && actionPart.equals(ACTION_REMOVEFILE)) {
-                String fileName = (String) request.getParameter("fileName");
-                GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+                String fileName = request.getParameter("fileName");
+                String errorFileName = request.getParameter("errorFileName");
+                if(!JadeStringUtil.isEmpty(fileName)) {
+                    GFFileUtils.deleteFile((GFEnvoiViewBean) viewBean, fileName);
+                } else if(!JadeStringUtil.isEmpty(errorFileName)) {
+                    ((GFEnvoiViewBean) viewBean).getErrorFileNameList().remove(errorFileName);
+                }
             }
 
             // Traitement
@@ -82,8 +88,14 @@ public class GFEnvoiServletAction extends FWDefaultServletAction {
 
             if (goesToSuccessDest) {
                 destination = _getDestChercherSucces(session, request, response, viewBean);
-                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE) || actionPart.equals(ACTION_ENVOYER)) {
+                if (actionPart.equals(ACTION_UPLOAD) || actionPart.equals(ACTION_REMOVEFILE)) {
                     destination = this.getActionFullURL() + ".reAfficher";
+                } else if(actionPart.equals(ACTION_ENVOYER)) {
+                    destination = "/eform?userAction="+GFSuiviServletAction.ACTION_PATH+"."+GFSuiviServletAction.ACTION_CHERCHER+
+                    "&likeNss=" + NSSUtils.unFormatNss(((GFEnvoiViewBean) viewBean).getNss()) +
+                            "&byCaisse=" + ((GFEnvoiViewBean) viewBean).getCodeCaisse() +
+                            "&byType=" + GFTypeDADossier.SEND_TYPE.getCodeSystem() +
+                            "&byStatus=" + GFStatusDADossier.SEND.getCodeSystem();
                 }
             } else {
                 destination = _getDestChercherEchec(session, request, response, viewBean);

@@ -32,11 +32,11 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
 
 /**
  * ViewBean pour les filtres de recherche de l'écran des créanciers
@@ -54,6 +54,13 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
     private static final Object[] METHODES_SEL_BENEFICIAIRE = new Object[] { new String[] { "idTiersDepuisPyxis",
             "idTiers" } };
 
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT_QR = new Object[]{
+            new String[]{"setIdReferenceQRDepuisPyxis", "getIdReferenceQR"}};
+
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[]{
+            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteLike", "forCompteLike"}};
+
+    private String referenceQRFormattee = "";
     private String ccpOuBanqueFormatte = "";
     private REDecisionEntity decision = null;
     private String idLot;
@@ -64,6 +71,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
     private boolean retourDepuisPyxis;
     private PRTiersWrapper tiers = null;
     private boolean tiersBeneficiaireChange = false;
+    private TIAdressePaiementData adressePaiementData = null;
 
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -76,7 +84,13 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
             if (JadeStringUtil.isEmpty(getTiersNomPrenom())) {
                 _addError(statement.getTransaction(), getSession().getLabel("JSP_CRE_D_ERREUR_CREANCIER"));
             }
+
+            // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+            if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+                _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+            }
         }
+
     }
 
     /**
@@ -279,6 +293,14 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
      */
     public Object[] getMethodesSelectionBeneficiaire() {
         return RECreancierViewBean.METHODES_SEL_BENEFICIAIRE;
+    }
+
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return RECreancierViewBean.METHODES_SEL_REFERENCE_PAIEMENT_QR;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return RECreancierViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
     }
 
     public String getMontantEnFaveurAssure() {
@@ -555,6 +577,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
 
     public void setIdTiersAdressePmtDepuisPyxis(String string) {
         setIdTiersAdressePmt(string);
+        setIdReferenceQR("");
         setRetourDepuisPyxis(true);
     }
 
@@ -563,6 +586,11 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
         tiers = null;
         setRetourDepuisPyxis(true);
         setTiersBeneficiaireChange(true);
+    }
+
+    public void setIdReferenceQRDepuisPyxis(String string) {
+        setIdReferenceQR(string);
+        setRetourDepuisPyxis(true);
     }
 
     public void setIsAdresseModifiee(String string) {
@@ -587,12 +615,36 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
         }
     }
 
+    /**
+     * setter pour l'attribut adresse paiement.
+     *
+     * @param adressePaiement
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiement) {
+        if (adressePaiement != null) {
+            adressePaiementData = adressePaiement;
+        }
+    }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
+    }
+
     public void setRetourDepuisPyxis(boolean b) {
         retourDepuisPyxis = b;
     }
 
     public void setTiersBeneficiaireChange(boolean b) {
         tiersBeneficiaireChange = b;
+    }
+
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
+    }
+
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
     }
 
 }

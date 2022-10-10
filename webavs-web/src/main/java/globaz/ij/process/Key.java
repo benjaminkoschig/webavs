@@ -50,6 +50,11 @@ public final class Key implements Comparable {
      */
     public String idTiersAdressePaiement = "";
 
+    /**
+     * non pris en compte pour le regroupement, sert à retrouver la référence de paiement QR
+     */
+    public String referencePaiement = "";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -65,11 +70,12 @@ public final class Key implements Comparable {
      * @param idExtra2
      *            DOCUMENT ME!
      */
-    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2) {
+    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2, String referencePaiement) {
         this.idTiers = idTiers;
         this.idAffilie = idAffilie;
         this.idExtra1 = idExtra1;
         this.idExtra2 = idExtra2;
+        this.referencePaiement = referencePaiement;
     }
 
     // ~ Methods

@@ -58,17 +58,21 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import ch.globaz.common.domaine.Date;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -126,6 +130,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             renteAccordee.setIdPrestationAccordee(renteAccordeeVb.getIdPrestationAccordee());
             renteAccordee.setIdTiersBeneficiaire(renteAccordeeVb.getIdTiersBeneficiaire());
             renteAccordee.setReferencePmt(renteAccordeeVb.getReferencePmt());
+            renteAccordee.setIdReferenceQR(renteAccordeeVb.getIdReferenceQR());
 
             // Retrouver l'idTiers par le NSS et le setter
             PRTiersWrapper tiers = PRTiersHelper.getTiers(session1, renteAccordeeVb.getNssTiersComplementaire1a());
@@ -182,7 +187,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeglobaz.framework.controller.FWHelper#_delete(globaz.framework.bean. FWViewBeanInterface,
      * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -229,7 +234,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      */
     @Override
     protected void _find(final BIPersistentObjectList persistentList, final FWAction action,
-            final globaz.globall.api.BISession session) throws Exception {
+                         final globaz.globall.api.BISession session) throws Exception {
         RERenteAccordeeJointDemandeRenteListViewBean mgr = (RERenteAccordeeJointDemandeRenteListViewBean) persistentList;
         mgr.setScreenMode(true);
         mgr.find();
@@ -247,7 +252,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     @Override
     protected void _findPrevious(final BIPersistentObjectList persistentList, final FWAction action,
-            final BISession session) throws Exception {
+                                 final BISession session) throws Exception {
         RERenteAccordeeJointDemandeRenteListViewBean mgr = (RERenteAccordeeJointDemandeRenteListViewBean) persistentList;
         mgr.setScreenMode(true);
         mgr.findPrev();
@@ -256,15 +261,11 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /**
      * redefini pour charger l'adresse de paiement.
-     * 
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _retrieve(final FWViewBeanInterface viewBean, final FWAction action, final BISession session)
@@ -319,7 +320,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeglobaz.framework.controller.FWHelper#_update(globaz.framework.bean. FWViewBeanInterface,
      * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -360,10 +361,10 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             // l'annonce liee cette rente accordee
             if (IREPrestationAccordee.CS_ETAT_CALCULE.equals(renteAccordee.getCsEtat())
                     && (!renteAccordee.getCodeCasSpeciaux1().equals(renteAccordeeVb.getCodeCasSpeciaux1())
-                            || !renteAccordee.getCodeCasSpeciaux2().equals(renteAccordeeVb.getCodeCasSpeciaux2())
-                            || !renteAccordee.getCodeCasSpeciaux3().equals(renteAccordeeVb.getCodeCasSpeciaux3())
-                            || !renteAccordee.getCodeCasSpeciaux4().equals(renteAccordeeVb.getCodeCasSpeciaux4()) || !renteAccordee
-                            .getCodeCasSpeciaux5().equals(renteAccordeeVb.getCodeCasSpeciaux5()))) {
+                    || !renteAccordee.getCodeCasSpeciaux2().equals(renteAccordeeVb.getCodeCasSpeciaux2())
+                    || !renteAccordee.getCodeCasSpeciaux3().equals(renteAccordeeVb.getCodeCasSpeciaux3())
+                    || !renteAccordee.getCodeCasSpeciaux4().equals(renteAccordeeVb.getCodeCasSpeciaux4()) || !renteAccordee
+                    .getCodeCasSpeciaux5().equals(renteAccordeeVb.getCodeCasSpeciaux5()))) {
 
                 updateCodeCasSpeciauxAnnonce = true;
             }
@@ -394,6 +395,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             renteAccordee.setIdBaseCalcul(renteAccordeeVb.getIdBaseCalcul());
             renteAccordee.setIdDemandePrincipaleAnnulante(renteAccordeeVb.getIdDemandePrincipaleAnnulante());
             renteAccordee.setReferencePmt(renteAccordeeVb.getReferencePmt());
+            renteAccordee.setIdReferenceQR(renteAccordeeVb.getIdReferenceQR());
             renteAccordee.setIdInfoCompta(renteAccordeeVb.getIdInfoCompta());
 
             // Mise à jour de l'info compta
@@ -539,18 +541,14 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     }
 
     /**
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public FWViewBeanInterface actionBloquerRA(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                               final BSession session) throws Exception {
 
         RERenteAccordeeJointDemandeRenteViewBean raViewBean = (RERenteAccordeeJointDemandeRenteViewBean) viewBean;
 
@@ -568,7 +566,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /**
      * Affiche la page de déblocage du montant de la rente accodrée
-     * 
+     *
      * @param viewBean
      * @param action
      * @param session
@@ -576,7 +574,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     public FWViewBeanInterface actionDebloquerMontantRA(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                        final BSession session) throws Exception {
 
         REDebloquerMontantRAViewBean draViewBean = null;
 
@@ -648,7 +646,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     }
 
     public FWViewBeanInterface actionDesactiverBlocage(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                       final BSession session) throws Exception {
 
         RERenteAccordeeJointDemandeRenteViewBean raViewBean = (RERenteAccordeeJointDemandeRenteViewBean) viewBean;
         RERenteAccordee ra = new RERenteAccordee();
@@ -663,7 +661,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     }
 
     public FWViewBeanInterface actionExecuterDeblocage(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                       final BSession session) throws Exception {
 
         REDebloquerMontantRenteAccordeeProcess process = new REDebloquerMontantRenteAccordeeProcess(session);
         process.setIdDomaine(((REDebloquerMontantRAViewBean) viewBean).getIdDomaineAdrPmt());
@@ -700,7 +698,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         demandeRente.setSession(session);
         demandeRente.setIdDemandeRente(raViewBean.getIdDemandeRente());
         demandeRente.retrieve();
-        if (!StringUtils.equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE,demandeRente.getCsEtat())) {
+        if (!StringUtils.equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE, demandeRente.getCsEtat())) {
             REDemandeRenteJointDemandeManager managerDemande = new REDemandeRenteJointDemandeManager();
             managerDemande.setForCsEtatDemande(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE);
             managerDemande.setForIdTiersRequ(raViewBean.getIdTiers());
@@ -715,7 +713,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     }
 
     private void chercherIdTiersFamille(final REDebloquerMontantRAViewBean viewBean, final FWAction action,
-            final BISession session) throws Exception {
+                                        final BISession session) throws Exception {
 
         // récupération des ID Tiers des membres de la famille (étendue)
         Set<String> idMembreFamille = new HashSet<String>();
@@ -737,11 +735,11 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * Elle va progressivement contrôler les compte annexes pour chaque rentes liés à un rentier. Pour les rentes de
      * niveau 5 (enfants) plusieurs tests seront fait (détaillés dans les méthodes adequates) pour mettre à jour le
      * compte annexe d'une rente.
-     * 
+     *
      * @throws Exception
      */
     private void updateInfoComptaPourMembreFamillesRenteAccordee(final BSession session,
-            final BTransaction transaction, final String idRA, final String newIDAdressePaiement) throws Exception {
+                                                                 final BTransaction transaction, final String idRA, final String newIDAdressePaiement) throws Exception {
 
         // Récupérer la rente accordée du tiers bénéficiaire
         RERenteAccordee ra = new RERenteAccordee();
@@ -773,7 +771,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         /**
          * 1. VERIFIER LE GROUPE LEVEL DU TEC
          * 2. COMMUTER DANS LE BON LEVEL
-         * 
+         *
          */
 
         int groupLevelTEC = REBeneficiairePrincipal.getGroupLevel(session, transaction, idRA);
@@ -785,7 +783,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     /**
      * Cette méthode permet de vérifier dans quel Group level on se trouve et d'appeler le bon traitement en fonction de
      * cela
-     * 
+     *
      * @param session
      * @param idRA
      * @param idt
@@ -795,13 +793,13 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     private void checkGroupLevelAndCommuteToLevelTreat(final BSession session, final BTransaction transaction,
-            final String idRA, final String newIDAdressePaiement, REInformationsComptabilite infoComptaTEC,
-            String idTEC, ISFMembreFamilleRequerant[] membres, int groupLevelTEC) throws Exception {
+                                                       final String idRA, final String newIDAdressePaiement, REInformationsComptabilite infoComptaTEC,
+                                                       String idTEC, ISFMembreFamilleRequerant[] membres, int groupLevelTEC) throws Exception {
         if (groupLevelTEC == 1 || groupLevelTEC == 2 || groupLevelTEC == 4 || groupLevelTEC == 5) {
             treatGroupLevels(session, transaction, infoComptaTEC, idTEC, newIDAdressePaiement, membres);
         } else {
             String message = java.text.MessageFormat.format(session.getLabel("GROUP_LEVEL_NOT_RECOGNISED"),
-                    new Object[] { groupLevelTEC, idRA });
+                    new Object[]{groupLevelTEC, idRA});
             throw new RETechnicalException(message);
         }
     }
@@ -812,24 +810,24 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * CA)
      * Vérification des rentes liées -> Si niveau 5 dans la situation familiale ALORS vérification pour mise à jour du
      * CA
-     * 
+     *
      * @param session
      * @param transaction
-     * @param icTEC : info comptable du tiers en cours
-     * @param idTEC : identifiant unique du tiers bénéficiaire en cours
+     * @param icTEC                : info comptable du tiers en cours
+     * @param idTEC                : identifiant unique du tiers bénéficiaire en cours
      * @param newIDAdressePaiement : nouvel id adresse paiement
-     * @param membres : membres de la situation familiale liés au tiers requérant
+     * @param membres              : membres de la situation familiale liés au tiers requérant
      * @throws Exception
      */
     private void treatGroupLevels(final BSession session, final BTransaction transaction,
-            REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement,
-            ISFMembreFamilleRequerant[] membres) throws Exception {
+                                  REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement,
+                                  ISFMembreFamilleRequerant[] membres) throws Exception {
 
         updateAdressePaiementForTEC(session, transaction, infoComptaTEC, idTEC, newIDAdressePaiement);
         /**
-         * 
+         *
          * 2. Vérifier les niveaux inférieurs de la situation familiale
-         * 
+         *
          */
         // Préparation d'une MAP triée par groupe level
         Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFSortedByGroupLevel = prepareMapSortedByGroupLevel(
@@ -846,7 +844,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /***
      * Méthode qui retourne l'id du compte annexe pour un rentier selon son idTiers
-     * 
+     *
      * @param bSession
      * @param idTiers
      * @return
@@ -893,7 +891,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
     /***
      * Méthode qui permet de changer l'id du compte annexe des info comptable d'une rente accordée en fonction de son
      * idTiers de payement.
-     * 
+     *
      * @param session
      * @param transaction
      * @param ra
@@ -901,8 +899,8 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     private void changementCASelonTiersAdressePmt(final BSession session, final BTransaction transaction,
-            RERenteAccJoinTblTiersJoinDemandeRente ra, ISFMembreFamilleRequerant[] membres,
-            List<RERenteAccJoinTblTiersJoinDemandeRente> rentesLvl5) throws Exception {
+                                                  RERenteAccJoinTblTiersJoinDemandeRente ra, ISFMembreFamilleRequerant[] membres,
+                                                  List<RERenteAccJoinTblTiersJoinDemandeRente> rentesLvl5) throws Exception {
 
         String idCAToChange = "";
 
@@ -1002,7 +1000,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /**
      * Créer un compte annexe pour le tiers passé en argument et retourne l'id du compte
-     * 
+     *
      * @param session
      * @param transaction
      * @param ra
@@ -1011,7 +1009,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     private String createCompteAnnexeAndReturnId(final BSession session, final BTransaction transaction,
-            RERenteAccJoinTblTiersJoinDemandeRente ra, String idTiers) throws Exception {
+                                                 RERenteAccJoinTblTiersJoinDemandeRente ra, String idTiers) throws Exception {
         String idCAToChange;
         idCAToChange = REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTiers,
                 ra.loadInformationsComptabilite(), IREValidationLevel.VALIDATION_LEVEL_ALL);
@@ -1020,7 +1018,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /***
      * Méthode qui retourne l'idTiers du plus jeune parmi les rentes à avoir la même adresse de payement
-     * 
+     *
      * @param session
      * @param ra
      * @param rentesEnfants
@@ -1028,7 +1026,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     private String getIdTiersYoungestWithSameAdressPmt(final BSession session,
-            RERenteAccJoinTblTiersJoinDemandeRente ra, List<RERenteAccJoinTblTiersJoinDemandeRente> rentesEnfants)
+                                                       RERenteAccJoinTblTiersJoinDemandeRente ra, List<RERenteAccJoinTblTiersJoinDemandeRente> rentesEnfants)
             throws Exception {
         String idTiersYoungestMembreFamilleSameIdTiersAdressePmt = "";
         if (!rentesEnfants.isEmpty()) {
@@ -1074,13 +1072,13 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /***
      * Méthode qui retourne l'idTiers du membre à qui correspond l'idTiers de l'adresse de payement de la rente accordée
-     * 
+     *
      * @param ra
      * @param membres
      * @return
      */
     private String getIdTiersSameAsTiersAdressePmt(RERenteAccJoinTblTiersJoinDemandeRente ra,
-            ISFMembreFamilleRequerant[] membres) {
+                                                   ISFMembreFamilleRequerant[] membres) {
         String idTiersMembreFamilleSameAsIdTiersAdressePmt = "";
         for (int i = 0; i < membres.length; i++) {
             if (ra.getIdTiersAdressePmt().equals(membres[i].getIdTiers())) {
@@ -1099,7 +1097,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * @throws Exception
      */
     private void updateAdressePaiementForTEC(final BSession session, final BTransaction transaction,
-            REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement) throws Exception {
+                                             REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement) throws Exception {
         /**
          * 1. Mettre à jour l'adresse de paiement du tiers en cours (TEC) + CA
          */
@@ -1114,18 +1112,18 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * Cette méthode permet de créer une structure de données mappée sur les niveaux de rentes.
      * Chaque rente se trouve dans un certain niveau. On détermine pour chaque rente le niveau et on créer une map en
      * fonction du niveau :
-     * 
+     * <p>
      * EX: nom objet = rente1 niveau = 1 -> ajout de l'objet à la liste listLevel1.add(rente1) -> ajout de la liste à la
      * map -> [1
      * : listLevel1]
-     * 
+     *
      * @param session
      * @param transaction
      * @param membres
      * @throws Exception
      */
     private Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> prepareMapSortedByGroupLevel(BSession session,
-            final BTransaction transaction, ISFMembreFamilleRequerant[] membres) throws Exception {
+                                                                                                    final BTransaction transaction, ISFMembreFamilleRequerant[] membres) throws Exception {
 
         // Instantiation d'une map afin de mémoriser les différents cas de situation familiale par groupe
         Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFByGroupLevel = new HashMap<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>>();
@@ -1186,11 +1184,11 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /**
      * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
+     * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
     protected FWViewBeanInterface execute(final FWViewBeanInterface viewBean, final FWAction action,
-            final BISession session) {
+                                          final BISession session) {
         return deleguerExecute(viewBean, action, session);
     }
 
@@ -1251,7 +1249,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
     /**
      * Méthode qui retourne le libellé de la nationalité par rapport au csNationalité qui est dans le vb
-     * 
+     *
      * @return le libellé du pays (retourne une chaîne vide si pays inconnu)
      */
     private String getLibellePays(final String idPays, final BSession session) {
@@ -1269,21 +1267,24 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      * si les id adresse de paiment et domaine d'adresses sont renseignes, charge et formatte l'adresse correspondante,
      * sinon recherche, charge et formatte une adresse pour le tiers courant.
      * </p>
-     * 
-     * @param session
-     *            DOCUMENT ME!
+     *
+     * @param session    DOCUMENT ME!
      * @param raViewBean
      * @throws Exception
      */
     private void rechargerAdressePaiement(final BSession session,
-            final RERenteAccordeeJointDemandeRenteViewBean raViewBean) throws Exception {
+                                          final RERenteAccordeeJointDemandeRenteViewBean raViewBean) throws Exception {
 
         // si le tiers beneficiaire a change on met a jours le tiers adresse
         // paiement
         if (raViewBean.isTiersBeneficiaireChange()) {
-
             raViewBean.setIdTiersAdressePmtIC(raViewBean.getIdTiersAdressePmtICDepuisPyxis());
+            raViewBean.setIdReferenceQR(raViewBean.getIdReferenceQRDepuisPyxis());
+        }
 
+        if (raViewBean.isRetourReferenceQrDepuisPyxis()) {
+            raViewBean.setIdReferenceQR(raViewBean.getIdReferenceQRDepuisPyxis());
+            raViewBean.setRetourReferenceQrDepuisPyxis(false);
         }
 
         // si le tiers beneficiaire est null, il ne sert a rien de faire une
@@ -1301,6 +1302,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
 
         raViewBean.setAdressePaiement(adresse);
 
+
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
         if ((adresse != null) && !adresse.isNew()) {
@@ -1315,11 +1317,18 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
                 raViewBean.setCcpOuBanqueFormatte(new TIAdressePaiementCppFormater().format(source));
             }
 
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                raViewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, raViewBean.getIdReferenceQR()));
+            } else {
+                raViewBean.setReferenceQRFormattee("");
+            }
+
             // formatter l'adresse
             raViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
         } else {
             raViewBean.setCcpOuBanqueFormatte("");
             raViewBean.setAdresseFormattee("");
+            raViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve
             // d'adresse

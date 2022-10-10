@@ -35,6 +35,7 @@ import globaz.prestation.tools.PRSession;
 import java.util.List;
 import ch.globaz.common.domaine.AdressePaiement;
 import com.google.common.base.Joiner;
+import org.apache.commons.lang3.StringUtils;
 
 public class REComptabiliseDebloquage extends AREModuleComptable {
 
@@ -74,6 +75,10 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
 
                 AdressePaiement adr = versement.loadAdressePaiement();
 
+                // TODO EBSC : dans le cadre des déblocages, on ne gère pas les références QR.
+//                String referenceQR = PRTiersHelper.getReferenceQR(session, versement.getLigneDeblocage().getIdReferenceQR());
+                String referenceQR = StringUtils.EMPTY;
+
                 String idSection = versement.getLigneDeblocageVentilation().getIdSectionSource().toString();
                 CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
                 mgr.setForIdSection(idSection);
@@ -86,7 +91,7 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                 doOrdreVersement(session, compta, sectionsLigneVentil.get(0).getIdCompteAnnexe(), versement
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement
                         .getLigneDeblocageVentilation().getMontant().toStringFormat(), adr.getIdAvoirPaiementUnique(),
-                        motifVersement, dateValeurComptable, false, idOrganeExecution);
+                        motifVersement, referenceQR, dateValeurComptable, false, idOrganeExecution);
             } else if (versement.getType().isDetteEnCompta()) {
 
                 String idSection = versement.getLigneDeblocage().getIdSectionCompensee().toString();

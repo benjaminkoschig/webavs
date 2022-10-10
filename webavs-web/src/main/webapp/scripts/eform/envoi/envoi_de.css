@@ -1,35 +1,52 @@
-
 select {
-    width: 300px;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
-}
-
-input[name="NssNssPrefixe"] {
-    width: 50px !important;
-    height: 20px !important;
-    padding: 1px !important;
-}
-input[name="partialNss"] {
-    width: 248px !important;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
+    width: 250px;
 }
 
 input{
-    width: 300px !important;
-    height: 20px !important;
-    padding: 1px !important;
-    border: 1px black !important;
+    width: 250px !important;
+    height: 25px;
 }
 
-.corps {
-    background-color: #B3C4DB;
+tr{
+    padding-bottom: 5px;
 }
 
-#nss, #caisseDestinatrice{
-    width: 292px !important;
+.libelletitre {
+    font-weight: bold;
 }
 
+.libelle {
+    padding-left: 10px;
+}
+
+.separateur {
+    border-top: 1px solid black;
+    height: 15px;
+    margin-right: 20px;
+}
+
+.buttons {
+    float:right;
+    margin-top: 20px;
+    padding-right: 20px;
+}
+
+.listfichiers {
+    width: 600px;
+    background-color:#FFF;
+    height: 200px;
+    overflow-y: scroll;
+    border: 1px solid black;
+}
+
+.buttons input{
+    width:100px !important;
+}
+
+#codeCaisse{
+    width: 586px !important;
+}
+
+.ui-widget INPUT {
+    font-size: x-small !important;
+}

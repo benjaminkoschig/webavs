@@ -22,7 +22,6 @@ import globaz.ij.vb.process.IJGenererDecisionViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -31,6 +30,7 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.*;
 
@@ -92,7 +92,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                         TIAdressePaiementData adressePmt = PRTiersHelper.getAdressePaiementData((BSession) session,
                                 ((BSession) session).getCurrentThreadTransaction(), decision.getIdTiersAdrPmt(),
                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
-                        vb.setAdressePaiementFormatee(getAdressePmtFormatee((BSession) session, adressePmt));
+                        vb.setAdressePaiementFormatee(getAdressePmtFormatee((BSession) session, adressePmt, vb));
 
                         if (vb.isRetourDepuisPyxis()) {
                             // BZ 7645 : dans le cas d'un changement d'adresse de courrier, cette adresse est stockées dans le
@@ -131,6 +131,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                             }
 
                             vb.setIdTiersAdressePaiementPersonnalisee(decision.getIdTiersAdressePaiementPersonnalisee());
+                            vb.setIdReferenceQRDepuisReferenceQR(decision.getIdReferenceQR());
                             vb.setIdDomaineApplicationAdressePaiementPersonnalisee(decision
                                     .getIdDomaineAdressePaiementPersonnalisee());
                             vb.setNumAffilieAdressePaiementPersonnalisee(decision.getNumeroAffilieAdressePaiementPersonnalisee());
@@ -179,7 +180,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
 
                     vb.setIdTierAssureAdressePaiement(idTiersPrincipal);
-                    vb.setAdressePaiementAssureFormatee(getAdressePmtFormatee((BSession) session, adressePmtAssure));
+                    vb.setAdressePaiementAssureFormatee(getAdressePmtFormatee((BSession) session, adressePmtAssure, vb));
                     vb.setAdresseCourrierAssureFormatee(this.getAdresseCourrierFormate((BSession) session, adressePmtAssure));
                     // New added
 
@@ -235,7 +236,7 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 JACalendar.todayJJsMMsAAAA());
 
                         vb.setIdTierEmployeurAdressePaiement(idTiersEmployeur);
-                        vb.setAdressePaiementEmployeurFormatee(getAdressePmtFormatee((BSession) session, adressePmtEmp));
+                        vb.setAdressePaiementEmployeurFormatee(getAdressePmtFormatee((BSession) session, adressePmtEmp, vb));
                         vb.setAdresseCourrierEmployeurFormatee(this.getAdresseCourrierFormate((BSession) session, adressePmtEmp));
                     }
 
@@ -246,7 +247,9 @@ public class IJGenererDecisionHelper extends FWHelper {
                                 vb.getIdDomaineApplicationAdressePaiementPersonnalisee(),
                                 vb.getNumAffilieAdressePaiementPersonnalisee(), JACalendar.todayJJsMMsAAAA());
 
-                        vb.setAdressePaiementPersonnaliseeFormatee(getAdressePmtFormatee((BSession) session, adressePmtEmp));
+                        vb.setAdressePaiementPersonnaliseeFormatee(getAdressePmtFormatee((BSession) session, adressePmtEmp, vb));
+                        vb.setAdressePaiementDataPersonnalise(adressePmtEmp);
+
                         // pour éviter d'avoir le texte "Aucune adresse trouvée" si l'utilisateur n'a jamais rentrée
                         // d'adresse de paiement personnalisée
                         if ((adressePmtEmp != null) && !adressePmtEmp.isNew()) {
@@ -351,6 +354,13 @@ public class IJGenererDecisionHelper extends FWHelper {
                         vb.setMsgType(FWViewBeanInterface.ERROR);
                         vb.setMessage(session.getLabel("ADR_COURR_ERR"));
                         session.addError(session.getLabel("ADR_COURR_ERR"));
+                    }
+
+                    // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+                    if (JadeStringUtil.isBlankOrZero(vb.getIdReferenceQR()) && TIAdressePaiement.isQRIban(vb.getOrReloadAdressePaiementData().getCompte())) {
+                        vb.setMsgType(FWViewBeanInterface.ERROR);
+                        vb.setMessage(session.getLabel("JSP_REFERENCE_QR_EMPTY"));
+                        session.addError(session.getLabel("JSP_REFERENCE_QR_EMPTY"));
                     }
 
                     // Ajout des copies par défauts - la caisse qui prend la décision - l'agence communale AVS (si celle-ci est
@@ -584,7 +594,7 @@ public class IJGenererDecisionHelper extends FWHelper {
         return result;
     }
 
-    private String getAdressePmtFormatee(BSession session, TIAdressePaiementData adressePmt) throws Exception {
+    private String getAdressePmtFormatee(BSession session, TIAdressePaiementData adressePmt, IJGenererDecisionViewBean vb) throws Exception {
 
         String result = "";
 
@@ -615,8 +625,8 @@ public class IJGenererDecisionHelper extends FWHelper {
                 result = new TIAdressePaiementCppFormater().format(sourcePmtAssure);
             }
 
-            if (CASepaCommonUtils.isQRIban(adressePmt.getCompte())) {
-                result += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            if (TIAdressePaiement.isQRIban(adressePmt.getCompte())) {
+                result += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, vb.getIdReferenceQR());
             }
 
         }

@@ -9,14 +9,17 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.retenues.RERetenuesPaiement;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.retenues.RERetenuesUtil;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -34,11 +37,14 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author HPE
@@ -54,8 +60,13 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
             new String[] { "idTiersAdressePmtDepuisPyxis", "idTiers" },
             new String[] { "idDomaineApplicatifDepuisPyxis", "idApplication" },
             new String[] { "numAffilieDepuisPyxis", "idExterneAvoirPaiement" } };
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
+            new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
 
     private String adresseFormattee = "";
+    private String referenceQRFormattee = "";
     private String ccpOuBanqueFormatte = "";
     private String forIdRenteAccordee = "";
     private String forIdTiersBeneficiaire = "";
@@ -69,6 +80,8 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
     private String numAffilieDepuisPyxis = "";
     private boolean retourDepuisPyxis = false;
     private boolean tiersBeneficiaireChange = false;
+
+    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
 
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -106,6 +119,12 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
                     && !IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(getCsTypeRetenue())) {
                 _addError(statement.getTransaction(), getSession().getLabel("VALID_RET_PMT_MNT_MENS_SUP_MNT_TOTAL"));
             }
+
+            // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+            if (IRERetenues.CS_TYPE_ADRESSE_PMT.equals(getCsTypeRetenue()) && JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+                _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+            }
+
         }
     }
 
@@ -324,6 +343,14 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
         return RERetenuesPaiementViewBean.METHODES_SEL_ADRESSE_PAIEMENT;
     }
 
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return RERetenuesPaiementViewBean.METHODES_SEL_REFERENCE_PAIEMENT;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return RERetenuesPaiementViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
+    }
+
     public String getMontantRenteAccordee() {
         return montantRenteAccordee;
     }
@@ -419,6 +446,10 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
         } else {
             return "";
         }
+    }
+
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
     }
 
     public String getNumAffilieDepuisPyxis() {
@@ -628,6 +659,15 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
         tiersBeneficiaireChange = true;
     }
 
+    public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
+        super.setIdReferenceQR(idReferenceQR);
+        retourDepuisPyxis = true;
+    }
+
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
+    }
+
     public void setIdTiersFamille(Collection<String> idTiersFamille) {
         this.idTiersFamille = idTiersFamille;
     }
@@ -676,5 +716,13 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
 
     public void setTiersBeneficiaireChange(boolean b) {
         tiersBeneficiaireChange = b;
+    }
+
+    public String getReferenceQRFormattee() {
+        return referenceQRFormattee;
+    }
+
+    public void setReferenceQRFormattee(String referenceQRFormattee) {
+        this.referenceQRFormattee = referenceQRFormattee;
     }
 }

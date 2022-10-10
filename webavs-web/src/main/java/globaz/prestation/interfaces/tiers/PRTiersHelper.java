@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import globaz.apg.properties.APProperties;
 import globaz.corvus.properties.REProperties;
 import globaz.pyxis.db.adressecourrier.*;
 import globaz.pyxis.db.tiers.*;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
@@ -55,10 +55,35 @@ import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.api.ITITiersAdresse;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
+import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import globaz.pyxis.db.adressecourrier.TIPays;
+import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
+import globaz.pyxis.db.tiers.*;
 import globaz.pyxis.util.TIAdressePmtResolver;
+import globaz.pyxis.util.TIAdresseResolver;
 import globaz.pyxis.util.TINSSFormater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
+
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
@@ -204,7 +229,6 @@ public class PRTiersHelper {
 
         return personneAvs.getIdTiers();
     }
-
     public static final String addTiers(BISession session, String noAVS, String nom, String prenom, String sexe,
                                         String dateNaissance, String dateDeces, String pays, String canton, String langue, String etatCivil)
             throws Exception {
@@ -264,6 +288,9 @@ public class PRTiersHelper {
 
         return personneAvs.getIdTiers();
     }
+
+
+
 
     public static final PRTiersWrapper[] getAdministrationActiveForGenre(BISession session, String genre)
             throws Exception {
@@ -941,6 +968,21 @@ public class PRTiersHelper {
             // ERREUR !! Aucune adresse de paiement pour ce tiers !!
             return new TIAdressePaiementData();
         }
+    }
+
+    public static String getReferenceQR(BSession session, String idReferenceQR) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idReferenceQR)) {
+            TIReferencePaiementManager mgr = new TIReferencePaiementManager();
+            mgr.setSession(session);
+            mgr.setForIdReferenceQR(idReferenceQR);
+
+            mgr.find(BManager.SIZE_NOLIMIT);
+
+            if (mgr.size() > 0) {
+                return  ((TIReferencePaiement) mgr.get(0)).getReferenceQR();
+            }
+        }
+        return "";
     }
 
     private static final String getAdresseRecours(TIAdministrationAdresse admAdr) {

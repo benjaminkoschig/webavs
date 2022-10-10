@@ -17,8 +17,8 @@ update SCHEMA.FWCOUP set PCOLUT = 'Ausserordentliche Invalidenrente von {quotite
 update SCHEMA.FWCOUP set PCOLUT = 'Rendita straordinaria d''invalidità di {quotite}' where PCOSID = 52821700 and PLAIDE = 'I';
 
 -- TRAX Adapatations de rentes
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('corvus.mail.erreur.adaptation.rentes','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('corvus.centrale.url.adaptation.rentes','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.mail.erreur.adaptation.rentes','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.centrale.url.adaptation.rentes','',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 
 ALTER TABLE SCHEMA.REANN53
     ADD COLUMN QUOTITE_ANNONCE_53 NUMERIC (5, 2);
@@ -34,3 +34,29 @@ ALTER TABLE SCHEMA.REFICHA
     ADD COLUMN DATE_TRAITEMENT VARCHAR (20);
 REORG table SCHEMA.REFICHA;
 -- call SYSPROC.ADMIN_CMD('reorg table REFICHA');
+
+
+-- Référence de paiement QR
+-- Table des créanciers
+ALTER TABLE SCHEMA.RECREAN
+    ADD COLUMN ID_REF_QR VARCHAR(27);
+REORG table SCHEMA.RECREAN;
+-- call SYSPROC.ADMIN_CMD('reorg table RECREAN');
+
+-- Table des prestations accordées
+ALTER TABLE SCHEMA.REPRACC
+    ADD COLUMN ID_REF_QR VARCHAR(27);
+REORG table SCHEMA.REPRACC;
+-- call SYSPROC.ADMIN_CMD('reorg table REPRACC');
+
+-- Table des avances
+ALTER TABLE SCHEMA.REAVANCE
+    ADD COLUMN ID_REF_QR VARCHAR(27);
+REORG table SCHEMA.REAVANCE;
+-- call SYSPROC.ADMIN_CMD('reorg table REAVANCE');
+
+-- Table des retenues
+ALTER TABLE SCHEMA.RERETEN
+    ADD COLUMN ID_REF_QR VARCHAR(27);
+REORG table SCHEMA.RERETEN;
+-- call SYSPROC.ADMIN_CMD('reorg table RERETEN');

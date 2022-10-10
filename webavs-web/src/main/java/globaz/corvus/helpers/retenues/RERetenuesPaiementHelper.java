@@ -19,13 +19,15 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author HPE
- * 
  */
 public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
@@ -34,20 +36,15 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
     /**
      * redefini pour renseigner les champs du viewbean qui sera affiche dans l'ecran rc.
-     * 
+     *
      * <p>
      * Cherche le montant retroactif du tiers beneficiaire et obtient une adresse de paiement valide.
      * </p>
-     * 
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _chercher(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
@@ -63,16 +60,11 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
     /**
      * redefini pour charger l'adresse de paiement.
-     * 
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _retrieve(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
@@ -86,22 +78,16 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
     /**
      * prepare un viewBean pour l'affichage d'informations dans la page rc de la ca page.
-     * 
+     *
      * <p>
      * Cherche le montant retroactif du tiers beneficiaire et obtient une adresse de paiement valide.
      * </p>
-     * 
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
-     * 
+     *
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
      * @return DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public FWViewBeanInterface actionPreparerChercher(FWViewBeanInterface viewBean, FWAction action, BSession session)
             throws Exception {
@@ -137,7 +123,7 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
     /**
      * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
+     * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
     protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {
@@ -146,16 +132,14 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
     /**
      * charge une adresse de paiement valide.
-     * 
+     *
      * <p>
      * si les id adresse de paiment et domaine d'adresses sont renseignes, charge et formatte l'adresse correspondante,
      * sinon recherche, charge et formatte une adresse pour le tiers courant.
      * </p>
-     * 
-     * @param session
-     *            DOCUMENT ME!
+     *
+     * @param session    DOCUMENT ME!
      * @param raViewBean
-     * 
      * @throws Exception
      */
     private void rechargerAdressePaiement(BSession session, RERetenuesPaiementViewBean rpViewBean) throws Exception {
@@ -182,6 +166,7 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
                 rpViewBean.getIdDomaineApplicatif(), rpViewBean.getIdExterne(), JACalendar.todayJJsMMsAAAA());
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -199,9 +184,16 @@ public class RERetenuesPaiementHelper extends PRAbstractHelper {
 
             // formatter l'adresse
             rpViewBean.setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
+
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                rpViewBean.setReferenceQRFormattee(TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR()));
+            } else {
+                rpViewBean.setReferenceQRFormattee("");
+            }
         } else {
             rpViewBean.setCcpOuBanqueFormatte("");
             rpViewBean.setAdresseFormattee("");
+            rpViewBean.setReferenceQRFormattee("");
 
             // si le tiers beneficiaire a change et que l'on a pas trouve
             // d'adresse

@@ -15,8 +15,10 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Slf4j
 public class EFormFileService {
@@ -34,11 +36,12 @@ public class EFormFileService {
     public EFormFileService(String nameConfiguration) {
         this.nameConfiguration = nameConfiguration;
         loadConfigurationFile();
-        if ("sftp".equals(type)) {
+        if(type == null) {
+            throw new ConfigurationFileNotFoundException("La configuration "+ nameConfiguration +" est manquante dans le fichier "+LEGACY_JADE_CONFIG_FILE);
+        } else if ("sftp".equals(type)) {
             ftpServer = JadeSFtpServer.client(server);
             ftpServer.connect();
-        }
-        if ("filesystem".equals(type)) {
+        } else if ("filesystem".equals(type)) {
             fileService = new JadeFsServer();
         }
     }
@@ -85,6 +88,13 @@ public class EFormFileService {
         }
     }
 
+    public List<String> list(String path) {
+        if (ftpServer == null) {
+            fileService.list(path);
+        }
+        return ftpServer.list(path);
+    }
+
     public File retrieve(String path, String filename){
         if (ftpServer == null) {
             return fileService.read(getPathRoot(path), filename);
@@ -104,11 +114,22 @@ public class EFormFileService {
         }
     }
 
-    public void remove(String path) {
+    public void remove(String stringPath) {
+        Path path = Paths.get(getPathRoot(stringPath));
         if (ftpServer == null) {
-            fileService.delete(Paths.get(getPathRoot(path)));
+            fileService.delete(path);
         }
-        ftpServer.delete(getPathRoot(path));
+        ftpServer.delete(stringPath);
+
+    }
+
+    public void removeFolder(String stringPath) {
+        Path path = Paths.get(getPathRoot(stringPath));
+        if (ftpServer == null) {
+            fileService.deleteDirectories(path, true);
+        } else {
+            ftpServer.deleteFolder(stringPath);
+        }
     }
 
     public boolean exist(String path) {

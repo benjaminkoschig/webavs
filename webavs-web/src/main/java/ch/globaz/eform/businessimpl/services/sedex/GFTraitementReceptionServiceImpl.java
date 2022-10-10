@@ -4,6 +4,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFHandlersFactory;
 import ch.globaz.eform.businessimpl.services.sedex.handlers.GFSedexhandler;
+import ch.globaz.eform.constant.GFTypeDADossier;
 import ch.globaz.eform.properties.GFProperties;
 import ch.globaz.eform.validator.GFDaDossierValidator;
 import ch.globaz.eform.web.application.GFApplication;
@@ -26,6 +27,7 @@ import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.exception.JadeApplicationRuntimeException;
 import globaz.jade.smtp.JadeSmtpClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -161,16 +163,21 @@ public class GFTraitementReceptionServiceImpl {
      */
     private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage, ZipFile zipFile, ValidationResult result) throws RuntimeException {
         try {
-            GFDaDossierValidator.sedexMessage101(currentSimpleMessage, result);
+            GFDaDossierValidator.sedexMessage102(currentSimpleMessage, result);
             if (!result.hasError()) {
                 GFSedexhandler handler = objectFactory.getSedexHandler(currentSimpleMessage, session);
                 if (handler != null) {
                     Map<String, Object> extraData = new HashMap<>();
                     extraData.put("zipFile", zipFile);
+                    extraData.put("typeTreat", GFTypeDADossier.RECEPTION);
 
                     handler.setData(extraData);
-                    handler.update(result);
 
+                    if (result.hasInfo() && result.getInfos().containsKey("yourBusinessReferenceId")) {
+                        handler.update(result);
+                    } else {
+                        handler.create(result);
+                    }
                     LOG.info("GFTraitementReceptionServiceImpl#importMessagesSingle - formulaire sauvegardé avec succès : {}.", currentSimpleMessage.fileLocation);
                 }
             }
@@ -192,14 +199,14 @@ public class GFTraitementReceptionServiceImpl {
     }
 
     private String getMailSubjet() {
-        return session.getLabel("MAIL_SUBJECT_DEMANDE_SEDEX");
+        return session.getLabel("MAIL_SUBJECT_RECEPTION_SEDEX");
     }
 
     private String getMailBody(ZipFile zipFile, ValidationResult validationResult) {
-        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_DEMANDE_SEDEX"), zipFile.getName()));
+        StringBuilder body = new StringBuilder(String.format(session.getLabel("MAIL_BODY_RECEPTION_SEDEX"), zipFile.getName()));
 
         if (Objects.nonNull(validationResult)) {
-            body.append(session.getLabel("MAIL_BODY_DEMANDE_ERROR_SECTION_SEDEX"));
+            body.append(session.getLabel("MAIL_BODY_RECEPTION_ERROR_SECTION_SEDEX"));
             validationResult.getErrors().forEach(error -> body.append("\n").append(error.getDesignation(session)));
         }
 
@@ -208,7 +215,7 @@ public class GFTraitementReceptionServiceImpl {
 
     private String[] getMailsProtocole() {
         try {
-            return GFProperties.EMAIL_EFORM.getValue().split(";");
+            return GFProperties.EMAIL_DADOSSIER.getValue().split(";");
         } catch (PropertiesException e) {
             LOG.error("GFTraitementReceptionServiceImpl#getMailsProtocole - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }

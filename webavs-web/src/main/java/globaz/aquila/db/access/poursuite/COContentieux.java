@@ -19,6 +19,7 @@ import globaz.aquila.db.access.batch.COTransitionManager;
 import globaz.aquila.db.access.batch.transition.COAbstractEnvoyerDocument;
 import globaz.aquila.db.access.batch.transition.COTransitionAction;
 import globaz.aquila.db.access.batch.transition.COTransitionException;
+import globaz.aquila.db.batch.COTransitionViewBean;
 import globaz.aquila.db.poursuite.COContentieuxViewBean;
 import globaz.aquila.service.COServiceLocator;
 import globaz.aquila.service.config.COConfigurationKey;
@@ -52,6 +53,8 @@ import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.contentieux.CAMotifContentieux;
 import globaz.osiris.db.contentieux.CAMotifContentieuxManager;
 import globaz.osiris.external.IntRole;
+import globaz.osiris.process.ebill.EtapeContentieuxEBillEnum;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1140,6 +1143,13 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
      */
     public Boolean getEBillPrintable() {
         return eBillPrintable;
+    }
+
+    /**
+     * @return true si l'étape de contentieux est compatible eBill
+     */
+    public Boolean isEtapeContentieuxEbill(COTransitionViewBean transitionViewBean) {
+        return EtapeContentieuxEBillEnum.contains(transitionViewBean.getEtapeSuivante().getIdEtape());
     }
 
     /**

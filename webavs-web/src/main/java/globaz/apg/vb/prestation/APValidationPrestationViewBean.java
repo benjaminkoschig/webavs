@@ -42,7 +42,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     private List<String> erreursValidationsJoursIsoles = new ArrayList<String>();
     private boolean calculMATCIAB2 = false;
 
-
+    private boolean isFromAcorWeb = false;
     private List<String> messagesError = new ArrayList<>();
 
     private boolean hasMessagePropError = false;
@@ -328,5 +328,13 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     public void setMessagesError(List<String> messagesError) {
         this.messagesError = messagesError;
+    }
+
+    public void setIsFromAcorWeb(boolean isFromAcorWeb){
+        this.isFromAcorWeb = isFromAcorWeb;
+    }
+
+    public boolean getIsFromAcorWeb(){
+        return isFromAcorWeb;
     }
 }

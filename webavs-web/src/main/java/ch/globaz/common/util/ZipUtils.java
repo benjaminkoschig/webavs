@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,26 +92,27 @@ public final class ZipUtils {
             BufferedOutputStream bufferedOutputStream;
             FileInputStream fis =new FileInputStream(zipFile.toFile());
             ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+
             ZipEntry entry;
 
             while ((entry = zis.getNextEntry()) != null) {
-                byte[] data = new byte[bufferSize];
-
-                //création des sous-dossiers si nécessaire
-                if (entry.getName().contains("/")) {
-                    Path pathDir = Paths.get(destDir + File.separator + entry.getName().substring(0, entry.getName().lastIndexOf("/")));
+                //création des sous-dossiers
+                if (entry.getName().endsWith("/")) {
+                    Path pathDir = Paths.get(destDir + File.separator + entry.getName());
                     if (!Files.exists(pathDir)) {
                         Files.createDirectories(pathDir);
                     }
-                }
+                } else {
+                    byte[] data = new byte[bufferSize];
 
-                FileOutputStream fos = new FileOutputStream(Paths.get(destDir + File.separator + entry.getName()).toFile());
-                bufferedOutputStream = new BufferedOutputStream(fos, bufferSize);
-                while ((count = zis.read(data, 0, bufferSize)) != -1) {
-                    bufferedOutputStream.write(data, 0, count);
+                    FileOutputStream fos = new FileOutputStream(Paths.get(destDir + File.separator + entry.getName()).toFile());
+                    bufferedOutputStream = new BufferedOutputStream(fos, bufferSize);
+                    while ((count = zis.read(data, 0, bufferSize)) != -1) {
+                        bufferedOutputStream.write(data, 0, count);
+                    }
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
                 }
-                bufferedOutputStream.flush();
-                bufferedOutputStream.close();
             }
             zis.close();
         } catch (Exception e) {

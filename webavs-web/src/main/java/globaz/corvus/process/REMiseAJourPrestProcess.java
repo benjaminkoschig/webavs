@@ -1,5 +1,13 @@
 package globaz.corvus.process;
 
+import ch.admin.ofit.anakin.commum.Session;
+import ch.admin.ofit.anakin.donnee.Annonce10eme;
+import ch.admin.ofit.anakin.donnee.Annonce9eme;
+import ch.admin.ofit.anakin.donnee.AnnonceAbstraite;
+import ch.admin.ofit.anakin.donnee.AnnonceErreur;
+import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationPlafonnement;
+import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationRente;
+import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationSurAssurance;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.anakin.REArcConverter;
 import globaz.corvus.api.adaptation.IREAdaptationRente;
@@ -47,19 +55,21 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import ch.admin.ofit.anakin.commum.Session;
-import ch.admin.ofit.anakin.donnee.Annonce10eme;
-import ch.admin.ofit.anakin.donnee.Annonce9eme;
-import ch.admin.ofit.anakin.donnee.AnnonceAbstraite;
-import ch.admin.ofit.anakin.donnee.AnnonceErreur;
-import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationPlafonnement;
-import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationRente;
-import ch.admin.ofit.arena.augmentation.controleur.ControleurAugmentationSurAssurance;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class REMiseAJourPrestProcess extends BProcess {
 
@@ -487,7 +497,7 @@ public class REMiseAJourPrestProcess extends BProcess {
 
                 // Le contrôleur de la central permettant le calcul
                 ControleurAugmentationRente revalorisation = new ControleurAugmentationRente(
-                        Logger.getLogger(ControleurAugmentationRente.class.getName()));
+                        LoggerFactory.getLogger(ControleurAugmentationRente.class.getName()));
 
                 Session.getInstance().setParametre(
                         ControleurAugmentationRente.class.getName(),

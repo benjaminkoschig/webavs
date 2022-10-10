@@ -1,7 +1,9 @@
 package ch.globaz.eform.web.application;
 
+import ch.globaz.eform.web.servlet.GFDemandeServletAction;
 import ch.globaz.eform.web.servlet.GFEnvoiServletAction;
 import ch.globaz.eform.web.servlet.GFFormulaireServletAction;
+import ch.globaz.eform.web.servlet.GFSuiviServletAction;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
@@ -22,6 +24,7 @@ public class GFApplication extends BApplication {
     public static final String DEFAULT_APPLICATION_ROOT = "eformRoot";
     public static final String EFORM_HOST_FILE_SERVER = "EFormHostService";
     public static final String DA_DOSSIER_HOST_FILE_SERVER = "DaDossierHostService";
+    public static final String DA_DOSSIER_SHARE_FILE = "DaDossierShareFile";
 
     /**
      * Constructeur
@@ -59,11 +62,13 @@ public class GFApplication extends BApplication {
      */
     @Override
     protected void _initializeCustomActions() {
-        // Définition et enregistrement des Custom actions à exécuter dans le module.
+        // Définition et enregistrement des Customs actions à exécuter dans le module.
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_TELECHARGER, FWSecureConstants.READ);
         FWAction.registerActionCustom(GFFormulaireServletAction.PATH_EFORM + "." + GFFormulaireServletAction.ACTION_CHANGE_STATUT, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_UPLOAD, FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_REMOVEFILE, FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.READ);
+        FWAction.registerActionCustom(GFEnvoiServletAction.ACTION_PATH + "." + GFEnvoiServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
+        FWAction.registerActionCustom(GFDemandeServletAction.ACTION_PATH + "." + GFDemandeServletAction.ACTION_ENVOYER, FWSecureConstants.ADD);
+        FWAction.registerActionCustom(GFSuiviServletAction.ACTION_PATH + "." + GFSuiviServletAction.ACTION_STATUT, FWSecureConstants.UPDATE);
     }
 }

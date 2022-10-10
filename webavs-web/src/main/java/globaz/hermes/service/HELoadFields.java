@@ -1,14 +1,15 @@
 package globaz.hermes.service;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
+import globaz.corvus.db.annonces.REAnnonce61;
+import globaz.corvus.db.annonces.REAnnonce61Manager;
+import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.hermes.api.IHEAnnoncesViewBean;
 import globaz.hermes.api.IHEOutputAnnonce;
 import globaz.hermes.db.gestion.HEAnnoncesViewBean;
+import globaz.hermes.db.gestion.HEInputAnnonceViewBean;
 import globaz.hermes.db.gestion.HEOutputAnnonceLotListViewBean;
 import globaz.hermes.db.gestion.HEOutputAnnonceViewBean;
 import globaz.hermes.db.parametrage.HEChampannonceListViewBean;
@@ -18,6 +19,8 @@ import globaz.hermes.db.parametrage.HEParametrageannonceManager;
 import globaz.hermes.utils.HENNSSUtils;
 import globaz.hermes.utils.HEUtil;
 import globaz.hermes.utils.StringUtils;
+import globaz.prestation.acor.web.mapper.PRConverterUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +28,13 @@ public class HELoadFields {
     /**
      * @param transaction
      * @param limiteNbDemandes
-     * @param listArc
-     * @param listeReferences
      * @param outputAnnonceListViewBean
+     * @param isReceptionCentrale
      * @return
      * @throws Exception
      */
     public IHEOutputAnnonce[] extraireAnnoncesAndLoadfields(BTransaction transaction, Integer limiteNbDemandes,
-            HEOutputAnnonceLotListViewBean outputAnnonceListViewBean) throws Exception {
+            HEOutputAnnonceLotListViewBean outputAnnonceListViewBean, boolean isReceptionCentrale) throws Exception {
         ArrayList listeReferences = new ArrayList();
         List listArc = new ArrayList();
         BStatement statement = outputAnnonceListViewBean.cursorOpen(transaction);
@@ -56,8 +58,12 @@ public class HELoadFields {
 
                 // this.loadFields(champAnnonceM, outputAnnonceViewBean.getChampEnregistrement());
                 // outputAnnonceViewBean.putAll(m);
-                outputAnnonceViewBean = loadFields(outputAnnonceViewBean, champAnnonceM,
-                        outputAnnonceViewBean.getChampEnregistrement());
+                if (isReceptionCentrale) {
+                    outputAnnonceViewBean = loadFieldsReceptionCentrale(outputAnnonceViewBean);
+                } else {
+                    outputAnnonceViewBean = loadFields(outputAnnonceViewBean, champAnnonceM,
+                            outputAnnonceViewBean.getChampEnregistrement());
+                }
                 listArc.add(outputAnnonceViewBean);
                 listeReferences.add(outputAnnonceViewBean.getRefUnique());
                 if (!lastRefUnique.equals(outputAnnonceViewBean.getRefUnique())) {
@@ -152,6 +158,97 @@ public class HELoadFields {
 
     /**
      * Method loadFields. Charge les valeurs des champs
+     *
+     * @param annonce
+     * @param annonce61
+     * @return HEInputAnnonceViewBean
+     */
+    public static HEInputAnnonceViewBean loadFields(HEInputAnnonceViewBean annonce, REAnnonce61 annonce61) {
+        annonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce61.getCodeApplication());
+        annonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce61.getCodeEnregistrement01());
+        annonce.put(IHEAnnoncesViewBean.RESERVE_A_BLANC, "");
+        annonce.put(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT, annonce61.getNss());
+        annonce.put(IHEAnnoncesViewBean.CODE_DE_TRAITEMENT, annonce61.getCodeRetour());
+        annonce.put(IHEAnnoncesViewBean.OBSERVATION_1_CENTRALE, annonce61.getObservation());
+        annonce.put(IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE, annonce61.getCantonEtatDomicile());
+        annonce.put(IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT, annonce61.getEtatCivil());
+        annonce.put(IHEAnnoncesViewBean.CS_MONTANT_ALLOC_INIT_TRAVAIL_PERIODE_2, "");
+        annonce.put(IHEAnnoncesViewBean.CS_REFUGIE, annonce61.getIsRefugie());
+        annonce.put(IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA, annonce61.getDebutDroit());
+        annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS, annonce61.getAncienMontant());
+        annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS, annonce61.getNouveauMontant());
+        annonce.put(IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA, annonce61.getFinDroit());
+        annonce.put(IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT, annonce61.getMoisRapport());
+        annonce.put(IHEAnnoncesViewBean.CS_CODE_DE_MUTATION, annonce61.getCodeMutation());
+        annonce.put(IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_AYANT_DROIT, "");
+        annonce.put(IHEAnnoncesViewBean.CS_DEGREINVALIDITE_AYANT_DROIT, annonce61.getDegreInvalidite());
+        annonce.put(IHEAnnoncesViewBean.CS_CODEINFIRMITE_AYANT_DROIT, "");
+        annonce.put(IHEAnnoncesViewBean.CS_CODE_SURVIVANT_INVALIDE, "");
+        annonce.put(IHEAnnoncesViewBean.CS_FRACTION_DE_LA_RENTE, annonce61.getFractionRente());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_OFFICE_PC, annonce61.getNumeroCaisse());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_PC, annonce61.getNumeroAgence());
+        annonce.put(IHEAnnoncesViewBean.PC_REFERENCE_INTERNE_OFFICE_PC, annonce61.getReferenceCaisseInterne());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_CAISSE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroCaisse());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroAgence());
+        annonce.put(IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION, annonce61.getGenrePrestation());
+        return annonce;
+    }
+
+    /**
+     * Method loadFields. Charge les valeurs des champs
+     *
+     * @param annonce
+     * @return HEInputAnnonceViewBean
+     * @throws AdaptationException
+     */
+    private HEOutputAnnonceViewBean loadFieldsReceptionCentrale(HEOutputAnnonceViewBean annonce) throws AdaptationException {
+
+        REAnnonce61Manager annonce61Manager = new REAnnonce61Manager();
+        annonce61Manager.setForDateAnnonce(PRConverterUtils.formatddMMAAAAToAAAAMMdd(annonce.getDateAnnonce()));
+        annonce61Manager.setForNss(annonce.getNumeroAVS());
+        try {
+            annonce61Manager.find(10);
+            if (annonce61Manager.getContainer().size() > 1) {
+                throw new AdaptationException("Il ne peut y avoir plus d'un enregistrement pour le NSS : " + annonce.getNumeroAVS() + " - Dans la reception de la centrale pour la date du : " + annonce.getDateAnnonce());
+            }
+
+            REAnnonce61 annonce61 = (REAnnonce61) annonce61Manager.get(0);
+            annonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce61.getCodeApplication());
+            annonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce61.getCodeEnregistrement01());
+            annonce.put(IHEAnnoncesViewBean.RESERVE_A_BLANC, "");
+            annonce.put(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT, annonce61.getNss());
+            annonce.put(IHEAnnoncesViewBean.CODE_DE_TRAITEMENT, annonce61.getCodeRetour());
+            annonce.put(IHEAnnoncesViewBean.OBSERVATION_1_CENTRALE, annonce61.getObservation());
+            annonce.put(IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE, annonce61.getCantonEtatDomicile());
+            annonce.put(IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT, annonce61.getEtatCivil());
+            annonce.put(IHEAnnoncesViewBean.CS_MONTANT_ALLOC_INIT_TRAVAIL_PERIODE_2, "");
+            annonce.put(IHEAnnoncesViewBean.CS_REFUGIE, annonce61.getIsRefugie());
+            annonce.put(IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA, annonce61.getDebutDroit());
+            annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS, annonce61.getAncienMontant());
+            annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS, annonce61.getNouveauMontant());
+            annonce.put(IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA, annonce61.getFinDroit());
+            annonce.put(IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT, annonce61.getMoisRapport());
+            annonce.put(IHEAnnoncesViewBean.CS_CODE_DE_MUTATION, annonce61.getCodeMutation());
+            annonce.put(IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_AYANT_DROIT, "");
+            annonce.put(IHEAnnoncesViewBean.CS_DEGREINVALIDITE_AYANT_DROIT, annonce61.getDegreInvalidite());
+            annonce.put(IHEAnnoncesViewBean.CS_CODEINFIRMITE_AYANT_DROIT, "");
+            annonce.put(IHEAnnoncesViewBean.CS_CODE_SURVIVANT_INVALIDE, "");
+            annonce.put(IHEAnnoncesViewBean.CS_FRACTION_DE_LA_RENTE, annonce61.getFractionRente());
+            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_OFFICE_PC, annonce61.getNumeroCaisse());
+            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_PC, annonce61.getNumeroAgence());
+            annonce.put(IHEAnnoncesViewBean.PC_REFERENCE_INTERNE_OFFICE_PC, annonce61.getReferenceCaisseInterne());
+            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_CAISSE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroCaisse());
+            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroAgence());
+            annonce.put(IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION, annonce61.getGenrePrestation());
+        } catch (Exception e) {
+            throw new AdaptationException("L'annonce n'a pu être mappée, contrôler le retour centrale pour le NSS : " + annonce.getNumeroAVS() + " - à la date du : " + annonce.getDateAnnonce());
+        }
+
+        return annonce;
+    }
+
+    /**
+     * Method loadFields. Charge les valeurs des champs
      * 
      * @param annonce
      * @param champAnnonceM
@@ -201,7 +298,6 @@ public class HELoadFields {
      * 
      * @param codeApp
      * @param codeEnr
-     * @param line
      * @param paramM
      * @return HEParametrageannonce
      * @throws Exception

@@ -218,6 +218,7 @@ public class IJValiderDecisionHelper extends FWHelper {
         scalableProperties.setParameter("idTierAdresseCourrier", decision.getIdTiersAdrCourrier());
         scalableProperties.setParameter("beneficiaire", decision.getBeneficiaire());
         scalableProperties.setParameter("idTierAdressePaiement", decision.getIdTiersAdrPmt());
+        scalableProperties.setParameter("idReferenceQR", decision.getIdReferenceQR());
         scalableProperties.setParameter("idPersonneReference", decision.getIdPersonneReference());
         scalableProperties.setParameter("cantonTauxImposition", decision.getCsCantonTauxImposition());
         scalableProperties.setParameter("tauxImposition", decision.getTauxImposition());

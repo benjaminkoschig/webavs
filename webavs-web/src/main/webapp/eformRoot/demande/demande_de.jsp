@@ -1,6 +1,10 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
 <%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
+<%@ page import="ch.globaz.eform.web.servlet.GFDemandeServletAction" %>
+<%@ page import="globaz.eform.translation.CodeSystem" %>
+<%@ page import="ch.globaz.eform.business.services.GFAdministrationService" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -9,8 +13,8 @@
 
 <%
 	idEcran="GFE0111";
-
 	GFDemandeViewBean viewBean = (GFDemandeViewBean) session.getAttribute("viewBean");
+	boolean hasRightAdd = objSession.hasRight(GFDemandeServletAction.ACTION_PATH, FWSecureConstants.ADD);
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -33,18 +37,67 @@
 
 <script >
 	var bFind = true;
-	var detailLink = "<%=actionNew%>";
+
+	$(function() {
+		buttonCheck();
+		<%if(!hasRightAdd){%>
+		$("[name=mainForm]").find('input,select,textarea').not(this.$inputsButton).prop('disabled', true);
+		<%}%>
+	});
+
+	function init() {
+	}
+
+	function validate() {
+		$('#btnEnvoyer').prop('disabled', 'true');
+		$('#btnCan').prop('disabled', 'true');
+		var nss = document.getElementById("nssAffilier").value;
+		var caisse = document.getElementById("codeCaisse").value;
+
+		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse;
+	}
+
+	function buttonCheck(){
+		var nss = document.getElementById("nssAffilier").value;
+		var caisse = document.getElementById("codeCaisse").value;
+
+		<%if(hasRightAdd){%>
+		if(nss == "" || caisse == ""){
+			document.getElementById("btnEnvoyer").disabled = true;
+		}else{
+			document.getElementById("btnEnvoyer").disabled = false;
+		}
+		<%}%>
+	}
+
+	function clearNss(){
+		var nss = document.getElementById("nssAffilier").value;
+
+		if(nss == ""){
+			document.getElementById("lastName").value = "";
+			document.getElementById("firstName").value = "";
+			document.getElementById("birthday").value = "";
+		}
+	}
+
+	function cancel(){
+		action(ROLLBACK);
+	}
 </script>
 
 <TITLE><%=idEcran%></TITLE>
 </HEAD>
 	<body style="margin: 5px;">
-		<div class="title thDetail text-center" style="margin-top: 20px;">
+		<div class="thDetail" style="text-align: center;font-size: small;">
 			<ct:FWLabel key="DEMANDE_DOSSIER_TITRE"/>
 			<span class="idEcran"><%=idEcran%></span>
 		</div>
 
 		<form name="mainForm" action="" method="post">
+			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
+			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+			<INPUT type="hidden" name="_sl" value="">
 			<div class="container-fluid corps" style="padding-bottom: 15px;margin-bottom: 5px;">
 				<div class="row-fluid" style="font-weight: bold">
 					<ct:FWLabel key="ASSURE"/>
@@ -52,7 +105,7 @@
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='byNss' name='byNss'>
+						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck();clearNss();">
 							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
 								<ct:widgetLineFormatter format="#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}"/>
@@ -72,24 +125,26 @@
 				</div>
 				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="LASTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="FIRSTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName"  readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/></div>
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="BIRTHDAY"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" readonly="true"/></div>
+					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/></div>
 				</div>
 				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
 					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
 					<div style="display: table-cell;width: 300px;">
-						<ct:widget id='byCaisse' name='byCaisse'>
-							<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
+							<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
+								<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
+								<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1}"/>
+								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
 								<ct:widgetJSReturnFunction>
 									<script type="text/javascript">
 										function(element){
-											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1');
+											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
 										}
 									</script>
 								</ct:widgetJSReturnFunction>
@@ -98,15 +153,17 @@
 					</div>
 				</div>
 			</div>
-		</form>
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div style="float:right;">
-					<input class="btnCtrl" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if (validate()) action(COMMIT);">
-					<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);">
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div style="float:right;">
+						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
+						<%if(hasRightAdd){%>
+						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
+						<%}%>
+					</div>
 				</div>
 			</div>
-		</div>
+		</form>
 
 		<SCRIPT>
 			if(top.fr_error!=null) {

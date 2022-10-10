@@ -2,6 +2,8 @@ package globaz.apg.helpers.prestation;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
@@ -14,12 +16,13 @@ import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -27,7 +30,10 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TIReferencePaiementManager;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.LinkedList;
 
@@ -430,6 +436,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
         }
 
         rpViewBean.setAdressePaiement(adresse);
+        rpViewBean.setAdressePaiementData(adresse);
 
         // formatter les infos de l'adresse pour l'affichage correct dans
         // l'ecran
@@ -447,8 +454,8 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
 
             // formatter l'adresse
             String adresseLine = new TIAdressePaiementBeneficiaireFormater().format(source);
-            if (CASepaCommonUtils.isQRIban(adresse.getCompte())) {
-                adresseLine += CASepaCommonUtils.getReferencePaiementPourAffichage(session, "4"); // TODO ESVE REFERENCE QR getIdReferencePaiement()
+            if (TIAdressePaiement.isQRIban(adresse.getCompte())) {
+                adresseLine += TIReferencePaiementManager.getReferencePaiementPourAffichage(session, rpViewBean.getIdReferenceQR());
             }
             rpViewBean.setAdresseFormattee(adresseLine);
         } else {
@@ -462,6 +469,22 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
                 rpViewBean.setIdTiersAdressePaiement("0");
             }
         }
+    }
+
+    public static String getIdReferenceQRFomSituationProfessionnelle(BSession session, String idSituationProfessionnelle){
+        String idReferenceQR = StringUtils.EMPTY;
+        try {
+            APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
+            mgr.setSession(session);
+            mgr.setForIdSituationProfessionnelle(idSituationProfessionnelle);
+            mgr.find(BManager.SIZE_NOLIMIT);
+            if (mgr.size() > 0) {
+                return ((APSituationProfessionnelle)mgr.get(0)).getIdReferenceQR();
+            }
+        }catch(Exception e){
+            JadeLogger.error(e, "Erreur lors du chargement de la situation professionnelle");
+        }
+        return idReferenceQR;
     }
 
     /**

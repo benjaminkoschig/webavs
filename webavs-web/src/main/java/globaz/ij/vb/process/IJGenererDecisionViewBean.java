@@ -1,6 +1,5 @@
 package globaz.ij.vb.process;
 
-import ch.globaz.common.util.Dates;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.babel.api.doc.impl.CTScalableDocumentAbstractViewBeanDefaultImpl;
@@ -17,13 +16,16 @@ import globaz.ij.db.prestations.IJIJCalculeeManager;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.utils.IJGestionnaireHelper;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -41,7 +43,10 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
             new String[] { "idTiersAdressePaiementPersonnalisee", "idTiers" },
             new String[] { "idDomaineApplicationAdressePaiementPersonnalisee", "idApplication" },
             new String[] { "numAffilieAdressePaiementPersonnalisee", "idExterneAvoirPaiement" } };
-
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
+            new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
     private String adresseCourrierAssureFormatee = "";
     private String adresseCourrierEmployeurFormatee = "";
     // pour la gestion de l'adresse de courrier
@@ -70,6 +75,8 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
     private String idTierDemandeDecision = "";
     private String idTierEmployeurAdressePaiement = "";
     private String idTiersAdressePaiementPersonnalisee = "";
+    private String idReferenceQR = "";
+    private TIAdressePaiementData adressePaiementDataPersonnalise = new TIAdressePaiementData();
     private boolean isRetourDepuisPyxis = false;
     private Boolean isSendToGed = Boolean.FALSE;
     private String numAffilieAdressePaiementPersonnalisee = "";
@@ -229,6 +236,51 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
         return idTierEmployeurAdressePaiement;
     }
 
+    /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+    public TIAdressePaiementData getOrReloadAdressePaiementData() {
+        try {
+            if (adressePaiementDataPersonnalise.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiementPersonnalisee())
+                    && !JadeStringUtil.isBlank(getIdDomaineApplicationAdressePaiementPersonnalisee())
+                    && !adressePaiementDataPersonnalise.getIdTiers().equals(getIdTiersAdressePaiementPersonnalisee()))) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersAdressePaiementPersonnalisee(),
+                        getIdDomaineApplicationAdressePaiementPersonnalisee(),
+                        null, JACalendar.todayJJsMMsAAAA());
+                if (Objects.nonNull(paiementData)) {
+                    setAdressePaiementDataPersonnalise(paiementData);
+                } else {
+                    paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+                            getSession().getCurrentThreadTransaction(),
+                            getIdTiersAdressePaiementPersonnalisee(),
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI,
+                            null, JACalendar.todayJJsMMsAAAA());
+                    if (Objects.nonNull(paiementData)) {
+                        setAdressePaiementDataPersonnalise(paiementData);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return adressePaiementDataPersonnalise;
+
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public TIAdressePaiementData getAdressePaiementDataPersonnalise() {
+        return adressePaiementDataPersonnalise;
+    }
+
     public String getIdTiersAdressePaiementPersonnalisee() {
         return idTiersAdressePaiementPersonnalisee;
     }
@@ -266,6 +318,14 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
 
     public Object[] getMethodesSelectionAdressePaiement() {
         return IJGenererDecisionViewBean.METHODES_SEL_ADRESSE_PAIEMENT;
+    }
+
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return IJGenererDecisionViewBean.METHODES_SEL_REFERENCE_PAIEMENT;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return IJGenererDecisionViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
     }
 
     public String getNumAffilieAdressePaiementPersonnalisee() {
@@ -571,6 +631,19 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
                     idTiersAdresseCourrierPyxis, "", IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI);
         } catch (Exception e) {
         }
+    }
+
+    public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
+        this.setIdReferenceQR(idReferenceQR);
+        isRetourDepuisPyxis = true;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
+
+    public void setAdressePaiementDataPersonnalise(TIAdressePaiementData adressePaiementDataPersonnalise) {
+        this.adressePaiementDataPersonnalise = adressePaiementDataPersonnalise;
     }
 
     public void setIdTiersAdressePaiementPersonnalisee(String idTiersAdressePaiementPersonnalisee) {

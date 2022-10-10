@@ -36,6 +36,8 @@ public class ReferenceQR extends AbstractReference {
     private static final String CODE_PAYS_DEFAUT = "CH";
     private static final String ESPACE = " ";
     private static final String LANGUE_PAR_DEFAUT = "FR";
+    public static final String CISEAU_HORIZ_IMG = "ciseau_horiz.png";
+    public static final String CISEAU_VERTICAL_IMG = "ciseau_vertical.png";
 
     private String subReportQR = "QR_FACTURE_TEMPLATE.jasper";
     private String subReportQRCurrentPage = "QR_FACTURE_TEMPLATE_CURRENT_PAGE.jasper";
@@ -181,8 +183,8 @@ public class ReferenceQR extends AbstractReference {
         parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(this, generationPayLoad()));
         // Activation ou non des traitillés et ciseaux sur Qr Facture
         if (addTraitille()) {
-            parameters.put(COParameter.P_CISEAU_VERTICAL_PATH, getDefaultModelPath() + "/ciseau_vertical.jpg");
-            parameters.put(COParameter.P_CISEAU_HORIZ_PATH, getDefaultModelPath() + "/ciseau_horiz.png");
+            parameters.put(COParameter.P_CISEAU_VERTICAL_PATH, getDefaultModelPath() + "/" + CISEAU_VERTICAL_IMG);
+            parameters.put(COParameter.P_CISEAU_HORIZ_PATH, getDefaultModelPath() + "/" + CISEAU_HORIZ_IMG);
         }
 
         parameters.put(COParameter.P_MONNAIE, monnaie);

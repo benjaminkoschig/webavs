@@ -52,12 +52,15 @@ public class APSitProJointEmployeur extends BEntity {
                 + APSituationProfessionnelle.FIELDNAME_HAS_ACM_ALPHA_PRESTATION + ", "
                 + APSituationProfessionnelle.FIELDNAME_HAS_ACM2_ALPHA_PRESTATION + ", "
                 + APSituationProfessionnelle.FIELDNAME_HAS_LAMAT_PRESTATION + ", "
-                + APSituationProfessionnelle.FIELDNAME_DATEDEBUT + ", " + APSituationProfessionnelle.FIELDNAME_DATEFIN
-                + ", " + APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE + ", "
+                + APSituationProfessionnelle.FIELDNAME_DATEDEBUT + ", "
+                + APSituationProfessionnelle.FIELDNAME_DATEFIN + ", "
+                + APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE + ", "
                 + APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION + " , "
-                + APEmployeur.FIELDNAME_ID_TIERS + ", " + APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT
-                + ", " + APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT + " "
-                + ", " + APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT + " ";
+                + APEmployeur.FIELDNAME_ID_TIERS + ", "
+                + APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT + ", "
+                + APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT + ", "
+                + APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR + ", "
+                + APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT + " ";
     }
 
     /**
@@ -157,6 +160,7 @@ public class APSitProJointEmployeur extends BEntity {
     private String montantJournalierAcmNe = "";
     private String idDomainePaiementEmployeur = "";
     private String idTiersPaiementEmployeur = "";
+    private String idReferenceQR = "";
     private Boolean isIndependant = Boolean.FALSE;
 
     // ~ Methods
@@ -252,6 +256,7 @@ public class APSitProJointEmployeur extends BEntity {
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
         idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
         idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
+        idReferenceQR = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDREFERENCE_QR);
         isIndependant = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT);
     }
 
@@ -453,12 +458,20 @@ public class APSitProJointEmployeur extends BEntity {
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
     }
 
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
+
     public String getIdDomainePaiementEmployeur() {
         return idDomainePaiementEmployeur;
     }
 
     public String getIdTiersPaiementEmployeur() {
         return idTiersPaiementEmployeur;
+    }
+
+    public String getIdReferenceQR() {
+        return idReferenceQR;
     }
 
     public Boolean getIndependant() {

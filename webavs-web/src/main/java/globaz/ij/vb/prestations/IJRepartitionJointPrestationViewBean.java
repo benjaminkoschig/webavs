@@ -1,14 +1,17 @@
 package globaz.ij.vb.prestations;
 
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.ij.api.prestations.IIJPrestation;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.ij.db.prestations.IJRepartitionJointPrestation;
 import globaz.ij.db.prononces.IJSituationProfessionnelle;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -19,8 +22,12 @@ import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <H1>Description</H1>
@@ -40,6 +47,10 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
             new String[] { "idTiersAdressePaiementDepuisPyxis", "getIdTiers" },
             new String[] { "idDomaineAdressePaiement", "idApplication" },
             new String[] { "numAffilieEmployeur", "idExterneAvoirPaiement" } };
+    private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
+            new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
+    private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
     private static final Object[] METHODES_SEL_BENEFICIAIRE = new Object[] {
             new String[] { "idTiersDepuisPyxis", "idTiers" }, new String[] { "nom", "nom" } };
     private static final Object[] METHODES_SEL_BENEFICIAIRE2 = new Object[] {
@@ -59,6 +70,9 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
 
     private String etatPrestation = "";
     private String idCompteAnnexe = "";
+
+    private TIAdressePaiementData adressePaiementData = new TIAdressePaiementData();
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
     private int idOfIdPrestationCourante;
@@ -173,6 +187,10 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         return idCompteAnnexe;
     }
 
+   public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
+    }
+
     public String getIdCompteAnnexe(BSession bSession, String nss) throws Exception {
         try {
 
@@ -249,6 +267,14 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
      */
     public Object[] getMethodesSelectionAdresse() {
         return IJRepartitionJointPrestationViewBean.METHODES_SEL_ADRESSE;
+    }
+
+    public Object[] getMethodesSelectionReferencePaiement() {
+        return IJRepartitionJointPrestationViewBean.METHODES_SEL_REFERENCE_PAIEMENT;
+    }
+
+    public Object[] getParamsChercherReferencePaiement() {
+        return IJRepartitionJointPrestationViewBean.PARAMS_CHERCHER_REFERENCE_PAIEMENT;
     }
 
     /**
@@ -586,6 +612,10 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         this.idCompteAnnexe = idCompteAnnexe;
     }
 
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
+    }
+
     /**
      * setter pour l'attribut id of id prestation courante
      * 
@@ -702,6 +732,11 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
 
     }
 
+    public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
+        super.setIdReferenceQR(idReferenceQR);
+        retourDepuisPyxis = true;
+    }
+
     /**
      * setter pour l'attribut retour depuis pyxis
      * 
@@ -719,4 +754,50 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         tiersBeneficiaireChange = b;
     }
 
+    /**
+     * Relance la recherche de l'adresse de paiement si l'adresse n'a pas encore été chargé
+     * ou si l'adresse chargé ne correspond pas au tiers
+     *
+     * @return l'adresse de paiement
+     */
+    public TIAdressePaiementData getOrReloadAdressePaiementData() {
+        try {
+            if (adressePaiementData.isNew() ||
+                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiement())
+                    && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
+                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+                        getSession().getCurrentThreadTransaction(),
+                        getIdTiersAdressePaiement(),
+                        getIdDomaineAdressePaiement(),
+                        null, JACalendar.todayJJsMMsAAAA());
+                if (Objects.nonNull(paiementData)) {
+                    setAdressePaiementData(paiementData);
+                } else {
+                    paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+                            getSession().getCurrentThreadTransaction(),
+                            getIdTiersAdressePaiement(),
+                            IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI,
+                            null, JACalendar.todayJJsMMsAAAA());
+                    if (Objects.nonNull(paiementData)) {
+                        setAdressePaiementData(paiementData);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, "Erreur lors du chargement de l'adresse de paiement.");
+        }
+        return adressePaiementData;
+
+    }
+
+    @Override
+    protected void _validate(globaz.globall.db.BStatement statement) throws Exception {
+        super._validate(statement);
+
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
+    }
 }
