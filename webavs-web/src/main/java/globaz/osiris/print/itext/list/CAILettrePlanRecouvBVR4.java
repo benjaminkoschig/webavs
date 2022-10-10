@@ -21,6 +21,7 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.musca.PaireIdEcheanceParDateExigibiliteEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.application.CAApplication;
@@ -395,7 +396,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
-                ajouteErrorEBillToEMail();
+                ajouteErrorEBillToEmail(getDocumentInfo());
             }
         }
         super.afterExecuteReport();
@@ -433,13 +434,13 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         }
     }
 
-    private void ajouteErrorEBillToEMail() {
-        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
-        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    private void ajouteErrorEBillToEmail(JadePublishDocumentInfo docinfo) {
+        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(),
+                FWMessage.ERREUR, this.getClass().getName());
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
+                FWMessage.ERREUR, this.getClass().getName());
+        docinfo.setDocumentNotes((!JadeStringUtil.isBlank(docinfo.getDocumentNotes()) ? docinfo.getDocumentNotes() : "") + getMemoryLog().getMessagesInString());
     }
-
-
 
     private List<CASection> getSectionsCouvertes(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
         // les couvertures

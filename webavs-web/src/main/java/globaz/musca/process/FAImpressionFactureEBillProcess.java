@@ -844,7 +844,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 FWMessage.INFORMATION, this.getClass().getName());
         getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
                 FWMessage.INFORMATION, this.getClass().getName());
-        docinfo.setDocumentNotes(getMemoryLog().getMessagesInString());
+        docinfo.setDocumentNotes((!JadeStringUtil.isBlank(docinfo.getDocumentNotes()) ? docinfo.getDocumentNotes() : "") + getMemoryLog().getMessagesInString());
     }
 
     /**
