@@ -114,10 +114,7 @@ public class APPrestationAcor {
         if(Objects.nonNull(periodeMontantJournApgType)){
             setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
-            String nbJoursHospitalisation = droit.getJoursSupplementaires();
-            if(StringUtils.isInteger(nbJoursHospitalisation)) {
-                setNombreJoursSupplementaires(Integer.parseInt(nbJoursHospitalisation));
-            }
+            setNombreJoursSupplementaires(0);
             setRevenuDeterminantMoyen(new FWCurrency(periodeMontantJournApgType.getRjm()));
         }
     }
