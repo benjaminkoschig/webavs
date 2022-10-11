@@ -175,7 +175,7 @@ public class CODecision extends CODocumentManager {
                         try {
                             EBillSftpProcessor.getInstance();
                             traiterDecisionEBillAquila(curContentieux.getCompteAnnexe());
-                            ajouteInfoEBillToEmail();
+                            eBillHelper.ajouteInfoEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                             getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -220,11 +220,6 @@ public class CODecision extends CODocumentManager {
         }
     }
 
-    private void ajouteInfoEBillToEmail() {
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
-        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
-    }
-
     /**
      * Méthode permettant de créer la décision eBill,
      * de générer et remplir le fichier puis de l'envoyer sur le ftp.
@@ -245,11 +240,11 @@ public class CODecision extends CODocumentManager {
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.setEBillTransactionID(getEBillTransactionID());
 
-        // Met à jour le status eBill de la section
-        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
-
         String dateEcheance = dateImprOuFactu;
         eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, dateImprOuFactu, dateEcheance, null, getSession(), null, typeDocument);
+
+        // Met à jour le status eBill de la section
+        eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
 
         factureEBill++;
     }

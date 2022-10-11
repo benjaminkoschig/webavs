@@ -21,6 +21,7 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.musca.PaireIdEcheanceParDateExigibiliteEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.application.CAApplication;
@@ -387,7 +388,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                 try {
                     EBillSftpProcessor.getInstance();
                     traiterSursisEBillOsiris(this);
-                    ajouteInfoEBillToEmail();
+                    eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -395,7 +396,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
-                ajouteErrorEBillToEMail();
+                ajouteErrorEBillToEmail(getDocumentInfo());
             }
         }
         super.afterExecuteReport();
@@ -433,18 +434,13 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         }
     }
 
-    private void ajouteInfoEBillToEmail() {
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
-        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
+    private void ajouteErrorEBillToEmail(JadePublishDocumentInfo docinfo) {
+        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(),
+                FWMessage.ERREUR, this.getClass().getName());
+        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
+                FWMessage.ERREUR, this.getClass().getName());
+        docinfo.setDocumentNotes((!JadeStringUtil.isBlank(docinfo.getDocumentNotes()) ? docinfo.getDocumentNotes() : "") + getMemoryLog().getMessagesInString());
     }
-
-    private void ajouteErrorEBillToEMail() {
-        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
-        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
-    }
-
-
 
     private List<CASection> getSectionsCouvertes(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {
         // les couvertures
@@ -494,24 +490,24 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocuments       : la liste des fichiers crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @param dateImprOuFactu         : la date d'execution ou de facturation du document
-     * @param section                 : la section
+     * @param sections                : les sections
      * @param titreSursis             : le titre de LineItem pour les sursis au paiement
      * @param typeDocument            : le type du document eBill
      * @throws Exception
      */
-    private void creerFichierEBill(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, List<CASection> section, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
+    private void creerFichierEBill(CAPlanRecouvrement planRecouvrement, FAEnteteFacture entete, String montantFacture, Map<PaireIdEcheanceParDateExigibiliteEBill, List<Map>> lignesSursis, String reference, List<JadePublishDocument> attachedDocuments, String dateImprOuFactu, List<CASection> sections, String titreSursis, EBillTypeDocument typeDocument) throws Exception {
 
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.setEBillTransactionID(FAEnteteFacture.incrementAndGetEBillTransactionID(plan.getEBillPrintable(), getSession()));
 
-        // Met à jour le status eBill de la section
-        for (int i = 0; i < section.size(); i++) {
-            eBillHelper.updateSectionEtatEtTransactionID(section.get(i), entete.getEBillTransactionID(), getMemoryLog());
-        }
-
         String dateEcheance = planRecouvrement.getDateEcheance();
         String dateOctroiSursis = planRecouvrement.getDate();
         eBillHelper.creerFichierEBill(planRecouvrement.getCompteAnnexe(), entete, null, montantFacture, null, lignesSursis, reference, attachedDocuments, dateImprOuFactu, dateEcheance, dateOctroiSursis, getSession(), titreSursis, typeDocument);
+
+        // Met à jour le status eBill de la sections
+        for (int i = 0; i < sections.size(); i++) {
+            eBillHelper.updateSectionEtatEtTransactionID(sections.get(i), entete.getEBillTransactionID(), getMemoryLog());
+        }
 
         factureEBill++;
     }
