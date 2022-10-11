@@ -411,7 +411,7 @@ public class COActionBatch extends CODefaultServletAction {
         if (action != null) {
             JSPUtils.setBeanProperties(request, action);
 
-            String eBillTransactionID  = action.getEBillPrintable() ? FAEnteteFacture.incrementAndGetEBillTransactionID(action.getEBillPrintable(), session) : "";
+            String eBillTransactionID  = FAEnteteFacture.incrementAndGetEBillTransactionID(action.getEBillPrintable(), session);
 
             action.getTransition().setEBillPrintable(action.getEBillPrintable());
             action.getTransition().setEBillTransactionID(eBillTransactionID);

@@ -1739,7 +1739,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
      * @return un eBillTransactionID incrémenté
      */
     public static String incrementAndGetEBillTransactionID(Boolean eBillPrintable, BSession session) {
-        String eBillTransactionID = null;
+        String eBillTransactionID = "";
         if (eBillPrintable) {
             try {
                 FAEnteteFacture entete = new FAEnteteFacture();
