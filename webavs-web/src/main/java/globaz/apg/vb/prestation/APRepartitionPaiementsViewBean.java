@@ -830,6 +830,11 @@ public class APRepartitionPaiementsViewBean extends APRepartitionPaiements imple
     public void setIdTiersAdressePaiementDepuisPyxis(String idTiersAdressePaiement) {
         super.setIdTiersAdressePaiement(idTiersAdressePaiement);
         retourDepuisPyxis = true;
+        resetIdReferenceQR();
+    }
+
+    private void resetIdReferenceQR() {
+        setIdReferenceQR("");
     }
 
     public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {

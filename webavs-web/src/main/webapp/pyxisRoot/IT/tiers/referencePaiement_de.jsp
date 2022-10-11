@@ -3,7 +3,8 @@
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
 <%
-	idEcran ="GTI0444";
+    bButtonDelete = false;
+	idEcran ="GTI0061";
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean viewBean = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean)session.getAttribute ("viewBean");
 	selectedIdValue = request.getParameter("selectedId");
     if (JadeStringUtil.isBlank(selectedIdValue)) {

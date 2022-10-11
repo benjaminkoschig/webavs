@@ -4,7 +4,7 @@
 <%@ include file="/theme/find/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%> 
  <%
-	idEcran ="GTI0333";
+	idEcran ="GTI0060";
 	actionNew  +=	(request.getParameter("colonneSelection")==null)?"":"&colonneSelection="+request.getParameter("colonneSelection");
 	actionNew  += "&forIdTiers=" + ((request.getParameter("forIdTiers")!=null)?request.getParameter("forIdTiers"):"") ;
 	actionNew  += "&forIdAdressePaiement=" + ((request.getParameter("forIdAdressePaiement")!=null)?request.getParameter("forIdAdressePaiement"):"") ;
@@ -33,7 +33,7 @@ usrAction = "pyxis.tiers.referencePaiement.lister";
 			<td><input name="forCompteLike" type="text" readonly class="disabled" value='<%=(request.getParameter("forCompteLike")==null)?"":request.getParameter("forCompteLike") %>'/></td>
 
 			<td align="right" style="padding-left:0.5cm">QR-Referenz&nbsp;</td>
-			<td><input name="forReferenceQR" type="text"></td>
+			<td><input name="forReferenceQRLike" type="text"></td>
 
 			<td align="right" style="padding-left:0.5cm">Zeigt alle AR-Referenzen einschlieﬂlich inaktiver an&nbsp;</td>
 			<td><input type="checkbox" value="true" name="afficheToutes"/></td>
