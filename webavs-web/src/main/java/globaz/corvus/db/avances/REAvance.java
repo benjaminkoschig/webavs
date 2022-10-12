@@ -18,6 +18,8 @@ import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
 import globaz.pyxis.db.tiers.ITIPersonneDefTable;
 import globaz.pyxis.db.tiers.ITITiersDefTable;
 
+import java.util.Objects;
+
 /**
  * @author SCR
  */
@@ -225,6 +227,7 @@ public class REAvance extends BEntity {
         if (JadeStringUtil.isBlankOrZero(getIdTiersAdrPmt()) || JadeStringUtil.isBlankOrZero(getCsDomaine())) {
             _addError(statement.getTransaction(), getSession().getLabel("PMT_AVANCES_ERREUR_DATE_ADRESSE_PAIEMENT"));
         }
+
     }
 
     @Override

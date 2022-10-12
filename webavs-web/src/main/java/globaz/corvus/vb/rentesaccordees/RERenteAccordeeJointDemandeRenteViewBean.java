@@ -16,6 +16,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSpy;
 import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -112,6 +113,16 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         nbPostit = statement.dbReadNumeric(RERenteAccordeeJointDemandeRenteListViewBean.FIELDNAME_COUNT_POSTIT);
         idRenteCalculee = statement.dbReadNumeric(REDemandeRente.FIELDNAME_ID_RENTE_CALCULEE);
         super._readProperties(statement);
+    }
+
+    public boolean validate() throws Exception {
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+            setMsgType(FWViewBeanInterface.ERROR);
+            setMessage(getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+            return false;
+        }
+        return true;
     }
 
     /**

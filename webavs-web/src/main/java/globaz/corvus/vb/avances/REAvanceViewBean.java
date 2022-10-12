@@ -5,6 +5,7 @@ import globaz.corvus.db.avances.REAvance;
 import globaz.corvus.vb.rentesaccordees.REAdressePmtUtil;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BStatement;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.af.IPRAffilie;
@@ -19,10 +20,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author SCR
@@ -245,6 +243,13 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
         }
 
         return adpmt;
+    }
+
+    @Override
+    protected void _validate(BStatement statement) throws Exception {
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(this.getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+            _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+        }
     }
 
     public void setAdpmt(REAdressePmtUtil adpmt) {
