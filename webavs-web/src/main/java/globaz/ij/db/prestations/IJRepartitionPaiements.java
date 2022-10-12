@@ -593,16 +593,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
     }
 
     public String getReferenceQR() throws Exception {
-        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
-        mgr.setSession(getSession());
-        mgr.setForIdReferenceQR(idReferenceQR);
-        mgr.find(BManager.SIZE_NOLIMIT);
-
-        if(mgr.size() > 0){
-            TIReferencePaiement referencePaiement = (TIReferencePaiement) mgr.get(0);
-            return referencePaiement.getReferenceQR();
-        }
-        return StringUtils.EMPTY;
+        return PRTiersHelper.getReferenceQR(getSession(), getIdReferenceQR());
     }
 
     /**

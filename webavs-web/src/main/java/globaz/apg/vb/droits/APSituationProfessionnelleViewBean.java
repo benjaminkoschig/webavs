@@ -1313,8 +1313,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return TypePrestation.TYPE_APG.equals(typePrestation);
     }
 
-    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
-        this.adressePaiementData = adressePaiementData;
+    public TIAdressePaiementData getAdressePaiementData() {
+        return adressePaiementData;
     }
 
     /**
@@ -1613,6 +1613,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);
         retourDepuisAdresse = true;
+        resetIdReferenceQR();
+    }
+
+    private void resetIdReferenceQR() {
+        setIdReferenceQR("");
     }
 
     public void setIdReferenceQRDepuisReferenceQR(final String idReferenceQR){
@@ -1816,6 +1821,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public void setIsRetourRechercheAffilie(Boolean isRetourRechercheAffilie) {
         this.isRetourRechercheAffilie = isRetourRechercheAffilie;
+    }
+
+    public void setAdressePaiementData(TIAdressePaiementData adressePaiementData) {
+        this.adressePaiementData = adressePaiementData;
     }
 
     public MenuPrestation getMenuPrestation() {

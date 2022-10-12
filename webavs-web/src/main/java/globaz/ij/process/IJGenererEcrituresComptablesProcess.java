@@ -751,7 +751,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
                 IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(getSession()
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
-        if (StringUtils.isEmpty(referencePaiement)) {
+        if (JadeStringUtil.isBlankOrZero(referencePaiement)) {
             ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
         } else {
             ordreVersement.setTypeVirement(APIOperationOrdreVersement.QR);
