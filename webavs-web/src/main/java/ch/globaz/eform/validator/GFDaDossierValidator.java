@@ -85,7 +85,7 @@ public class GFDaDossierValidator {
 
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String ourBusinessReferenceId = nodeMessageId.getFirstChild().getNodeValue();
+            String ourBusinessReferenceId = nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(ourBusinessReferenceId)) {
                 result.addError("ourBusinessReferenceId", ValidationError.MANDATORY);
             }
@@ -104,6 +104,13 @@ public class GFDaDossierValidator {
                 result.addError("nss", ValidationError.MANDATORY);
             } else if (!NSSUtils.checkNSS(nss)) {
                 result.addError("nss", ValidationError.MALFORMED);
+            } else {
+                PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
+                ts.setForNumeroAvsActuel(nss);
+                ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
+                if (0 == ts.getSize()) {
+                    result.addError("nss", ValidationError.UNKNOWN);
+                }
             }
         } catch (ParserConfigurationException e) {
             LOG.error("Erreur dans la configuration du parceur XML", e);
@@ -113,6 +120,9 @@ public class GFDaDossierValidator {
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         } catch (XPathExpressionException e) {
             LOG.error("Erreur dans le parcing de l'expression xpath", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (Exception e) {
+            LOG.error("Erreur dans le la validation des information du XML", e);
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         }
 
@@ -173,14 +183,14 @@ public class GFDaDossierValidator {
 
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String ourBusinessReferenceId = nodeOurBusinessReferenceId.getFirstChild() == null ? null : nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
+            String ourBusinessReferenceId = nodeOurBusinessReferenceId == null ? null : nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(ourBusinessReferenceId)) {
                 result.addError("ourBusinessReferenceId", ValidationError.MANDATORY);
             }
 
             //Recherche de la value du yourBusinessReferenceId
             Node nodeYourBusinessReferenceId = (Node) xPath.compile("/message/header/yourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String yourBusinessReferenceId = nodeYourBusinessReferenceId.getFirstChild() == null ? null : nodeYourBusinessReferenceId.getFirstChild().getNodeValue();
+            String yourBusinessReferenceId = nodeYourBusinessReferenceId == null ? null : nodeYourBusinessReferenceId.getFirstChild().getNodeValue();
             if (!StringUtils.isEmpty(yourBusinessReferenceId)) {
                 result.addInfo("yourBusinessReferenceId", yourBusinessReferenceId);
             }
@@ -208,7 +218,7 @@ public class GFDaDossierValidator {
                 result.addError("nss", ValidationError.MALFORMED);
             }
             PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
-            ts.setForNumeroAvsActuel(nss);
+            ts.setForNumeroAvsActuel(NSSUtils.formatNss(nss));
             ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
             if (0 == ts.getSize()) {
                 result.addError("nss", ValidationError.UNKNOWN);

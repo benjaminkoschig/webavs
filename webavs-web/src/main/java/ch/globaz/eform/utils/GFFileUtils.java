@@ -57,7 +57,7 @@ public class GFFileUtils {
 
                 if (matcher.find()) {
                     if (StringUtils.isBlank(viewBean.getNss()) || !viewBean.getNss().equals(matcher.group(1))) {
-                        viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'affilier choisi incorrecte!");
+                        viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'assuré  choisi incorrecte!");
                     } else {
                         Path zipDir = Paths.get(workDir.toAbsolutePath() + File.separator + FilenameUtils.removeExtension(filePath.getFileName().toString()));
 
@@ -71,7 +71,7 @@ public class GFFileUtils {
                         FileUtils.deleteDirectory(zipDir.toFile());
                     }
                 } else {
-                    viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'affilier choisi incorrecte!");
+                    viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'assuré  choisi incorrecte!");
                 }
             } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF) || extension.equals(FILE_TYPE_TIF)) {
                 String originalFilename = Paths.get(viewBean.getFilename().replaceAll("\\\\", "/")).getFileName().toString();
