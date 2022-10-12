@@ -101,7 +101,7 @@ public class APAcorBaseCalculMapper {
         if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
             if(Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
                 if(Double.parseDouble(droit.getTauxImpotSource()) != 0){
-                    basesCalcul.setTauxImpot(Double.parseDouble(droit.getTauxImpotSource()));
+                    basesCalcul.setTauxImpot(convertTauxImpot(droit.getTauxImpotSource()));
                 }else{
                     List tauxImpots;
                     try {
@@ -129,12 +129,16 @@ public class APAcorBaseCalculMapper {
                         taux = new PRTauxImposition();
                         taux.setTaux(droit.getTauxImpotSource());
                     }
-                    basesCalcul.setTauxImpot(Double.parseDouble(taux.getTaux()));
+                    basesCalcul.setTauxImpot(convertTauxImpot(taux.getTaux()));
                     basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
                 }
 
             }
         }
+    }
+
+    private static double convertTauxImpot(String taux) {
+        return Double.parseDouble(taux) / 100;
     }
 
     private static List findTauxImposition(BSession session, String dateDebut, String dateFin, String idCanton)
