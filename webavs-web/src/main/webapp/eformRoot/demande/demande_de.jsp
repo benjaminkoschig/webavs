@@ -9,12 +9,13 @@
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
-<%@ include file="/theme/detail_ajax/header.jspf" %>
+<%@ include file="/theme/detail/header.jspf" %>
 
 <%
 	idEcran="GFE0111";
 	GFDemandeViewBean viewBean = (GFDemandeViewBean) session.getAttribute("viewBean");
 	boolean hasRightAdd = objSession.hasRight(GFDemandeServletAction.ACTION_PATH, FWSecureConstants.ADD);
+	tableHeight = 100;
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -85,26 +86,26 @@
 	}
 </script>
 
-<TITLE><%=idEcran%></TITLE>
-</HEAD>
-	<body style="margin: 5px;">
-		<div class="thDetail" style="text-align: center;font-size: small;">
-			<ct:FWLabel key="DEMANDE_DOSSIER_TITRE"/>
-			<span class="idEcran"><%=idEcran%></span>
-		</div>
-
-		<form name="mainForm" action="" method="post">
+<%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
+<%-- tpl:insert attribute="zoneTitle" --%>
+<ct:FWLabel key="ENVOI_TITRE"/>
+<%-- /tpl:insert --%>
+<%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
 			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
 			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
 			<INPUT type="hidden" name="_sl" value="">
-			<div class="container-fluid corps" style="padding-bottom: 15px;margin-bottom: 5px;">
-				<div class="row-fluid" style="font-weight: bold">
-					<ct:FWLabel key="ASSURE"/>
-				</div>
-				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
-					<div style="display: table-cell;width: 300px;">
+				<tr><td>
+					<div style="font-weight: bold">
+						<ct:FWLabel key="ASSURE"/>
+					</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="libelle">
+						<ct:FWLabel key="NSS"/>
+					</td>
+					<td>
 						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck();clearNss();">
 							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
@@ -121,19 +122,25 @@
 								</ct:widgetJSReturnFunction>
 							</ct:widgetService>
 						</ct:widget>
-					</div>
-				</div>
-				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="LASTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/></div>
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="FIRSTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/></div>
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="BIRTHDAY"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/></div>
-				</div>
-				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
-					<div style="display: table-cell;width: 300px;">
+					</td>
+				</tr>
+				<tr><td class="libelle">
+						<ct:FWLabel key="LASTNAME"/>
+					</td><td>
+						<ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/>
+					</td><td>
+						<ct:FWLabel key="FIRSTNAME"/>
+					</td><td>
+						<ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/>
+					</td><td>
+						<ct:FWLabel key="BIRTHDAY"/>
+					</td><td>
+						<ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/>
+					</td></tr>
+				<tr><td colspan="6"><hr/></td></tr>
+				<tr><td class="libelle">
+						<ct:FWLabel key="CAISSE_DEST"/>
+					</td><td colspan="5">
 						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 							<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
@@ -150,28 +157,25 @@
 								</ct:widgetJSReturnFunction>
 							</ct:widgetService>
 						</ct:widget>
-					</div>
-				</div>
-			</div>
-			<div class="container-fluid">
-				<div class="row-fluid">
-					<div style="float:right;">
-						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
-						<%if(hasRightAdd){%>
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
-						<%}%>
-					</div>
-				</div>
-			</div>
-		</form>
+				</td>
+			</tr>
+		</TBODY>
+	</TABLE>
+</form>
 
-		<SCRIPT>
-			if(top.fr_error!=null) {
-				top.fr_error.location.replace(top.fr_error.location.href);
-			}
-		</SCRIPT>
+<%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
+<%@ include file="/theme/detail_ajax/footer.jspf" %>
 
-		<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
-		<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
-	</body>
-</html>
+<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
+
+<tr>
+	<td >
+		<div style="float:right;">
+			<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
+			<%if(hasRightAdd){%>
+			<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
+			<%}%>
+		</div>
+	</td>
+</tr>
