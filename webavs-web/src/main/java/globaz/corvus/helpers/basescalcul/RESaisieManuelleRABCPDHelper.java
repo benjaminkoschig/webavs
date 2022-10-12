@@ -54,6 +54,8 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.Objects;
+
 import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.pyxis.db.tiers.TIReferencePaiementManager;
 
@@ -195,6 +197,11 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
                     transaction.addErrors(session.getLabel("VALID_FRACTION_RENTE_SI_PAS_GENRE_AI"));
                     return viewBean;
                 }
+            }
+
+            if (JadeStringUtil.isBlankOrZero(saisieRABCPDVb.getIdReferenceQR()) && Objects.nonNull(saisieRABCPDVb.getAdressePaiementData()) && TIAdressePaiement.isQRIban(saisieRABCPDVb.getAdressePaiementData().getCompte())) {
+                transaction.addErrors(session.getLabel("JSP_REFERENCE_QR_EMPTY"));
+                return viewBean;
             }
 
             // Création de la base de calcul si nécessaire et de la rente calculée si nécessaire
