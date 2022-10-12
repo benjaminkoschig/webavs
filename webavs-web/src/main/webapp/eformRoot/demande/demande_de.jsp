@@ -5,6 +5,7 @@
 <%@ page import="ch.globaz.eform.web.servlet.GFDemandeServletAction" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
 <%@ page import="ch.globaz.eform.business.services.GFAdministrationService" %>
+<%@ page import="ch.globaz.eform.properties.GFProperties" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -95,10 +96,26 @@
 			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
 			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
 			<INPUT type="hidden" name="_sl" value="">
-				<tr><td>
-					<div style="font-weight: bold">
-						<ct:FWLabel key="ASSURE"/>
-					</div>
+				<tr>
+					<td><div class="libelletitre"><ct:FWLabel key="JSP_GESTIONNAIRE"/></div></td>
+				</tr>
+				<tr>
+					<td><div class="libelle"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div></td>
+					<td><ct:inputText name="nomGestionnaire" id="nomGestionnaire" defaultValue="<%=viewBean.getSession().getUserFullName()%>" disabled="true"/></td>
+				</tr>
+				<tr>
+					<td><div class="libelle"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div></td>
+					<td><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_DEPARTEMENT.getValue()%>" disabled="true"/></td>
+					<td><div class="libelle"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div></td>
+					<td><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_TELEPHONE.getValue()%>" disabled="true"/></td>
+					<td><div class="libelle"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div></td>
+					<td><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" disabled="true"/></td>
+				</tr>
+				<tr>
+					<td>
+						<div style="font-weight: bold">
+							<ct:FWLabel key="ASSURE"/>
+						</div>
 					</td>
 				</tr>
 				<tr>
