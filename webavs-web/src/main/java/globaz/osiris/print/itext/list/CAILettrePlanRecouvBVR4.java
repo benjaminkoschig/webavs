@@ -391,12 +391,14 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                     eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 } finally {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
-                ajouteErrorEBillToEmail(getDocumentInfo());
+                getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
+                getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
+                eBillHelper.ajouteErreurEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
             }
         }
         super.afterExecuteReport();
@@ -432,14 +434,6 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         if (decisionFusionnee != null) {
             attachedDocuments.add(decisionFusionnee);
         }
-    }
-
-    private void ajouteErrorEBillToEmail(JadePublishDocumentInfo docinfo) {
-        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(),
-                FWMessage.ERREUR, this.getClass().getName());
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
-                FWMessage.ERREUR, this.getClass().getName());
-        docinfo.setDocumentNotes((!JadeStringUtil.isBlank(docinfo.getDocumentNotes()) ? docinfo.getDocumentNotes() : "") + getMemoryLog().getMessagesInString());
     }
 
     private List<CASection> getSectionsCouvertes(CAILettrePlanRecouvBVR4 documentBVR) throws Exception {

@@ -170,10 +170,17 @@ public class CODecisionFPV extends CODocumentManager {
                         try {
                             EBillSftpProcessor.getInstance();
                             traiterDecisionEBillAquila(curContentieux.getCompteAnnexe());
+
+                            // transfert l'information de compteur pour les étapes manuelles
                             eBillHelper.ajouteInfoEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                            getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                            // transfert les erreurs dans l'email pour les étapes en masses
+                            this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.ERREUR);
+
+                            // transfert les erreurs dans l'email pour les étapes manuelles
+                            eBillHelper.ajouteErreurEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
                         } finally {
                             EBillSftpProcessor.closeServiceFtp();
                         }

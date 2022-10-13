@@ -144,30 +144,41 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     @Override
     public void afterExecuteReport() {
-        if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
+        try {
+            if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
 
-            // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-            boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+                // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+                boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
 
-            // On imprime eBill si :
-            //  - eBillAquila est actif
-            //  - le compte annexe possède un eBillAccountID
-            //  - eBillPrintable est sélectioné sur l'écran d'impression
-            //  - l'impression prévisionel n'est pas activée
-            if (eBillAquilaActif && getEBillPrintable() && !getPrevisionnel()) {
-                if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
-                    try {
-                        EBillSftpProcessor.getInstance();
-                        traiterReclamationEBillAquila(curContentieux.getCompteAnnexe());
-                        eBillHelper.ajouteInfoEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
-                    } catch (Exception exception) {
-                        LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
-                    } finally {
-                        EBillSftpProcessor.closeServiceFtp();
+                // On imprime eBill si :
+                //  - eBillAquila est actif
+                //  - le compte annexe possède un eBillAccountID
+                //  - eBillPrintable est sélectioné sur l'écran d'impression
+                //  - l'impression prévisionel n'est pas activée
+                if (eBillAquilaActif && getEBillPrintable() && !getPrevisionnel()) {
+                    if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                        try {
+                            EBillSftpProcessor.getInstance();
+                            traiterReclamationEBillAquila(curContentieux.getCompteAnnexe());
+
+                            // transfert l'information de compteur pour les étapes manuelles
+                            eBillHelper.ajouteInfoEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
+                        } catch (Exception exception) {
+                            LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+
+                            // transfert les erreurs dans l'email pour les étapes en masses
+                            this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.ERREUR);
+
+                            // transfert les erreurs dans l'email pour les étapes manuelles
+                            eBillHelper.ajouteErreurEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+                        } finally {
+                            EBillSftpProcessor.closeServiceFtp();
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            this._addError(e.toString());
         }
         super.afterExecuteReport();
     }

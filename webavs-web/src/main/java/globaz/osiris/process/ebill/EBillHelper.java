@@ -255,7 +255,14 @@ public class EBillHelper {
 
     public void ajouteInfoEBillToDocumentNotes(int factureEBill, JadePublishDocumentInfo docInfo, BSession session) {
         if (docInfo != null) {
-            docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill);
+            docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill + "\n");
         }
     }
+
+    public void ajouteErreurEBillToDocumentNotes(FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo) {
+        if (docInfo != null) {
+            docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + memoryLog.getMessagesInString());
+        }
+    }
+
 }
