@@ -900,7 +900,6 @@
                onchange="validateFloatNumber(this);"
                onkeypress="return filterCharForFloat(window.event);"
                style="text-align: right"/>
-        <ct:FWLabel key="JSP_TAUX_CANTON"/>
     </td>
 </tr>
 <tr id="availableIfSoumisCotisation">
