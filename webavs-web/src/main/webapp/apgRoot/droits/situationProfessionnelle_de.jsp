@@ -792,9 +792,6 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 								<TD><LABEL for="isAllocationExploitation"><ct:FWLabel key="JSP_ALLOC_EXPLOI"/></LABEL></TD>
 								<TD><INPUT type="checkbox" name="isAllocationExploitation" value="on" <%=viewBean.getIsAllocationExploitation().booleanValue()?"CHECKED":""%>></TD>
 							<%}%>
-<%--							<%}else{%>--%>
-<%--								<TD colspan="2"/>--%>
-<%--							<%}%>--%>
 						</TR>
 					</TBODY>
 					<TBODY id="specialEmployeur">
