@@ -584,6 +584,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
     public void setIdTiersDepuisPyxis(String string) {
         setIdTiers(string);
         tiers = null;
+        setIdReferenceQR("");
         setRetourDepuisPyxis(true);
         setTiersBeneficiaireChange(true);
     }
