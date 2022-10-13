@@ -146,7 +146,7 @@ public class GFDaDossierValidator {
                 Node attachmentNode = nodeList.item(i);
                 String attachmentName = attachmentNode.getChildNodes().item(13).getChildNodes().item(1).getFirstChild().getNodeValue().split("/")[1];
                 if (messageSedex.attachments.entrySet().stream()
-                        .noneMatch(entry -> (entry.getValue()).equals(attachmentName))) {
+                        .noneMatch(entry -> (entry.getValue()).endsWith(attachmentName))) {
                     result.addError("attachment", ValidationError.MISSING);
                 }
                 i++;
