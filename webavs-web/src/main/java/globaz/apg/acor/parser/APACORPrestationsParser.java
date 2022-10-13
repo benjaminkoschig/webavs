@@ -619,7 +619,6 @@ public class APACORPrestationsParser {
                     }
 
                     nssAssureImporte = APACORPrestationsParser.getField(line, fields, "NUMERO_AVS_ASSURE");
-                    nombreJoursSupplementaires = Integer.parseInt(APACORPrestationsParser.getField(line, fields, "NOMBRE_JOURS_SUPPLEMENTAIRES"));
                     break;
                 }
             }
