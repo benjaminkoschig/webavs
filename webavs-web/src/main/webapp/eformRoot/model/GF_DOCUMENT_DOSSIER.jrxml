@@ -34,6 +34,7 @@
 	<parameter name="P_SALUTATION" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_SIGNATURE_CAISSE" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -90,7 +91,7 @@
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="180"  isSplitAllowed="true" >
+			<band height="250"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="147"
@@ -351,19 +352,11 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SALUTATION}]]></textFieldExpression>
 				</textField>
-			</band>
-		</detail>
-		<columnFooter>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-		</columnFooter>
-		<pageFooter>
-			<band height="30"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
 						x="1"
-						y="1"
+						y="226"
 						width="552"
 						height="13"
 						forecolor="#000000"
@@ -378,6 +371,14 @@
 					<parametersMapExpression><![CDATA[new HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_SIGNATURE}]]></subreportExpression>
 				</subreport>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="false" >
 			</band>
 		</pageFooter>
 		<summary>
