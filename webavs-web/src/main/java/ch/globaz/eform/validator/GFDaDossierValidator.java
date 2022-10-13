@@ -106,7 +106,7 @@ public class GFDaDossierValidator {
                 result.addError("nss", ValidationError.MALFORMED);
             } else {
                 PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
-                ts.setForNumeroAvsActuel(nss);
+                ts.setForNumeroAvsActuel(NSSUtils.formatNss(nss));
                 ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
                 if (0 == ts.getSize()) {
                     result.addError("nss", ValidationError.UNKNOWN);

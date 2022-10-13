@@ -174,18 +174,18 @@
 				<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} "/>
+				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} #{tiers.designation3}"/>
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
-							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
-							$('#idTiersCaisse').val($(element).attr('admin.idTiersAdministration'));
+							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2') + ' ' + $(element).attr('tiers.designation3');
+							$('#idTierAdministration').val($(element).attr('admin.idTiersAdministration'));
 						}
 					</script>
 				</ct:widgetJSReturnFunction>
 			</ct:widgetService>
 		</ct:widget>
-		<INPUT type="hidden" id="idTiersCaisse" name="idTiersCaisse" value="<%=viewBean.getIdTiersCaisse()%>">
+		<INPUT type="hidden" id="idTierAdministration" name="idTierAdministration" value="<%=viewBean.getIdTierAdministration()%>">
 	</td>
 </tr>
 <tr><td colspan="6"><hr/></td></tr>
