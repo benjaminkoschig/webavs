@@ -5,6 +5,7 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.printing.itext.fill.FWIImportManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
@@ -41,6 +42,8 @@ public class GFDocumentDossier extends FWIDocumentManager {
     protected final static String PARAM_TITRE = "P_TITRE";
     protected final static String PARAM_PARAGRAPHE = "P_PARAGRAPHE";
     protected final static String PARAM_SALUTATION = "P_SALUTATION";
+    public static final String GF_DOCUMENT_SIGNATURE_JASPER = "GF_DOCUMENT_SIGNATURE.jasper";
+    public static final String BLANK_JASPER = "blank.jasper";
 
     @Getter
     @Setter
@@ -76,7 +79,14 @@ public class GFDocumentDossier extends FWIDocumentManager {
             caisseHelper.addHeaderParameters(this, headerBean);
 
             // signature
-            caisseHelper.addSignatureParameters(getImporter());
+
+            FWIImportManager importer = getImporter();
+            caisseHelper.addSignatureParameters(importer);
+            if(importer.getParametre().get(ICaisseReportHelper.PARAM_SUBREPORT_SIGNATURE) == null
+                || ((String)importer.getParametre().get(ICaisseReportHelper.PARAM_SUBREPORT_SIGNATURE)).endsWith(BLANK_JASPER)) {
+                importer.setParametre(ICaisseReportHelper.PARAM_SUBREPORT_SIGNATURE,
+                        importer.getImportPath() + GF_DOCUMENT_SIGNATURE_JASPER);
+            }
         } catch (Exception e) {
             throw new FWIException(e);
         }
