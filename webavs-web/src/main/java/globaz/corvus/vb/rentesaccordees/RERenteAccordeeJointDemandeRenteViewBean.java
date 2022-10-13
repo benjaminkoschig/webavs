@@ -16,7 +16,6 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSpy;
 import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -1065,6 +1064,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     public void setIdTiersAdressePmtICDepuisPyxis(String string) {
         setIdTiersAdressePmtIC(string);
         idTiersAdressePmtICDepuisPyxis = string;
+        idReferenceQRDepuisPyxis = "";
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
     }
