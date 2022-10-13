@@ -1,6 +1,5 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
-<%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="globaz.framework.secure.FWSecureConstants" %>
 <%@ page import="ch.globaz.eform.web.servlet.GFDemandeServletAction" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
@@ -55,8 +54,9 @@
 		$('#btnCan').prop('disabled', 'true');
 		var nss = document.getElementById("nssAffilier").value;
 		var caisse = document.getElementById("codeCaisse").value;
+		var idTierAdministration = document.getElementById("idTierAdministration").value;
 
-		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse;
+		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse + "&idTierAdministration=" + idTierAdministration;
 	}
 
 	function buttonCheck(){
@@ -92,10 +92,12 @@
 <ct:FWLabel key="ENVOI_TITRE"/>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
-			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
-			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
-			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
-			<INPUT type="hidden" name="_sl" value="">
+
+			<INPUT type="hidden" id="idTierAdministration" name="idTierAdministration" value="<%=viewBean.getIdTierAdministration()%>" />
+			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>" />
+			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>' />
+			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>' />
+			<INPUT type="hidden" name="_sl" value="" />
 				<tr>
 					<td><div class="libelletitre"><ct:FWLabel key="JSP_GESTIONNAIRE"/></div></td>
 				</tr>
@@ -154,28 +156,33 @@
 					</td><td>
 						<ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/>
 					</td></tr>
-				<tr><td colspan="6"><hr/></td></tr>
-				<tr><td class="libelle">
+				<tr>
+					<td colspan="6"><hr/></td>
+				</tr>
+				<tr>
+					<td class="libelle">
 						<ct:FWLabel key="CAISSE_DEST"/>
-					</td><td colspan="5">
+					</td>
+					<td colspan="5">
 						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 							<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 								<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 								<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
+								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} #{tiers.designation3}"/>
 								<ct:widgetJSReturnFunction>
 									<script type="text/javascript">
 										function(element){
-											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
+											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2') + ' ' + $(element).attr('tiers.designation3');
+											$('#idTierAdministration').val($(element).attr('admin.idTiersAdministration'));
 										}
 									</script>
 								</ct:widgetJSReturnFunction>
 							</ct:widgetService>
 						</ct:widget>
-				</td>
-			</tr>
+					</td>
+				</tr>
 		</TBODY>
 	</TABLE>
 </form>

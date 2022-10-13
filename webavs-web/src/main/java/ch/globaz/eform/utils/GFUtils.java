@@ -6,6 +6,7 @@ import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.vulpecula.business.services.administration.AdministrationService;
+import globaz.eform.translation.CodeSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
@@ -32,9 +33,9 @@ public final class GFUtils {
         }
     }
 
-    public static AdministrationComplexModel getCaisse(String codeCaisse) throws Exception{
+    public static AdministrationComplexModel getCaisse(String idTierAdministration) throws Exception{
         AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
-        search.setForCodeAdministration(codeCaisse);
+        search.setForIdTiersAdministration(idTierAdministration);
 
         search = TIBusinessServiceLocator.getAdministrationService().find(search);
 
@@ -48,6 +49,7 @@ public final class GFUtils {
     public static AdministrationComplexModel getCaisseBySedexId(String sedexIdCaisse){
         AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
         search.setForSedexId(sedexIdCaisse);
+        search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
 
         try {
             search = TIBusinessServiceLocator.getAdministrationService().find(search);

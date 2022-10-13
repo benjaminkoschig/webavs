@@ -20,6 +20,8 @@ public class GFDaDossierModel extends JadeSimpleModel {
     private String messageId;
     private String nssAffilier;
     private String codeCaisse;
+    private String idTierAdministration;
+    private String sedexIdCaisse;
     private String originalType;
     private String type;
     private String status;
@@ -54,6 +56,14 @@ public class GFDaDossierModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(codeCaisse)) {
             result.addError("codeCaisse", ValidationError.MANDATORY);
+        }
+
+        if (JadeStringUtil.isBlank(idTierAdministration)) {
+            result.addError("idTierAdministration", ValidationError.MANDATORY);
+        }
+
+        if (JadeStringUtil.isBlank(sedexIdCaisse)) {
+            result.addError("sedexIdCaisse", ValidationError.MANDATORY);
         }
 
         if (JadeStringUtil.isBlank(originalType)) {

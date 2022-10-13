@@ -88,6 +88,14 @@ public class GFSuiviListViewBean  extends BJadePersistentObjectListViewBean {
         }
     }
 
+    public String getByIdTierAdministration() {
+        return suiviSearch.getByIdTierAdministration();
+    }
+
+    public void setByIdTierAdministration(String idTierAdministration) {
+        suiviSearch.setByIdTierAdministration(idTierAdministration);
+    }
+
     public String getByType() {
         return suiviSearch.getByType();
     }

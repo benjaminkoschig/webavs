@@ -41,6 +41,7 @@
 	function clearFields() {
 		document.getElementsByName("likeNss")[0].value = "";
 		document.getElementsByName("byCaisse")[0].value = "";
+		document.getElementsByName("byIdTierAdministration")[0].value = "";
 		document.getElementsByName("byType")[0].value = "";
 		document.getElementsByName("byStatus")[0].value = "";
 		document.getElementsByName("byGestionnaire")[0].value = "";
@@ -57,6 +58,7 @@
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 
 <%-- tpl:insert attribute="zoneMain" --%>
+<INPUT type="hidden" id="byIdTierAdministration" name="byIdTierAdministration" value="">
 <tr>
 	<td style="width:150px">
 		<LABEL for="likeNss">
@@ -91,10 +93,11 @@
 				<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
+				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} #{tiers.designation3}"/>
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
+							$('#byIdTierAdministration').val($(element).attr('admin.idTiersAdministration'));
 							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
 						}
 					</script>

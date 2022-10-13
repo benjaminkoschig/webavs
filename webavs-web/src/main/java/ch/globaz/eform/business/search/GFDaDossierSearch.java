@@ -12,6 +12,7 @@ public class GFDaDossierSearch extends JadeSearchSimpleModel {
     private String byMessageId = null;
     private String likeNss = null;
     private String byCaisse = null;
+    private String byIdTierAdministration = null;
     private String byType = null;
     private String byStatus = null;
     private String byGestionnaire = null;
