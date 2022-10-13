@@ -18,8 +18,6 @@ public class CAFichierTraitementEBillManager extends BManager {
     private String forDateLecture;
     private String forStatutFichier;
 
-    private java.lang.String order = null;
-
     @Override
     protected BEntity _newEntity() throws Exception {
         return new CAFichierTraitementEBill();
@@ -74,7 +72,7 @@ public class CAFichierTraitementEBillManager extends BManager {
 
     @Override
     protected String _getSql(BStatement statement) {
-        return super._getSql(statement) + _getGroupBy(statement) + _getOrder(statement);
+        return super._getSql(statement) + _getGroupBy(statement) + getOrder();
     }
 
     @Override
@@ -129,20 +127,8 @@ public class CAFichierTraitementEBillManager extends BManager {
         this.forStatutFichier = forStatutFichier;
     }
 
-    @Override
-    protected String _getOrder(BStatement statement) {
-        if (getOrder() == null) {
-            return " ORDER BY " + CAFichierTraitementEBill.FIELD_DATE_LECTURE + " DESC ";
-        } else {
-            return " ORDER BY " + getOrder();
-        }
-    }
-
     public String getOrder() {
-        return order;
+        return " ORDER BY " + CAFichierTraitementEBill.FIELD_DATE_LECTURE + " DESC ";
     }
 
-    public void setOrder(java.lang.String string) {
-        order = string;
-    }
 }
