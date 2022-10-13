@@ -200,7 +200,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 			  $('.withReferencePaiement').hide();
 		  <%}%>
 	  } else {
-		  $('.withoutReferencePaiement').hide();
+		  $('.withoutReferencePaiement').show();
 		  $('.withReferencePaiement').hide();
 	  }
   }
@@ -705,6 +705,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
                             <%}%>
 						</TR>
 						<TR>
+							<TD class="withoutAdressePaiement" colspan="2"/>
 							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 
@@ -753,11 +754,11 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD class="withoutReferencePaiement" colspan="2" rowspan="4">&nbsp;</TD></TR>
 						<%if (TIAdressePaiement.isQRIban(viewBean.getAdressePaiementData().getCompte())) {%>
+						<TR><TD class="withReferencePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
-							<TD class="withReferencePaiement" colspan="2">
+							<TD class="withReferencePaiement">
 
 								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
@@ -778,6 +779,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 										redirectUrl="<%=mainServletPath%>"
 								/>
 							</TD>
+							<TD class="withReferencePaiement" colspan="3"> </TD>
 						</TR>
 						<%}%>
 						<TR><TD colspan="6"><HR></TD></TR>
@@ -790,6 +792,9 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 								<TD><LABEL for="isAllocationExploitation"><ct:FWLabel key="JSP_ALLOC_EXPLOI"/></LABEL></TD>
 								<TD><INPUT type="checkbox" name="isAllocationExploitation" value="on" <%=viewBean.getIsAllocationExploitation().booleanValue()?"CHECKED":""%>></TD>
 							<%}%>
+<%--							<%}else{%>--%>
+<%--								<TD colspan="2"/>--%>
+<%--							<%}%>--%>
 						</TR>
 					</TBODY>
 					<TBODY id="specialEmployeur">
