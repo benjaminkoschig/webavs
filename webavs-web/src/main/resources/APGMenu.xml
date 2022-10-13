@@ -136,12 +136,6 @@
 							<parameter name="csGroupeTypesDocuments" value="APTYPES" />
 						</action>
 					</node>
-					<node>
-						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
-						<action command="/cepheus" responseTarget="fr_main">
-							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
-						</action>
-					</node>
 				</nodes>
 			</node>
 		</nodes>
@@ -909,12 +903,6 @@
 							<parameter name="csGroupeTypesDocuments" value="MATTYPES" />
 						</action>
 					</node>
-					<node>
-						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
-						<action command="/cepheus" responseTarget="fr_main">
-							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
-						</action>
-					</node>
 				</nodes>
 			</node>
 		</nodes>
@@ -1196,12 +1184,6 @@
 							<parameter name="csGroupeTypesDocuments" value="PATTYPES" />
 						</action>
 					</node>
-					<node>
-						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
-						<action command="/cepheus" responseTarget="fr_main">
-							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
-						</action>
-					</node>
 				</nodes>
 			</node>
 		</nodes>
@@ -1293,12 +1275,6 @@
 							<parameter name="userAction" value="babel.cat.document.chercher" />
 							<parameter name="csGroupeDomaines" value="PAIDOMAINE" />
 							<parameter name="csGroupeTypesDocuments" value="PAITYPES" />
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
-						<action command="/cepheus" responseTarget="fr_main">
-							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
 						</action>
 					</node>
 				</nodes>
