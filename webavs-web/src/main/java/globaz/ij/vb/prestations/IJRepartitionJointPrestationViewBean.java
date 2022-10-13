@@ -767,10 +767,8 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if (adressePaiementData.isNew() ||
-                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiement())
-                    && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
+            if (!JadeStringUtil.isBlank(getIdTiersAdressePaiement()) && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
+                && (JadeStringUtil.isBlank(adressePaiementData.getIdTiers())|| !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
                 TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersAdressePaiement(),
