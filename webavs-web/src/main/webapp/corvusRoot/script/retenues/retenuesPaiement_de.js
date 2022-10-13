@@ -11,6 +11,7 @@ var retenuePaiement = {
 	$form: null,
 
 	$boutonChoisirAdressePaiement: null,
+	$boutonChoisirReferenceQR: null,
 
 	$trOptionnels: null,
 	$csTypeRetenue: null,
@@ -39,6 +40,8 @@ var retenuePaiement = {
 	$champNonModifiableApresPaiement: null,
 	$valeursAMasquer: null,
 	$valeursSpecifiques: null,
+	$champAdresses: null,
+	$referenceQR: null,
 
 	init: function () {
 		this.$userAction = $('input[name="userAction"]');
@@ -48,6 +51,9 @@ var retenuePaiement = {
 
 		this.$boutonChoisirAdressePaiement = $('#selecteurAdresses');
 		this.$boutonChoisirAdressePaiement.addClass('modifiable nonModifiableApresPaiement');
+
+		this.$boutonChoisirReferenceQR = $('#selecteurReferencePaiement');
+		this.$boutonChoisirReferenceQR.addClass('modifiable nonModifiableApresPaiement');
 
 		this.$trOptionnels = $('.trOptionnels');
 		this.$csTypeRetenue = $('#csTypeRetenue');
@@ -74,6 +80,8 @@ var retenuePaiement = {
 		this.$champNonModifiableApresPaiement = $('.nonModifiableApresPaiement');
 		this.$valeursAMasquer = $('.valeursAMasquer');
 		this.$valeursSpecifiques = $('.valeursSpecifiques');
+		this.$champAdresses = $('.IJAfficheText');
+		this.$referenceQR = $('#referenceQR');
 
 		this.bindEvent();
 
@@ -159,7 +167,9 @@ var retenuePaiement = {
 
 	csTypeRetenueChange: function () {
 		this.afficherTrOptionnels();
+		this.$champAdresses.html('');
 		this.$valeursSpecifiques.val('');
+		this.$referenceQR.hide();
 		this.$valeursAMasquer.hide();
 	},
 
@@ -185,8 +195,12 @@ var retenuePaiement = {
 		return this.$method.val() === 'add';
 	},
 
+	isEnMiseAJour: function () {
+		return this.$method.val() === 'upd';
+	},
+
 	isEnModification: function () {
-		return !this.isEnAjout();
+		return !this.isEnAjout() && !this.isEnMiseAJour();
 	},
 
 	hasBeenModifiedOrAdded: function () {
@@ -219,6 +233,7 @@ var retenuePaiement = {
 			this.$form.submit();
 		}
 	}
+
 };
 
 function add() {

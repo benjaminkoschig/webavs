@@ -655,12 +655,13 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
 
     public void setIdTiersAdressePmtDepuisPyxis(String string) {
         idTiersAdressePmtDepuisPyxis = string;
+        setIdReferenceQR("");
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
     }
 
     public void setIdReferenceQRDepuisReferenceQR(String idReferenceQR) {
-        super.setIdReferenceQR(idReferenceQR);
+        setIdReferenceQR(idReferenceQR);
         retourDepuisPyxis = true;
     }
 

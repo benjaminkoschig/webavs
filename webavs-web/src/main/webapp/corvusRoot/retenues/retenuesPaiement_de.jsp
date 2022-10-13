@@ -155,9 +155,9 @@
 								</ct:select>
 							</td>
 							<td width="50%" colspan="2" rowspan="3">
-								<pre><span class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></pre>
-								<pre><span class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></pre>
-								<pre><span class="IJAfficheText"><%=viewBean.getReferenceQRFormattee()%></span></pre>
+								<pre><span name="compteFormattee" class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></pre>
+								<pre><span name="adresseFormattee" class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></pre>
+								<pre><span name="referenceQRFormattee" class="IJAfficheText"><%=viewBean.getReferenceQRFormattee()%></span></pre>
 							</td>
 						</tr>
 						<tr>
@@ -222,9 +222,10 @@
 		}
 %>							</td>
 							<%if (Objects.nonNull(viewBean.getAdressePaiementData()) && TIAdressePaiement.isQRIban(viewBean.getAdressePaiementData().getCompte())) {%>
-							<td valign="middle" align="left">
+							<td id="referenceQR" valign="middle" align="left">
 								<span><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
-								<span class="TEST">
+								<INPUT type="hidden" name="idReferenceQR" class="valeursSpecifiques" value="<%=viewBean.getIdReferenceQR()%>">
+								<span>
 
                 									<input type="hidden" name="forIdTiers"
 														   value="<%=viewBean.getIdTiersAdressePmt()%>">
