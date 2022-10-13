@@ -239,7 +239,8 @@ public class COEffectuerTransitions {
                         FWViewBeanInterface.WARNING, this.getClass().getName());
             }
 
-            if (getEBillPrintable() && factureEBill != 0) {
+            if (getEBillPrintable()) {
+                 // transfert l'information de compteur pour les étapes en masses
                 eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, parent.getMemoryLog(), null, session, this.getClass().getName());
             }
 

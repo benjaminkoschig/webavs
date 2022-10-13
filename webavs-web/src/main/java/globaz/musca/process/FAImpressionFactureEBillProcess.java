@@ -753,7 +753,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                     traiterBulletinDeSoldesEBillMusca();
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 } finally {
                     EBillSftpProcessor.closeServiceFtp();
                 }
