@@ -244,22 +244,20 @@ public class EBillHelper {
         return null;
     }
 
-    public void ajouteInfoEBillToMemoryLog(int factureEBill, FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo, BSession session, String className) {
+    public void ajouteCompteurEBillToMemoryLog(int factureEBill, FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo, BSession session, String className) {
         if (memoryLog != null) {
             memoryLog.logMessage(session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, className);
-            if (docInfo != null) {
-                docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + memoryLog.getMessagesInString());
-            }
+            ajouteMemoryLogEBillToDocumentNotes(memoryLog, docInfo);
         }
     }
 
-    public void ajouteInfoEBillToDocumentNotes(int factureEBill, JadePublishDocumentInfo docInfo, BSession session) {
+    public void ajouteCompteurEBillToDocumentNotes(int factureEBill, JadePublishDocumentInfo docInfo, BSession session) {
         if (docInfo != null) {
             docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill + "\n");
         }
     }
 
-    public void ajouteErreurEBillToDocumentNotes(FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo) {
+    public void ajouteMemoryLogEBillToDocumentNotes(FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo) {
         if (docInfo != null) {
             docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + memoryLog.getMessagesInString());
         }
