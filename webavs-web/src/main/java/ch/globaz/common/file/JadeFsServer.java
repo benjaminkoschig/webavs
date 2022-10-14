@@ -11,7 +11,10 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +33,24 @@ public class JadeFsServer {
         try {
             File dest = new File(path + source.getName());
             FileUtils.copyFile(source, dest);
+
+            Set<PosixFilePermission> perms = new HashSet<>();
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+            perms.add(PosixFilePermission.OTHERS_READ);
+            perms.add(PosixFilePermission.OTHERS_WRITE);
+            perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+            try {
+                Files.setPosixFilePermissions(dest.toPath(), perms);
+            } catch (Exception e) {
+                //System non compatible posix
+                dest.setReadable(true, false);
+                dest.setWritable(true, false);
+                dest.setExecutable(true, false);
+            }
         } catch (Throwable e) {
             throw new FSOperationException("JadeFsServer#write : error in the write file operation", e);
         }
@@ -105,6 +126,25 @@ public class JadeFsServer {
         if (!Files.exists(path)) {
             try {
                 Files.createDirectories(path);
+
+                Set<PosixFilePermission> perms = new HashSet<>();
+                perms.add(PosixFilePermission.OWNER_READ);
+                perms.add(PosixFilePermission.OWNER_WRITE);
+                perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+                perms.add(PosixFilePermission.OTHERS_READ);
+                perms.add(PosixFilePermission.OTHERS_WRITE);
+                perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+                try {
+                    Files.setPosixFilePermissions(path, perms);
+                } catch (Exception e) {
+                    //System non compatible posix
+                    File dir = path.toFile();
+                    dir.setReadable(true, false);
+                    dir.setWritable(true, false);
+                    dir.setExecutable(true, false);
+                }
             } catch (IOException e) {
                 throw new FSOperationException("JadeFsServer#createFolder : Unable to create directory", e);
             }
