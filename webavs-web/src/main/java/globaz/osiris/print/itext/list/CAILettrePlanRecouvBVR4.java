@@ -390,13 +390,20 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                     eBillHelper.ajouteCompteurEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+
+                    // transfert les erreurs dans l'email pour les étapes en masses
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                    // transfert les erreurs dans l'email pour les étapes manuelles
+                    eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
                 } finally {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
                 getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
                 getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
+
+                // transfert les erreurs dans l'email pour les étapes manuelles
                 eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
             }
         }

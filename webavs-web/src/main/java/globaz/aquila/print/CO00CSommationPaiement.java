@@ -204,8 +204,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
                         try {
                             EBillSftpProcessor.getInstance();
                             traiterSommationEBillAquila(curContentieux.getCompteAnnexe());
-
-                            // transfert l'information de compteur pour les étapes manuelles
                             eBillHelper.ajouteCompteurEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
@@ -215,6 +213,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
                             // transfert les erreurs dans l'email pour les étapes manuelles
                             eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+
+                            // transfert les erreurs dans la session pour permettre d'annuler l'étape si étapes en masses
+                            this._addError(exception.toString());
                         } finally {
                             EBillSftpProcessor.closeServiceFtp();
                         }
