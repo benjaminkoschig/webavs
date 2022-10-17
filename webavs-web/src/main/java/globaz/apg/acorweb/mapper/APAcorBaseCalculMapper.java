@@ -100,59 +100,14 @@ public class APAcorBaseCalculMapper {
     public static void mapImpotSourceInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
         if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
             if(Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
-                if(Double.parseDouble(droit.getTauxImpotSource()) != 0){
-                    basesCalcul.setTauxImpot(convertTauxImpot(droit.getTauxImpotSource()));
-                }else{
-                    List tauxImpots;
-                    try {
-                        tauxImpots = findTauxImposition(session, droit.getDateDebutDroit(), droit.getDateFinDroit(),
-                                droit.getCsCantonDomicile());
-                    } catch(Exception e) {
-                        throw new PRAcorTechnicalException("Erreur lors du mapping de l'impôt source du droit APG ou maternité.", e);
-                    }
-                    // remarque: s'il n'y a pas de taux d'impositions definis pour ce
-                    // canton et qu'on n'en a pas saisi à la main,
-                    // aucune cotisation n'est creee...
-                    if (((tauxImpots == null) || tauxImpots.isEmpty())
-                            && JadeStringUtil.isDecimalEmpty(droit.getTauxImpotSource())) {
-                        return;
-                    }
-
-                    PRTauxImposition taux = null;
-                    if (JadeStringUtil.isDecimalEmpty(droit.getTauxImpotSource())) {
-
-                        // Si l'utilisateur n'a pas redefini de taux d'imposition on
-                        // prend le taux au debut de la periode
-                        taux = (PRTauxImposition) tauxImpots.get(0);
-
-                    } else {
-                        taux = new PRTauxImposition();
-                        taux.setTaux(droit.getTauxImpotSource());
-                    }
-                    basesCalcul.setTauxImpot(convertTauxImpot(taux.getTaux()));
-                    basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
-                }
-
+                basesCalcul.setTauxImpot(convertTauxImpot(droit.getTauxImpotSource()));
+                basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
             }
         }
     }
 
     private static double convertTauxImpot(String taux) {
         return Double.parseDouble(taux) / 100;
-    }
-
-    private static List findTauxImposition(BSession session, String dateDebut, String dateFin, String idCanton)
-            throws Exception {
-
-        PRTauxImpositionManager mgrTauxImpot = new PRTauxImpositionManager();
-        mgrTauxImpot.setSession(session);
-        mgrTauxImpot.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-        mgrTauxImpot.setOrderBy(PRTauxImposition.FIELDNAME_DATEDEBUT);
-        mgrTauxImpot.setForPeriode(dateDebut, dateFin);
-        mgrTauxImpot.setForCsCanton(idCanton);
-        mgrTauxImpot.find();
-
-        return mgrTauxImpot.getContainer();
     }
 
     private List<APBaseCalcul> loadBasesCalcul(BSession session) {
