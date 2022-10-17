@@ -94,8 +94,8 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         model.setSedexIdCaisse(getSenderId());
         model.setOurBusinessRefId(JadeUUIDGenerator.createLongUID().toString());
         model.setYourBusinessRefId(getOurBusinessReferenceId());
-        model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
-        model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        model.setOriginalType(GFTypeDADossier.RECEPTION.getCodeSystem());
+        model.setType(GFTypeDADossier.RECEPTION.getCodeSystem());
         model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
 
         AdministrationSearchComplexModel administrationSearch = new AdministrationSearchComplexModel();
