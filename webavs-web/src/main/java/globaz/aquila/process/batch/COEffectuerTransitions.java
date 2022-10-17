@@ -240,8 +240,7 @@ public class COEffectuerTransitions {
             }
 
             if (getEBillPrintable()) {
-                 // transfert l'information de compteur pour les étapes en masses
-                eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, parent.getMemoryLog(), null, session, this.getClass().getName());
+                eBillHelper.ajouteCompteurEBillToMemoryLog(factureEBill, parent.getMemoryLog(), null, session, this.getClass().getName());
             }
 
         } catch (Exception e) {

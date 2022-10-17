@@ -478,10 +478,15 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     try {
                         EBillSftpProcessor.getInstance();
                         traiterBulletinDeSoldesEBillOsiris();
-                        eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
+                        eBillHelper.ajouteCompteurEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
                     } catch (Exception exception) {
                         LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+
+                        // transfert les erreurs dans l'email pour les étapes en masses
                         getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                        // transfert les erreurs dans l'email pour les étapes manuelles
+                        eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
                     } finally {
                         EBillSftpProcessor.closeServiceFtp();
                     }

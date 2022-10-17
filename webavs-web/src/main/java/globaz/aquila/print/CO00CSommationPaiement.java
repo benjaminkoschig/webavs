@@ -204,17 +204,18 @@ public class CO00CSommationPaiement extends CODocumentManager {
                         try {
                             EBillSftpProcessor.getInstance();
                             traiterSommationEBillAquila(curContentieux.getCompteAnnexe());
-
-                            // transfert l'information de compteur pour les étapes manuelles
-                            eBillHelper.ajouteInfoEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
+                            eBillHelper.ajouteCompteurEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
 
                             // transfert les erreurs dans l'email pour les étapes en masses
-                            this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.ERREUR);
+                            this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.WARNING);
 
                             // transfert les erreurs dans l'email pour les étapes manuelles
-                            eBillHelper.ajouteErreurEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+                            eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+
+                            // transfert les erreurs dans la session pour permettre d'annuler l'étape si étapes en masses
+                            this._addError(exception.toString());
                         } finally {
                             EBillSftpProcessor.closeServiceFtp();
                         }
@@ -248,7 +249,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesSommation.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName(), false);
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, hasAttachedDocuments() ? getAttachedDocuments() : getParent().getAttachedDocuments(), CO00CSommationPaiement.class.getSimpleName(), false);
 
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.SOMMATION);

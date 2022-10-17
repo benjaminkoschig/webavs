@@ -21,7 +21,6 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.musca.PaireIdEcheanceParDateExigibiliteEBill;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.application.CAApplication;
@@ -388,17 +387,24 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
                 try {
                     EBillSftpProcessor.getInstance();
                     traiterSursisEBillOsiris(this);
-                    eBillHelper.ajouteInfoEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
+                    eBillHelper.ajouteCompteurEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+
+                    // transfert les erreurs dans l'email pour les étapes en masses
                     getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                    // transfert les erreurs dans l'email pour les étapes manuelles
+                    eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
                 } finally {
                     EBillSftpProcessor.closeServiceFtp();
                 }
             } else {
                 getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_ECHEANCE") + getLignesSursis().size(), FWMessage.ERREUR, this.getClass().getName());
                 getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.ERREUR, this.getClass().getName());
-                eBillHelper.ajouteErreurEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+
+                // transfert les erreurs dans l'email pour les étapes manuelles
+                eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
             }
         }
         super.afterExecuteReport();
