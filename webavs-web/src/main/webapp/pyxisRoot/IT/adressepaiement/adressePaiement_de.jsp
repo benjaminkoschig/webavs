@@ -56,6 +56,21 @@ function del() {
 
 
 function init(){
+	changeNumeroCompte();
+}
+
+function changeNumeroCompte() {
+	if (isQRIban()) {
+		$('#referenceQR').show();
+	} else {
+		$('#referenceQR').hide();
+	}
+}
+
+function isQRIban() {
+	var pattern = /^CH\d{2}3[0-1]\d{3}\d{12}$/;
+	var value = document.getElementsByName('numCompteBancaire')[0].value.replace(/\s/g, '');
+	return pattern.test(value);
 }
 
 
@@ -80,7 +95,7 @@ function init(){
 <tr>
 	<td>N° conto</td>
 	<td>
-		<input   name="numCompteBancaire"  class="libellelong" value="<%=viewBean.getNumCompteBancaireFormateIban()%>"  type="text">
+		<input   name="numCompteBancaire"  class="libellelong" value="<%=viewBean.getNumCompteBancaireFormateIban()%>" onfocusout="changeNumeroCompte()" type="text">
 		<%
 		java.util.HashSet except = new java.util.HashSet();
 			if (! viewBean.getCode().equals(globaz.pyxis.constantes.IConstantes.CS_ADRESSE_PAIEMENT_IBAN_INCORRECT)) {
@@ -163,8 +178,7 @@ function init(){
 	</td>
 </tr>
 
-<%if(TIAdressePaiement.isQRIban(viewBean.getNumCompteBancaire()) && !viewBean.isNew()){%>
-	<tr>
+	<tr id="referenceQR">
 		<td>Riferimento QR</td>
 		<td>
 
@@ -188,7 +202,6 @@ function init(){
 
 		</td>
 	</tr>
-<%}%>
 
 <tr>
 			<td>Paese</td>
