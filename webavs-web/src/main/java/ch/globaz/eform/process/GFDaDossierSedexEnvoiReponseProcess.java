@@ -138,6 +138,8 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
         Map<GFDaDossierElementSender, String> dataMessageSedex = new HashMap<>();
 
+        model.setSedexIdCaisse(sedexId);
+
         //Attribution des identifiants
         if (StringUtils.isBlank(model.getMessageId())) {
             model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
