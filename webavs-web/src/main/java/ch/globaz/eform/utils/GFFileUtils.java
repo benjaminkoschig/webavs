@@ -88,13 +88,12 @@ public class GFFileUtils {
                         Files.move(existantFile, renamedFile);
 
                         viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
-                    } else {
-                        String renamedFileName = renameFile(allIndex.size() + 1, originalFilename);
-
-                        Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
-                        viewBean.getFileNameList().add(renamedFileName);
                     }
-                    ;
+                    String renamedFileName = renameFile(allIndex.size() + 1, originalFilename);
+
+                    Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
+
+                    viewBean.getFileNameList().add(renamedFileName);
                 } else {
                     Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + originalFilename));
                     viewBean.getFileNameList().add(originalFilename);

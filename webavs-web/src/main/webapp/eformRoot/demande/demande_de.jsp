@@ -99,7 +99,7 @@
 			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>' />
 			<INPUT type="hidden" name="_sl" value="" />
 				<tr>
-					<td><div class="libelletitre"><ct:FWLabel key="JSP_GESTIONNAIRE"/></div></td>
+					<td><div style="font-weight: bold"><ct:FWLabel key="JSP_GESTIONNAIRE"/></div></td>
 				</tr>
 				<tr>
 					<td><div class="libelle"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div></td>
@@ -112,6 +112,9 @@
 					<td><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_TELEPHONE.getValue()%>" disabled="true"/></td>
 					<td><div class="libelle"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div></td>
 					<td><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" disabled="true"/></td>
+				</tr>
+				<tr>
+					<td colspan="6"><hr/></td>
 				</tr>
 				<tr>
 					<td>
@@ -155,7 +158,8 @@
 						<ct:FWLabel key="BIRTHDAY"/>
 					</td><td>
 						<ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/>
-					</td></tr>
+					</td>
+				</tr>
 				<tr>
 					<td colspan="6"><hr/></td>
 				</tr>
