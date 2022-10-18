@@ -98,10 +98,12 @@ public class APAcorBaseCalculMapper {
     }
 
     public static void mapImpotSourceInformation(BSession session, BasesCalculCommunes basesCalcul, APDroitLAPG droit) {
-        if(Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
-            if(Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
+        if (Boolean.TRUE.equals(droit.getIsSoumisImpotSource())) {
+            if (Objects.nonNull(droit.getTauxImpotSource()) && StringUtils.isNumeric(droit.getTauxImpotSource())) {
                 basesCalcul.setTauxImpot(convertTauxImpot(droit.getTauxImpotSource()));
-                basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
+                if (Double.parseDouble(droit.getTauxImpotSource()) != 0) {
+                    basesCalcul.setCantonImpot(PRConverterUtils.formatRequiredInteger(PRACORConst.csCantonToAcor(droit.getCsCantonDomicile())));
+                }
             }
         }
     }
