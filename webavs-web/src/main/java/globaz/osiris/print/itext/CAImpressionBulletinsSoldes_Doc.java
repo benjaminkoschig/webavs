@@ -482,7 +482,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     } catch (Exception exception) {
                         LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
 
-                        // transfert les erreurs dans l'email pour les étapes en masses
+                        // transfert les erreurs dans l'email
                         getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
 
                         // transfert les erreurs dans l'email pour les étapes manuelles
