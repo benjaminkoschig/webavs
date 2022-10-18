@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
-    public static final String CODE_FAILLITE_FPV = "19803042";
-
     public String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
 
     @Override
@@ -70,7 +68,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         AFAffiliation aff;
         try {
             String properties = getSession().getApplication().getProperty(BATCH_IMPORT_IDFAILLITE, "");
-            idsfaillite = Arrays.stream(properties.split(","))
+            idsfaillite = Arrays.stream(properties.split("[,;]+"))
                     .map(String::trim).collect(Collectors.toList());
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
