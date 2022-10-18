@@ -18,7 +18,7 @@ public class EBTreatPucsFileProtocoleContainer {
     @Column(name = "BATCH_PROTOCOLE_COL_NOM_FICHIER", order = 1)
     @ColumnStyle(align = Align.LEFT)
     public String getFileName() {
-        return file.getPucsFile().getFilename();
+        return file.getPucsFile() != null ? file.getPucsFile().getFilename() : "";
     }
 
     @Column(name = "BATCH_PROTOCOLE_COL_STATUT", order = 2)

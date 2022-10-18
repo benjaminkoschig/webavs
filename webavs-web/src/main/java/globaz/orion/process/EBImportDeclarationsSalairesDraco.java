@@ -9,12 +9,13 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     public static final String CODE_FAILLITE_FPV = "19803042";
+
+    public String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -63,20 +66,26 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
+        List<String> idsfaillite;
         AFAffiliation aff;
         try {
+            String properties = getSession().getApplication().getProperty(BATCH_IMPORT_IDFAILLITE, "");
+            idsfaillite = Arrays.stream(properties.split(","))
+                    .map(String::trim).collect(Collectors.toList());
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return Objects.nonNull(aff)
-                && !(CodeSystem.MOTIF_FIN_FAILLITE.equals(aff.getMotifFin()) || CODE_FAILLITE_FPV.equals(aff.getMotifFin()));
+                && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
+                || !(idsfaillite.contains(aff.getMotifFin())));
     }
 
     private void importFile(List<PucsFile> pucsFiles) throws Exception {
         EBTreatPucsFiles process = new EBTreatPucsFiles();
-        process.setSendCompletionMail(true);
+        process.setSendCompletionMail(false);
         process.setEmailAdress(getEMailAddress());
         process.setIsBatch(true);
         process.setMode("miseajour");
@@ -116,4 +125,5 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_LONG;
     }
+
 }
