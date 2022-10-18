@@ -710,31 +710,13 @@ public class IJDecisionCotisationBuilder {
      * @throws Exception
      */
     public String[] soustraireImpots(BSession session, BITransaction transaction, String montant,
-            String csCantonImposition, String tauxImposition) throws Exception {
+                                     String csCantonImposition, String tauxImposition) throws Exception {
 
-        if (JadeStringUtil.isBlankOrZero(csCantonImposition) && JadeStringUtil.isBlankOrZero(tauxImposition)) {
-
+        if (JadeStringUtil.isBlankOrZero(csCantonImposition)) {
             throw new Exception(session.getLabel("TAUX_CANTONS_ERR"));
         }
-
-        // Si taux non renseigné, on prend le taux du canton
-        if (JadeStringUtil.isBlankOrZero(tauxImposition)) {
-
-            PRTauxImpositionManager tauxManager = new PRTauxImpositionManager();
-
-            tauxManager.setForCsCanton(csCantonImposition);
-            tauxManager.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-            tauxManager.setOrderBy(PRTauxImposition.FIELDNAME_DATEDEBUT);
-            tauxManager.setSession(session);
-            tauxManager.find();
-
-            tauxImposition = ((PRTauxImposition) tauxManager.getFirstEntity()).getTaux();
-        }
-
-        String[] ret = { getMontantImpot(montant, tauxImposition), tauxImposition };
-
+        String[] ret = {getMontantImpot(montant, tauxImposition), tauxImposition};
         return ret;
-
     }
 
 }
