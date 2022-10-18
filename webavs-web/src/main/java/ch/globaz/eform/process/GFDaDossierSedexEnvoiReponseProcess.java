@@ -2,6 +2,7 @@ package ch.globaz.eform.process;
 
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
@@ -74,6 +75,7 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         initBsession();
         this.setSendMailOnError(true);
         this.setSendCompletionMail(false);
+        this.setEMailAddress(GFProperties.EMAIL_DADOSSIER.getValue());
 
         List<Path> attachmentsPath;
 
@@ -90,16 +92,26 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
             attachmentsPath = new ArrayList<>();
         }
 
-        envoyerReponse(model, documentType, attachmentsPath, getSession());
+        ValidationResult validation = envoyerReponse(model, documentType, attachmentsPath, getSession());
+
+        if (validation.hasError()) {
+            validation.getErrors().forEach(error -> {
+                String errorMsg = error.getDesignation(getSession());
+                _addError(errorMsg);
+                LOG.error(errorMsg);
+            });
+            return false;
+        }
 
         //suppression du sous dossier de partage
+        //TODO à faire, supprimé par manque de temps
 
         closeBsession();
         LOG.info("Fin du process d'information.");
         return true;
     }
 
-    public void envoyerReponse(GFDaDossierModel model, GFDocumentTypeDossier documentType, List<Path> attachments, BSession session) throws Exception {
+    private ValidationResult envoyerReponse(GFDaDossierModel model, GFDocumentTypeDossier documentType, List<Path> attachments, BSession session) throws Exception {
         TIPersonneAvsManager mgr = new TIPersonneAvsManager();
         mgr.setISession(session);
         mgr.setForNumAvsActuel(NSSUtils.formatNss(model.getNssAffilier()));
@@ -184,14 +196,22 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
         sender.setElements(dataMessageSedex);
         sender.addAttachments(attachments);
-        sender.send();
 
-        if (StringUtils.isBlank(model.getId())) {
-            model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
-            GFEFormServiceLocator.getGFDaDossierDBService().create(model);
-        } else {
-            GFEFormServiceLocator.getGFDaDossierDBService().update(model);
+        //prévalidation du model
+        ValidationResult validation = model.validating();
+
+        if (!validation.hasError()) {
+            sender.send();
+
+            if (StringUtils.isBlank(model.getId())) {
+                model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+                GFEFormServiceLocator.getGFDaDossierDBService().create(model);
+            } else {
+                GFEFormServiceLocator.getGFDaDossierDBService().update(model);
+            }
         }
+
+        return validation;
     }
 
 

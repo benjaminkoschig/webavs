@@ -5,13 +5,12 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
-@Getter
 public enum GFDocumentTypeDossier {
-    GENERAL("Général/Divers", "", "01.01", "01.01.01.02"),
-    RENTE_AI("Rente AI", "", "01.03", "01.03.01.02"),
-    RENTE_AVS("Rente AVS", "", "01.04", "01.04.01.02"),
-    API_AI("API AI", "", "01.11", "01.11.01.02"),
-    API_AVS("API AVS", "", "01.12", "01.12.01.02");
+    GENERAL("TYPE_GENERAL", "", "01.01", "01.01.01.02"),
+    RENTE_AI("TYPE_RENTE_AI", "", "01.03", "01.03.01.02"),
+    RENTE_AVS("TYPE_RENTE_AVS", "", "01.04", "01.04.01.02"),
+    API_AI("TYPE_API_AI", "", "01.11", "01.11.01.02"),
+    API_AVS("TYPE_API_AVS", "", "01.12", "01.12.01.02");
 
     String label;
     String code;
@@ -25,6 +24,21 @@ public enum GFDocumentTypeDossier {
         this.documentTypeLead = documentTypeLead;
     }
 
+    public String getLabel(BSession session) {
+        return session.getLabel(this.label);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public String getDocumentTypeLead() {
+        return documentTypeLead;
+    }
 
     public String getDesignation(BSession session) {
         return session.getLabel(code);
