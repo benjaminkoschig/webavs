@@ -326,11 +326,13 @@ public class PYValidateDTO {
             case "m":
             case "homme":
             case "male":
+            case "516001":
                 dto.setSex(Sexe.HOMME.getCodeSysteme().toString());
                 break;
             case "f":
             case "femme":
             case "female":
+            case "516002":
                 dto.setSex(Sexe.FEMME.getCodeSysteme().toString());
                 break;
             case "":
