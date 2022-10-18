@@ -101,7 +101,7 @@ public class RpcDecisionAnnonceComplete {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
                 // PLAT2-1396 - conjoint survivant -> COUPLE et non ALONE
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData) || isMarie(personData)) {
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData) || isMarieOrLpart(personData)) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;
@@ -109,8 +109,8 @@ public class RpcDecisionAnnonceComplete {
         }
     }
 
-    private boolean isMarie(PersonElementsCalcul personData) {
-        return EtatCivil.MARIE.equals(personData.getSituationFamiliale());
+    private boolean isMarieOrLpart(PersonElementsCalcul personData) {
+        return EtatCivil.MARIE.equals(personData.getSituationFamiliale()) ||EtatCivil.LPART.equals(personData.getSituationFamiliale());
     }
 
     private boolean isVeuf(PersonElementsCalcul personData) {
