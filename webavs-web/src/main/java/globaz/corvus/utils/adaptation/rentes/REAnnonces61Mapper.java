@@ -1,17 +1,14 @@
 package globaz.corvus.utils.adaptation.rentes;
 
-import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.ch.admin.zas.rc.annonces.rente.rc.ELRueckMeldungType;
 import globaz.corvus.db.annonces.REAnnonce61;
-import globaz.globall.db.BTransaction;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class REAnnonces61Mapper {
 
-    private final BTransaction transaction;
-
-    public REAnnonce61 createAnnonce61 (ELRueckMeldungType rrELRueckMeldungType, String dateAnnonce) throws Exception {
+    public REAnnonce61 createAnnonce61 (ELRueckMeldungType rrELRueckMeldungType, String dateAnnonce) {
         REAnnonce61 ann61 = new REAnnonce61();
 
         // 1 | Code application: 61

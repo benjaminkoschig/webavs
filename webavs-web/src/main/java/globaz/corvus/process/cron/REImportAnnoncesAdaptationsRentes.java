@@ -66,6 +66,8 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     private static final String MAIL_ERROR_CONTENT_53 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_53";
     private static final String MAIL_ERROR_CONTENT_61 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_61";
     private static final String MAIL_ERROR_SUBJECT = "ADAPTATIONS_RENTES_MAIL_ERROR_SUBJECT";
+    private static final String MAIL_SUBJECT = "ADAPTATIONS_RENTES_MAIL_SUBJECT";
+    private static final String MAIL_CONTENT = "ADAPTATIONS_RENTES_MAIL_CONTENT";
     private JADate datePmtMensuel;
     private LocalDateTime dateDuTraitement;
     private List<REProtocoleErreurAdaptationsRentes> protocoles = new ArrayList<>();
@@ -86,7 +88,9 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             initBsession();
             importFiles();
 
-            if (!protocoles.isEmpty()) {
+            if (protocoles.isEmpty()) {
+                sendMailFinTraitement(getSession().getLabel(MAIL_CONTENT));
+            } else {
                 StringBuilder errors = generateErrorMailContent();
                 sendErrorMail(errors.toString());
             }
@@ -161,11 +165,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
             // Traitement des annonces 61
             String dateAnnonce = PRConverterUtils.formatDateToAAAAMMdd(annonces.getLot().get(0).getPoolKopf().getErstellungsdatum());
-            try {
-                traitementAnnonces61(annonces, dateAnnonce);
-            } catch (Exception e) {
-                throw new AdaptationException("Impossibilité de traiter les annonces 61", e);
-            }
+            traitementAnnonces61(annonces, dateAnnonce, protocole);
 
             if (protocole.hasErrors()) {
                 protocoles.add(protocole);
@@ -198,19 +198,20 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 .forEach((each) -> createAnnonce51(each, protocole));
     }
 
-    private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce) {
+    private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof ELRueckMeldungType)
                 .map(o -> (ELRueckMeldungType) o)
-                .forEach(each -> createAnnonce61(each, dateAnnonce));
+                .forEach(each -> createAnnonce61(each, dateAnnonce, protocole));
     }
 
-    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce) {
-        REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper(getSession().getCurrentThreadTransaction());
-
+    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
+        REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper();
+        StringBuilder errorMessage = new StringBuilder();
         REAnnonce61 ann61;
         try {
+            errorMessage.append(each.getVNrLeistungsberechtigtePerson()).append("-").append(each.getLeistungsart());
             ann61 = annonces61Mapper.createAnnonce61(each, dateAnnonce);
             ann61.add(getTransaction());
 
@@ -222,7 +223,9 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 creationLigneHEAnnonce(ann61, dateAnnonce);
             }
         } catch (Exception e) {
-             LOG.error("Erreur durant la creation de l'annonce : {}", each.getVNrLeistungsberechtigtePerson());
+            LOG.error("Erreur durant la creation de l'annonce : {}", each.getVNrLeistungsberechtigtePerson());
+            protocole.addAnnonces53enErreur(errorMessage.toString());
+            clearErrorsWarning();
         }
 
     }
@@ -329,8 +332,12 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         }
     }
 
+    private void sendMailFinTraitement(String content) throws Exception {
+        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getEMailObject(), content, null);
+    }
+
     private void sendErrorMail(String errors) throws Exception {
-        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getEMailObject(), errors, null);
+        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getErrorEMailObject(), errors, null);
     }
 
     private String getEMailAddressAdaptationRentes() throws PropertiesException {
@@ -356,9 +363,13 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         //Nothing to do
     }
 
+    private String getErrorEMailObject() {
+        return getSession().getLabel(MAIL_ERROR_SUBJECT);
+    }
+
     @Override
     protected String getEMailObject() {
-        return getSession().getLabel(MAIL_ERROR_SUBJECT);
+        return getSession().getLabel(MAIL_SUBJECT);
     }
 
     @Override
