@@ -4,8 +4,6 @@
 package globaz.ij.process;
 
 import ch.globaz.common.util.Dates;
-import ch.globaz.ij.business.services.IJPrononceService;
-import ch.globaz.ij.business.services.IJServiceLocator;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -395,7 +393,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
 
         // génère les attestations originales
-        createAttestation(annee, dateDebut, dateFin, map, false);
+        createAttestation(annee, dateDebut, dateFin, map, false, isImpotSource(prononce));
 
         // si il y a des copies d'attestations à générer
         if (!mapFisc.isEmpty()) {
@@ -405,11 +403,16 @@ public class IJGenererAttestationsProcess extends BProcess {
 
             // génère les copies d'attestations regroupées par canton (cas avec impôt source)
             for (Map.Entry<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> entry : mapFiscRegroupedByCanton.entrySet()) {
-                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true);
+                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true,isImpotSource(prononce) );
+                //TODO ASI mettre true si il faut pas de taux a zero pour le fisc
             }
         }
 
         return true;
+    }
+
+    public boolean isImpotSource(IJPrononce prononce) {
+        return prononce == null ? false : prononce.getSoumisImpotSource();
     }
 
     private boolean findOneImpotSourceForTiers(Map<Key, ArrayList<AttestationsInfos>> mapFisc, String idTiers) {
@@ -646,7 +649,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         return (Double.parseDouble(totalMontantIJ) != 0) && (IIJPrestation.CS_NORMAL.equals(prest.getCsType()) || IIJPrestation.CS_RESTITUTION.equals(prest.getCsType()));
     }
 
-    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy) throws Exception {
+    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy, boolean impotSource) throws Exception {
         IJAttestations attestations = new IJAttestations(getSession());
         attestations.setAttestationsMap(map);
         attestations.setDateDebut(dateDebut);
@@ -657,6 +660,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setIsGenerationUnique(isGenerationUnique);
         attestations.setAttestationCopy(isAttestationCopy);
+        attestations.setImpotSource(impotSource);
         attestations.executeProcess();
     }
 
