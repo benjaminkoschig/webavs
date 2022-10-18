@@ -27,7 +27,6 @@ public class REAnnonce61 extends REAnnoncesAbstractLevel1A {
     public static final String FIELDNAME_NOUVEAU_MONTANT = "NOUVEAU_MONTANT";
     public static final String FIELDNAME_ANCIEN_MONTANT = "ANCIEN_MONTANT";
     public static final String FIELDNAME_GENRE = "GENRE";
-//    public static final String FIELDNAME_DATE_DEBUT_DROIT = "DATE_DEBUT_DROIT";
     public static final String FIELDNAME_DATE_RAPPORT = "DATE_RAPPORT";
     public static final String FIELDNAME_DATE_ANNONCE = "DATE_ANNONCE";
     public static final String FIELDNAME_CODE_RETOUR = "CODE_RETOUR";

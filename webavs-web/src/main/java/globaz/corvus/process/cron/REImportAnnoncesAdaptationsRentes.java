@@ -6,13 +6,11 @@ import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung10Type;
 import acor.ch.admin.zas.rc.annonces.rente.rc.RRBestandesmeldung9Type;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import globaz.corvus.db.annonces.REAnnonce51;
 import globaz.corvus.db.annonces.REAnnonce53;
 import globaz.corvus.db.annonces.REAnnonce61;
 import globaz.corvus.db.annonces.REFicheAugmentation;
-import globaz.corvus.properties.REProperties;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces51Mapper;
 import globaz.corvus.utils.adaptation.rentes.REAnnonces53Mapper;
@@ -27,7 +25,6 @@ import globaz.hermes.api.IHEAnnoncesViewBean;
 import globaz.hermes.db.gestion.HEInputAnnonceViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
 import globaz.hermes.service.HELoadFields;
-import globaz.hermes.utils.DateUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
@@ -49,7 +46,10 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * CRON permettant d'importer les annonces 51 et 53
@@ -60,11 +60,14 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
     private static final String XML_EXTENSION = ".xml";
     private static final String ANNONCES_SCHEMA = "acor.ch.admin.zas.rc.annonces.rente.pool";
-    public static final String DOSSIER_ANNONCES_51_53_61 = "annonces51_53/";
+    public static final String DOSSIER_ANNONCES_51_53_61 = "annonces_51_53_61/";
     private static final String MAIL_ERROR_CONTENT = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT";
     private static final String MAIL_ERROR_CONTENT_51 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_51";
     private static final String MAIL_ERROR_CONTENT_53 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_53";
+    private static final String MAIL_ERROR_CONTENT_61 = "ADAPTATIONS_RENTES_MAIL_ERROR_CONTENT_61";
     private static final String MAIL_ERROR_SUBJECT = "ADAPTATIONS_RENTES_MAIL_ERROR_SUBJECT";
+    private static final String MAIL_SUBJECT = "ADAPTATIONS_RENTES_MAIL_SUBJECT";
+    private static final String MAIL_CONTENT = "ADAPTATIONS_RENTES_MAIL_CONTENT";
     private JADate datePmtMensuel;
     private LocalDateTime dateDuTraitement;
     private List<REProtocoleErreurAdaptationsRentes> protocoles = new ArrayList<>();
@@ -77,7 +80,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     @Override
     protected boolean _executeProcess() throws Exception {
         try {
-            LOG.info("Lancement du process d'importation des Annonces 51.");
+            LOG.info("Lancement du process d'importation des Annonces d'adaptation de rente.");
             //Pas d'envoi de mail automatique du process, tout est géré manuellement
             this.setSendCompletionMail(false);
             this.setSendMailOnError(false);
@@ -85,7 +88,9 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             initBsession();
             importFiles();
 
-            if (!protocoles.isEmpty()) {
+            if (protocoles.isEmpty()) {
+                sendMailFinTraitement(getSession().getLabel(MAIL_CONTENT));
+            } else {
                 StringBuilder errors = generateErrorMailContent();
                 sendErrorMail(errors.toString());
             }
@@ -104,6 +109,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         String content = getSession().getLabel(MAIL_ERROR_CONTENT);
         String content51 = getSession().getLabel(MAIL_ERROR_CONTENT_51);
         String content53 = getSession().getLabel(MAIL_ERROR_CONTENT_53);
+        String content61 = getSession().getLabel(MAIL_ERROR_CONTENT_61);
         for (REProtocoleErreurAdaptationsRentes eachProtocole : protocoles) {
             errors.append(FWMessageFormat.format(content, eachProtocole.getFichier()));
             if (StringUtils.isNotEmpty(eachProtocole.getAnnonces51enErreur())) {
@@ -111,6 +117,9 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             }
             if (StringUtils.isNotEmpty(eachProtocole.getAnnonces53enErreur())) {
                 errors.append(FWMessageFormat.format(content53, eachProtocole.getAnnonces53enErreur()));
+            }
+            if (StringUtils.isNotEmpty(eachProtocole.getAnnonces61enErreur())) {
+                errors.append(FWMessageFormat.format(content61, eachProtocole.getAnnonces61enErreur()));
             }
         }
         return errors;
@@ -156,11 +165,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
 
             // Traitement des annonces 61
             String dateAnnonce = PRConverterUtils.formatDateToAAAAMMdd(annonces.getLot().get(0).getPoolKopf().getErstellungsdatum());
-            try {
-                traitementAnnonces61(annonces, dateAnnonce);
-            } catch (Exception e) {
-                throw new AdaptationException("Impossibilité de traiter les annonces 61", e);
-            }
+            traitementAnnonces61(annonces, dateAnnonce, protocole);
 
             if (protocole.hasErrors()) {
                 protocoles.add(protocole);
@@ -193,19 +198,20 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 .forEach((each) -> createAnnonce51(each, protocole));
     }
 
-    private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce) {
+    private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof ELRueckMeldungType)
                 .map(o -> (ELRueckMeldungType) o)
-                .forEach(each -> createAnnonce61(each, dateAnnonce));
+                .forEach(each -> createAnnonce61(each, dateAnnonce, protocole));
     }
 
-    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce) {
-        REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper(getSession().getCurrentThreadTransaction());
-
+    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
+        REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper();
+        StringBuilder errorMessage = new StringBuilder();
         REAnnonce61 ann61;
         try {
+            errorMessage.append(each.getVNrLeistungsberechtigtePerson()).append("-").append(each.getLeistungsart());
             ann61 = annonces61Mapper.createAnnonce61(each, dateAnnonce);
             ann61.add(getTransaction());
 
@@ -217,7 +223,9 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
                 creationLigneHEAnnonce(ann61, dateAnnonce);
             }
         } catch (Exception e) {
-             LOG.error("Erreur durant la creation de l'annonce : {}", each.getVNrLeistungsberechtigtePerson());
+            LOG.error("Erreur durant la creation de l'annonce : {}", each.getVNrLeistungsberechtigtePerson());
+            protocole.addAnnonces53enErreur(errorMessage.toString());
+            clearErrorsWarning();
         }
 
     }
@@ -324,8 +332,12 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         }
     }
 
+    private void sendMailFinTraitement(String content) throws Exception {
+        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getEMailObject(), content, null);
+    }
+
     private void sendErrorMail(String errors) throws Exception {
-        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getEMailObject(), errors, null);
+        JadeSmtpClient.getInstance().sendMail(getEMailAddressAdaptationRentes(), getErrorEMailObject(), errors, null);
     }
 
     private String getEMailAddressAdaptationRentes() throws PropertiesException {
@@ -351,9 +363,13 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
         //Nothing to do
     }
 
+    private String getErrorEMailObject() {
+        return getSession().getLabel(MAIL_ERROR_SUBJECT);
+    }
+
     @Override
     protected String getEMailObject() {
-        return getSession().getLabel(MAIL_ERROR_SUBJECT);
+        return getSession().getLabel(MAIL_SUBJECT);
     }
 
     @Override
