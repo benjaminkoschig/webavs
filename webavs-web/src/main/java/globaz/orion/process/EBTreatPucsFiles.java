@@ -372,7 +372,7 @@ public class EBTreatPucsFiles extends BProcess {
                     // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
                     if (getIsBatch()) {
                         pucsBatchController.setSession(getSession());
-                        if (!pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
+                        if (pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
                             moveFile = false;
                             _addError(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie());
                             handleOnError(emailAdress, null, this, pucsFileMerge);

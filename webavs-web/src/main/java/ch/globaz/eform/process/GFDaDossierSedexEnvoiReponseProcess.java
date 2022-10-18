@@ -62,9 +62,9 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_SHARE_FILE);
         String partageDir = model.getMessageId() + File.separator;
-        //fileService.removeFolder(partageDir);
+        fileService.removeFolder(partageDir);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         List<Path> attachmentsPath;
 
         //Transfère des fichiers joint dans le dossier work
-        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+        EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_SHARE_FILE);
 
         String partageDir = model.getMessageId() + File.separator;
 
@@ -122,8 +122,8 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
                 .getSedexId();
 
         GFDocumentPojo documentPojo = GFDocumentPojo.builder()
-                .nom(tiers.getDesignation2())
-                .prenom(tiers.getDesignation1())
+                .nom(tiers.getDesignation1())
+                .prenom(tiers.getDesignation2())
                 .nss(NSSUtils.formatNss(model.getNssAffilier()))
                 .dateNaissance(tiers.getDateNaissance())
                 .build();
@@ -137,6 +137,8 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         GFDaDossierSender sender = GFSenderFactory.getSedexSender(GFMessageTypeSedex.TYPE_2021_TRANSFERE);
 
         Map<GFDaDossierElementSender, String> dataMessageSedex = new HashMap<>();
+
+        model.setSedexIdCaisse(sedexId);
 
         //Attribution des identifiants
         if (StringUtils.isBlank(model.getMessageId())) {

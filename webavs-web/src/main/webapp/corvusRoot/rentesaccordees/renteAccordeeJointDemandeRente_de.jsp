@@ -179,11 +179,11 @@
                     document.getElementById("ccpOuBanqueF").innerHTML = adressePmtArray[i][2];
                     document.getElementById("adresseF").innerHTML = adressePmtArray[i][3];
                     document.getElementById("referenceQRF").innerHTML = "";
-                    <% viewBean.setIdReferenceQR(""); %>
                     document.getElementById("idTiersAdressePmtIC").value = idTiers;
                     if (adressePmtArray[i][4] == "true") {
                         $("#referenceQR").show();
                     } else {
+                        document.getElementById("idReferenceQR").value = "";
                         $("#referenceQR").hide();
                     }
                 }
@@ -614,6 +614,7 @@
                 </TD>
                 <td valign="top" align="left">
                     <span><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
+                    <INPUT type="hidden" name="idReferenceQR" value="<%=viewBean.getIdReferenceQR()%>">
                     <span class="TEST">
 
                 									<input type="hidden" name="forIdTiers"

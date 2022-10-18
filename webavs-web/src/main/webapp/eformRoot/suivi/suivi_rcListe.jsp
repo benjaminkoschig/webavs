@@ -6,7 +6,6 @@
 <%@ page import="ch.globaz.eform.utils.GFUtils" %>
 <%@ page import="ch.globaz.eform.constant.GFTypeDADossier" %>
 <%@ page import="ch.globaz.eform.constant.GFStatusDADossier" %>
-<%@ page import="globaz.eform.helpers.formulaire.GFFormulaireHelper" %>
 <%@ page import="globaz.pyxis.db.tiers.TITiersViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.model.AdministrationComplexModel" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -41,7 +40,7 @@
 <%
     GFSuiviViewBean line = (GFSuiviViewBean)viewBean.getEntity(i);
     TITiersViewBean tiers = GFUtils.getTiers(line.getDaDossier().getNssAffilier(), objSession);
-    AdministrationComplexModel caisse = GFUtils.getCaisse(line.getDaDossier().getCodeCaisse());
+    AdministrationComplexModel caisse = GFUtils.getCaisse(line.getDaDossier().getIdTierAdministration());
 %>
 <%-- /tpl:insert --%>
 
@@ -67,7 +66,7 @@
     <div style="font-weight: bold;"><%=NSSUtils.formatNss(line.getDaDossier().getNssAffilier())%></div>
     <div><%=GFUtils.formatTiers(tiers, objSession)%></div>
 </TD>
-<TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1() + " " + caisse.getTiers().getDesignation2()%></TD>
+<TD class="mtd>" nowrap><%=caisse.getTiers().getDesignation1() + " " + caisse.getTiers().getDesignation2() + " " + caisse.getTiers().getDesignation3()%></TD>
 <TD class="mtd" nowrap><%=GFTypeDADossier.getByCodeSystem(line.getDaDossier().getType()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFStatusDADossier.getByCodeSystem(line.getDaDossier().getStatus()).getDesignation(objSession)%></TD>
 <TD class="mtd" nowrap><%=GFUtils.formatSpy(line.getDaDossier().getSpy()).getDate()%></TD>

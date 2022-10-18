@@ -3,7 +3,8 @@
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
 <%
-	idEcran ="GTI0444";
+    bButtonDelete = false;
+	idEcran ="GTI0061";
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean viewBean = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean)session.getAttribute ("viewBean");
 	selectedIdValue = request.getParameter("selectedId");
     if (JadeStringUtil.isBlank(selectedIdValue)) {
@@ -99,7 +100,7 @@ function init(){}
           <TR>
             <TD width="119">Data d'inizio</TD>
             <TD nowrap width="211">
-                <ct:FWCalendarTag name="dateFin" doClientValidation="CALENDAR" value="<%=viewBean.getDateFin()%>"/></TD>
+                <ct:FWCalendarTag name="dateDebut" doClientValidation="CALENDAR" value="<%=viewBean.getDateDebut()%>"/></TD>
             <TD width="50" nowrap></TD>
             <TD width="180"></TD>
             <TD nowrap width="125"></TD>
@@ -134,7 +135,8 @@ function init(){}
 
           <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
           <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
-		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>"
+		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>">
+          <input type="hidden"  name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

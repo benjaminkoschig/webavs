@@ -1,15 +1,10 @@
 select {
     width: 291px;
     height: 23px;
-    font-size: 13px !important;
 }
 
 input {
-    font-size: 13px !important;
-}
-
-input[type="text"] {
-    width: 296px;
+    height: 23px;
 }
 
 label {
@@ -22,4 +17,9 @@ label {
 
 #likeNss, #byCaisse{
     width: 291px;
+}
+
+.btnCtrl {
+    width:auto !important;
+    height:auto !important;
 }

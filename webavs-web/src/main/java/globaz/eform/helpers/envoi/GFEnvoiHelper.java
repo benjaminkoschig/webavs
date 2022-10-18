@@ -15,6 +15,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.jade.client.util.JadeUUIDGenerator;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -47,7 +48,7 @@ public class GFEnvoiHelper extends FWHelper {
 
             //Mise en dossier de partage des fichiers à joindre à la réponse de la demande de transfère
             if (!envoiViewBean.getFileNameList().isEmpty()) {
-                EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_PARTAGE_FILE);
+                EFormFileService fileService = new EFormFileService(GFApplication.DA_DOSSIER_SHARE_FILE);
 
                 if (!fileService.exist(envoiViewBean.getDaDossier().getMessageId())) {
                     fileService.createFolder(envoiViewBean.getDaDossier().getMessageId());
@@ -89,7 +90,7 @@ public class GFEnvoiHelper extends FWHelper {
             Path workDir = Paths.get(GFFileUtils.WORK_PATH + ((GFEnvoiViewBean) viewBean).getFolderUid() + File.separator);
 
             if (Files.exists(workDir)) {
-                Files.delete(workDir);
+                FileUtils.deleteDirectory(workDir.toFile());
             }
         }
 

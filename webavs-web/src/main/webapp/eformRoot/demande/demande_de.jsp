@@ -1,20 +1,21 @@
 <%@ page import="globaz.eform.vb.demande.GFDemandeViewBean" %>
 <%@ page import="ch.globaz.pyxis.business.service.PersonneEtendueService" %>
-<%@ page import="ch.globaz.pyxis.business.service.AdministrationService" %>
 <%@ page import="globaz.framework.secure.FWSecureConstants" %>
 <%@ page import="ch.globaz.eform.web.servlet.GFDemandeServletAction" %>
 <%@ page import="globaz.eform.translation.CodeSystem" %>
 <%@ page import="ch.globaz.eform.business.services.GFAdministrationService" %>
+<%@ page import="ch.globaz.eform.properties.GFProperties" %>
 <%@ page errorPage="/errorPage.jsp" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
-<%@ include file="/theme/detail_ajax/header.jspf" %>
+<%@ include file="/theme/detail/header.jspf" %>
 
 <%
 	idEcran="GFE0111";
 	GFDemandeViewBean viewBean = (GFDemandeViewBean) session.getAttribute("viewBean");
 	boolean hasRightAdd = objSession.hasRight(GFDemandeServletAction.ACTION_PATH, FWSecureConstants.ADD);
+	tableHeight = 100;
 %>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -49,10 +50,13 @@
 	}
 
 	function validate() {
+		$('#btnEnvoyer').prop('disabled', 'true');
+		$('#btnCan').prop('disabled', 'true');
 		var nss = document.getElementById("nssAffilier").value;
 		var caisse = document.getElementById("codeCaisse").value;
+		var idTierAdministration = document.getElementById("idTierAdministration").value;
 
-		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse;
+		top.fr_main.location.href='<%=request.getContextPath()%>/eform?userAction=<%=GFDemandeServletAction.ACTION_PATH+"."+GFDemandeServletAction.ACTION_ENVOYER%>&nssAffilier=' + nss + "&codeCaisse=" + caisse + "&idTierAdministration=" + idTierAdministration;
 	}
 
 	function buttonCheck(){
@@ -83,26 +87,47 @@
 	}
 </script>
 
-<TITLE><%=idEcran%></TITLE>
-</HEAD>
-	<body style="margin: 5px;">
-		<div class="thDetail" style="text-align: center;font-size: small;">
-			<ct:FWLabel key="DEMANDE_DOSSIER_TITRE"/>
-			<span class="idEcran"><%=idEcran%></span>
-		</div>
+<%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
+<%-- tpl:insert attribute="zoneTitle" --%>
+<ct:FWLabel key="ENVOI_TITRE"/>
+<%-- /tpl:insert --%>
+<%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 
-		<form name="mainForm" action="" method="post">
-			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
-			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
-			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
-			<INPUT type="hidden" name="_sl" value="">
-			<div class="container-fluid corps" style="padding-bottom: 15px;margin-bottom: 5px;">
-				<div class="row-fluid" style="font-weight: bold">
-					<ct:FWLabel key="ASSURE"/>
-				</div>
-				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="NSS"/></div>
-					<div style="display: table-cell;width: 300px;">
+			<INPUT type="hidden" id="idTierAdministration" name="idTierAdministration" value="<%=viewBean.getIdTierAdministration()%>" />
+			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>" />
+			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>' />
+			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>' />
+			<INPUT type="hidden" name="_sl" value="" />
+				<tr>
+					<td><div style="font-weight: bold"><ct:FWLabel key="JSP_GESTIONNAIRE"/></div></td>
+				</tr>
+				<tr>
+					<td><div class="libelle"><ct:FWLabel key="NOM_GESTIONNAIRE"/></div></td>
+					<td><ct:inputText name="nomGestionnaire" id="nomGestionnaire" defaultValue="<%=viewBean.getSession().getUserFullName()%>" disabled="true"/></td>
+				</tr>
+				<tr>
+					<td><div class="libelle"><ct:FWLabel key="DEPARTEMENT_GESTIONNAIRE"/></div></td>
+					<td><ct:inputText name="nomDepartement" id="nomDepartement" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_DEPARTEMENT.getValue()%>" disabled="true"/></td>
+					<td><div class="libelle"><ct:FWLabel key="GESTIONNAIRE_TELEPHONE"/></div></td>
+					<td><ct:inputText name="telephoneGestionnaire" id="telephoneGestionnaire" defaultValue="<%=GFProperties.GESTIONNAIRE_USER_TELEPHONE.getValue()%>" disabled="true"/></td>
+					<td><div class="libelle"><ct:FWLabel key="GESTIONNAIRE_EMAIL"/></div></td>
+					<td><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" disabled="true"/></td>
+				</tr>
+				<tr>
+					<td colspan="6"><hr/></td>
+				</tr>
+				<tr>
+					<td>
+						<div style="font-weight: bold">
+							<ct:FWLabel key="ASSURE"/>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="libelle">
+						<ct:FWLabel key="NSS"/>
+					</td>
+					<td>
 						<ct:widget id='nssAffilier' name='nssAffilier' onchange="buttonCheck();clearNss();">
 							<ct:widgetService methodName="find" className="<%=PersonneEtendueService.class.getName()%>">
 								<ct:widgetCriteria criteria="forNumeroAvsActuel" label="NSS"/>
@@ -119,57 +144,66 @@
 								</ct:widgetJSReturnFunction>
 							</ct:widgetService>
 						</ct:widget>
-					</div>
-				</div>
-				<div style="display: table; margin-top:5px; padding-bottom:15px;border-bottom: 1px solid black;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="LASTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/></div>
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="FIRSTNAME"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/></div>
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="BIRTHDAY"/></div>
-					<div style="display: table-cell;width: 300px;"><ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/></div>
-				</div>
-				<div style="display: table; margin-top: 15px;" class="panel-body std-body-height">
-					<div style="display: table-cell;width: 130px;padding-left: 10px;"><ct:FWLabel key="CAISSE_DEST"/></div>
-					<div style="display: table-cell;width: 300px;">
+					</td>
+				</tr>
+				<tr><td class="libelle">
+						<ct:FWLabel key="LASTNAME"/>
+					</td><td>
+						<ct:inputText name="lastName" id="lastName" defaultValue="<%=viewBean.getLastName()%>"  disabled="true"/>
+					</td><td>
+						<ct:FWLabel key="FIRSTNAME"/>
+					</td><td>
+						<ct:inputText name="firstName" id="firstName" defaultValue="<%=viewBean.getFirstName()%>"  disabled="true"/>
+					</td><td>
+						<ct:FWLabel key="BIRTHDAY"/>
+					</td><td>
+						<ct:inputText name="birthday" id="birthday" defaultValue="<%=viewBean.getBirthday()%>"  disabled="true"/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6"><hr/></td>
+				</tr>
+				<tr>
+					<td class="libelle">
+						<ct:FWLabel key="CAISSE_DEST"/>
+					</td>
+					<td colspan="5">
 						<ct:widget id='codeCaisse' name='codeCaisse' onchange="buttonCheck()">
 							<ct:widgetService defaultLaunchSize="1" methodName="find" className="<%=GFAdministrationService.class.getName()%>">
 								<ct:widgetCriteria criteria="forCodeAdministrationLike" label="CODE"/>
 								<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 								<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 								<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2}"/>
+								<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} #{tiers.designation3}"/>
 								<ct:widgetJSReturnFunction>
 									<script type="text/javascript">
 										function(element){
-											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
+											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2') + ' ' + $(element).attr('tiers.designation3');
+											$('#idTierAdministration').val($(element).attr('admin.idTiersAdministration'));
 										}
 									</script>
 								</ct:widgetJSReturnFunction>
 							</ct:widgetService>
 						</ct:widget>
-					</div>
-				</div>
-			</div>
-			<div class="container-fluid">
-				<div class="row-fluid">
-					<div style="float:right;">
-						<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
-						<%if(hasRightAdd){%>
-						<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
-						<%}%>
-					</div>
-				</div>
-			</div>
-		</form>
+					</td>
+				</tr>
+		</TBODY>
+	</TABLE>
+</form>
 
-		<SCRIPT>
-			if(top.fr_error!=null) {
-				top.fr_error.location.replace(top.fr_error.location.href);
-			}
-		</SCRIPT>
+<%@ include file="/theme/detail_ajax/bodyErrors.jspf" %>
+<%@ include file="/theme/detail_ajax/footer.jspf" %>
 
-		<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
-		<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
-	</body>
-</html>
+<ct:menuChange displayId="menu" menuId="eform-menuprincipal" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="eform-optionsempty"/>
+
+<tr>
+	<td >
+		<div style="float:right;">
+			<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel();">
+			<%if(hasRightAdd){%>
+			<input class="btnCtrl" id="btnEnvoyer" type="button" value="<ct:FWLabel key="BUTTON_ENVOYER"/>" onclick="validate()">
+			<%}%>
+		</div>
+	</td>
+</tr>

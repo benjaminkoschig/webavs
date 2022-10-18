@@ -434,8 +434,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                     idTiersPaiement = idTiersAdressePaiement;
                 }
 
-                if (!JadeStringUtil.isBlankOrZero(situation.getIdReferenceQREmployeur())) {
-                    idReferenceQR = situation.getIdReferenceQREmployeur();
+                if (!JadeStringUtil.isBlankOrZero(situation.getIdReferenceQR())) {
+                    idReferenceQR = situation.getIdReferenceQR();
                 }
             }
         }
@@ -450,11 +450,6 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
         setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
                 idDomainePaiement, idAffilie, JACalendar.todayJJsMMsAAAA()));
-
-        String referencePaiement = PRTiersHelper.getReferenceQR(getSession(), idReferenceQR);
-        if(StringUtils.isEmpty(referencePaiement)){
-            idReferenceQR = "";
-        }
     }
 
     private String giveDomaineDefaut(BTransaction transaction) throws Exception {
@@ -527,16 +522,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     }
 
     public String getReferenceQR() throws Exception {
-        TIReferencePaiementManager mgr = new TIReferencePaiementManager();
-        mgr.setSession(getSession());
-        mgr.setForIdReferenceQR(idReferenceQR);
-        mgr.find(BManager.SIZE_NOLIMIT);
-
-        if(mgr.size() > 0){
-            TIReferencePaiement referencePaiement = (TIReferencePaiement) mgr.get(0);
-            return referencePaiement.getReferenceQR();
-        }
-        return StringUtils.EMPTY;
+        return PRTiersHelper.getReferenceQR(getSession(), getIdReferenceQR());
     }
 
     /**

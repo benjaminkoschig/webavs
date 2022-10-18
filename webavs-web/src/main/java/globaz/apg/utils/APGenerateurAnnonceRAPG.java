@@ -306,9 +306,7 @@ public class APGenerateurAnnonceRAPG {
                 annonceACreer.setNumeroAssure(
                         droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                 annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
-                if(Objects.isNull(annonceACreer.getTauxJournalierAllocationBase())) {
-                    annonceACreer.setTauxJournalierAllocationBase("0");
-                }
+                annonceACreer.setTauxJournalierAllocationBase(montantJournalierPrestation.toString());
                 annonceACreer.setPeriodeDe(prestation.getDateDebut());
                 annonceACreer.setPeriodeA(prestation.getDateFin());
                 if ("4".equals(annonceACreer.getContenuAnnonce())) {

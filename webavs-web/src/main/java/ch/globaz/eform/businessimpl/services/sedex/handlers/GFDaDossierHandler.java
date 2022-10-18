@@ -56,6 +56,7 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         model = new GFDaDossierModel();
 
         model.setMessageId(getMessageId());
+        model.setSedexIdCaisse(getSenderId());
         model.setOurBusinessRefId(JadeUUIDGenerator.createLongUID().toString());
         model.setYourBusinessRefId(getOurBusinessReferenceId());
         model.setOriginalType(GFTypeDADossier.SOLICITATION.getCodeSystem());
@@ -76,8 +77,10 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         if (search.getSize() > 0) {
             AdministrationComplexModel complexModel = (AdministrationComplexModel) search.getSearchResults()[0];
             model.setCodeCaisse(complexModel.getAdmin().getCodeAdministration());
+            model.setIdTierAdministration(complexModel.getAdmin().getIdTiersAdministration());
         } else {
             model.setCodeCaisse("000000");
+            model.setIdTierAdministration("-1");
         }
         if(getInsuredPerson() != null) {
             model.setNssAffilier(getInsuredPerson().getVn().toString());
@@ -88,10 +91,11 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         model = new GFDaDossierModel();
 
         model.setMessageId(getMessageId());
+        model.setSedexIdCaisse(getSenderId());
         model.setOurBusinessRefId(JadeUUIDGenerator.createLongUID().toString());
         model.setYourBusinessRefId(getOurBusinessReferenceId());
-        model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
-        model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        model.setOriginalType(GFTypeDADossier.RECEPTION.getCodeSystem());
+        model.setType(GFTypeDADossier.RECEPTION.getCodeSystem());
         model.setStatus(GFStatusDADossier.TREAT.getCodeSystem());
 
         AdministrationSearchComplexModel administrationSearch = new AdministrationSearchComplexModel();
@@ -107,8 +111,10 @@ public abstract class GFDaDossierHandler implements GFSedexhandler {
         if (administrationSearch.getSize() > 0) {
             AdministrationComplexModel complexModel = (AdministrationComplexModel) administrationSearch.getSearchResults()[0];
             model.setCodeCaisse(complexModel.getAdmin().getCodeAdministration());
+            model.setIdTierAdministration(complexModel.getAdmin().getIdTiersAdministration());
         } else {
             model.setCodeCaisse("000000");
+            model.setIdTierAdministration("-1");
         }
         if(getInsuredPerson() != null) {
             model.setNssAffilier(getInsuredPerson().getVn().toString());

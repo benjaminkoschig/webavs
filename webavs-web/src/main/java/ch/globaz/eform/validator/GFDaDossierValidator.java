@@ -6,6 +6,8 @@ import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.search.GFDaDossierSearch;
 import ch.globaz.eform.business.search.GFFormulaireSearch;
+import ch.globaz.eform.utils.GFUtils;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.jade.exception.JadeApplicationException;
@@ -67,9 +69,23 @@ public class GFDaDossierValidator {
                 result.addError("messageId", ValidationError.MANDATORY);
             }
 
+            //Validation de la connaissance de la caisse
+            Node nodeSenderId = (Node) xPath.compile("/message/header/senderId").evaluate(xmlDocument, XPathConstants.NODE);
+            String senderId = nodeSenderId.getFirstChild().getNodeValue();
+
+            if (StringUtils.isEmpty(senderId)) {
+                result.addError("senderId", ValidationError.MANDATORY);
+            } else {
+                AdministrationComplexModel caisse = GFUtils.getCaisseBySedexId(senderId);
+
+                if (caisse == null) {
+                    result.addError("senderId", ValidationError.UNKNOWN);
+                }
+            }
+
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String ourBusinessReferenceId = nodeMessageId.getFirstChild().getNodeValue();
+            String ourBusinessReferenceId = nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(ourBusinessReferenceId)) {
                 result.addError("ourBusinessReferenceId", ValidationError.MANDATORY);
             }
@@ -88,6 +104,13 @@ public class GFDaDossierValidator {
                 result.addError("nss", ValidationError.MANDATORY);
             } else if (!NSSUtils.checkNSS(nss)) {
                 result.addError("nss", ValidationError.MALFORMED);
+            } else {
+                PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
+                ts.setForNumeroAvsActuel(NSSUtils.formatNss(nss));
+                ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
+                if (0 == ts.getSize()) {
+                    result.addError("nss", ValidationError.UNKNOWN);
+                }
             }
         } catch (ParserConfigurationException e) {
             LOG.error("Erreur dans la configuration du parceur XML", e);
@@ -97,6 +120,9 @@ public class GFDaDossierValidator {
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         } catch (XPathExpressionException e) {
             LOG.error("Erreur dans le parcing de l'expression xpath", e);
+            result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
+        } catch (Exception e) {
+            LOG.error("Erreur dans le la validation des information du XML", e);
             result.addError("INTERNAL" , ValidationError.INTERNAL_ERROR);
         }
 
@@ -120,10 +146,24 @@ public class GFDaDossierValidator {
                 Node attachmentNode = nodeList.item(i);
                 String attachmentName = attachmentNode.getChildNodes().item(13).getChildNodes().item(1).getFirstChild().getNodeValue().split("/")[1];
                 if (messageSedex.attachments.entrySet().stream()
-                        .noneMatch(entry -> (entry.getValue()).equals(attachmentName))) {
+                        .noneMatch(entry -> (entry.getValue()).endsWith(attachmentName))) {
                     result.addError("attachment", ValidationError.MISSING);
                 }
                 i++;
+            }
+
+            //Validation de la connaissance de la caisse
+            Node nodeSenderId = (Node) xPath.compile("/message/header/senderId").evaluate(xmlDocument, XPathConstants.NODE);
+            String senderId = nodeSenderId.getFirstChild().getNodeValue();
+
+            if (StringUtils.isEmpty(senderId)) {
+                result.addError("senderId", ValidationError.MANDATORY);
+            } else {
+                AdministrationComplexModel caisse = GFUtils.getCaisseBySedexId(senderId);
+
+                if (caisse == null) {
+                    result.addError("senderId", ValidationError.UNKNOWN);
+                }
             }
 
             //Validation du doublon du message ID
@@ -143,14 +183,14 @@ public class GFDaDossierValidator {
 
             //Validation de la présence du ourBusinessReferenceId
             Node nodeOurBusinessReferenceId = (Node) xPath.compile("/message/header/ourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String ourBusinessReferenceId = nodeOurBusinessReferenceId.getFirstChild() == null ? null : nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
+            String ourBusinessReferenceId = nodeOurBusinessReferenceId == null ? null : nodeOurBusinessReferenceId.getFirstChild().getNodeValue();
             if (StringUtils.isEmpty(ourBusinessReferenceId)) {
                 result.addError("ourBusinessReferenceId", ValidationError.MANDATORY);
             }
 
             //Recherche de la value du yourBusinessReferenceId
             Node nodeYourBusinessReferenceId = (Node) xPath.compile("/message/header/yourBusinessReferenceId").evaluate(xmlDocument, XPathConstants.NODE);
-            String yourBusinessReferenceId = nodeYourBusinessReferenceId.getFirstChild() == null ? null : nodeYourBusinessReferenceId.getFirstChild().getNodeValue();
+            String yourBusinessReferenceId = nodeYourBusinessReferenceId == null ? null : nodeYourBusinessReferenceId.getFirstChild().getNodeValue();
             if (!StringUtils.isEmpty(yourBusinessReferenceId)) {
                 result.addInfo("yourBusinessReferenceId", yourBusinessReferenceId);
             }
@@ -178,7 +218,7 @@ public class GFDaDossierValidator {
                 result.addError("nss", ValidationError.MALFORMED);
             }
             PersonneEtendueSearchComplexModel ts = new PersonneEtendueSearchComplexModel();
-            ts.setForNumeroAvsActuel(nss);
+            ts.setForNumeroAvsActuel(NSSUtils.formatNss(nss));
             ts = TIBusinessServiceLocator.getPersonneEtendueService().find(ts);
             if (0 == ts.getSize()) {
                 result.addError("nss", ValidationError.UNKNOWN);

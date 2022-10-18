@@ -7,6 +7,8 @@
             <field comment="Id de la demande" name="messageId" column="MESSAGE_ID" type="STRING" mandatory="true"/>
             <field comment="Numéro Nss de l'affilier à transférer" name="nssAffilier" column="NSS_AFFILIER" type="STRING" mandatory="true"/>
             <field comment="Code de la caisse demandeuse" name="codeCaisse" column="CODE_CAISSE" type="STRING" mandatory="true"/>
+            <field comment="Id tier administration" name="idTierAdministration" column="ID_TIER_ADMINISTRATION" type="STRING" mandatory="true"/>
+            <field comment="Id Sedex de la caisse émettrice" name="sedexIdCaisse" column="SEDEX_ID_CAISSE" type="STRING" mandatory="true"/>
             <field comment="Type original de la demande" name="originalType" column="ORIGINAL_TYPE" type="STRING" mandatory="true"/>
             <field comment="Type de la demande" name="type" column="TYPE" type="STRING" mandatory="true"/>
             <field comment="Statut de la demande" name="status" column="STATUS" type="STRING" mandatory="true"/>
@@ -23,6 +25,16 @@
         <search-definition name="messageId">
             <search-group operator="AND">
                 <search-field name="byMessageId" field-ref="messageId" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="idTierAdministration">
+            <search-group operator="AND">
+                <search-field name="byIdTierAdministration" field-ref="idTierAdministration" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+        <search-definition name="sedexId">
+            <search-group operator="AND">
+                <search-field name="bySedexId" field-ref="sedexIdCaisse" operation="EQUALS"/>
             </search-group>
         </search-definition>
         <search-definition name="yourBusinessRefId">
@@ -44,6 +56,7 @@
             <search-group operator="AND">
                 <search-field name="likeNss" field-ref="nssAffilier" operation="LIKE"/>
                 <search-field name="byCaisse" field-ref="codeCaisse" operation="EQUALS"/>
+                <search-field name="byIdTierAdministration" field-ref="idTierAdministration" operation="EQUALS"/>
                 <search-field name="byType" field-ref="type" operation="EQUALS"/>
                 <search-field name="byStatus" field-ref="status" operation="EQUALS"/>
                 <search-field name="byGestionnaire" field-ref="userGestionnaire" operation="EQUALS"/>

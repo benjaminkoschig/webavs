@@ -8,7 +8,9 @@ import ch.globaz.eform.business.models.sedex.GFSedexModel;
 import globaz.eform.vb.envoi.GFEnvoiViewBean;
 import globaz.jade.common.Jade;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -30,6 +32,7 @@ public class GFFileUtils {
     public final static String PERSISTANCE_PATH = Jade.getInstance().getPersistenceDir();
     public final static String FILE_TYPE_PDF = "pdf";
     public final static String FILE_TYPE_TIFF = "tiff";
+    public final static String FILE_TYPE_TIF = "tif";
     public final static String FILE_TYPE_ZIP = "zip";
 
     public static void downloadFile(HttpServletResponse response, String name, byte[] buf) throws IOException {
@@ -45,22 +48,33 @@ public class GFFileUtils {
 
         Files.createDirectories(workDir);
 
-        if (Files.exists(filePath))
-        {
-            String extension = FilenameUtils.getExtension(filePath.getFileName().toString());
+        if (Files.exists(filePath)) {
+            String extension = FilenameUtils.getExtension(filePath.getFileName().toString()).toLowerCase();
             if (FILE_TYPE_ZIP.equalsIgnoreCase(extension)) {
-                Path zipDir = Paths.get(workDir.toAbsolutePath() + File.separator + FilenameUtils.removeExtension(filePath.getFileName().toString()));
+                String filename = filePath.getFileName().toString();
+                Pattern pattern = Pattern.compile("^(756\\.[0-9]{4}\\.[0-9]{4}\\.[0-9]{2})[a-zA-Z0-9-_\\. ]*$");
+                Matcher matcher = pattern.matcher(filename);
 
-                Files.createDirectories(zipDir);
+                if (matcher.find()) {
+                    if (StringUtils.isBlank(viewBean.getNss()) || !viewBean.getNss().equals(matcher.group(1))) {
+                        viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'assuré  choisi incorrecte!");
+                    } else {
+                        Path zipDir = Paths.get(workDir.toAbsolutePath() + File.separator + FilenameUtils.removeExtension(filePath.getFileName().toString()));
 
-                ZipUtils.unZip(filePath, zipDir);
+                        Files.createDirectories(zipDir);
 
-                checkFile(viewBean, zipDir);
-                injectFiles(viewBean, workDir, zipDir);
+                        ZipUtils.unZip(filePath, zipDir);
 
-                Files.delete(zipDir);
-            } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF)) {
-                String originalFilename = Paths.get(viewBean.getFilename()).getFileName().toString();
+                        checkFile(viewBean, zipDir);
+                        injectFiles(viewBean, workDir, zipDir);
+
+                        FileUtils.deleteDirectory(zipDir.toFile());
+                    }
+                } else {
+                    viewBean.getSession().getCurrentThreadTransaction().addErrors("Correspondance du NSS avec l'assuré  choisi incorrecte!");
+                }
+            } else if (extension.equals(FILE_TYPE_PDF) || extension.equals(FILE_TYPE_TIFF) || extension.equals(FILE_TYPE_TIF)) {
+                String originalFilename = Paths.get(viewBean.getFilename().replaceAll("\\\\", "/")).getFileName().toString();
 
                 if (isContains(viewBean.getFileNameList(), originalFilename)) {
                     List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), originalFilename);
@@ -74,12 +88,12 @@ public class GFFileUtils {
                         Files.move(existantFile, renamedFile);
 
                         viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
-                    } else {
-                        String renamedFileName = renameFile(allIndex.size() + 1, originalFilename);
+                    }
+                    String renamedFileName = renameFile(allIndex.size() + 1, originalFilename);
 
-                        Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
-                        viewBean.getFileNameList().add(renamedFileName);
-                    };
+                    Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
+
+                    viewBean.getFileNameList().add(renamedFileName);
                 } else {
                     Files.move(filePath, Paths.get(workDir.toAbsolutePath() + File.separator + originalFilename));
                     viewBean.getFileNameList().add(originalFilename);
@@ -93,23 +107,28 @@ public class GFFileUtils {
         }
     }
 
-    private static void checkFile(GFEnvoiViewBean viewBean, Path zipDir) {
+    private static void checkFile(GFEnvoiViewBean viewBean, Path directory) {
         try {
-            try (Stream<Path> streamZipDir = Files.list(zipDir)) {
+            try (Stream<Path> streamZipDir = Files.list(directory)) {
                 streamZipDir.forEach(extractFilePath -> {
-                    String extension = FilenameUtils.getExtension(extractFilePath.getFileName().toString());
+                    if (Files.isDirectory(extractFilePath)) {
+                        checkFile(viewBean, extractFilePath);
+                    } else {
+                        String extension = FilenameUtils.getExtension(extractFilePath.getFileName().toString());
 
-                    switch (extension) {
-                        case "pdf":
-                        case "tiff":
-                            break;
-                        default:
-                            viewBean.getErrorFileNameList().add(extractFilePath.getFileName().toString());
-                            try {
-                                Files.delete(extractFilePath);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                        switch (extension.toLowerCase()) {
+                            case FILE_TYPE_PDF:
+                            case FILE_TYPE_TIFF:
+                            case FILE_TYPE_TIF:
+                                break;
+                            default:
+                                viewBean.getErrorFileNameList().add(extractFilePath.getFileName().toString());
+                                try {
+                                    Files.delete(extractFilePath);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                        }
                     }
                 });
             }
@@ -122,33 +141,37 @@ public class GFFileUtils {
         try {
             try (Stream<Path> streamZipDir = Files.list(zipDir)) {
                 streamZipDir.forEach(extractFile -> {
-                    try {
-                        String fileName = extractFile.getFileName().toString();
-                        if (isContains(viewBean.getFileNameList(), fileName)) {
-                            List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), fileName);
-                            String renamedFileName;
+                    if (Files.isDirectory(extractFile)) {
+                        injectFiles(viewBean, workDir, extractFile);
+                    } else {
+                        try {
+                            String fileName = extractFile.getFileName().toString();
+                            if (isContains(viewBean.getFileNameList(), fileName)) {
+                                List<Integer> allIndex = indexOfAll(viewBean.getFileNameList(), fileName);
+                                String renamedFileName;
 
-                            //Renommage du fichier
-                            if (allIndex.size() == 1) {
-                                renamedFileName = renameFile(1, viewBean.getFileNameList().get(allIndex.get(0)));
+                                //Renommage du fichier
+                                if (allIndex.size() == 1) {
+                                    renamedFileName = renameFile(1, viewBean.getFileNameList().get(allIndex.get(0)));
 
-                                Path existantFile = Paths.get(workDir.toAbsolutePath() + File.separator + viewBean.getFileNameList().get(allIndex.get(0)));
-                                Path renamedFile = Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName);
+                                    Path existantFile = Paths.get(workDir.toAbsolutePath() + File.separator + viewBean.getFileNameList().get(allIndex.get(0)));
+                                    Path renamedFile = Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName);
 
-                                Files.move(existantFile, renamedFile);
+                                    Files.move(existantFile, renamedFile);
 
-                                viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
+                                    viewBean.getFileNameList().set(allIndex.get(0), renamedFileName);
+                                }
+                                renamedFileName = renameFile(allIndex.size() + 1, fileName);
+                                viewBean.getFileNameList().add(renamedFileName);
+
+                                Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
+                            } else {
+                                viewBean.getFileNameList().add(fileName);
+                                Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + fileName));
                             }
-                            renamedFileName = renameFile(allIndex.size() + 1, fileName);
-                            viewBean.getFileNameList().add(renamedFileName);
-
-                            Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + renamedFileName));
-                        } else {
-                            viewBean.getFileNameList().add(fileName);
-                            Files.move(extractFile, Paths.get(workDir.toAbsolutePath() + File.separator + fileName));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     }
                 });
             }
@@ -165,10 +188,10 @@ public class GFFileUtils {
             return true;
         } else {
             Pattern pdfFilePattern;
-            if ("pdf".equalsIgnoreCase(extention)) {
+            if (FILE_TYPE_PDF.equalsIgnoreCase(extention)) {
                 pdfFilePattern = Pattern.compile(name + "_([1-9]+)\\.pdf$");
             } else {
-                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\.tiff$");
+                pdfFilePattern = Pattern.compile(name + "_([1-9]+)(_[pP][1-9]+)\\." + extention + "$");
             }
 
             return fileList.stream().anyMatch(fileInjected -> {
@@ -178,7 +201,7 @@ public class GFFileUtils {
         }
     }
 
-    private static List<Integer> indexOfAll(List<String> fileList, String file){
+    private static List<Integer> indexOfAll(List<String> fileList, String file) {
         List<Integer> index = new ArrayList<>();
 
         if (fileList.contains(file)) {
@@ -207,7 +230,7 @@ public class GFFileUtils {
     }
 
     private static String renameFile(Integer index, String file) {
-        String extention = FilenameUtils.getExtension(file);
+        String extention = FilenameUtils.getExtension(file).toLowerCase();
 
         Pattern pdfFilePattern;
         if ("pdf".equalsIgnoreCase(extention)) {
@@ -218,11 +241,11 @@ public class GFFileUtils {
                 return mFileInjected.group(1) + "_" + index + ".pdf";
             }
         } else {
-            pdfFilePattern = Pattern.compile("(.*)(_[pP][1-9]+)\\.tiff$");
+            pdfFilePattern = Pattern.compile("(.*)(_[pP][1-9]+)\\." + extention + "$");
             Matcher mFileInjected = pdfFilePattern.matcher(file);
 
             if (mFileInjected.find()) {
-                return mFileInjected.group(1) + "_" + index + mFileInjected.group(2) + ".tiff";
+                return mFileInjected.group(1) + "_" + index + mFileInjected.group(2) + "." + extention;
             }
         }
 

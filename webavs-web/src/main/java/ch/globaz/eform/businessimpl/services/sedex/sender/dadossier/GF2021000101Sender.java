@@ -43,6 +43,7 @@ public class GF2021000101Sender extends GFDaDossierSender<Message> {
     @Override
     protected Message createMessage(){
         Message message = new Message();
+        message.setMinorVersion(BigInteger.ZERO);
 
         try {
             message.setHeader(createHeader());
@@ -60,15 +61,15 @@ public class GF2021000101Sender extends GFDaDossierSender<Message> {
         header.setSenderId(elements.get(GFDaDossierHeaderElementSender.SENDER_ID));
         header.setRecipientId(elements.get(GFDaDossierHeaderElementSender.RECIPIENT_ID));
         header.setMessageId(elements.get(GFDaDossierHeaderElementSender.MESSAGE_ID));
+        header.setBusinessProcessId(identifiantGenerator.generateBusinessProcessId());
         header.setOurBusinessReferenceId(elements.get(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID));
         header.setMessageType(GFMessageTypeSedex.TYPE_2021_DEMANDE.getMessageType());
         header.setSubMessageType(GFMessageTypeSedex.TYPE_2021_DEMANDE.getSubMessageType());
         header.setSubject(elements.get(GFDaDossierHeaderElementSender.SUBJECT));
-        header.setComment("");
         header.setMessageDate(getDocumentDate());
         header.setAction(GFActionSedex.DEMANDE.getCode().toString());
         header.setTestDeliveryFlag(Boolean.parseBoolean(elements.get(GFDaDossierHeaderElementSender.TEST_DELIVERY_FLAG)));
-        header.setResponseExpected(true);
+        header.setResponseExpected(false);
         header.setBusinessCaseClosed(false);
         header.setSendingApplication(getSendingApplication());
         header.getAttachment().addAll(createAttachments());

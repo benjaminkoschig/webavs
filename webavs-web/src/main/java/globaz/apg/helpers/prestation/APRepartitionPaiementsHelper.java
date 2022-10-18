@@ -479,7 +479,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             mgr.setForIdSituationProfessionnelle(idSituationProfessionnelle);
             mgr.find(BManager.SIZE_NOLIMIT);
             if (mgr.size() > 0) {
-                return ((APSituationProfessionnelle)mgr.get(0)).getIdReferenceQREmployeur();
+                return ((APSituationProfessionnelle)mgr.get(0)).getIdReferenceQR();
             }
         }catch(Exception e){
             JadeLogger.error(e, "Erreur lors du chargement de la situation professionnelle");

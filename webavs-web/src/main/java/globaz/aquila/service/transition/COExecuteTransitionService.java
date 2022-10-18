@@ -10,6 +10,7 @@ import globaz.aquila.db.access.batch.transition.COTransitionException;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.aquila.db.batch.COTransitionViewBean;
+import globaz.aquila.process.batch.COEffectuerTransitionException;
 import globaz.aquila.service.COServiceLocator;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.aquila.util.COActionUtils;
@@ -185,6 +186,13 @@ public class COExecuteTransitionService extends COAbstractTransitionService {
         contentieux.setEBillPrintable(action.getEBillPrintable());
 
         action.execute(contentieux, transaction);
+
+        // Lance une TransitionException si des erreurs ont eu lieu dans l'afterExecuteReport d'un documents eBill
+        if (transaction.getSession() != null && transaction.getSession().hasErrors()
+                && action.getEBillPrintable() && !contentieux.getPrevisionnel()
+                && contentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(contentieux.getCompteAnnexe().getEBillAccountID())) {
+            throw new COEffectuerTransitionException(transaction.getSession().getErrors().toString());
+        }
 
         if ((journal == null) || !journal.isPrevisionnel()) {
             // met à jour le contentieux

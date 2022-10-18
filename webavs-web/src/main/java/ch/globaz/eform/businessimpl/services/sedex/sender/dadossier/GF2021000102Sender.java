@@ -6,6 +6,7 @@ import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierAttachmentE
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierHeaderElementSender;
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierSender;
 import ch.globaz.eform.constant.GFDocumentTypeDossier;
+import ch.globaz.eform.utils.GFFileUtils;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.AttachmentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ContentType;
 import eform.ch.eahv_iv.xmlns.eahv_iv_2021_000102._3.ExtensionType;
@@ -49,6 +50,7 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
     @Override
     protected Message createMessage(){
         Message message = new Message();
+        message.setMinorVersion(BigInteger.ZERO);
 
         try {
             message.setHeader(createHeader());
@@ -66,16 +68,16 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
         header.setSenderId(elements.get(GFDaDossierHeaderElementSender.SENDER_ID));
         header.setRecipientId(elements.get(GFDaDossierHeaderElementSender.RECIPIENT_ID));
         header.setMessageId(elements.get(GFDaDossierHeaderElementSender.MESSAGE_ID));
+        header.setBusinessProcessId(identifiantGenerator.generateBusinessProcessId());
         header.setOurBusinessReferenceId(elements.get(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID));
         header.setMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getMessageType());
         header.setSubMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getSubMessageType());
         header.setSubject(elements.get(GFDaDossierHeaderElementSender.SUBJECT));
-        header.setComment("");
         header.setMessageDate(getDocumentDate());
         header.setAction(GFActionSedex.REPONSE.getCode().toString());
         header.setTestDeliveryFlag(Boolean.parseBoolean(elements.get(GFDaDossierHeaderElementSender.TEST_DELIVERY_FLAG)));
-        header.setResponseExpected(true);
-        header.setBusinessCaseClosed(false);
+        header.setResponseExpected(false);
+        header.setBusinessCaseClosed(true);
         header.setSendingApplication(getSendingApplication());
         header.getAttachment().addAll(createAttachments());
         header.setExtension(createExtention());
@@ -101,7 +103,9 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
         //Le docuement principal est forcéemnt un
         if (this.leadingAttachment == null) { throw new IllegalArgumentException("Lettre de transfère manquante!"); }
         if (!this.attachments.entrySet().stream()
-                .allMatch(entry -> StringUtils.endsWith(entry.getKey(), "pdf") || StringUtils.endsWith(entry.getKey(), "tiff")))  { throw new IllegalArgumentException("Type de document attaché non conforme!"); }
+                .allMatch(entry -> StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_PDF)
+                        || StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_TIFF)
+                        || StringUtils.endsWith(entry.getKey(), GFFileUtils.FILE_TYPE_TIF)))  { throw new IllegalArgumentException("Type de document attaché non conforme!"); }
 
         List<AttachmentType> attachments = new ArrayList<>();
 

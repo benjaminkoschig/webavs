@@ -1,15 +1,15 @@
 package globaz.osiris.process.ebill;
 
-import globaz.aquila.db.access.poursuite.COContentieux;
-import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.docinfo.CADocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMemoryLog;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.musca.api.musca.FAImpressionFactureEBillXml;
 import globaz.musca.api.musca.PaireIdEcheanceParDateExigibiliteEBill;
 import globaz.musca.api.musca.PaireIdExterneEBill;
@@ -243,4 +243,24 @@ public class EBillHelper {
 
         return null;
     }
+
+    public void ajouteCompteurEBillToMemoryLog(int factureEBill, FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo, BSession session, String className) {
+        if (memoryLog != null) {
+            memoryLog.logMessage(session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, className);
+            ajouteMemoryLogEBillToDocumentNotes(memoryLog, docInfo);
+        }
+    }
+
+    public void ajouteCompteurEBillToDocumentNotes(int factureEBill, JadePublishDocumentInfo docInfo, BSession session) {
+        if (docInfo != null) {
+            docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + session.getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill + "\n");
+        }
+    }
+
+    public void ajouteMemoryLogEBillToDocumentNotes(FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo) {
+        if (docInfo != null) {
+            docInfo.setDocumentNotes((!JadeStringUtil.isBlank(docInfo.getDocumentNotes()) ? docInfo.getDocumentNotes() : "") + memoryLog.getMessagesInString());
+        }
+    }
+
 }

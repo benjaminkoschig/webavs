@@ -87,6 +87,13 @@ public class GFDemandeViewBean extends BJadePersistentObjectViewBean {
         daDossier.setCodeCaisse(StringUtils.isBlank(codeCaisse) ? null : codeCaisse.split(" - ")[0]);
     }
 
+    public String getIdTierAdministration() {
+        return daDossier.getIdTierAdministration();
+    }
+    public void setIdTierAdministration(String idTierAdministration) {
+        daDossier.setIdTierAdministration(idTierAdministration);
+    }
+
     @Override
     public void add() throws Exception {
     }

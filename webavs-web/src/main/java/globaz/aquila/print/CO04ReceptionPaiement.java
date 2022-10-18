@@ -144,30 +144,42 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     @Override
     public void afterExecuteReport() {
-        if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
+        try {
+            if (curContentieux.getSection() != null && curContentieux.getSection().getCompteAnnexe() != null) {
 
-            // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
-            boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
+                // Effectue le traitement eBill pour les documents concernés et les envoient sur le ftp
+                boolean eBillAquilaActif = CAApplication.getApplicationOsiris().getCAParametres().isEBillAquilaActifEtDansListeCaisses(getSession());
 
-            // On imprime eBill si :
-            //  - eBillAquila est actif
-            //  - le compte annexe possède un eBillAccountID
-            //  - eBillPrintable est sélectioné sur l'écran d'impression
-            //  - l'impression prévisionel n'est pas activée
-            if (eBillAquilaActif && getEBillPrintable() && !curContentieux.getPrevisionnel()) {
-                if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
-                    try {
-                        EBillSftpProcessor.getInstance();
-                        traiterReclamationEBillAquila(curContentieux.getCompteAnnexe());
-                        ajouteInfoEBillToEmail();
-                    } catch (Exception exception) {
-                        LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                        getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
-                    } finally {
-                        EBillSftpProcessor.closeServiceFtp();
+                // On imprime eBill si :
+                //  - eBillAquila est actif
+                //  - le compte annexe possède un eBillAccountID
+                //  - eBillPrintable est sélectioné sur l'écran d'impression
+                //  - l'impression prévisionel n'est pas activée
+                if (eBillAquilaActif && getEBillPrintable() && !getPrevisionnel()) {
+                    if(curContentieux.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(curContentieux.getCompteAnnexe().getEBillAccountID())) {
+                        try {
+                            EBillSftpProcessor.getInstance();
+                            traiterReclamationEBillAquila(curContentieux.getCompteAnnexe());
+                            eBillHelper.ajouteCompteurEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
+                        } catch (Exception exception) {
+                            LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
+
+                            // transfert les erreurs dans l'email pour les étapes en masses
+                            this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.WARNING);
+
+                            // transfert les erreurs dans l'email pour les étapes manuelles
+                            eBillHelper.ajouteMemoryLogEBillToDocumentNotes(getMemoryLog(), getDocumentInfo());
+
+                            // transfert les erreurs dans la session pour permettre d'annuler l'étape si étapes en masses
+                            this._addError(exception.toString());
+                        } finally {
+                            EBillSftpProcessor.closeServiceFtp();
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            this._addError(e.toString());
         }
         super.afterExecuteReport();
     }
@@ -183,18 +195,13 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesReclamation.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, hasAttachedDocuments() ? getAttachedDocuments() : getParent().getAttachedDocuments(), CO04ReceptionPaiement.class.getSimpleName(), false);
 
                 if (!attachedDocuments.isEmpty()) {
-                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection(), EBillTypeDocument.RECLAMATION);
+                    creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getSection(), EBillTypeDocument.RECLAMATION_FRAIS_ET_INTERET);
                 }
             }
         }
-    }
-
-    private void ajouteInfoEBillToEmail() {
-        getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill, FWMessage.INFORMATION, this.getClass().getName());
-        getDocumentInfo().setDocumentNotes(getDocumentInfo().getDocumentNotes() + getMemoryLog().getMessagesInString());
     }
 
     /**
@@ -216,10 +223,10 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         // Génère et ajoute un eBillTransactionId dans l'entête de facture eBill
         entete.setEBillTransactionID(getEBillTransactionID());
 
+        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getProchaineDateDeclenchement(), null, getSession(), null, typeDocument);
+
         // Met à jour le status eBill de la section
         eBillHelper.updateSectionEtatEtTransactionID(section, entete.getEBillTransactionID(), getMemoryLog());
-
-        eBillHelper.creerFichierEBill(compteAnnexe, entete, null, montantFacture, lignes, null, reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getProchaineDateDeclenchement(), null, getSession(), null, typeDocument);
 
         factureEBill++;
     }

@@ -1,9 +1,6 @@
 input {
-    font-size: 13px !important;
-}
-
-input[type="text"] {
-    width: 296px;
+    width: 291px;
+    height: 23px;
 }
 
 .corps {
@@ -16,4 +13,13 @@ input[type="text"] {
 
 #codeCaisse{
     width: 586px;
+}
+
+.libelle {
+    padding-left: 10px;
+}
+
+.btnCtrl {
+    width:auto !important;
+    height:auto !important;
 }

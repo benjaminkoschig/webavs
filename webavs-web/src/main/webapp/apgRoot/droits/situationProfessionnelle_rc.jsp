@@ -19,7 +19,7 @@ droitLAPG.setSession(viewBean.getSession());
 droitLAPG.setIdDroit(viewBean.getIdDroit());
 droitLAPG.retrieve();
 bButtonNew = viewBean.isModifiable() && bButtonNew && viewBean.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
-IFrameDetailHeight = "500";
+IFrameDetailHeight = "510";
 IFrameListHeight = "100";
 subTableHeight = 20;
 scrollingDetailActive = "YES";

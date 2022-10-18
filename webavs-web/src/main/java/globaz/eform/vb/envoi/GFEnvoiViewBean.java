@@ -50,9 +50,6 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
     @Getter
     @Setter
     private String fileNamePersistance;
-    @Getter
-    @Setter
-    private String idTiersCaisse = "";
 
     @Override
     public String getId() {
@@ -69,6 +66,14 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public void setDaDossier(GFDaDossierModel daDossier) {
         this.daDossier = daDossier;
+    }
+
+    public String getIdTierAdministration() {
+        return daDossier.getIdTierAdministration();
+    }
+
+    public void setIdTierAdministration(String idTierAdministration) {
+        daDossier.setIdTierAdministration(idTierAdministration);
     }
 
     public String getNss() {
@@ -172,9 +177,9 @@ public class GFEnvoiViewBean extends BJadePersistentObjectViewBean {
 
     public String getCodeCaisse() {
         try {
-            if(!StringUtils.isBlank(idTiersCaisse)) {
+            if(!StringUtils.isBlank(daDossier.getIdTierAdministration())) {
                 AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
-                search.setForIdTiersAdministration(idTiersCaisse);
+                search.setForIdTiersAdministration(daDossier.getIdTierAdministration());
                 search = TIBusinessServiceLocator.getAdministrationService().find(search);
 
                 if (search.getSearchResults().length == 1) {

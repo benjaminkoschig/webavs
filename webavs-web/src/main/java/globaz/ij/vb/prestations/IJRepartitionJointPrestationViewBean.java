@@ -645,6 +645,11 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
     public void setIdTiersAdressePaiementDepuisPyxis(String idAdressePaiement) {
         super.setIdTiersAdressePaiement(idAdressePaiement);
         retourDepuisPyxis = true;
+        resetIdReferenceQR();
+    }
+
+    private void resetIdReferenceQR() {
+        setIdReferenceQR("");
     }
 
     /**
@@ -762,11 +767,9 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
      */
     public TIAdressePaiementData getOrReloadAdressePaiementData() {
         try {
-            if (adressePaiementData.isNew() ||
-                    (!JadeStringUtil.isBlank(getIdTiersAdressePaiement())
-                    && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
-                    && !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
-                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+            if (!JadeStringUtil.isBlank(getIdTiersAdressePaiement()) && !JadeStringUtil.isBlank(getIdDomaineAdressePaiement())
+                && (JadeStringUtil.isBlank(adressePaiementData.getIdTiers())|| !adressePaiementData.getIdTiers().equals(getIdTiersAdressePaiement()))) {
+                TIAdressePaiementData paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                         getSession().getCurrentThreadTransaction(),
                         getIdTiersAdressePaiement(),
                         getIdDomaineAdressePaiement(),
@@ -774,7 +777,7 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
                 if (Objects.nonNull(paiementData)) {
                     setAdressePaiementData(paiementData);
                 } else {
-                    paiementData = PRTiersHelper.getAdressePaiementData(this.getSession(),
+                    paiementData = PRTiersHelper.getAdressePaiementData(getSession(),
                             getSession().getCurrentThreadTransaction(),
                             getIdTiersAdressePaiement(),
                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI,

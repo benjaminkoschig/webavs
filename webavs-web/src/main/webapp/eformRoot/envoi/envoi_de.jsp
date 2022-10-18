@@ -159,11 +159,11 @@
 	<td><ct:inputText name="prenomAssure" id="prenomAssure" disabled="true"/></td>
 	<td><div class="libelle"><ct:FWLabel key="BIRTHDAY"/></div></td>
 	<td><ct:inputText name="dateNaissance" id="dateNaissance" disabled="true"/></td>
-</tr><tr>
-	<td colspan="6"><div class="separateur"/></td>
+</tr>
+<tr><td colspan="6"><hr/></td></tr>
 
 	<%--        Partie sur la caisse--%>
-</tr><tr>
+<tr>
 	<td><div class="libelletitre"><ct:FWLabel key="CAISSE_DESTINATRICE"/></div></td>
 </tr><tr>
 	<td><div class="libelle"><ct:FWLabel key="CAISSE_DEST"/></div></td>
@@ -174,25 +174,26 @@
 				<ct:widgetCriteria criteria="inGenreAdministration" label="GENRE" fixedValue="<%=CodeSystem.GENRE_ADMIN_CAISSE_COMP+'_'+CodeSystem.GENRE_OFFICE_AI%>" />
 				<ct:widgetCriteria criteria="notNull" label="SEDEX" fixedValue="true"/>
 				<ct:widgetCriteria criteria="forDesignation1Like" label="DESIGNATION"/>
-				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} "/>
+				<ct:widgetLineFormatter format="#{admin.codeAdministration} - #{tiers.designation1} #{tiers.designation2} #{tiers.designation3}"/>
 				<ct:widgetJSReturnFunction>
 					<script type="text/javascript">
 						function(element){
-							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2');
-							$('#idTiersCaisse').val($(element).attr('admin.idTiersAdministration'));
+							this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2') + ' ' + $(element).attr('tiers.designation3');
+							$('#idTierAdministration').val($(element).attr('admin.idTiersAdministration'));
 						}
 					</script>
 				</ct:widgetJSReturnFunction>
 			</ct:widgetService>
 		</ct:widget>
-		<INPUT type="hidden" id="idTiersCaisse" name="idTiersCaisse" value="<%=viewBean.getIdTiersCaisse()%>">
+		<INPUT type="hidden" id="idTierAdministration" name="idTierAdministration" value="<%=viewBean.getIdTierAdministration()%>">
 	</td>
-</tr><tr>
-	<td colspan="6"><div class="separateur"/></td>
-</tr><tr>
+</tr>
+<tr><td colspan="6"><hr/></td></tr>
+<tr>
 	<%--        Partie sur les fichiers--%>
 	<td><div class="libelletitre"><ct:FWLabel key="DOCUMENT_A_ENVOYER"/></div></td>
-</tr><tr>
+</tr>
+<tr>
 	<td><div class="libelle"><ct:FWLabel key="TYPE_DE_FICHIER"/></div></td>
 	<td>
 		<ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
@@ -202,12 +203,17 @@
 		</ct:select>
 
 	</td>
-</tr><tr>
+</tr>
+<tr>
 	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="FICHIER_SOURCE"/></div></td>
 	<td><div style="width: 0px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
-</tr><tr>
-
-	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></div></td>
+</tr>
+<tr>
+	<td></td>
+	<td colspan="5"><ct:FWLabel key="WARNING_MESSAGE"/></td>
+</tr>
+<tr>
+	<td style="vertical-align: top" class="libelle"><ct:FWLabel key="SELECTION_FICHIER"/></td>
 	<td colspan="5">
 		<div class="listfichiers">
 			<table id="periodes" name=periode" style="width: 100%">

@@ -15,7 +15,7 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
     public void envoyerDemande(GFDaDossierModel model, BSession session) throws Exception {
         GFDaDossierSedexEnvoiDemandeProcess process = new GFDaDossierSedexEnvoiDemandeProcess();
         process.setModel(model);
-        process.executeProcess();
+        process.start();
     }
 
     @Override
@@ -24,6 +24,6 @@ public class GFDaDossierSedexServiceImpl implements GFDaDossierSedexService {
         process.setModel(model);
         process.setDocumentType(documentType);
         process.setAttachments(attachments);
-        process.executeProcess();
+        process.start();
     }
 }

@@ -190,19 +190,25 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   	document.forms[0].elements('montantVerse').value = '';
   }
 
-  var isQRIban = TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte());
-
-  function manageAdressePaiement(){
-	  if(document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>){
-		  $(".withoutAdressePaiement").hide();
-		  $(".withAdressePaiement").show();
-		  if(isQRIban) {
+  function manageAdressePaiementQR() {
+	  if (document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>) {
+		  <%if (TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
 			  $('.withoutReferencePaiement').hide();
 			  $('.withReferencePaiement').show();
-		  } else {
+		  <%} else{%>
 			  $('.withoutReferencePaiement').show();
 			  $('.withReferencePaiement').hide();
-		  }
+		  <%}%>
+	  } else {
+		  $('.withoutReferencePaiement').show();
+		  $('.withReferencePaiement').hide();
+	  }
+  }
+
+  function manageAdressePaiement() {
+	  if (document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>) {
+		  $(".withoutAdressePaiement").hide();
+		  $(".withAdressePaiement").show();
 	  } else {
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
@@ -604,8 +610,8 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD><LABEL for="adressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/></LABEL></TD>
 
 							<TD>
-								<INPUT type="radio" name="isVersementEmployeur" value="on" <%=viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_EMPLOYEUR"/>
-							    <INPUT type="radio" name="isVersementEmployeur" value="" <%=!viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_ASSURE"/>
+								<INPUT type="radio" name="isVersementEmployeur" value="on" <%=viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement();manageAdressePaiementQR();" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_EMPLOYEUR"/>
+							    <INPUT type="radio" name="isVersementEmployeur" value="" <%=!viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement();manageAdressePaiementQR();" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_ASSURE"/>
 							</TD>
 						</TR>
 						<TR>
@@ -699,6 +705,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
                             <%}%>
 						</TR>
 						<TR>
+							<TD class="withoutAdressePaiement" colspan="2"/>
 							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 
@@ -747,10 +754,11 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD class="withoutReferencePaiement" colspan="6">&nbsp;</TD></TR>
+						<%if (TIAdressePaiement.isQRIban(viewBean.getAdressePaiementData().getCompte())) {%>
+						<TR><TD class="withReferencePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR>
 							<TD class="withReferencePaiement"><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
-							<TD class="withReferencePaiement" colspan="6">
+							<TD class="withReferencePaiement">
 
 								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
@@ -771,7 +779,9 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 										redirectUrl="<%=mainServletPath%>"
 								/>
 							</TD>
+							<TD class="withReferencePaiement" colspan="3"> </TD>
 						</TR>
+						<%}%>
 						<TR><TD colspan="6"><HR></TD></TR>
 						<TR>
 							<TD><LABEL for="isCollaborateurAgricole"><ct:FWLabel key="JSP_COLL_AGRICOLE"/></LABEL></TD>

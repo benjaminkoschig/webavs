@@ -3,7 +3,8 @@
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit"  --%>
 <%
-	idEcran ="GTI0444";
+    bButtonDelete = false;
+	idEcran ="GTI0061";
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean viewBean = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean)session.getAttribute ("viewBean");
 	selectedIdValue = request.getParameter("selectedId");
     if (JadeStringUtil.isBlank(selectedIdValue)) {
@@ -134,7 +135,8 @@ function init(){}
 
           <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
           <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
-		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>"
+		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>">
+          <input type="hidden"  name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
@@ -142,9 +144,9 @@ function init(){}
 				<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage"  --%>
-<%if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> 
+<%if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %>
 <SCRIPT>
-</SCRIPT> 
+</SCRIPT>
 <%}%>
 
 <ct:menuChange displayId="options" menuId="reference-paiement" showTab="options">

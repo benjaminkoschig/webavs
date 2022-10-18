@@ -36,11 +36,12 @@ public class EFormFileService {
     public EFormFileService(String nameConfiguration) {
         this.nameConfiguration = nameConfiguration;
         loadConfigurationFile();
-        if ("sftp".equals(type)) {
+        if(type == null) {
+            throw new ConfigurationFileNotFoundException("La configuration "+ nameConfiguration +" est manquante dans le fichier "+LEGACY_JADE_CONFIG_FILE);
+        } else if ("sftp".equals(type)) {
             ftpServer = JadeSFtpServer.client(server);
             ftpServer.connect();
-        }
-        if ("filesystem".equals(type)) {
+        } else if ("filesystem".equals(type)) {
             fileService = new JadeFsServer();
         }
     }
@@ -126,9 +127,9 @@ public class EFormFileService {
         Path path = Paths.get(getPathRoot(stringPath));
         if (ftpServer == null) {
             fileService.deleteDirectories(path, true);
+        } else {
+            ftpServer.deleteFolder(stringPath);
         }
-        ftpServer.deleteFolder(stringPath);
-
     }
 
     public boolean exist(String path) {

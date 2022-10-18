@@ -100,6 +100,16 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             // récupération du viewBean et ajout de la rente accordée
             RERenteAccordeeJointDemandeRenteViewBean renteAccordeeVb = (RERenteAccordeeJointDemandeRenteViewBean) viewBean;
 
+            TIAdressePaiementData adresse = PRTiersHelper.getAdressePaiementData(session1,
+                    transaction, renteAccordeeVb.getIdTiersAdressePmtIC(),
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
+
+            renteAccordeeVb.setAdressePaiement(adresse);
+
+            if (!renteAccordeeVb.validate()) {
+                return;
+            }
+
             RERenteAccordee renteAccordee = new RERenteAccordee();
 
             renteAccordee.setAnneeAnticipation(renteAccordeeVb.getAnneeAnticipation());
@@ -344,6 +354,16 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             // récupération du viewBean et retrieve de la rente accordée, puis
             // update
             RERenteAccordeeJointDemandeRenteViewBean renteAccordeeVb = (RERenteAccordeeJointDemandeRenteViewBean) viewBean;
+
+            TIAdressePaiementData adresse = PRTiersHelper.getAdressePaiementData(session1,
+                   transaction, renteAccordeeVb.getIdTiersAdressePmtIC(),
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
+
+            renteAccordeeVb.setAdressePaiement(adresse);
+
+            if (!renteAccordeeVb.validate()) {
+                return;
+            }
 
             RERenteAccordee renteAccordee = new RERenteAccordee();
             renteAccordee.setIdPrestationAccordee(renteAccordeeVb.getIdPrestationAccordee());

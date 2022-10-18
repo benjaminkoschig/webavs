@@ -930,7 +930,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     }
 
     private void ajouteTexteImpotSource(ICTDocument document, StringBuffer buffer) throws Exception {
-        String taux = getImpotSourceTauxDroitOuTauxCanton(droit);
+        String taux = droit.getTauxImpotSource();
 
         // on récupère et on complète le texte avec les paramètres
         String textImpotSource = getTextOrEmpty(document, 4, 105);
@@ -941,37 +941,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             buffer.append(PRStringUtils.replaceString(textImpotSource, "{tauxImposition}", JANumberFormatter.format(taux, 0.01, 2, JANumberFormatter.NEAR)));
         }
     }
-
-    private String getImpotSourceTauxDroitOuTauxCanton(APDroitMaternite droit) throws Exception {
-        String taux = droit.getTauxImpotSource();
-
-        // si aucun taux n'a été défini dans le droit
-        if (JadeStringUtil.isDecimalEmpty(taux)) {
-
-            // on va rechercher tous les taux pour ce canton et pour la période de la prestation
-            String cantonImposition = PRTiersHelper.getCanton(getSession(), droit.getNpa());
-
-            PRTauxImpositionManager mgrTauxImpot = new PRTauxImpositionManager();
-            mgrTauxImpot.setSession(getSession());
-            mgrTauxImpot.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-            mgrTauxImpot.setOrderBy(PRTauxImposition.FIELDNAME_DATEDEBUT);
-            mgrTauxImpot.setForPeriode(droit.getDateDebutDroit(), droit.getDateFinDroit());
-            mgrTauxImpot.setForCsCanton(cantonImposition);
-            mgrTauxImpot.find(BManager.SIZE_NOLIMIT);
-
-            List<PRTauxImposition> tauxImpots = mgrTauxImpot.getContainerAsList();
-
-            // on retourne le premier taux trouvé ou 0.00
-            if (tauxImpots.size() > 0) {
-                taux = tauxImpots.get(0).getTaux();
-            } else {
-                taux = "0.00";
-            }
-        }
-
-        return taux;
-    }
-
     private Boolean hasNotOnlyMATCIAB1() throws FWIException {
         if (hasMATCIAB1()) {
             // Création champs de données document assurées pour tous les types sauf MATCIAB1

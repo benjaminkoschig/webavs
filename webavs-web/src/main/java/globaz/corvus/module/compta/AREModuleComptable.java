@@ -927,7 +927,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(session.getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
 
-        if (StringUtils.isEmpty(referenceQR)) {
+        if (JadeStringUtil.isBlankOrZero(referenceQR)) {
             ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
         } else {
             ordreVersement.setTypeVirement(APIOperationOrdreVersement.QR);

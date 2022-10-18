@@ -126,7 +126,7 @@ public class RECreancier extends BEntity {
         refPaiement = statement.dbReadString(FIELDNAME_REF_PAIEMENT);
         idTiersRegroupement = statement.dbReadNumeric(FIELDNAME_ID_TIERS_REGROUPEMENT);
         isBloque = statement.dbReadBoolean(FIELDNAME_IS_BLOQUE);
-        idReferenceQR = statement.dbReadString(FIELDNAME_REF_PAIEMENT);
+        idReferenceQR = statement.dbReadString(FIELDNAME_ID_REFERENCE_QR);
     }
 
     /**

@@ -114,6 +114,16 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
         super._readProperties(statement);
     }
 
+    public boolean validate() throws Exception {
+        // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
+        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && Objects.nonNull(getAdressePaiementData()) && TIAdressePaiement.isQRIban(this.getAdressePaiementData().getCompte())) {
+            setMsgType(FWViewBeanInterface.ERROR);
+            setMessage(getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @return
      */
@@ -1054,6 +1064,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     public void setIdTiersAdressePmtICDepuisPyxis(String string) {
         setIdTiersAdressePmtIC(string);
         idTiersAdressePmtICDepuisPyxis = string;
+        idReferenceQRDepuisPyxis = "";
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
     }
