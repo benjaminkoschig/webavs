@@ -2,6 +2,7 @@ package ch.globaz.eform.process;
 
 
 import ch.globaz.common.util.NSSUtils;
+import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
@@ -61,15 +62,25 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         initBsession();
         this.setSendMailOnError(true);
         this.setSendCompletionMail(false);
+        this.setEMailAddress(GFProperties.EMAIL_DADOSSIER.getValue());
 
-        envoyerDemande(model, getSession());
+        ValidationResult validation = envoyerDemande(model, getSession());
+
+        if (validation.hasError()) {
+            validation.getErrors().forEach(error -> {
+                String errorMsg = error.getDesignation(getSession());
+                _addError(errorMsg);
+                LOG.error(errorMsg);
+            });
+            return false;
+        }
 
         closeBsession();
         LOG.info("Fin du process d'information.");
         return true;
     }
 
-    public void envoyerDemande(GFDaDossierModel model, BSession session) throws Exception {
+    private ValidationResult envoyerDemande(GFDaDossierModel model, BSession session) throws Exception {
         TIPersonneAvsManager mgr = new TIPersonneAvsManager();
         mgr.setISession(session);
         mgr.setForNumAvsActuel(NSSUtils.formatNss(model.getNssAffilier()));
@@ -150,9 +161,16 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
             throw new RuntimeException(e);
         }
 
-        sender.send();
+        //prévalidation du model
+        ValidationResult validation = model.validating();
 
-        GFEFormServiceLocator.getGFDaDossierDBService().create(model);
+        if (!validation.hasError()) {
+            sender.send();
+
+            GFEFormServiceLocator.getGFDaDossierDBService().create(model);
+        }
+
+        return validation;
     }
 
     @Override

@@ -130,7 +130,11 @@
 	<td><ct:inputText name="emailGestionnaire" id="emailGestionnaire" defaultValue="<%=viewBean.getSession().getUserInfo().getEmail()%>" disabled="true"/></td>
 
 	<%--Partie assuré--%>
-</tr><tr>
+</tr>
+<tr>
+	<td colspan="6"><hr/></td>
+</tr>
+<tr>
 	<td><div class="libelletitre"><ct:FWLabel key="ASSURE"/><div></div></td>
 </tr><tr>
 	<td><div class="libelle"><ct:FWLabel key="NSS"/></div></td>
@@ -198,7 +202,7 @@
 	<td>
 		<ct:select name="typeDeFichier" styleClass="longSelect" id="c" tabindex="3" onchange="buttonCheck()">
 			<% for(GFDocumentTypeDossier type : GFDocumentTypeDossier.values()) { %>
-			<ct:option value="<%=type.getDocumentType()%>" label="<%=type.getLabel()%>"></ct:option>
+			<ct:option value="<%=type.getDocumentType()%>" label="<%=type.getLabel(objSession)%>"></ct:option>
 			<% } %>
 		</ct:select>
 
@@ -206,7 +210,7 @@
 </tr>
 <tr>
 	<td style="vertical-align: top"><div class="libelle"><ct:FWLabel key="FICHIER_SOURCE"/></div></td>
-	<td><div style="width: 0px"><input  name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
+	<td><div style="width: 0px"><input name="filename" type="file" data-g-upload="callBack: callBackUpload"/></div></td>
 </tr>
 <tr>
 	<td></td>
