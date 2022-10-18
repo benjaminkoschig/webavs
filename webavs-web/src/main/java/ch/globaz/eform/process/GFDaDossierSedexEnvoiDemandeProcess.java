@@ -111,6 +111,7 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         //Attribution des identifiants
         model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
         model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
+        model.setSedexIdCaisse(sedexId);
 
         //Définition des informations complémentaire en vue de la persistence de la demande
         model.setOriginalType(GFTypeDADossier.RECEPTION.getCodeSystem());
