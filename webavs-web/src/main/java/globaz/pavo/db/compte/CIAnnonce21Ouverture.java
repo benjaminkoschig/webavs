@@ -48,7 +48,10 @@ public class CIAnnonce21Ouverture extends CIAnnonceWrapper {
             List<AFAffiliation> affiliations = retrieveAffiliations(numeroAffilie, transaction);
 
             for (AFAffiliation affiliation : affiliations) {
-                if (!JadeStringUtil.isBlankOrZero(affiliation.getDateFin())) {
+
+                if (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), JACalendar.todayJJsMMsAAAA(), affiliation.getDateDebut())
+                    && (JadeStringUtil.isBlankOrZero(affiliation.getDateFin())
+                        ||  BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), affiliation.getDateFin(), JACalendar.todayJJsMMsAAAA()))) {
 
                         // récupérer NSS du tiers affilié
                         String numeroNSSAffiliation = NSUtil.unFormatAVS(affiliation.getTiers().getNumAvsActuel());
