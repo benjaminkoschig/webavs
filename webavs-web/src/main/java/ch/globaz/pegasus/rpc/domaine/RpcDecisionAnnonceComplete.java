@@ -101,12 +101,16 @@ public class RpcDecisionAnnonceComplete {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
                 // PLAT2-1396 - conjoint survivant -> COUPLE et non ALONE
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData)) {
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData) || isMarie(personData)) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;
             }
         }
+    }
+
+    private boolean isMarie(PersonElementsCalcul personData) {
+        return EtatCivil.MARIE.equals(personData.getSituationFamiliale());
     }
 
     private boolean isVeuf(PersonElementsCalcul personData) {
