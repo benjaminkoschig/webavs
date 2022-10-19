@@ -386,35 +386,11 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
                 montantImpoSource = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
                         * (new FWCurrency(getTauxImposition())).floatValue());
                 montantImpoSource.round(FWCurrency.ROUND_ENTIER);
-            } else if (!JadeStringUtil.isDecimalEmpty(getMontantRetenuMensuel())) {
+
+            } else if (!JadeStringUtil.isBlank(getMontantRetenuMensuel())) {
                 montantImpoSource = new FWCurrency(getMontantRetenuMensuel());
             } else {
-                // recherche du taux
-                PRTauxImpositionManager tManager = new PRTauxImpositionManager();
-                tManager.setSession(getSession());
-                tManager.setForCsCanton(getCantonImposition());
-                tManager.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-
-                JADate dateDebut = new JADate(REPmtMensuel.getDateDernierPmt(getSession()));
-                JADate dateFin = new JADate(REPmtMensuel.getDateDernierPmt(getSession()));
-
-                tManager.setForPeriode(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebut.toStrAMJ()),
-                        PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFin.toStrAMJ()));
-                try {
-                    tManager.find();
-
-                    if (tManager.size() > 0) {
-                        PRTauxImposition taux = (PRTauxImposition) tManager.getFirstEntity();
-
-                        montantImpoSource = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
-                                * (new FWCurrency(taux.getTaux())).floatValue());
-                        montantImpoSource.round(FWCurrency.ROUND_ENTIER);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    montantImpoSource = new FWCurrency("0.00");
-                }
-                return montantImpoSource.toString();
+                montantImpoSource = new FWCurrency("0");
             }
             return montantImpoSource.toString();
         } else {
