@@ -505,7 +505,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
         // On recherche les conjoints du requerant
         SFConjointManager conjointMgr = new SFConjointManager();
         conjointMgr.setSession(getSession());
-        conjointMgr.setForIdsConjoints(apercuRelationConjoint.getIdConjoint1(),apercuRelationConjoint.getIdConjoint2());
+        conjointMgr.setForInIdsConjoints(Arrays.asList(apercuRelationConjoint.getIdConjoint1(),apercuRelationConjoint.getIdConjoint2()));
         conjointMgr.find();
 
         for (Iterator it = conjointMgr.iterator(); it.hasNext();) {

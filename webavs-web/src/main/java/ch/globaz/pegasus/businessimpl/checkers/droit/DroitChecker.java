@@ -164,8 +164,7 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
     }
 
     public static boolean isDroitMembrefamilleSynchronisableWithOutException(Droit droit) {
-        if ((Integer.valueOf(droit.getSimpleVersionDroit().getNoVersion()) > 1)
-                || IPCDroits.CS_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
+        if (IPCDroits.CS_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
                 || IPCDroits.CS_HISTORISE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
                 || IPCDroits.CS_ANNULE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
             return false;
