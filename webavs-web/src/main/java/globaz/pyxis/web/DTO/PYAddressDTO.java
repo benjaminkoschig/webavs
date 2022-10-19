@@ -24,6 +24,8 @@ public class PYAddressDTO {
     private String postalCode;
     private String locality;
     private String modificationDate;
+    private String complementAdresse1;
+    private String complementAdresse2;
 
 
     /**
