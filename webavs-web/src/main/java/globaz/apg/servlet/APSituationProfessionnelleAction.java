@@ -37,6 +37,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 import javax.servlet.ServletException;
@@ -358,6 +359,14 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         try {
             APSituationProfessionnelleViewBean spViewBean = (APSituationProfessionnelleViewBean) viewBean;
 
+            if(checkErreurSituationProfessionnelleAvecQRIbanSansReference(spViewBean)){
+                String message = "Une adresse de paiement QR IBAN n'a pas de référence QR. Calcul des prestations impossible !!!";
+                spViewBean.setMessage(message);
+                spViewBean.setMsgType(FWViewBeanInterface.ERROR);
+                saveViewBean(spViewBean, request);
+                throw new Exception(message);
+            }
+
             // Fait pour les anciens situations professionnelles, car on ne passe pas forcement par
             // l ecran pour remplir les nouveaux deux champs id domaine paiement et id tiers paiement.
             updateAdresseSituationProfessionnelle(idDroit, spViewBean);
@@ -608,4 +617,24 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         spViewBean.setDroitDTO(dto);
     }
 
+    private boolean checkErreurSituationProfessionnelleAvecQRIbanSansReference(APSituationProfessionnelleViewBean viewBean) throws Exception {
+        APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
+        manager.setSession(viewBean.getSession());
+        manager.setForIdDroit(viewBean.getIdDroit());
+        manager.find(BManager.SIZE_NOLIMIT);
+        if(manager.size() > 0){
+            for(int i = 0; i < manager.size(); i++){
+                APSituationProfessionnelle situationProfessionnelle = (APSituationProfessionnelle) manager.get(0);
+                APSituationProfessionnelleViewBean sitViewBean = new APSituationProfessionnelleViewBean();
+                sitViewBean.setId(situationProfessionnelle.getId());
+                sitViewBean.setSession(viewBean.getSession());
+                sitViewBean.retrieve();
+                if(TIAdressePaiement.isQRIban(sitViewBean.getNumCompteBancaire()) && sitViewBean.getIsVersementEmployeur() && JadeStringUtil.isBlankOrZero(sitViewBean.getIdReferenceQR())){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
