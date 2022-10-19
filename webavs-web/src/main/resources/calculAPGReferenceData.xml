@@ -34,7 +34,7 @@
     <attribut name="BKmax" value="59.00"/>
   </prestation> 
 
-  <prestation type="APG" from="01.01.2009" to="31.12.2999" revision="52002003" >
+  <prestation type="APG" from="01.01.2009" to="31.12.2022" revision="52002003" >
     <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
            calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
     <attribut name="GE" value="245.00"/>
@@ -51,9 +51,28 @@
     <attribut name="KC2min" value="152.00"/>
     <attribut name="BZ" value="67.00"/>
     <attribut name="BKmax" value="67.00"/>
-  </prestation> 
+  </prestation>
 
- <prestation type="MATERNITE" from="01.07.2001" to="30.06.2005" revision="52002004" >
+    <prestation type="APG" from="01.01.2023" to="31.12.2999" revision="52002003" >
+        <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
+               calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
+        <attribut name="GE" value="275.00"/>
+        <attribut name="Amax" value="220.00"/>
+        <attribut name="KZ" value="22.00"/>
+        <attribut name="KA0min" value="69.00"/>
+        <attribut name="KA1min" value="110.00"/>
+        <attribut name="KA2min" value="138.00"/>
+        <attribut name="KB0min" value="124.00"/>
+        <attribut name="KB1min" value="179.00"/>
+        <attribut name="KB2min" value="193.00"/>
+        <attribut name="KC0min" value="102.00"/>
+        <attribut name="KC1min" value="152.00"/>
+        <attribut name="KC2min" value="171.00"/>
+        <attribut name="BZ" value="75.00"/>
+        <attribut name="BKmax" value="75.00"/>
+    </prestation>
+
+    <prestation type="MATERNITE" from="01.07.2001" to="30.06.2005" revision="52002004" >
     <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
            calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
     <attribut name="GE" value="215.00"/>
@@ -91,7 +110,7 @@
     <attribut name="BKmax" value="59.00"/>
   </prestation> 
 
- <prestation type="MATERNITE" from="01.01.2009" to="31.12.2999" revision="52002004" >
+ <prestation type="MATERNITE" from="01.01.2009" to="31.12.2022" revision="52002004" >
     <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
            calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
     <attribut name="GE" value="245.00"/>
@@ -108,7 +127,26 @@
     <attribut name="KC2min" value="152.00"/>
     <attribut name="BZ" value="67.00"/>
     <attribut name="BKmax" value="67.00"/>
-  </prestation> 
+  </prestation>
+
+    <prestation type="MATERNITE" from="01.01.2023" to="31.12.2999" revision="52002004" >
+    <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
+           calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
+        <attribut name="GE" value="275.00"/>
+        <attribut name="Amax" value="220.00"/>
+        <attribut name="KZ" value="22.00"/>
+        <attribut name="KA0min" value="69.00"/>
+        <attribut name="KA1min" value="110.00"/>
+        <attribut name="KA2min" value="138.00"/>
+        <attribut name="KB0min" value="124.00"/>
+        <attribut name="KB1min" value="179.00"/>
+        <attribut name="KB2min" value="193.00"/>
+        <attribut name="KC0min" value="102.00"/>
+        <attribut name="KC1min" value="152.00"/>
+        <attribut name="KC2min" value="171.00"/>
+        <attribut name="BZ" value="75.00"/>
+        <attribut name="BKmax" value="75.00"/>
+    </prestation>
   
    <prestation type="MATERNITE-CANTONALE" from="01.07.2005" to="31.12.2999" revision="52002004" >
 	    <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
@@ -129,7 +167,7 @@
 	    <attribut name="BKmax" value="65.00"/>
   </prestation> 
 
-    <prestation type="PANDEMIE" from="28.02.2020" to="31.12.2999" revision="52002004" >
+    <prestation type="PANDEMIE" from="28.02.2020" to="31.12.2022" revision="52002004" >
         <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
                calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
         <attribut name="GE" value="245.00"/>
@@ -148,7 +186,26 @@
         <attribut name="BKmax" value="67.00"/>
     </prestation>
 
-    <prestation type="PATERNITE" from="01.01.2009" to="31.12.2999" revision="52002004" >
+    <prestation type="PANDEMIE" from="01.01.2023" to="31.12.2999" revision="52002004" >
+        <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
+               calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
+        <attribut name="GE" value="275.00"/>
+        <attribut name="Amax" value="220.00"/>
+        <attribut name="KZ" value="22.00"/>
+        <attribut name="KA0min" value="69.00"/>
+        <attribut name="KA1min" value="110.00"/>
+        <attribut name="KA2min" value="138.00"/>
+        <attribut name="KB0min" value="124.00"/>
+        <attribut name="KB1min" value="179.00"/>
+        <attribut name="KB2min" value="193.00"/>
+        <attribut name="KC0min" value="102.00"/>
+        <attribut name="KC1min" value="152.00"/>
+        <attribut name="KC2min" value="171.00"/>
+        <attribut name="BZ" value="75.00"/>
+        <attribut name="BKmax" value="75.00"/>
+    </prestation>
+
+    <prestation type="PATERNITE" from="01.01.2009" to="31.12.2022" revision="52002004" >
         <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
                calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
         <attribut name="GE" value="245.00"/>
@@ -167,7 +224,26 @@
         <attribut name="BKmax" value="67.00"/>
     </prestation>
 
-    <prestation type="PROCHE_AIDANT" from="01.01.2021" to="31.12.2999" revision="52002004" >
+    <prestation type="PATERNITE" from="01.01.2023" to="31.12.2999" revision="52002004" >
+        <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
+               calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
+        <attribut name="GE" value="275.00"/>
+        <attribut name="Amax" value="220.00"/>
+        <attribut name="KZ" value="22.00"/>
+        <attribut name="KA0min" value="69.00"/>
+        <attribut name="KA1min" value="110.00"/>
+        <attribut name="KA2min" value="138.00"/>
+        <attribut name="KB0min" value="124.00"/>
+        <attribut name="KB1min" value="179.00"/>
+        <attribut name="KB2min" value="193.00"/>
+        <attribut name="KC0min" value="102.00"/>
+        <attribut name="KC1min" value="152.00"/>
+        <attribut name="KC2min" value="171.00"/>
+        <attribut name="BZ" value="75.00"/>
+        <attribut name="BKmax" value="75.00"/>
+    </prestation>
+
+    <prestation type="PROCHE_AIDANT" from="01.01.2021" to="31.12.2022" revision="52002004" >
         <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
                calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
         <attribut name="GE" value="245.00"/>
@@ -184,5 +260,24 @@
         <attribut name="KC2min" value="152.00"/>
         <attribut name="BZ" value="67.00"/>
         <attribut name="BKmax" value="67.00"/>
+    </prestation>
+
+    <prestation type="PROCHE_AIDANT" from="01.01.2023" to="31.12.2999" revision="52002004" >
+        <class reference-data="globaz.apg.module.calcul.rev2005.APReferenceDataAPG"
+               calculateur="globaz.apg.module.calcul.rev2005.APModuleCalculAPG"/>
+        <attribut name="GE" value="275.00"/>
+        <attribut name="Amax" value="220.00"/>
+        <attribut name="KZ" value="22.00"/>
+        <attribut name="KA0min" value="69.00"/>
+        <attribut name="KA1min" value="110.00"/>
+        <attribut name="KA2min" value="138.00"/>
+        <attribut name="KB0min" value="124.00"/>
+        <attribut name="KB1min" value="179.00"/>
+        <attribut name="KB2min" value="193.00"/>
+        <attribut name="KC0min" value="102.00"/>
+        <attribut name="KC1min" value="152.00"/>
+        <attribut name="KC2min" value="171.00"/>
+        <attribut name="BZ" value="75.00"/>
+        <attribut name="BKmax" value="75.00"/>
     </prestation>
 </calcul-apg-reference-data>
