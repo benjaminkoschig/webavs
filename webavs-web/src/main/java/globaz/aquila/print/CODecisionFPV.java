@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <H1>Description</H1>
@@ -170,11 +171,14 @@ public class CODecisionFPV extends CODocumentManager {
                         try {
                             EBillSftpProcessor.getInstance();
                             traiterDecisionEBillAquila(curContentieux.getCompteAnnexe());
-                            eBillHelper.ajouteCompteurEBillToDocumentNotes(factureEBill, getDocumentInfo(), getSession());
+                            // n'ajoute pas le compteur si on est sur une étape en masses (avec un processus parent) car déjà présent
+                            if (Objects.isNull(this.getParent())) {
+                                eBillHelper.ajouteCompteurEBillToMemoryLog(factureEBill, getMemoryLog(), getDocumentInfo(), getSession(), this.getClass().getName());
+                            }
                         } catch (Exception exception) {
                             LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
 
-                            // transfert les erreurs dans l'email pour les étapes en masses
+                            // transfert les erreurs dans l'email
                             this.log(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage() + " [" + getTransition().getEtapeSuivante().getLibActionLibelle() + "] " , FWMessage.WARNING);
 
                             // transfert les erreurs dans l'email pour les étapes manuelles
@@ -214,7 +218,7 @@ public class CODecisionFPV extends CODocumentManager {
 
                 FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(curContentieux.getSection(), getSession());
                 String reference = referencesDecision.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, hasAttachedDocuments() ? getAttachedDocuments() : getParent().getAttachedDocuments(), CODecision.class.getSimpleName(), false);
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, hasAttachedDocuments() ? getAttachedDocuments() : getParent().getAttachedDocuments(), CODecision.class.getSimpleName(), true);
 
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBill(compteAnnexe, entete, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, curContentieux.getDateExecution(), curContentieux.getSection(), EBillTypeDocument.DECISION);
