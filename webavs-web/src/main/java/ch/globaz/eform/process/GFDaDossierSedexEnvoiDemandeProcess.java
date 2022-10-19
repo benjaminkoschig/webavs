@@ -1,10 +1,13 @@
 package ch.globaz.eform.process;
 
 
+import ch.globaz.common.process.ProcessMailUtils;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFDaDossierModel;
+import ch.globaz.eform.businessimpl.services.sedex.ZipFile;
 import ch.globaz.eform.businessimpl.services.sedex.constant.GFMessageTypeSedex;
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierAttachmentElementSender;
 import ch.globaz.eform.businessimpl.services.sedex.sender.GFDaDossierContactInformationElementSender;
@@ -23,6 +26,8 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.eform.itext.GFDemandeDossier;
 import globaz.eform.itext.GFDocumentPojo;
 import globaz.eform.translation.CodeSystem;
+import globaz.framework.util.FWMemoryLog;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -36,8 +41,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Process qui effectue un envoi SEDEX d'une demande de dossier Da Dossier
@@ -70,7 +77,13 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
             validation.getErrors().forEach(error -> {
                 String errorMsg = error.getDesignation(getSession());
                 _addError(errorMsg);
+                getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
                 LOG.error(errorMsg);
+                try {
+                    sendMail(validation);
+                } catch (PropertiesException e) {
+                    throw new RuntimeException(e);
+                }
             });
             return false;
         }
@@ -171,6 +184,29 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         }
 
         return validation;
+    }
+
+    private void sendMail(ValidationResult validation) throws PropertiesException {
+        String email = GFProperties.EMAIL_DADOSSIER.getValue();
+
+        String subject = getSession().getLabel("MAIL_SUBJECT_ENVOI_DEMANDE_ERROR_SEDEX");
+        String body = getMailBody(validation);
+
+        ProcessMailUtils.sendMail(Collections.singletonList(email), subject, body, Collections.EMPTY_LIST);
+    }
+
+    private String getMailBody(ValidationResult validationResult) {
+        StringBuilder body = new StringBuilder(getSession().getLabel("MAIL_BODY_ENVOI_DEMANDE_MESSAGE_ERROR_SEDEX"));
+
+        body.append(System.getProperty("line.separator"))
+                .append(getSession().getLabel("MAIL_BODY_DEMANDE_ERROR_SECTION_SEDEX"))
+                .append(System.getProperty("line.separator"));
+
+        if (Objects.nonNull(validationResult)) {
+            validationResult.getErrors().forEach(error -> body.append("    ").append(error.getDesignation(getSession())).append(System.getProperty("line.separator")));
+        }
+
+        return body.toString();
     }
 
     @Override

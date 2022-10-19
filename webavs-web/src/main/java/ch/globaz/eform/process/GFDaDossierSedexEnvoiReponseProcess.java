@@ -1,6 +1,8 @@
 package ch.globaz.eform.process;
 
 
+import ch.globaz.common.process.ProcessMailUtils;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.util.NSSUtils;
 import ch.globaz.common.validation.ValidationResult;
 import ch.globaz.eform.business.GFEFormServiceLocator;
@@ -25,6 +27,7 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.eform.itext.GFDocumentPojo;
 import globaz.eform.itext.GFEnvoiDossier;
 import globaz.eform.translation.CodeSystem;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -42,9 +45,11 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -98,7 +103,13 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
             validation.getErrors().forEach(error -> {
                 String errorMsg = error.getDesignation(getSession());
                 _addError(errorMsg);
+                getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
                 LOG.error(errorMsg);
+                try {
+                    sendMail(validation);
+                } catch (PropertiesException e) {
+                    throw new RuntimeException(e);
+                }
             });
             return false;
         }
@@ -214,6 +225,28 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
         return validation;
     }
 
+    private void sendMail(ValidationResult validation) throws PropertiesException {
+        String email = GFProperties.EMAIL_DADOSSIER.getValue();
+
+        String subject = getSession().getLabel("MAIL_SUBJECT_ENVOI_RECEPTION_ERROR_SEDEX");
+        String body = getMailBody(validation);
+
+        ProcessMailUtils.sendMail(Collections.singletonList(email), subject, body, Collections.EMPTY_LIST);
+    }
+
+    private String getMailBody(ValidationResult validationResult) {
+        StringBuilder body = new StringBuilder(getSession().getLabel("MAIL_BODY_ENVOI_RECEPTION_MESSAGE_ERROR_SEDEX"));
+
+        body.append(System.getProperty("line.separator"))
+                .append(getSession().getLabel("MAIL_BODY_ENVOI_RECEPTION_ERROR_SECTION_SEDEX"))
+                .append(System.getProperty("line.separator"));
+
+        if (Objects.nonNull(validationResult)) {
+            validationResult.getErrors().forEach(error -> body.append("    ").append(error.getDesignation(getSession())).append(System.getProperty("line.separator")));
+        }
+
+        return body.toString();
+    }
 
     @Override
     protected String getEMailObject() {
