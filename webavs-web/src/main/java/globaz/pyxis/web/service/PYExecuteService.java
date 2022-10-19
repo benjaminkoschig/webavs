@@ -677,6 +677,8 @@ public class PYExecuteService extends BProcess {
             adresseSimpleModel.setAttention(addressDTO.getAttention());
             adresseSimpleModel.setRue(addressDTO.getStreet());
             adresseSimpleModel.setNumeroRue(addressDTO.getStreetNumber());
+            adresseSimpleModel.setLigneAdresse2(addressDTO.getComplementAdresse1());
+            adresseSimpleModel.setLigneAdresse3(addressDTO.getComplementAdresse2());
 
             LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
             localiteSimpleModel.setNumPostal(addressDTO.getPostalCode());
