@@ -1925,4 +1925,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         }
     }
 
+    public String getNumCompteBancaire(){
+        return getOrReloadAdressePaiementData().getCompte();
+    }
+
 }
