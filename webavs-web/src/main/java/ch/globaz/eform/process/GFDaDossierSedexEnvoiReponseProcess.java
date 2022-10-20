@@ -97,22 +97,25 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
             attachmentsPath = new ArrayList<>();
         }
 
-        ValidationResult validation = envoyerReponse(model, documentType, attachmentsPath, getSession());
+        try {
+            ValidationResult validation = envoyerReponse(model, documentType, attachmentsPath, getSession());
 
-        if (validation.hasError()) {
-            validation.getErrors().forEach(error -> {
-                String errorMsg = error.getDesignation(getSession());
-                getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
-                LOG.error(errorMsg);
-            });
-            sendMail(validation);
-            return false;
+            if (validation.hasError()) {
+                validation.getErrors().forEach(error -> {
+                    String errorMsg = error.getDesignation(getSession());
+                    getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
+                    LOG.error(errorMsg);
+                });
+                sendMail(validation);
+                return false;
+            }
+
+            //suppression du sous dossier de partage
+            //TODO à faire, supprimé par manque de temps
+        } finally {
+            closeBsession();
         }
 
-        //suppression du sous dossier de partage
-        //TODO à faire, supprimé par manque de temps
-
-        closeBsession();
         LOG.info("Fin du process d'information.");
         return true;
     }
@@ -269,6 +272,4 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
     private void closeBsession() {
         BSessionUtil.stopUsingContext(this);
     }
-
-
 }
