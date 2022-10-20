@@ -4,8 +4,6 @@
 package globaz.ij.process;
 
 import ch.globaz.common.util.Dates;
-import ch.globaz.ij.business.services.IJPrononceService;
-import ch.globaz.ij.business.services.IJServiceLocator;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -395,7 +393,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
 
         // génère les attestations originales
-        createAttestation(annee, dateDebut, dateFin, map, false);
+        createAttestation(annee, dateDebut, dateFin, map, false, isImpotSource(prononce));
 
         // si il y a des copies d'attestations à générer
         if (!mapFisc.isEmpty()) {
@@ -405,18 +403,22 @@ public class IJGenererAttestationsProcess extends BProcess {
 
             // génère les copies d'attestations regroupées par canton (cas avec impôt source)
             for (Map.Entry<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> entry : mapFiscRegroupedByCanton.entrySet()) {
-                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true);
+                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true,isImpotSource(prononce) );
             }
         }
 
         return true;
     }
 
+    public boolean isImpotSource(IJPrononce prononce) {
+        return prononce == null ? false : prononce.getSoumisImpotSource();
+    }
+
     private boolean findOneImpotSourceForTiers(Map<Key, ArrayList<AttestationsInfos>> mapFisc, String idTiers) {
         boolean foundOneImpotSource = false;
         for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
             for (AttestationsInfos attestationsInfos : entry.getValue()) {
-                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc() && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc()) {
                     foundOneImpotSource = true;
                     break;
                 }
@@ -581,20 +583,15 @@ public class IJGenererAttestationsProcess extends BProcess {
                         // set le flag isCopyFisc qui définit si le document est une copie au fisc
                         ai.setIsCopyFisc(isCopyFisc);
 
-                        if (!totalMontantImpotSource.isZero()) {
-                            // évite l'envoi de lettre entete en doublon pour le même canton
-                            if (!cantonsLettreEntete.contains(canton)) {
-                                cantonsLettreEntete.add(canton);
-                                // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
-                                ai.setIsAddLettreEntete(true);
-                            }
+                        // évite l'envoi de lettre entete en doublon pour le même canton
+                        if (!cantonsLettreEntete.contains(canton)) {
+                            cantonsLettreEntete.add(canton);
+                            // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
+                            ai.setIsAddLettreEntete(true);
                         }
                     }
-
-                    // set le flag isHasCopyFisc pour les documents original et pour la copie
-                    if (!totalMontantImpotSource.isZero()) {
-                        ai.setIsHasCopyFisc(true);
-                    }
+//                     set le flag isHasCopyFisc pour les documents original et pour la copie
+                    ai.setIsHasCopyFisc(true);
                 }
             }
         } catch (Exception e) {
@@ -646,7 +643,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         return (Double.parseDouble(totalMontantIJ) != 0) && (IIJPrestation.CS_NORMAL.equals(prest.getCsType()) || IIJPrestation.CS_RESTITUTION.equals(prest.getCsType()));
     }
 
-    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy) throws Exception {
+    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy, boolean impotSource) throws Exception {
         IJAttestations attestations = new IJAttestations(getSession());
         attestations.setAttestationsMap(map);
         attestations.setDateDebut(dateDebut);
@@ -657,6 +654,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setIsGenerationUnique(isGenerationUnique);
         attestations.setAttestationCopy(isAttestationCopy);
+        attestations.setImpotSource(impotSource);
         attestations.executeProcess();
     }
 

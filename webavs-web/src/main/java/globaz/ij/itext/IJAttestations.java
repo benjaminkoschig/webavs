@@ -129,6 +129,9 @@ public class IJAttestations extends FWIDocumentManager {
 
     private String cantonAttestationCopyFisc = "";
 
+    private boolean isImpotSource = false;
+
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -393,10 +396,9 @@ public class IJAttestations extends FWIDocumentManager {
                     message.format(new Object[] { totalMontantCoti.toStringFormat() }, buffer, new FieldPosition(0))
                             .toString());
 
-            if (!totalMontantImpot.isZero()) {
+            if (isImpotSource) {
 
                 parametres.put("PARAM_FIELD_IMPOT", document.getTextes(3).getTexte(12).toString());
-
                 buffer.setLength(0);
                 message = createMessageFormat(buffer);
                 buffer.setLength(0);
@@ -1199,6 +1201,13 @@ public class IJAttestations extends FWIDocumentManager {
 
     public void setCantonAttestationCopyFisc(String cantonAttestation) {
         this.cantonAttestationCopyFisc = cantonAttestation;
+    }
+    public boolean isImpotSource() {
+        return isImpotSource;
+    }
+
+    public void setImpotSource(boolean impotSource) {
+        isImpotSource = impotSource;
     }
 
 }
