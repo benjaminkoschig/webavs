@@ -28,8 +28,6 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
      * 
      */
     private static final long serialVersionUID = 1L;
-    public final static String BVR = "210002";
-    public final static String QR = "210003";
     public final static String CODE_ISO_MONNAIE_CHF = "CHF";
     public final static String CODE_PAYS_SUISSE = "CH";
     public static final String FIELD_CODEISOMONBON = "CODEISOMONBON";
@@ -56,7 +54,10 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
     public static final String FIELD_VALEURCONVERSION = "VALEURCONVERSION";
 
     public static final String TABLE_CAOPOVP = "CAOPOVP";
+
     public final static String VIREMENT = "210001";
+    public final static String BVR = "210002";
+    public final static String QR = "210003";
 
     private IntAdressePaiement _adressePaiement = null;
     private TIAdressePaiementData _adressePaiementData = null;

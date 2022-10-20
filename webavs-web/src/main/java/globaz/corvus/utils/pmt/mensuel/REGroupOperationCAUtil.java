@@ -2,11 +2,7 @@ package globaz.corvus.utils.pmt.mensuel;
 
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.corvus.api.retenues.IRERetenues;
-import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
-import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
-import globaz.corvus.db.rentesaccordees.REPaiementRentes;
-import globaz.corvus.db.rentesaccordees.REPrestationAccordeeBloquee;
-import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.db.retenues.RERetenuesPaiement;
 import globaz.corvus.db.retenues.RERetenuesPaiementManager;
 import globaz.corvus.module.compta.AREModuleComptable;
@@ -32,14 +28,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.api.APICompteAnnexe;
-import globaz.osiris.api.APIEcriture;
-import globaz.osiris.api.APIGestionComptabiliteExterne;
-import globaz.osiris.api.APIGestionRentesExterne;
-import globaz.osiris.api.APIOperationOrdreVersement;
-import globaz.osiris.api.APIReferenceRubrique;
-import globaz.osiris.api.APIRubrique;
-import globaz.osiris.api.APISection;
+import globaz.osiris.api.*;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -53,6 +42,7 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +82,7 @@ public class REGroupOperationCAUtil {
      */
     public class OrdreVersement {
         public String idAdrPmt = "";
+        public String idReferenceQR = "";
         public String idRubrique = "";
         public FWCurrency montant = new FWCurrency(0);
     }
@@ -703,11 +694,16 @@ public class REGroupOperationCAUtil {
         ordreVersement.setCodeISOMonnaieBonification(session
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(session.getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
-        ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+
+        if (JadeStringUtil.isBlankOrZero(referenceQR)) {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
+        } else {
+            ordreVersement.setTypeVirement(APIOperationOrdreVersement.QR);
+            ordreVersement.setReferencePaiement(referenceQR);
+        }
 
         ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_RENTES_AVS_AI);
         ordreVersement.setMotif(motifVersement);
-        ordreVersement.setReferencePaiement(referenceQR);
         compta.addOperation(ordreVersement);
 
         return null;
@@ -833,11 +829,13 @@ public class REGroupOperationCAUtil {
                         nomCache = nomCache.substring(0, 39);
                     }
 
+                    String referenceQR = PRTiersHelper.getReferenceQR(session, ov.idReferenceQR);
+
                     compta.addVersement(session, transaction, String.valueOf(idOperationEcritureVersement),
                             idCompteAnnexe, String.valueOf(idSection), ov.idRubrique, idCompteCourant,
                             ov.montant.toString(),
                             PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(process.getDateEcheancePaiement()), "",
-                            String.valueOf(idOperationOV), ov.idAdrPmt, process.getIdOrganeExecution(), motif, nomCache);
+                            String.valueOf(idOperationOV), ov.idAdrPmt, process.getIdOrganeExecution(), motif, referenceQR, nomCache);
 
                     this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD, ov.idRubrique, ov.montant);
                 }
@@ -1064,7 +1062,7 @@ public class REGroupOperationCAUtil {
     }
 
     public void initOperation(BSession session, String idCompteAnnexe, String idCompteCourant,
-            String idTiersBeneficiaire, String idRubriqueOV, String idTiersAdrPmt, String idAdrPmt) throws Exception {
+            String idTiersBeneficiaire, String idRubriqueOV, String idTiersAdrPmt, String idAdrPmt, String idReferenceQR) throws Exception {
 
         // si compte annexe différent du précédant, on ne garde pas la section de blocage
         if ((this.idCompteAnnexe != null) && !this.idCompteAnnexe.equals(idCompteAnnexe)) {
@@ -1082,6 +1080,7 @@ public class REGroupOperationCAUtil {
 
         ov.idRubrique = idRubriqueOV;
         ov.idAdrPmt = idAdrPmt;
+        ov.idReferenceQR = idReferenceQR;
         isOperationSurJournalExterne = false;
     }
 

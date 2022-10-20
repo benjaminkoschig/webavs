@@ -23,9 +23,6 @@ public class REPaiementRentes extends BEntity {
     private String idAdressePmtRente = "";
     private String idAdresseStd = "";
 
-    // private String nom = "";
-    // private String prenom = "";
-    // private String nss = "";
     private String idCompteAnnexe = "";
     private String idRenteAccordee = "";
     private String idTiersAdressePmt = "";
@@ -42,9 +39,9 @@ public class REPaiementRentes extends BEntity {
     private String nssTBE = "";
     private String prenomTBE = "";
     private String referencePmt = "";
+    private String idReferenceQR = "";
     private String sousTypeCodePrestation = "";
 
-    // private String libelleEcriture = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -104,12 +101,7 @@ public class REPaiementRentes extends BEntity {
         // TODO valider la récupération de l'id !!!
         idAdressePmtAllocNoel = statement.dbReadNumeric(REPaiementRentesManager.FIELDNAME_ID_ADR_PMT_ALLOCATION_NOEL);
 
-        // nom = statement.dbReadString(REPaiementRentesManager.FIELDNAME_NOM);
-        // prenom =
-        // statement.dbReadString(REPaiementRentesManager.FIELDNAME_PRENOM);
-        // nss =
-        // statement.dbReadString(REPaiementRentesManager.FIELDNAME_NUM_AVS);
-
+        idReferenceQR = statement.dbReadString(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
         isPrestationBloquee = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_PRESTATION_BLOQUEE);
         isRetenue = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_RETENUES);
         nomTBE = statement.dbReadString(REPaiementRentesManager.FIELDNAME_NOM_BP);
@@ -212,30 +204,6 @@ public class REPaiementRentes extends BEntity {
         return montant;
     }
 
-    // public String getNom() {
-    // return nom;
-    // }
-    //
-    // public void setNom(String nom) {
-    // this.nom = nom;
-    // }
-    //
-    // public String getPrenom() {
-    // return prenom;
-    // }
-    //
-    // public void setPrenom(String prenom) {
-    // this.prenom = prenom;
-    // }
-    //
-    // public String getNss() {
-    // return nss;
-    // }
-    //
-    // public void setNss(String nss) {
-    // this.nss = nss;
-    // }
-
     public String getNomTBE() {
         return nomTBE;
     }
@@ -307,13 +275,6 @@ public class REPaiementRentes extends BEntity {
         this.isAttenteMajRetenue = isAttenteMajRetenue;
     }
 
-    // public String getLibelleEcriture() {
-    // return libelleEcriture;
-    // }
-    //
-    // public void setLibelleEcriture(String libelleEcriture) {
-    // this.libelleEcriture = libelleEcriture;
-    // }
 
     public void setIsPrestationBloquee(Boolean isPrestationBloquee) {
         this.isPrestationBloquee = isPrestationBloquee;
@@ -347,6 +308,14 @@ public class REPaiementRentes extends BEntity {
         this.referencePmt = referencePmt;
     }
 
+    public String getIdReferenceQR() {
+        return idReferenceQR;
+    }
+
+    public void setIdReferenceQR(String idReferenceQR) {
+        this.idReferenceQR = idReferenceQR;
+    }
+
     /**
      * @param sousTypeCodePrestation
      *            the sousTypeCodePrestation to set
@@ -367,9 +336,6 @@ public class REPaiementRentes extends BEntity {
         sb.append("\t").append("codePrestation = ").append(codePrestation).append("\n");
         sb.append("\t").append("idAdressePmtRente = ").append(idAdressePmtRente).append("\n");
         sb.append("\t").append("idAdresseStd = ").append(idAdresseStd).append("\n");
-        // sb.append("\t").append("nom = ").append(nom).append("\n");
-        // sb.append("\t").append("prenom = ").append(prenom).append("\n");
-        // sb.append("\t").append("nss = ").append(nss).append("\n");
         sb.append("\t").append("nomTBE = ").append(nomTBE).append("\n");
         sb.append("\t").append("prenomTBE = ").append(prenomTBE).append("\n");
         sb.append("\t").append("nssTBE = ").append(nssTBE).append("\n");

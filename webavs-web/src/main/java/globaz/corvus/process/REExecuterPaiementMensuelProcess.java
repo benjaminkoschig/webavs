@@ -404,7 +404,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                             grpOP = new REGroupOperationCAUtil();
                             grpOP.initOperation(getSession(), rente.getIdCompteAnnexe(), idCompteCourant,
                                     rente.getIdTiersBeneficiaire(), idRubriqueOV, rente.getIdTiersAdressePmt(),
-                                    getIdAdrPmt(rente));
+                                    getIdAdrPmt(rente), rente.getIdReferenceQR());
 
                         }
 
@@ -449,7 +449,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                             grpOP = new REGroupOperationCAUtil();
                             grpOP.initOperation(getSession(), rente.getIdCompteAnnexe(), idCompteCourant,
                                     rente.getIdTiersBeneficiaire(), idRubriqueOV, rente.getIdTiersAdressePmt(),
-                                    getIdAdrPmt(rente));
+                                    getIdAdrPmt(rente), rente.getIdReferenceQR());
 
                             // Le motif de versement est généré par rapport à la 1ère
                             // écriture trouvée pour

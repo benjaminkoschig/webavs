@@ -19,6 +19,8 @@ public class CARentesOrdreVersement {
     private String idOrganeExecution;
     protected BPreparedStatement insert;
     private String motif;
+    private String referenceQR;
+    private String typeVirement;
     private String natureOrdre;
     private String nomCache;
     private String numeroTransaction;
@@ -75,6 +77,8 @@ public class CARentesOrdreVersement {
         insert.setString(6, getNomCache());
         insert.setInt(7, JadeStringUtil.parseInt(getNumeroTransaction(), 0));
         insert.setInt(8, JadeStringUtil.parseInt(getNatureOrdre(), 0));
+        insert.setString(9, getReferenceQR());
+        insert.setString(10, getTypeVirement());
     }
 
     public String getIdAdressePaiement() {
@@ -127,12 +131,10 @@ public class CARentesOrdreVersement {
         sql += CAOrdreVersement.FIELD_CODEISOMONDEP + ", ";
         sql += CAOrdreVersement.FIELD_COURSCONVERSION + ", ";
         sql += CAOrdreVersement.FIELD_VALEURCONVERSION + ", ";
-        sql += CAOrdreVersement.FIELD_REFERENCEBVR + ", ";
         sql += CAOrdreVersement.FIELD_IDBANQUE + ", ";
         sql += CAOrdreVersement.FIELD_NOCOMPTE + ", ";
         sql += CAOrdreVersement.FIELD_ESTBLOQUE + ", ";
         sql += CAOrdreVersement.FIELD_ESTRETIRE + ", ";
-        sql += CAOrdreVersement.FIELD_TYPEVIREMENT + ", ";
         sql += CAOrdreVersement.FIELD_TYPEORDRE + ", ";
         sql += CAOrdreVersement.FIELD_CODEISOPAYS + ", ";
 
@@ -144,16 +146,17 @@ public class CARentesOrdreVersement {
         sql += CAOrdreVersement.FIELD_NOMCACHE + ", ";
         sql += CAOrdreVersement.FIELD_NUMTRANSACTION + ", ";
         sql += CAOrdreVersement.FIELD_NATUREORDRE + ", ";
+        sql += CAOrdreVersement.FIELD_REFERENCEBVR + ", ";
+        sql += CAOrdreVersement.FIELD_TYPEVIREMENT + ", ";
         sql += BSpy.FIELDNAME;
         sql += ") VALUES (";
 
-        sql += "'CHF', 'CHF', 0.00, 0, '', 0, '0', '', ";
+        sql += "'CHF', 'CHF', 0.00, 0, 0, '0', '', ";
         sql += BConstants.DB_BOOLEAN_FALSE_DELIMITED + ", ";
-        sql += CAOrdreVersement.VIREMENT + ", ";
         sql += "'" + APIOperation.CAOPERATIONORDREVERSEMENT + "', ";
         sql += "'', ";
 
-        sql += "?, ?, ?, ?, ?, ?, ?, ?, ";
+        sql += "?, ?, ?, ?, ?, ?, ?, ?, ?, ?,";
         sql += "'" + new BSpy(transaction.getSession()).getFullData() + "'";
         sql += ")";
 
@@ -194,5 +197,21 @@ public class CARentesOrdreVersement {
 
     public void setNumeroTransaction(String numTransaction) {
         numeroTransaction = numTransaction;
+    }
+
+    public String getReferenceQR() {
+        return referenceQR;
+    }
+
+    public void setReferenceQR(String referenceQR) {
+        this.referenceQR = referenceQR;
+    }
+
+    public String getTypeVirement() {
+        return typeVirement;
+    }
+
+    public void setTypeVirement(String typeVirement) {
+        this.typeVirement = typeVirement;
     }
 }
