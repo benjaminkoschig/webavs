@@ -90,7 +90,8 @@ public class AFFacturationOrganesExternesManager extends BManager implements Ser
         }
         sqlWhere += "MFTPAR in (" + CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE + ", "
                 + CodeSystem.PARTIC_AFFILIE_NON_ACTIF_ASSISSTE + ", " + CodeSystem.PARTIC_AFFILIE_REFUGIE + ", "
-                + CodeSystem.PARTIC_AFFILIE_RMCAS + ", " + CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_FAMILLE
+                + CodeSystem.PARTIC_AFFILIE_RMCAS + ", " + CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_FAMILLE +", "
+                + CodeSystem.PARTIC_AFFILIE_NON_ACTIF_BENEFICIAIRE_LPTRA
                 + ")";
 
         if (wantInnerJoinWhitEnteteFacture) {
