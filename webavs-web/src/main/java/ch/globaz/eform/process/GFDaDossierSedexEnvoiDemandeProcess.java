@@ -71,19 +71,22 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         this.setSendCompletionMail(false);
         this.setEMailAddress(GFProperties.EMAIL_DADOSSIER.getValue());
 
-        ValidationResult validation = envoyerDemande(model, getSession());
+        try {
+            ValidationResult validation = envoyerDemande(model, getSession());
 
-        if (validation.hasError()) {
-            validation.getErrors().forEach(error -> {
-                String errorMsg = error.getDesignation(getSession());
-                getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
-                LOG.error(errorMsg);
-            });
-            sendMail(validation);
-            return false;
+            if (validation.hasError()) {
+                validation.getErrors().forEach(error -> {
+                    String errorMsg = error.getDesignation(getSession());
+                    getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
+                    LOG.error(errorMsg);
+                });
+                sendMail(validation);
+                return false;
+            }
+        } finally {
+            closeBsession();
         }
 
-        closeBsession();
         LOG.info("Fin du process d'information.");
         return true;
     }
