@@ -76,15 +76,10 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         if (validation.hasError()) {
             validation.getErrors().forEach(error -> {
                 String errorMsg = error.getDesignation(getSession());
-                _addError(errorMsg);
                 getMemoryLog().logMessage(errorMsg, FWMessage.ERREUR, this.getClass().getName());
                 LOG.error(errorMsg);
-                try {
-                    sendMail(validation);
-                } catch (PropertiesException e) {
-                    throw new RuntimeException(e);
-                }
             });
+            sendMail(validation);
             return false;
         }
 
