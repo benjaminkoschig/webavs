@@ -22,6 +22,7 @@ import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -4593,6 +4594,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                         || (JadeDateUtil.isDateMonthYearBefore(dateDepot, dateMax) || dateDepot.equals(dateMax))) {
                     mfFiltre.add(membreFamDispo);
                 }
+
+
             }
 
             DroitMembreFamilleSearch searchModel = new DroitMembreFamilleSearch();

@@ -544,6 +544,27 @@ public abstract class ASFSituationFamiliale extends BEntity {
                         enfantAjoute = true;
                     }
                 }
+                if(enfantAjoute && (!enfant.getParent1().getIdMembreFamille().equals(idMembreRequerant) && !enfant.getParent2().getIdMembreFamille().equals(idMembreRequerant)) ){
+                    try {
+                        SFPeriodeManager periodeMgr = new SFPeriodeManager();
+                        periodeMgr.setSession(getSession());
+                        periodeMgr.setForIdMembreFamille(enfant.getIdMembreFamille());
+                        periodeMgr.setForCsTypePeriodeIn(Arrays.asList(ch.globaz.hera.business.constantes.ISFPeriode.CS_TYPE_PERIODE_ENFANT_CONJOINT));
+                        periodeMgr.find(BManager.SIZE_NOLIMIT);
+                        if(periodeMgr.getSize() == 0){
+                            enfantAjoute = false;
+                        }else{
+                            List<ISFMembreFamille> recueillant = new ArrayList<>();
+                            for(SFPeriode periode: periodeMgr.<SFPeriode>toList()) {
+                                    if(!apercuRelationConjoint.getIdTiers1().equals(periode.getIdRecueillant()) ){
+                                        enfantAjoute = false;
+                                    }
+                            }
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 if (enfantAjoute) {
                     // On va récupéré la nationalité de l'enfant dans les tiers.
                     if (!JadeStringUtil.isIntegerEmpty(enfant.getIdTiers())) {
