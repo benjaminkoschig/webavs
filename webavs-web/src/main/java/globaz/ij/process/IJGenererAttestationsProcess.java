@@ -404,7 +404,6 @@ public class IJGenererAttestationsProcess extends BProcess {
             // génère les copies d'attestations regroupées par canton (cas avec impôt source)
             for (Map.Entry<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> entry : mapFiscRegroupedByCanton.entrySet()) {
                 createAttestation(annee, dateDebut, dateFin, entry.getValue(), true,isImpotSource(prononce) );
-                //TODO ASI mettre true si il faut pas de taux a zero pour le fisc
             }
         }
 
@@ -419,7 +418,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         boolean foundOneImpotSource = false;
         for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
             for (AttestationsInfos attestationsInfos : entry.getValue()) {
-                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc() && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc()) {
                     foundOneImpotSource = true;
                     break;
                 }
@@ -584,20 +583,15 @@ public class IJGenererAttestationsProcess extends BProcess {
                         // set le flag isCopyFisc qui définit si le document est une copie au fisc
                         ai.setIsCopyFisc(isCopyFisc);
 
-                        if (!totalMontantImpotSource.isZero()) {
-                            // évite l'envoi de lettre entete en doublon pour le même canton
-                            if (!cantonsLettreEntete.contains(canton)) {
-                                cantonsLettreEntete.add(canton);
-                                // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
-                                ai.setIsAddLettreEntete(true);
-                            }
+                        // évite l'envoi de lettre entete en doublon pour le même canton
+                        if (!cantonsLettreEntete.contains(canton)) {
+                            cantonsLettreEntete.add(canton);
+                            // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
+                            ai.setIsAddLettreEntete(true);
                         }
                     }
-
-                    // set le flag isHasCopyFisc pour les documents original et pour la copie
-                    if (!totalMontantImpotSource.isZero()) {
-                        ai.setIsHasCopyFisc(true);
-                    }
+//                     set le flag isHasCopyFisc pour les documents original et pour la copie
+                    ai.setIsHasCopyFisc(true);
                 }
             }
         } catch (Exception e) {
