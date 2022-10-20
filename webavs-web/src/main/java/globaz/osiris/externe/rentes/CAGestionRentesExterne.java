@@ -17,6 +17,7 @@ import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.db.journal.operation.CAUpdateOperationOrdreVersementInEtatVerse;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreVersement;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.rentes.check.montantpargenre.CARentesCheckMontantParGenre;
 import globaz.osiris.db.rentes.check.montantpargenre.CARentesCheckMontantParGenreManager;
@@ -98,7 +99,7 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
     @Override
     public void addVersement(BSession session, BTransaction transaction, String idOperation, String idCompteAnnexe,
             String idSection, String idRubrique, String idCompteCourant, String montant, String date, String libelle,
-            String idOperationVersement, String idAdressePaiement, String idOrganeExecution, String motif,
+            String idOperationVersement, String idAdressePaiement, String idOrganeExecution, String motif, String referenceQR,
             String nomCache) throws Exception {
         if ((journal == null) || journal.isNew()) {
             throw new Exception(session.getLabel("5157"));
@@ -143,6 +144,12 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
         ordreVersement.setIdOrdreGroupe(ordreGroupe.getIdOrdreGroupe());
         ordreVersement.setIdOrganeExecution(idOrganeExecution);
         ordreVersement.setMotif(motif);
+        ordreVersement.setReferenceQR(referenceQR);
+        if (JadeStringUtil.isBlankOrZero(referenceQR)) {
+            ordreVersement.setTypeVirement(CAOrdreVersement.VIREMENT);
+        } else {
+            ordreVersement.setTypeVirement(CAOrdreVersement.QR);
+        }
         ordreVersement.setNomCache(nomCache);
         ordreVersement.setNumeroTransaction("" + countVersement);
         ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_RENTES_AVS_AI);

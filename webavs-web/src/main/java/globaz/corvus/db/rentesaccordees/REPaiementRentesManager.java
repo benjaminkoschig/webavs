@@ -134,6 +134,8 @@ public class REPaiementRentesManager extends BManager {
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
                 .append(REPrestationsAccordees.FIELDNAME_REFERENCE_PMT).append(", ");
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
+                .append(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR).append(", ");
+        sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
                 .append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION).append(", ");
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(POINT)
                 .append(REPrestationsAccordees.FIELDNAME_SOUS_TYPE_GENRE_PRESTATION).append(", ");

@@ -51,7 +51,7 @@ public interface APIGestionRentesExterne {
      */
     public void addVersement(BSession session, BTransaction transaction, String idOperation, String idCompteAnnexe,
             String idSection, String idRubrique, String idCompteCourant, String montant, String date, String libelle,
-            String idOperationVersement, String idAdressePaiement, String idOrganeExecution, String motif,
+            String idOperationVersement, String idAdressePaiement, String idOrganeExecution, String motif, String referenceQR,
             String nomCache) throws Exception;
 
     /**
