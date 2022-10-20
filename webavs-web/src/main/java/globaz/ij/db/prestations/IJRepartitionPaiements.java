@@ -789,6 +789,7 @@ public class IJRepartitionPaiements extends BEntity implements PRHierarchique, I
             idTiersAdressePaiement = "";
             idDomaineAdressePaiement = "";
             idAffilieAdrPmt = "";
+            idReferenceQR = "";
         }
     }
 

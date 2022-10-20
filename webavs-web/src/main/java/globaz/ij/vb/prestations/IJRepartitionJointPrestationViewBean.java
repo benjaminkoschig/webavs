@@ -648,7 +648,7 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         resetIdReferenceQR();
     }
 
-    private void resetIdReferenceQR() {
+    public void resetIdReferenceQR() {
         setIdReferenceQR("");
     }
 
@@ -662,6 +662,7 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
         super.setIdTiers(idTiers);
         retourDepuisPyxis = true;
         tiersBeneficiaireChange = true;
+        resetIdReferenceQR();
     }
 
     /**
