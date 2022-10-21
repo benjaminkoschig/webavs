@@ -191,7 +191,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   }
 
   function changeNumeroCompte() {
-	  if (isQRIban() && document.forms[0].elements('isVersementEmployeur')[0].checked) {
+	  if (isQRIban() && document.forms[0].elements('isVersementEmployeur')[0].checked ) {
 		  $('#referenceQR').show();
 		  $('#spaceReferenceQR').show();
 	  } else {
@@ -207,7 +207,6 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   }
 
   function manageAdressePaiement() {
-	  changeNumeroCompte();
 	  if (document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>) {
 		  $(".withoutAdressePaiement").hide();
 		  $(".withAdressePaiement").show();
@@ -215,6 +214,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 		  $(".withoutAdressePaiement").show();
 		  $(".withAdressePaiement").hide();
 	  }
+	  changeNumeroCompte();
   }
 
   function boutonIndependantChange() {
@@ -756,7 +756,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
 						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
-						<TR><TD id="spaceReferenceQR" colspan="6">&nbsp;</TD></TR>
+<%--						<TR><TD id="spaceReferenceQR" colspan="6">&nbsp;</TD></TR>--%>
 						<TR id="referenceQR">
 							<TD ><ct:FWLabel key="JSP_REFERENCE_QR"/></TD>
 							<TD >

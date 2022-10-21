@@ -473,16 +473,18 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
 
     public static String getIdReferenceQRFomSituationProfessionnelle(BSession session, String idSituationProfessionnelle){
         String idReferenceQR = StringUtils.EMPTY;
-        try {
-            APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
-            mgr.setSession(session);
-            mgr.setForIdSituationProfessionnelle(idSituationProfessionnelle);
-            mgr.find(BManager.SIZE_NOLIMIT);
-            if (mgr.size() > 0) {
-                return ((APSituationProfessionnelle)mgr.get(0)).getIdReferenceQR();
+        if(!JadeStringUtil.isBlankOrZero(idSituationProfessionnelle)) {
+            try {
+                APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
+                mgr.setSession(session);
+                mgr.setForIdSituationProfessionnelle(idSituationProfessionnelle);
+                mgr.find(BManager.SIZE_NOLIMIT);
+                if (mgr.size() > 0) {
+                    return ((APSituationProfessionnelle) mgr.get(0)).getIdReferenceQR();
+                }
+            } catch (Exception e) {
+                JadeLogger.error(e, "Erreur lors du chargement de la situation professionnelle");
             }
-        }catch(Exception e){
-            JadeLogger.error(e, "Erreur lors du chargement de la situation professionnelle");
         }
         return idReferenceQR;
     }
