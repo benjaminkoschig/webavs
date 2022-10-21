@@ -56,11 +56,12 @@ function del() {
 
 
 function init(){
+	isNew = <%=viewBean.isNew()%>;
 	changeNumeroCompte();
 }
 
 function changeNumeroCompte() {
-	if (isQRIban()) {
+	if (isQRIban() && !isNew) {
 		$('#referenceQR').show();
 	} else {
 		$('#referenceQR').hide();
