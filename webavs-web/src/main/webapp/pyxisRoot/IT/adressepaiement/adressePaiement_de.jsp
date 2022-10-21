@@ -185,6 +185,7 @@ function isQRIban() {
 			<input type="hidden"  name="forIdTiers" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdTiers()) ? viewBean.getIdTiers() : viewBean.getIdTiersAdresse()%>">
 		    <input type="hidden"  name="forIdAdressePaiement" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdAdressePaiement()) ? viewBean.getIdAdressePaiement() : viewBean.getOldIdAdressePaiement()%>">
 			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaire()%>">
+			<input type="hidden"  name="hideColonneSelection" value="yes">
 
 			<%
 				Object[] referencePaiementSelectionMethodsName = new Object[]{ new String[]{ }};
@@ -192,12 +193,13 @@ function isQRIban() {
 			%>
 			<ct:FWSelectorTag
 					name="referencePaiementSelector1"
-
 					methods="<%=referencePaiementSelectionMethodsName%>"
 					providerApplication ="pyxis"
 					providerPrefix="TI"
 					providerAction ="pyxis.tiers.referencePaiement.chercher"
 					providerActionParams ="<%=referencePaiementChercherParams%>"
+					target="fr_main"
+					redirectUrl="<%=mainServletPath%>"
 			/>
 
 		</td>
