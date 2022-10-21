@@ -174,7 +174,6 @@ function isQRIban() {
 			providerActionParams ="<%=adresseParams%>"
 		/>
 
-		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 	</td>
 </tr>
 
