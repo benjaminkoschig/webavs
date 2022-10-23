@@ -94,6 +94,14 @@ public class GFDemandeViewBean extends BJadePersistentObjectViewBean {
         daDossier.setIdTierAdministration(idTierAdministration);
     }
 
+    public String getSedexIdAdministration() {
+        return daDossier.getSedexIdCaisse();
+    }
+
+    public void setSedexIdAdministration(String sedexIdAdministration) {
+        daDossier.setSedexIdCaisse(sedexIdAdministration);
+    }
+
     @Override
     public void add() throws Exception {
     }

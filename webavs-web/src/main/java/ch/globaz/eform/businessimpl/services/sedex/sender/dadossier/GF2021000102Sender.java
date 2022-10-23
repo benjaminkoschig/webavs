@@ -70,6 +70,9 @@ public class GF2021000102Sender extends GFDaDossierSender<Message> {
         header.setMessageId(elements.get(GFDaDossierHeaderElementSender.MESSAGE_ID));
         header.setBusinessProcessId(identifiantGenerator.generateBusinessProcessId());
         header.setOurBusinessReferenceId(elements.get(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID));
+        if (elements.containsKey(GFDaDossierHeaderElementSender.YOUR_BUSINESS_REFERENCE_ID)){
+            header.setYourBusinessReferenceId(elements.get(GFDaDossierHeaderElementSender.YOUR_BUSINESS_REFERENCE_ID));
+        }
         header.setMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getMessageType());
         header.setSubMessageType(GFMessageTypeSedex.TYPE_2021_TRANSFERE.getSubMessageType());
         header.setSubject(elements.get(GFDaDossierHeaderElementSender.SUBJECT));
