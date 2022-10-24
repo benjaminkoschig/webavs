@@ -76,4 +76,4 @@ INSERT INTO SCHEMA.FWSROLP (FCOMMENT,KROLE,PSPY) VALUES ('Da Dossier','rGFDaDoss
 
 INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('Y','Y','N','Y','eform.envoi.envoi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('Y','Y','N','Y','eform.demande.demande','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('N','Y','N','N','eform.suivi.suivi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('N','Y','N','Y','eform.suivi.suivi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
