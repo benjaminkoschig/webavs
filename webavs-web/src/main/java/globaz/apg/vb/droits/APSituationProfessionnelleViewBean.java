@@ -341,6 +341,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         } else {
             setIdTiersPaiementEmployeur(null);
             setIdDomainePaiementEmployeur(null);
+            resetIdReferenceQR();
         }
     }
 
@@ -1597,6 +1598,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         numAffilieEtTypeAffiliationEmployeur = "";
         genreAffiliation = "";
         retourDepuisPyxis = true;
+        resetIdReferenceQR();
     }
 
     /**
@@ -1614,7 +1616,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         resetIdReferenceQR();
     }
 
-    private void resetIdReferenceQR() {
+    public void resetIdReferenceQR() {
         setIdReferenceQR("");
     }
 

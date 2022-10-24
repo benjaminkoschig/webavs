@@ -966,6 +966,7 @@ public class IJRepartitionJointPrestationHelper extends PRAbstractHelper {
         IJRepartitionJointPrestationViewBean spviewBean = (IJRepartitionJointPrestationViewBean) viewBean;
 
         spviewBean.setIsCreationNouvelleRepartition(true);
+        spviewBean.resetIdReferenceQR();
 
         IPRAffilie affilie;
         affilie = PRAffiliationHelper.getEmployeurParNumAffilie(session, spviewBean.getNumAffilieEmployeur(),

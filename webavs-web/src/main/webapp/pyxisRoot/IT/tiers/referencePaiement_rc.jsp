@@ -8,6 +8,7 @@
 	actionNew  +=	(request.getParameter("colonneSelection")==null)?"":"&colonneSelection="+request.getParameter("colonneSelection");
 	actionNew  += "&forIdTiers=" + ((request.getParameter("forIdTiers")!=null)?request.getParameter("forIdTiers"):"") ;
 	actionNew  += "&forIdAdressePaiement=" + ((request.getParameter("forIdAdressePaiement")!=null)?request.getParameter("forIdAdressePaiement"):"") ;
+	actionNew  += "&hideColonneSelection=" + ((request.getParameter("hideColonneSelection")!=null)?request.getParameter("hideColonneSelection"):"") ;
 	rememberSearchCriterias = true;
 %>
 <%-- /tpl:put --%>
@@ -42,6 +43,7 @@ usrAction = "pyxis.tiers.referencePaiement.lister";
 			<input type="hidden"  name="forDateFin" value='<%= JACalendar.todayJJsMMsAAAA() %>'/>
 			<input type="hidden"  name="forIdTiers" value='<%=(request.getParameter("forIdTiers")==null)?"":request.getParameter("forIdTiers") %>'/>
 			<input type="hidden"  name="forIdAdressePaiement" value='<%=(request.getParameter("forIdAdressePaiement")==null)?"":request.getParameter("forIdAdressePaiement") %>'/>
+			<input type="hidden"  name="hideColonneSelection" value='<%=(request.getParameter("hideColonneSelection")==null)?"":request.getParameter("hideColonneSelection") %>'/>
 		</tr>
 
           		<%-- /tpl:put --%>

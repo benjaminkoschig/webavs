@@ -403,7 +403,7 @@
 
 						<%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
 							<td valign="top" align="left">
-								<span><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
+								<span class="adressePaiement assure employeur personnalise"><ct:FWLabel key="JSP_REFERENCE_QR"/></span>
 								<span class="adressePaiement assure employeur personnalise">
 
 									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>">

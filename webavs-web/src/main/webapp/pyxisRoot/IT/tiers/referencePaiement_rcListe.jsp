@@ -8,6 +8,7 @@
     session.setAttribute("listViewBean",viewBean);
 	menuName="reference-paiement";
 	detailLink ="pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId=";
+	isSelection=!("yes".equals(request.getParameter("hideColonneSelection"))) && isSelection;
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <style>
@@ -17,7 +18,6 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
 	<%-- tpl:put name="zoneHeaders"  --%>
-
 	<Th nowrap width="16">&nbsp;</Th>
     <Th>Etichetta</Th>
     <Th>Riferimento QR</Th>
@@ -31,7 +31,6 @@
     boolean sameAdresse = false;
     int pos = 0;
     %>
-
     <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
     <%-- tpl:put name="zoneCondition"  --%>
@@ -49,25 +48,23 @@
 				}
 			}
     %>
-
     <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineStyle.jspf" %>
 	<%-- tpl:put name="zoneList"  --%>
 <%
 	globaz.pyxis.db.tiers.TIReferencePaiementViewBean entity = (globaz.pyxis.db.tiers.TIReferencePaiementViewBean) viewBean.getEntity(i);
-	actionDetail = "parent.location.href='"+detailLink+entity.getIdReferenceQR()+"&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection")+"'";
+	actionDetail = "parent.location.href='"+detailLink+entity.getIdReferenceQR()+"&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection")+"&hideColonneSelection="+request.getParameter("hideColonneSelection")+"'";
 %>
 <%
 	if  (!sameAdresse) {
 		pos ++;
 %>
       <TD class="mtd" width="16" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;">
-			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection");%>
+			<%String url = request.getContextPath()+"/pyxis?userAction=pyxis.tiers.referencePaiement.afficher&selectedId="+entity.getIdReferenceQR()+"&colonneSelection="+request.getParameter("colonneSelection")+"&hideColonneSelection="+request.getParameter("hideColonneSelection");%>
 			<ct:menuPopup menu="reference-paiement" detailLabelId="Detail" detailLink="<%=url%>">
 	 			<ct:menuParam key="idReference" value="<%=entity.getIdReferenceQR()%>"/>
 			</ct:menuPopup>
       </TD>
-
       <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getLibelle()%>&nbsp;</TD>
       <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getReferenceQR()%>&nbsp;</TD>
       <TD class="mtd" onClick="<%=actionDetail%>" align="right" style="<%=(sameAdresse)?"":"border-top:solid 1px silver"%>;"><%=entity.getDateDebut()%>&nbsp;</TD>
