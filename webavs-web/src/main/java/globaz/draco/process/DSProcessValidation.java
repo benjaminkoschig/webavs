@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class DSProcessValidation extends BProcess implements FWViewBeanInterface {
@@ -514,31 +513,30 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
             DSApplication app = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
                     .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
-            DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession());
+            DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession(), decl);
             if(app != null && app.isValidationControlesSupplementaires()) {
 
-                if (controlesSup.masseAFetAVScorrespondentPas(decl)) {
+                if (controlesSup.masseAFetAVScorrespondentPas()) {
                     return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_AVS_MASSE_AF") + " " + decl.getNumeroAffilie());
                 }
 
                 // Vérifier que la masse PC Familles soit identique à celle de la masse AF VD
-                if (controlesSup.massePCFamilleEtMasseAFVDNeCorrespondentPas(decl)) {
+                if (controlesSup.massePCFamilleEtMasseAFVDNeCorrespondentPas()) {
                     return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_PC_FAMILLE_MASSE_AFVD") + " " + decl.getNumeroAffilie());
                 }
 
                 // S’il y a différents cantons, les masses doivent être indiquées dans chaque assurance
-                if (controlesSup.masseCantonPasDansAssurance(decl)) {
+                if (controlesSup.masseCantonPasDansAssurance()) {
                     return returnError( getSession().getLabel("ERREUR_VALIDATION_ASSURANCE_CANTON") + " " + decl.getNumeroAffilie());
                 }
 
                 // Le montant AC + AC2 = le montant AVS pour toutes les saisies individuelles ayant de l’AC
-                Optional<DSInscriptionsIndividuelles> dsind = controlesSup.inscriptionsMontantACetAVSneCorrespondentPas(decl);
-                if (dsind.isPresent()) {
-                    return returnError(getSession().getLabel("ERREUR_VALIDATION_MONTANTAC_AC2_MONTANTAVS") + " " + decl.getNumeroAffilie() + " / " + dsind.get().getNssFormate());
+                if (controlesSup.inscriptionsMontantACetAVSneCorrespondentPas()) {
+                    return returnError(getSession().getLabel("ERREUR_VALIDATION_MONTANTAC_AC2_MONTANTAVS") + " " + decl.getNumeroAffilie());
                 }
             }
 
-            if(app != null && controlesSup.contientPasToutesLesAssurancesRequises(decl, app.listValidationAssurances())) {
+            if(app != null && controlesSup.contientPasToutesLesAssurancesRequises(app.listValidationAssurances())) {
                 return returnError(getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES") + " " + decl.getNumeroAffilie());
             }
 
