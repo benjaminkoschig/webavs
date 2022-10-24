@@ -105,13 +105,12 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         TITiersViewBean tiers = (TITiersViewBean) mgr.getFirstEntity();
 
         AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
-        search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
-        search.setForCodeAdministration(model.getCodeCaisse());
+        search.setForIdTiersAdministration(model.getIdTierAdministration());
 
-        String sedexId = ((AdministrationComplexModel) TIBusinessServiceLocator.getAdministrationService()
+        model.setSedexIdCaisse(((AdministrationComplexModel) TIBusinessServiceLocator.getAdministrationService()
                 .find(search).getSearchResults()[0])
                 .getAdmin()
-                .getSedexId();
+                .getSedexId());
 
         GFDocumentPojo documentPojo = GFDocumentPojo.builder()
                 .nom(tiers.getDesignation1())
@@ -133,7 +132,6 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         //Attribution des identifiants
         model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
         model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
-        model.setSedexIdCaisse(sedexId);
 
         //Définition des informations complémentaire en vue de la persistence de la demande
         model.setOriginalType(GFTypeDADossier.RECEPTION.getCodeSystem());
@@ -144,7 +142,7 @@ public class GFDaDossierSedexEnvoiDemandeProcess extends BProcess {
         dataMessageSedex.put(GFDaDossierHeaderElementSender.MESSAGE_ID, model.getMessageId());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID, model.getOurBusinessRefId());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SENDER_ID, GFProperties.SENDER_ID.getValue());
-        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, sedexId);
+        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, model.getSedexIdCaisse());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SUBJECT,
                 session.getLabel("SUBJECT_2021_101_SEDEX") + " – " + tiers.getDesignation2() + ", " + tiers.getDesignation1());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.TEST_DELIVERY_FLAG, GFProperties.DA_DOSSIER_MODE_TEST.getValue());

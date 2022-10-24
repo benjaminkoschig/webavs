@@ -97,22 +97,25 @@ public final class ZipUtils {
 
             while ((entry = zis.getNextEntry()) != null) {
                 //création des sous-dossiers
-                if (entry.getName().endsWith("/")) {
-                    Path pathDir = Paths.get(destDir + File.separator + entry.getName());
+                if (entry.getName().contains("/")) {
+                    String[] fullDirPart = entry.getName().split("/");
+                    String[] dirPart = new String[fullDirPart.length - 1];
+                    System.arraycopy(fullDirPart, 0, dirPart, 0, fullDirPart.length - 1);
+                    String partDir = String.join(File.separator, dirPart);
+                    Path pathDir = Paths.get(destDir + File.separator + partDir);
                     if (!Files.exists(pathDir)) {
                         Files.createDirectories(pathDir);
                     }
-                } else {
-                    byte[] data = new byte[bufferSize];
-
-                    FileOutputStream fos = new FileOutputStream(Paths.get(destDir + File.separator + entry.getName()).toFile());
-                    bufferedOutputStream = new BufferedOutputStream(fos, bufferSize);
-                    while ((count = zis.read(data, 0, bufferSize)) != -1) {
-                        bufferedOutputStream.write(data, 0, count);
-                    }
-                    bufferedOutputStream.flush();
-                    bufferedOutputStream.close();
                 }
+                byte[] data = new byte[bufferSize];
+
+                FileOutputStream fos = new FileOutputStream(Paths.get(destDir + File.separator + entry.getName()).toFile());
+                bufferedOutputStream = new BufferedOutputStream(fos, bufferSize);
+                while ((count = zis.read(data, 0, bufferSize)) != -1) {
+                    bufferedOutputStream.write(data, 0, count);
+                }
+                bufferedOutputStream.flush();
+                bufferedOutputStream.close();
             }
             zis.close();
         } catch (Exception e) {

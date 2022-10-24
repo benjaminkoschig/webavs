@@ -48,7 +48,7 @@ CREATE TABLE SCHEMA.GF_DA_DOSSIER
     ID                          NUMERIC(15,0) 	NOT NULL,
     MESSAGE_ID                  VARCHAR(255) 	NOT NULL UNIQUE,
     NSS_AFFILIER 	            VARCHAR(255) 	NOT NULL,
-    CODE_CAISSE                 NUMERIC(8,0) 	NOT NULL,
+    CODE_CAISSE                 VARCHAR(8) 	    NOT NULL,
     ID_TIER_ADMINISTRATION      NUMERIC(15,0) 	NOT NULL,
     SEDEX_ID_CAISSE             VARCHAR(14) 	NOT NULL,
     ORIGINAL_TYPE 	            VARCHAR(255) 	NOT NULL,
@@ -76,4 +76,4 @@ INSERT INTO SCHEMA.FWSROLP (FCOMMENT,KROLE,PSPY) VALUES ('Da Dossier','rGFDaDoss
 
 INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('Y','Y','N','Y','eform.envoi.envoi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('Y','Y','N','Y','eform.demande.demande','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
-INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('N','Y','N','N','eform.suivi.suivi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+INSERT INTO SCHEMA.FWSREP (FISADD,FISREAD,FISREMOVE,FISUPDATE,KELEMENT,KROLE,PSPY) VALUES ('N','Y','N','Y','eform.suivi.suivi','rGFDaDossier',to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');

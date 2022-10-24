@@ -94,6 +94,7 @@
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 
 			<INPUT type="hidden" id="idTierAdministration" name="idTierAdministration" value="<%=viewBean.getIdTierAdministration()%>" />
+			<INPUT type="hidden" id="sedexIdAdministration" name="sedexIdAdministration" value="<%=viewBean.getSedexIdAdministration()%>" />
 			<INPUT type="hidden" name="userAction" value="<%=userActionValue%>" />
 			<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>' />
 			<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>' />
@@ -180,6 +181,7 @@
 										function(element){
 											this.value=$(element).attr('admin.codeAdministration') + ' - ' +  $(element).attr('tiers.designation1') + ' ' + $(element).attr('tiers.designation2') + ' ' + $(element).attr('tiers.designation3');
 											$('#idTierAdministration').val($(element).attr('admin.idTiersAdministration'));
+											$('#sedexIdAdministration').val($(element).attr('admin.sedexId'));
 										}
 									</script>
 								</ct:widgetJSReturnFunction>

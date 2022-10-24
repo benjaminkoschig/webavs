@@ -133,15 +133,6 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
         TITiersViewBean tiers = (TITiersViewBean) mgr.getFirstEntity();
 
-        AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
-        search.setForGenreAdministration(CodeSystem.GENRE_ADMIN_CAISSE_COMP);
-        search.setForCodeAdministration(model.getCodeCaisse());
-
-        String sedexId = ((AdministrationComplexModel) TIBusinessServiceLocator.getAdministrationService()
-                .find(search).getSearchResults()[0])
-                .getAdmin()
-                .getSedexId();
-
         GFDocumentPojo documentPojo = GFDocumentPojo.builder()
                 .nom(tiers.getDesignation1())
                 .prenom(tiers.getDesignation2())
@@ -159,23 +150,38 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
 
         Map<GFDaDossierElementSender, String> dataMessageSedex = new HashMap<>();
 
-        model.setSedexIdCaisse(sedexId);
-
         //Attribution des identifiants
         if (StringUtils.isBlank(model.getMessageId())) {
             model.setMessageId(sender.getIdentifiantGenerator().generateMessageId());
         }
-        model.setOurBusinessRefId(sender.getIdentifiantGenerator().generateBusinessReferenceId());
 
         //Définition des informations complémentaire en vue de la persistence de la demande
+
+        //complément des informations sur la caisse destinatrice et le type original si nécessaire (nb: envoie sans sollicitation)
+        if (StringUtils.isBlank(model.getId())) {
+            model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
+        }
         model.setType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
         model.setStatus(GFStatusDADossier.SEND.getCodeSystem());
         model.setUserGestionnaire(session.getUserInfo().getVisa());
 
+        if (StringUtils.isBlank(model.getSedexIdCaisse())) {
+            AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
+            search.setForIdTiersAdministration(model.getIdTierAdministration());
+
+            model.setSedexIdCaisse(((AdministrationComplexModel) TIBusinessServiceLocator.getAdministrationService()
+                    .find(search).getSearchResults()[0])
+                    .getAdmin()
+                    .getSedexId());
+        }
+
         dataMessageSedex.put(GFDaDossierHeaderElementSender.MESSAGE_ID, model.getMessageId());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.OUR_BUSINESS_REFERENCE_ID, model.getOurBusinessRefId());
+        if (!StringUtils.isEmpty(model.getYourBusinessRefId())) {
+            dataMessageSedex.put(GFDaDossierHeaderElementSender.YOUR_BUSINESS_REFERENCE_ID, model.getYourBusinessRefId());
+        }
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SENDER_ID, GFProperties.SENDER_ID.getValue());
-        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, sedexId);
+        dataMessageSedex.put(GFDaDossierHeaderElementSender.RECIPIENT_ID, model.getSedexIdCaisse());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.SUBJECT,
                 session.getLabel("SUBJECT_2021_102_SEDEX") + " – " + tiers.getDesignation2() + ", " + tiers.getDesignation1());
         dataMessageSedex.put(GFDaDossierHeaderElementSender.TEST_DELIVERY_FLAG, GFProperties.DA_DOSSIER_MODE_TEST.getValue());
@@ -213,7 +219,6 @@ public class GFDaDossierSedexEnvoiReponseProcess extends BProcess {
             sender.send();
 
             if (StringUtils.isBlank(model.getId())) {
-                model.setOriginalType(GFTypeDADossier.SEND_TYPE.getCodeSystem());
                 GFEFormServiceLocator.getGFDaDossierDBService().create(model);
             } else {
                 GFEFormServiceLocator.getGFDaDossierDBService().update(model);
