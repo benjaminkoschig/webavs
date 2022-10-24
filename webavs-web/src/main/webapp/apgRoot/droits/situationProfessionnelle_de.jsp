@@ -191,7 +191,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   }
 
   function changeNumeroCompte() {
-	  if (isQRIban() && document.forms[0].elements('isVersementEmployeur')[0].checked) {
+	  if (isQRIban() && document.forms[0].elements('isVersementEmployeur')[0].checked ) {
 		  $('#referenceQR').show();
 		  $('#spaceReferenceQR').show();
 	  } else {
