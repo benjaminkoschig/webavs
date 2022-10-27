@@ -443,8 +443,8 @@
             var oName = elems(i).name;
 
             if (oName.length > 0) {
-                // dans l'etat "Valide" les champs ne sont pas modifiable et disabled
-                <%if(IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat())){%>
+                // dans l'etat "Valide ou "Courant Validé" (Partiel) les champs ne sont pas modifiable et disabled
+                <%if(IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())){%>
                 document.getElementsByName(oName)[0].disabled = 'true';
                 document.getElementsByName(oName)[0].readOnly = 'true';
                 document.getElementsByName(oName)[0].tabindex = '-1';
