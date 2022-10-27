@@ -165,7 +165,6 @@ public class APImportationCalculAcor {
         List<APPrestationAcor> prestations = new ArrayList<>();
         for (PeriodeServiceApgType periodeServiceApgType:
                 fCalcul.getCarteApg().getPeriodeService()) {
-            List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
             JADate dateDebutPeriode;
             try {
                 dateDebutPeriode = JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()));
@@ -181,6 +180,7 @@ public class APImportationCalculAcor {
             APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, dateDebutPeriode, dateFinPeriode);
             for (VersementMoisComptableApgType moisComptableApgType :
                     fCalcul.getVersementMoisComptable()) {
+                List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
                 for (VersementApgType versementApgType :
                         moisComptableApgType.getVersement()) {
                     createAndMapRepartitionsByVersementApg(session, periodeServiceApgType, repartitions, baseCalcul, versementApgType);
@@ -232,36 +232,37 @@ public class APImportationCalculAcor {
                                                        APBaseCalcul baseCalcul,
                                                        VersementBeneficiaireApgType versementAssure) throws PRACORException {
         if(Objects.nonNull(versementAssure)) {
-            APRepartitionPaiementAcor repartitionPaiementAcor = createAndMapRepartitionByBeneficiaire(session,
+            List<APRepartitionPaiementAcor> repartitionPaiementAcors = createAndMapRepartitionByBeneficiaire(session,
                                                                                                                periodeServiceApgType,
                                                                                                                baseCalcul,
                                                                                                                versementAssure);
-            if(Objects.nonNull(repartitionPaiementAcor)){
-                repartitions.add(repartitionPaiementAcor);
+            if(!repartitionPaiementAcors.isEmpty()){
+                repartitions.addAll(repartitionPaiementAcors);
             }
         }
     }
 
-    private APRepartitionPaiementAcor createAndMapRepartitionByBeneficiaire(BSession session,
+    private List<APRepartitionPaiementAcor> createAndMapRepartitionByBeneficiaire(BSession session,
                                                                             PeriodeServiceApgType periodeServiceApgType,
                                                                             APBaseCalcul baseCalcul,
                                                                             VersementBeneficiaireApgType versementBeneficiaireApgType)
-                                                                                throws PRACORException {
+                                                                                    throws PRACORException {
+        List<APRepartitionPaiementAcor> repartitionPaiementAcors = new ArrayList<>();
         for (DecompteApgType decompteApgType :
                 versementBeneficiaireApgType.getDecompte()) {
             for (PeriodeDecompteApgType periodeDecompteApgType :
                     decompteApgType.getPeriodeDecompte()) {
                 if (periodeDecompteApgType.getDebut().equals(periodeServiceApgType.getDebut()) &&
                         periodeDecompteApgType.getFin().equals(periodeServiceApgType.getFin())) {
-                    return APPrestationAcor.createRepartitionPaiement(session,
+                    repartitionPaiementAcors.add(APPrestationAcor.createRepartitionPaiement(session,
                             baseCalcul,
                             versementBeneficiaireApgType,
                             periodeDecompteApgType,
-                            fCalcul);
+                            fCalcul));
                 }
             }
         }
-        return null;
+        return repartitionPaiementAcors;
     }
 
     private APPrestationAcor createAndMapPrestation(APDroitLAPG droit,
