@@ -400,7 +400,7 @@ public abstract class APBasesCalculBuilder {
 
             // si le contrat se termine durant la période du droit, le
             // bénéficiaire de la prestation sera modifié
-            if (!JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
+            if (!(droit instanceof APDroitAPG) && !JAUtil.isDateEmpty(sitPro.getDateFinContrat())) {
                 commands.add(new EmployeurCommand(sitPro.getDateFinContrat(), false, nbContrats.intValue(), sitPro));
             }
 
