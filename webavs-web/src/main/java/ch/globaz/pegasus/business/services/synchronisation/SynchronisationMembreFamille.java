@@ -209,11 +209,7 @@ public class SynchronisationMembreFamille {
 
         try {
             MembreFamilleVO[] searchMembresFamilleDisponibles = HeraServiceLocator.getMembreFamilleService()
-                    .searchMembresFamilleRequerantDomaineRentes(idTiersRequerant, dateRechecheMembre);
-            //
-            // MembreFamilleVO[] searchMembresFamilleDisponiblesStandard = HeraServiceLocator.getMembreFamilleService()
-            // .searchMembresFamilleRequerantDomaineStandard(idTiersRequerant, dateRechecheMembre);
-
+                    .searchMembresFamilleRequerantDomaineRentesEtendues(idTiersRequerant, dateRechecheMembre);
             return HeraServiceLocator.getMembreFamilleService().filtreMembreFamilleWithDate(
                     searchMembresFamilleDisponibles, dateRechecheMembre);
 
