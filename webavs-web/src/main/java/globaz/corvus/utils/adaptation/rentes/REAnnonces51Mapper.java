@@ -255,14 +255,14 @@ public class REAnnonces51Mapper {
         ann51_03.setQuotite(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getProzentualAnteil()));
 //        ann51_03.setFractionRente(JadeStringUtil.substring(getChampEnregistrement(annonce), 47, 1));
 
-        // 6 | Ancien revenu annuel déterminant moyen en francs
-        ann51_03.setAncienRAM(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getDurchschnittlichesJahreseinkommen()));
-
-        // 7 | Ancienne RO remplacéé
-        ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getMonatsbetragErsetzteOrdentlicheRente()));
-
         RRBestandesmeldung9Type.ZusaetzlicheAngabenZAS.BisherigeWerte bisherigeWerte = zusaetzlicheAngabenZAS.getBisherigeWerte();
         if (Objects.nonNull(bisherigeWerte)) {
+            // 6 | Ancien revenu annuel déterminant moyen en francs
+            ann51_03.setAncienRAM(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()));
+
+            // 7 | Ancienne RO remplacéé
+            ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetragErsetzteOrdentlicheRente()));
+
             // 8 | Ancien montant mensuel
             ann51_03.setAncienMontantMensuel(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetrag()));
 
@@ -289,19 +289,19 @@ public class REAnnonces51Mapper {
                     ann51_03.setAncienCodeCasSpecial5(PRConverterUtils.formatCodeCasSpecial(codesCasSpeciaux.get(4)));
                 }
             }
+
+            // 15 | Ancien revenu annuel moyen sans BTE
+            ann51_03.setAncienRAMSansBTE(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDJEohneErziehungsgutschrift()));
+
+            // 16 | Anciennes BTE prises en comtpe
+            ann51_03.setAncienneBTEMoyennePrisCompte(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAngerechneteErziehungsgutschrift()));
+
+            // 17 | Ancien supplément d'ajournement en francs
+            ann51_03.setAncienSupplementAjournement(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAufschubszuschlag()));
         }
 
         // 14 | Observations de la centrale
         ann51_03.setObservationCentrale(zusaetzlicheAngabenZAS.getBemerkungenZAS());
-
-        // 15 | Ancien revenu annuel moyen sans BTE
-        ann51_03.setAncienRAMSansBTE(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getDJEohneErziehungsgutschrift()));
-
-        // 16 | Anciennes BTE prises en comtpe
-        ann51_03.setAncienneBTEMoyennePrisCompte(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getAngerechneteErziehungsgutschrift()));
-
-        // 17 | Ancien supplément d'ajournement en francs
-        ann51_03.setAncienSupplementAjournement(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getAufschubszuschlag()));
 
         // 18 | Réserve: à blanc
 
@@ -631,10 +631,11 @@ public class REAnnonces51Mapper {
 
             // 23 | Survenance de l'événement assuré - ayant droit
             ann51_02.setSurvenanceEvenAssure(PRConverterUtils.formatDateToMMAA(ivDaten.getDatumVersicherungsfall()));
+
+            // 27 | Genre du droit à l'API
+            ann51_02.setGenreDroitAPI(PRConverterUtils.formatShortToString(ivDaten.getArtHEAnspruch()));
         }
 
-        // 27 | Genre du droit à l'API
-        ann51_02.setGenreDroitAPI(PRConverterUtils.formatShortToString(hilflosenentschaedigung.getLeistungsbeschreibung().getBerechnungsgrundlagen().getIVDaten().getArtHEAnspruch()));
 
         List<Short> codesCasSpeciaux = hilflosenentschaedigung.getLeistungsbeschreibung().getSonderfallcodeRente();
         if (Objects.nonNull(codesCasSpeciaux)) {
