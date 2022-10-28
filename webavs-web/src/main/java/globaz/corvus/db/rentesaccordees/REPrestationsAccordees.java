@@ -214,7 +214,7 @@ public class REPrestationsAccordees extends BEntity {
         isAttenteMajBlocage = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_ATTENTE_MAJ_BLOCAGE);
         isAttenteMajRetenue = statement.dbReadBoolean(REPrestationsAccordees.FIELDNAME_IS_ATTENTE_MAJ_RETENUE);
         typeDeMiseAJours = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_TYPE_MAJ);
-        idReferenceQR = statement.dbReadString(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
+        idReferenceQR = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
     }
 
     /**
@@ -332,7 +332,7 @@ public class REPrestationsAccordees extends BEntity {
                 this._dbWriteString(statement.getTransaction(), sousTypeGenrePrestation, "sousTypeGenrePrestation"));
 
         statement.writeField(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR,
-                this._dbWriteString(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "idReferenceQR"));
 
     }
 

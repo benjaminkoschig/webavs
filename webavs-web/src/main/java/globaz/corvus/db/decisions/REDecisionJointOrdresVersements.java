@@ -721,7 +721,7 @@ public class REDecisionJointOrdresVersements extends BEntity {
             referencePourLePaiementPrestationAccordeeOrdreVersement = statement
                     .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_ORDRE_VERSEMENT);
             idReferenceQRPrestationAccordeeOrdreVersement = statement
-                    .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_ORDRE_VERSEMENT);
+                    .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_ORDRE_VERSEMENT);
 
             idCompteAnnexePrestationAccordeeOrdreVersement = Long
                     .parseLong(statement
@@ -746,7 +746,7 @@ public class REDecisionJointOrdresVersements extends BEntity {
         referencePourLePaiementPrestationAccordeeDecision = statement
                 .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_PAIEMENT_PRESTATION_ACCORDEE_DECISION);
         idReferenceQRPrestationAccordeeDecision = statement
-                .dbReadString(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_DECISION);
+                .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_REFERENCE_QR_PRESTATION_ACCORDEE_DECISION);
 
         idCompteAnnexePrestationAccordeeDecision = Long.parseLong(statement
                 .dbReadNumeric(REDecisionJointOrdresVersements.ALIAS_ID_COMPTE_ANNEXE_PRESTATION_ACCORDEE_DECISION));
