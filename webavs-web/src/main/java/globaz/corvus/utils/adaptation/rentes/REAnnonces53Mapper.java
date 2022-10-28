@@ -27,10 +27,10 @@ public class REAnnonces53Mapper {
         ann53.setCodeEnregistrement01("01");
 
         // 3 | Numéro de la Caisse
-        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(0,3));
+        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(3,6));
+        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann53.setNumeroAnnonce(PRConverterUtils.formatLongToString(ordentlicheRente.getMeldungsnummer()));
@@ -248,11 +248,11 @@ public class REAnnonces53Mapper {
         // 5 | Fraction de la rente --> quotité à présent
         ann53_03.setQuotite(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getProzentualAnteil()));
 
-        // 6 | Ancien revenu annuel déterminant moyen en francs
-        ann53_03.setAncienRAM(PRConverterUtils.formatBigDecimalToString(zusaetzlicheAngabenZAS.getBisherigeWerte().getDurchschnittlichesJahreseinkommen()));
-
         RRBestandesmeldung10Type.ZusaetzlicheAngabenZAS.BisherigeWerte bisherigeWerte = zusaetzlicheAngabenZAS.getBisherigeWerte();
         if (Objects.nonNull(bisherigeWerte)) {
+            // 6 | Ancien revenu annuel déterminant moyen en francs
+            ann53_03.setAncienRAM(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()));
+
             // 7 | Ancien supplément d'ajournement
             ann53_03.setAncienSupplementAjourn(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAufschubszuschlag()));
 
@@ -311,10 +311,10 @@ public class REAnnonces53Mapper {
         ann53.setCodeEnregistrement01("01");
 
         // 3 | Numéro de la Caisse
-        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()).substring(0,3));
+        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()).substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()).substring(3,6));
+        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()).substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann53.setNumeroAnnonce(PRConverterUtils.formatLongToString(ausserordentlicheRente.getMeldungsnummer()));
@@ -461,10 +461,10 @@ public class REAnnonces53Mapper {
         ann53.setCodeEnregistrement01("01");
 
         // 3 | Numéro de la Caisse
-        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()).substring(0,3));
+        ann53.setNumeroCaisse(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()).substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()).substring(3,6));
+        ann53.setNumeroAgence(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()).substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann53.setNumeroAnnonce(PRConverterUtils.formatLongToString(hilflosenentschaedigung.getMeldungsnummer()));
@@ -538,10 +538,10 @@ public class REAnnonces53Mapper {
             // 19 | Survenance de l'événement assuré
             ann53_02.setSurvenanceEvenAssure(PRConverterUtils.formatDateToMMAA(ivDaten.getDatumVersicherungsfall()));
 
+            // 21 | Genre du droit à l'API --> n'existe pas dans une rente ordinaire
+            ann53_02.setGenreDroitAPI(PRConverterUtils.formatShortToString(ivDaten.getArtHEAnspruch()));
         }
 
-        // 21 | Genre du droit à l'API --> n'existe pas dans une rente ordinaire
-        ann53_02.setGenreDroitAPI(PRConverterUtils.formatShortToString(hilflosenentschaedigung.getLeistungsbeschreibung().getBerechnungsgrundlagen().getIVDaten().getArtHEAnspruch()));
 
         List<Short> codesCasSpeciaux = hilflosenentschaedigung.getLeistungsbeschreibung().getSonderfallcodeRente();
         if (Objects.nonNull(codesCasSpeciaux)) {
