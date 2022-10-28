@@ -10,12 +10,16 @@ import java.util.Optional;
 import acor.apg.xsd.apg.out.*;
 import ch.globaz.common.util.Dates;
 import ch.globaz.eavs.utils.StringUtils;
+import globaz.apg.api.droits.IAPDroitAPG;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APPeriodeAPG;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
 import globaz.apg.module.calcul.APResultatCalcul;
 import globaz.apg.module.calcul.APResultatCalculSituationProfessionnel;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
+import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
@@ -109,97 +113,68 @@ public class APPrestationAcor {
         }
     }
 
-    public void mapInformationFromMontantJournalierApg(APDroitLAPG droit, FCalcul fCalcul, PeriodeServiceApgType periode) {
-        PeriodeMontantJournApgType periodeMontantJournApgType = fCalcul.getPeriodeMontantJourn().stream().filter(b ->
-                comparePeriod2IsInsidePeriod1(
-                        b.getDebut(),
-                        b.getFin(), periode.getDebut(),
-                        periode.getFin())
-                ).findFirst()
-                .orElse(null);
-        if(Objects.nonNull(periodeMontantJournApgType)){
+    public void mapInformationFromMontantJournalierApg(APPeriodeWrapper periode, FCalcul fCalcul, String genreService) {
+        Optional<PeriodeMontantJournApgType> periodeMontantJournApgTypeOpt = fCalcul.getPeriodeMontantJourn()
+                .stream().filter(p -> isInPeriode(p.getDebut(), p.getFin(), periode)).findFirst();
+        if(periodeMontantJournApgTypeOpt.isPresent()){
+            PeriodeMontantJournApgType periodeMontantJournApgType = periodeMontantJournApgTypeOpt.get();
             setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
-            setNombreJoursSupplementaires(0);
             setRevenuDeterminantMoyen(new FWCurrency(periodeMontantJournApgType.getRjm()));
+            if(!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+                setNombreJoursSoldes(periodeMontantJournApgType.getNbJours());
+            }
+        }else {
+            setAllocationJournalier(new FWCurrency(0));
+            setAllocationExploitation(new FWCurrency(0));
+            setRevenuDeterminantMoyen(new FWCurrency(0));
         }
+        setNombreJoursSupplementaires(0);
     }
 
-    public void mapInformationFromPeriodeServiceApg(BSession session, String genreService, PeriodeServiceApgType periodeServiceApgType) {
-
-        if (Objects.nonNull(periodeServiceApgType.getPartAssure())) {
-            setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
-        }
-        IAPReferenceDataPrestation ref = retrieveReferenceData(session, periodeServiceApgType, genreService);
+    public void mapInformationFromPeriodeServiceApg(BSession session, String genreService, APPeriodeWrapper periode, FCalcul fCalcul) {
+        IAPReferenceDataPrestation ref = retrieveReferenceData(session, periode, genreService);
         setRevision(ref.getNoRevision());
         setFraisGardeMax(ref.getMontantMaxFraisGarde());
+        setDateDebut(Dates.toDate(periode.getDateDebut()));
+        setDateFin(Dates.toDate(periode.getDateFin()));
+        if(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+            Optional<PeriodeServiceApgType> periodeServiceApgType = fCalcul.getCarteApg()
+                    .getPeriodeService()
+                    .stream().filter(p -> isInPeriode(p.getDebut(), p.getFin(), periode)).findFirst();
+            periodeServiceApgType.ifPresent(serviceApgType -> setNombreJoursSoldes(serviceApgType.getNbJours()));
+        }
+    }
+
+    private boolean isSamePeriode(Integer debut, Integer fin, APPeriodeWrapper periodeWrapper){
         try {
-            setDateDebut(Dates.toDate(JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getDebut()))));
-            setDateFin(Dates.toDate(JADate.newDateFromAMJ(String.valueOf(periodeServiceApgType.getFin()))));
+            JADate periodeApgDebut = JADate.newDateFromAMJ(String.valueOf(debut));
+            if(periodeApgDebut.equals(periodeWrapper.getDateDebut())){
+                JADate periodeApgFin = JADate.newDateFromAMJ(String.valueOf(fin));
+                if(periodeApgFin.equals(periodeWrapper.getDateFin())){
+                    return true;
+                }
+            }
+            return false;
         } catch (JAException e) {
-            throw new PRAcorTechnicalException("Formattage des dates de période de service APG incorrect !!!", e);
-        }
-        setNombreJoursSoldes(periodeServiceApgType.getNbJours());
-    }
-
-    public void createAndMapRepartitionPaiementsDecomptes(BSession session,
-                                                          APBaseCalcul baseCalcul,
-                                                          FCalcul fCalcul,
-                                                          VersementMoisComptableApgType moisComptable) {
-        for (VersementMoisComptableApgType versement:
-                fCalcul.getVersementMoisComptable()) {
-            for (VersementApgType versementApg:
-                    versement.getVersement()) {
-                VersementBeneficiaireApgType versementBeneficiaire = findVersementBeneficiaireFederalType(versementApg);
-                addRepartitionsPaiementParBenficiaire(session, baseCalcul, fCalcul, moisComptable, versementBeneficiaire);
-                versementBeneficiaire = findVersementBeneficiaireGenevoisType(versementApg);
-                addRepartitionsPaiementParBenficiaire(session, baseCalcul, fCalcul, moisComptable, versementBeneficiaire);
-            }
+            throw new RuntimeException(e);
         }
     }
 
-    private void addRepartitionsPaiementParBenficiaire(BSession session,
-                                                       APBaseCalcul baseCalcul,
-                                                       FCalcul fCalcul,
-                                                       VersementMoisComptableApgType moisComptable,
-                                                       VersementBeneficiaireApgType versementBeneficiaire) {
-        if(Objects.nonNull(versementBeneficiaire)) {
-            for (DecompteApgType decompteApgType :
-                    versementBeneficiaire.getDecompte()) {
-                addRepartitionPaiementByDecompte(session, baseCalcul, fCalcul, moisComptable, versementBeneficiaire, decompteApgType);
+    private boolean isInPeriode(Integer debut, Integer fin, APPeriodeWrapper periodeWrapper) {
+        try {
+            LocalDate periodeApgDebut = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(debut)));
+            if (periodeApgDebut.isBefore(Dates.toDate(periodeWrapper.getDateDebut())) ||
+                periodeApgDebut.isEqual(Dates.toDate(periodeWrapper.getDateDebut()))) {
+                LocalDate periodeApgFin = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(fin)));
+                if (periodeApgFin.isAfter(Dates.toDate(periodeWrapper.getDateFin())) ||
+                    periodeApgFin.isEqual(Dates.toDate(periodeWrapper.getDateFin()))) {
+                    return true;
+                }
             }
-        }
-    }
-
-    private void addRepartitionPaiementByDecompte(BSession session,
-                                                  APBaseCalcul baseCalcul,
-                                                  FCalcul fCalcul,
-                                                  VersementMoisComptableApgType moisComptable,
-                                                  VersementBeneficiaireApgType versementBeneficiaire,
-                                                  DecompteApgType decompteApgType) {
-        decompteApgType.getPeriodeDecompte().stream().filter(p -> {
-            try {
-                return checkPeriodesDansLeMemeMois(p.getDebut(), p.getFin(), moisComptable.getMoisComptable());
-            } catch (JAException e) {
-                throw new PRAcorTechnicalException(e);
-            }
-        }).forEach(p -> {
-            try {
-                createAndAddRepartitionPaiement(session, baseCalcul, fCalcul, versementBeneficiaire, p);
-            } catch (PRACORException e) {
-                throw new PRAcorTechnicalException(e);
-            }
-        });
-    }
-
-    private void createAndAddRepartitionPaiement(BSession session,
-                                                 APBaseCalcul baseCalcul,
-                                                 FCalcul fCalcul,
-                                                 VersementBeneficiaireApgType versementBeneficiaire,
-                                                 PeriodeDecompteApgType periodeDecompte) throws PRACORException {
-        APRepartitionPaiementAcor repartition = createRepartitionPaiement(session, baseCalcul, versementBeneficiaire, periodeDecompte, fCalcul);
-        if (Objects.nonNull(repartition)) {
-            repartitionPaiements.add(repartition);
+            return false;
+        } catch (JAException e) {
+            throw new RuntimeException(e);
         }
     }
 
