@@ -443,14 +443,20 @@
             var oName = elems(i).name;
 
             if (oName.length > 0) {
+                // dans l'etat "Valide ou "Courant Validé" (Partiel) les champs ne sont pas modifiable et disabled
+                <%if(IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())){%>
+                document.getElementsByName(oName)[0].disabled = 'true';
+                document.getElementsByName(oName)[0].readOnly = 'true';
+                document.getElementsByName(oName)[0].tabindex = '-1';
                 // dans l'etat "Calcule" les champs sont modifiable
-                <%if(IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())){%>
+                <%}else if(IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())){%>
                 //if(! oName.indexOf("codeCasSpeciaux")=='0'){
                 //
                 //	document.getElementsByName(oName)[0].readonly = 'true';
                 //	document.getElementsByName(oName)[0].tabindex = '-1';
                 //	document.getElementsByName(oName)[0].disabled = 'true';
                 //}
+                // dans les autres états les champs ne sont pas modifiable
                 <%}else{%>
                 document.getElementsByName(oName)[0].readOnly = 'true';
                 document.getElementsByName(oName)[0].tabindex = '-1';
@@ -530,8 +536,7 @@
                     <%}%>
                 </TD>
                 <TD>
-                    <A href="#" onclick="window.open('<%=servletContext%>
-                        <%=("/corvus")%>?userAction=<%=globaz.corvus.servlet.IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNssTiersBeneficiaire()%>&amp;idTiersExtraFolder=<%=viewBean.getIdTiersBeneficiaire()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')"><ct:FWLabel
+                    <A href="#" onclick="window.open('<%=servletContext%><%=("/corvus")%>?userAction=<%=globaz.corvus.servlet.IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNssTiersBeneficiaire()%>&amp;idTiersExtraFolder=<%=viewBean.getIdTiersBeneficiaire()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')"><ct:FWLabel
                             key="JSP_LIEN_GED"/></A>
                 </TD>
             </TR>
