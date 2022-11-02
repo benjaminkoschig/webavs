@@ -679,6 +679,7 @@ public class PYExecuteService extends BProcess {
             adresseSimpleModel.setNumeroRue(addressDTO.getStreetNumber());
             adresseSimpleModel.setLigneAdresse2(addressDTO.getComplementAdresse1());
             adresseSimpleModel.setLigneAdresse3(addressDTO.getComplementAdresse2());
+            adresseSimpleModel.setCasePostale(addressDTO.getCasePostale());
 
             LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
             localiteSimpleModel.setNumPostal(addressDTO.getPostalCode());
@@ -776,6 +777,7 @@ public class PYExecuteService extends BProcess {
         adresseSimpleModel.setNumeroRue(addressDTO.getStreetNumber());
         adresseSimpleModel.setLigneAdresse2(addressDTO.getComplementAdresse1());
         adresseSimpleModel.setLigneAdresse3(addressDTO.getComplementAdresse2());
+        adresseSimpleModel.setCasePostale(addressDTO.getCasePostale());
 
 
         LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
@@ -896,6 +898,7 @@ public class PYExecuteService extends BProcess {
         adresseSimpleModel.setNumeroRue(pyAddressDTO.getStreetNumber());
         adresseSimpleModel.setLigneAdresse2(pyAddressDTO.getComplementAdresse1());
         adresseSimpleModel.setLigneAdresse3(pyAddressDTO.getComplementAdresse2());
+        adresseSimpleModel.setCasePostale(pyAddressDTO.getCasePostale());
 
 
         LocaliteSimpleModel localiteSimpleModel = new LocaliteSimpleModel();
