@@ -579,15 +579,13 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             for (int idxCC = 0; idxCC < Math.pow(2, nbEnfants); idxCC++) {
 
                 List<PersonnePCAccordee> combinaisonPersonnes = new ArrayList<PersonnePCAccordee>(parents);
-                int nombreEnfant = 0;
                 for (int idxEnfant = 0; idxEnfant < nbEnfants; idxEnfant++) {
                     if ((idxCC & (int) Math.pow(2, idxEnfant)) > 0) {
                         combinaisonPersonnes.add(enfants.get(idxEnfant));
-                        nombreEnfant++;
                     }
                 }
 
-                context.put(Attribut.NB_ENFANTS_INCLUS,nombreEnfant);
+                context.put(Attribut.NB_ENFANTS_INCLUS, combinaisonPersonnes.size());
 
                 // lance le calcul pour la combinaison
                 CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
