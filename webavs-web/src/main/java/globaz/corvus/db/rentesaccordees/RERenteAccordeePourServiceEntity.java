@@ -457,7 +457,7 @@ public final class RERenteAccordeePourServiceEntity extends BEntity {
                 .dbReadString(REPrestationsAccordees.FIELDNAME_REFERENCE_PMT);
 
         idReferenceQRPrestationAccordee = statement
-                .dbReadString(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
+                .dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_REFERENCE_QR);
 
         idCompteAnnexePrestationAccordee = RERenteAccordeePourServiceEntity.parseLong(
                 statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE),

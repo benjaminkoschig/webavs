@@ -103,7 +103,7 @@ public class RERetenuesPaiement extends BEntity {
         idTypeSection = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_TYPE_SECTION);
         csTypeRetenue = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TYPE_RETENU);
         idTiersAdressePmt = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_TIERS_ADR_PMT);
-        idReferenceQR = statement.dbReadNumeric(FIELDNAME_ID_REFERENCE_QR);
+        idReferenceQR = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_REFERENCE_QR);
         idDomaineApplicatif = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_DOMAINE_APPLICATIF);
         noFacture = statement.dbReadString(RERetenuesPaiement.FIELDNAME_NO_FACTURE);
         idExterne = statement.dbReadString(RERetenuesPaiement.FIELDNAME_ID_EXTERNE);

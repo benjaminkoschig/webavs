@@ -158,7 +158,7 @@ public class REAvance extends BEntity {
         idTiersAdrPmt = statement.dbReadNumeric(REAvance.FIELDNAME_ID_TIERS_ADR_PMT);
         idTiersBeneficiaire = statement.dbReadNumeric(REAvance.FIELDNAME_ID_TIERS_BENEFICIAIRE);
         libelle = statement.dbReadString(REAvance.FIELDNAME_LIBELLE);
-        idReferenceQR = statement.dbReadString(REAvance.FIELDNAME_ID_REFERENCE_QR);
+        idReferenceQR = statement.dbReadNumeric(REAvance.FIELDNAME_ID_REFERENCE_QR);
         montantMensuel = statement.dbReadNumeric(REAvance.FIELDNAME_MONTANT_MENSUEL);
         montant1erAcompte = statement.dbReadNumeric(REAvance.FIELDNAME_MONTANT_1ER_ACOMPTE);
         nom = statement.dbReadString(ITITiersDefTable.DESIGNATION_1);
@@ -274,7 +274,7 @@ public class REAvance extends BEntity {
         statement.writeField(REAvance.FIELDNAME_LIBELLE,
                 this._dbWriteString(statement.getTransaction(), libelle, "libelle"));
         statement.writeField(REAvance.FIELDNAME_ID_REFERENCE_QR,
-                this._dbWriteString(statement.getTransaction(), idReferenceQR, "referenceQR"));
+                this._dbWriteNumeric(statement.getTransaction(), idReferenceQR, "referenceQR"));
         statement.writeField(REAvance.FIELDNAME_DOMAINE_AVANCE,
                 this._dbWriteNumeric(statement.getTransaction(), csDomaineAvance, "csDomaineAvance"));
     }
