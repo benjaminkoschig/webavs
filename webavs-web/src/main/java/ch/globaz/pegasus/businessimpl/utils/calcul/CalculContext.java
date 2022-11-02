@@ -75,6 +75,7 @@ public class CalculContext {
         NB_ENFANTS_INF_11,
         NB_PARENTS,
         NB_PERSONNES,
+        NB_ENFANTS_INCLUS,
         FAMILY_SIZE,
         TAUX_DEVISES_ETRANGERES,
         TAUX_PENSION_NON_RECONNUE,
