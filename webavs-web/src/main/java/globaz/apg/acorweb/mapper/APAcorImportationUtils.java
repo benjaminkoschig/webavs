@@ -10,6 +10,7 @@ import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
 import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
+import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
@@ -131,7 +132,7 @@ public final class APAcorImportationUtils {
         APBaseCalculSituationProfessionnel bcSitPro;
         for (Object o1 : basesCalcul.getBasesCalculSituationProfessionnel()) {
             bcSitPro = (APBaseCalculSituationProfessionnel) o1;
-            if(!bcSitPro.isPaiementEmployeur()){
+            if(!bcSitPro.isPaiementEmployeur() && !bcSitPro.isIndependant()){
                 return bcSitPro;
             }
         }
@@ -284,16 +285,16 @@ public final class APAcorImportationUtils {
         return dateLocalDebutPeriode1.getMonth() == datePeriode2.getMonth() || dateLocalFinPeriode1.getMonth() == datePeriode2.getMonth();
     }
 
-    public static IAPReferenceDataPrestation retrieveReferenceData(BSession session, PeriodeApgType periode, String genreService) {
+    public static IAPReferenceDataPrestation retrieveReferenceData(BSession session, APPeriodeWrapper periode, String genreService) {
         IAPReferenceDataPrestation ref;
 
         try {
             if (session.getCode(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE).equals(genreService)) {
-                ref = APReferenceDataParser.loadReferenceData(session, "MATERNITE", JADate.newDateFromAMJ(String.valueOf(periode.getDebut())),
-                        JADate.newDateFromAMJ(String.valueOf(periode.getFin())), JADate.newDateFromAMJ(String.valueOf(periode.getFin())));
+                ref = APReferenceDataParser.loadReferenceData(session, "MATERNITE", periode.getDateDebut(),
+                        periode.getDateFin(), periode.getDateFin());
             } else {
-                ref = APReferenceDataParser.loadReferenceData(session, "APG", JADate.newDateFromAMJ(String.valueOf(periode.getDebut())),
-                        JADate.newDateFromAMJ(String.valueOf(periode.getFin())), JADate.newDateFromAMJ(String.valueOf(periode.getFin())));
+                ref = APReferenceDataParser.loadReferenceData(session, "APG", periode.getDateDebut(),
+                        periode.getDateFin(), periode.getDateFin());
             }
             return ref;
         }catch(Exception e){
