@@ -16,6 +16,7 @@ public class REAnnonce53Adaptation extends BEntity implements IREAnnonceAdaptati
     private String dateRevocationAjour = "";
     private String dureeAjournement = "";
     private String fractionRente = "";
+    private String quotiteRente = "";
     private String genrePrestation = "";
     private String idAnnonce01 = "";
     private String idAnnonce02 = "";
@@ -37,7 +38,7 @@ public class REAnnonce53Adaptation extends BEntity implements IREAnnonceAdaptati
         fields += "L2A2.YYLCS1 CCS1, L2A2.YYLCS2 CCS2, L2A2.YYLCS3 CCS3, L2A2.YYLCS4 CCS4, L2A2.YYLCS5 CCS5, L2A2.YYMRAM, L2A2.YYNSUP, ";
         fields += "L2A2.YYNDUR, L2A2.YYDREV, ";
         fields += "L3A2.YZNRED, ";
-        fields += "N533.ZDMAMM ANCMNTPREST, N533.ZDTFRE FRACTION, N533.ZDLOCE OBS, ";
+        fields += "N533.ZDMAMM ANCMNTPREST, N533.ZDTFRE FRACTION, N533.QUOTITE_ANNONCE_53 QUOTITE, N533.ZDLOCE OBS, ";
         fields += "HEA1.ZAIANH IDANN01, HEA2.ZAIANH IDANN02, HEA3.ZAIANH IDANN03";
 
         return fields;
@@ -162,6 +163,7 @@ public class REAnnonce53Adaptation extends BEntity implements IREAnnonceAdaptati
         // REANN53
         ancienMontantMensuel = statement.dbReadString("ANCMNTPREST");
         fractionRente = statement.dbReadString("FRACTION");
+        quotiteRente = statement.dbReadNumeric("QUOTITE");
         observationsCentrale = statement.dbReadString("OBS");
     }
 
@@ -352,4 +354,11 @@ public class REAnnonce53Adaptation extends BEntity implements IREAnnonceAdaptati
         return CODE_APPLICATION_ANNONCE_53;
     }
 
+    public String getQuotiteRente() {
+        return quotiteRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
+    }
 }

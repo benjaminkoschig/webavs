@@ -25,6 +25,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,9 +33,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * 
  * @author HPE
- * 
  */
 public class REListeErreursProcess extends BProcess {
 
@@ -43,18 +42,18 @@ public class REListeErreursProcess extends BProcess {
     public class KeyRAAnnoncesAdaptation implements Comparable<KeyRAAnnoncesAdaptation> {
 
         private String codePrestation = "";
-        private String fractionRente = "";
+        private String quotiteRente = "";
         private String montantAvant = "";
         private String nss = "";
 
         /**
          * Crée une nouvelle instance de la classe KeyRAAnnoncesAdaptation.
          */
-        public KeyRAAnnoncesAdaptation(String codePrestation, String nss, String montantAvant, String fractionRente) {
+        public KeyRAAnnoncesAdaptation(String codePrestation, String nss, String montantAvant, String quotiteRente) {
             this.nss = nss;
             this.codePrestation = codePrestation;
             this.montantAvant = montantAvant;
-            this.fractionRente = fractionRente;
+            this.quotiteRente = quotiteRente;
         }
 
         @Override
@@ -65,8 +64,8 @@ public class REListeErreursProcess extends BProcess {
                 return codePrestation.compareTo(keyRaAnnAdapt.codePrestation);
             } else if (montantAvant.compareTo(keyRaAnnAdapt.montantAvant) != 0) {
                 return montantAvant.compareTo(keyRaAnnAdapt.montantAvant);
-            } else if (fractionRente.compareTo(keyRaAnnAdapt.fractionRente) != 0) {
-                return fractionRente.compareTo(keyRaAnnAdapt.fractionRente);
+            } else if (quotiteRente.compareTo(keyRaAnnAdapt.quotiteRente) != 0) {
+                return quotiteRente.compareTo(keyRaAnnAdapt.quotiteRente);
             } else {
                 return 0;
             }
@@ -81,13 +80,13 @@ public class REListeErreursProcess extends BProcess {
             KeyRAAnnoncesAdaptation keyRaAnnAdapt = (KeyRAAnnoncesAdaptation) obj;
 
             return ((keyRaAnnAdapt.nss.equals(nss)) && (keyRaAnnAdapt.codePrestation.equals(codePrestation))
-                    && (keyRaAnnAdapt.montantAvant.equals(montantAvant)) && (keyRaAnnAdapt.fractionRente
-                        .equals(fractionRente)));
+                    && (keyRaAnnAdapt.montantAvant.equals(montantAvant)) && (keyRaAnnAdapt.quotiteRente
+                    .equals(quotiteRente)));
         }
 
         @Override
         public int hashCode() {
-            return (nss + codePrestation + montantAvant + fractionRente).hashCode();
+            return (nss + codePrestation + montantAvant + quotiteRente).hashCode();
         }
 
     }
@@ -206,33 +205,31 @@ public class REListeErreursProcess extends BProcess {
     private void doControleRentesAnnonces5153(REAnnonce51AdaptationManager mgr51, REAnnonce53AdaptationManager mgr53)
             throws Exception {
 
-        Map<KeyRAAnnoncesAdaptation, IREAnnonceAdaptation> mapAnnonces = new TreeMap<KeyRAAnnoncesAdaptation, IREAnnonceAdaptation>();
-        Map<KeyRAAnnoncesAdaptation, REPrestAccJointInfoComptaJointTiers> mapRenteAcc = new TreeMap<KeyRAAnnoncesAdaptation, REPrestAccJointInfoComptaJointTiers>();
+        Map<KeyRAAnnoncesAdaptation, IREAnnonceAdaptation> mapAnnonces = new TreeMap<>();
+        Map<KeyRAAnnoncesAdaptation, REPrestAccJointInfoComptaJointTiers> mapRenteAcc = new TreeMap<>();
 
         // Chargement des map avec les manager
-        KeyRAAnnoncesAdaptation key = null;
+        KeyRAAnnoncesAdaptation key;
 
-        for (Iterator iterator = mgr51.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr51.iterator(); iterator.hasNext(); ) {
             REAnnonce51Adaptation ann51 = (REAnnonce51Adaptation) iterator.next();
 
             FWCurrency montant = new FWCurrency(ann51.getAncienMontantMensuel());
 
             key = new KeyRAAnnoncesAdaptation(ann51.getGenrePrestation(), NSUtil.formatAVSUnknown(ann51.getNss()),
-            // "","");
-                    montant.toString(), ann51.getFractionRente());
+                    montant.toString(), ann51.getQuotiteRente());
 
             mapAnnonces.put(key, ann51);
 
         }
 
-        for (Iterator iterator = mgr53.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr53.iterator(); iterator.hasNext(); ) {
             REAnnonce53Adaptation ann53 = (REAnnonce53Adaptation) iterator.next();
 
             FWCurrency montant = new FWCurrency(ann53.getAncienMontantMensuel());
 
             key = new KeyRAAnnoncesAdaptation(ann53.getGenrePrestation(), NSUtil.formatAVSUnknown(ann53.getNss()),
-            // "","");
-                    montant.toString(), ann53.getFractionRente());
+                    montant.toString(), ann53.getQuotiteRente());
 
             mapAnnonces.put(key, ann53);
 
@@ -246,26 +243,18 @@ public class REListeErreursProcess extends BProcess {
         raMgr.setOrderBy(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
         raMgr.find(BManager.SIZE_NOLIMIT);
 
-        for (Iterator iterator = raMgr.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = raMgr.iterator(); iterator.hasNext(); ) {
             REPrestAccJointInfoComptaJointTiers ra = (REPrestAccJointInfoComptaJointTiers) iterator.next();
 
-            String fraction;
-            if (JadeStringUtil.isBlankOrZero(ra.getFractionRente())) {
-                fraction = "1";
-            } else {
-                fraction = ra.getFractionRente();
-            }
-
             key = new KeyRAAnnoncesAdaptation(ra.getCodePrestation(), ra.getNss(),
-            // "","");
-                    ra.getMontantPrestation(), fraction);
+                    ra.getMontantPrestation(), ra.getQuotiteOrFraction());
 
             mapRenteAcc.put(key, ra);
 
         }
 
-        ArrayList<Object> listRaAnn = null;
-        String keyMap = "";
+        ArrayList<Object> listRaAnn;
+        String keyMap;
 
         // Parcourir toutes les annonces 51 et 53 et rechercher les
         // correspondants dans les RA
@@ -297,32 +286,32 @@ public class REListeErreursProcess extends BProcess {
                 if (mapAnnonces.get(keyAnnonce) instanceof REAnnonce51Adaptation) {
 
                     PRTiersWrapper tier = PRTiersHelper.getTiers(getSession(),
-                            NSUtil.formatAVSUnknown(((REAnnonce51Adaptation) mapAnnonces.get(keyAnnonce)).getNss()));
+                            NSUtil.formatAVSUnknown((mapAnnonces.get(keyAnnonce)).getNss()));
 
                     if (tier != null) {
                         keyMap = tier.getProperty(PRTiersWrapper.PROPERTY_NOM)
                                 + tier.getProperty(PRTiersWrapper.PROPERTY_PRENOM)
-                                + ((REAnnonce51Adaptation) mapAnnonces.get(keyAnnonce)).getGenrePrestation()
-                                + ((REAnnonce51Adaptation) mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
+                                + (mapAnnonces.get(keyAnnonce)).getGenrePrestation()
+                                + (mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
                     } else {
-                        keyMap = ((REAnnonce51Adaptation) mapAnnonces.get(keyAnnonce)).getGenrePrestation()
-                                + ((REAnnonce51Adaptation) mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
+                        keyMap = (mapAnnonces.get(keyAnnonce)).getGenrePrestation()
+                                + (mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
                     }
 
                     mapPrestationsNonTrouveesFichierCaisse.put(keyMap, mapAnnonces.get(keyAnnonce));
                 } else {
 
                     PRTiersWrapper tier = PRTiersHelper.getTiers(getSession(),
-                            NSUtil.formatAVSUnknown(((REAnnonce53Adaptation) mapAnnonces.get(keyAnnonce)).getNss()));
+                            NSUtil.formatAVSUnknown((mapAnnonces.get(keyAnnonce)).getNss()));
 
                     if (tier != null) {
                         keyMap = tier.getProperty(PRTiersWrapper.PROPERTY_NOM)
                                 + tier.getProperty(PRTiersWrapper.PROPERTY_PRENOM)
-                                + ((REAnnonce53Adaptation) mapAnnonces.get(keyAnnonce)).getGenrePrestation()
-                                + ((REAnnonce53Adaptation) mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
+                                + (mapAnnonces.get(keyAnnonce)).getGenrePrestation()
+                                + (mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
                     } else {
-                        keyMap = ((REAnnonce53Adaptation) mapAnnonces.get(keyAnnonce)).getGenrePrestation()
-                                + ((REAnnonce53Adaptation) mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
+                        keyMap = (mapAnnonces.get(keyAnnonce)).getGenrePrestation()
+                                + (mapAnnonces.get(keyAnnonce)).getIdAnnonce01();
                     }
 
                     mapPrestationsNonTrouveesFichierCaisse.put(keyMap, mapAnnonces.get(keyAnnonce));
