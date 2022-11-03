@@ -20,10 +20,12 @@ import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
+import globaz.pyxis.api.ITILocalite;
 import globaz.pyxis.api.ITIPersonneAvs;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresseViewBean;
+import globaz.pyxis.db.adressecourrier.TILocaliteManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiementManager;
@@ -656,6 +658,9 @@ public class PYExecuteService extends BProcess {
 
         //Using a Vector for adding multiple addresses
         for (PYAddressDTO addressDTO : dto.getAddresses()) {
+            if (!addressDTO.getCountry().equals("100") && !checkIfLocaliteExist(addressDTO)) {
+                createLocaliteEtranger(session, addressDTO);
+            }
 
             //Special need for CCVS. The domain is not always set to "Default".
             if (addressDTO.getDomainAddress() != null)
@@ -751,6 +756,10 @@ public class PYExecuteService extends BProcess {
         }
 
         PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, addressDTO.getIdTiers());
+
+        if (!addressDTO.getCountry().equals("100") && !checkIfLocaliteExist(addressDTO)) {
+            createLocaliteEtranger(session, addressDTO);
+        }
 
         AdresseComplexModel homeAddress = null;
 
@@ -1046,6 +1055,56 @@ public class PYExecuteService extends BProcess {
         currentAvoirAdresse.retrieve(session.getCurrentThreadTransaction());
         currentAvoirAdresse.delete(session.getCurrentThreadTransaction());
     }
+
+    /**
+     * Méthode pour vérifier si la localité existe
+     *
+     * @param addressDTO
+     * @return true si la localité existe
+     * @throws Exception
+     */
+    private boolean checkIfLocaliteExist(PYAddressDTO addressDTO) throws Exception {
+        TILocaliteManager mgr = new TILocaliteManager();
+        mgr.changeManagerSize(0);
+        mgr.setInclureInactif(Boolean.TRUE);
+
+        mgr.setForNumPostal(addressDTO.getPostalCode());
+        mgr.setForIdPays(addressDTO.getCountry());
+
+        mgr.find(1);
+
+        if (mgr.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Méthode pour créer une nouvelle localité étrangère
+     *
+     * @param session
+     * @param addressDTO
+     * @throws Exception
+     */
+    private void createLocaliteEtranger(BSession session, PYAddressDTO addressDTO) throws Exception {
+        ITILocalite localite = (ITILocalite) session.getAPIFor(ITILocalite.class);
+        localite.setLocalite(addressDTO.getLocality());
+        localite.setLocaliteCourt(addressDTO.getLocality().length() > 18 ? addressDTO.getLocality().substring(0, 18) : addressDTO.getLocality());
+        localite.setNumPostal(addressDTO.getPostalCode());
+        localite.setIdPays(addressDTO.getCountry());
+        localite.setIdCanton("505027");
+
+        localite.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
+
+        if (session.getCurrentThreadTransaction() != null) {
+            localite.add(session.getCurrentThreadTransaction());
+            checkForErrorsAndThrow(session, "Erreur DB lors de la création de de localité");
+        } else {
+            throw new PYInternalException("Erreur de session lors de la création de la localité.");
+        }
+    }
+
 
     /**
      * Création d'une adresse de paiement.
