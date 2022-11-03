@@ -5,6 +5,8 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @author HPE
@@ -42,6 +44,7 @@ public class RERentesAdaptees extends BEntity {
     public static final String FIELDNAME_PRENOM = "ABLPRE";
     public static final String FIELDNAME_REMARQUES_ADAPTATION = "ABLREM";
     public static final String FIELDNAME_TYPE_ADAPTATION = "ABTTAD";
+    public static final String FIELDNAME_QUOTITE_RENTE = "QUOTITE_RENTE";
     public static final String TABLE_NAME_RENTES_ADAPTEES = "READALI";
 
     // ~ Instance fields
@@ -68,6 +71,7 @@ public class RERentesAdaptees extends BEntity {
     private String nssTri = "";
     private String prenomTri = "";
     private String remarquesAdaptation = "";
+    private String quotiteRente = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -106,6 +110,7 @@ public class RERentesAdaptees extends BEntity {
         nssTri = statement.dbReadString(RERentesAdaptees.FIELDNAME_NSS);
         fractionRente = statement.dbReadString(RERentesAdaptees.FIELDNAME_FRACTION_RENTE);
         remarquesAdaptation = statement.dbReadString(RERentesAdaptees.FIELDNAME_REMARQUES_ADAPTATION);
+        quotiteRente = statement.dbReadNumeric(RERentesAdaptees.FIELDNAME_QUOTITE_RENTE);
 
     }
 
@@ -164,6 +169,8 @@ public class RERentesAdaptees extends BEntity {
                 this._dbWriteString(statement.getTransaction(), fractionRente, "fractionRente"));
         statement.writeField(RERentesAdaptees.FIELDNAME_REMARQUES_ADAPTATION,
                 this._dbWriteString(statement.getTransaction(), remarquesAdaptation, "remarquesAdaptation"));
+        statement.writeField(RERentesAdaptees.FIELDNAME_QUOTITE_RENTE,
+                this._dbWriteNumeric(statement.getTransaction(), quotiteRente, "quotiteRente"));
 
     }
 
@@ -340,4 +347,29 @@ public class RERentesAdaptees extends BEntity {
         this.remarquesAdaptation = remarquesAdaptation;
     }
 
+    public String getQuotiteRente() {
+        return quotiteRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
+    }
+
+    public String getQuotiteOrFraction() {
+        if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
+            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(1).toString();
+        } else {
+            switch (fractionRente) {
+                case "2":
+                    return "50.0";
+                case "3":
+                    return "75.0";
+                case "4":
+                    return "25.0";
+                case "1":
+                default:
+                    return "100.0";
+            }
+        }
+    }
 }

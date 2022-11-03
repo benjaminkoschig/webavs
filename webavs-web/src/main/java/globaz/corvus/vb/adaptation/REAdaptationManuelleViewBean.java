@@ -30,7 +30,7 @@ public class REAdaptationManuelleViewBean extends PRAbstractViewBeanSupport {
     private String ancienSupplementAjournement = "";
     private String csTypeAdaptation = "";
     private String descriptionTiers = "";
-    private String fractionRente = "";
+    private String quotiteRente = "";
     private String genrePrestation = "";
     private String idPrestationAccordee = "";
     private String idRenteAdaptee = "";
@@ -111,15 +111,6 @@ public class REAdaptationManuelleViewBean extends PRAbstractViewBeanSupport {
 
     public String getDescriptionTiers() {
         return descriptionTiers;
-    }
-
-    public String getFractionRente() {
-
-        if (JadeStringUtil.isBlank(fractionRente)) {
-            return "0";
-        }
-
-        return fractionRente;
     }
 
     public String getGenrePrestation() {
@@ -261,10 +252,6 @@ public class REAdaptationManuelleViewBean extends PRAbstractViewBeanSupport {
         this.descriptionTiers = descriptionTiers;
     }
 
-    public void setFractionRente(String fractionRente) {
-        this.fractionRente = fractionRente;
-    }
-
     public void setGenrePrestation(String genrePrestation) {
         this.genrePrestation = genrePrestation;
     }
@@ -338,4 +325,11 @@ public class REAdaptationManuelleViewBean extends PRAbstractViewBeanSupport {
         return false;
     }
 
+    public String getQuotiteRente() {
+        return quotiteRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
+    }
 }

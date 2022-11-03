@@ -421,8 +421,8 @@ public class REListeComparaisonLivraison2Centrale extends FWIAbstractDocumentLis
         // 2) - Nom, prénom
         _addCell(ra.getNomRA() + " " + ra.getPrenomRA());
 
-        // 3) - Genre + Fraction
-        _addCell(ra.getCodePrestation() + "." + ra.getFractionRente());
+        // 3) - Genre + Quotité
+        _addCell(ra.getCodePrestation() + "-" + ra.getQuotiteOrFraction());
 
         // 4) - Montant Annonce
         FWCurrency montantAnnonce = new FWCurrency();
