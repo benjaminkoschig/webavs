@@ -183,30 +183,36 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     }
 
     private void traitementAnnonces53(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole) {
+        REInfoLogAdaptationsRentes infoLog = new REInfoLogAdaptationsRentes("Annonces 53");
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof RRBestandesmeldung10Type)
                 .map(o -> (RRBestandesmeldung10Type) o)
-                .forEach((each) -> createAnnonce53(each, protocole));
+                .forEach((each) -> createAnnonce53(each, protocole, infoLog));
+        infoLog.finalLog();
     }
 
     private void traitementAnnonces51(PoolAntwortVonZAS annonces, REProtocoleErreurAdaptationsRentes protocole) {
+        REInfoLogAdaptationsRentes infoLog = new REInfoLogAdaptationsRentes("Annonces 51");
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof RRBestandesmeldung9Type)
                 .map(o -> (RRBestandesmeldung9Type) o)
-                .forEach((each) -> createAnnonce51(each, protocole));
+                .forEach((each) -> createAnnonce51(each, protocole, infoLog));
+        infoLog.finalLog();
     }
 
     private void traitementAnnonces61(PoolAntwortVonZAS annonces, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
+        REInfoLogAdaptationsRentes infoLog = new REInfoLogAdaptationsRentes("Annonces 61");
         annonces.getLot().stream().map(PoolAntwortVonZAS.Lot::getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag)
                 .flatMap(Collection::stream)
                 .filter(o -> o instanceof ELRueckMeldungType)
                 .map(o -> (ELRueckMeldungType) o)
-                .forEach(each -> createAnnonce61(each, dateAnnonce, protocole));
+                .forEach(each -> createAnnonce61(each, dateAnnonce, protocole, infoLog));
+        infoLog.finalLog();
     }
 
-    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole) {
+    private void createAnnonce61(ELRueckMeldungType each, String dateAnnonce, REProtocoleErreurAdaptationsRentes protocole, REInfoLogAdaptationsRentes infoLog) {
         REAnnonces61Mapper annonces61Mapper = new REAnnonces61Mapper();
         StringBuilder errorMessage = new StringBuilder();
         REAnnonce61 ann61;
@@ -227,7 +233,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             protocole.addAnnonces53enErreur(errorMessage.toString());
             clearErrorsWarning();
         }
-
+        infoLog.countLog();
     }
 
     private void creationLigneHEAnnonce(REAnnonce61 ann61, String dateAnnonce) throws Exception {
@@ -257,7 +263,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
      * @param protocole
      * @return
      */
-    private void createAnnonce53(RRBestandesmeldung10Type bestandesmeldung10Type, REProtocoleErreurAdaptationsRentes protocole) {
+    private void createAnnonce53(RRBestandesmeldung10Type bestandesmeldung10Type, REProtocoleErreurAdaptationsRentes protocole, REInfoLogAdaptationsRentes infoLog) {
         StringBuilder errorMessage = new StringBuilder();
         try {
             REAnnonces53Mapper annonces53Mapper = new REAnnonces53Mapper(getSession().getCurrentThreadTransaction());
@@ -285,6 +291,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             protocole.addAnnonces53enErreur(errorMessage.toString());
             clearErrorsWarning();
         }
+        infoLog.countLog();
     }
 
     private void clearErrorsWarning() {
@@ -301,7 +308,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
     /**
      * @param rrBestandesmeldung9Type
      */
-    private void createAnnonce51(RRBestandesmeldung9Type rrBestandesmeldung9Type, REProtocoleErreurAdaptationsRentes protocole) {
+    private void createAnnonce51(RRBestandesmeldung9Type rrBestandesmeldung9Type, REProtocoleErreurAdaptationsRentes protocole, REInfoLogAdaptationsRentes infoLog) {
         StringBuilder errorMessage = new StringBuilder();
         try {
             REAnnonces51Mapper annonces51Mapper = new REAnnonces51Mapper(getSession().getCurrentThreadTransaction());
@@ -330,6 +337,7 @@ public class REImportAnnoncesAdaptationsRentes extends BProcess {
             protocole.addAnnonces51enErreur(errorMessage.toString());
             clearErrorsWarning();
         }
+        infoLog.countLog();
     }
 
     private void sendMailFinTraitement(String content) throws Exception {
