@@ -232,7 +232,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         vb.setDescriptionTiers(rentesAdap.getNssRA() + " / " + rentesAdap.getNomRA() + " " + rentesAdap.getPrenomRA());
         vb.setGenrePrestation(ra.getCodePrestation());
-        vb.setFractionRente(ra.getFractionRente());
+        vb.setQuotiteRente(ra.getQuotiteOrFraction());
 
         vb.setAncienRam(rentesAdap.getAncienRAM());
         vb.setNouveauRam(rentesAdap.getNouveauRAM());

@@ -436,8 +436,8 @@ public class REPrestationsNonTrouveesFichierCaisse extends FWIAbstractDocumentLi
         } else {
             _addCell("");
         }
-        String fraction = getFraction(uneAnnonce);
-        _addCell(uneAnnonce.getGenrePrestation()+"."+fraction);
+        String quotite = getQuotite(uneAnnonce);
+        _addCell(uneAnnonce.getGenrePrestation()+"-"+quotite);
 
         FWCurrency ancienMontant = new FWCurrency(uneAnnonce.getAncienMontantMensuel());
         _addCell(ancienMontant.toStringFormat());
@@ -469,17 +469,17 @@ public class REPrestationsNonTrouveesFichierCaisse extends FWIAbstractDocumentLi
         _addCell(getSession().getLabel("PROCESS_LISTE_ERR_RA_INEX_CAISSE"));
     }
 
-    private String getFraction(IREAnnonceAdaptation uneAnnonce) {
-        String fraction = "";
+    private String getQuotite(IREAnnonceAdaptation uneAnnonce) {
+        String quotite = "";
         if(uneAnnonce instanceof REAnnonce51Adaptation){
-            fraction = ((REAnnonce51Adaptation) uneAnnonce).getFractionRente();
+            quotite = ((REAnnonce51Adaptation) uneAnnonce).getQuotiteRente();
         }else if(uneAnnonce instanceof REAnnonce53Adaptation){
-            fraction = ((REAnnonce53Adaptation) uneAnnonce).getFractionRente();
+            quotite = ((REAnnonce53Adaptation) uneAnnonce).getQuotiteRente();
         }
-        if(JadeStringUtil.isBlank(fraction)){
-            return "0";
+        if(JadeStringUtil.isBlankOrZero(quotite)){
+            return "100.0";
         }
-        return fraction;
+        return quotite;
     }
 
     public void setMapPrestationsNonTrouveesFichierCaisse(

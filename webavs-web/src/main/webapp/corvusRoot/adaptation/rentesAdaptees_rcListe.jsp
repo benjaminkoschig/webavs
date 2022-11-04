@@ -52,7 +52,7 @@
      	</TD>
 		<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getNssRA()%></TD>
      	<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getNomRA() + " " + courant.getPrenomRA()%></TD>
-     	<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getCodePrestation()+"."+courant.getFractionRente()%></TD>
+     	<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getCodePrestation()+"-"+courant.getQuotiteOrFraction()%></TD>
      	<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getSession().getCodeLibelle(courant.getCsTypeAdaptation())%></TD>
      	<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=courant.getAncienMontantPrestation()%></TD>
      	<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=courant.getNouveauMontantPrestation()%></TD>

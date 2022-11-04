@@ -430,7 +430,7 @@ public class REListeDifferencesCentraleCaisse extends FWIAbstractDocumentList {
 
         _addCell(ra.getNss());
         _addCell(ra.getNom() + " " + ra.getPrenom());
-        _addCell(ra.getCodePrestation() + "." + ra.getFractionRenteWithZeroWhenBlank());
+        _addCell(ra.getCodePrestation() + "-" + ra.getQuotiteOrFraction());
 
         FWCurrency ancienMontant = new FWCurrency(ra.getMontantPrestation());
         _addCell(ancienMontant.toStringFormat());
@@ -463,7 +463,7 @@ public class REListeDifferencesCentraleCaisse extends FWIAbstractDocumentList {
 
         _addCell(ra.getNss());
         _addCell(ra.getNom() + " " + ra.getPrenom());
-        _addCell(ra.getCodePrestation() + "." + ra.getFractionRenteWithZeroWhenBlank());
+        _addCell(ra.getCodePrestation() + "-" + ra.getQuotiteOrFraction());
 
         FWCurrency ancienMontant = new FWCurrency(ra.getMontantPrestation());
         _addCell(ancienMontant.toStringFormat());

@@ -18,7 +18,6 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,16 +39,16 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
 
     public class KeyRAAnnoncesAdap implements Comparable<KeyRAAnnoncesAdap> {
 
-        private String codePrestation = "";
-        private String fractionRente = "";
-        private String montantAvant = "";
-        private String nss = "";
+        private String codePrestation;
+        private String quotiteRente;
+        private String montantAvant;
+        private String nss;
 
-        public KeyRAAnnoncesAdap(String codePrestation, String nss, String montantAvant, String fractionRente) {
+        public KeyRAAnnoncesAdap(String codePrestation, String nss, String montantAvant, String quotiteRente) {
             this.nss = nss;
             this.codePrestation = codePrestation;
             this.montantAvant = montantAvant;
-            this.fractionRente = fractionRente;
+            this.quotiteRente = quotiteRente;
         }
 
         @Override
@@ -60,8 +59,8 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
                 return codePrestation.compareTo(keyRaAnnAdapt.codePrestation);
             } else if (montantAvant.compareTo(keyRaAnnAdapt.montantAvant) != 0) {
                 return montantAvant.compareTo(keyRaAnnAdapt.montantAvant);
-            } else if (fractionRente.compareTo(keyRaAnnAdapt.fractionRente) != 0) {
-                return fractionRente.compareTo(keyRaAnnAdapt.fractionRente);
+            } else if (quotiteRente.compareTo(keyRaAnnAdapt.quotiteRente) != 0) {
+                return quotiteRente.compareTo(keyRaAnnAdapt.quotiteRente);
             } else {
                 return 0;
             }
@@ -76,13 +75,13 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
             KeyRAAnnoncesAdap keyRaAnnAdapt = (KeyRAAnnoncesAdap) obj;
 
             return ((keyRaAnnAdapt.nss.equals(nss)) && (keyRaAnnAdapt.codePrestation.equals(codePrestation))
-                    && (keyRaAnnAdapt.montantAvant.equals(montantAvant)) && (keyRaAnnAdapt.fractionRente
-                        .equals(fractionRente)));
+                    && (keyRaAnnAdapt.montantAvant.equals(montantAvant)) && (keyRaAnnAdapt.quotiteRente
+                        .equals(quotiteRente)));
         }
 
         @Override
         public int hashCode() {
-            return (nss + codePrestation + montantAvant + fractionRente).hashCode();
+            return (nss + codePrestation + montantAvant + quotiteRente).hashCode();
         }
 
     }
@@ -189,7 +188,7 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
             BITransaction transaction) throws Exception {
 
         // charger toutes les rentes adaptées nécessaires
-        KeyRAAnnoncesAdap key = null;
+        KeyRAAnnoncesAdap key;
 
         JADate date = new JADate(getMoisAnnee());
 
@@ -204,16 +203,8 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
         for (int i = 0; i < raMgr.size(); i++) {
             RERentesAdapteesJointRATiers ra = (RERentesAdapteesJointRATiers) raMgr.get(i);
 
-            String fraction;
-            if (JadeStringUtil.isBlankOrZero(ra.getFractionRente())) {
-                fraction = "1";
-            } else {
-                fraction = ra.getFractionRente();
-            }
-
             key = new KeyRAAnnoncesAdap(ra.getCodePrestation(), ra.getNssRA(),
-            // "","");
-                    ra.getAncienMontantPrestation(), fraction);
+                    ra.getAncienMontantPrestation(), ra.getQuotiteOrFraction());
 
             mapRenteAdaptees.put(key, ra);
         }
@@ -232,7 +223,7 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
 
                 keyAnn = new KeyRAAnnoncesAdap(ann51_01.getGenrePrestation(), NSUtil.formatAVSUnknown(ann51_01
                         .getNoAssAyantDroit()), (new FWCurrency(ann51_03.getAncienMontantMensuel())).toString(),
-                        ann51_03.getFractionRente());
+                        ann51_03.getQuotite());
 
                 if (!mapAnnonces.containsKey(keyAnn)) {
                     mapAnnonces.put(keyAnn, listAnn);
@@ -245,7 +236,7 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
 
                 keyAnn = new KeyRAAnnoncesAdap(ann53_01.getGenrePrestation(), NSUtil.formatAVSUnknown(ann53_01
                         .getNoAssAyantDroit()), (new FWCurrency(ann53_03.getAncienMontantMensuel())).toString(),
-                        ann53_03.getFractionRente());
+                        ann53_03.getQuotite());
 
                 if (!mapAnnonces.containsKey(keyAnn)) {
                     mapAnnonces.put(keyAnn, listAnn);
@@ -254,8 +245,8 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
         }
 
         // Chercher les correspondances et les non
-        ArrayList<Object> listRaAnn = null;
-        String keyMap = "";
+        ArrayList<Object> listRaAnn;
+        String keyMap;
 
         // Parcourir toutes les rentesAdaptees 51 et 53 et rechercher les correspondants dans les annonces
         for (KeyRAAnnoncesAdap keyRentesAdap : mapRenteAdaptees.keySet()) {
@@ -266,7 +257,7 @@ public class REDeuxiemeLivraisonCentraleProcess extends BProcess {
             // => Si correspondance dans les annonces, mettre dans la mapCorrespondances
             if (mapAnnonces.containsKey(keyRentesAdap)) {
 
-                listRaAnn = new ArrayList<Object>();
+                listRaAnn = new ArrayList<>();
                 listRaAnn.add(ra);
                 listRaAnn.add(mapAnnonces.get(keyRentesAdap));
 

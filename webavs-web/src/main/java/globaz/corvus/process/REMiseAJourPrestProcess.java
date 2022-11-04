@@ -234,7 +234,7 @@ public class REMiseAJourPrestProcess extends BProcess {
     private void ajouterPrestationsNonAdaptees(final BITransaction transaction,
             final Map<String, Object> mapPrestationsNonTrouveesCentrale2) throws Exception {
 
-        RERentesAdaptees rad = null;
+        RERentesAdaptees rad;
 
         long progressCounter = 0;
         int maxScale = mapPrestationsNonTrouveesCentrale2.size();
@@ -328,6 +328,7 @@ public class REMiseAJourPrestProcess extends BProcess {
             rad.setIdPrestationAccordee(ra.getIdPrestationAccordee());
 
             rad.setFractionRente(ra.getFractionRente());
+            rad.setQuotiteRente(ra.getQuotiteRente());
             rad.add(transaction);
 
         }
@@ -1108,6 +1109,7 @@ public class REMiseAJourPrestProcess extends BProcess {
             rad.setNouveauAnneeMontantRAM(anneeMontantRAMPourRA);
             rad.setIdPrestationAccordee(ra.getIdPrestationAccordee());
             rad.setFractionRente(ra.getFractionRente());
+            rad.setQuotiteRente(ra.getQuotiteRente());
 
             rad.add(transaction);
 
@@ -1428,6 +1430,7 @@ public class REMiseAJourPrestProcess extends BProcess {
             rad.setNouveauAnneeMontantRAM(anneeMontantRAMPourRA);
             rad.setIdPrestationAccordee(ra.getIdPrestationAccordee());
             rad.setFractionRente(ra.getFractionRente());
+            rad.setQuotiteRente(ra.getQuotiteRente());
 
             rad.add(transaction);
 

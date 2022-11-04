@@ -36,17 +36,17 @@ public class REListePrestationsAugmentees extends FWIAbstractDocumentList {
     private Boolean isLstPrestProgrammeCentrale = false;
     private Boolean isLstPrestTraitementAutomatique = false;
 
-    private Map<String, Object> mapAPIAI = new TreeMap<String, Object>();
-    private Map<String, Object> mapAPIAVS = new TreeMap<String, Object>();
-    private Map<String, RERentesAdapteesJointRATiers> mapAutomatique = new HashMap<String, RERentesAdapteesJointRATiers>();
-    private Map<String, RERentesAdapteesJointRATiers> mapJavaCentrale = new HashMap<String, RERentesAdapteesJointRATiers>();
+    private Map<String, Object> mapAPIAI = new TreeMap<>();
+    private Map<String, Object> mapAPIAVS = new TreeMap<>();
+    private Map<String, RERentesAdapteesJointRATiers> mapAutomatique = new HashMap<>();
+    private Map<String, RERentesAdapteesJointRATiers> mapJavaCentrale = new HashMap<>();
 
-    private Map<String, RERentesAdapteesJointRATiers> mapManuellement = new HashMap<String, RERentesAdapteesJointRATiers>();
-    private Map<String, RERentesAdapteesJointRATiers> mapNonAdapte = new HashMap<String, RERentesAdapteesJointRATiers>();
-    private Map<String, Object> mapREOAI = new TreeMap<String, Object>();
-    private Map<String, Object> mapREOAVS = new TreeMap<String, Object>();
-    private Map<String, Object> mapROAI = new TreeMap<String, Object>();
-    private Map<String, Object> mapROAVS = new TreeMap<String, Object>();
+    private Map<String, RERentesAdapteesJointRATiers> mapManuellement = new HashMap<>();
+    private Map<String, RERentesAdapteesJointRATiers> mapNonAdapte = new HashMap<>();
+    private Map<String, Object> mapREOAI = new TreeMap<>();
+    private Map<String, Object> mapREOAVS = new TreeMap<>();
+    private Map<String, Object> mapROAI = new TreeMap<>();
+    private Map<String, Object> mapROAVS = new TreeMap<>();
 
     private String moisAnnee = "";
 
@@ -403,18 +403,13 @@ public class REListePrestationsAugmentees extends FWIAbstractDocumentList {
             _addPageBreak();
         }
 
-        montantTotalAvant = new FWCurrency();
-        montantTotalApres = new FWCurrency();
-        totalEcart = new FWCurrency();
-        nbTotal = new FWCurrency();
-
         // Remise à zéro des map
-        mapROAVS = new TreeMap<String, Object>();
-        mapREOAVS = new TreeMap<String, Object>();
-        mapROAI = new TreeMap<String, Object>();
-        mapREOAI = new TreeMap<String, Object>();
-        mapAPIAVS = new TreeMap<String, Object>();
-        mapAPIAI = new TreeMap<String, Object>();
+        mapROAVS = new TreeMap<>();
+        mapREOAVS = new TreeMap<>();
+        mapROAI = new TreeMap<>();
+        mapREOAI = new TreeMap<>();
+        mapAPIAVS = new TreeMap<>();
+        mapAPIAI = new TreeMap<>();
 
     }
 
@@ -425,7 +420,7 @@ public class REListePrestationsAugmentees extends FWIAbstractDocumentList {
 
         _addCell(renteAdap.getNssRA());
         _addCell(renteAdap.getNomRA() + " " + renteAdap.getPrenomRA());
-        _addCell(renteAdap.getCodePrestation() + "." + renteAdap.getFractionRente());
+        _addCell(renteAdap.getCodePrestation() + "-" + renteAdap.getQuotiteOrFraction());
 
         FWCurrency nouveauMontant = new FWCurrency(renteAdap.getNouveauMontantPrestation());
         FWCurrency ancienMontant = new FWCurrency(renteAdap.getAncienMontantPrestation());
@@ -438,7 +433,7 @@ public class REListePrestationsAugmentees extends FWIAbstractDocumentList {
 
         _addCell(ecart.toStringFormat());
 
-        double ancien = 0;
+        double ancien;
         double nouveau = nouveauMontant.doubleValue();
         double result = 100;
         if (!ancienMontant.isZero()) {
@@ -462,7 +457,7 @@ public class REListePrestationsAugmentees extends FWIAbstractDocumentList {
 
     }
 
-    private void triRA(final String key, final RERentesAdapteesJointRATiers ra) throws Exception {
+    private void triRA(final String key, final RERentesAdapteesJointRATiers ra) {
 
         CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(ra.getCodePrestation()));
 

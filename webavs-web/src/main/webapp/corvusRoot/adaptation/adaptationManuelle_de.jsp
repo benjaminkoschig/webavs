@@ -106,7 +106,7 @@
 							<tr>
 								<td width="30%"><ct:FWLabel key="JSP_LIST_ADAP_MANUELLE_GENRE_PREST"/></td>
 								<td width="70%" colspan="3">
-									<%=viewBean.getGenrePrestation()+"."+viewBean.getFractionRente()%>
+									<%=viewBean.getGenrePrestation()+"-"+viewBean.getQuotiteRente()%>
 								</td>
 							</tr>
 						</table>

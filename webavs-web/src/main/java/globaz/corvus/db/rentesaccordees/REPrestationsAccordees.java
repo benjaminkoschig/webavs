@@ -1,5 +1,6 @@
 package globaz.corvus.db.rentesaccordees;
 
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BConstants;
@@ -11,7 +12,8 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRDateValidator;
-import ch.globaz.prestation.domaine.CodePrestation;
+
+import java.math.BigDecimal;
 
 public class REPrestationsAccordees extends BEntity {
 
@@ -688,4 +690,24 @@ public class REPrestationsAccordees extends BEntity {
     public void setIdReferenceQR(String idReferenceQR) {
         this.idReferenceQR = idReferenceQR;
     }
+
+
+    public String getQuotiteOrFraction() {
+        if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
+            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(1).toString();
+        } else {
+            switch (fractionRente) {
+                case "2":
+                    return "50.0";
+                case "3":
+                    return "75.0";
+                case "4":
+                    return "25.0";
+                case "1":
+                default:
+                    return "100.0";
+            }
+        }
+    }
+
 }
