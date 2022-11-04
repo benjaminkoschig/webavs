@@ -15,6 +15,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.naos.application.AFApplication;
 import globaz.naos.web.exceptions.AFBadRequestException;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -709,6 +710,13 @@ public class PYExecuteService extends BProcess {
                 homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, addressDTO.getDomainAddress(), typeAddress, false);
 
                 if (!Objects.isNull(homeAddress)) {
+                    //Par défaut la date de début de relation de l'adresse correspond à la date d'aujourd'hui.
+                    //Ceci empêche de créer une affiliation avec une date antérieur à aujourd'hui.
+                    //Pour remédier à ça, on set la colonne TIAADRP.HEDDAD à "0", afin de reproduire le comportement
+                    //de l'application.
+                    homeAddress.getAvoirAdresse().setDateDebutRelation("0");
+                    JadePersistenceManager.update(homeAddress.getAvoirAdresse());
+
                     addressDTO.setIdTiers(homeAddress.getTiers().getId());
                     addressDTO.setIdAvoirAddress(homeAddress.getAvoirAdresse().getIdAdresseIntUnique());
                     addressDTO.setIdAddress(homeAddress.getAdresse().getId());
@@ -807,6 +815,13 @@ public class PYExecuteService extends BProcess {
             homeAddress = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, addressDTO.getDomainAddress(), typeAddress, false);
 
             if (!Objects.isNull(homeAddress)) {
+                //Par défaut la date de début de relation de l'adresse correspond à la date d'aujourd'hui.
+                //Ceci empêche de créer une affiliation avec une date antérieur à aujourd'hui.
+                //Pour remédier à ça, on set la colonne TIAADRP.HEDDAD à "0", afin de reproduire le comportement
+                //de l'application.
+                homeAddress.getAvoirAdresse().setDateDebutRelation("0");
+                JadePersistenceManager.update(homeAddress.getAvoirAdresse());
+
                 addressDTO.setIdAddress(homeAddress.getAdresse().getId());
                 addressDTO.setIdAvoirAddress(homeAddress.getAvoirAdresse().getIdAdresseIntUnique());
             }
