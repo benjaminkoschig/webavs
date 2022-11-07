@@ -201,7 +201,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   }
 
   function isQRIban() {
-	  var pattern = /^CH\d{2}3[0-1]\d{3}\d{12}$/;
+	  var pattern = /^CH\d{2}3[0-1]\d{3}[0-9a-zA-Z]{12}$/;
 	  var value = document.getElementsByName('numCompteBancaire')[0].value.replace(/\s/g, '');
 	  return pattern.test(value);
   }
