@@ -1,5 +1,6 @@
 package globaz.orion.process;
 
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileEntity;
@@ -12,6 +13,9 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
+import globaz.naos.services.AFAffiliationServices;
+import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +55,14 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
     private void importDeclarationsSalaires() throws Exception {
         EBPucsFileManager manager = new EBPucsFileManager();
         manager.setStatut(EtatPucsFile.A_TRAITER.getValue());
-        List<EBPucsFileEntity> filterList = manager.search().stream()
+        List<EBPucsFileEntity> ebuList = manager.search();
+
+        // Fichier swissDec etat A_VALIDER
+        manager.setStatut(EtatPucsFile.A_VALIDE.getValue());
+        manager.setForProvenance(DeclarationSalaireProvenance.SWISS_DEC);
+        ebuList.addAll(manager.search());
+
+        List<EBPucsFileEntity> filterList = ebuList.stream()
                 .filter(this::validate)
                 .collect(Collectors.toList());
         List<PucsFile> pucsFiles = EBPucsFileService.entitiesToPucsFile(filterList);
@@ -60,7 +71,9 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     private boolean validate(EBPucsFileEntity ebPucsFileEntity) {
         return !ebPucsFileEntity.isAfSeul()
-                && validateAffilie(ebPucsFileEntity);
+                && !ebPucsFileEntity.isForTest()
+                && validateAffilie(ebPucsFileEntity)
+                && validateParticularite(ebPucsFileEntity);
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
@@ -79,6 +92,15 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         return Objects.nonNull(aff)
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
                 || !(idsfaillite.contains(aff.getMotifFin())));
+    }
+
+    private boolean validateParticularite(EBPucsFileEntity ebPucsFileEntity) {
+        List<AFParticulariteAffiliation> listeParticularites = AFAffiliationServices.findListParticulariteAffiliation(ebPucsFileEntity.getIdAffiliation(),
+                getSession());
+
+        return !listeParticularites.stream()
+                .anyMatch(p -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(p.getParticularite())
+                    || CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL.equals(p.getParticularite()));
     }
 
     private void importFile(List<PucsFile> pucsFiles) throws Exception {
