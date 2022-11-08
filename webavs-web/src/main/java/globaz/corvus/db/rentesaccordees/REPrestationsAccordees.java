@@ -9,6 +9,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.corvus.utils.quotite.REQuotiteEnum;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRDateValidator;
@@ -696,17 +697,7 @@ public class REPrestationsAccordees extends BEntity {
         if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
             return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(1).toString();
         } else {
-            switch (fractionRente) {
-                case "2":
-                    return "50.0";
-                case "3":
-                    return "75.0";
-                case "4":
-                    return "25.0";
-                case "1":
-                default:
-                    return "100.0";
-            }
+            return REQuotiteEnum.getQuotiteFromFraction(fractionRente);
         }
     }
 
