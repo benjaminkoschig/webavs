@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     public String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
+    public String BATCH_IMPORT_IDIMMEUBLE = "batch.import.idimmeuble";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -78,11 +79,11 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
         List<String> idsfaillite;
+        List<String> idsImmeuble;
         AFAffiliation aff;
         try {
-            String properties = getSession().getApplication().getProperty(BATCH_IMPORT_IDFAILLITE, "");
-            idsfaillite = Arrays.stream(properties.split("[,;]+"))
-                    .map(String::trim).collect(Collectors.toList());
+            idsfaillite = getListPropriete(BATCH_IMPORT_IDFAILLITE);
+            idsImmeuble = getListPropriete(BATCH_IMPORT_IDIMMEUBLE);
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
         } catch (Exception e) {
@@ -91,7 +92,14 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
         return Objects.nonNull(aff)
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
-                || !(idsfaillite.contains(aff.getMotifFin())));
+                || !(idsfaillite.contains(aff.getMotifFin())))
+                || !(idsImmeuble.contains(aff.getPersonnaliteJuridique()));
+    }
+
+    private List<String> getListPropriete(String proprieteName) throws Exception {
+        String properties = getSession().getApplication().getProperty(proprieteName, "");
+        return Arrays.stream(properties.split("[,;]+"))
+                .map(String::trim).collect(Collectors.toList());
     }
 
     private boolean validateParticularite(EBPucsFileEntity ebPucsFileEntity) {
