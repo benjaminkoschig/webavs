@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
-    public static final String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
-    public static final String BATCH_IMPORT_IDIMMEUBLE = "batch.import.idimmeuble";
+    public static final String IMPORT_MOTIF_DE_FIN = "import.motifdefin";
+    public static final String IMPORT_PERSONNALITE_JURIDIQUE = "import.personnalitejuridique";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -78,12 +78,12 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
-        List<String> idsfaillite;
-        List<String> idsImmeuble;
+        List<String> motifsDeFins;
+        List<String> personnalitesJuridiques;
         AFAffiliation aff;
         try {
-            idsfaillite = getListPropriete(BATCH_IMPORT_IDFAILLITE);
-            idsImmeuble = getListPropriete(BATCH_IMPORT_IDIMMEUBLE);
+            motifsDeFins = getListPropriete(IMPORT_MOTIF_DE_FIN);
+            personnalitesJuridiques = getListPropriete(IMPORT_PERSONNALITE_JURIDIQUE);
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
         } catch (Exception e) {
@@ -92,9 +92,9 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
         return Objects.nonNull(aff)
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
-                    || !idsfaillite.contains(aff.getMotifFin()))
+                    || !motifsDeFins.contains(aff.getMotifFin()))
                 && (JadeStringUtil.isBlankOrZero(aff.getPersonnaliteJuridique())
-                    || !idsImmeuble.contains(aff.getPersonnaliteJuridique()));
+                    || !personnalitesJuridiques.contains(aff.getPersonnaliteJuridique()));
     }
 
     private List<String> getListPropriete(String proprieteName) throws Exception {
