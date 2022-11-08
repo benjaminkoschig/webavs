@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
-    public String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
-    public String BATCH_IMPORT_IDIMMEUBLE = "batch.import.idimmeuble";
+    public static final String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
+    public static final String BATCH_IMPORT_IDIMMEUBLE = "batch.import.idimmeuble";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -92,8 +92,9 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
         return Objects.nonNull(aff)
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
-                || !(idsfaillite.contains(aff.getMotifFin())))
-                || !(idsImmeuble.contains(aff.getPersonnaliteJuridique()));
+                    || !idsfaillite.contains(aff.getMotifFin()))
+                && (JadeStringUtil.isBlankOrZero(aff.getPersonnaliteJuridique())
+                    || !idsImmeuble.contains(aff.getPersonnaliteJuridique()));
     }
 
     private List<String> getListPropriete(String proprieteName) throws Exception {
@@ -106,8 +107,8 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         List<AFParticulariteAffiliation> listeParticularites = AFAffiliationServices.findListParticulariteAffiliation(ebPucsFileEntity.getIdAffiliation(),
                 getSession());
 
-        return !listeParticularites.stream()
-                .anyMatch(p -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(p.getParticularite())
+        return listeParticularites.stream()
+                .noneMatch(p -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(p.getParticularite())
                     || CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL.equals(p.getParticularite()));
     }
 
