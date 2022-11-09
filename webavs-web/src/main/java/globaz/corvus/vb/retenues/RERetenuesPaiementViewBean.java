@@ -382,7 +382,7 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
         } else if (getCsTypeRetenue().equals(IRERetenues.CS_TYPE_IMPOT_SOURCE)) {
             FWCurrency montantImpoSource = null;
 
-            if (!JadeStringUtil.isDecimalEmpty(getTauxImposition()) && montantARetenir.floatValue() == 0) {
+            if (!JadeStringUtil.isDecimalEmpty(getTauxImposition()) && montantARetenir.isZero()) {
                 montantImpoSource = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
                         * (new FWCurrency(getTauxImposition())).floatValue());
                 montantImpoSource.round(FWCurrency.ROUND_ENTIER);
