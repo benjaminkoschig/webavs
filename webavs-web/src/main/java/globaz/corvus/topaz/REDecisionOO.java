@@ -704,7 +704,6 @@ public class REDecisionOO extends REAbstractJobOO {
      * Retourne le document type number en fonction du type de décision.
      *
      * @return le document type number
-     * @see IPRConstantesExternes.DECISION_RENTES_......._TYPE_NUMBER
      */
     public String getDocumentTypeNumber() {
         return documentTypeNumber;
@@ -3068,11 +3067,6 @@ public class REDecisionOO extends REAbstractJobOO {
                                         tierRA.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
                                 line1.addData("CHF", getTexte(catalogeDeTexteDecision, 2, 3));
 
-                                // Retrouver le type de rente accordée grâce au code système (avec genre prestation +
-                                // fraction (10.1))
-                                String pourRechercheCodeSysteme = getTypeOfRA(benefs[inc]);
-
-
                                 // Retrouver le sexe du bénéficiaire
                                 Long idTiers = benefs[inc].getIdTiersBeneficiaire();
                                 String csSexe = "";
@@ -3095,7 +3089,7 @@ public class REDecisionOO extends REAbstractJobOO {
                                     line1.addData("genreRente", getTexte(catalogeDeTexteDecision, 2, 12));
 
                                 } else {
-                                    String libelle = REPrestationUtils.getLibelleGenrePrestation(pourRechercheCodeSysteme, benefs[inc].getQuotite(), codeIsoLangue, getSession());
+                                    String libelle = REPrestationUtils.getLibelleGenrePrestation(benefs[inc].getGenrePrestation(), benefs[inc].getFraction(), benefs[inc].getQuotite(), codeIsoLangue, getSession());
                                     line1.addData("genreRente", libelle);
 
                                 }
@@ -3141,31 +3135,6 @@ public class REDecisionOO extends REAbstractJobOO {
 
             }
         }
-    }
-
-    private String getTypeOfRA(REBeneficiaireInfoVO benef) {
-        String pourRechercheCodeSysteme = benef.getGenrePrestation();
-
-        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(benef.getGenrePrestation()))) {
-            if (!JadeStringUtil.isEmpty(benef.getFraction())) {
-                pourRechercheCodeSysteme += "." + benef.getFraction();
-            } else if (!JadeStringUtil.isEmpty(benef.getQuotite())) {
-                if (Objects.equals(REGenresPrestations.GENRE_50, benef.getGenrePrestation()) || Objects.equals(REGenresPrestations.GENRE_70, benef.getGenrePrestation())) {
-                    if (Float.valueOf(benef.getQuotite()) >= 0.70) {
-                        pourRechercheCodeSysteme += ".1";
-                    } else {
-                        pourRechercheCodeSysteme += ".0";
-                    }
-                } else {
-                    pourRechercheCodeSysteme += ".1";
-                }
-            } else {
-                pourRechercheCodeSysteme += ".0";
-            }
-        } else {
-            pourRechercheCodeSysteme += ".0";
-        }
-        return pourRechercheCodeSysteme;
     }
 
     private void remplirSalutationsSignature() throws Exception {

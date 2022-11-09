@@ -17,6 +17,7 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
     private String dateDecision;
     private String dateFinDroit;
     private String fractionRente;
+    private String quotiteRente;
     private String idRenteAccordee;
     private String idTiersAdressePaiement;
     private String idTiersBeneficiaire;
@@ -32,12 +33,13 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
         dateDecision = "";
         dateFinDroit = "";
         fractionRente = "";
+        quotiteRente = "";
         idRenteAccordee = "";
         idTiersAdressePaiement = "";
         idTiersBeneficiaire = "";
         isRenteBloquee = Boolean.FALSE;
         montantPrestation = "";
-        retenues = new HashMap<String, RERetenuePourAttestationsFiscales>();
+        retenues = new HashMap<>();
     }
 
     @Override
@@ -150,5 +152,13 @@ public class RERentePourAttestationsFiscales implements Serializable, Comparable
 
     void setMontantPrestation(String montantPrestation) {
         this.montantPrestation = montantPrestation;
+    }
+
+    public String getQuotiteRente() {
+        return quotiteRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
     }
 }
