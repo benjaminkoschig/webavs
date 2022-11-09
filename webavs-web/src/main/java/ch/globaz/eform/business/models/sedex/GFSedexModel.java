@@ -3,10 +3,7 @@ package ch.globaz.eform.business.models.sedex;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +14,7 @@ public class GFSedexModel {
     private LocalDate messageDate;
     private String formulaireNom;
     private String formulaireType;
+    private String formulaireSubType;
     private String nomBeneficiaire;
     private String prenomBenefiaicaire;
     private String nssBeneficiaire;

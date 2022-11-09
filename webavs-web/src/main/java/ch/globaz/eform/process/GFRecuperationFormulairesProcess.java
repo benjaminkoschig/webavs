@@ -98,7 +98,7 @@ public class GFRecuperationFormulairesProcess extends BProcess {
                 .map(model -> {
                     GFFFormulaireReceiveContainer container = new GFFFormulaireReceiveContainer(getSession());
 
-                    container.setSubject(GFTypeEForm.getGFTypeEForm(model.getSubject()));
+                    container.setSubject(GFTypeEForm.getGFTypeEForm(model.getType(), model.getSubType()));
                     container.setMessageId(model.getMessageId());
                     container.setDate(model.getDate());
                     container.setStatus(GFStatusEForm.getStatusByCodeSystem(model.getStatus()));

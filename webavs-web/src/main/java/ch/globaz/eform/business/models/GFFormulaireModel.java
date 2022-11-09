@@ -16,12 +16,14 @@ import java.util.Arrays;
 @EqualsAndHashCode(callSuper = true)
 public class GFFormulaireModel extends JadeSimpleModel {
     private final String typePattern = "^25(\\d{2})";
+    private final String subTypePattern = "^00(\\d{4})";
     private final String datePattern = "^(0[1-9]|[12][0-9]|3[01])[.](0[1-9]|1[012])[.]((?:19|20)\\d\\d)$";
 
     private String id;
     private String messageId;
     private String businessProcessId;
     private String type;
+    private String subType;
     private String subject;
     private String date;
     private String status;
@@ -63,6 +65,12 @@ public class GFFormulaireModel extends JadeSimpleModel {
             result.addError("type", ValidationError.MANDATORY);
         } else if (!Strings.match(type, typePattern)) {
             result.addError("type", ValidationError.MALFORMED);
+        }
+
+        if (JadeStringUtil.isBlank(subType)) {
+            result.addError("subType", ValidationError.MANDATORY);
+        } else if (!Strings.match(type, subTypePattern)) {
+            result.addError("subType", ValidationError.MALFORMED);
         }
 
         if (JadeStringUtil.isBlank(date)) {
