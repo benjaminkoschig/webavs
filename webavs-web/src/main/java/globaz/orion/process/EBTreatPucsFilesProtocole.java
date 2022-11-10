@@ -79,7 +79,7 @@ public class EBTreatPucsFilesProtocole {
 
     public void sendProtocole(String emailAdress, BProcess process) throws Exception {
         String file = buildXlsProtocole().getAbsolutePath();
-        String titre = LabelCommonProvider.getLabel(hasError ? "PROCESS_ERROR" : "PROCESS_SUCCES", session.getIdLangueISO());
+        String titre = session.getLabel(hasError ? "PROCESS_ERROR" : "PROCESS_SUCCES");
         String body = titre + " : ";
         body += session.getLabel("BATCH_PROTOCOLE_BODY");
 
