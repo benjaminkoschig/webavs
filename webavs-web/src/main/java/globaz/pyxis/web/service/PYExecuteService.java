@@ -974,6 +974,9 @@ public class PYExecuteService extends BProcess {
             trans.openTransaction();
 
 
+            //Retrieve oldAvoirAdresse
+            String oldIdAdresse = currentAvoirAdresse.getIdAdresse();
+
             //Retrieve avoirAdresse
             currentAvoirAdresse = new TIAvoirAdresseViewBean();
             currentAvoirAdresse.setSession(session);
@@ -998,7 +1001,7 @@ public class PYExecuteService extends BProcess {
                     adrPmt.setSession(session);
                     adrPmt.setIdAdressePmtUnique(idAdressePmt);
                     adrPmt.retrieve();
-                    if (pyAddressDTO.getIdAddress().equals(adrPmt.getIdAdresse())) { //Si cette adresse de paiement est liée à l'adresse qu'on veut MAJ
+                    if (oldIdAdresse.equals(adrPmt.getIdAdresse())) { //Si cette adresse de paiement est liée à l'adresse qu'on veut MAJ
                         boolean droitDomaine = TICodeSystemRightChecker.check(session, "PYAPPLICAT", "avoirPaiement", avPmt.getIdApplication(), avPmt.getIdApplication(), 1);
                         if (droitDomaine) {
                             adrPmt.setIdAdressePmtUnique("");
@@ -1190,6 +1193,11 @@ public class PYExecuteService extends BProcess {
                 String iban = ibanFormatter.unformat(pyPaymentAddressDTO.getAccountNumber());
                 if (checkIban(iban)) {
                     adressePaiement.setIdTiersBanque(retrieveBankId(pyPaymentAddressDTO.getClearingNumber(), pyPaymentAddressDTO.getBranchOfficePostalCode()));
+                    //Contrôle qu'une banque avec ce clearing et ce NPA existe
+                    if (null == adressePaiement.getIdTiersBanque()) {
+                        LOG.error("PRTiersHelper#addTiersPaymentAddress - Aucune Banque existe avec ce clearing et ce NPA");
+                        throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Aucune Banque existe avec ce clearing et ce NPA");
+                    }
                     adressePaiement.setNumCompteBancaire(pyPaymentAddressDTO.getAccountNumber());
                 } else {
                     LOG.error("Paiement adresse non créée : IBAN non valide : " + iban);
@@ -1258,6 +1266,11 @@ public class PYExecuteService extends BProcess {
             String iban = ibanFormatter.unformat(pyPaymentAddressDTO.getAccountNumber());
             if (checkIban(iban)) {
                 adressePaiement.setIdTiersBanque(retrieveBankId(pyPaymentAddressDTO.getClearingNumber(), pyPaymentAddressDTO.getBranchOfficePostalCode()));
+                //Contrôle qu'une banque avec ce clearing et ce NPA existe
+                if (null == adressePaiement.getIdTiersBanque()) {
+                    LOG.error("PRTiersHelper#addTiersPaymentAddress - Aucune Banque existe avec ce clearing et ce NPA");
+                    throw new PYBadRequestException("PRTiersHelper#addTiersPaymentAddress - Aucune Banque existe avec ce clearing et ce NPA");
+                }
                 adressePaiement.setNumCompteBancaire(pyPaymentAddressDTO.getAccountNumber());
             } else {
                 LOG.error("Paiement adresse non créée : IBAN non valide : " + iban);
