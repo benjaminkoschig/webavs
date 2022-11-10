@@ -27,6 +27,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.fweb.taglib.FWSelectorTag;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
@@ -359,8 +360,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         try {
             APSituationProfessionnelleViewBean spViewBean = (APSituationProfessionnelleViewBean) viewBean;
 
-            if(checkErreurSituationProfessionnelleAvecQRIbanSansReference(spViewBean)){
-                String message = "Une adresse de paiement QR IBAN n'a pas de référence QR. Calcul des prestations impossible !!!";
+            if(hasSituationProfessionnelleQRIbanSansReference(spViewBean.getSession(), idDroit)){
+                String message = spViewBean.getSession().getLabel("JSP_REFERENCE_QR_EMPTY");
                 spViewBean.setMessage(message);
                 spViewBean.setMsgType(FWViewBeanInterface.ERROR);
                 saveViewBean(spViewBean, request);
@@ -617,20 +618,22 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         spViewBean.setDroitDTO(dto);
     }
 
-    private boolean checkErreurSituationProfessionnelleAvecQRIbanSansReference(APSituationProfessionnelleViewBean viewBean) throws Exception {
-        APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
-        manager.setSession(viewBean.getSession());
-        manager.setForIdDroit(viewBean.getIdDroit());
-        manager.find(BManager.SIZE_NOLIMIT);
-        if(manager.size() > 0){
-            for(int i = 0; i < manager.size(); i++){
-                APSituationProfessionnelle situationProfessionnelle = (APSituationProfessionnelle) manager.get(0);
-                APSituationProfessionnelleViewBean sitViewBean = new APSituationProfessionnelleViewBean();
-                sitViewBean.setId(situationProfessionnelle.getId());
-                sitViewBean.setSession(viewBean.getSession());
-                sitViewBean.retrieve();
-                if(TIAdressePaiement.isQRIban(sitViewBean.getNumCompteBancaire()) && sitViewBean.getIsVersementEmployeur() && JadeStringUtil.isBlankOrZero(sitViewBean.getIdReferenceQR())){
-                    return true;
+    private boolean hasSituationProfessionnelleQRIbanSansReference(BSession session, String idDroit) throws Exception {
+        if (session != null && !JadeStringUtil.isBlankOrZero(idDroit)) {
+            APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
+            manager.setSession(session);
+            manager.setForIdDroit(idDroit);
+            manager.find(BManager.SIZE_NOLIMIT);
+            if(manager.size() > 0){
+                for(int i = 0; i < manager.size(); i++){
+                    APSituationProfessionnelle situationProfessionnelle = (APSituationProfessionnelle) manager.get(i);
+                    APSituationProfessionnelleViewBean sitViewBean = new APSituationProfessionnelleViewBean();
+                    sitViewBean.setId(situationProfessionnelle.getId());
+                    sitViewBean.setSession(session);
+                    sitViewBean.retrieve();
+                    if(TIAdressePaiement.isQRIban(sitViewBean.getNumCompteBancaire()) && sitViewBean.getIsVersementEmployeur() && JadeStringUtil.isBlankOrZero(sitViewBean.getIdReferenceQR())){
+                        return true;
+                    }
                 }
             }
         }
