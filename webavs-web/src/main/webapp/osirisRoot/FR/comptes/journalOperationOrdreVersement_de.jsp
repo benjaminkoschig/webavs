@@ -451,7 +451,7 @@ function updateNatureOrdre(){
             <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
                 <TD width="100">R&eacute;f&eacute;rence QR</TD>
                 <TD colspan="2">
-                  <input type="text" name="referenceQR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
+                  <input type="text" name="referenceBVR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
                 </TD>
             <%}%>
           </TR>
