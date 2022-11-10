@@ -9,7 +9,8 @@
             <field comment="Id du process métier fournis par la central" name="businessProcessId" column="BUSINESS_PROCESS_ID" type="STRING" mandatory="true"/>
             <field comment="Numéro du formulaire" name="subject" column="SUBJECT" type="STRING" mandatory="true"/>
             <field comment="Date d'émission du formulaire" name="date" column="DATE" type="DATE" mandatory="true"/>
-            <field comment="Type du formulaire" name="type" column="TYPE" type="STRING" mandatory="true"/>
+            <field comment="Type sedex du formulaire" name="type" column="TYPE" type="STRING" mandatory="true"/>
+            <field comment="Subtype sedex du formulaire" name="subType" column="SUB_TYPE" type="STRING" mandatory="true"/>
             <field comment="Status du formulaire" name="status" column="STATUS" type="STRING" mandatory="true"/>
             <field comment="Numéro AVS du bénificiaire" name="beneficiaireNss" column="BENEFICIAIRE_NSS" type="STRING" mandatory="true"/>
             <field comment="Nom du bénificiaire" name="beneficiaireNom" column="BENEFICIAIRE_NOM" type="STRING" mandatory="true"/>

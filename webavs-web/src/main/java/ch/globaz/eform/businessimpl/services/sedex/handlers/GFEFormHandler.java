@@ -19,9 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public abstract class GFEFormHandler implements GFSedexhandler {
+    public static final String TYPE_FORMULAIRE = "^(\\d{3}\\.\\d{3}(?:\\.\\d)?)\\s-\\s.+$";
+
     protected BSession session;
     protected GFSedexModel model;
     protected Object message;
@@ -38,12 +42,13 @@ public abstract class GFEFormHandler implements GFSedexhandler {
 
     protected abstract void extractData() throws RuntimeException;
 
-    protected void initModel(String messageId, String businessProcessId, String type, String subject, LocalDate messageDate) {
+    protected void initModel(String messageId, String businessProcessId, String type, String subType, String subject, LocalDate messageDate) {
         model = new GFSedexModel();
 
         model.setMessageId(messageId);
         model.setBusinessProcessId(businessProcessId);
         model.setFormulaireType(type);
+        model.setFormulaireSubType(subType);
         model.setMessageSubject(subject);
         model.setMessageDate(messageDate);
     }
@@ -89,7 +94,8 @@ public abstract class GFEFormHandler implements GFSedexhandler {
             dbModel.setMessageId(model.getMessageId());
             dbModel.setBusinessProcessId(model.getBusinessProcessId());
             dbModel.setType(model.getFormulaireType());
-            dbModel.setSubject(model.getMessageSubject());
+            dbModel.setSubType(model.getFormulaireSubType());
+            dbModel.setSubject(cleanSubject(model.getMessageSubject()));
             dbModel.setStatus(GFStatusEForm.RECEIVE.getCodeSystem());
             dbModel.setDate(Dates.formatSwiss(model.getMessageDate()));
             dbModel.setBeneficiaireNss(model.getNssBeneficiaire());
@@ -100,6 +106,17 @@ public abstract class GFEFormHandler implements GFSedexhandler {
             dbModel.setAttachementName(model.getAttachementName());
 
             GFEFormServiceLocator.getGFEFormDBService().create(dbModel, result);
+    }
+
+    private String cleanSubject(String subject) {
+        Pattern pattern = Pattern.compile(TYPE_FORMULAIRE);
+        Matcher matcher = pattern.matcher(subject);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return "";
     }
 
     public void setMessage(Object message){
