@@ -524,7 +524,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
                                         codePrestation.put(index, ra.getCodePrestation());
                                     } else {
-                                        String libelle = REPrestationUtils.getLibelleGenrePrestation(getRERechercheCodeSystem(ra), ra.getQuotite(), codeIsoLangue, bSession);
+                                        String libelle = REPrestationUtils.getLibelleGenrePrestation(ra.getCodePrestation(), ra.getFractionRente(), ra.getQuotite(), codeIsoLangue, bSession);
                                         String index = Integer.toString(j);
                                         assure.put(index, infoTiers);
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));
@@ -755,37 +755,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         }
 
-    }
-
-    /**
-     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
-     *
-     * @param ra    Rente accordé
-     * @return      La chaîne permettant de chercher le code système
-     */
-    private String getRERechercheCodeSystem(REAttestationFiscaleRenteAccordee ra){
-        String pourRechercheCodeSysteme = ra.getCodePrestation();
-
-        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
-            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
-                pourRechercheCodeSysteme += "." + ra.getFractionRente();
-            } else if (!JadeStringUtil.isEmpty(ra.getQuotite())) {
-                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
-                    if (Float.valueOf(ra.getQuotite()) >= 0.70) {
-                        pourRechercheCodeSysteme += ".1";
-                    } else {
-                        pourRechercheCodeSysteme += ".0";
-                    }
-                } else {
-                    pourRechercheCodeSysteme += ".1";
-                }
-            } else {
-                pourRechercheCodeSysteme += ".0";
-            }
-        } else {
-            pourRechercheCodeSysteme += ".0";
-        }
-        return pourRechercheCodeSysteme;
     }
 
     /**

@@ -1,8 +1,5 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
-import java.sql.ResultSet;
-import java.util.*;
-
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -13,23 +10,17 @@ import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscalesManager;
-import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
 import globaz.corvus.excel.REListeExcelAttestationsFiscalesNonSorties;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.topaz.REAttestationsFiscalesOO;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BPreparedStatement;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BProcessLauncher;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -45,6 +36,10 @@ import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import org.apache.commons.lang3.StringUtils;
+
+import java.sql.ResultSet;
+import java.util.*;
 
 public class REGenererAttestationsFiscalesProcess extends BProcess {
 
@@ -159,7 +154,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
-                if (REAttestationsFiscalesUtils.hasDecisionRetroDateCourantAndDecisionCourantDateRetro(uneFamille, getSession(),getAnneeAsInteger())) {
+                if (REAttestationsFiscalesUtils.hasDecisionRetroDateCourantAndDecisionCourantDateRetro(uneFamille, getSession(), getAnneeAsInteger())) {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
@@ -296,7 +291,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     chargerAdresseCourrierEtTitreTiers(unTiersBeneficiaire);
                     if (JadeStringUtil.isBlank(unTiersBeneficiaire.getAdresseCourrierFormatee())) {
                         unTiersBeneficiaire.setAdresseCourrierFormatee(getAdressePaiementFormatee(unTiersBeneficiaire));
-                        if(uneFamille.getTiersRequerant().getIdTiers().equals(unTiersBeneficiaire.getIdTiers())
+                        if (uneFamille.getTiersRequerant().getIdTiers().equals(unTiersBeneficiaire.getIdTiers())
                                 && JadeStringUtil.isBlank(uneFamille.getTiersRequerant().getAdresseCourrierFormatee())) {
                             uneFamille.getTiersRequerant().setAdresseCourrierFormatee(unTiersBeneficiaire.getAdresseCourrierFormatee());
                         }
@@ -503,6 +498,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         rente.setDateDecision(uneDonnee.getDateDecision());
         rente.setDateFinDroit(uneDonnee.getDateFinDroit());
         rente.setFractionRente(uneDonnee.getFractionRente());
+        rente.setQuotiteRente(uneDonnee.getQuotiteRente());
         rente.setIdTiersAdressePaiement(uneDonnee.getIdTiersAdressePaiement());
         rente.setIdTiersBeneficiaire(uneDonnee.getIdTiersBeneficiaire());
         rente.setIsRenteBloquee(uneDonnee.getIsPrestationBloquee());
@@ -710,10 +706,17 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             REDonneesPourAttestationsFiscales attestation = (REDonneesPourAttestationsFiscales) manager.get(i);
             StringBuilder csCodePrestation = new StringBuilder();
             csCodePrestation.append("52821").append(attestation.getCodePrestation());
-            if (JadeStringUtil.isBlankOrZero(attestation.getFractionRente())) {
-                csCodePrestation.append("0");
-            } else {
+
+            if (!JadeStringUtil.isBlankOrZero(attestation.getFractionRente())) {
                 csCodePrestation.append(attestation.getFractionRente());
+            } else if (Arrays.asList(REGenresPrestations.GENRE_PRESTATIONS_AI).contains(attestation.getCodePrestation())) {
+                if (StringUtils.equals(REGenresPrestations.GENRE_50, attestation.getCodePrestation()) || StringUtils.equals(REGenresPrestations.GENRE_70, attestation.getCodePrestation())) {
+                    csCodePrestation.append("0");
+                } else {
+                    csCodePrestation.append("1");
+                }
+            } else {
+                csCodePrestation.append("0");
             }
             // Le code ISO de la langue est en dure...
             // C'est n'est pas le sommet mais dans notre cas, on veut simplement tester le fait que le code system
@@ -856,11 +859,11 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 }
                 List<RERentePourAttestationsFiscales> listRentesSorted = sortRentesForIdAdressePaiement(unTiersBeneficiaire.getRentes());
 
-                for(RERentePourAttestationsFiscales rente : listRentesSorted) {
+                for (RERentePourAttestationsFiscales rente : listRentesSorted) {
                     String idAdressePaiement = rente.getIdTiersAdressePaiement();
 
-                    if(!listIdAdressePaiement.contains(idAdressePaiement)
-                        && !JadeStringUtil.isBlankOrZero(idAdressePaiement)) {
+                    if (!listIdAdressePaiement.contains(idAdressePaiement)
+                            && !JadeStringUtil.isBlankOrZero(idAdressePaiement)) {
                         listIdAdressePaiement.add(idAdressePaiement);
                     }
                 }
@@ -895,15 +898,16 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
     }
 
     /**
-     *  Test si plusieur adresses de paiement après le splitting
+     * Test si plusieur adresses de paiement après le splitting
+     *
      * @param uneFamille
      * @return vrai si plusieurs adresses de paiement pour la famille
      */
     private boolean isHasPlusieursAdresses(REFamillePourAttestationsFiscales uneFamille) {
         List<String> listIdAdressePaiement = new ArrayList<>();
         for (RERentePourAttestationsFiscales rente : uneFamille.getRentesDeLaFamille()) {
-                String idAdressePaiement = rente.getIdTiersAdressePaiement();
-            if(!listIdAdressePaiement.contains(idAdressePaiement)
+            String idAdressePaiement = rente.getIdTiersAdressePaiement();
+            if (!listIdAdressePaiement.contains(idAdressePaiement)
                     && !JadeStringUtil.isBlankOrZero(idAdressePaiement)) {
                 listIdAdressePaiement.add(idAdressePaiement);
             }
@@ -913,6 +917,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Creer une nouvelle famille (= une attestation supplémentaire) si il y un cas orphelin avec une adresse différente
+     *
      * @param familles
      * @param uneFamille
      * @param idAdressePaiementRentePrincipal
@@ -921,10 +926,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         Map<String, REFamillePourAttestationsFiscales> mapFamilleOrphelins = new HashMap<>();
         for (RETiersPourAttestationsFiscales unTiers : uneFamille.getTiersBeneficiaires()) {
             List<RERentePourAttestationsFiscales> listTmp = new ArrayList<>(unTiers.getRentes());
-            for(RERentePourAttestationsFiscales rente : listTmp){
+            for (RERentePourAttestationsFiscales rente : listTmp) {
                 CodePrestation codePrestation = CodePrestation
                         .getCodePrestation(Integer.parseInt(rente.getCodePrestation()));
-                if(isOrphelin(idAdressePaiementRentePrincipal, rente, codePrestation)) {
+                if (isOrphelin(idAdressePaiementRentePrincipal, rente, codePrestation)) {
                     createNewAttestation(familles, mapFamilleOrphelins, rente, unTiers);
                 }
             }
@@ -933,6 +938,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Test s'il s'agit d'un enfant avec une rente de survivant = orphelin
+     *
      * @param idAdressePaiementRentePrincipal
      * @param rente
      * @param codePrestation
@@ -940,13 +946,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      */
     private boolean isOrphelin(String idAdressePaiementRentePrincipal, RERentePourAttestationsFiscales rente, CodePrestation codePrestation) {
         return codePrestation.isSurvivant()
-               && (idAdressePaiementRentePrincipal == null
+                && (idAdressePaiementRentePrincipal == null
                 || !idAdressePaiementRentePrincipal.equals(rente.getIdTiersAdressePaiement()))
                 && !JadeStringUtil.isBlankOrZero(rente.getIdTiersAdressePaiement());
     }
 
     /**
      * Crée une nouvelle attestation avec la reste de survivant. La rente est supprimée du Tiers lié à l'ancienne attestation
+     *
      * @param familles
      * @param mapFamilleOrphelins
      * @param rente
@@ -954,7 +961,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      */
     private void createNewAttestation(List<REFamillePourAttestationsFiscales> familles, Map<String, REFamillePourAttestationsFiscales> mapFamilleOrphelins, RERentePourAttestationsFiscales rente, RETiersPourAttestationsFiscales unTiers) {
         RETiersPourAttestationsFiscales newTiers = duplicateTierWithRente(unTiers, rente);
-        if(mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()) == null) {
+        if (mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()) == null) {
             // crée une nouvelle famille pour impression sur une autre attestation
             REFamillePourAttestationsFiscales nouvelleFamille = new REFamillePourAttestationsFiscales();
             nouvelleFamille.setTiersRequerant(newTiers);
@@ -963,7 +970,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             mapFamilleOrphelins.put(rente.getIdTiersAdressePaiement(), nouvelleFamille);
         } else {
             // Si plusieurs enfants orphelins avec même adresse de paiement, ajout dans la même attestation
-            if(mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().get(newTiers.getIdTiers()) == null) {
+            if (mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().get(newTiers.getIdTiers()) == null) {
                 mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().put(newTiers.getIdTiers(), newTiers);
             } else {
                 // tiers déjà présent ajout de la rente
@@ -974,6 +981,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Duplique le tier
+     *
      * @param tier
      * @param rente
      * @return Le nouveau tiers avec la rente de survivant
@@ -1002,17 +1010,18 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Trie les adresses de paiement. Ne retourne qu'une seul adresse (la plus récente) pour le requérant
+     *
      * @param listRentes
      * @return
      */
     private List<RERentePourAttestationsFiscales> sortRentesForIdAdressePaiement(Collection<RERentePourAttestationsFiscales> listRentes) {
         List<RERentePourAttestationsFiscales> rentes = new ArrayList<>(listRentes);
         Collections.sort(rentes, new Comparator<RERentePourAttestationsFiscales>() {
-            public int compare (RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2){
-                if(!JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
-                    && JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
+            public int compare(RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2) {
+                if (!JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
+                        && JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
                     return -1;
-                } else if(JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
+                } else if (JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
                         && !JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
                     return 1;
                 } else {
@@ -1028,13 +1037,13 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             }
         });
         boolean hasUniqueAdress = false;
-        for(RERentePourAttestationsFiscales rente : rentes) {
+        for (RERentePourAttestationsFiscales rente : rentes) {
             CodePrestation code = CodePrestation.getCodePrestation(Integer.parseInt(rente.getCodePrestation()));
-            if(code.isSurvivant() && code.isRentePrincipale()) {
+            if (code.isSurvivant() && code.isRentePrincipale()) {
                 hasUniqueAdress = true;
             }
         }
-        if(hasUniqueAdress) {
+        if (hasUniqueAdress) {
             // ne prendre que la plus récente
             return rentes.subList(0, 1);
         }
