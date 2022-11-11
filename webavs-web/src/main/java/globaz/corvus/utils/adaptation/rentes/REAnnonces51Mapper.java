@@ -25,11 +25,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()),6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(0, 3));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()).substring(3, 6));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(ordentlicheRente.getMeldungsnummer()));
@@ -321,11 +322,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()),6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0,3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3,6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(ausserordentlicheRente.getMeldungsnummer()));
@@ -547,11 +549,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()),6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0,3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3,6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(hilflosenentschaedigung.getMeldungsnummer()));
