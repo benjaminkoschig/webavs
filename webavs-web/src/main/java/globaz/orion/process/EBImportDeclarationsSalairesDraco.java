@@ -114,7 +114,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     private void importFile(List<PucsFile> pucsFiles) throws Exception {
         EBTreatPucsFiles process = new EBTreatPucsFiles();
-        process.setSendCompletionMail(false);
+        process.setSendCompletionMail(true);
         process.setEmailAdress(getEMailAddress());
         process.setIsBatch(true);
         process.setMode("miseajour");
