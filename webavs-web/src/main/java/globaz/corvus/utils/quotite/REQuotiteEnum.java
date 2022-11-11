@@ -6,10 +6,10 @@ import java.util.Objects;
  * Enum de mapping entre la fraction et la quotité
  */
 public enum REQuotiteEnum {
-    QUOTITE_100("1", "100.0"),
-    QUOTITE_75("3", "75.0"),
-    QUOTITE_50("2", "50.0"),
-    QUOTITE_25("4", "25.0");
+    QUOTITE_100("1", "100.00"),
+    QUOTITE_75("3", "75.00"),
+    QUOTITE_50("2", "50.00"),
+    QUOTITE_25("4", "25.00");
 
     private String fraction;
     private String quotite;
