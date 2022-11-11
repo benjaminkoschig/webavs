@@ -32,7 +32,6 @@ public class Rule1200 extends Rule{
             droit.setIdDroit(champsAnnonce.getIdDroit());
             droit.retrieve();
             if(Boolean.FALSE.equals(droit.getIsSoumisImpotSource())
-                    && checkTiersEtranger(droit.loadDemande().getIdTiers())
                     && !IConstantes.ID_PAYS_SUISSE.equals(droit.getPays())
                     && checkAdressePaiementSetToAffilieForAnySituationProfessionnelle(champsAnnonce.getIdDroit())){
                 return false;
@@ -42,20 +41,6 @@ public class Rule1200 extends Rule{
         }
         return true;
     }
-
-    private boolean checkTiersEtranger(String idTiers) throws Exception {
-        TITiers tiers = new TITiers();
-        tiers.setSession(getSession());
-        tiers.setIdTiers(idTiers);
-        tiers.retrieve();
-
-        TIPays paysNationalite = new TIPays();
-        paysNationalite.setSession(getSession());
-        paysNationalite.setIdPays(tiers.getIdPays());
-        paysNationalite.retrieve();
-        return !CodeIsoPays.SUISSE.getCodeIso().equals(paysNationalite.getCodeIso());
-    }
-
     private boolean checkAdressePaiementSetToAffilieForAnySituationProfessionnelle(String idDroit) throws Exception {
         APSituationProfessionnelleManager situationProfessionnelleManager = new APSituationProfessionnelleManager();
         situationProfessionnelleManager.setSession(getSession());
