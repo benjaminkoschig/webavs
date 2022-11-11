@@ -358,7 +358,7 @@ public class RERentesAdaptees extends BEntity {
 
     public String getQuotiteOrFraction() {
         if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
-            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).toString();
+            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(2).toString();
         } else {
             return REQuotiteEnum.getQuotiteFromFraction(fractionRente);
         }

@@ -263,7 +263,7 @@ public class REListeErreursProcess extends BProcess {
             // => Si correspondance dans les RA, mettre dans la
             // mapDifferencesCentraleCaisse
             if (mapRenteAcc.containsKey(keyAnnonce)) {
-                listRaAnn = new ArrayList<Object>();
+                listRaAnn = new ArrayList<>();
                 listRaAnn.add(mapAnnonces.get(keyAnnonce));
                 listRaAnn.add(mapRenteAcc.get(keyAnnonce));
 
