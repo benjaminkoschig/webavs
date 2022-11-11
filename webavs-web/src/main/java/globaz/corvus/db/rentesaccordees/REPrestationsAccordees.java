@@ -695,7 +695,7 @@ public class REPrestationsAccordees extends BEntity {
 
     public String getQuotiteOrFraction() {
         if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
-            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(1).toString();
+            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).toString();
         } else {
             return REQuotiteEnum.getQuotiteFromFraction(fractionRente);
         }
