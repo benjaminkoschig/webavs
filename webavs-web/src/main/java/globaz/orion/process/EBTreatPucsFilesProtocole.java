@@ -1,6 +1,5 @@
 package globaz.orion.process;
 
-import ch.globaz.common.LabelCommonProvider;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.orion.business.models.pucs.PucsFileMerge;
@@ -58,11 +57,11 @@ public class EBTreatPucsFilesProtocole {
                         + JadeI18n.getInstance().getMessage(session.getIdLangueISO(),
                         jadeBusinessMessage.getMessageId()) + "\n";
             }
-            message += LabelCommonProvider.getLabel("PROCESS_ERROR", session.getIdLangueISO()) + ": " + msg;
+            message += session.getLabel("PROCESS_ERROR") + ": " + msg;
         } else {
             message += session.getErrors().toString() + process.getTransaction().getErrors().toString();
             if (e != null) {
-                message += LabelCommonProvider.getLabel("PROCESS_ERROR", session.getIdLangueISO()) + ": " + e.getMessage();
+                message += session.getLabel("PROCESS_ERROR") + ": " + e.getMessage();
             }
         }
         if (e != null) {
