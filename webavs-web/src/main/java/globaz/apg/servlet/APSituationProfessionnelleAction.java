@@ -618,7 +618,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         spViewBean.setDroitDTO(dto);
     }
 
-    private boolean hasSituationProfessionnelleQRIbanSansReference(BSession session, String idDroit) throws Exception {
+    public static boolean hasSituationProfessionnelleQRIbanSansReference(BSession session, String idDroit) throws Exception {
         if (session != null && !JadeStringUtil.isBlankOrZero(idDroit)) {
             APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
             manager.setSession(session);

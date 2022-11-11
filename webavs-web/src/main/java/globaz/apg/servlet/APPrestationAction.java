@@ -98,6 +98,14 @@ public class APPrestationAction extends PRDefaultAction {
         viewBean.setIdDroit(idDroit);
         viewBean.setGenreService(genreService);
 
+        if (APSituationProfessionnelleAction.hasSituationProfessionnelleQRIbanSansReference(droit.getSession(), idDroit)) {
+            String message = droit.getSession().getLabel("JSP_REFERENCE_QR_EMPTY");
+            viewBean.setMessage(message);
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            saveViewBean(viewBean, session);
+            throw new Exception(message);
+        }
+
         // 1 - en premier lieu il s'agit de savoir si on les calcul via ACOR ou via la calculateur maison
         getAction().changeActionPart(APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS);
 
