@@ -59,7 +59,8 @@ public class HELoadFields {
                 // this.loadFields(champAnnonceM, outputAnnonceViewBean.getChampEnregistrement());
                 // outputAnnonceViewBean.putAll(m);
                 if (isReceptionCentrale) {
-                    outputAnnonceViewBean = loadFieldsReceptionCentrale(outputAnnonceViewBean);
+                    String dateDroit = extractionDateDroitFromAnnonceVb(outputAnnonceViewBean.getChampEnregistrement(), champAnnonceM);
+                    outputAnnonceViewBean = loadFieldsReceptionCentrale(outputAnnonceViewBean, dateDroit);
                 } else {
                     outputAnnonceViewBean = loadFields(outputAnnonceViewBean, champAnnonceM,
                             outputAnnonceViewBean.getChampEnregistrement());
@@ -78,6 +79,19 @@ public class HELoadFields {
         // HEUtil.commitTreatReference(listeReferences, this.getSession(), transaction);
         // retourne le tableau des données
         return (IHEOutputAnnonce[]) listArc.toArray(new IHEOutputAnnonce[listArc.size()]);
+    }
+
+    private String extractionDateDroitFromAnnonceVb(String line, HEChampannonceListViewBean champAnnonceM) {
+        String dateDebut = "";
+        for (Object champTemp : champAnnonceM.getContainer()) {
+            HEChampannonceViewBean champ = (HEChampannonceViewBean) champTemp;
+            if (IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT.equals(champ.getIdChamp())) {
+                int debut = Integer.parseInt(champ.getDebut()) - 1;
+                int fin = debut + Integer.parseInt(champ.getLongueur());
+                dateDebut = line.substring(debut, fin).trim();
+            }
+        }
+        return dateDebut;
     }
 
     /**
@@ -201,50 +215,71 @@ public class HELoadFields {
      * @return HEInputAnnonceViewBean
      * @throws AdaptationException
      */
-    private HEOutputAnnonceViewBean loadFieldsReceptionCentrale(HEOutputAnnonceViewBean annonce) throws AdaptationException {
+    private HEOutputAnnonceViewBean loadFieldsReceptionCentrale(HEOutputAnnonceViewBean annonce, String dateDebutDroit) throws AdaptationException {
 
         REAnnonce61Manager annonce61Manager = new REAnnonce61Manager();
         annonce61Manager.setForDateAnnonce(PRConverterUtils.formatddMMAAAAToAAAAMMdd(annonce.getDateAnnonce()));
         annonce61Manager.setForNss(annonce.getNumeroAVS());
+
+        REAnnonce61 annonce61;
         try {
             annonce61Manager.find(10);
-            if (annonce61Manager.getContainer().size() > 1) {
-                throw new AdaptationException("Il ne peut y avoir plus d'un enregistrement pour le NSS : " + annonce.getNumeroAVS() + " - Dans la reception de la centrale pour la date du : " + annonce.getDateAnnonce());
-            }
+            annonce61 = returnContainerAnnonce61(annonce61Manager, dateDebutDroit);
+        } catch (Exception e) {
+            throw new AdaptationException("Il ne peut y avoir plus d'un enregistrement pour le NSS : " + annonce.getNumeroAVS() + " - Dans la reception de la centrale pour la date du : " + annonce.getDateAnnonce());
+        }
 
-            REAnnonce61 annonce61 = (REAnnonce61) annonce61Manager.get(0);
-            annonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce61.getCodeApplication());
-            annonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce61.getCodeEnregistrement01());
-            annonce.put(IHEAnnoncesViewBean.RESERVE_A_BLANC, "");
-            annonce.put(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT, annonce61.getNss());
-            annonce.put(IHEAnnoncesViewBean.CODE_DE_TRAITEMENT, annonce61.getCodeRetour());
-            annonce.put(IHEAnnoncesViewBean.OBSERVATION_1_CENTRALE, annonce61.getObservation());
-            annonce.put(IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE, annonce61.getCantonEtatDomicile());
-            annonce.put(IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT, annonce61.getEtatCivil());
-            annonce.put(IHEAnnoncesViewBean.CS_MONTANT_ALLOC_INIT_TRAVAIL_PERIODE_2, "");
-            annonce.put(IHEAnnoncesViewBean.CS_REFUGIE, annonce61.getIsRefugie());
-            annonce.put(IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA, annonce61.getDebutDroit());
-            annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS, annonce61.getAncienMontant());
-            annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS, annonce61.getNouveauMontant());
-            annonce.put(IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA, annonce61.getFinDroit());
-            annonce.put(IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT, annonce61.getMoisRapport());
-            annonce.put(IHEAnnoncesViewBean.CS_CODE_DE_MUTATION, annonce61.getCodeMutation());
-            annonce.put(IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_AYANT_DROIT, "");
-            annonce.put(IHEAnnoncesViewBean.CS_DEGREINVALIDITE_AYANT_DROIT, annonce61.getDegreInvalidite());
-            annonce.put(IHEAnnoncesViewBean.CS_CODEINFIRMITE_AYANT_DROIT, "");
-            annonce.put(IHEAnnoncesViewBean.CS_CODE_SURVIVANT_INVALIDE, "");
-            annonce.put(IHEAnnoncesViewBean.CS_FRACTION_DE_LA_RENTE, annonce61.getFractionRente());
-            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_OFFICE_PC, annonce61.getNumeroCaisse());
-            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_PC, annonce61.getNumeroAgence());
-            annonce.put(IHEAnnoncesViewBean.PC_REFERENCE_INTERNE_OFFICE_PC, annonce61.getReferenceCaisseInterne());
-            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_CAISSE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroCaisse());
-            annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroAgence());
-            annonce.put(IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION, annonce61.getGenrePrestation());
+        try {
+            mappingAnnonceVbWithAnnonce61(annonce, annonce61);
         } catch (Exception e) {
             throw new AdaptationException("L'annonce n'a pu être mappée, contrôler le retour centrale pour le NSS : " + annonce.getNumeroAVS() + " - à la date du : " + annonce.getDateAnnonce());
         }
-
         return annonce;
+    }
+
+    private void mappingAnnonceVbWithAnnonce61(HEOutputAnnonceViewBean annonce, REAnnonce61 annonce61) {
+        annonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, annonce61.getCodeApplication());
+        annonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, annonce61.getCodeEnregistrement01());
+        annonce.put(IHEAnnoncesViewBean.RESERVE_A_BLANC, "");
+        annonce.put(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT, annonce61.getNss());
+        annonce.put(IHEAnnoncesViewBean.CODE_DE_TRAITEMENT, annonce61.getCodeRetour());
+        annonce.put(IHEAnnoncesViewBean.OBSERVATION_1_CENTRALE, annonce61.getObservation());
+        annonce.put(IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE, annonce61.getCantonEtatDomicile());
+        annonce.put(IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT, annonce61.getEtatCivil());
+        annonce.put(IHEAnnoncesViewBean.CS_MONTANT_ALLOC_INIT_TRAVAIL_PERIODE_2, "");
+        annonce.put(IHEAnnoncesViewBean.CS_REFUGIE, annonce61.getIsRefugie());
+        annonce.put(IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA, annonce61.getDebutDroit());
+        annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS, annonce61.getAncienMontant());
+        annonce.put(IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS, annonce61.getNouveauMontant());
+        annonce.put(IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA, annonce61.getFinDroit());
+        annonce.put(IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT, annonce61.getMoisRapport());
+        annonce.put(IHEAnnoncesViewBean.CS_CODE_DE_MUTATION, annonce61.getCodeMutation());
+        annonce.put(IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_AYANT_DROIT, "");
+        annonce.put(IHEAnnoncesViewBean.CS_DEGREINVALIDITE_AYANT_DROIT, annonce61.getDegreInvalidite());
+        annonce.put(IHEAnnoncesViewBean.CS_CODEINFIRMITE_AYANT_DROIT, "");
+        annonce.put(IHEAnnoncesViewBean.CS_CODE_SURVIVANT_INVALIDE, "");
+        annonce.put(IHEAnnoncesViewBean.CS_FRACTION_DE_LA_RENTE, annonce61.getFractionRente());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_OFFICE_PC, annonce61.getNumeroCaisse());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_PC, annonce61.getNumeroAgence());
+        annonce.put(IHEAnnoncesViewBean.PC_REFERENCE_INTERNE_OFFICE_PC, annonce61.getReferenceCaisseInterne());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_CAISSE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroCaisse());
+        annonce.put(IHEAnnoncesViewBean.PC_NUMERO_AGENCE_QUI_VERSE_LA_PRESTATION, annonce61.getNumeroAgence());
+        annonce.put(IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION, annonce61.getGenrePrestation());
+    }
+
+    private REAnnonce61 returnContainerAnnonce61(REAnnonce61Manager annonce61Manager, String dateDebutDroit) throws AdaptationException {
+        if (annonce61Manager.getContainer().size() > 1) {
+            for (Object temp : annonce61Manager) {
+                REAnnonce61 annonce61Temp = (REAnnonce61) temp;
+                if(dateDebutDroit.equals(annonce61Temp.getDebutDroit())) {
+                    return annonce61Temp;
+                }
+            }
+
+        } else if (annonce61Manager.size() == 1){
+            return (REAnnonce61) annonce61Manager.get(0);
+        }
+        throw new AdaptationException("Erreur lors de la recherche des annonces");
     }
 
     /**
