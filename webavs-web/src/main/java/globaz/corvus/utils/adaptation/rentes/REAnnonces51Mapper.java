@@ -127,10 +127,11 @@ public class REAnnonces51Mapper {
         RRBestandesmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter flexiblesRentenAlter = ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getFlexiblesRentenAlter();
         if (Objects.nonNull(flexiblesRentenAlter)) {
             // 12 | Durée de l'ajournement : AMM
-            ann51_02.setDureeAjournement(PRConverterUtils.formatBigDecimal(flexiblesRentenAlter.getRentenaufschub().getAufschubsdauer()));
+            ann51_02.setDureeAjournement(flexiblesRentenAlter.getRentenaufschub().getAufschubsdauer().setScale(2).toString().replace(".",""));
 
-            // 13 | Supplément d'ajournement en francs
-            ann51_02.setSupplementAjournement(PRConverterUtils.formatBigDecimalToString(flexiblesRentenAlter.getRentenaufschub().getAufschubszuschlag()));
+            // 13 | Supplément d'ajournement en francs --> sur 5 caractères
+            String supplementAjournement = String.valueOf(flexiblesRentenAlter.getRentenaufschub().getAufschubszuschlag().intValue());
+            ann51_02.setSupplementAjournement(PRConverterUtils.indentLeftWithZero(supplementAjournement,5));
 
             // 14 | Date de révocation de l'ajournement : MMAA
             ann51_02.setDateRevocationAjournement(PRConverterUtils.formatDateToMMAA(flexiblesRentenAlter.getRentenaufschub().getAbrufdatum()));
@@ -256,11 +257,11 @@ public class REAnnonces51Mapper {
 
         RRBestandesmeldung9Type.ZusaetzlicheAngabenZAS.BisherigeWerte bisherigeWerte = zusaetzlicheAngabenZAS.getBisherigeWerte();
         if (Objects.nonNull(bisherigeWerte)) {
-            // 6 | Ancien revenu annuel déterminant moyen en francs --> sur 2 caractères
+            // 6 | Ancien revenu annuel déterminant moyen en francs --> sur 8 caractères
             ann51_03.setAncienRAM(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()),8));
 
-            // 7 | Ancienne RO remplacéé
-            ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetragErsetzteOrdentlicheRente()));
+            // 7 | Ancienne RO remplacéé --> sur 5 caractères.
+            ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetragErsetzteOrdentlicheRente()),5));
 
             // 8 | Ancien montant mensuel --> sur 5 caractères
             ann51_03.setAncienMontantMensuel(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetrag()),5));
@@ -295,8 +296,9 @@ public class REAnnonces51Mapper {
             // 16 | Anciennes BTE prises en comtpe
             ann51_03.setAncienneBTEMoyennePrisCompte(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAngerechneteErziehungsgutschrift()));
 
-            // 17 | Ancien supplément d'ajournement en francs
-            ann51_03.setAncienSupplementAjournement(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAufschubszuschlag()));
+            // 17 | Ancien supplément d'ajournement en francs --> sur 5 caractères.
+            String ancienSupplementAjournement = String.valueOf(bisherigeWerte.getAufschubszuschlag().intValue());
+            ann51_03.setAncienSupplementAjournement(PRConverterUtils.indentLeftWithZero(ancienSupplementAjournement, 5));
         }
 
         // 14 | Observations de la centrale
@@ -371,9 +373,8 @@ public class REAnnonces51Mapper {
         // 16 | Mensualité de la prestation en francs --> sur 5 caractères
         ann51.setMensualitePrestationsFrancs(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetrag()), 5));
 
-        // 17 | Mensualité de la rente ordinaire
-        // | remplacée en francs
-        ann51.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetragErsetzteOrdentlicheRente()));
+        // 17 | Mensualité de la rente ordinaire | remplacée en francs --> sur 5 caractères
+        ann51.setMontantAncRenteRemplacee(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetragErsetzteOrdentlicheRente()),5));
 
         // 18 | Fin du droit: MMAA
         ann51.setFinDroit(PRConverterUtils.formatDateToMMAA(ausserordentlicheRente.getLeistungsbeschreibung().getAnspruchsende()));
@@ -478,7 +479,7 @@ public class REAnnonces51Mapper {
             ann51_02.setAgeDebutInvaliditeEpouse(PRConverterUtils.formatBooleanToString(ivDatenFrau.isIstFruehInvalid()));
         }
 
-        // 28 | Réduction
+        // 28 | Réduction --> sur 2 caractères
         ann51_02.setReduction(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ausserordentlicheRente.getLeistungsbeschreibung().getKuerzungSelbstverschulden()),2));
 
         List<Short> codesCasSpeciaux = ausserordentlicheRente.getLeistungsbeschreibung().getSonderfallcodeRente();
