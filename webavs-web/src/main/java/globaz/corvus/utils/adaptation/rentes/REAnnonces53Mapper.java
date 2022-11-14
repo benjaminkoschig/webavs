@@ -84,7 +84,6 @@ public class REAnnonces53Mapper {
         // 20 | Réserve: à blanc
 
         ann53.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53.add(transaction);
 
         REAnnonce53 ann53_02 = new REAnnonce53();
         // 1 | Code application: 53
@@ -211,20 +210,17 @@ public class REAnnonces53Mapper {
         // 35 | Réserve: à blanc
 
         ann53_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53_02.add(transaction);
+
 
         // mise à jour de l'idLien de l'annonce 01
-        ann53.retrieve();
-        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
-        ann53.update(transaction);
-
 
         REAnnonce53 ann53_03 = createAnnonces53InfosComplementaires(bestandesmeldung10Type.getZusaetzlicheAngabenZAS());
 
         // mise à jour de l'idLien de l'annonce 01
-        ann53_02.retrieve();
         ann53_02.setIdLienAnnonce(ann53_03.getIdAnnonce());
-        ann53_02.update(transaction);
+        ann53_02.add(transaction);
+        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
+        ann53.add(transaction);
 
         return ann53;
     }
@@ -367,7 +363,6 @@ public class REAnnonces53Mapper {
         // 20 | Réserve: à blanc
 
         ann53.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53.add(transaction);
 
         REAnnonce53 ann53_02 = new REAnnonce53();
         // 1 | Code application: 53
@@ -431,20 +426,12 @@ public class REAnnonces53Mapper {
         // 35 | Réserve: à blanc
 
         ann53_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53_02.add(transaction);
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann53.retrieve();
-        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
-        ann53.update(transaction);
-
 
         REAnnonce53 ann53_03 = createAnnonces53InfosComplementaires(bestandesmeldung10Type.getZusaetzlicheAngabenZAS());
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann53_02.retrieve();
         ann53_02.setIdLienAnnonce(ann53_03.getIdAnnonce());
-        ann53_02.update(transaction);
+        ann53_02.add(transaction);
+        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
+        ann53.add(transaction);
 
         return ann53;
     }
@@ -518,7 +505,6 @@ public class REAnnonces53Mapper {
         // 20 | Réserve: à blanc
 
         ann53.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53.add(transaction);
 
         REAnnonce53 ann53_02 = new REAnnonce53();
         // 1 | Code application: 53
@@ -569,23 +555,15 @@ public class REAnnonces53Mapper {
         }
 
         // 35 | Réserve: à blanc
-
         ann53_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann53_02.add(transaction);
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann53.retrieve();
-        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
-        ann53.update(transaction);
-
 
         REAnnonce53 ann53_03 = createAnnonces53InfosComplementaires(bestandesmeldung10Type.getZusaetzlicheAngabenZAS());
 
         // mise à jour de l'idLien de l'annonce 01
-        ann53_02.retrieve();
         ann53_02.setIdLienAnnonce(ann53_03.getIdAnnonce());
-        ann53_02.update(transaction);
-
+        ann53_02.add(transaction);
+        ann53.setIdLienAnnonce(ann53_02.getIdAnnonce());
+        ann53.add(transaction);
         return ann53;
     }
 
