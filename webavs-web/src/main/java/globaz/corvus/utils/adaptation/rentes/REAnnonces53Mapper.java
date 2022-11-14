@@ -188,17 +188,19 @@ public class REAnnonces53Mapper {
                 // 28 | Nombre d'années d'anticipation
                 ann53_02.setNbreAnneeAnticipation(PRConverterUtils.formatIntegerToString(rentenvorbezug.getAnzahlVorbezugsjahre()));
 
-                // 29 | réduction anticipation
-                ann53_02.setReductionAnticipation(PRConverterUtils.formatBigDecimalToString(rentenvorbezug.getVorbezugsreduktion()));
+                // 29 | réduction anticipation --> sur 5 caractères.
+                String reductionAnticipation = String.valueOf(rentenvorbezug.getVorbezugsreduktion().intValue());
+                ann53_02.setReductionAnticipation(PRConverterUtils.indentLeftWithZero(reductionAnticipation, 5));
 
                 // 30 | Date début anticipation MMAA
                 ann53_02.setDateDebutAnticipation(PRConverterUtils.formatDateToMMAA(rentenvorbezug.getVorbezugsdatum()));
             } else if (Objects.nonNull(rentenaufschub)) {
-                // 31 | Durée ajournement
-                ann53_02.setDureeAjournement(PRConverterUtils.formatBigDecimal(rentenaufschub.getAufschubsdauer()));
+                // 31 | Durée ajournement --> sur 3 carctères.
+                ann53_02.setDureeAjournement(rentenaufschub.getAufschubsdauer().setScale(2).toString().replace(".",""));
 
-                // 32 | Supplément d'ajournement en francs
-                ann53_02.setSupplementAjournement(PRConverterUtils.formatBigDecimalToString(rentenaufschub.getAufschubszuschlag()));
+                // 32 | Supplément d'ajournement en francs --> sur 5 caractères.
+                String supplementAjournement = String.valueOf(rentenaufschub.getAufschubszuschlag().intValue());
+                ann53_02.setSupplementAjournement(PRConverterUtils.indentLeftWithZero(supplementAjournement, 5));
 
                 // 33 | Date révocation ajournement MMAA
                 ann53_02.setDateRevocationAjournement(PRConverterUtils.formatDateToMMAA(rentenaufschub.getAbrufdatum()));
@@ -252,11 +254,13 @@ public class REAnnonces53Mapper {
             // 6 | Ancien revenu annuel déterminant moyen en francs --> sur 8 caractères.
             ann53_03.setAncienRAM(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()),8));
 
-            // 7 | Ancien supplément d'ajournement
-            ann53_03.setAncienSupplementAjourn(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAufschubszuschlag()));
+            // 7 | Ancien supplément d'ajournement --> sur 5 caractères.
+            String ancienSupplementAjournement = String.valueOf(bisherigeWerte.getAufschubszuschlag().intValue());
+            ann53_03.setAncienSupplementAjourn(PRConverterUtils.indentLeftWithZero(ancienSupplementAjournement, 5));
 
-            // 8 | Ancienne réduction
-            ann53_03.setAncienRedAnticipation(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getVorbezugsreduktion()));
+            // 8 | Ancienne réduction --> sur 5 caractères.
+            String ancienneReductionAnticipation = String.valueOf(bisherigeWerte.getVorbezugsreduktion().intValue());
+            ann53_03.setAncienRedAnticipation(PRConverterUtils.indentLeftWithZero(ancienneReductionAnticipation,5));
 
             // 9 | Ancien montant mensuel --> sur 5 caractères
             ann53_03.setAncienMontantMensuel(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetrag()),5));
