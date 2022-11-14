@@ -256,5 +256,4 @@ public class APPrestationAcor {
             rc.addResultatCalculSitProfessionnelle(rcSitPro);
         }
     }
-
 }

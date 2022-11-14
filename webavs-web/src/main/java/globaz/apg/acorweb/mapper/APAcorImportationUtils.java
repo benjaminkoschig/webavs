@@ -75,27 +75,29 @@ public final class APAcorImportationUtils {
         }
     }
 
-    public static VersementBeneficiaireApgType findVersementBeneficiaireFederalType(VersementApgType versementApg) {
-        VersementBeneficiaireApgType versementBeneficiaire = null;
-        if(Objects.nonNull(versementApg.getVersementsFederal())){
-            versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
-            if(Objects.isNull(versementBeneficiaire)){
-                versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
-            }
-        }
-        return versementBeneficiaire;
-    }
+//    TODO: Remove commented code if not needed
+//    public static VersementBeneficiaireApgType findVersementBeneficiaireFederalType(VersementApgType versementApg) {
+//        VersementBeneficiaireApgType versementBeneficiaire = null;
+//        if(Objects.nonNull(versementApg.getVersementsFederal())){
+//            versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
+//            if(Objects.isNull(versementBeneficiaire)){
+//                versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
+//            }
+//        }
+//        return versementBeneficiaire;
+//    }
 
-    public static VersementBeneficiaireApgType findVersementBeneficiaireGenevoisType(VersementApgType versementApg) {
-        VersementBeneficiaireApgType versementBeneficiaire = null;
-        if(Objects.nonNull(versementApg.getVersementsGenevois())){
-            versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
-            if(Objects.isNull(versementBeneficiaire)){
-                versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
-            }
-        }
-        return versementBeneficiaire;
-    }
+//    TODO: Remove commented code if not needed
+//    public static VersementBeneficiaireApgType findVersementBeneficiaireGenevoisType(VersementApgType versementApg) {
+//        VersementBeneficiaireApgType versementBeneficiaire = null;
+//        if(Objects.nonNull(versementApg.getVersementsGenevois())){
+//            versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
+//            if(Objects.isNull(versementBeneficiaire)){
+//                versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
+//            }
+//        }
+//        return versementBeneficiaire;
+//    }
 
     public static APBaseCalcul findBaseCalcul(Collection<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor) {
         APBaseCalcul retValue = basesCalcul.stream().filter(b ->
@@ -190,8 +192,7 @@ public final class APAcorImportationUtils {
     }
 
     public static APBaseCalculSituationProfessionnel findBaseCalculSitPro(APBaseCalcul basesCalcul,
-                                                                    String idTiers, String idAffilie, String nomAffilie)
-            throws PRACORException {
+                                                                    String idTiers, String idAffilie, String nomAffilie) {
         if (Objects.isNull(basesCalcul)) {
             LOG.warn("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
             return null;
@@ -230,41 +231,42 @@ public final class APAcorImportationUtils {
         return name.replaceFirst("^\\[\\d+\\]", "");
     }
 
-    public static boolean comparePeriod2IsInsidePeriod1(Integer startDatePeriod1, Integer endDatePeriode1,
-                                                        Integer startDatePeriod2, Integer endDatePeriode2) {
-        JADate startDatePeriod1JADate;
-        try {
-            startDatePeriod1JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod1));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
-        }
-        JADate endDatePeriode1JADate;
-        try {
-            endDatePeriode1JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode1));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
-        }
-        JADate startDatePeriod2JADate;
-        try {
-            startDatePeriod2JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod2));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
-        }
-        JADate endDatePeriode2JADate;
-        try {
-            endDatePeriode2JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode2));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
-        }
-        LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1JADate);
-        LocalDate localDateFinPeriode1 = Dates.toDate(endDatePeriode1JADate);
-        LocalDate localDateDebutPeriod2 = Dates.toDate(startDatePeriod2JADate);
-        LocalDate localDateFinPeriod2 = Dates.toDate(endDatePeriode2JADate);
-        return (localDateDebutPeriod1.isBefore(localDateDebutPeriod2) ||
-                localDateDebutPeriod1.isEqual(localDateDebutPeriod2)) &&
-                (localDateFinPeriode1.isAfter(localDateFinPeriod2) ||
-                        localDateFinPeriode1.isEqual(localDateFinPeriod2));
-    }
+//    TODO: Remove commented code if not needed
+//    public static boolean comparePeriod2IsInsidePeriod1(Integer startDatePeriod1, Integer endDatePeriode1,
+//                                                        Integer startDatePeriod2, Integer endDatePeriode2) {
+//        JADate startDatePeriod1JADate;
+//        try {
+//            startDatePeriod1JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod1));
+//        } catch (JAException e) {
+//            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+//        }
+//        JADate endDatePeriode1JADate;
+//        try {
+//            endDatePeriode1JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode1));
+//        } catch (JAException e) {
+//            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+//        }
+//        JADate startDatePeriod2JADate;
+//        try {
+//            startDatePeriod2JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod2));
+//        } catch (JAException e) {
+//            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+//        }
+//        JADate endDatePeriode2JADate;
+//        try {
+//            endDatePeriode2JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode2));
+//        } catch (JAException e) {
+//            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+//        }
+//        LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1JADate);
+//        LocalDate localDateFinPeriode1 = Dates.toDate(endDatePeriode1JADate);
+//        LocalDate localDateDebutPeriod2 = Dates.toDate(startDatePeriod2JADate);
+//        LocalDate localDateFinPeriod2 = Dates.toDate(endDatePeriode2JADate);
+//        return (localDateDebutPeriod1.isBefore(localDateDebutPeriod2) ||
+//                localDateDebutPeriod1.isEqual(localDateDebutPeriod2)) &&
+//                (localDateFinPeriode1.isAfter(localDateFinPeriod2) ||
+//                        localDateFinPeriode1.isEqual(localDateFinPeriod2));
+//    }
 
     public static boolean comparePeriod2IsInsidePeriod1(JADate startDatePeriod1, JADate endDatePeriode1,
                                                         JADate startDatePeriod2, JADate endDatePeriode2) {
@@ -277,13 +279,13 @@ public final class APAcorImportationUtils {
                 (localDateFinPeriode1.isAfter(localDateFinPeriod2) ||
                         localDateFinPeriode1.isEqual(localDateFinPeriod2));
     }
-
-    public static boolean  checkPeriodesDansLeMemeMois(int dateDebutPeriode1, int dateFinPeriode1, int dateDebutPeriode2) throws JAException {
-        LocalDate dateLocalDebutPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode1)));
-        LocalDate dateLocalFinPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateFinPeriode1)));
-        LocalDate datePeriode2 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode2)));
-        return dateLocalDebutPeriode1.getMonth() == datePeriode2.getMonth() || dateLocalFinPeriode1.getMonth() == datePeriode2.getMonth();
-    }
+//    TODO: Remove commented code if not needed
+//    public static boolean  checkPeriodesDansLeMemeMois(int dateDebutPeriode1, int dateFinPeriode1, int dateDebutPeriode2) throws JAException {
+//        LocalDate dateLocalDebutPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode1)));
+//        LocalDate dateLocalFinPeriode1 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateFinPeriode1)));
+//        LocalDate datePeriode2 = Dates.toDate(JADate.newDateFromAMJ(String.valueOf(dateDebutPeriode2)));
+//        return dateLocalDebutPeriode1.getMonth() == datePeriode2.getMonth() || dateLocalFinPeriode1.getMonth() == datePeriode2.getMonth();
+//    }
 
     public static IAPReferenceDataPrestation retrieveReferenceData(BSession session, APPeriodeWrapper periode, String genreService) {
         IAPReferenceDataPrestation ref;
