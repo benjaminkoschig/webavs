@@ -4,33 +4,20 @@ import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiers;
 import globaz.corvus.db.adaptation.REPrestAccJointInfoComptaJointTiersManager;
-import globaz.corvus.db.annonces.IREAnnonceAdaptation;
-import globaz.corvus.db.annonces.REAnnonce51Adaptation;
-import globaz.corvus.db.annonces.REAnnonce51AdaptationManager;
-import globaz.corvus.db.annonces.REAnnonce53Adaptation;
-import globaz.corvus.db.annonces.REAnnonce53AdaptationManager;
+import globaz.corvus.db.annonces.*;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
-import globaz.corvus.itext.REListeDifferencesCentraleCaisse;
-import globaz.corvus.itext.REListeDifferencesCentraleCaissePourcent;
-import globaz.corvus.itext.REListeDifferencesDroitApplique;
-import globaz.corvus.itext.REPrestationsNonTrouveesCentrale;
-import globaz.corvus.itext.REPrestationsNonTrouveesFichierCaisse;
+import globaz.corvus.itext.*;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author HPE
