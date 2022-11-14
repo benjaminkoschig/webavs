@@ -59,8 +59,8 @@ public class HELoadFields {
                 // this.loadFields(champAnnonceM, outputAnnonceViewBean.getChampEnregistrement());
                 // outputAnnonceViewBean.putAll(m);
                 if (isReceptionCentrale) {
-                    String dateDroit = extractionDateDroitFromAnnonceVb(outputAnnonceViewBean.getChampEnregistrement(), champAnnonceM);
-                    outputAnnonceViewBean = loadFieldsReceptionCentrale(outputAnnonceViewBean, dateDroit);
+                    String genrePresta = extractionGenrePrestaFromAnnonceVb(outputAnnonceViewBean.getChampEnregistrement(), champAnnonceM);
+                    outputAnnonceViewBean = loadFieldsReceptionCentrale(outputAnnonceViewBean, genrePresta);
                 } else {
                     outputAnnonceViewBean = loadFields(outputAnnonceViewBean, champAnnonceM,
                             outputAnnonceViewBean.getChampEnregistrement());
@@ -81,17 +81,17 @@ public class HELoadFields {
         return (IHEOutputAnnonce[]) listArc.toArray(new IHEOutputAnnonce[listArc.size()]);
     }
 
-    private String extractionDateDroitFromAnnonceVb(String line, HEChampannonceListViewBean champAnnonceM) {
-        String dateDebut = "";
+    private String extractionGenrePrestaFromAnnonceVb(String line, HEChampannonceListViewBean champAnnonceM) {
+        String genrePresta = "";
         for (Object champTemp : champAnnonceM.getContainer()) {
             HEChampannonceViewBean champ = (HEChampannonceViewBean) champTemp;
-            if (IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT.equals(champ.getIdChamp())) {
+            if (IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION.equals(champ.getIdChamp())) {
                 int debut = Integer.parseInt(champ.getDebut()) - 1;
                 int fin = debut + Integer.parseInt(champ.getLongueur());
-                dateDebut = line.substring(debut, fin).trim();
+                genrePresta = line.substring(debut, fin).trim();
             }
         }
-        return dateDebut;
+        return genrePresta;
     }
 
     /**
@@ -215,7 +215,7 @@ public class HELoadFields {
      * @return HEInputAnnonceViewBean
      * @throws AdaptationException
      */
-    private HEOutputAnnonceViewBean loadFieldsReceptionCentrale(HEOutputAnnonceViewBean annonce, String dateDebutDroit) throws AdaptationException {
+    private HEOutputAnnonceViewBean loadFieldsReceptionCentrale(HEOutputAnnonceViewBean annonce, String genrePresta) throws AdaptationException {
 
         REAnnonce61Manager annonce61Manager = new REAnnonce61Manager();
         annonce61Manager.setForDateAnnonce(PRConverterUtils.formatddMMAAAAToAAAAMMdd(annonce.getDateAnnonce()));
@@ -224,7 +224,7 @@ public class HELoadFields {
         REAnnonce61 annonce61;
         try {
             annonce61Manager.find(10);
-            annonce61 = returnContainerAnnonce61(annonce61Manager, dateDebutDroit);
+            annonce61 = returnContainerAnnonce61(annonce61Manager, genrePresta);
         } catch (Exception e) {
             throw new AdaptationException("Il ne peut y avoir plus d'un enregistrement pour le NSS : " + annonce.getNumeroAVS() + " - Dans la reception de la centrale pour la date du : " + annonce.getDateAnnonce());
         }
@@ -267,11 +267,11 @@ public class HELoadFields {
         annonce.put(IHEAnnoncesViewBean.PC_GENRE_DE_PRESTATION, annonce61.getGenrePrestation());
     }
 
-    private REAnnonce61 returnContainerAnnonce61(REAnnonce61Manager annonce61Manager, String dateDebutDroit) throws AdaptationException {
+    private REAnnonce61 returnContainerAnnonce61(REAnnonce61Manager annonce61Manager, String genrePresta) throws AdaptationException {
         if (annonce61Manager.getContainer().size() > 1) {
             for (Object temp : annonce61Manager) {
                 REAnnonce61 annonce61Temp = (REAnnonce61) temp;
-                if(dateDebutDroit.equals(annonce61Temp.getDebutDroit())) {
+                if(genrePresta.equals(annonce61Temp.getGenrePrestation())) {
                     return annonce61Temp;
                 }
             }
