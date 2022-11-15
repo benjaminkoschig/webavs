@@ -174,7 +174,7 @@ function isQRIban() {
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
-
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 	</td>
 </tr>
 
@@ -196,7 +196,7 @@ function isQRIban() {
 					methods="<%=referencePaiementSelectionMethodsName%>"
 					providerApplication ="pyxis"
 					providerPrefix="TI"
-					providerAction ="pyxis.tiers.referencePaiement.chercher"
+					providerAction ="pyxis.tiers.referencePaiement.chercher&colonneSelection=no"
 					providerActionParams ="<%=referencePaiementChercherParams%>"
 					target="fr_main"
 					redirectUrl="<%=mainServletPath%>"
