@@ -158,6 +158,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             LOG.debug(String.valueOf(nbAnnoncesLot));
             if (getIsForAnnoncesSubsequentes()) {
                 mgr.setForAnnoncesSubsequentes(true);
+                nbAnnoncesLot = mgr.getCount();
             }
             statement = mgr.cursorOpen(getTransaction());
 
