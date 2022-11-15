@@ -587,6 +587,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                         nombreEnfant++;
                     }
                 }
+                context.put(Attribut.NB_ENFANTS_INCLUS, nombreEnfant);
                 // lance le calcul pour la combinaison
                 CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
                 getCalculsComparatifs().add(cc);
@@ -601,6 +602,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         List<PersonnePCAccordee> combinaisonPersonnesCommun = new ArrayList<PersonnePCAccordee>();
         combinaisonPersonnesCommun.addAll(parents);
+        int nombreEnfant = 0;
 
         for (PersonnePCAccordee parent : parents) {
 
@@ -613,7 +615,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 //            for(PersonnePCAccordee enfant : enfants) {
 //                combinaisonPersonnesSepare.add(enfant);
 //            }
-
+            context.put(Attribut.NB_ENFANTS_INCLUS, 0);
             CalculComparatif ccSeul = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_SEUL, combinaisonPersonnesSepare, context);
 
             // calcul par combinaison d'enfants
@@ -631,7 +633,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                         combinaisonPersonnesCommun.add(enfants.get(idxEnfant));
                     }
                 }
-
                 // lance le calcul pour la combinaison
                 CalculComparatif ccSepare = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_AVEC_ENFANTS,
                         combinaisonPersonnesSepare, context);
