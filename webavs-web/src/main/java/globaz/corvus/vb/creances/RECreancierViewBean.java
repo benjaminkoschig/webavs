@@ -675,11 +675,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
         creMgr.find(BManager.SIZE_NOLIMIT);
 
         if (creMgr.size() > 0) {
-
-            for (Iterator iterator = creMgr.iterator(); iterator.hasNext(); ) {
-                RECreancier creancier = (RECreancier) iterator.next();
-                return creancier.getIdCreancier();
-            }
+           return ((RECreancier) creMgr.get(0)).getIdCreancier();
         }
         return "";
     }
