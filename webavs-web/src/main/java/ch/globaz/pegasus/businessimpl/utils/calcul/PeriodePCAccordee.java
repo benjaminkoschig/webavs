@@ -602,7 +602,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         List<PersonnePCAccordee> combinaisonPersonnesCommun = new ArrayList<PersonnePCAccordee>();
         combinaisonPersonnesCommun.addAll(parents);
-        int nombreEnfant = 0;
 
         for (PersonnePCAccordee parent : parents) {
 
