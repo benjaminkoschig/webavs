@@ -8,9 +8,6 @@ import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.properties.APParameter;
 import globaz.globall.db.FWFindParameter;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.prestation.enums.PRCanton;
-import globaz.pyxis.constantes.IConstantes;
 
 /**
  * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> </br><strong>Champs concerné(s)
@@ -23,10 +20,7 @@ public class Rule321 extends Rule {
 
     boolean isErrorDailyAmountZero;
     APChampsAnnonce annonce;
-    private final int montantMiniAllocationJournalier = 62;
-    private final int montantMiniAllocationJournalierMaternite = 196;
-    private final int montantMiniAllocationJournalierCadre = 245;
-    
+
     /**
      * @param errorCode
      */
@@ -74,18 +68,35 @@ public class Rule321 extends Rule {
         if (services1.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
-            if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalier)) {
-                return false;
+            if (numberOfChilren.equals("0")) {
+                testDateNotEmptyAndValid(dateDebut, "startOfPeriod");
+                try {
+                    BigDecimal tauxUnitaireMaxSansEnfant = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
+                            "1", APParameter.TAUX_UNITAIRE_MAX_0_ENFANT.getParameterName(), dateDebut, "", 2));
+                    if (Float.valueOf(basicDailyAmount) > tauxUnitaireMaxSansEnfant.floatValue()) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    throw new APRuleExecutionException(e);
+                }
             }
-
         }
 
         // Condition sur les deuxièmes serviceType
         if (services2.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
-            if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
-                return false;
+            if (numberOfChilren.equals("0")) {
+                testDateNotEmptyAndValid(dateDebut, "startOfPeriod");
+                try {
+                    BigDecimal tauxJournalierMaxDroitAcquisSansEnfant = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
+                            "0", APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName(), dateDebut, "", 2));
+                    if (Float.valueOf(basicDailyAmount) > tauxJournalierMaxDroitAcquisSansEnfant.floatValue()) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    throw new APRuleExecutionException(e);
+                }
             }
         }
 
@@ -99,12 +110,11 @@ public class Rule321 extends Rule {
                 validNotEmpty(basicDailyAmount, "basicDailyAmount");
             }
 
-            String parameterName = null;
-            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();
+            testDateNotEmptyAndValid(dateDebut, "startOfPeriod");
             try {
-                BigDecimal montantMax = new BigDecimal(
-                        FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "0", parameterName, dateDebut, "", 2));
-                if ((Float.valueOf(basicDailyAmount) > montantMax.floatValue())) {
+                BigDecimal tauxJournalierMaxDroitAcquisSansEnfant = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
+                        "0", APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName(), dateDebut, "", 2));
+                if ((Float.valueOf(basicDailyAmount) > tauxJournalierMaxDroitAcquisSansEnfant.floatValue())) {
                     return false;
                 }
             } catch (Exception e) {
@@ -114,7 +124,17 @@ public class Rule321 extends Rule {
         } else if (!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
-            if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
+            if (Integer.valueOf(numberOfChilren) > 0) {
+                testDateNotEmptyAndValid(dateDebut, "startOfPeriod");
+                try {
+                    BigDecimal tauxJournalierMaxDroitAcquisAvecEnfant = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
+                            "0", APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_PLUS_DE_2_ENFANT.getParameterName(), dateDebut, "", 2));
+                    if ((Float.valueOf(basicDailyAmount) > tauxJournalierMaxDroitAcquisAvecEnfant.floatValue())) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    throw new APRuleExecutionException(e);
+                }
                 return false;
             }
         }
