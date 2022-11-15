@@ -139,10 +139,16 @@ public class APPrestationAcor {
         setDateDebut(Dates.toDate(periode.getDateDebut()));
         setDateFin(Dates.toDate(periode.getDateFin()));
         if(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
-            Optional<PeriodeServiceApgType> periodeServiceApgType = fCalcul.getCarteApg()
+            Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg()
                     .getPeriodeService()
                     .stream().filter(p -> isInPeriode(p.getDebut(), p.getFin(), periode)).findFirst();
-            periodeServiceApgType.ifPresent(serviceApgType -> setNombreJoursSoldes(serviceApgType.getNbJours()));
+            if(periodeServiceApgTypeOptional.isPresent()){
+                PeriodeServiceApgType periodeServiceApgType = periodeServiceApgTypeOptional.get();
+                setNombreJoursSoldes(periodeServiceApgType.getNbJours());
+                if(Double.compare(periodeServiceApgType.getPartAssure(), 0.0) != 0){
+                    setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
+                }
+            }
         }
     }
 

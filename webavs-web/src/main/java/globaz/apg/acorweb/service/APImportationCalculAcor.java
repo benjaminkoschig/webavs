@@ -5,6 +5,7 @@ import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.acorweb.mapper.APAcorImportationUtils;
 import globaz.apg.acorweb.mapper.APPeriodeAcor;
 import globaz.apg.acorweb.mapper.APPrestationAcor;
 import globaz.apg.acorweb.mapper.APRepartitionPaiementAcor;
@@ -16,10 +17,7 @@ import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
 import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
-import globaz.apg.properties.APProperties;
-import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.prestation.APPrestationViewBean;
-import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
@@ -37,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -169,44 +166,44 @@ public class APImportationCalculAcor {
 
     private List<APPrestationAcor> createAndMapPrestationsAcor(BSession session,
                                                                APDroitLAPG droit,
-                                                               List<APBaseCalcul> basesCalcul) throws PRACORException {
+                                                               List<APBaseCalcul> basesCalcul) {
         List<APPrestationAcor> prestations = new ArrayList<>();
-        List<APPeriodeAcor> periodes =  getPeriodes(fCalcul, droit.getGenreService());
-        for (APPeriodeAcor periode:
+        List<APPeriodeAcor> periodes = getPeriodes(fCalcul, droit.getGenreService());
+        for (APPeriodeAcor periode :
                 periodes) {
             APBaseCalcul baseCalcul = findBaseCalcul(basesCalcul, periode.getWrapper().getDateDebut(), periode.getWrapper().getDateFin());
             for (VersementMoisComptableApgType moisComptableApgType :
                     fCalcul.getVersementMoisComptable()) {
-                List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
-                for (VersementApgType versementApgType :
-                        moisComptableApgType.getVersement()) {
-                    createAndMapRepartitionsByVersementApg(session, periode, repartitions, baseCalcul, versementApgType);
-                }
-                if (!repartitions.isEmpty()) {
-                    try {
+                try {
+                    if (APAcorImportationUtils.checkPeriodesDansLeMemeMois(periode.getWrapper().getDateDebut().toInt(),
+                            periode.getWrapper().getDateFin().toInt(),
+                            moisComptableApgType.getMoisComptable())) {
+
                         APPrestationAcor prestationAcor = createAndMapPrestation(droit, moisComptableApgType, periode, baseCalcul);
-                        for (APRepartitionPaiementAcor repartition :
-                                repartitions) {
-                            prestationAcor.getRepartitionPaiements().add(repartition);
+                        for (VersementApgType versementApgType :
+                                moisComptableApgType.getVersement()) {
+                            List<APRepartitionPaiementAcor> repartitions = new ArrayList<>();
+                            createAndMapRepartitionsByVersementApg(session, periode, repartitions, baseCalcul, versementApgType);
+                            prestationAcor.getRepartitionPaiements().addAll(repartitions);
                         }
                         prestations.add(prestationAcor);
-                    } catch (Exception e) {
-                        throw new PRAcorTechnicalException("Erreur lors de la création de la prestation.", e);
                     }
+                } catch (Exception e) {
+                    throw new PRAcorTechnicalException("Erreur lors de la création de la prestation.", e);
                 }
             }
         }
-         return prestations;
+        return prestations;
     }
 
-    private List<APPeriodeAcor> getPeriodes(FCalcul fCalcul, String genreService) {
+    private static List<APPeriodeAcor> getPeriodes(FCalcul fCalcul, String genreService) {
         List<APPeriodeAcor> periodes = new ArrayList<>();
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             for (PeriodeServiceApgType periode :
                     fCalcul.getCarteApg().getPeriodeService()) {
                 APPeriodeAcor periodeAcor = new APPeriodeAcor();
                 periodeAcor.setWrapper(getPeriodeWrapper(periode.getDebut(), periode.getFin()));
-                if(periode.getPartAssure().equals(0)) {
+                if(periode.getPartAssure().compareTo(0.0) != 0) {
                     periodeAcor.setPartAssure(true);
                 }
                 periodes.add(periodeAcor);
@@ -245,7 +242,8 @@ public class APImportationCalculAcor {
         return periodes;
     }
 
-    private List<APPeriodeAcor> getVersementPeriode(VersementBeneficiaireApgType versementBeneficiaireApgType, List<APPeriodeAcor> periodesExistantes){
+    private static List<APPeriodeAcor> getVersementPeriode(VersementBeneficiaireApgType versementBeneficiaireApgType,
+                                                           List<APPeriodeAcor> periodesExistantes){
         List<APPeriodeAcor> periodesPourAjout = new ArrayList<>();
         for (DecompteApgType decompteApgType :
                 versementBeneficiaireApgType.getDecompte()) {
@@ -254,7 +252,8 @@ public class APImportationCalculAcor {
                 APPeriodeAcor periodeAcor = new APPeriodeAcor();
                 periodeAcor.setWrapper(getPeriodeWrapper(periodeDecompteApgType.getDebut(), periodeDecompteApgType.getFin()));
                 if(periodesExistantes.stream().noneMatch(p ->
-                        periodeAcor.getWrapper().getDateDebut().equals(p.getWrapper().getDateDebut()) && periodeAcor.getWrapper().getDateFin().equals(p.getWrapper().getDateFin())
+                        periodeAcor.getWrapper().getDateDebut().equals(p.getWrapper().getDateDebut()) &&
+                        periodeAcor.getWrapper().getDateFin().equals(p.getWrapper().getDateFin())
                 )){
                     periodesPourAjout.add(periodeAcor);
                 }
@@ -325,20 +324,21 @@ public class APImportationCalculAcor {
                 versementBeneficiaireApgType.getDecompte()) {
             for (PeriodeDecompteApgType periodeDecompteApgType :
                     decompteApgType.getPeriodeDecompte()) {
-                APPeriodeWrapper periodeApg = getPeriodeWrapper(periodeDecompteApgType.getDebut(), periodeDecompteApgType.getFin());
-                LocalDate periodeApgDebut = Dates.toDate(periodeApg.getDateDebut());
-                LocalDate periodeApgFin = Dates.toDate(periodeApg.getDateFin());
-                LocalDate periodeDebut = Dates.toDate(periode.getWrapper().getDateDebut());
-                LocalDate periodeFin = Dates.toDate(periode.getWrapper().getDateFin());
-                boolean isInPeriod = periodeDebut.isBefore(periodeApgDebut) || periodeDebut.isEqual(periodeApgDebut);
-                isInPeriod = isInPeriod && (periodeFin.isAfter(periodeApgFin) || periodeFin.isEqual(periodeApgFin));
-                if (isInPeriod) {
-                    repartitionPaiementAcors.add(APPrestationAcor.createRepartitionPaiement(session,
-                            baseCalcul,
-                            versementBeneficiaireApgType,
-                            periodeDecompteApgType,
-                            fCalcul));
-                }
+//                APPeriodeWrapper periodeApg = getPeriodeWrapper(periodeDecompteApgType.getDebut(), periodeDecompteApgType.getFin());
+//                LocalDate periodeApgDebut = Dates.toDate(periodeApg.getDateDebut());
+//                LocalDate periodeApgFin = Dates.toDate(periodeApg.getDateFin());
+//                LocalDate periodeDebut = Dates.toDate(periode.getWrapper().getDateDebut());
+//                LocalDate periodeFin = Dates.toDate(periode.getWrapper().getDateFin());
+//                boolean isInPeriod = periodeDebut.isBefore(periodeApgDebut) || periodeDebut.isEqual(periodeApgDebut);
+//                isInPeriod = isInPeriod && (periodeFin.isAfter(periodeApgFin) || periodeFin.isEqual(periodeApgFin));
+//                if (isInPeriod) {
+
+                repartitionPaiementAcors.add(APPrestationAcor.createRepartitionPaiement(session,
+                        baseCalcul,
+                        versementBeneficiaireApgType,
+                        periodeDecompteApgType,
+                        fCalcul));
+//                }
             }
         }
         return repartitionPaiementAcors;
