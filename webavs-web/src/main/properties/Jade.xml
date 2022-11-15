@@ -68,8 +68,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
 
- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl>
- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema>
+ <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
+ <!-- 	 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
  
 <!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
@@ -86,8 +86,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema>-->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl>-->
-<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema>-->
+ 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl>
+ 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema>
 		
 <!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
@@ -175,7 +175,7 @@
 	<externalHelpGlobazClientId>Globaz</externalHelpGlobazClientId>
 	<!--externalHelpGlobazUserID: ID d'utilisateur force dans le systeme d'aide externe, si necessaire-->
 	<externalHelpGlobazUserId>AVS1</externalHelpGlobazUserId>
-	<!--shareDir: répertoire de partage pour l'upload de fichier par le client-->
+	<!--shareDir: rpertoire de partage pour l'upload de fichier par le client-->
 	<sharedDir>d:\Temp</sharedDir>
 	<!-- Emplacement de la documentation webavs (AQ) -->
 	<documentationUrl>http://docavsaq.ju.globaz.ch/</documentationUrl>
