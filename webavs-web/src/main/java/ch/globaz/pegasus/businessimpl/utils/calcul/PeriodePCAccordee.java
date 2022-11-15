@@ -570,7 +570,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             for (int idxEnfant = 0; idxEnfant < nbEnfants; idxEnfant++) {
                 combinaisonPersonnes.add(enfants.get(idxEnfant));
             }
-
+            context.put(Attribut.NB_ENFANTS_INCLUS, 0);
             // lance le calcul pour la combinaison
             CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
             getCalculsComparatifs().add(cc);
