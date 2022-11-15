@@ -138,26 +138,16 @@ public class APPrestationAcor {
         setFraisGardeMax(ref.getMontantMaxFraisGarde());
         setDateDebut(Dates.toDate(periode.getDateDebut()));
         setDateFin(Dates.toDate(periode.getDateFin()));
-        if(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
-            Optional<PeriodeServiceApgType> periodeServiceApgType = fCalcul.getCarteApg()
-                    .getPeriodeService()
-                    .stream().filter(p -> isInPeriode(p.getDebut(), p.getFin(), periode)).findFirst();
-            periodeServiceApgType.ifPresent(serviceApgType -> setNombreJoursSoldes(serviceApgType.getNbJours()));
-        }
-    }
 
-    private boolean isSamePeriode(Integer debut, Integer fin, APPeriodeWrapper periodeWrapper){
-        try {
-            JADate periodeApgDebut = JADate.newDateFromAMJ(String.valueOf(debut));
-            if(periodeApgDebut.equals(periodeWrapper.getDateDebut())){
-                JADate periodeApgFin = JADate.newDateFromAMJ(String.valueOf(fin));
-                if(periodeApgFin.equals(periodeWrapper.getDateFin())){
-                    return true;
-                }
+        Optional<PeriodeServiceApgType> periodeServiceApgTypeOptional = fCalcul.getCarteApg()
+                .getPeriodeService()
+                .stream().filter(p -> isInPeriode(p.getDebut(), p.getFin(), periode)).findFirst();
+        if (periodeServiceApgTypeOptional.isPresent()) {
+            PeriodeServiceApgType periodeServiceApgType = periodeServiceApgTypeOptional.get();
+            setNombreJoursSoldes(periodeServiceApgType.getNbJours());
+            if (periodeServiceApgType.getPartAssure() != null && Double.compare(periodeServiceApgType.getPartAssure(), 0.0) != 0) {
+                setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
             }
-            return false;
-        } catch (JAException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -256,5 +246,4 @@ public class APPrestationAcor {
             rc.addResultatCalculSitProfessionnelle(rcSitPro);
         }
     }
-
 }
