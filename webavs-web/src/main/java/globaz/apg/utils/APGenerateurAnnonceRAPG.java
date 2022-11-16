@@ -440,7 +440,7 @@ public class APGenerateurAnnonceRAPG {
         }
         if (nombrePeriode >= 2 && HasPeriode7Jours) {
             return "4";
-        };
+        }
         return "3";
 
     }
