@@ -38,6 +38,7 @@ import globaz.naos.db.assurance.AFCalculAssurance;
 import globaz.naos.db.controleEmployeur.AFControleEmployeur;
 import globaz.naos.db.controleEmployeur.AFControleEmployeurManager;
 import globaz.naos.db.cotisation.AFCotisation;
+import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliationManager;
 import globaz.naos.db.planAffiliation.AFPlanAffiliation;
@@ -1284,6 +1285,7 @@ public class AFApercuReleve extends BEntity {
                     .subtract(JADate.getMonth(line.getDebutPeriode())).add(new BigDecimal("1"));
             BigDecimal masseAnnuel = null;
             BigDecimal masseAnnuelPourTaux = null;
+            BigDecimal masseAnnuelleRelevePeriodiquePrincipalAnnualise = null;
             // calcul de la masse annuelle sur la base de la masse du relevé
             AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
                     AFApplication.DEFAULT_APPLICATION_NAOS);
@@ -1337,6 +1339,13 @@ public class AFApercuReleve extends BEntity {
                     // celle-ci
                     taux = tauxVarUtil.getTaux(getSession(), JANumberFormatter.deQuote(line.getMasseAnnuelle()),
                             line.getDebutPeriode());
+                } else if (CodeSystem.TYPE_RELEVE_COMPLEMENT.equals(getType())) {
+                    BigDecimal masseRelevePeriodiquePrincipal = new BigDecimal(findMasseRelevePeriodiquePrincipal(line).toString());
+//                    BigDecimal masseRelevePeriodiquePrincipalAnnualise = new BigDecimal(CPToolBox.annualisation(line.getDebutPeriode(),line.getFinPeriode(),"",masseRelevePeriodiquePrincipal.toString()));
+                    BigDecimal masseRelevePeriodiquePrincipalAnnualise = masseRelevePeriodiquePrincipal.multiply(new BigDecimal("12"));
+                    taux = tauxVarUtil.getTaux(getSession(), masseRelevePeriodiquePrincipalAnnualise.abs().toString(),
+                            line.getDebutPeriode());
+
                 } else {
                     if (masseAnnuelTaux != 0.0) {
                         // recherche du taux en fonction de la masse
@@ -1373,6 +1382,51 @@ public class AFApercuReleve extends BEntity {
         }
     }
 
+    public BigDecimal findMasseRelevePeriodiquePrincipal(AFApercuReleveLineFacturation line) throws Exception {
+        BigDecimal masse = null;
+        JADate jaDateDebut = new JADate(getDateDebut());
+        FAAfactManager faAfactManager = new FAAfactManager();
+        faAfactManager.setSession(getSession());
+        faAfactManager.setForIdRubrique(line.getAssuranceRubriqueId());
+        faAfactManager.setForDebutPeriode(jaDateDebut.toStrAMJ());
+        faAfactManager.setForIdModuleFacturation(line.getIdModFacturation());
+        faAfactManager.find(BManager.SIZE_NOLIMIT);
+
+        if(faAfactManager.size()>0){
+            String masseFacture = ((FAAfact) faAfactManager.get(0)).getMasseFacture();
+            masse= new BigDecimal(JANumberFormatter.deQuote(masseFacture));
+            return masse;
+        }
+
+//        AFApercuReleveMontantManager manager = new AFApercuReleveMontantManager();
+//        manager.setSession(getSession());
+//        manager.setForIdCotisation(line.getCotisationId());
+//        manager.find(BManager.SIZE_NOLIMIT);
+//
+//        if (manager.size() > 0) {
+//            masse = new BigDecimal(((AFApercuReleveMontant) manager.get(0)).getMasse());
+//            masse = masse.multiply(new BigDecimal("12"));
+//        } else {
+//            masse = findMasseCotisation(line);
+//        }
+        return masse;
+    }
+//    public BigDecimal findMasseCotisation(AFApercuReleveLineFacturation line) throws Exception {
+//        BigDecimal masse = null;
+//        AFCotisationManager cotisationManager = new AFCotisationManager();
+//        cotisationManager.setSession(getSession());
+//        cotisationManager.setForIdCotisation(line.getCotisationId());
+//        cotisationManager.setForAssuranceId(line.getAssuranceId());
+//        cotisationManager.find(BManager.SIZE_NOLIMIT);
+//
+//        if (cotisationManager.size() > 0) {
+//            masse = new BigDecimal(((AFCotisation) cotisationManager.get(0)).getMasseAnnuelle());
+//        } else {
+//            masse = new BigDecimal("0");
+//        }
+//        return masse;
+//
+//    }
     public void firstCalculation(boolean b) {
         firstCalculation = b;
     }
