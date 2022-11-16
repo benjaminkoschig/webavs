@@ -93,7 +93,7 @@ public class Rule321 extends Rule {
         if (serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) ||
                 serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) ||
                 serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
-            if (serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) && isAnnonceModification(champsAnnonce)) {
+            if (isAnnonceModification(champsAnnonce)) {
                 return true;
             } else {
                 validNotEmpty(basicDailyAmount, "basicDailyAmount");

@@ -19,7 +19,6 @@ import globaz.apg.db.droits.APDroitPaterniteJointTiersManager;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APEnfantAPG;
 import globaz.apg.db.droits.APEnfantAPGManager;
-import globaz.apg.db.droits.APEnfantPatManager;
 import globaz.apg.db.droits.APPeriodeAPG;
 import globaz.apg.db.droits.APSituationFamilialeAPG;
 import globaz.apg.db.droits.APSituationFamilialePat;
@@ -52,7 +51,14 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class APGenerateurAnnonceRAPG {
     private final int NB_JOURS_PATERNITE_14 = 14;
@@ -290,6 +296,7 @@ public class APGenerateurAnnonceRAPG {
                     if(JadeStringUtil.isBlankOrZero(oldAnnonce.getBusinessProcessId())){
                         annonceACreer.setBusinessProcessId(prestBase.getIdPrestation());
                     }
+                    annonceACreer.setTauxJournalierAllocationBase(calculTauxSiTauxDifferent(prestation, prestManager));
                 } else {
                     annonceEnHistorique = true;
                 }
@@ -381,6 +388,36 @@ public class APGenerateurAnnonceRAPG {
         return annonceACreer;
     }
 
+    private String calculTauxSiTauxDifferent(APPrestation prestation, APPrestationManager prestManager) throws Exception {
+        if(prestManager.size() == 0) {
+            return null;
+        }
+        APPrestation prestBase = (APPrestation) prestManager.getFirstEntity();
+        if(!prestBase.getMontantJournalier().equals(prestation.getMontantJournalier())) {
+            List<APPrestation> listPrestation = prestManager.getContainerAsList();
+            List<APPrestation> listPrestationVersee = new ArrayList<>();
+            BigDecimal totalBasicDailyAmount = BigDecimal.ZERO;
+            for(APPrestation prest : listPrestation) {
+                APAnnonceAPG oldAnnonce = new APAnnonceAPG();
+                oldAnnonce.setIdAnnonce(prest.getIdAnnonce());
+                oldAnnonce.setSession(prestManager.getSession());
+                oldAnnonce.retrieve();
+                if(!oldAnnonce.isNew()) {
+                    listPrestationVersee.add(prest);
+                }
+                if(!JadeStringUtil.isBlankOrZero(oldAnnonce.getTauxJournalierAllocationBase())) {
+                    totalBasicDailyAmount = totalBasicDailyAmount.add(new BigDecimal(oldAnnonce.getTauxJournalierAllocationBase()));
+                }
+            }
+            listPrestationVersee.add(prestation);
+            BigDecimal totalPrestationVerse = listPrestationVersee.stream().map(p -> new BigDecimal(p.getMontantBrut())).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalNombreJours = listPrestationVersee.stream().map(p -> new BigDecimal(p.getNombreJoursSoldes())).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalJournalier = totalPrestationVerse.divide(totalNombreJours, 2, RoundingMode.HALF_UP);
+            return totalJournalier.subtract(totalBasicDailyAmount).toString();
+        }
+        return null;
+    }
+
     private String getTypePaternite(String nss, String idDroit, BSession session) throws Exception {
         String typePaternite = "";
         List<APPeriodeAPG> periodes = ApgServiceLocator.getEntityService().getPeriodesDuDroitAPG(session,
@@ -403,7 +440,7 @@ public class APGenerateurAnnonceRAPG {
         }
         if (nombrePeriode >= 2 && HasPeriode7Jours) {
             return "4";
-        }
+        };
         return "3";
 
     }
