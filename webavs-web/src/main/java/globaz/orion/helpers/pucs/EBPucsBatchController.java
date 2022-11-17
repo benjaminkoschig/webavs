@@ -73,11 +73,9 @@ public class EBPucsBatchController {
      * utilisé lors du processus de mise à jour des PUCS.
      */
     public boolean contientDeclarationSalaireOuverteDansAnneeConcernee(DeclarationSalaire ds, AFAffiliation aff) throws Exception {
-        // TODO ESVE equivalant EBPucsValidationDetailViewBean.traiteDeclarationSalaire()? - decl principale
         DSDeclarationListViewBean manager = new DSDeclarationListViewBean();
         manager.setForAnnee(Integer.toString(ds.getAnnee()));
         manager.setForAffiliationId(aff.getAffiliationId());
-        manager.setForEtat(DSDeclarationViewBean.CS_OUVERT);
         manager.setSession(getSession());
         manager.find(BManager.SIZE_NOLIMIT);
 
