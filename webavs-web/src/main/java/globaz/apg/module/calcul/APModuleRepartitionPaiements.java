@@ -2266,9 +2266,7 @@ public class APModuleRepartitionPaiements {
 
             // on cherche le montant journalier verse pour cette situation prof.
             FWCurrency salaireJournalierVerse = APSituationProfessionnelleHelper.getSalaireJournalierVerse(element
-                    .loadSituationProfessionnelle());
-            salaireJournalierVerse = new FWCurrency(JANumberFormatter.format(salaireJournalierVerse.toString(), 1, 2,
-                    JANumberFormatter.SUP));
+                    .loadSituationProfessionnelle(), true);
 
             // le montant journalier de la prestation standard
             FWCurrency montantJournalierStandard = retrieveMontantJournalierPrestationStd(prestationLAMat.getIdDroit(),

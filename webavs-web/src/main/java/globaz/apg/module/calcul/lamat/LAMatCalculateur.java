@@ -380,11 +380,9 @@ public class LAMatCalculateur {
 
             // si LAMat on additionne le revenu journalier
             if (sitPro.getHasLaMatPrestations().booleanValue()) {
-                revenuLAMat.add(APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro));
+                revenuLAMat.add(APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true));
             }
         }
-
-        revenuLAMat = new FWCurrency(JANumberFormatter.format(revenuLAMat.toString(), 1, 2, JANumberFormatter.SUP));
 
         return revenuLAMat;
     }

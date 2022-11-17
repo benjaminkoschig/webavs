@@ -138,9 +138,7 @@ public class APCalculateurAcmAlpha {
                 BigDecimal montantACM = new BigDecimal(0);
 
                 // le revenu moyen determinant est donne par la situation prof.
-                FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
-                revenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1,
-                        2, JANumberFormatter.SUP));
+                FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true);
 
                 BigDecimal rmd = null;
                 // pour la Maternité, arrondi au franc superieur
