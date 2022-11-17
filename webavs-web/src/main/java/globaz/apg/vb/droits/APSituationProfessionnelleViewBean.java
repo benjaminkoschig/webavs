@@ -1922,7 +1922,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         super._validate(statement);
 
         // Contrôle la présence d'une référence QR si le numéro de compte de l'adresse de paiement est QR-IBAN
-        if (JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
+        if (isVersementEmployeur && JadeStringUtil.isBlankOrZero(this.getIdReferenceQR()) && TIAdressePaiement.isQRIban(this.getOrReloadAdressePaiementData().getCompte())) {
             _addError(statement.getTransaction(), getSession().getLabel("JSP_REFERENCE_QR_EMPTY"));
         }
     }
