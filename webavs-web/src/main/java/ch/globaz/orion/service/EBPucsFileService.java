@@ -144,6 +144,12 @@ public class EBPucsFileService {
         }
     }
 
+    public static void enRefus(List<PucsFile> pucsFiles, BSession session) {
+        for (PucsFile pucsFile : pucsFiles) {
+            enRefus(pucsFile.getIdDb(), session);
+        }
+    }
+
     public static void comptabiliserByFilename(String filename, BSession session) {
         PucsFile pucsFile = readByFilename(filename, session);
         // On est fait se test pour gérer la rétrocomptabilité des ancienne DS.
@@ -230,6 +236,10 @@ public class EBPucsFileService {
 
     public static void enTraitement(String id, BSession session) {
         changeStatut(id, EtatPucsFile.EN_TRAITEMENT, session);
+    }
+
+    public static void enRefus(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.REJETE, session);
     }
 
     private static void changeStatut(String id, EtatPucsFile etat, BSession session) {

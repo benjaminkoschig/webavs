@@ -51,6 +51,24 @@ public class EBPucsBatchController {
     }
 
     /**
+     * Contrôle qu'il n'y a pas plus de deux fichiers pucs dans mergedPucsFiles pour l’année en cours avec total de contrôle différents.
+     * utilisé lors du processus de mise à jour des PUCS.
+     */
+    public boolean contientDeclarationAvecAnneDeclarationEtTotalDifferent(PucsFile pucsFile, List<PucsFile> mergedPucsFiles) {
+        int compteurDoublon = 0;
+        for (PucsFile nextPucsFile : mergedPucsFiles) {
+            if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && !Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle())) {
+                compteurDoublon ++;
+            }
+        }
+        if (compteurDoublon > 2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Contrôle si il n'y a pas de déclaration de salaire ouverte dans le module Draco pour l’année concernée.
      * utilisé lors du processus de mise à jour des PUCS.
      */
