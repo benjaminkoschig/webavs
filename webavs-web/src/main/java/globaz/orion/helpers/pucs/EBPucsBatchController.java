@@ -4,6 +4,7 @@ import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.Employee;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.business.models.pucs.PucsFileMerge;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -59,17 +60,17 @@ public class EBPucsBatchController {
      * Contrôle qu'il n'y a pas plus de deux fichiers pucs dans mergedPucsFiles pour l’année en cours avec total de contrôle différents.
      * utilisé lors du processus de mise à jour des PUCS.
      */
-    public boolean contientDeclarationAvecAnneDeclarationEtTotalDifferent(PucsFile pucsFile, List<PucsFile> mergedPucsFiles) {
-        int compteurDoublon = 0;
-        for (PucsFile nextPucsFile : mergedPucsFiles) {
-            if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && !Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle())) {
-                compteurDoublon ++;
+    public boolean contientDeclarationAvecAnneDeclarationEtTotalDifferent(PucsFileMerge pucsFilemerge, List<PucsFileMerge> pucsFiles) {
+        PucsFile pucsFile = pucsFilemerge.getPucsFile();
+        for (PucsFileMerge nextMergePucsFile : pucsFiles) {
+            PucsFile nextPucsFile = nextMergePucsFile.getPucsFile();
+            if (!nextPucsFile.getIdDb().equals(pucsFile.getIdDb())
+                    && Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration())
+                    && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie())
+                    && !Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle())) {
+                return true;
             }
         }
-        if (compteurDoublon > 2) {
-            return true;
-        }
-
         return false;
     }
 

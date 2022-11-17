@@ -324,6 +324,7 @@ public class EBTreatPucsFiles extends BProcess {
                 setSimulation(true);
             }
             boolean hasError = false;
+            boolean hasRefus = false;
             boolean moveFile = true;
             protocole = new EBTreatPucsFilesProtocole(this);
 
@@ -380,10 +381,10 @@ public class EBTreatPucsFiles extends BProcess {
                     // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
                     if (getIsBatch()) {
                         pucsBatchController.setSession(getSession());
-                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFile, mergedPucsFiles)) {
+                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
                             moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(null, msg);
+                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFile.getNumeroAffilie();
+                            protocole.addWarnToProtocol(pucsFileMerge, msg);
                             continue;
                         }
                         if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
@@ -398,8 +399,8 @@ public class EBTreatPucsFiles extends BProcess {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie();
                             _addError(msg);
-                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
-                            hasError = true;
+                            handleOnRefus(emailAdress, null, this, msg, pucsFileMerge);
+                            hasRefus = true;
                             continue;
                         }
                         if (pucsBatchController.contientNumeroAffilieNonExistant(pucsFile)) {
@@ -635,7 +636,7 @@ public class EBTreatPucsFiles extends BProcess {
                     }
                     if (hasError) {
                         changePucsFilesStatusToOnError(pucsFileMerge);
-                    } else if (pucsFileMerge.getPucsFile().isForTest()) {
+                    } else if (!hasRefus && pucsFileMerge.getPucsFile().isForTest()) {
                         EBPucsFileService.comptabiliser(pucsFileMerge.getPucsFileToMergded(), getSession());
                     }
                 }
