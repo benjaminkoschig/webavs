@@ -37,7 +37,16 @@ public class EBTreatPucsFilesProtocole {
         if (fileMerge.getPucsFile() != null) {
             numAffile = fileMerge.getPucsFile().getNumeroAffilie();
         }
-        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, "", numAffile, false));
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, "", numAffile, "OK"));
+    }
+
+    public void addWarnToProtocol(PucsFileMerge fileMerge, String message) {
+        String numAffile = "";
+        fileMerge.clearDomParser();
+        if (fileMerge.getPucsFile() != null) {
+            numAffile = fileMerge.getPucsFile().getNumeroAffilie();
+        }
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "NON TRAITE"));
     }
 
     public void addErrorToProtocol(Throwable e, String messageInfo, PucsFileMerge fileMerge) {
@@ -72,7 +81,7 @@ public class EBTreatPucsFilesProtocole {
                     + new Gson().toJson(JadeThread.logMessagesToLevel(JadeBusinessMessageLevels.ERROR)) + "\n\n";
         }
 
-        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, true));
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "KO"));
 
     }
 
