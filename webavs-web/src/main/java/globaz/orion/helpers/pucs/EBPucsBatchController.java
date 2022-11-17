@@ -5,16 +5,21 @@ import ch.globaz.orion.business.domaine.pucs.Employee;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
-import globaz.draco.db.declaration.DSDeclarationViewBean;
-import globaz.draco.process.DSProcessValidation;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.cotisation.AFCotisation;
+import globaz.naos.db.cotisation.AFCotisationManager;
+import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Regroupe tous les contrôles additionels effectués lors de la mise à jour
@@ -39,7 +44,7 @@ public class EBPucsBatchController {
     public boolean contientDeclarationAvecAnneDeclarationEtTotalIdentique(PucsFile pucsFile, List<PucsFile> mergedPucsFiles) {
         int compteurDoublon = 0;
         for (PucsFile nextPucsFile : mergedPucsFiles) {
-            if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle()) && pucsFile.getTypeDeclaration() == nextPucsFile.getTypeDeclaration()) {
+            if (Objects.equals(pucsFile.getAnneeDeclaration(), nextPucsFile.getAnneeDeclaration()) && Objects.equals(pucsFile.getNumeroAffilie(), nextPucsFile.getNumeroAffilie()) && Objects.equals(pucsFile.getTotalControle(), nextPucsFile.getTotalControle())) {
                 compteurDoublon ++;
             }
         }
@@ -69,10 +74,10 @@ public class EBPucsBatchController {
     }
 
     /**
-     * Contrôle si il n'y a pas de déclaration de salaire ouverte dans le module Draco pour l’année concernée.
+     * Contrôle si il n'y a pas de déclaration de salaire dans le module Draco pour l’année concernée.
      * utilisé lors du processus de mise à jour des PUCS.
      */
-    public boolean contientDeclarationSalaireOuverteDansAnneeConcernee(DeclarationSalaire ds, AFAffiliation aff) throws Exception {
+    public boolean contientDeclarationSalaireDansAnneeConcernee(DeclarationSalaire ds, AFAffiliation aff) throws Exception {
         DSDeclarationListViewBean manager = new DSDeclarationListViewBean();
         manager.setForAnnee(Integer.toString(ds.getAnnee()));
         manager.setForAffiliationId(aff.getAffiliationId());
@@ -100,19 +105,36 @@ public class EBPucsBatchController {
         return false;
     }
 
-
     /**
      * Contrôle si des collaborateurs sont dans plusieurs cantons alors il doit s’agir
-     * d’un fichier SwissDec Mixte ou il y a un détail par canton
+     * d’un fichier qui commencent par MIX
      * utilisé lors du processus de mise à jour des PUCS.
      */
-    public boolean contientCollaborateursDansPlusieursCantonsEtPasSwissDecMixte(DeclarationSalaire ds, AFAffiliation aff) {
-        if (!ds.getProvenance().isSwissDec()) {
-            if (DSProcessValidation.CS_DECL_MIXTE.equals(aff.getDeclarationSalaire())) {
-                Set<String> cantons = ds.resolveDistinctContant();
-                if (cantons.size() > 1) {
-                    return true;
+    public boolean contientCollaborateursDansPlusieursCantonsEtPasMix(PucsFile pucsFile, AFAffiliation aff) {
+        if (!pucsFile.getFilename().startsWith("MIX")) {
+            List<AFCotisation> cotisations = new ArrayList<>();
+            AFCotisationManager manager = new AFCotisationManager();
+            manager.setSession(getSession());
+            manager.setForAffiliationId(aff.getAffiliationId());
+            manager.setForAnneeActive(pucsFile.getAnneeDeclaration());
+            manager.setForNotMotifFin(CodeSystem.MOTIF_FIN_EXCEPTION);
+            try {
+                manager.find(BManager.SIZE_NOLIMIT);
+                if (manager.size() > 0) {
+                    for (int i = 0; i < manager.size(); i++) {
+                        cotisations.add((AFCotisation) manager.getEntity(i));
+                    }
                 }
+            } catch (Exception e) {
+                JadeLogger.info(e, "Une erreur s'est produite lors de la recherche des cotisations de l'affiliation." + e.getMessage());
+            }
+
+            Map<String, Long> cotisationsParCantonAssurance = cotisations.stream()
+                    .filter(c -> !JadeStringUtil.isBlankOrZero(c.getAssurance().getAssuranceCanton()))
+                    .collect(Collectors.groupingBy(c -> c.getAssurance().getAssuranceCanton(), Collectors.counting()));
+
+            if (cotisationsParCantonAssurance.size() > 1) {
+                return true;
             }
         }
 

@@ -382,13 +382,13 @@ public class EBTreatPucsFiles extends BProcess {
                         pucsBatchController.setSession(getSession());
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFile, mergedPucsFiles)) {
                             moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie();
+                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
                             protocole.addWarnToProtocol(null, msg);
                             continue;
                         }
-                        if (pucsBatchController.contientDeclarationSalaireOuverteDansAnneeConcernee(ds, aff)) {
+                        if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
                             moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_OUVERTE") + " " + pucsFile.getNumeroAffilie();
+                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
                             _addError(msg);
                             handleOnError(emailAdress, null, this, msg, pucsFileMerge);
                             hasError = true;
@@ -410,7 +410,7 @@ public class EBTreatPucsFiles extends BProcess {
                             hasError = true;
                             continue;
                         }
-                        if (pucsBatchController.contientCollaborateursDansPlusieursCantonsEtPasSwissDecMixte(ds, aff)) {
+                        if (pucsBatchController.contientCollaborateursDansPlusieursCantonsEtPasMix(pucsFile, aff)) {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_CANTONS_MULTIPLES") + " " + pucsFile.getNumeroAffilie();
                             _addError(msg);
