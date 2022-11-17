@@ -38,6 +38,7 @@ import globaz.naos.db.assurance.AFCalculAssurance;
 import globaz.naos.db.controleEmployeur.AFControleEmployeur;
 import globaz.naos.db.controleEmployeur.AFControleEmployeurManager;
 import globaz.naos.db.cotisation.AFCotisation;
+import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliationManager;
 import globaz.naos.db.planAffiliation.AFPlanAffiliation;
@@ -58,6 +59,9 @@ import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TITiers;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1284,6 +1288,7 @@ public class AFApercuReleve extends BEntity {
                     .subtract(JADate.getMonth(line.getDebutPeriode())).add(new BigDecimal("1"));
             BigDecimal masseAnnuel = null;
             BigDecimal masseAnnuelPourTaux = null;
+            BigDecimal masseAnnuelleRelevePeriodiquePrincipalAnnualise = null;
             // calcul de la masse annuelle sur la base de la masse du relevé
             AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
                     AFApplication.DEFAULT_APPLICATION_NAOS);
@@ -1337,6 +1342,12 @@ public class AFApercuReleve extends BEntity {
                     // celle-ci
                     taux = tauxVarUtil.getTaux(getSession(), JANumberFormatter.deQuote(line.getMasseAnnuelle()),
                             line.getDebutPeriode());
+                } else if (CodeSystem.TYPE_RELEVE_COMPLEMENT.equals(getType())) {
+                    BigDecimal masseRelevePeriodiquePrincipal = new BigDecimal(findMasseRelevePeriodiquePrincipal(line).toString());
+                    BigDecimal masseRelevePeriodiquePrincipalAnnualise = new BigDecimal(annualiserMasse(line.getDebutPeriode(), line.getFinPeriode(), masseRelevePeriodiquePrincipal.intValue()));
+                    taux = tauxVarUtil.getTaux(getSession(), masseRelevePeriodiquePrincipalAnnualise.abs().toString(),
+                            line.getDebutPeriode());
+
                 } else {
                     if (masseAnnuelTaux != 0.0) {
                         // recherche du taux en fonction de la masse
@@ -1371,6 +1382,62 @@ public class AFApercuReleve extends BEntity {
             line.setMontantCalculer(coti.toString());
 
         }
+    }
+
+    public BigDecimal findMasseRelevePeriodiquePrincipal(AFApercuReleveLineFacturation line) throws Exception {
+        BigDecimal masse = null;
+        JADate jaDateDebut = new JADate(getDateDebut());
+        FAAfactManager faAfactManager = new FAAfactManager();
+        faAfactManager.setSession(getSession());
+        faAfactManager.setForIdRubrique(line.getAssuranceRubriqueId());
+        faAfactManager.setForDebutPeriode(jaDateDebut.toStrAMJ());
+        faAfactManager.setForIdModuleFacturation(line.getIdModFacturation());
+        faAfactManager.find(BManager.SIZE_NOLIMIT);
+
+        if (faAfactManager.size() > 0) {
+            String masseFacture = ((FAAfact) faAfactManager.get(0)).getMasseFacture();
+            masse = new BigDecimal(JANumberFormatter.deQuote(masseFacture));
+            return masse;
+        }
+
+        return findMasseCotisation(line);
+    }
+
+    public BigDecimal findMasseCotisation(AFApercuReleveLineFacturation line) throws Exception {
+        BigDecimal masse = null;
+        AFCotisationManager cotisationManager = new AFCotisationManager();
+        cotisationManager.setSession(getSession());
+        cotisationManager.setForIdCotisation(line.getCotisationId());
+        cotisationManager.setForAssuranceId(line.getAssuranceId());
+        cotisationManager.find(BManager.SIZE_NOLIMIT);
+
+        if (cotisationManager.size() > 0) {
+            masse = new BigDecimal(((AFCotisation) cotisationManager.get(0)).getMasseAnnuelle());
+        } else {
+            masse = new BigDecimal("0");
+        }
+        return masse;
+
+    }
+
+    public String annualiserMasse(String dateDebutExercice, String dateFinExercice, int montant) {
+        int numberOfMonthsInAYear = 12;
+        int masseAnnualise = 0;
+        if (montant != 0) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            LocalDate startMonth = LocalDate.parse(dateDebutExercice, dateTimeFormatter);
+            LocalDate endMonth = LocalDate.parse(dateFinExercice, dateTimeFormatter);
+            Period diffBetweenMonths = Period.between(startMonth, endMonth);
+
+            int months = diffBetweenMonths.getMonths();
+            if (months <= 1) {
+                masseAnnualise = montant * numberOfMonthsInAYear;
+
+            } else {
+                masseAnnualise = ((montant * numberOfMonthsInAYear) / months);
+            }
+        }
+        return Integer.toString(masseAnnualise);
     }
 
     public void firstCalculation(boolean b) {
