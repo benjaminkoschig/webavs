@@ -267,11 +267,11 @@ public class REExportationCalculAcor {
 //        StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) &&
         if (demandeRente instanceof REDemandeRenteVieillesse) {
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant())) {
-                createFlexibilisationType((REDemandeRenteVieillesse) demandeRente).ifPresent(assureType::setFlexibilisation);
+                createFlexibilisationType((REDemandeRenteVieillesse) demandeRente).ifPresent(assureType.getFlexibilisation()::add);
             } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())) {
                 Optional<REDemandeRenteVieillesse> demandeRenteConjoint = rechercheDemandeVieillesseConjoint(membre);
                 demandeRenteConjoint.flatMap(this::createFlexibilisationType)
-                        .ifPresent(assureType::setFlexibilisation);
+                        .ifPresent(assureType.getFlexibilisation()::add);
             }
         }
 
