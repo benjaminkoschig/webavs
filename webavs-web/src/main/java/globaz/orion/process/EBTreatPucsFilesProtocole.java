@@ -41,13 +41,13 @@ public class EBTreatPucsFilesProtocole {
         protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, "", numAffile, "OK"));
     }
 
-    public void addWarnToProtocol(PucsFileMerge fileMerge, String message) {
+    public void addWarnToProtocol(PucsFileMerge fileMerge, String message, String statut) {
         String numAffile = "";
         fileMerge.clearDomParser();
         if (fileMerge.getPucsFile() != null) {
             numAffile = fileMerge.getPucsFile().getNumeroAffilie();
         }
-        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "NON TRAITE"));
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, statut));
     }
 
     public void addErrorToProtocol(Throwable e, String messageInfo, PucsFileMerge fileMerge) {
