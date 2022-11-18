@@ -138,15 +138,15 @@ public class APCalculateurAcmAlpha {
                 BigDecimal montantACM = new BigDecimal(0);
 
                 // le revenu moyen determinant est donne par la situation prof.
-                FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true);
 
                 BigDecimal rmd = null;
                 // pour la Maternité, arrondi au franc superieur
                 // pour les APG, arrondi au demi franc superieur
                 if (droit instanceof APDroitMaternite) {
-                    rmd = new BigDecimal(JANumberFormatter.deQuote(JANumberFormatter.format(
-                            revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP)));
+                    FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true);
+                    rmd = new BigDecimal(revenuMoyenDeterminant.toString());
                 } else {
+                    FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, false);
                     rmd = new BigDecimal(JANumberFormatter.deQuote(JANumberFormatter.format(
                             revenuMoyenDeterminant.toString(), 0.5, 2, JANumberFormatter.SUP)));
                 }

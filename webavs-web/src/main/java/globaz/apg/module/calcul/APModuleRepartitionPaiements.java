@@ -2315,7 +2315,7 @@ public class APModuleRepartitionPaiements {
                         montantJournalierStandard.toString()));
                 montant = new FWCurrency(JANumberFormatter.format(
                         montantJournalierLAMat.multiply(new BigDecimal(prestationLAMat.getNombreJoursSoldes()))
-                                .toString(), 1, 2, JANumberFormatter.SUP));
+                                .toString(), 0.05, 2, JANumberFormatter.SUP));
             } else {
                 // le montant a verser est celui de la repartition du taux RJM
                 // Mais on veut arrondire le montant journalier a 0.05 cts
