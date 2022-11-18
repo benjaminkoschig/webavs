@@ -10,6 +10,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
 public class EBPucsBatchController {
 
     BSession session = null;
+
+    public static final String ORION_PUCS_VALIDATION_DECLARATION_ANNEE = "orion.pucs.validation.declaration.annee";
 
     public BSession getSession() {
         return session;
@@ -152,6 +155,42 @@ public class EBPucsBatchController {
                 if (salaryAvs.getMontantAvs().isNegative()) {
                     return true;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Contrôle si l'année de la déclaration correspond à
+     * la propriété orion.pucs.validation.declaration.annee
+     * utilisé lors du processus de mise à jour des PUCS.
+     */
+    public boolean anneeDeclarationPasEgalPropriete(Integer anneeDeclaration) {
+        try {
+            Integer anneePropriete = Integer.parseInt(JadePropertiesService.getInstance().getProperty(EBPucsBatchController.ORION_PUCS_VALIDATION_DECLARATION_ANNEE));
+            if (anneeDeclaration != null && !anneeDeclaration.equals(anneePropriete)) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            JadeLogger.error(e, "Une erreur s'est produite lors de la recherche de la propriété : " + EBPucsBatchController.ORION_PUCS_VALIDATION_DECLARATION_ANNEE + " " + e.getMessage());
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Contrôle si le nom trouvé dans la table des fichier pucs EBPUCS_FILE.NOM_AFFILIE
+     * correspond au nom du tiers de l'affiliation dans WebAvs
+     * utilisé lors du processus de mise à jour des PUCS.
+     */
+    public boolean nomAffiliePucsFilePasEgalNomAffilieTiers(String nomAffiliePucsFile, String nomAffilieTiers) {
+        if (nomAffiliePucsFile != null && nomAffilieTiers != null) {
+            String nomAffiliePucsFileFormatted = nomAffiliePucsFile.replaceAll("[^a-zA-Z0-9]", "");
+            String nomAffilieTiersFormatted = nomAffilieTiers.replaceAll("[^a-zA-Z0-9]", "");
+            if (!nomAffiliePucsFileFormatted.equalsIgnoreCase(nomAffilieTiersFormatted)) {
+                return true;
             }
         }
 
