@@ -384,7 +384,7 @@ public class EBTreatPucsFiles extends BProcess {
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(pucsFileMerge, msg, "NON TRAITE");
+                            protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
                             continue;
                         }
                         if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
@@ -437,7 +437,7 @@ public class EBTreatPucsFiles extends BProcess {
                         }
                         if (pucsBatchController.nomAffiliePucsFilePasEgalNomAffilieTiers(pucsFile.getNomAffilie(), aff.getTiersNom())) {
                             String msg = String.format(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_NOM_AFFILIATION_DIFFERENT"), pucsFile.getNomAffilie(), aff.getTiersNom()) + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(pucsFileMerge, msg, "WARN");
+                            protocole.addWarnToProtocol(pucsFileMerge, msg);
                         }
                     }
 
