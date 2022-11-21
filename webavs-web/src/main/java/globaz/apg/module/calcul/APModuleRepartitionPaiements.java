@@ -2266,9 +2266,7 @@ public class APModuleRepartitionPaiements {
 
             // on cherche le montant journalier verse pour cette situation prof.
             FWCurrency salaireJournalierVerse = APSituationProfessionnelleHelper.getSalaireJournalierVerse(element
-                    .loadSituationProfessionnelle());
-            salaireJournalierVerse = new FWCurrency(JANumberFormatter.format(salaireJournalierVerse.toString(), 1, 2,
-                    JANumberFormatter.SUP));
+                    .loadSituationProfessionnelle(), true);
 
             // le montant journalier de la prestation standard
             FWCurrency montantJournalierStandard = retrieveMontantJournalierPrestationStd(prestationLAMat.getIdDroit(),
@@ -2317,7 +2315,7 @@ public class APModuleRepartitionPaiements {
                         montantJournalierStandard.toString()));
                 montant = new FWCurrency(JANumberFormatter.format(
                         montantJournalierLAMat.multiply(new BigDecimal(prestationLAMat.getNombreJoursSoldes()))
-                                .toString(), 1, 2, JANumberFormatter.SUP));
+                                .toString(), 0.05, 2, JANumberFormatter.SUP));
             } else {
                 // le montant a verser est celui de la repartition du taux RJM
                 // Mais on veut arrondire le montant journalier a 0.05 cts
