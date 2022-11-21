@@ -387,20 +387,20 @@ public class EBTreatPucsFiles extends BProcess {
                             protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
                             continue;
                         }
-                        if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
-                            moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
-                            _addError(msg);
-                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
-                            hasError = true;
-                            continue;
-                        }
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, mergedPucsFiles)) {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie();
                             _addError(msg);
                             handleOnRefus(emailAdress, null, this, msg, pucsFileMerge);
                             hasRefus = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
+                            moveFile = false;
+                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
+                            _addError(msg);
+                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
+                            hasError = true;
                             continue;
                         }
                         if (pucsBatchController.contientNumeroAffilieNonExistant(pucsFile)) {
