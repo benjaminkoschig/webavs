@@ -384,15 +384,7 @@ public class EBTreatPucsFiles extends BProcess {
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(pucsFileMerge, msg, "NON TRAITE");
-                            continue;
-                        }
-                        if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
-                            moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
-                            _addError(msg);
-                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
-                            hasError = true;
+                            protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
                             continue;
                         }
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, mergedPucsFiles)) {
@@ -401,6 +393,14 @@ public class EBTreatPucsFiles extends BProcess {
                             _addError(msg);
                             handleOnRefus(emailAdress, null, this, msg, pucsFileMerge);
                             hasRefus = true;
+                            continue;
+                        }
+                        if (pucsBatchController.contientDeclarationSalaireDansAnneeConcernee(ds, aff)) {
+                            moveFile = false;
+                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_EXISTANTE") + " " + pucsFile.getNumeroAffilie();
+                            _addError(msg);
+                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
+                            hasError = true;
                             continue;
                         }
                         if (pucsBatchController.contientNumeroAffilieNonExistant(pucsFile)) {
@@ -437,7 +437,7 @@ public class EBTreatPucsFiles extends BProcess {
                         }
                         if (pucsBatchController.nomAffiliePucsFilePasEgalNomAffilieTiers(pucsFile.getNomAffilie(), aff.getTiersNom())) {
                             String msg = String.format(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_NOM_AFFILIATION_DIFFERENT"), pucsFile.getNomAffilie(), aff.getTiersNom()) + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(pucsFileMerge, msg, "WARN");
+                            protocole.addWarnToProtocol(pucsFileMerge, msg);
                         }
                     }
 
