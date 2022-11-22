@@ -42,7 +42,7 @@ public class EBPucsBatchController {
     }
 
     /**
-     * Contrôle qu'il n'y a pas plus de deux fichiers pucs dans mergedPucsFiles pour l’année en cours avec le même total de contrôle.
+     * Contrôle qu'il n'y a pas plus de un fichiers pucs dans mergedPucsFiles pour l’année en cours avec le même total de contrôle.
      * utilisé lors du processus de mise à jour des PUCS.
      */
     public boolean contientDeclarationAvecAnneDeclarationEtTotalIdentique(PucsFile pucsFile, List<PucsFile> mergedPucsFiles) {
@@ -52,7 +52,7 @@ public class EBPucsBatchController {
                 compteurDoublon ++;
             }
         }
-        if (compteurDoublon > 2) {
+        if (compteurDoublon > 1) {
             return true;
         }
 
