@@ -383,14 +383,15 @@ public class EBTreatPucsFiles extends BProcess {
                         pucsBatchController.setSession(getSession());
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
                             moveFile = false;
+                            hasError = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFile.getNumeroAffilie();
                             protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
                             continue;
                         }
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, mergedPucsFiles)) {
                             moveFile = false;
+                            hasError = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE") + " " + pucsFile.getNumeroAffilie();
-                            _addError(msg);
                             handleOnRefus(emailAdress, null, this, msg, pucsFileMerge);
                             hasRefus = true;
                             continue;
