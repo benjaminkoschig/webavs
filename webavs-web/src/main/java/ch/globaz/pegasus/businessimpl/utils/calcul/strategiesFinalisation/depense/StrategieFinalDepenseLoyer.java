@@ -50,6 +50,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         final int nbPersonnesCalcul = (Integer) context.get(Attribut.NB_PERSONNES);
         final int nbEnfantInclus = (Integer) context.get(Attribut.NB_ENFANTS_INCLUS);
         final int nbParents = (Integer) context.get(Attribut.NB_PARENTS);
+        final boolean isFratrie = (Boolean) context.get(Attribut.IS_FRATRIE);
         final int nbPersonnesCalculSansRenteUniquement = (Integer) context.get(Attribut.NB_PERSONNES_CALCUL);
 
         final float plafondCouple = Float.parseFloat(((ControlleurVariablesMetier) context
@@ -134,7 +135,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                 donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE).addValeur(
                         forfaitFraisChauffage * prorata);
                 if (context.contains(Attribut.REFORME)) {
-                    plafond = getPlafondReforme(donnee, tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement,nbParents,nbEnfantInclus, dateDebutD);
+                    plafond = getPlafondReforme(donnee, tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement,nbParents,nbEnfantInclus, dateDebutD, isFratrie);
                     float montantLoyerMensuel = (tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET)) / 12;
 
                     if (isFauteuilRoulant) {
@@ -188,7 +189,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
             if (context.contains(Attribut.REFORME)) {
-                plafond = getPlafondReforme(donnee, tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement, nbParents, nbEnfantInclus, dateDebutD);
+                plafond = getPlafondReforme(donnee, tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement, nbParents, nbEnfantInclus, dateDebutD, isFratrie);
             }
         }
 
@@ -241,10 +242,10 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
     }
 
-    private float getPlafondReforme(TupleDonneeRapport donnee, TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement, int nbParents, int nbEnfantInclus, ch.globaz.common.domaine.Date dateDebutDroit) throws CalculException {
+    private float getPlafondReforme(TupleDonneeRapport donnee, TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement, int nbParents, int nbEnfantInclus, ch.globaz.common.domaine.Date dateDebutDroit, boolean isFratrie) throws CalculException {
 
         int nbPersonne;
-        if ((nbPersonnesCalculSansRenteUniquement == 1 || (nbParents == 1 && nbEnfantInclus==0) ) && nbHabitants > 1) {
+        if ((nbPersonnesCalculSansRenteUniquement == 1 || (nbParents == 1 && nbEnfantInclus==0 && !isFratrie) ) && nbHabitants > 1) {
             // Personne seule dans la famille et plusieurs personne dans l'habitat : communaute d'habitation
             nbPersonne = 0;
         } else {
