@@ -75,6 +75,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
     private String dateNaissanceTiersBaseCalcul;
     private String dateNaissanceTiersBeneficiaire;
     private String fractionRente;
+    private String quotiteRente;
     private String idRenteAccordee;
     private String idRetenue;
     private String idTiersAdressePaiement;
@@ -108,6 +109,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         dateNaissanceTiersBaseCalcul = "";
         dateNaissanceTiersBeneficiaire = "";
         fractionRente = "";
+        quotiteRente = "";
         idRenteAccordee = "";
         idTiersAdressePaiement = "";
         idTiersBaseCalcul = "";
@@ -142,6 +144,8 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION)
                 .append(",");
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE)
+                .append(",");
+        sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE)
                 .append(",");
 
         sql.append(tableDecision).append(".").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(",");
@@ -370,6 +374,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         dateNaissanceTiersBeneficiaire = statement
                 .dbReadDateAMJ(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_BENEFICIAIRE_DATE_NAISSANCE);
         fractionRente = statement.dbReadString(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE);
+        quotiteRente = statement.dbReadString(REPrestationsAccordees.FIELDNAME_QUOTITE_RENTE);
         idRenteAccordee = statement.dbReadNumeric(RERenteAccordee.FIELDNAME_ID_RENTE_ACCORDEE);
         idRetenue = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_RETENUE);
         idTiersAdressePaiement = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT);
@@ -636,5 +641,13 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
 
     public void setPrenomTiersBeneficiaire(String prenomTiersBeneficiaire) {
         this.prenomTiersBeneficiaire = prenomTiersBeneficiaire;
+    }
+
+    public String getQuotiteRente() {
+        return quotiteRente;
+    }
+
+    public void setQuotiteRente(String quotiteRente) {
+        this.quotiteRente = quotiteRente;
     }
 }

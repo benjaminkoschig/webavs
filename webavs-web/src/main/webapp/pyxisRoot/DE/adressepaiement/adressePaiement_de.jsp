@@ -71,7 +71,7 @@ function changeNumeroCompte() {
 }
 
 function isQRIban() {
-	var pattern = /^CH\d{2}3[0-1]\d{3}\d{12}$/;
+	var pattern = /^CH\d{2}3[0-1]\d{3}[0-9a-zA-Z]{12}$/;
 	var value = document.getElementsByName('numCompteBancaire')[0].value.replace(/\s/g, '');
 	return pattern.test(value);
 }
@@ -175,7 +175,7 @@ function isQRIban() {
 			providerAction ="pyxis.adressecourrier.adresse.chercher"
 			providerActionParams ="<%=adresseParams%>"
 		/>
-
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
 	</td>
 </tr>
 
@@ -197,7 +197,7 @@ function isQRIban() {
 					methods="<%=referencePaiementSelectionMethodsName%>"
 					providerApplication ="pyxis"
 					providerPrefix="TI"
-					providerAction ="pyxis.tiers.referencePaiement.chercher"
+					providerAction ="pyxis.tiers.referencePaiement.chercher&colonneSelection=no"
 					providerActionParams ="<%=referencePaiementChercherParams%>"
 					target="fr_main"
 					redirectUrl="<%=mainServletPath%>"

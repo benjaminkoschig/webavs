@@ -49,6 +49,9 @@
 
 	IFrameListHeight = "150";
 	IFrameDetailHeight = "500";
+
+    Boolean isValidated = viewBean.hasRepartiLesCreances(noDemandeRente);
+
 %>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%
@@ -290,8 +293,17 @@
 								<td class="forceAlignRight">
 									<ct:FWLabel key="JSP_CRE_R_EN_FAVEUR_ASSURE" />
 								</td>
-								<td colspan="2">
-									&nbsp;
+								<td style="text-align: right;color: red" colspan="2">
+
+									<%
+										if (!isValidated) {
+									%>
+
+
+									<ct:FWLabel key="JSP_CRE_R_REPARTITION" />
+									<%
+										}
+									%>
 								</td>
 							</tr>
 							<tr class="forceTRHeight">

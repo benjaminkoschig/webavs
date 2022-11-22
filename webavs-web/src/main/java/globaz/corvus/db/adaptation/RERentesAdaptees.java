@@ -4,6 +4,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.corvus.utils.quotite.REQuotiteEnum;
 
 import java.math.BigDecimal;
 
@@ -357,19 +358,9 @@ public class RERentesAdaptees extends BEntity {
 
     public String getQuotiteOrFraction() {
         if (!JadeStringUtil.isBlankOrZero(quotiteRente)) {
-            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(1).toString();
+            return new BigDecimal(quotiteRente).multiply(BigDecimal.valueOf(100)).setScale(2).toString();
         } else {
-            switch (fractionRente) {
-                case "2":
-                    return "50.0";
-                case "3":
-                    return "75.0";
-                case "4":
-                    return "25.0";
-                case "1":
-                default:
-                    return "100.0";
-            }
+            return REQuotiteEnum.getQuotiteFromFraction(fractionRente);
         }
     }
 }

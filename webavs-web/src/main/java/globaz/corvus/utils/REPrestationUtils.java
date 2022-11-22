@@ -1,9 +1,12 @@
 package globaz.corvus.utils;
 
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
+import globaz.corvus.vb.decisions.REBeneficiaireInfoVO;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class REPrestationUtils {
@@ -16,7 +19,9 @@ public class REPrestationUtils {
 
     // Class utilitaire
     private REPrestationUtils() {}
-    public static String getLibelleGenrePrestation(String codePrestation, String quotite, String codeIsoLangue, BSession session) throws Exception {
+
+    public static String getLibelleGenrePrestation(String genrePrestation, String fraction, String quotite, String codeIsoLangue, BSession session) throws Exception {
+        String codePrestation = getCodePrestationCS(genrePrestation, fraction, quotite);
         String libelle = RENumberFormatter.codeSystemToLibelle(
                 session.getSystemCode(TYPE_CODE_GENRE, codePrestation),
                 codeIsoLangue, session);
@@ -27,5 +32,29 @@ public class REPrestationUtils {
             libelle = libelle.replace(REPLACE_QUOTITE, quotiteLibelle);
         }
         return libelle;
+    }
+
+    private static String getCodePrestationCS(String genrePrestation, String fraction, String quotite) {
+        String codePrestationCS = genrePrestation;
+        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(eachGenrePrestation -> eachGenrePrestation.equals(genrePrestation))) {
+            if (!JadeStringUtil.isEmpty(fraction)) {
+                codePrestationCS += "." + fraction;
+            } else if (!JadeStringUtil.isEmpty(quotite)) {
+                if (Objects.equals(REGenresPrestations.GENRE_50,genrePrestation) || Objects.equals(REGenresPrestations.GENRE_70, genrePrestation)) {
+                    if (Float.valueOf(quotite) >= 0.70) {
+                        codePrestationCS += ".1";
+                    } else {
+                        codePrestationCS += ".0";
+                    }
+                } else {
+                    codePrestationCS += ".1";
+                }
+            } else {
+                codePrestationCS += ".0";
+            }
+        } else {
+            codePrestationCS += ".0";
+        }
+        return codePrestationCS;
     }
 }

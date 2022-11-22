@@ -7,6 +7,7 @@ import globaz.globall.db.BTransaction;
 import globaz.prestation.acor.web.mapper.PRConverterUtils;
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,11 +26,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()), 6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(ordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(ordentlicheRente.getMeldungsnummer()));
@@ -61,8 +63,8 @@ public class REAnnonces51Mapper {
         // 12 | Réfugié
         ann51.setIsRefugie(PRConverterUtils.formatBooleanToString(ordentlicheRente.getLeistungsberechtigtePerson().isIstFluechtling()));
 
-        // 13 | Canton/Etat de domicile
-        ann51.setCantonEtatDomicile(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsberechtigtePerson().getWohnkantonStaat()));
+        // 13 | Canton/Etat de domicile --> sur 3 caractères.
+        ann51.setCantonEtatDomicile(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsberechtigtePerson().getWohnkantonStaat()), 3));
 
         // 14 | Genre de prestations
         ann51.setGenrePrestation(ordentlicheRente.getLeistungsbeschreibung().getLeistungsart());
@@ -70,8 +72,8 @@ public class REAnnonces51Mapper {
         // 15 | Début du droit: MMAA
         ann51.setDebutDroit(PRConverterUtils.formatDateToMMAA(ordentlicheRente.getLeistungsbeschreibung().getAnspruchsbeginn()));
 
-        // 16 | Mensualité de la prestation en francs
-        ann51.setMensualitePrestationsFrancs(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getMonatsbetrag()));
+        // 16 | Mensualité de la prestation en francs --> sur 5 caractères.
+        ann51.setMensualitePrestationsFrancs(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getMonatsbetrag()), 5));
 
         // 18 | Fin du droit: MMAA
         ann51.setFinDroit(PRConverterUtils.formatDateToMMAA(ordentlicheRente.getLeistungsbeschreibung().getAnspruchsende()));
@@ -85,7 +87,6 @@ public class REAnnonces51Mapper {
         // 21 | Réserve: à blanc
 
         ann51.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51.add(transaction);
 
         REAnnonce51 ann51_02 = new REAnnonce51();
         // 1 | Code application: 51
@@ -94,8 +95,8 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 02
         ann51_02.setCodeEnregistrement01("02");
 
-        // 3 | Revenu annuel moyen déterminant en francs
-        ann51_02.setRamDeterminant(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getDurchschnittlichesJahreseinkommen()));
+        // 3 | Revenu annuel moyen déterminant en francs --> sur 8 caractères
+        ann51_02.setRamDeterminant(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getDurchschnittlichesJahreseinkommen()), 8));
 
         // 4 | Durée de cotisation pour déterminer le revenu annuel moyen : AAMM
         ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimal(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung().getBeitragsdauerDurchschnittlichesJahreseinkommen()));
@@ -117,20 +118,25 @@ public class REAnnonces51Mapper {
         // de rentes après 1973 : AAMM
         ann51_02.setDureeCoEchelleRenteDes73(PRConverterUtils.formatBigDecimal(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getBeitragsdauerAb1973()));
 
-        // 10 | Prise en compte des durées de cotisations manquantes en mois
-        // pour les années 1948-72
-        ann51_02.setDureeCotManquante48_72(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getAnrechnungVor1973FehlenderBeitragsmonate()));
+        // 10 | Prise en compte des durées de cotisations manquantes en mois pour les années 1948-72 --> sur 2 caractères
+        ann51_02.setDureeCotManquante48_72(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getAnrechnungVor1973FehlenderBeitragsmonate()), 2));
 
-        // 11 | Années de cotisations de la classe d'âge
-        ann51_02.setAnneeCotClasseAge(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getBeitragsjahreJahrgang()));
+        // 11 | Années de cotisations de la classe d'âge --> sur 2 caractères.
+        ann51_02.setAnneeCotClasseAge(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getBeitragsjahreJahrgang()), 2));
 
         RRBestandesmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter flexiblesRentenAlter = ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getFlexiblesRentenAlter();
         if (Objects.nonNull(flexiblesRentenAlter)) {
             // 12 | Durée de l'ajournement : AMM
-            ann51_02.setDureeAjournement(PRConverterUtils.formatBigDecimal(flexiblesRentenAlter.getRentenaufschub().getAufschubsdauer()));
+            BigDecimal dureeAjournement = flexiblesRentenAlter.getRentenaufschub().getAufschubsdauer();
+            if (Objects.nonNull(dureeAjournement)) {
+                ann51_02.setDureeAjournement(dureeAjournement.setScale(2).toString().replace(".", ""));
+            }
 
-            // 13 | Supplément d'ajournement en francs
-            ann51_02.setSupplementAjournement(PRConverterUtils.formatBigDecimalToString(flexiblesRentenAlter.getRentenaufschub().getAufschubszuschlag()));
+            // 13 | Supplément d'ajournement en francs --> sur 5 caractères
+            BigDecimal supplementAjournement = flexiblesRentenAlter.getRentenaufschub().getAufschubszuschlag();
+            if (Objects.nonNull(supplementAjournement)) {
+                ann51_02.setSupplementAjournement(PRConverterUtils.indentLeftWithZero(String.valueOf(supplementAjournement.intValue()), 5));
+            }
 
             // 14 | Date de révocation de l'ajournement : MMAA
             ann51_02.setDateRevocationAjournement(PRConverterUtils.formatDateToMMAA(flexiblesRentenAlter.getRentenaufschub().getAbrufdatum()));
@@ -141,11 +147,11 @@ public class REAnnonces51Mapper {
             // 17 | Office AI compétent - ayant droit
             ann51_02.setOfficeAICompetent(PRConverterUtils.formatIntegerToString(ivDaten.getIVStelle()));
 
-            // 19 | Degré invalidité ayant droit
-            ann51_02.setDegreInvalidite(PRConverterUtils.formatShortToString(ivDaten.getInvaliditaetsgrad()));
+            // 19 | Degré invalidité ayant droit --> sur 3 caractères
+            ann51_02.setDegreInvalidite(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDaten.getInvaliditaetsgrad()), 3));
 
-            // 21 | Code l'infirmité - ayant droit
-            StringBuilder codeInfirmite = new StringBuilder(ivDaten.getGebrechensschluessel()).append(ivDaten.getFunktionsausfallcode());
+            // 21 | Code l'infirmité - ayant droit --> clé d'affliction sur 3 caractères + Code de défaillance fonctionnelle sur 2 caractères
+            StringBuilder codeInfirmite = new StringBuilder(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ivDaten.getGebrechensschluessel()), 3)).append(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDaten.getFunktionsausfallcode()), 2));
             ann51_02.setCodeInfirmite(codeInfirmite.toString());
 
             // 23 | Survenance de l'événement assuré - ayant droit
@@ -163,8 +169,8 @@ public class REAnnonces51Mapper {
             // 20 | Degré invalidité épouse
             ann51_02.setDegreInvaliditeEpouse(PRConverterUtils.formatShortToString(ivDatenFrau.getInvaliditaetsgrad()));
 
-            // 22 | Code de l'informité - épouse
-            StringBuilder codeInfirmiteEpouse = new StringBuilder(ivDatenFrau.getGebrechensschluessel()).append(ivDatenFrau.getFunktionsausfallcode());
+            // 22 | Code de l'informité - épouse --> clé d'affliction sur 3 caractères + Code de défaillance fonctionnelle sur 2 caractères
+            StringBuilder codeInfirmiteEpouse = new StringBuilder(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ivDatenFrau.getGebrechensschluessel()), 3)).append(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDatenFrau.getFunktionsausfallcode()), 2));
             ann51_02.setCodeInfirmiteEpouse(codeInfirmiteEpouse.toString());
 
             // 24 | Survenance de l'événement assuré - épouse
@@ -174,8 +180,8 @@ public class REAnnonces51Mapper {
             ann51_02.setAgeDebutInvaliditeEpouse(PRConverterUtils.formatBooleanToString(ivDatenFrau.isIstFruehInvalid()));
         }
 
-        // 28 | Réduction
-        ann51_02.setReduction(PRConverterUtils.formatShortToString(ordentlicheRente.getLeistungsbeschreibung().getKuerzungSelbstverschulden()));
+        // 28 | Réduction --> sur 2 caractères.
+        ann51_02.setReduction(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ordentlicheRente.getLeistungsbeschreibung().getKuerzungSelbstverschulden()), 2));
 
         List<Short> codesCasSpeciaux = ordentlicheRente.getLeistungsbeschreibung().getSonderfallcodeRente();
         if (Objects.nonNull(codesCasSpeciaux)) {
@@ -201,9 +207,8 @@ public class REAnnonces51Mapper {
             }
         }
 
-        // 34 | Prise en compte des durées de cotisations manquantes en mois
-        // pour les années 73-78
-        ann51_02.setDureeCotManquante73_78(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getAnrechnungAb1973Bis1978FehlenderBeitragsmonate()));
+        // 34 | Prise en compte des durées de cotisations manquantes en mois pour les années 73-78 --> sur 2 caractères
+        ann51_02.setDureeCotManquante73_78(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getSkalaBerechnung().getAnrechnungAb1973Bis1978FehlenderBeitragsmonate()), 2));
 
         // 35 | Revenu annuel moyen sans BTE
         ann51_02.setRevenuAnnuelMoyenSansBTE(PRConverterUtils.formatBigDecimalToString(ordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getGutschriften().getDJEohneErziehungsgutschrift()));
@@ -218,19 +223,12 @@ public class REAnnonces51Mapper {
         // 38 | Réserve: à blanc
 
         ann51_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51_02.add(transaction);
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51.retrieve();
-        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
-        ann51.update(transaction);
 
         REAnnonce51 ann51_03 = createAnnonces51InfosComplementaires(rrBestandesmeldung9Type.getZusaetzlicheAngabenZAS());
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51_02.retrieve();
         ann51_02.setIdLienAnnonce(ann51_03.getIdAnnonce());
-        ann51_02.update(transaction);
+        ann51_02.add(transaction);
+        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
+        ann51.add(transaction);
 
         return ann51;
 
@@ -257,14 +255,14 @@ public class REAnnonces51Mapper {
 
         RRBestandesmeldung9Type.ZusaetzlicheAngabenZAS.BisherigeWerte bisherigeWerte = zusaetzlicheAngabenZAS.getBisherigeWerte();
         if (Objects.nonNull(bisherigeWerte)) {
-            // 6 | Ancien revenu annuel déterminant moyen en francs
-            ann51_03.setAncienRAM(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()));
+            // 6 | Ancien revenu annuel déterminant moyen en francs --> sur 8 caractères
+            ann51_03.setAncienRAM(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getDurchschnittlichesJahreseinkommen()), 8));
 
-            // 7 | Ancienne RO remplacéé
-            ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetragErsetzteOrdentlicheRente()));
+            // 7 | Ancienne RO remplacéé --> sur 5 caractères.
+            ann51_03.setMontantAncRenteRemplacee(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetragErsetzteOrdentlicheRente()), 5));
 
-            // 8 | Ancien montant mensuel
-            ann51_03.setAncienMontantMensuel(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetrag()));
+            // 8 | Ancien montant mensuel --> sur 5 caractères
+            ann51_03.setAncienMontantMensuel(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getMonatsbetrag()), 5));
 
             List<Short> codesCasSpeciaux = bisherigeWerte.getSonderfallcodeRente();
             if (Objects.nonNull(codesCasSpeciaux)) {
@@ -296,8 +294,11 @@ public class REAnnonces51Mapper {
             // 16 | Anciennes BTE prises en comtpe
             ann51_03.setAncienneBTEMoyennePrisCompte(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAngerechneteErziehungsgutschrift()));
 
-            // 17 | Ancien supplément d'ajournement en francs
-            ann51_03.setAncienSupplementAjournement(PRConverterUtils.formatBigDecimalToString(bisherigeWerte.getAufschubszuschlag()));
+            // 17 | Ancien supplément d'ajournement en francs --> sur 5 caractères.
+            BigDecimal ancienSupplementAjournement = bisherigeWerte.getAufschubszuschlag();
+            if (Objects.nonNull(ancienSupplementAjournement)) {
+                ann51_03.setAncienSupplementAjournement(PRConverterUtils.indentLeftWithZero(String.valueOf(ancienSupplementAjournement.intValue()), 5));
+            }
         }
 
         // 14 | Observations de la centrale
@@ -323,11 +324,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()), 6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getKasseZweigstelle()));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(ausserordentlicheRente.getMeldungsnummer()));
@@ -359,8 +361,8 @@ public class REAnnonces51Mapper {
         // 12 | Réfugié
         ann51.setIsRefugie(PRConverterUtils.formatBooleanToString(ausserordentlicheRente.getLeistungsberechtigtePerson().isIstFluechtling()));
 
-        // 13 | Canton/Etat de domicile
-        ann51.setCantonEtatDomicile(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getLeistungsberechtigtePerson().getWohnkantonStaat()));
+        // 13 | Canton/Etat de domicile --> sur 3 caractères
+        ann51.setCantonEtatDomicile(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ausserordentlicheRente.getLeistungsberechtigtePerson().getWohnkantonStaat()), 3));
 
         // 14 | Genre de prestations
         ann51.setGenrePrestation(ausserordentlicheRente.getLeistungsbeschreibung().getLeistungsart());
@@ -368,12 +370,11 @@ public class REAnnonces51Mapper {
         // 15 | Début du droit: MMAA
         ann51.setDebutDroit(PRConverterUtils.formatDateToMMAA(ausserordentlicheRente.getLeistungsbeschreibung().getAnspruchsbeginn()));
 
-        // 16 | Mensualité de la prestation en francs
-        ann51.setMensualitePrestationsFrancs(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetrag()));
+        // 16 | Mensualité de la prestation en francs --> sur 5 caractères
+        ann51.setMensualitePrestationsFrancs(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetrag()), 5));
 
-        // 17 | Mensualité de la rente ordinaire
-        // | remplacée en francs
-        ann51.setMontantAncRenteRemplacee(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetragErsetzteOrdentlicheRente()));
+        // 17 | Mensualité de la rente ordinaire | remplacée en francs --> sur 5 caractères
+        ann51.setMontantAncRenteRemplacee(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(ausserordentlicheRente.getLeistungsbeschreibung().getMonatsbetragErsetzteOrdentlicheRente()), 5));
 
         // 18 | Fin du droit: MMAA
         ann51.setFinDroit(PRConverterUtils.formatDateToMMAA(ausserordentlicheRente.getLeistungsbeschreibung().getAnspruchsende()));
@@ -387,7 +388,6 @@ public class REAnnonces51Mapper {
         // 21 | Réserve: à blanc
 
         ann51.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51.add(transaction);
 
         REAnnonce51 ann51_02 = new REAnnonce51();
         // 1 | Code application: 51
@@ -401,8 +401,8 @@ public class REAnnonces51Mapper {
 
         DJE9BeschreibungType djeBeschreibung = ausserordentlicheRente.getLeistungsbeschreibung().getBerechnungsgrundlagen().getDJEBeschreibung();
         if (Objects.nonNull(djeBeschreibung)) {
-            // 3 | Revenu annuel moyen déterminant en francs
-            ann51_02.setRamDeterminant(PRConverterUtils.formatBigDecimalToString(djeBeschreibung.getDurchschnittlichesJahreseinkommen()));
+            // 3 | Revenu annuel moyen déterminant en francs --> sur 8 caractères
+            ann51_02.setRamDeterminant(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(djeBeschreibung.getDurchschnittlichesJahreseinkommen()), 8));
 
             // 4 | Durée de cotisation pour déterminer le revenu annuel moyen : AAMM
             ann51_02.setDureeCotPourDetRAM(PRConverterUtils.formatBigDecimal(djeBeschreibung.getBeitragsdauerDurchschnittlichesJahreseinkommen()));
@@ -424,16 +424,14 @@ public class REAnnonces51Mapper {
             // de rentes après 1973 : AAMM
             ann51_02.setDureeCoEchelleRenteDes73(PRConverterUtils.formatBigDecimal(skalaBerechnung.getBeitragsdauerAb1973()));
 
-            // 10 | Prise en compte des durées de cotisations manquantes en mois
-            // pour les années 1948-72
-            ann51_02.setDureeCotManquante48_72(PRConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungVor1973FehlenderBeitragsmonate()));
+            // 10 | Prise en compte des durées de cotisations manquantes en mois pour les années 1948-72 --> sur 2 caractères.
+            ann51_02.setDureeCotManquante48_72(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungVor1973FehlenderBeitragsmonate()), 2));
 
-            // 11 | Années de cotisations de la classe d'âge
-            ann51_02.setAnneeCotClasseAge(PRConverterUtils.formatIntegerToString(skalaBerechnung.getBeitragsjahreJahrgang()));
+            // 11 | Années de cotisations de la classe d'âge --> sur 2 caractères
+            ann51_02.setAnneeCotClasseAge(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(skalaBerechnung.getBeitragsjahreJahrgang()), 2));
 
-            // 34 | Prise en compte des durées de cotisations manquantes en mois
-            // pour les années 73-78
-            ann51_02.setDureeCotManquante73_78(PRConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungAb1973Bis1978FehlenderBeitragsmonate()));
+            // 34 | Prise en compte des durées de cotisations manquantes en mois pour les années 73-78 --> sur 2 caractères.
+            ann51_02.setDureeCotManquante73_78(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(skalaBerechnung.getAnrechnungAb1973Bis1978FehlenderBeitragsmonate()), 2));
         }
 
         // 15 | Limites de revenu
@@ -447,11 +445,11 @@ public class REAnnonces51Mapper {
             // 17 | Office AI compétent - ayant droit
             ann51_02.setOfficeAICompetent(PRConverterUtils.formatIntegerToString(ivDaten.getIVStelle()));
 
-            // 19 | Degré invalidité ayant droit
-            ann51_02.setDegreInvalidite(PRConverterUtils.formatShortToString(ivDaten.getInvaliditaetsgrad()));
+            // 19 | Degré invalidité ayant droit --> sur 3 caractères
+            ann51_02.setDegreInvalidite(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDaten.getInvaliditaetsgrad()), 3));
 
-            // 21 | Code l'infirmité - ayant droit
-            StringBuilder codeInfirmite = new StringBuilder(ivDaten.getGebrechensschluessel()).append(ivDaten.getFunktionsausfallcode());
+            // 21 | Code l'infirmité - ayant droit --> clé d'affliction sur 3 caractères + Code de défaillance fonctionnelle sur 2 caractères
+            StringBuilder codeInfirmite = new StringBuilder(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ivDaten.getGebrechensschluessel()), 3)).append(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDaten.getFunktionsausfallcode()), 2));
             ann51_02.setCodeInfirmite(codeInfirmite.toString());
 
             // 23 | Survenance de l'événement assuré - ayant droit
@@ -469,8 +467,8 @@ public class REAnnonces51Mapper {
             // 20 | Degré invalidité épouse
             ann51_02.setDegreInvaliditeEpouse(PRConverterUtils.formatShortToString(ivDatenFrau.getInvaliditaetsgrad()));
 
-            // 22 | Code de l'informité - épouse
-            StringBuilder codeInfirmiteEpouse = new StringBuilder(ivDatenFrau.getGebrechensschluessel()).append(ivDatenFrau.getFunktionsausfallcode());
+            // 22 | Code de l'informité - épouse --> clé d'affliction sur 3 caractères + Code de défaillance fonctionnelle sur 2 caractères
+            StringBuilder codeInfirmiteEpouse = new StringBuilder(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ivDatenFrau.getGebrechensschluessel()), 3)).append(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDatenFrau.getFunktionsausfallcode()), 2));
             ann51_02.setCodeInfirmiteEpouse(codeInfirmiteEpouse.toString());
 
             // 24 | Survenance de l'événement assuré - épouse
@@ -480,8 +478,8 @@ public class REAnnonces51Mapper {
             ann51_02.setAgeDebutInvaliditeEpouse(PRConverterUtils.formatBooleanToString(ivDatenFrau.isIstFruehInvalid()));
         }
 
-        // 28 | Réduction
-        ann51_02.setReduction(PRConverterUtils.formatShortToString(ausserordentlicheRente.getLeistungsbeschreibung().getKuerzungSelbstverschulden()));
+        // 28 | Réduction --> sur 2 caractères
+        ann51_02.setReduction(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ausserordentlicheRente.getLeistungsbeschreibung().getKuerzungSelbstverschulden()), 2));
 
         List<Short> codesCasSpeciaux = ausserordentlicheRente.getLeistungsbeschreibung().getSonderfallcodeRente();
         if (Objects.nonNull(codesCasSpeciaux)) {
@@ -523,19 +521,12 @@ public class REAnnonces51Mapper {
         // 38 | Réserve: à blanc
 
         ann51_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51_02.add(transaction);
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51.retrieve();
-        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
-        ann51.update(transaction);
 
         REAnnonce51 ann51_03 = createAnnonces51InfosComplementaires(rrBestandesmeldung9Type.getZusaetzlicheAngabenZAS());
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51_02.retrieve();
         ann51_02.setIdLienAnnonce(ann51_03.getIdAnnonce());
-        ann51_02.update(transaction);
+        ann51_02.add(transaction);
+        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
+        ann51.add(transaction);
 
         return ann51;
     }
@@ -551,11 +542,12 @@ public class REAnnonces51Mapper {
         // 2 | Code enregistrement: 01
         ann51.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()), 6);
         // 3 | Numéro de la Caisse
-        ann51.setNumeroCaisse(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()));
+        ann51.setNumeroCaisse(numeroCaisseAgence.substring(0, 3));
 
         // 4 | Numéro de l'agence
-        ann51.setNumeroAgence(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getKasseZweigstelle()));
+        ann51.setNumeroAgence(numeroCaisseAgence.substring(3, 6));
 
         // 5 | Numéro de l'annonce
         ann51.setNumeroAnnonce(PRConverterUtils.formatLongToString(hilflosenentschaedigung.getMeldungsnummer()));
@@ -587,8 +579,8 @@ public class REAnnonces51Mapper {
         // 12 | Réfugié
         ann51.setIsRefugie(PRConverterUtils.formatBooleanToString(hilflosenentschaedigung.getLeistungsberechtigtePerson().isIstFluechtling()));
 
-        // 13 | Canton/Etat de domicile
-        ann51.setCantonEtatDomicile(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getLeistungsberechtigtePerson().getWohnkantonStaat()));
+        // 13 | Canton/Etat de domicile --> sur 3 caractères.
+        ann51.setCantonEtatDomicile(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(hilflosenentschaedigung.getLeistungsberechtigtePerson().getWohnkantonStaat()), 3));
 
         // 14 | Genre de prestations
         ann51.setGenrePrestation(hilflosenentschaedigung.getLeistungsbeschreibung().getLeistungsart());
@@ -596,8 +588,8 @@ public class REAnnonces51Mapper {
         // 15 | Début du droit: MMAA
         ann51.setDebutDroit(PRConverterUtils.formatDateToMMAA(hilflosenentschaedigung.getLeistungsbeschreibung().getAnspruchsbeginn()));
 
-        // 16 | Mensualité de la prestation en francs
-        ann51.setMensualitePrestationsFrancs(PRConverterUtils.formatBigDecimalToString(hilflosenentschaedigung.getLeistungsbeschreibung().getMonatsbetrag()));
+        // 16 | Mensualité de la prestation en francs --> sur 5 caractères
+        ann51.setMensualitePrestationsFrancs(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatBigDecimalToString(hilflosenentschaedigung.getLeistungsbeschreibung().getMonatsbetrag()), 5));
 
         // 18 | Fin du droit: MMAA
         ann51.setFinDroit(PRConverterUtils.formatDateToMMAA(hilflosenentschaedigung.getLeistungsbeschreibung().getAnspruchsende()));
@@ -611,7 +603,6 @@ public class REAnnonces51Mapper {
         // 21 | Réserve: à blanc
 
         ann51.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51.add(transaction);
 
         REAnnonce51 ann51_02 = new REAnnonce51();
         // 1 | Code application: 51
@@ -625,8 +616,8 @@ public class REAnnonces51Mapper {
             // 17 | Office AI compétent - ayant droit
             ann51_02.setOfficeAICompetent(PRConverterUtils.formatIntegerToString(ivDaten.getIVStelle()));
 
-            // 21 | Code l'infirmité - ayant droit
-            StringBuilder codeInfirmite = new StringBuilder(ivDaten.getGebrechensschluessel()).append(ivDaten.getFunktionsausfallcode());
+            // 21 | Code l'infirmité - ayant droit --> clé d'affliction sur 3 caractères + Code de défaillance fonctionnelle sur 2 caractères
+            StringBuilder codeInfirmite = new StringBuilder(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(ivDaten.getGebrechensschluessel()), 3)).append(PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatShortToString(ivDaten.getFunktionsausfallcode()), 2));
             ann51_02.setCodeInfirmite(codeInfirmite.toString());
 
             // 23 | Survenance de l'événement assuré - ayant droit
@@ -664,19 +655,12 @@ public class REAnnonces51Mapper {
         // 38 | Réserve: à blanc
 
         ann51_02.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-        ann51_02.add(transaction);
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51.retrieve();
-        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
-        ann51.update(transaction);
 
         REAnnonce51 ann51_03 = createAnnonces51InfosComplementaires(rrBestandesmeldung9Type.getZusaetzlicheAngabenZAS());
-
-        // mise à jour de l'idLien de l'annonce 01
-        ann51_02.retrieve();
         ann51_02.setIdLienAnnonce(ann51_03.getIdAnnonce());
-        ann51_02.update(transaction);
+        ann51_02.add(transaction);
+        ann51.setIdLienAnnonce(ann51_02.getIdAnnonce());
+        ann51.add(transaction);
 
         return ann51;
     }

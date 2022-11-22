@@ -1,5 +1,6 @@
 package globaz.orion.process;
 
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileEntity;
@@ -12,6 +13,9 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
+import globaz.naos.services.AFAffiliationServices;
+import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +31,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EBImportDeclarationsSalairesDraco extends BProcess {
 
-    public String BATCH_IMPORT_IDFAILLITE = "batch.import.idfaillite";
+    public static final String IMPORT_MOTIF_DE_FIN = "import.motifdefin";
+    public static final String IMPORT_PERSONNALITE_JURIDIQUE = "import.personnalitejuridique";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -51,7 +56,14 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
     private void importDeclarationsSalaires() throws Exception {
         EBPucsFileManager manager = new EBPucsFileManager();
         manager.setStatut(EtatPucsFile.A_TRAITER.getValue());
-        List<EBPucsFileEntity> filterList = manager.search().stream()
+        List<EBPucsFileEntity> ebuList = manager.search();
+
+        // Fichier swissDec etat A_VALIDER
+        manager.setStatut(EtatPucsFile.A_VALIDE.getValue());
+        manager.setForProvenance(DeclarationSalaireProvenance.SWISS_DEC);
+        ebuList.addAll(manager.search());
+
+        List<EBPucsFileEntity> filterList = ebuList.stream()
                 .filter(this::validate)
                 .collect(Collectors.toList());
         List<PucsFile> pucsFiles = EBPucsFileService.entitiesToPucsFile(filterList);
@@ -60,16 +72,18 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     private boolean validate(EBPucsFileEntity ebPucsFileEntity) {
         return !ebPucsFileEntity.isAfSeul()
-                && validateAffilie(ebPucsFileEntity);
+                && !ebPucsFileEntity.isForTest()
+                && validateAffilie(ebPucsFileEntity)
+                && validateParticularite(ebPucsFileEntity);
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
-        List<String> idsfaillite;
+        List<String> motifsDeFins;
+        List<String> personnalitesJuridiques;
         AFAffiliation aff;
         try {
-            String properties = getSession().getApplication().getProperty(BATCH_IMPORT_IDFAILLITE, "");
-            idsfaillite = Arrays.stream(properties.split("[,;]+"))
-                    .map(String::trim).collect(Collectors.toList());
+            motifsDeFins = getListPropriete(IMPORT_MOTIF_DE_FIN);
+            personnalitesJuridiques = getListPropriete(IMPORT_PERSONNALITE_JURIDIQUE);
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
         } catch (Exception e) {
@@ -78,12 +92,29 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
         return Objects.nonNull(aff)
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
-                || !(idsfaillite.contains(aff.getMotifFin())));
+                    || !motifsDeFins.contains(aff.getMotifFin()))
+                && (JadeStringUtil.isBlankOrZero(aff.getPersonnaliteJuridique())
+                    || !personnalitesJuridiques.contains(aff.getPersonnaliteJuridique()));
+    }
+
+    private List<String> getListPropriete(String proprieteName) throws Exception {
+        String properties = getSession().getApplication().getProperty(proprieteName, "");
+        return Arrays.stream(properties.split("[,;]+"))
+                .map(String::trim).collect(Collectors.toList());
+    }
+
+    private boolean validateParticularite(EBPucsFileEntity ebPucsFileEntity) {
+        List<AFParticulariteAffiliation> listeParticularites = AFAffiliationServices.findListParticulariteAffiliation(ebPucsFileEntity.getIdAffiliation(),
+                getSession());
+
+        return listeParticularites.stream()
+                .noneMatch(p -> CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE.equals(p.getParticularite())
+                    || CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL.equals(p.getParticularite()));
     }
 
     private void importFile(List<PucsFile> pucsFiles) throws Exception {
         EBTreatPucsFiles process = new EBTreatPucsFiles();
-        process.setSendCompletionMail(false);
+        process.setSendCompletionMail(true);
         process.setEmailAdress(getEMailAddress());
         process.setIsBatch(true);
         process.setMode("miseajour");

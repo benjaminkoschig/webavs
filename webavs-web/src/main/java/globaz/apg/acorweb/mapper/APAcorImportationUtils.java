@@ -5,29 +5,31 @@ import ch.globaz.common.util.Dates;
 import ch.globaz.eavs.utils.StringUtils;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.module.calcul.APBaseCalcul;
-import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
-import globaz.apg.module.calcul.APBasesCalculBuilder;
-import globaz.apg.module.calcul.APReferenceDataParser;
+import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
 import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
+import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
+import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorDomaineException;
 import globaz.prestation.acor.PRAcorTechnicalException;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.db.employeurs.PRAbstractEmployeur;
+import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.tools.PRCalcul;
 import globaz.pyxis.util.CommonNSSFormater;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public final class APAcorImportationUtils {
@@ -73,28 +75,6 @@ public final class APAcorImportationUtils {
                 throw new PRAcorDomaineException(session.getLabel("IMPORTATION_MAUVAIS_PRONONCE") + " (8)");
             }
         }
-    }
-
-    public static VersementBeneficiaireApgType findVersementBeneficiaireFederalType(VersementApgType versementApg) {
-        VersementBeneficiaireApgType versementBeneficiaire = null;
-        if(Objects.nonNull(versementApg.getVersementsFederal())){
-            versementBeneficiaire = versementApg.getVersementsFederal().getVersementEmployeur();
-            if(Objects.isNull(versementBeneficiaire)){
-                versementBeneficiaire = versementApg.getVersementsFederal().getVersementAssure();
-            }
-        }
-        return versementBeneficiaire;
-    }
-
-    public static VersementBeneficiaireApgType findVersementBeneficiaireGenevoisType(VersementApgType versementApg) {
-        VersementBeneficiaireApgType versementBeneficiaire = null;
-        if(Objects.nonNull(versementApg.getVersementsGenevois())){
-            versementBeneficiaire = versementApg.getVersementsGenevois().getVersementEmployeur();
-            if(Objects.isNull(versementBeneficiaire)){
-                versementBeneficiaire = versementApg.getVersementsGenevois().getVersementAssure();
-            }
-        }
-        return versementBeneficiaire;
     }
 
     public static APBaseCalcul findBaseCalcul(Collection<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor) {
@@ -190,8 +170,7 @@ public final class APAcorImportationUtils {
     }
 
     public static APBaseCalculSituationProfessionnel findBaseCalculSitPro(APBaseCalcul basesCalcul,
-                                                                    String idTiers, String idAffilie, String nomAffilie)
-            throws PRACORException {
+                                                                    String idTiers, String idAffilie, String nomAffilie) {
         if (Objects.isNull(basesCalcul)) {
             LOG.warn("La base de calcul est null et la situation professionelle ne peut être trouvée !!!");
             return null;
@@ -230,42 +209,6 @@ public final class APAcorImportationUtils {
         return name.replaceFirst("^\\[\\d+\\]", "");
     }
 
-    public static boolean comparePeriod2IsInsidePeriod1(Integer startDatePeriod1, Integer endDatePeriode1,
-                                                        Integer startDatePeriod2, Integer endDatePeriode2) {
-        JADate startDatePeriod1JADate;
-        try {
-            startDatePeriod1JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod1));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
-        }
-        JADate endDatePeriode1JADate;
-        try {
-            endDatePeriode1JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode1));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
-        }
-        JADate startDatePeriod2JADate;
-        try {
-            startDatePeriod2JADate = JADate.newDateFromAMJ(String.valueOf(startDatePeriod2));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
-        }
-        JADate endDatePeriode2JADate;
-        try {
-            endDatePeriode2JADate = JADate.newDateFromAMJ(String.valueOf(endDatePeriode2));
-        } catch (JAException e) {
-            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
-        }
-        LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1JADate);
-        LocalDate localDateFinPeriode1 = Dates.toDate(endDatePeriode1JADate);
-        LocalDate localDateDebutPeriod2 = Dates.toDate(startDatePeriod2JADate);
-        LocalDate localDateFinPeriod2 = Dates.toDate(endDatePeriode2JADate);
-        return (localDateDebutPeriod1.isBefore(localDateDebutPeriod2) ||
-                localDateDebutPeriod1.isEqual(localDateDebutPeriod2)) &&
-                (localDateFinPeriode1.isAfter(localDateFinPeriod2) ||
-                        localDateFinPeriode1.isEqual(localDateFinPeriod2));
-    }
-
     public static boolean comparePeriod2IsInsidePeriod1(JADate startDatePeriod1, JADate endDatePeriode1,
                                                         JADate startDatePeriod2, JADate endDatePeriode2) {
         LocalDate localDateDebutPeriod1 = Dates.toDate(startDatePeriod1);
@@ -299,6 +242,190 @@ public final class APAcorImportationUtils {
             return ref;
         }catch(Exception e){
             throw new PRAcorTechnicalException("Erreur lors de la récupération des référence data.", e);
+        }
+    }
+
+    public static boolean hasErrors(final BSession session, final BTransaction transaction) {
+        return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
+    }
+
+    public static APPeriodeWrapper createAndMapPeriodeWrapper(APPrestationAcor prestation, APPrestationWrapper prestationWrapper) {
+        APPeriodeWrapper periodeWrapper = new APPeriodeWrapper();
+        periodeWrapper.setDateDebut(Dates.toJADate(prestation.getDateDebut()));
+        periodeWrapper.setDateFin(Dates.toJADate(prestation.getDateFin()));
+        prestationWrapper.setPeriodeBaseCalcul(periodeWrapper);
+        return periodeWrapper;
+    }
+
+    public static APResultatCalcul createAndMapAPResultatCalul(List<APBaseCalcul> basesCalcul,
+                                                                APPrestationAcor prestation,
+                                                                APPrestationWrapper prestationWrapper,
+                                                                APPeriodeWrapper periodeWrapper) {
+        APResultatCalcul rc = new APResultatCalcul();
+        rc.setDateDebut(periodeWrapper.getDateDebut());
+        rc.setDateFin(periodeWrapper.getDateFin());
+        rc.setSoumisImpotSource(prestation.isSoumisImpotSource());
+        rc.setIdTauxImposition(prestation.getIdTauxImposition());
+        rc.setTauxImposition(prestation.getTauxImposition());
+        rc.setTypeAllocation(prestation.getGenre());
+        rc.setVersementAssure(prestation.getVersementAssure());
+        rc.setRevision(prestation.getRevision());
+        rc.setAllocationJournaliereExploitation(prestation.getAllocationExploitation());
+        rc.setAllocationJournaliereMaxFraisGarde(prestation.getFraisGardeMax());
+        rc.setMontantJournalier(prestation.getAllocationJournalier());
+        rc.setBasicDailyAmount(prestation.getAllocationJournalier());
+        rc.setNombreJoursSoldes(prestation.getNombreJoursSoldes());
+        rc.setNombreJoursSupplementaires(prestation.getNombreJoursSupplementaires());
+        rc.setRevenuDeterminantMoyen(prestation.getRevenuDeterminantMoyen());
+        prestationWrapper.setPrestationBase(rc);
+        prestation.createAndMapResultatCalculSituationProfessionnelleWithRepartitionPaiement(rc);
+        return rc;
+    }
+
+    public static List<APPeriodeWrapper> getPeriodes(FCalcul fCalcul, String genreService) {
+        List<APPeriodeWrapper> periodes = new ArrayList<>();
+        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+            for (PeriodeServiceApgType periode :
+                    fCalcul.getCarteApg().getPeriodeService()) {
+                APPeriodeWrapper periodeAcor = getPeriodeWrapper(periode.getDebut(), periode.getFin());
+                periodes.add(periodeAcor);
+            }
+        } else {
+            for (VersementMoisComptableApgType moisComptableApgType :
+                    fCalcul.getVersementMoisComptable()) {
+                for (VersementApgType versementApgType :
+                        moisComptableApgType.getVersement()) {
+                    getPeriodesFromVersementApgType(periodes, versementApgType.getVersementsGenevois());
+                    getPeriodesFromVersementApgType(periodes, versementApgType.getVersementsFederal());
+                }
+            }
+        }
+        return periodes;
+    }
+
+    public static void getPeriodesFromVersementApgType(List<APPeriodeWrapper> periods, VersementsInstanceAdminApgType versement) {
+        if(Objects.nonNull(versement)) {
+            getPeriodeDepuisBenificiare(versement.getVersementAssure(), periods);
+            getPeriodeDepuisBenificiare(versement.getVersementEmployeur(), periods);
+        }
+    }
+
+    public static void getPeriodeDepuisBenificiare(VersementBeneficiaireApgType versementBeneficiaireApgType, List<APPeriodeWrapper> periodes) {
+        if(Objects.nonNull(versementBeneficiaireApgType)) {
+            periodes.addAll(getVersementPeriode(versementBeneficiaireApgType, periodes));
+        }
+    }
+
+    public static List<APPeriodeWrapper> getVersementPeriode(VersementBeneficiaireApgType versementBeneficiaireApgType,
+                                                              List<APPeriodeWrapper> periodesExistantes){
+        List<APPeriodeWrapper> periodesPourAjout = new ArrayList<>();
+        for (DecompteApgType decompteApgType :
+                versementBeneficiaireApgType.getDecompte()) {
+            for (PeriodeDecompteApgType periodeDecompteApgType :
+                    decompteApgType.getPeriodeDecompte()) {
+                APPeriodeWrapper periodeAcor = getPeriodeWrapper(periodeDecompteApgType.getDebut(), periodeDecompteApgType.getFin());
+                if(periodesExistantes.stream().noneMatch(p ->
+                        periodeAcor.getDateDebut().equals(p.getDateDebut()) &&
+                                periodeAcor.getDateFin().equals(p.getDateFin())
+                )){
+                    periodesPourAjout.add(periodeAcor);
+                }
+            }
+        }
+        return periodesPourAjout;
+    }
+
+    public static APPeriodeWrapper getPeriodeWrapper(Integer debut, Integer fin) {
+        APPeriodeWrapper periodeWrapper = new APPeriodeWrapper();
+        try {
+            periodeWrapper.setDateDebut(JADate.newDateFromAMJ(String.valueOf(debut)));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de début d'une période de service APG type.", e);
+        }
+        try {
+            periodeWrapper.setDateFin(JADate.newDateFromAMJ(String.valueOf(fin)));
+        } catch (JAException e) {
+            throw new PRAcorTechnicalException("Erreur lors de la récupération de la date de fin d'une période de service APG type.", e);
+        }
+        return periodeWrapper;
+    }
+
+    public static void updateWrappersTauxParticipation(BSession session,
+                                                        FCalcul fCalcul,
+                                                        Collection<APPrestationWrapper> wrappers) throws PRACORException {
+        for (EmployeurApgType employeur:
+                fCalcul.getEmployeur()) {
+            for ( PeriodeMontantJournApgType periodeMontantJournApgType:
+                    fCalcul.getPeriodeMontantJourn()) {
+                for (PeriodeRepartitionApgType periodeRepartitionApgType :
+                        periodeMontantJournApgType.getPeriodeRepartition()) {
+                    Optional<PeriodeRepartitionEmployeurApgType> periodeRepartitionEmployeurOptional =
+                            periodeRepartitionApgType
+                                    .getEmployeur().stream().filter(p -> p.getIdEmpl().equals(employeur.getIdIntEmpl())).findFirst();
+                    if (periodeRepartitionEmployeurOptional.isPresent()) {
+                        PeriodeRepartitionEmployeurApgType periodeRepartitionEmployeur = periodeRepartitionEmployeurOptional.get();
+                        for (APPrestationWrapper wrapper : wrappers) {
+                            for (APResultatCalculSituationProfessionnel sitPro : wrapper.getPrestationBase().getResultatsCalculsSitProfessionnelle()) {
+                                /*
+                                 * Regex qui remplace une chaine qui commence (^ <-- çà veut dire commence quoi;) par '['
+                                 * suivi d'un minimum de un ou de plusieurs chiffres ([0-9] signifie les caractères valide,
+                                 * donc les chiffres, le '+' dit que çà doit correspondre au moins une fois) et qui est
+                                 * suivit d'un ']' Si je n'est pas été assez claire :
+                                 * http://en.wikipedia.org/wiki/Regular_expression saura répondre (RCO) BZ 8422
+                                 */
+
+                                String idAffilie;
+                                String idTiers;
+                                if (PRAbstractEmployeur.isNumeroBidon(employeur.getNoAffilie())) {
+                                    idAffilie = "0"; // sauve dans la base puis recharge, donc 0
+                                    idTiers = PRAbstractEmployeur.extractIdTiers(employeur.getNoAffilie());
+                                } else {
+                                    try {
+                                        IPRAffilie affilie = APRepartitionPaiementAcor.getIprAffilie(session, employeur.getNoAffilie(), employeur.getNom());
+
+                                        idAffilie = affilie.getIdAffilie();
+                                        idTiers = affilie.getIdTiers();
+                                    } catch (Exception e) {
+                                        throw new PRACORException("Impossible de trouver l'affilie", e);
+                                    }
+                                }
+                                String nomSitProEmployeur = mapNameWithoutEmployerType(sitPro.getNom());
+                                String nomEmployeur = mapNameWithoutEmployerType(employeur.getNom());
+                                if (idAffilie.equals(sitPro.getIdAffilie())
+                                        && idTiers.equals(sitPro.getIdTiers())
+                                        && nomEmployeur.equals(nomSitProEmployeur)) {
+                                    FWCurrency taux = new FWCurrency(periodeRepartitionEmployeur.getTauxRjmArr(), 4);
+                                    sitPro.setTauxProRata(taux);
+
+                                    // Il s'agit d'une situation profesionnelle
+                                    // créer entièrement à partir de la base de
+                                    // calcul.
+                                    // newRcSitPro on va donc y rajouter le montant
+                                    // et salaire journalier en le recalculant à
+                                    // partir
+                                    // du montant total de la prestation au prorata.
+
+                                    // Ceci est nécessaire pour le calcul du montant
+                                    // des cotisations, afin de determiner
+                                    // si la part salariale est supérieure à la part
+                                    // de l'indépendant, le cas échéant.
+                                    if ((Objects.isNull(sitPro.getSalaireJournalierNonArrondi()))
+                                            || JadeStringUtil.isBlankOrZero(sitPro.getSalaireJournalierNonArrondi()
+                                            .toString())) {
+                                        BigDecimal montant = (BigDecimal.valueOf(fCalcul.getCarteApg().getAllocTotaleCarteApg()))
+                                                .multiply(taux.getBigDecimalValue());
+
+                                        double salaireJ = PRCalcul.quotient(montant.toString(),
+                                                String.valueOf(fCalcul.getCarteApg().getSommeJoursService()));
+                                        sitPro.setMontant(new FWCurrency(montant.toString()));
+                                        sitPro.setSalaireJournalierNonArrondi(new FWCurrency(salaireJ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

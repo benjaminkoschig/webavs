@@ -13,7 +13,7 @@ public class EBTreatPucsFileProtocoleContainer {
     private PucsFileMerge file;
     private String message;
     private String affilie;
-    private boolean erreur;
+    private String statut;
 
     @Column(name = "BATCH_PROTOCOLE_COL_NOM_FICHIER", order = 1)
     @ColumnStyle(align = Align.LEFT)
@@ -24,7 +24,7 @@ public class EBTreatPucsFileProtocoleContainer {
     @Column(name = "BATCH_PROTOCOLE_COL_STATUT", order = 2)
     @ColumnStyle(align = Align.LEFT)
     public String getStatut() {
-        return erreur ? "KO": "OK";
+        return statut;
     }
 
     @Column(name = "BATCH_PROTOCOLE_COL_AFFILIE", order = 3)

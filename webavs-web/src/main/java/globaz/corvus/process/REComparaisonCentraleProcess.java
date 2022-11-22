@@ -196,6 +196,7 @@ public class REComparaisonCentraleProcess extends BProcess {
                     ann51_01Ad.setMntRenteOrdRemplacee(ann51_02.getMntRenteOrdinaireRempl());
                     ann51_01Ad.setAncienMontantMensuel(ann51_03.getAncienMontantMensuel());
                     ann51_01Ad.setFractionRente(ann51_03.getFractionRente());
+                    ann51_01Ad.setQuotiteRente(ann51_03.getQuotite());
 
                     listAnnonces.clear();
                     listAnnonces.add(ann51_01Ad);
@@ -219,6 +220,7 @@ public class REComparaisonCentraleProcess extends BProcess {
                     ann53_01Ad.setMntReducAnticipation(ann53_02.getReductionAnticipation());
                     ann53_01Ad.setAncienMontantMensuel(ann53_03.getAncienMontantMensuel());
                     ann53_01Ad.setFractionRente(ann53_03.getFractionRente());
+                    ann53_01Ad.setQuotiteRente(ann53_03.getQuotite());
 
                     listAnnonces.clear();
                     listAnnonces.add(ann53_01Ad);

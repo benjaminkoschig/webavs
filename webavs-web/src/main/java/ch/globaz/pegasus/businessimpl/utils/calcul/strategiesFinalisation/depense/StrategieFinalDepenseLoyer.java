@@ -50,6 +50,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         final int nbPersonnesCalcul = (Integer) context.get(Attribut.NB_PERSONNES);
         final int nbEnfantInclus = (Integer) context.get(Attribut.NB_ENFANTS_INCLUS);
         final int nbParents = (Integer) context.get(Attribut.NB_PARENTS);
+        final boolean isFratrie = (Boolean) context.get(Attribut.IS_FRATRIE);
         final int nbPersonnesCalculSansRenteUniquement = (Integer) context.get(Attribut.NB_PERSONNES_CALCUL);
 
         final float plafondCouple = Float.parseFloat(((ControlleurVariablesMetier) context
@@ -134,7 +135,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                 donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE).addValeur(
                         forfaitFraisChauffage * prorata);
                 if (context.contains(Attribut.REFORME)) {
-                    plafond = getPlafondReforme(donnee, tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement,nbParents,nbEnfantInclus);
+                    plafond = getPlafondReforme(donnee, tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement,nbParents,nbEnfantInclus, dateDebutD, isFratrie);
                     float montantLoyerMensuel = (tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET)) / 12;
 
                     if (isFauteuilRoulant) {
@@ -188,7 +189,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
             if (context.contains(Attribut.REFORME)) {
-                plafond = getPlafondReforme(donnee, tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement, nbParents, nbEnfantInclus);
+                plafond = getPlafondReforme(donnee, tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement, nbParents, nbEnfantInclus, dateDebutD, isFratrie);
             }
         }
 
@@ -241,24 +242,10 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
     }
 
-    private float getPlafondReforme(TupleDonneeRapport donnee, TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement, int nbParents, int nbEnfantInclus) throws CalculException {
-
-        ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
-        String idLocalite = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE);
-        if (JadeStringUtil.isBlankOrZero(idLocalite)) {
-            throw new CalculException("pegasus.calcul.commune.mandatory", idLocalite);
-        }
-        loyerMaxLocaliteSearch.setForIdLocalite(idLocalite);
-        String dateDebut = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT);
-        String dateDeDebut = JadeDateUtil.getFirstDateOfMonth(dateDebut);
-        String dateDeFin = JadeDateUtil.addMonths(dateDeDebut, 1);
-        loyerMaxLocaliteSearch.setForDateDebut(dateDeDebut);
-        loyerMaxLocaliteSearch.setForDateFin(dateDeFin);
-        loyerMaxLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        loyerMaxLocaliteSearch.setForType(EPCForfaitType.LOYER.getCode().toString());
+    private float getPlafondReforme(TupleDonneeRapport donnee, TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement, int nbParents, int nbEnfantInclus, ch.globaz.common.domaine.Date dateDebutDroit, boolean isFratrie) throws CalculException {
 
         int nbPersonne;
-        if ((nbPersonnesCalculSansRenteUniquement == 1 || (nbParents == 1 && nbEnfantInclus==0) ) && nbHabitants > 1) {
+        if ((nbPersonnesCalculSansRenteUniquement == 1 || (nbParents == 1 && nbEnfantInclus==0 && !isFratrie) ) && nbHabitants > 1) {
             // Personne seule dans la famille et plusieurs personne dans l'habitat : communaute d'habitation
             nbPersonne = 0;
         } else {
@@ -266,14 +253,40 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         }
         String csType = EPCPlafondLoyer.getEnumByNbPersonne(nbPersonne).getCode();
 
-        loyerMaxLocaliteSearch.setForCsTypePrime(csType);
+        return findPlafondLoyer(dateDebutDroit, csType, donneeLoyer, donnee);
+    }
+
+    private float findPlafondLoyer(ch.globaz.common.domaine.Date dateDebutDroit, String csType, TupleDonneeRapport donneeLoyer, TupleDonneeRapport donnee) throws CalculException {
+        ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
+        String idLocalite = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE);
+        if (JadeStringUtil.isBlankOrZero(idLocalite)) {
+            throw new CalculException("pegasus.calcul.commune.mandatory", idLocalite);
+        }
+
+        // Incident Adaptation, plafond loyer se basé sur le début de la donnée financière, et non pas sur le début de la période du droit
+
+        String dateDebut = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT);
+        String dateDeDebut = dateDebutDroit.getSwissValue();
+        String dateDeFin = JadeDateUtil.addMonths(dateDeDebut, 1);
+
         try {
+            loyerMaxLocaliteSearch.setForIdLocalite(idLocalite);
+            loyerMaxLocaliteSearch.setForCsTypePrime(csType);
+            loyerMaxLocaliteSearch.setForDateDebut(dateDeDebut);
+            loyerMaxLocaliteSearch.setForDateFin(dateDeFin);
+            loyerMaxLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            loyerMaxLocaliteSearch.setForType(EPCForfaitType.LOYER.getCode().toString());
             loyerMaxLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
                     .getForfaitPrimeAssuranceMaladieLocaliteService().search(loyerMaxLocaliteSearch);
         } catch (ForfaitsPrimesAssuranceMaladieException | JadeApplicationServiceNotAvailableException | JadePersistenceException e) {
             throw new CalculException("pegasus.calcul.loyer.max.mandatory", getNpaLocalite(idLocalite),
-                    dateDebut, dateDeFin);
+                    dateDeDebut, dateDeFin);
         }
+
+        return calculMontantPlafond(loyerMaxLocaliteSearch, donneeLoyer, donnee, idLocalite, dateDebut, dateDeFin);
+    }
+
+    private float calculMontantPlafond(ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch, TupleDonneeRapport donneeLoyer, TupleDonneeRapport donnee, String idLocalite, String dateDebut, String dateDeFin) throws CalculException {
         if (loyerMaxLocaliteSearch.getSearchResults().length > 0) {
             ForfaitPrimeAssuranceMaladieLocalite plafond = (ForfaitPrimeAssuranceMaladieLocalite) loyerMaxLocaliteSearch.getSearchResults()[0];
             donneeLoyer.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE, 0.0f, plafond.getSimpleForfaitPrimesAssuranceMaladie().getIdZoneForfait()));

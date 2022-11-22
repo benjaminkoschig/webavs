@@ -283,7 +283,7 @@ public class CAOrdreVersement extends BEntity implements Serializable, APISynchr
                 getMemoryLog().logMessage("5143", null, FWMessage.ERREUR, this.getClass().getName());
             }
 
-            // Vérifier la référence BVR
+            // Vérifier la référence QR/BVR
             if (JadeStringUtil.isBlank(getReferenceBVR()) && (CAOrdreVersement.BVR.equals(getTypeVirement())
                     || CAOrdreVersement.QR.equals(getTypeVirement()))) {
                 getMemoryLog().logMessage("5144", null, FWMessage.ERREUR, this.getClass().getName());

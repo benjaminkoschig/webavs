@@ -549,6 +549,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         if (!isVersementEmployeur) {
             setIdTiersPaiementEmployeur(null);
             setIdDomainePaiementEmployeur(null);
+            setIdReferenceQR("");
         }
     }
 
@@ -1471,6 +1472,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public void setIsVersementEmployeur(Boolean boolean1) {
         if (!boolean1.equals(isVersementEmployeur)) {
             deletePrestationsRequis = true;
+            setIdReferenceQR("");
         }
 
         isVersementEmployeur = boolean1;

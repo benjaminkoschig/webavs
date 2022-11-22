@@ -570,29 +570,29 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             for (int idxEnfant = 0; idxEnfant < nbEnfants; idxEnfant++) {
                 combinaisonPersonnes.add(enfants.get(idxEnfant));
             }
-
+            context.put(Attribut.NB_ENFANTS_INCLUS, 0);
             // lance le calcul pour la combinaison
             CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
             getCalculsComparatifs().add(cc);
 
         } else {
+            int nombreEnfant = 0;
             for (int idxCC = 0; idxCC < Math.pow(2, nbEnfants); idxCC++) {
 
                 List<PersonnePCAccordee> combinaisonPersonnes = new ArrayList<PersonnePCAccordee>(parents);
-                int nombreEnfant = 0;
+
                 for (int idxEnfant = 0; idxEnfant < nbEnfants; idxEnfant++) {
                     if ((idxCC & (int) Math.pow(2, idxEnfant)) > 0) {
                         combinaisonPersonnes.add(enfants.get(idxEnfant));
                         nombreEnfant++;
                     }
                 }
-
                 context.put(Attribut.NB_ENFANTS_INCLUS, nombreEnfant);
-
                 // lance le calcul pour la combinaison
                 CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
                 getCalculsComparatifs().add(cc);
             }
+            context.put(Attribut.NB_ENFANTS_INCLUS, nombreEnfant);
         }
 
     }
@@ -614,7 +614,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 //            for(PersonnePCAccordee enfant : enfants) {
 //                combinaisonPersonnesSepare.add(enfant);
 //            }
-
+            context.put(Attribut.NB_ENFANTS_INCLUS, 0);
             CalculComparatif ccSeul = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_SEUL, combinaisonPersonnesSepare, context);
 
             // calcul par combinaison d'enfants
@@ -632,7 +632,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                         combinaisonPersonnesCommun.add(enfants.get(idxEnfant));
                     }
                 }
-
                 // lance le calcul pour la combinaison
                 CalculComparatif ccSepare = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_AVEC_ENFANTS,
                         combinaisonPersonnesSepare, context);
