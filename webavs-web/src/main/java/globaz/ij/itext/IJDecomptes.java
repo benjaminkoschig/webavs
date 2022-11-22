@@ -620,9 +620,10 @@ public class IJDecomptes extends FWIDocumentManager {
      */
     @Override
     public boolean beforePrintDocument() {
-
-        getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_IJ);
-        return true && super.beforePrintDocument();
+        if (getDocumentInfo() != null) {
+            getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_IJ);
+        }
+        return super.beforePrintDocument();
     }
 
     private String buildOrderPrintingByKey(String idAffilie, String idTiers) throws Exception {
