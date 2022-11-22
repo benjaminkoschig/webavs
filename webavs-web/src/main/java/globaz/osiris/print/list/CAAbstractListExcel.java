@@ -827,6 +827,21 @@ public abstract class CAAbstractListExcel {
     }
 
     /**
+     * droite; encadré(thin); wrap
+     *
+     *
+     * @return le style liste aligné à droite avec séparateur de milliers
+     */
+    protected HSSFCellStyle getStyleListRightWithThousandsSeparator() {
+        return addThousandsSeparator(getStyleListRight());
+    }
+
+    protected HSSFCellStyle addThousandsSeparator(HSSFCellStyle style) {
+        style.setDataFormat(wb.createDataFormat().getFormat("#,##0"));
+        return style;
+    }
+
+    /**
      * centré; gras; encadré(medium); Wrap
      * 
      * @author: sel Créé le : 20 oct. 06

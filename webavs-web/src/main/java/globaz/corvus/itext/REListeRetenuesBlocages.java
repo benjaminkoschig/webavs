@@ -838,15 +838,17 @@ public class REListeRetenuesBlocages extends FWIAbstractDocumentList {
         FWCurrency montantDejaRetenu = new FWCurrency(retenue.getMontantDejaRetenu());
         FWCurrency montantRetenuMensuel = new FWCurrency(retenue.getMontantRetenuMensuel());
         FWCurrency prochaineRetenue = null;
+        String montantRA = retenue.getRenteAccordee().getMontantPrestation();
 
         if (IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(retenue.getCsTypeRetenue())) {
-            // impot source
-            String montantRA = retenue.getRenteAccordee().getMontantPrestation();
+            if (montantRetenuMensuel.isZero()) {
+                // impot source
 
-            montantRetenuMensuel = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
-                    * (new FWCurrency(retenue.getTauxImposition())).floatValue());
-            montantRetenuMensuel.round(FWCurrency.ROUND_ENTIER);
+                montantRetenuMensuel = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
+                        * (new FWCurrency(retenue.getTauxImposition())).floatValue());
+                montantRetenuMensuel.round(FWCurrency.ROUND_ENTIER);
 
+            }
             prochaineRetenue = montantRetenuMensuel;
             montantTotalRetenue = montantRetenuMensuel;
 
@@ -873,6 +875,8 @@ public class REListeRetenuesBlocages extends FWIAbstractDocumentList {
         montantGenreRetenues.add(prochaineRetenue);
         nbGenreRetenues.add(1);
     }
+
+
 
     private void triMap(final POJO pojo) {
         String genrePrestation = pojo.getCodePrestation();

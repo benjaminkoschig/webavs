@@ -447,7 +447,7 @@ public class IJRepartitionPaiementBuilder {
         // reprends la référenceQR de la décisions si il y a en a une
         IJDecisionIJAI ijDecisionIJAI = new IJDecisionIJAI();
         ijDecisionIJAI.setIdDecision(prononce.getIdDecision());
-        ijDecisionIJAI.retrieve();
+        ijDecisionIJAI.retrieve(transaction);
         if (!ijDecisionIJAI.isNew()) {
             repartition.setIdReferenceQR(ijDecisionIJAI.getIdReferenceQR());
         }
@@ -602,7 +602,7 @@ public class IJRepartitionPaiementBuilder {
         // reprends la référenceQR de la décisions si il y a en a une
         IJDecisionIJAI ijDecisionIJAI = new IJDecisionIJAI();
         ijDecisionIJAI.setIdDecision(prononce.getIdDecision());
-        ijDecisionIJAI.retrieve();
+        ijDecisionIJAI.retrieve(transaction);
         if (!ijDecisionIJAI.isNew()) {
             repartition.setIdReferenceQR(ijDecisionIJAI.getIdReferenceQR());
         }

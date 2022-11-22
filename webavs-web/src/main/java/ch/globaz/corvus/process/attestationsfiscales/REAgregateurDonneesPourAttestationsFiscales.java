@@ -167,6 +167,7 @@ public class REAgregateurDonneesPourAttestationsFiscales {
         rente.setDateDecision(uneDonnee.getDateDecision());
         rente.setDateFinDroit(uneDonnee.getDateFinDroit());
         rente.setFractionRente(uneDonnee.getFractionRente());
+        rente.setQuotiteRente(uneDonnee.getQuotiteRente());
         rente.setIdTiersAdressePaiement(uneDonnee.getIdTiersAdressePaiement());
         rente.setIdTiersBeneficiaire(uneDonnee.getIdTiersBeneficiaire());
         rente.setIsRenteBloquee(uneDonnee.getIsPrestationBloquee());

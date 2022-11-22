@@ -448,12 +448,10 @@ function updateNatureOrdre(){
               </SELECT>
             </TD>
             <TD width="7">&nbsp;</TD>
-            <%if(TIAdressePaiement.isQRIban(viewBean.getOrReloadAdressePaiementData().getCompte())){%>
-                <TD width="100">R&eacute;f&eacute;rence QR</TD>
-                <TD colspan="2">
-                  <input type="text" name="referenceQR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
-                </TD>
-            <%}%>
+            <TD width="100">R&eacute;f&eacute;rence QR</TD>
+            <TD colspan="2">
+              <input type="text" name="referenceBVR" size="35" maxlength="27" value="<%=viewBean.getReferenceBVR()%>" <%=isDisplayUpdate?"":"readonly"%>>
+            </TD>
           </TR>
           <TR>
             <TD nowrap width="129">Bloquer le versement</TD>

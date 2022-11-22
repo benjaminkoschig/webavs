@@ -97,6 +97,7 @@ public class JadeSFtpServer {
                 connect(user, certificats);
             }
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpConnectionException(e);
         }
     }
@@ -105,6 +106,7 @@ public class JadeSFtpServer {
         try {
             connection(user, password);
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpConnectionException(e);
         }
     }
@@ -113,6 +115,7 @@ public class JadeSFtpServer {
         try {
             connection(user, certificats);
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpConnectionException(e);
         }
     }
@@ -121,6 +124,7 @@ public class JadeSFtpServer {
         try {
             connection(user, password, certificats);
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpConnectionException(e);
         }
     }
@@ -135,6 +139,7 @@ public class JadeSFtpServer {
         try {
             client.put(file, normalizePath(path));
         } catch (SftpException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#send : Unable to store file in " + protocol.toUpperCase() + " : " + e, e);
         }
     }
@@ -148,6 +153,7 @@ public class JadeSFtpServer {
             createFolder(path);
             client.put(Files.newInputStream(file.toPath()), normalizePath(path) + file.getName());
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#send : Unable to store file in " + path + " : ", e);
         }
     }
@@ -156,6 +162,7 @@ public class JadeSFtpServer {
         try {
             client.rename(normalizePath(oldFileName), normalizePath(newFileName));
         } catch (SftpException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#rename : Unable to rename the file " + oldFileName + " to " + newFileName + ": ", e);
         }
     }
@@ -167,6 +174,7 @@ public class JadeSFtpServer {
 
             return fileRetreave;
         } catch (Exception e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#retrieve : Unable to get file from ftp: ", e);
         }
     }
@@ -175,6 +183,7 @@ public class JadeSFtpServer {
         try {
             client.rm(normalizePath(path));
         } catch (SftpException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#delete : Unable to delete the file " + path + ": ", e);
         }
     }
@@ -203,6 +212,7 @@ public class JadeSFtpServer {
                     try {
                         client.mkdir(sftpPath.toString());
                     } catch (SftpException e) {
+                        LOG.error("", e);
                         throw new SFtpOperationException("JadeFtpServer#createFolder : folder can't be creating!", e);
                     }
                 }
@@ -237,6 +247,7 @@ public class JadeSFtpServer {
                 client.rmdir(normalizePath); // delete the parent directory after empty
             }
         } catch (SftpException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#deleteFolder : Remove dir is failed", e);
         }
     }
@@ -266,6 +277,7 @@ public class JadeSFtpServer {
                     .map(LsEntry::getFilename)
                     .collect(Collectors.toList());
         } catch (SftpException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("JadeFtpServer#list : Unable to list files from ftp: " + e, e);
         }
     }
@@ -383,6 +395,7 @@ public class JadeSFtpServer {
                     jsch.addIdentity(certificat, passphrase);
                 }
             } catch (JSchException e) {
+                LOG.error("", e);
                 throw new RuntimeException(e);
             }
         });
@@ -440,10 +453,13 @@ public class JadeSFtpServer {
             final DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(source);
         } catch (ParserConfigurationException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("XML Parser error: ", e);
         } catch (SAXException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("XML Error: ", e);
         } catch (IOException e) {
+            LOG.error("", e);
             throw new SFtpOperationException("IO error trying to parse source stream: ", e);
         }
 

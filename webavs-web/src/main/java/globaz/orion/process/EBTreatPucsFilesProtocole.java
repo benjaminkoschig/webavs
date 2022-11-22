@@ -1,6 +1,5 @@
 package globaz.orion.process;
 
-import ch.globaz.common.LabelCommonProvider;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.orion.business.models.pucs.PucsFileMerge;
@@ -10,6 +9,7 @@ import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.log.business.JadeBusinessMessage;
@@ -38,7 +38,24 @@ public class EBTreatPucsFilesProtocole {
         if (fileMerge.getPucsFile() != null) {
             numAffile = fileMerge.getPucsFile().getNumeroAffilie();
         }
-        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, "", numAffile, false));
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, "", numAffile, "OK"));
+    }
+
+    public void addWarnToProtocol(PucsFileMerge fileMerge, String message) {
+        String numAffile = "";
+        if (fileMerge.getPucsFile() != null) {
+            numAffile = fileMerge.getPucsFile().getNumeroAffilie();
+        }
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "WARN"));
+    }
+
+    public void addNonTraiteToProtocol(PucsFileMerge fileMerge, String message) {
+        String numAffile = "";
+        fileMerge.clearDomParser();
+        if (fileMerge.getPucsFile() != null) {
+            numAffile = fileMerge.getPucsFile().getNumeroAffilie();
+        }
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "NON TRAITE"));
     }
 
     public void addErrorToProtocol(Throwable e, String messageInfo, PucsFileMerge fileMerge) {
@@ -49,37 +66,40 @@ public class EBTreatPucsFilesProtocole {
         if (fileMerge.getPucsFile() != null) {
             numAffile += fileMerge.getPucsFile().getNumeroAffilie() + "\n";
         }
-        message += messageInfo + "\n";
-        if (JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.WARN)) {
-            JadeBusinessMessage[] messages = JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR);
-            String msg = "";
-            for (JadeBusinessMessage jadeBusinessMessage : messages) {
-                msg = msg
-                        + JadeI18n.getInstance().getMessage(session.getIdLangueISO(),
-                        jadeBusinessMessage.getMessageId()) + "\n";
-            }
-            message += LabelCommonProvider.getLabel("PROCESS_ERROR", session.getIdLangueISO()) + ": " + msg;
+        if(!JadeStringUtil.isEmpty(messageInfo)) {
+            message += messageInfo + "\n";
         } else {
-            message += session.getErrors().toString() + process.getTransaction().getErrors().toString();
-            if (e != null) {
-                message += LabelCommonProvider.getLabel("PROCESS_ERROR", session.getIdLangueISO()) + ": " + e.getMessage();
+            if (JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.WARN)) {
+                JadeBusinessMessage[] messages = JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR);
+                String msg = "";
+                for (JadeBusinessMessage jadeBusinessMessage : messages) {
+                    msg = msg
+                            + JadeI18n.getInstance().getMessage(session.getIdLangueISO(),
+                            jadeBusinessMessage.getMessageId()) + "\n";
+                }
+                message += session.getLabel("PROCESS_ERROR") + ": " + msg;
+            } else {
+                message += session.getErrors().toString() + process.getTransaction().getErrors().toString();
+                if (e != null) {
+                    message += session.getLabel("PROCESS_ERROR") + ": " + e.getMessage();
+                }
             }
-        }
-        if (e != null) {
-            message += "Stack: \t " + Throwables.getStackTraceAsString(e) + "\n";
-        }
-        if (JadeThread.logHasMessagesToLevel(JadeBusinessMessageLevels.ERROR)) {
-            message += "Thread messages: "
-                    + new Gson().toJson(JadeThread.logMessagesToLevel(JadeBusinessMessageLevels.ERROR)) + "\n\n";
+            if (e != null) {
+                message += "Stack: \t " + Throwables.getStackTraceAsString(e) + "\n";
+            }
+            if (JadeThread.logHasMessagesToLevel(JadeBusinessMessageLevels.ERROR)) {
+                message += "Thread messages: "
+                        + new Gson().toJson(JadeThread.logMessagesToLevel(JadeBusinessMessageLevels.ERROR)) + "\n\n";
+            }
         }
 
-        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, true));
+        protocole.add(EBTreatPucsFileProtocoleContainer.of(fileMerge, message, numAffile, "KO"));
 
     }
 
     public void sendProtocole(String emailAdress, BProcess process) throws Exception {
         String file = buildXlsProtocole().getAbsolutePath();
-        String titre = LabelCommonProvider.getLabel(hasError ? "PROCESS_ERROR" : "PROCESS_SUCCES", session.getIdLangueISO());
+        String titre = session.getLabel(hasError ? "PROCESS_ERROR" : "PROCESS_SUCCES");
         String body = titre + " : ";
         body += session.getLabel("BATCH_PROTOCOLE_BODY");
 

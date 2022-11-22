@@ -17,6 +17,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -646,6 +647,37 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
 
     public void setReferenceQRFormattee(String referenceQRFormattee) {
         this.referenceQRFormattee = referenceQRFormattee;
+    }
+
+    public boolean hasRepartiLesCreances(String noRente) throws Exception {
+        boolean isReparti = true;
+        String idCreancier = getIdCreancier(noRente);
+
+        if (!idCreancier.equals("")) {
+            RECreanceAccordeeManager caManager = new RECreanceAccordeeManager();
+            caManager.setSession(getSession());
+            caManager.setForIdCreancier(idCreancier);
+            caManager.setForCsTypeCreancier(IRECreancier.CS_IMPOT_SOURCE);
+            caManager.find(BManager.SIZE_NOLIMIT);
+            //quand c'est réparti deux lignes sont misent dans la table RECRACC sinon y'a rien
+            if (caManager.size() == 0) {
+                isReparti = false;
+            }
+        }
+
+        return isReparti;
+    }
+    private String getIdCreancier(String noRente) throws Exception {
+        RECreancierManager creMgr = new RECreancierManager();
+        creMgr.setSession(getSession());
+        creMgr.setForCsType(IRECreancier.CS_IMPOT_SOURCE);
+        creMgr.setForIdDemandeRente(noRente);
+        creMgr.find(BManager.SIZE_NOLIMIT);
+
+        if (creMgr.size() > 0) {
+           return ((RECreancier) creMgr.get(0)).getIdCreancier();
+        }
+        return "";
     }
 
 }

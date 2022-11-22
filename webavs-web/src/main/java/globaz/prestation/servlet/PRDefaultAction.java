@@ -13,6 +13,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.helpers.PRAbstractHelper;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -167,13 +168,17 @@ public class PRDefaultAction extends FWDefaultServletAction {
             destination = (String) methode.invoke(this,
                     new Object[] { session, request, response, dispatcher, viewBean });
         } catch (Exception e) {
-            if(e.getMessage() == null){
-                viewBean.setMessage(e.getCause().getMessage());
-            }else{
-                viewBean.setMessage(e.getMessage());
-            }
+            if (viewBean != null ) {
+                if (e.getMessage() == null) {
+                    viewBean.setMessage(e.getCause().getMessage());
+                } else {
+                    viewBean.setMessage(e.getMessage());
+                }
 
-            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            } else {
+                JadeLogger.error(this, e);
+            }
         }
 
         // desactive le forward pour le cas ou la reponse a deja ete flushee

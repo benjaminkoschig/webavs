@@ -136,6 +136,7 @@ function init(){}
           <input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiers()%>">
           <input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getIdAdressePaiement()%>">
 		  <input type="hidden"  name="forCompteLike" value="<%=viewBean.getDetailNumCompteBancaire()%>">
+          <input type="hidden"  name="colonneSelection" value="yes">
           <input type="hidden"  name="hideColonneSelection" value="<%=request.getParameter("hideColonneSelection")%>"/>
 
 <%-- /tpl:put --%>

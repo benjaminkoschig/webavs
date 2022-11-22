@@ -17,11 +17,12 @@ public class REAnnonces61Mapper {
         // 2 | Code enregistrement: 01
         ann61.setCodeEnregistrement01("01");
 
+        String numeroCaisseAgence = PRConverterUtils.indentLeftWithZero(PRConverterUtils.formatIntegerToString(rrELRueckMeldungType.getELStelleZweigstelle()),6);
         // 3 | Numéro de la Caisse
-        ann61.setNumeroCaisse(PRConverterUtils.formatIntegerToString(rrELRueckMeldungType.getELStelleZweigstelle()).substring(0,3));
+        ann61.setNumeroCaisse(numeroCaisseAgence.substring(0,3));
 
         // 4 | Numéro de l'agence
-        ann61.setNumeroAgence(PRConverterUtils.formatIntegerToString(rrELRueckMeldungType.getELStelleZweigstelle()).substring(3,6));
+        ann61.setNumeroAgence(numeroCaisseAgence.substring(3,6));
 
         // 5 | Numéro de l'annonce
 //        ann61.setNumeroAnnonce(PRConverterUtils.formatLongToString(rrELRueckMeldungType.));

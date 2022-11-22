@@ -671,7 +671,7 @@ public class APGenerateurAnnonceRAPG {
     }
 
     private String getNombreEnfant(BSession session, APDroitLAPG droit, String dateDebutPrestation) throws Exception {
-        if (droit instanceof APDroitMaternite || droit instanceof APDroitPaternite || droit instanceof APDroitProcheAidant) {
+        if (droit instanceof APDroitMaternite || droit instanceof APDroitPaternite || droit instanceof APDroitProcheAidant || droit instanceof APDroitPandemie) {
             return "0";
         } else{
             APSituationFamilialeAPG situationFamilialeAPG = ((APDroitAPG) droit).loadSituationFamilliale();

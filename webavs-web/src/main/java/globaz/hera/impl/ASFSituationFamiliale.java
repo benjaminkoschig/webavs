@@ -559,7 +559,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
                             } else {
                                 List<ISFMembreFamille> recueillant = new ArrayList<>();
                                 for (SFPeriode periode : periodeMgr.<SFPeriode>toList()) {
-                                    if (!apercuRelationConjoint.getIdTiers1().equals(periode.getIdRecueillant())) {
+                                    if (!idTiers.equals(periode.getIdRecueillant())) {
                                         enfantAjoute = false;
                                     }
                                 }
