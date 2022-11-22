@@ -1130,6 +1130,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 FWCurrency totalMontantCotisation = new FWCurrency(0);
                 FWCurrency totalMontantImpotSource = new FWCurrency(0);
                 String tauxImpotSource = null;
+                setImpotSource(false);
 
                 String libelleCot = document.getTextes(3).getTexte(15).getDescription();
                 String libelleAVS = "";
@@ -1139,7 +1140,7 @@ public class IJDecomptes extends FWIDocumentManager {
                 for (int i = 0; i < ijCotMan.size(); i++) {
                     IJCotisation ijCot = (IJCotisation) ijCotMan.getEntity(i);
 
-                    if (ijCot.getIsImpotSource().booleanValue() == true) {
+                    if (ijCot.getIsImpotSource()) {
                         totalMontantImpotSource.add(ijCot.getMontant());
                         if (tauxImpotSource == null) {
                             tauxImpotSource = ijCot.getTaux();
@@ -2351,10 +2352,30 @@ public class IJDecomptes extends FWIDocumentManager {
 
             // le pied de page
             buffer.setLength(0);
-            buffer.append(document.getTextes(4).getTexte(1).getDescription());
-            if (isImpotSource()) {
-                buffer.append("\n");
-                buffer.append(document.getTextes(4).getTexte(101).getDescription());
+
+            for (Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext();) {
+                ICTTexte texte = textes.next();
+
+                if (isImpotSource() && Integer.parseInt(texte.getPosition()) == 101) {
+                    if (buffer.length() > 0) {
+                        buffer.append("\n");
+                    }
+
+                    buffer.append(texte.getDescription());
+                }
+
+                // ne pas traiter le contenu optionnel
+                if (Integer.parseInt(texte.getPosition()) > 100) {
+                    break;
+                }
+
+                if (Integer.parseInt(texte.getPosition()) == 1) {
+                    if (buffer.length() > 0) {
+                        buffer.append("\n");
+                    }
+
+                    buffer.append(texte.getDescription());
+                }
             }
 
             parametres.put("PARAM_PIED", buffer.toString());
