@@ -331,6 +331,19 @@ public class EBTreatPucsFiles extends BProcess {
             String workDir = Jade.getInstance().getHomeDir() + "work/";
             List<PucsFileMerge> listPucsFile = PucsFileMerge.build(pucsEntrys, pucsToMerge, workDir);
             List<PucsFile> mergedPucsFiles = new ArrayList<>();
+
+            if (getIsBatch()) {
+                pucsBatchController.setSession(getSession());
+                List <PucsFileMerge> controlListPucsFile = new ArrayList<>(listPucsFile);
+                for(PucsFileMerge pucsFileMerge : controlListPucsFile) {
+                    if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, controlListPucsFile)) {
+                        String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFileMerge.getPucsFile().getNumeroAffilie();
+                        protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
+                        listPucsFile.remove(pucsFileMerge);
+                    }
+                }
+            }
+
             for (PucsFileMerge pucsFileMerge : listPucsFile) {
                 clearErrorsWarning();
                 boolean exceptionAppend = false;
@@ -384,13 +397,6 @@ public class EBTreatPucsFiles extends BProcess {
                         if (pucsBatchController.nomAffiliePucsFilePasEgalNomAffilieTiers(pucsFile.getNomAffilie(), aff.getTiersNom())) {
                             String msg = String.format(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_NOM_AFFILIATION_DIFFERENT"), pucsFile.getNomAffilie(), aff.getTiersNom()) + " " + pucsFile.getNumeroAffilie();
                             protocole.addWarnToProtocol(pucsFileMerge, msg);
-                        }
-                        if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
-                            moveFile = false;
-                            hasError = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_DECLARATION_IDENTIQUE_TOTAL_DIFFERENT") + " " + pucsFile.getNumeroAffilie();
-                            protocole.addNonTraiteToProtocol(pucsFileMerge, msg);
-                            continue;
                         }
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalIdentique(pucsFile, mergedPucsFiles)) {
                             moveFile = false;
