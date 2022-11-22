@@ -216,6 +216,7 @@ public class CAFormatVersementISO extends CAOrdreFormateur {
             AccountIdentification4ChoiceCH id = factory.createAccountIdentification4ChoiceCH();
             if(isQR){
                 id.setIBAN(CASepaOVConverterUtils.getCbtrIBAN(ov));
+                id.setOthr(CASepaOVConverterUtils.getCbtrNotIBAN(ov));
             } else if (isBVR) {
                 try {
                     id.setOthr(CASepaOVConverterUtils.getNumAdherentBVR(adpf));
