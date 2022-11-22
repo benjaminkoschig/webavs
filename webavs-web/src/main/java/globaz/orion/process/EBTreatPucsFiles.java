@@ -381,6 +381,10 @@ public class EBTreatPucsFiles extends BProcess {
                     // Si isBatch le lancement vient du cron/batch et on effectue des contrôles additionels
                     if (getIsBatch()) {
                         pucsBatchController.setSession(getSession());
+                        if (pucsBatchController.nomAffiliePucsFilePasEgalNomAffilieTiers(pucsFile.getNomAffilie(), aff.getTiersNom())) {
+                            String msg = String.format(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_NOM_AFFILIATION_DIFFERENT"), pucsFile.getNomAffilie(), aff.getTiersNom()) + " " + pucsFile.getNumeroAffilie();
+                            protocole.addWarnToProtocol(pucsFileMerge, msg);
+                        }
                         if (pucsBatchController.contientDeclarationAvecAnneDeclarationEtTotalDifferent(pucsFileMerge, listPucsFile)) {
                             moveFile = false;
                             hasError = false;
@@ -435,10 +439,6 @@ public class EBTreatPucsFiles extends BProcess {
                             handleOnError(emailAdress, null, this, msg, pucsFileMerge);
                             hasError = true;
                             continue;
-                        }
-                        if (pucsBatchController.nomAffiliePucsFilePasEgalNomAffilieTiers(pucsFile.getNomAffilie(), aff.getTiersNom())) {
-                            String msg = String.format(getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_NOM_AFFILIATION_DIFFERENT"), pucsFile.getNomAffilie(), aff.getTiersNom()) + " " + pucsFile.getNumeroAffilie();
-                            protocole.addWarnToProtocol(pucsFileMerge, msg);
                         }
                     }
 
