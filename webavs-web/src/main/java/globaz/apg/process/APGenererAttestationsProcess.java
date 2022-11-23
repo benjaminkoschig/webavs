@@ -596,7 +596,7 @@ public class APGenererAttestationsProcess extends BProcess {
                     }
 
                     // set le flag isHasCopyFisc pour les documents original et pour la copie
-                        ai.setIsHasCopyFisc(true);
+                    ai.setIsHasCopyFisc(true);
                 }
             }
         } catch (Exception e) {
