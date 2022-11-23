@@ -944,11 +944,11 @@ public class IJAttestations extends FWIDocumentManager {
 
             for (Iterator iterator = list.iterator(); iterator.hasNext();) {
                 AttestationsInfos ai = (AttestationsInfos) iterator.next();
-
                 setIdBaseInd(ai.idBaseInd);
                 setIdTiers(ai.idTiers);
-                setCantonAttestationCopyFisc(ai.getCanton());
-
+                if(ai.isHasCopyFisc()) {
+                    setCantonAttestationCopyFisc(ai.getCanton());
+                }
             }
 
             setEMailAddress(getEMailAddress());
