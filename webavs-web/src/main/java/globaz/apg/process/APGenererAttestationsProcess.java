@@ -347,12 +347,12 @@ public class APGenererAttestationsProcess extends BProcess {
                     if (!map.containsKey(k)) {
 
                         // crée une attestation dans la map pour les attestations
-                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false,hasImpotSource);
+                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false, hasImpotSource);
 
                     } else { // si la clé existe déjà
 
                         // ajoute une attestation dans la map pour les attestations
-                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false,hasImpotSource );
+                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false, hasImpotSource);
 
                     }
 
@@ -362,12 +362,12 @@ public class APGenererAttestationsProcess extends BProcess {
                         if (!mapFisc.containsKey(k)) {
 
                             // crée une copie d'attestation dans la map pour les copies d'attestations au fisc
-                            createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true,hasImpotSource);
+                            createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true, hasImpotSource);
 
                         } else { // si la clé existe déjà
 
                             // ajoute une copie d'attestation dans la map pour les copies d'attestations au fisc
-                            putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true,hasImpotSource );
+                            putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true, hasImpotSource);
 
                         }
                     }
@@ -415,7 +415,7 @@ public class APGenererAttestationsProcess extends BProcess {
         boolean foundOneImpotSource = false;
         for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
             for (AttestationsInfos attestationsInfos : entry.getValue()) {
-                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc() && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc()) {
                     foundOneImpotSource = true;
                     break;
                 }
@@ -462,7 +462,7 @@ public class APGenererAttestationsProcess extends BProcess {
         return mapFiscByCanton;
     }
 
-    private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean impotSource) throws JAException {
+    private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean hasImpotSource) throws JAException {
         // On crée un objet
         AttestationsInfos ai = new AttestationsInfos();
 
@@ -479,7 +479,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 .toString()));
         ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
-        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai,impotSource );
+        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai, hasImpotSource);
 
         ai.idsRPVentilations = idsVentilation;
         // Comme la clé est inexistante, on crée la liste
@@ -491,7 +491,7 @@ public class APGenererAttestationsProcess extends BProcess {
         map.put(k, list);
     }
 
-    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean impotSource) throws JAException {
+    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean hasImpotSource) throws JAException {
         // On récupère la liste
         ArrayList list = (ArrayList) map.get(k);
 
@@ -535,7 +535,7 @@ public class APGenererAttestationsProcess extends BProcess {
                         .toString()));
                 ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
-                initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai, impotSource );
+                initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai, hasImpotSource);
 
                 // Pas besoin de l'ajouter dans la liste, car
                 // modifié en temps réel !
@@ -565,19 +565,19 @@ public class APGenererAttestationsProcess extends BProcess {
             ai1.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
             ai1.idsRPVentilations = idsVentilation;
 
-            initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai1,impotSource );
+            initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai1,hasImpotSource );
 
             list.add(ai1);
         }
     }
 
-    private void initCopyFisc(APPrestation prest, FWCurrency totalMontantImpotSource, boolean isCopyFisc, AttestationsInfos ai, boolean impotSource) {
+    private void initCopyFisc(APPrestation prest, FWCurrency totalMontantImpotSource, boolean isCopyFisc, AttestationsInfos ai, boolean hasImpotSource) {
         try {
             if (isPrestationLapat(prest) || (isPrestationAPG(prest) || isPrestationPandemie(prest) || isPrestationAmat(prest) || isPrestationLapai(prest))) {
 
                 APDroitLAPG droit = APGUtils.loadDroit(getSession(), getTransaction(), prest.getIdDroit(), rechercheTypeDroit(prest));
 
-                if (droit.getIsSoumisImpotSource() || (isPrestationLapat(prest) && impotSource)) {
+                if (droit.getIsSoumisImpotSource() || (isPrestationLapat(prest) && hasImpotSource)) {
 
                     // cherche le canton impôt source de l'attestation d'imposition
                     String canton = searchCantonImpotSourceCascade(droit, prest);

@@ -241,8 +241,8 @@ public class IJGenererAttestationsProcess extends BProcess {
         int nbRep = 0;
 
         while ((repPres = (IJRepartitionJointPrestation) (mgr.cursorReadNext(statement))) != null) {
-
             nbRep++;
+
             // Reprendre chaque répartition
             IJRepartitionPaiements rep = new IJRepartitionPaiements();
             rep.setIdRepartitionPaiement(repPres.getIdRepartitionPaiement());
