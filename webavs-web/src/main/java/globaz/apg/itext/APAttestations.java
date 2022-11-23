@@ -1028,8 +1028,9 @@ public class APAttestations extends FWIDocumentManager {
                 AttestationsInfos ai = (AttestationsInfos) iterator.next();
 
                 setIdTiers(ai.idTiers);
-                setCantonAttestationCopyFisc(ai.getCanton());
-
+                if(ai.isHasCopyFisc()) {
+                    setCantonAttestationCopyFisc(ai.getCanton());
+                }
             }
 
             setEMailAddress(getEMailAddress());
