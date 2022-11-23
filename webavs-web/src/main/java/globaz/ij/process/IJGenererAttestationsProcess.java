@@ -243,7 +243,6 @@ public class IJGenererAttestationsProcess extends BProcess {
         while ((repPres = (IJRepartitionJointPrestation) (mgr.cursorReadNext(statement))) != null) {
 
             nbRep++;
-
             // Reprendre chaque répartition
             IJRepartitionPaiements rep = new IJRepartitionPaiements();
             rep.setIdRepartitionPaiement(repPres.getIdRepartitionPaiement());
@@ -261,7 +260,7 @@ public class IJGenererAttestationsProcess extends BProcess {
             // independant)
             if (JadeStringUtil.isIntegerEmpty(rep.getIdParent())
                     && (IIJRepartitionPaiements.CS_PAIEMENT_DIRECT.equals(rep.getTypePaiement()) || IIJPrononce.CS_INDEPENDANT
-                            .equals(prononceLocal.getCsStatutProfessionnel()))) {
+                    .equals(prononceLocal.getCsStatutProfessionnel()))) {
 
                 montantTotal = rep.getMontantRestant();
                 totalMontantIJ = rep.getMontantBrut();
@@ -284,7 +283,7 @@ public class IJGenererAttestationsProcess extends BProcess {
                 /*
                  * IJBaseIndemnisation bi = new IJBaseIndemnisation(); bi.setSession(getSession());
                  * bi.setIdBaseIndemisation(prest.getIdBaseIndemnisation()); bi.retrieve(getTransaction());
-                 * 
+                 *
                  * boolean isVentilationATraiter = true; //On ne traite pas les ventilations pour des bases
                  * d'indemnistations annulées !!! if (IIJBaseIndemnisation.CS_ANNULE.equals(bi.getCsEtat())) { continue;
                  * //isVentilationATraiter = false; }
@@ -316,7 +315,7 @@ public class IJGenererAttestationsProcess extends BProcess {
                 FWCurrency totalMontantCotisations = new FWCurrency();
                 FWCurrency totalMontantImpotSource = new FWCurrency();
 
-                for (Iterator iterator = cotMan.iterator(); iterator.hasNext();) {
+                for (Iterator iterator = cotMan.iterator(); iterator.hasNext(); ) {
                     IJCotisation cot = (IJCotisation) iterator.next();
 
                     if (cot.getIsImpotSource().booleanValue()) {
@@ -337,8 +336,8 @@ public class IJGenererAttestationsProcess extends BProcess {
                 if (((Double.parseDouble(totalMontantIJ) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
                         .isZero())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
-                                .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
-                                .isPositive())))) {
+                        .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
+                        .isPositive())))) {
 
                     // Création de la clé
                     Key k = new Key();
@@ -393,7 +392,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         mapFisc.entrySet().removeIf(entry -> (!findOneImpotSourceForTiers(mapFisc, entry.getKey().idTiers)));
 
         // génère les attestations originales
-        createAttestation(annee, dateDebut, dateFin, map, false, isImpotSource(prononce));
+        createAttestation(annee, dateDebut, dateFin, map, false);
 
         // si il y a des copies d'attestations à générer
         if (!mapFisc.isEmpty()) {
@@ -403,15 +402,11 @@ public class IJGenererAttestationsProcess extends BProcess {
 
             // génère les copies d'attestations regroupées par canton (cas avec impôt source)
             for (Map.Entry<String, LinkedHashMap<Key, ArrayList<AttestationsInfos>>> entry : mapFiscRegroupedByCanton.entrySet()) {
-                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true,isImpotSource(prononce) );
+                createAttestation(annee, dateDebut, dateFin, entry.getValue(), true);
             }
         }
 
         return true;
-    }
-
-    public boolean isImpotSource(IJPrononce prononce) {
-        return prononce == null ? false : prononce.getSoumisImpotSource();
     }
 
     private boolean findOneImpotSourceForTiers(Map<Key, ArrayList<AttestationsInfos>> mapFisc, String idTiers) {
@@ -590,7 +585,7 @@ public class IJGenererAttestationsProcess extends BProcess {
                             ai.setIsAddLettreEntete(true);
                         }
                     }
-//                     set le flag isHasCopyFisc pour les documents original et pour la copie
+                    //set le flag isHasCopyFisc pour les documents original et pour la copie
                     ai.setIsHasCopyFisc(true);
                 }
             }
@@ -643,7 +638,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         return (Double.parseDouble(totalMontantIJ) != 0) && (IIJPrestation.CS_NORMAL.equals(prest.getCsType()) || IIJPrestation.CS_RESTITUTION.equals(prest.getCsType()));
     }
 
-    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy, boolean impotSource) throws Exception {
+    private void createAttestation(String annee, String dateDebut, String dateFin, Map map, boolean isAttestationCopy) throws Exception {
         IJAttestations attestations = new IJAttestations(getSession());
         attestations.setAttestationsMap(map);
         attestations.setDateDebut(dateDebut);
@@ -654,7 +649,6 @@ public class IJGenererAttestationsProcess extends BProcess {
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setIsGenerationUnique(isGenerationUnique);
         attestations.setAttestationCopy(isAttestationCopy);
-        attestations.setImpotSource(impotSource);
         attestations.executeProcess();
     }
 

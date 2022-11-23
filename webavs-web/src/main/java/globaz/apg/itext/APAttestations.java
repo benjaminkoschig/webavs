@@ -425,7 +425,7 @@ public class APAttestations extends FWIDocumentManager {
             // le "détail"
             // --------------------------------------------------------------------------------------
 
-            initCopyFisc(parametres);
+            boolean isImpotSource = initCopyFisc(parametres);
 
             buffer.setLength(0);
 
@@ -441,7 +441,7 @@ public class APAttestations extends FWIDocumentManager {
                     message.format(new Object[] { totalMontantCoti.toStringFormat() }, buffer, new FieldPosition(0))
                             .toString());
 
-            if (totalMontantImpot.doubleValue() >= 0) {
+            if (isImpotSource) {
 
                 parametres.put("PARAM_FIELD_IMPOT", document.getTextes(3).getTexte(12).toString());
 
@@ -607,7 +607,7 @@ public class APAttestations extends FWIDocumentManager {
         }
     }
 
-    private void initCopyFisc(Map parametres) throws Exception {
+    private boolean initCopyFisc(Map parametres) throws Exception {
 
         // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
         boolean isCopyFisc = false;
@@ -651,6 +651,7 @@ public class APAttestations extends FWIDocumentManager {
                 createLettreEntete(idTiersAdmFiscale, true);
             }
         }
+        return isHasCopyFisc;
     }
 
     @Override

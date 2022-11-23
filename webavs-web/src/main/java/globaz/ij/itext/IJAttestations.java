@@ -379,7 +379,7 @@ public class IJAttestations extends FWIDocumentManager {
             // le "détail"
             // --------------------------------------------------------------------------------------
 
-            initCopyFisc(parametres);
+            boolean isImpotSource = initCopyFisc(parametres);
 
             buffer.setLength(0);
 
@@ -560,7 +560,7 @@ public class IJAttestations extends FWIDocumentManager {
         }
     }
 
-    private void initCopyFisc(Map parametres) throws Exception {
+    private boolean initCopyFisc(Map parametres) throws Exception {
 
         // cherche si au moins une des prestations du regroupements par tiers possède isCopyFisc hasCopyFisc ou isAddLettreEntete
         boolean isCopyFisc = false;
@@ -604,6 +604,7 @@ public class IJAttestations extends FWIDocumentManager {
                 createLettreEntete(idTiersAdmFiscale, true);
             }
         }
+        return isHasCopyFisc;
     }
 
     @Override
@@ -1182,7 +1183,7 @@ public class IJAttestations extends FWIDocumentManager {
         try {
             return document.getTextes(niveau).getTexte(position).getDescription();
         } catch (IndexOutOfBoundsException e) {
-            getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, "APAttestations");
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, "IJAttestations");
             return "";
         }
     }
@@ -1202,12 +1203,4 @@ public class IJAttestations extends FWIDocumentManager {
     public void setCantonAttestationCopyFisc(String cantonAttestation) {
         this.cantonAttestationCopyFisc = cantonAttestation;
     }
-    public boolean isImpotSource() {
-        return isImpotSource;
-    }
-
-    public void setImpotSource(boolean impotSource) {
-        isImpotSource = impotSource;
-    }
-
 }
