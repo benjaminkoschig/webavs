@@ -464,54 +464,12 @@ public class REListeImpotSource extends FWIAbstractDocumentList {
 
             FWCurrency montantImpoSource = null;
 
-            if (!JadeStringUtil.isDecimalEmpty(retenues.getTauxImposition())) {
+            montantImpoSource = new FWCurrency(retenues.getMontantRetenuMensuel());
+
+            if (JadeStringUtil.isDecimalEmpty(retenues.getMontantRetenuMensuel())){
                 montantImpoSource = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
                         * (new FWCurrency(retenues.getTauxImposition())).floatValue());
                 montantImpoSource.round(FWCurrency.ROUND_ENTIER);
-            } else if (!JadeStringUtil.isDecimalEmpty(retenues.getMontantRetenuMensuel())) {
-
-                montantImpoSource = new FWCurrency(retenues.getMontantRetenuMensuel());
-
-            } else {
-
-                // recherche du taux
-                PRTauxImpositionManager tManager = new PRTauxImpositionManager();
-                tManager.setSession(getSession());
-                tManager.setForCsCanton(retenues.getCantonImposition());
-                tManager.setForTypeImpot(IPRTauxImposition.CS_TARIF_D);
-
-                JADate date = new JADate(retenues.getMois());
-
-                JACalendar cal = new JACalendarGregorian();
-                int last = cal.daysInMonth(date.getMonth(), date.getYear());
-
-                String mois = String.valueOf(date.getMonth());
-                if (mois.length() < 2) {
-                    mois = "0" + mois;
-                }
-
-                String dateFin = String.valueOf(last) + "." + mois + "." + date.getYear();
-                String dateDebut = "01" + "." + mois + "." + date.getYear();
-
-                tManager.setForPeriode(dateDebut, dateFin);
-
-                try {
-                    tManager.find();
-
-                    if (tManager.size() > 0) {
-                        PRTauxImposition taux = (PRTauxImposition) tManager.getFirstEntity();
-
-                        montantImpoSource = new FWCurrency((new FWCurrency(montantRA).floatValue() / 100)
-                                * (new FWCurrency(taux.getTaux())).floatValue());
-                        montantImpoSource.round(FWCurrency.ROUND_ENTIER);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    montantImpoSource = new FWCurrency("0.00");
-                }
-
-                return montantImpoSource.toString();
             }
 
             return montantImpoSource.toString();
