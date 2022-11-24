@@ -244,7 +244,6 @@ public class APGenererAttestationsProcess extends BProcess {
         int nbRep = 0;
 
         while ((repPres = (APRepartitionJointPrestation) (mgr.cursorReadNext(statement))) != null) {
-
             nbRep++;
 
             // Reprendre chaque répartition
@@ -311,12 +310,14 @@ public class APGenererAttestationsProcess extends BProcess {
 
                 FWCurrency totalMontantCotisations = new FWCurrency();
                 FWCurrency totalMontantImpotSource = new FWCurrency();
+                boolean hasImpotSource = false;
 
                 for (Iterator iterator = cotMan.iterator(); iterator.hasNext(); ) {
                     APCotisation cot = (APCotisation) iterator.next();
 
                     if (cot.getType().equals(APCotisation.TYPE_IMPOT)) {
                         totalMontantImpotSource.add(cot.getMontant());
+                        hasImpotSource = true;
                     } else {
                         totalMontantCotisations.add(cot.getMontant());
                     }
@@ -346,12 +347,12 @@ public class APGenererAttestationsProcess extends BProcess {
                     if (!map.containsKey(k)) {
 
                         // crée une attestation dans la map pour les attestations
-                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false);
+                        createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false, hasImpotSource);
 
                     } else { // si la clé existe déjà
 
                         // ajoute une attestation dans la map pour les attestations
-                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false);
+                        putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, map, false, hasImpotSource);
 
                     }
 
@@ -361,12 +362,12 @@ public class APGenererAttestationsProcess extends BProcess {
                         if (!mapFisc.containsKey(k)) {
 
                             // crée une copie d'attestation dans la map pour les copies d'attestations au fisc
-                            createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true);
+                            createAttestationInfoAndPutInMap(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true, hasImpotSource);
 
                         } else { // si la clé existe déjà
 
                             // ajoute une copie d'attestation dans la map pour les copies d'attestations au fisc
-                            putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true);
+                            putAttestationInfoInList(prest, idsVentilation, montantVentilation, totalMontantCotisations, totalMontantImpotSource, k, mapFisc, true, hasImpotSource);
 
                         }
                     }
@@ -414,7 +415,7 @@ public class APGenererAttestationsProcess extends BProcess {
         boolean foundOneImpotSource = false;
         for (Map.Entry<Key, ArrayList<AttestationsInfos>> entry : mapFisc.entrySet()) {
             for (AttestationsInfos attestationsInfos : entry.getValue()) {
-                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc() && !attestationsInfos.totalMontantImpotSource.equals(new BigDecimal(0))) {
+                if (entry.getKey().idTiers.equals(idTiers) && attestationsInfos.isHasCopyFisc()) {
                     foundOneImpotSource = true;
                     break;
                 }
@@ -461,7 +462,7 @@ public class APGenererAttestationsProcess extends BProcess {
         return mapFiscByCanton;
     }
 
-    private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
+    private void createAttestationInfoAndPutInMap(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean hasImpotSource) throws JAException {
         // On crée un objet
         AttestationsInfos ai = new AttestationsInfos();
 
@@ -478,7 +479,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 .toString()));
         ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
-        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
+        initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai, hasImpotSource);
 
         ai.idsRPVentilations = idsVentilation;
         // Comme la clé est inexistante, on crée la liste
@@ -490,7 +491,7 @@ public class APGenererAttestationsProcess extends BProcess {
         map.put(k, list);
     }
 
-    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc) throws JAException {
+    private void putAttestationInfoInList(APPrestation prest, Set idsVentilation, FWCurrency montantVentilation, FWCurrency totalMontantCotisations, FWCurrency totalMontantImpotSource, Key k, Map map, boolean isCopyFisc, boolean hasImpotSource) throws JAException {
         // On récupère la liste
         ArrayList list = (ArrayList) map.get(k);
 
@@ -534,7 +535,7 @@ public class APGenererAttestationsProcess extends BProcess {
                         .toString()));
                 ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
-                initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai);
+                initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai, hasImpotSource);
 
                 // Pas besoin de l'ajouter dans la liste, car
                 // modifié en temps réel !
@@ -564,19 +565,19 @@ public class APGenererAttestationsProcess extends BProcess {
             ai1.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
             ai1.idsRPVentilations = idsVentilation;
 
-            initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai1);
+            initCopyFisc(prest, totalMontantImpotSource, isCopyFisc, ai1,hasImpotSource );
 
             list.add(ai1);
         }
     }
 
-    private void initCopyFisc(APPrestation prest, FWCurrency totalMontantImpotSource, boolean isCopyFisc, AttestationsInfos ai) {
+    private void initCopyFisc(APPrestation prest, FWCurrency totalMontantImpotSource, boolean isCopyFisc, AttestationsInfos ai, boolean hasImpotSource) {
         try {
             if (isPrestationLapat(prest) || (isPrestationAPG(prest) || isPrestationPandemie(prest) || isPrestationAmat(prest) || isPrestationLapai(prest))) {
 
                 APDroitLAPG droit = APGUtils.loadDroit(getSession(), getTransaction(), prest.getIdDroit(), rechercheTypeDroit(prest));
 
-                if (droit.getIsSoumisImpotSource() || isPrestationLapat(prest)) {
+                if (droit.getIsSoumisImpotSource() || (isPrestationLapat(prest) && hasImpotSource)) {
 
                     // cherche le canton impôt source de l'attestation d'imposition
                     String canton = searchCantonImpotSourceCascade(droit, prest);
@@ -586,20 +587,16 @@ public class APGenererAttestationsProcess extends BProcess {
                         // set le flag isCopyFisc qui définit si le document est une copie au fisc
                         ai.setIsCopyFisc(isCopyFisc);
 
-                        if (!totalMontantImpotSource.isZero()) {
                             // évite l'envoi de lettre entete en doublon pour le même canton
                             if (!cantonsLettreEntete.contains(canton)) {
                                 cantonsLettreEntete.add(canton);
                                 // set le flag isAddLettreEntete qui déclanche la création d'une lettre d'entête
                                 ai.setIsAddLettreEntete(true);
                             }
-                        }
                     }
 
                     // set le flag isHasCopyFisc pour les documents original et pour la copie
-                    if (!totalMontantImpotSource.isZero()) {
-                        ai.setIsHasCopyFisc(true);
-                    }
+                    ai.setIsHasCopyFisc(true);
                 }
             }
         } catch (Exception e) {
