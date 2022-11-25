@@ -421,18 +421,17 @@ public class REExportationCalculAcor {
         commonRente.setGenre(PRConverterUtils.formatRequiredInteger(rente.getCodePrestation()));
         // Non mappé -> mettre false par défaut
         commonRente.setIndemniteForfaitaire(false);
-        if (StringUtils.isNotEmpty(rente.getQuotiteRente())) {
-            commonRente.setQuotite(Double.valueOf(rente.getQuotiteRente()));
-        }
+
         // 3. date début du droit
         commonRente.setDebutDroit(Dates.toXMLGregorianCalendar(rente.getDateDebutDroit(), "MM.yyyy"));
+
         // 4. fraction
-        LocalDate dateDebutDroit = Dates.toDate("01." + rente.getDateDebutDroit());
-        LocalDate dateMaxFraction = Dates.toDate("01.01.2022");
-        // si la date de début du droit est avant le 01.01.2022 alors la fraction s'affiche
-        if (dateDebutDroit.isBefore(dateMaxFraction)) {
+        if (!JadeStringUtil.isBlankOrZero(rente.getQuotiteRente())) {
+            commonRente.setQuotite(Double.valueOf(rente.getQuotiteRente()));
+        } else {
             commonRente.setFraction(FractionRente.getValueFromConst((rente.getFractionRente())));
         }
+
         // 5. date fin du droit
         XMLGregorianCalendar dateFinDroit = Dates.toXMLGregorianCalendar(rente.getDateFinDroit(), "MM.yyyy");
         if (Objects.nonNull(dateFinDroit)) {
