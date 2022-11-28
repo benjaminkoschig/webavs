@@ -69,7 +69,7 @@ public class GFFormulaireModel extends JadeSimpleModel {
 
         if (JadeStringUtil.isBlank(subType)) {
             result.addError("subType", ValidationError.MANDATORY);
-        } else if (!Strings.match(type, subTypePattern)) {
+        } else if (!Strings.match(subType, subTypePattern)) {
             result.addError("subType", ValidationError.MALFORMED);
         }
 
