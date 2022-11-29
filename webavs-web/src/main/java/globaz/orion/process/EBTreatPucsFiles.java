@@ -430,14 +430,6 @@ public class EBTreatPucsFiles extends BProcess {
                             hasError = true;
                             continue;
                         }
-                        if (pucsBatchController.contientSalaireNegatif(ds.getEmployees())) {
-                            moveFile = false;
-                            String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_SALAIRE_NEGATIF") + " " + pucsFile.getNumeroAffilie();
-                            _addError(msg);
-                            handleOnError(emailAdress, null, this, msg, pucsFileMerge);
-                            hasError = true;
-                            continue;
-                        }
                         if (pucsBatchController.anneeDeclarationPasEgalPropriete(ds.getAnnee())) {
                             moveFile = false;
                             String msg = getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_ANNEE_DECLARATION") + " " + pucsFile.getNumeroAffilie();

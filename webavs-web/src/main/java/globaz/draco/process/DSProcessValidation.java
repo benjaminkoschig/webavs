@@ -125,6 +125,51 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 abort();
                 return false;
             }
+
+            /**
+             *  Controles supplemetaires
+             */
+            DSApplication app = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
+                    .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
+            DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession(), decl);
+            if(getIsBatch()) {
+                boolean errorValidationSupplementaire = false;
+                String messageError = "";
+                if (app != null && app.isValidationControlesSupplementaires()) {
+
+                    if (controlesSup.masseAFetAVScorrespondentPas()) {
+                        errorValidationSupplementaire = true;
+                        messageError+= getSession().getLabel("ERREUR_VALIDATION_MASSE_AVS_MASSE_AF") + " " + decl.getNumeroAffilie() + "\n";
+                    }
+
+                    // Vérifier que la masse PC Familles soit identique à celle de la masse AF VD
+                    if (controlesSup.massePCFamilleEtMasseAFVDNeCorrespondentPas()) {
+                        errorValidationSupplementaire = true;
+                        messageError+=getSession().getLabel("ERREUR_VALIDATION_MASSE_PC_FAMILLE_MASSE_AFVD") + " " + decl.getNumeroAffilie() + "\n";
+                    }
+
+                    // S’il y a différents cantons, les masses doivent être indiquées dans chaque assurance
+                    if (controlesSup.masseCantonPasDansAssurance()) {
+                        errorValidationSupplementaire = true;
+                        messageError+=getSession().getLabel("ERREUR_VALIDATION_ASSURANCE_CANTON") + " " + decl.getNumeroAffilie() + "\n";
+                    }
+
+                    // Le montant AC + AC2 = le montant AVS pour toutes les saisies individuelles ayant de l’AC
+                    if (controlesSup.inscriptionsMontantACetAVSneCorrespondentPas()) {
+                        errorValidationSupplementaire = true;
+                        messageError+=getSession().getLabel("ERREUR_VALIDATION_MONTANTAC_AC2_MONTANTAVS") + " " + decl.getNumeroAffilie() + "\n";
+                    }
+                }
+
+                if (app != null && controlesSup.contientPasToutesLesAssurancesRequises(app.listValidationAssurances())) {
+                    errorValidationSupplementaire = true;
+                    messageError+=getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES") + " " + decl.getNumeroAffilie() + "\n";
+                }
+                if(errorValidationSupplementaire) {
+                    return returnError(messageError);
+                }
+            }
+
             /***
              * Plausi 1-5-4-1, un décompte complémentaire ne peut être fait que si un 13 existe en compta Plausi
              * salaires différés
@@ -505,41 +550,6 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             if (decl.hasErrors() || getSession().hasErrors()) {
                 getMemoryLog().logMessage(getSession().getLabel("ERREUR_UPDATE_DECLARATION"), FWMessage.ERREUR, "");
                 return false;
-            }
-
-            /**
-             *  Controles supplemetaires
-             */
-
-            DSApplication app = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
-                    .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
-            DSProcessValidationControlesSupplementaires controlesSup = new DSProcessValidationControlesSupplementaires(getSession(), decl);
-            if(getIsBatch()) {
-                if (app != null && app.isValidationControlesSupplementaires()) {
-
-                    if (controlesSup.masseAFetAVScorrespondentPas()) {
-                        return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_AVS_MASSE_AF") + " " + decl.getNumeroAffilie());
-                    }
-
-                    // Vérifier que la masse PC Familles soit identique à celle de la masse AF VD
-                    if (controlesSup.massePCFamilleEtMasseAFVDNeCorrespondentPas()) {
-                        return returnError(getSession().getLabel("ERREUR_VALIDATION_MASSE_PC_FAMILLE_MASSE_AFVD") + " " + decl.getNumeroAffilie());
-                    }
-
-                    // S’il y a différents cantons, les masses doivent être indiquées dans chaque assurance
-                    if (controlesSup.masseCantonPasDansAssurance()) {
-                        return returnError(getSession().getLabel("ERREUR_VALIDATION_ASSURANCE_CANTON") + " " + decl.getNumeroAffilie());
-                    }
-
-                    // Le montant AC + AC2 = le montant AVS pour toutes les saisies individuelles ayant de l’AC
-                    if (controlesSup.inscriptionsMontantACetAVSneCorrespondentPas()) {
-                        return returnError(getSession().getLabel("ERREUR_VALIDATION_MONTANTAC_AC2_MONTANTAVS") + " " + decl.getNumeroAffilie());
-                    }
-                }
-
-                if (app != null && controlesSup.contientPasToutesLesAssurancesRequises(app.listValidationAssurances())) {
-                    return returnError(getSession().getLabel("ERREUR_VALIDATION_PUCS_BATCH_ASSURANCES_MANQUANTES") + " " + decl.getNumeroAffilie());
-                }
             }
 
             // ------------------------
