@@ -166,11 +166,15 @@ public class LAMatCalculateur {
                     montantLAMat = montantMax;
                 }
             } else {
+                BigDecimal montantmin = new BigDecimal("62");
+                if (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebutPrestation, "01.01.2023")) {
+                    montantmin = new BigDecimal("69");
+                }
                 // si le 80% du revenu moyen determinant est inferieur a 62 CHF,
                 // la LAMat vaut 62 CHF
-                if ((rmd80.compareTo(new BigDecimal("62")) <= 0) && !isAllocationMax) {
+                if ((rmd80.compareTo(montantmin) <= 0) && !isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("62");
+                    montantLAMat = montantmin;
 
                     // Adaptations des montants LAMat complément 14 jours dans le cas d'une extension maternité
                     // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
@@ -183,7 +187,7 @@ public class LAMatCalculateur {
                     // si le 80% du revenu moyen determinant est compris entre
                     // 62 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
-                } else if ((rmd80.compareTo(new BigDecimal("62")) > 0) && (rmd80.compareTo(montantMax) <= 0)
+                } else if ((rmd80.compareTo(montantmin) > 0) && (rmd80.compareTo(montantMax) <= 0)
                         && !isAllocationMax) {
 
                     montantLAMat = rmd80;
@@ -307,15 +311,21 @@ public class LAMatCalculateur {
                 }
             }
         } else if (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebutPrestation, "01.01.2009")) {
+            BigDecimal montantmin = new BigDecimal("62");
+            BigDecimal montantmax = new BigDecimal("196");
+            if (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebutPrestation, "01.01.2023")) {
+                montantmin = new BigDecimal("69");
+                montantmax = new BigDecimal("220");
+            }
             // si le montant journalier est inferieur a 62 CHF, on compense a
             // hauteur de 62 CHF
-            if ((mj.compareTo(new BigDecimal("62")) <= 0) && !isAllocationMax) {
+            if ((mj.compareTo(montantmin) <= 0) && !isAllocationMax) {
 
-                montantLAMat = new BigDecimal("62").subtract(mj);
+                montantLAMat = montantmin.subtract(mj);
 
                 // si le montant journalier est compris entre 62 et 196 CHF, on
                 // ne compense rien
-            } else if ((mj.compareTo(new BigDecimal("62")) > 0) && (mj.compareTo(new BigDecimal("196")) < 0)
+            } else if ((mj.compareTo(montantmin) > 0) && (mj.compareTo(montantmax) < 0)
                     && !isAllocationMax) {
 
                 montantLAMat = new BigDecimal(0);
@@ -323,7 +333,7 @@ public class LAMatCalculateur {
                 // si le montant journalier vaut 196 CHF, on calcul la
                 // compensation LAMat en fonction du
                 // 80% du revenu moyen determinant (au maximum 280)
-            } else if ((mj.compareTo(new BigDecimal("196")) >= 0) || isAllocationMax) {
+            } else if ((mj.compareTo(montantmax) >= 0) || isAllocationMax) {
 
                 // 80% du revenu moyen determinant arrondi au franc superieur,
                 // arrondi à 2 chiffres après la virgule, à 5cts près.
@@ -338,7 +348,7 @@ public class LAMatCalculateur {
                 // determinant
                 if ((rmd80.compareTo(montantMax) <= 0) && !isAllocationMax) {
 
-                    montantLAMat = rmd80.subtract(new BigDecimal("196"));
+                    montantLAMat = rmd80.subtract(montantmax);
 
                     // si le 80% du revenu moyen determinant est superieur a 280
                     // CHF,
@@ -346,7 +356,7 @@ public class LAMatCalculateur {
                     // maximum LAMat
                 } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
-                    montantLAMat = montantMax.subtract(new BigDecimal("196"));
+                    montantLAMat = montantMax.subtract(montantmax);
                 }
             }
         }
@@ -380,11 +390,9 @@ public class LAMatCalculateur {
 
             // si LAMat on additionne le revenu journalier
             if (sitPro.getHasLaMatPrestations().booleanValue()) {
-                revenuLAMat.add(APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro));
+                revenuLAMat.add(APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true));
             }
         }
-
-        revenuLAMat = new FWCurrency(JANumberFormatter.format(revenuLAMat.toString(), 1, 2, JANumberFormatter.SUP));
 
         return revenuLAMat;
     }

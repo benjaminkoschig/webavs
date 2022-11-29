@@ -2,7 +2,7 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\Workspaces_git\WebAVS\repos_webavs\webavs-web\src\main\webapp</homeDir>
+	<homeDir>D:\workspaceGit\webavs\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
@@ -68,8 +68,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>-->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
 
- <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
- <!-- 	 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl>-->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema>-->
  
 <!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
@@ -110,7 +110,10 @@
 
 <!-- BASES INTEGRATION -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_INT_TEST_GLOBAZ</defaultJdbcUrl> -->
+<!--	 		<defaultJdbcUrl>jdbc:jade:CCVD_AGRI_INT</defaultJdbcUrl>-->
+<!--	 		<defaultJdbcSchema>AGRIINT</defaultJdbcSchema>-->
+
+	<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_INT_TEST_GLOBAZ</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>AGLAINT</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_TEST</defaultJdbcUrl> -->
@@ -175,7 +178,7 @@
 	<externalHelpGlobazClientId>Globaz</externalHelpGlobazClientId>
 	<!--externalHelpGlobazUserID: ID d'utilisateur force dans le systeme d'aide externe, si necessaire-->
 	<externalHelpGlobazUserId>AVS1</externalHelpGlobazUserId>
-	<!--shareDir: rpertoire de partage pour l'upload de fichier par le client-->
+	<!--shareDir: répertoire de partage pour l'upload de fichier par le client-->
 	<sharedDir>d:\Temp</sharedDir>
 	<!-- Emplacement de la documentation webavs (AQ) -->
 	<documentationUrl>http://docavsaq.ju.globaz.ch/</documentationUrl>

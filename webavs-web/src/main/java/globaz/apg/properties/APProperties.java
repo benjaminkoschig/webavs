@@ -241,7 +241,13 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
-    };
+    },
+    ACOR_AFFICHER_VERSION_POSTE("acor.utiliser.version.poste.utilisateur","Boolean, si true, affichage du lien ACORv3"){
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },    ;
 
     private String description;
     private String propertyName;

@@ -65,6 +65,8 @@ public class AFCotisationManager extends BManager implements Serializable {
 
     private boolean withAnnuelZero = false;
 
+    private String forIdCotisation;
+
     @Override
     protected String _getFields(BStatement statement) {
         // System.out.println("appel de getfield");
@@ -411,6 +413,13 @@ public class AFCotisationManager extends BManager implements Serializable {
             sqlWhere += " MEICOT <> " + this._dbWriteNumeric(statement.getTransaction(), getNotForCotisationId());
         }
 
+        if (!JadeStringUtil.isEmpty(getForIdCotisation())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += " MEICOT = " + this._dbWriteNumeric(statement.getTransaction(), getForIdCotisation());
+        }
+
         return sqlWhere;
     }
 
@@ -739,4 +748,11 @@ public class AFCotisationManager extends BManager implements Serializable {
         this.withAnnuelZero = withAnnuelZero;
     }
 
+    public String getForIdCotisation() {
+        return forIdCotisation;
+    }
+
+    public void setForIdCotisation(String forIdCotisation) {
+        this.forIdCotisation = forIdCotisation;
+    }
 }

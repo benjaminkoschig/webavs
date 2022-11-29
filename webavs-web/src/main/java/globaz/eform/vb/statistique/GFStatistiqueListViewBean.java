@@ -102,7 +102,7 @@ public class GFStatistiqueListViewBean extends BJadePersistentObjectListViewBean
                 .map(o -> (GFFormulaireModel) o)
                 .forEach(formulaire -> statistiqueList.stream()
                         //Recherche de la statistique par le type du formulaire
-                        .filter(model -> model.getId().equals(formulaire.getSubject()))
+                        .filter(model -> model.getId().equals(GFTypeEForm.getGFTypeEForm(formulaire.getType(), formulaire.getSubType()).getCodeEForm()))
                         //Recherche de la statistique par le statut et ajout au compteur du formulaire
                         .forEach(model -> model.addStatus(GFStatusEForm.getStatusByCodeSystem(formulaire.getStatus())))
         );

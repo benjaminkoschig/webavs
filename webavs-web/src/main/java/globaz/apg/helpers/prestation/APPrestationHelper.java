@@ -2323,9 +2323,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                         "Impossible de retrouver la sit pro avec l'id [" + sitPro.getIdSituationProf() + "]");
             }
             // recherche le salaire horaire/mensuel/indépendant/versé
-            FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
-            revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP));
+            FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro, true);
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 
