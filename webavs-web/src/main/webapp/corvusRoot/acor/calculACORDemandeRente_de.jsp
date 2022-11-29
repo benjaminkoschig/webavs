@@ -365,6 +365,8 @@
     </td>
 </tr>
 <% } %>
+
+<% if (REProperties.ACOR_AFFICHER_VERSION_POSTE.getBooleanValue()) { %>
 <tr>
     <td colspan="4">
         <br/>
@@ -397,6 +399,7 @@
         </p>
     </td>
 </tr>
+<% } %>
 <% } %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <input type="button"

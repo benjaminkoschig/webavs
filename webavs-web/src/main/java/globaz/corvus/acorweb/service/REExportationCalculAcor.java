@@ -447,7 +447,7 @@ public class REExportationCalculAcor {
         commonRente.setMontant(PRConverterUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));
         // 38. année du montant du ram
         commonRente.setAnneeEtat(Dates.toXMLGregorianCalendar(rente.getAnneeMontantRAM(), "yyyy"));
-//        // 17. code cas spécial
+        // 17. code cas spécial
         if (!JadeStringUtil.isBlankOrZero((rente.getCs1()))) {
             commonRente.getCasSpecial().add(PRConverterUtils.formatRequiredShort(rente.getCs1()));
         }

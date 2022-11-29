@@ -1,3 +1,9 @@
+/**
+*
+*/
+/**
+*
+*/
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -29,6 +35,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%@ page import="globaz.globall.db.BSession" %>
 <%@ page import="globaz.ij.acorweb.ws.token.IJAcorTokenServiceImpl" %>
 <%@ page import="globaz.ij.servlet.IIJActions" %>
+<%@ page import="globaz.ij.properties.IJProperties" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -208,7 +215,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 </TR>
 <% if (viewBean.isCalculable()) { %>
 <%
-    if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
+    if (IJProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
 %>
 
 <TR>
@@ -230,7 +237,9 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 </TR>
 
 <% } %>
-
+<%
+	if (IJProperties.ACOR_AFFICHER_VERSION_POSTE.getBooleanValue()) {
+%>
 						<TR>
 
 							<TD colspan="4">
@@ -246,6 +255,7 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 							</TD>
 
 						</TR>
+<% } %>
 <% } else { %>
 <TR>
 <TD colspan="4">
