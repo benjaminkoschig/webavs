@@ -57,9 +57,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
     public final static String VALIDATION_SPY_COMPLEMENT = "validationSpyComplement";
     public final static String EXCLURE_IMPORT_LIGNE_A_ZERO = "exclure.importation.ligne.a.zero";
     public final static String COMPLEMENT_USER_VALIDATION_DS = "ValideDS";
-
     public final static String VALIDATION_CONTROLES_SUPPLEMENTAIRES = "validation.controles.supplementaires";
-
     public final static String VALIDATIONS_ASSURANCES = "validation.assurances";
     private IFormatData affileFormater = null;
     private BIApplication appMusca = null;
