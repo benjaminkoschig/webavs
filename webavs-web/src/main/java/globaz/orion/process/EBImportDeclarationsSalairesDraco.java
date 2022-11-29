@@ -11,6 +11,7 @@ import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
@@ -33,6 +34,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     public static final String IMPORT_MOTIF_DE_FIN = "import.motifdefin";
     public static final String IMPORT_PERSONNALITE_JURIDIQUE = "import.personnalitejuridique";
+    public static final String ORION_PUCS_VALIDATION_DECLARATION_BATCH = "orion.pucs.validation.declaration.validationDs.batch";
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -119,12 +121,24 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         process.setIsBatch(true);
         process.setMode("miseajour");
         process.setIdMiseEnGed(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));
-        process.setIdValidationDeLaDs(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));
+        if (isValidationDeclarationBatch()) {
+             // active la validation des Ds après l'import batch
+            process.setIdValidationDeLaDs(pucsFiles.stream().map(PucsFile::getIdDb).collect(Collectors.toList()));
+        }
         process.setPucsEntrys(pucsFiles);
         process.setSession(getSession());
         process.setPucsToMerge(new HashMap<>());
         process.setName(getSession().getLabel("DESCRIPTION_PROCESSUS_TRAITEMENT_PUCS"));
         BProcessLauncher.start(process, false);
+    }
+
+    /**
+     * Contrôle si la validation doit être lancée après la mise à jour des PUCS dans
+     * la propriété orion.pucs.validation.declaration.validationDs.batch
+     * utilisé lors du processus de mise à jour des PUCS.
+     */
+    public boolean isValidationDeclarationBatch() {
+        return "true".equals(JadePropertiesService.getInstance().getProperty(EBImportDeclarationsSalairesDraco.ORION_PUCS_VALIDATION_DECLARATION_BATCH));
     }
 
     private void sendErrorMail(String errors) throws Exception {
