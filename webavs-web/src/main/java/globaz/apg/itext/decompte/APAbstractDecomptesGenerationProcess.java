@@ -2127,7 +2127,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     // Affichage de l'impôt à la source
-                    if (impotSource) {
+                    if (impotSource && !JadeStringUtil.isBlank(tauxImpotSource)) {
                         if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())
                                 || IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())
