@@ -20,6 +20,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBDanUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
 
     public static final String IMPORT_MOTIF_DE_FIN = "import.motifdefin";
     public static final String IMPORT_PERSONNALITE_JURIDIQUE = "import.personnalitejuridique";
+    public static final String IMPORT_DECLARATION_SALAIRE = "import.declarationsalaire";
     public static final String ORION_PUCS_VALIDATION_DECLARATION_BATCH = "orion.pucs.validation.declaration.validationDs.batch";
 
     @Override
@@ -76,16 +78,19 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
         return !ebPucsFileEntity.isAfSeul()
                 && !ebPucsFileEntity.isForTest()
                 && validateAffilie(ebPucsFileEntity)
-                && validateParticularite(ebPucsFileEntity);
+                && validateParticularite(ebPucsFileEntity)
+                && validateMasseNonZero(ebPucsFileEntity);
     }
 
     private boolean validateAffilie(EBPucsFileEntity ebPucsFileEntity) {
         List<String> motifsDeFins;
         List<String> personnalitesJuridiques;
+        List<String> declarationSalaire;
         AFAffiliation aff;
         try {
             motifsDeFins = getListPropriete(IMPORT_MOTIF_DE_FIN);
             personnalitesJuridiques = getListPropriete(IMPORT_PERSONNALITE_JURIDIQUE);
+            declarationSalaire = getListPropriete(IMPORT_DECLARATION_SALAIRE);
             aff = EBDanUtils.findAffilie(getSession(), ebPucsFileEntity.getNumeroAffilie(), "31.12."
                     + ebPucsFileEntity.getAnneeDeclaration(), "01.01." + ebPucsFileEntity.getAnneeDeclaration());
         } catch (Exception e) {
@@ -96,13 +101,19 @@ public class EBImportDeclarationsSalairesDraco extends BProcess {
                 && (JadeStringUtil.isBlankOrZero(aff.getMotifFin())
                     || !motifsDeFins.contains(aff.getMotifFin()))
                 && (JadeStringUtil.isBlankOrZero(aff.getPersonnaliteJuridique())
-                    || !personnalitesJuridiques.contains(aff.getPersonnaliteJuridique()));
+                    || !personnalitesJuridiques.contains(aff.getPersonnaliteJuridique()))
+                && (JadeStringUtil.isBlankOrZero(aff.getDeclarationSalaire())
+                    || !declarationSalaire.contains(aff.getDeclarationSalaire()));
     }
 
     private List<String> getListPropriete(String proprieteName) throws Exception {
         String properties = getSession().getApplication().getProperty(proprieteName, "");
         return Arrays.stream(properties.split("[,;]+"))
                 .map(String::trim).collect(Collectors.toList());
+    }
+
+    private boolean validateMasseNonZero(EBPucsFileEntity ebPucsFileEntity) {
+        return BigDecimal.ZERO.compareTo(ebPucsFileEntity.getTotalControle()) != 0;
     }
 
     private boolean validateParticularite(EBPucsFileEntity ebPucsFileEntity) {
