@@ -33,3 +33,7 @@ INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPAR
 VALUES ('APG', 'M_MINGROS', 0, 20230101, 0.000000, 0, 0.000000, '', 69.000000, 'Montant minimum pour prestation maternite genevoise', 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY)
 VALUES ('APG','M_MAXGROS', 0, 20230101, 0.000000, 0, 0.000000, '', 329.600000, 'Montant maximum pour prestation maternite genevoise', 0, 0, to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');
+
+-- Ajout de la propriété d'affichage d'acor v3
+INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY)
+VALUES ('apg.acor.utiliser.version.poste.utilisateur', 'false', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz', to_char(current timestamp, 'YYYYMMDDHH24MISS') concat 'globaz');

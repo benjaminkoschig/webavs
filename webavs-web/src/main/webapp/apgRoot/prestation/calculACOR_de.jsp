@@ -204,6 +204,7 @@ selectedIdValue = viewBean.getIdDroit();
 						</tr>
 						<TR><TD colspan="2"><HR></TD></TR>
 						<% }%>
+						<% if (APProperties.ACOR_AFFICHER_VERSION_POSTE.getBooleanValue()) { %>
 						<TR>
 							<TD colspan="2">
 								<p>---------------------------------------------------------------------------------------------</p>
@@ -274,6 +275,7 @@ selectedIdValue = viewBean.getIdDroit();
 						<tr><td>
 							<INPUT type="button" name="btnImporter" class="btnCtrl" value="<%=viewBean.getLibelleBoutonValidate()%>">
 						</td></tr>
+						<% }%>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
