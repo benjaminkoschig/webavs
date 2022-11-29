@@ -25,7 +25,6 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.prestation.acor.PRACORConst"%>
-<%@ page import="globaz.corvus.properties.REProperties" %>
 <%@ page import="globaz.globall.db.BSession" %>
 <%@ page import="globaz.ij.acorweb.ws.token.IJAcorTokenServiceImpl" %>
 <%@ page import="globaz.ij.servlet.IIJActions" %>
