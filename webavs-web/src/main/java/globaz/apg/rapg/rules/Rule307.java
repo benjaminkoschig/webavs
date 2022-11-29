@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.apg.properties.APParameter;
 import globaz.globall.db.FWFindParameter;
 
 /**
@@ -87,17 +88,17 @@ public class Rule307 extends Rule {
 
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
-        BigDecimal montantMinime;
-
-        testDateNotEmptyAndValid(champsAnnonce.getStartOfPeriod(), "startOfPeriod");
+        BigDecimal tauxAllocationExploitationMin;
+        String dateDebut = champsAnnonce.getStartOfPeriod();
+        testDateNotEmptyAndValid(dateDebut, "startOfPeriod");
 
         try {
-            montantMinime = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
-                    "1", "APGMINALEX", champsAnnonce.getStartOfPeriod(), "", 0));
+            tauxAllocationExploitationMin = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
+                    "1", APParameter.TAUX_ALLOCATION_EXPLOITATION_MIN.getParameterName(), dateDebut, "", 0));
         } catch (Exception e) {
             throw new APRuleExecutionException(e);
         }
 
-        return check(champsAnnonce, montantMinime);
+        return check(champsAnnonce, tauxAllocationExploitationMin);
     }
 }

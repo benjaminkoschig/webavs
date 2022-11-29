@@ -128,12 +128,12 @@ public class GFFormulaireViewBean extends BJadePersistentObjectViewBean {
     }
 
     public String getCompleteSubject(BSession session) throws NotFoundException {
-        GFTypeEForm type = GFTypeEForm.getGFTypeEForm(formulaire.getSubject());
+        GFTypeEForm type = GFTypeEForm.getGFTypeEForm(formulaire.getType(), formulaire.getSubType());
         return type.getCodeEForm() + " - " + type.getDesignation(session);
     }
 
     public String getSubject() throws NotFoundException {
-        return GFTypeEForm.getGFTypeEForm(formulaire.getSubject())
+        return GFTypeEForm.getGFTypeEForm(formulaire.getType(), formulaire.getSubType())
                 .getDesignation(getSession());
     }
 

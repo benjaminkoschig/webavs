@@ -38,13 +38,18 @@ public class APSituationProfessionnelleHelper extends PRAbstractHelper {
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
+    static public FWCurrency getSalaireJournalierVerse(APSituationProfessionnelle sitPro) {
+        return getSalaireJournalierVerse(sitPro, false);
+    }
+
     /**
      * Donne le montant journalier arrondi au franc supp. correspondant a la situation professionelle
      * 
      * @param repartition
      * @return
      */
-    static public FWCurrency getSalaireJournalierVerse(APSituationProfessionnelle sitPro) {
+
+    static public FWCurrency getSalaireJournalierVerse(APSituationProfessionnelle sitPro, boolean arrondi) {
 
         FWCurrency montantJournalierVerse = null;
 
@@ -52,6 +57,9 @@ public class APSituationProfessionnelleHelper extends PRAbstractHelper {
         if (sitPro.getIsIndependant().booleanValue()) {
             BigDecimal mv = new BigDecimal(sitPro.getRevenuIndependant());
             mv = mv.divide(new BigDecimal("360"), 10, BigDecimal.ROUND_DOWN);
+            if(arrondi) {
+                mv = arrondiFrancSuperieur(mv);
+            }
             montantJournalierVerse = new FWCurrency(mv.toString());
 
         } else {
@@ -84,6 +92,10 @@ public class APSituationProfessionnelleHelper extends PRAbstractHelper {
                 // si périodicité année
                 else if (sitPro.getPeriodiciteMontantVerse().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
                     revenuIntermediaire = mv.divide(new BigDecimal("360"), 10, BigDecimal.ROUND_DOWN);
+                }
+
+                if(arrondi) {
+                    revenuIntermediaire = arrondiFrancSuperieur(revenuIntermediaire);
                 }
 
                 montantJournalierVerse = new FWCurrency(revenuIntermediaire.toString());
@@ -209,10 +221,13 @@ public class APSituationProfessionnelleHelper extends PRAbstractHelper {
                     }
                 }
 
+                if(arrondi) {
+                    revenuIntermediaire = arrondiFrancSuperieur(revenuIntermediaire);
+                }
+
                 // l'employeur ne verse qu'un pourcentage du salaire
                 if ((Float.parseFloat(sitPro.getMontantVerse()) > 0)
                         && sitPro.getIsPourcentMontantVerse().booleanValue()) {
-
                     // multiplie par le % du salaire verse
                     montantJournalierVerse = new FWCurrency(JANumberFormatter.format(
                             PRCalcul.pourcentage100(revenuIntermediaire.toString(), sitPro.getMontantVerse()), 0.05, 2,
@@ -224,6 +239,11 @@ public class APSituationProfessionnelleHelper extends PRAbstractHelper {
         }
 
         return montantJournalierVerse;
+    }
+
+    private static BigDecimal arrondiFrancSuperieur(BigDecimal revenu) {
+        return new BigDecimal(JANumberFormatter.format(revenu.toString(), 1,
+                2, JANumberFormatter.SUP));
     }
 
     /**
