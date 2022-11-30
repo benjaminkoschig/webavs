@@ -583,6 +583,9 @@ public class EBTreatPucsFiles extends BProcess {
                                 || (declaration.getDeclaration() != null && declaration.getDeclaration().hasErrors())
                                 || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors())
                                 || declaration.isImportPucsOnError();
+                        if(hasError && isBatch) {
+                            logErrorFromDeclaration(declaration, pucsFileMerge);
+                        }
                         if (!hasError && pucsFile.isAfSeul()) {
                             for (PucsFile pf : pucsFileMerge.getPucsFileToMergded()) {
                                 String filename = pf.getFilename();
@@ -626,7 +629,7 @@ public class EBTreatPucsFiles extends BProcess {
                             }
                         }
                     }
-                    if(isBatch) {
+                    if(isBatch && !hasError) {
                         protocole.addOkToProtocol(pucsFileMerge);
                     }
                 } catch (Throwable e) {
@@ -659,6 +662,17 @@ public class EBTreatPucsFiles extends BProcess {
             JadeThreadActivator.stopUsingContext(this);
         }
         return true;
+    }
+
+    private void logErrorFromDeclaration(CIDeclaration declaration, PucsFileMerge pucsFileMerge) {
+        String errors = declaration.getSession().getErrors().toString();
+        if(!JadeStringUtil.isEmpty(errors)) {
+            protocole.addErrorToProtocol(null, errors ,pucsFileMerge);
+        } else if((declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors())) {
+            protocole.addErrorToProtocol(null, declaration.getMemoryLog().getMessagesInString() ,pucsFileMerge);
+        } else {
+            protocole.addErrorToProtocol(null, getSession().getLabel("ERREUR_CONTROLE_PUCS_BATCH_ERREUR_AUTRE") ,pucsFileMerge);
+        }
     }
 
     private void clearErrorsWarning() {
