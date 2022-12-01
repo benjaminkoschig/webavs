@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public abstract class GFEFormHandler implements GFSedexhandler {
-    public static final String TYPE_FORMULAIRE = "^(\\d{3}\\.\\d{3}(?:\\.\\d)?)\\s-\\s.+$";
+    public static final String TYPE_FORMULAIRE = "^(\\d{3}\\.\\d{3}(?:\\.\\d)?)(?:\\s-\\s.+)?$";
 
     protected BSession session;
     protected GFSedexModel model;
