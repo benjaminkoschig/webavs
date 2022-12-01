@@ -159,6 +159,10 @@ public class ValidationAutomatique {
 
                 processValidation.setNotImpressionDecFinalAZero(vb.getNotImpressionDecFinalAZero());
                 processValidation.executeProcess();
+                if(declaration.getIsBatch() && session.hasErrors()) {
+                       JadeSmtpClient.getInstance().sendMail(processValidation.getEMailAddress(), processValidation.getEMailObject(), session.getErrors().toString(),
+                            new String[0]);
+                }
                 isProcessExecuted = true;
             }
             values.put("pourcentageCalcule", validationAutomatique.computePourcentage().toString());
