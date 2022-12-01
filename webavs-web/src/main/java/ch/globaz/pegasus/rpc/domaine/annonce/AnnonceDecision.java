@@ -71,7 +71,13 @@ public class AnnonceDecision {
         validFrom = decision.getDateDebut();
 
         // PLAT2-1396 - Si Décés -> decisionKind = 3
-        String dateDeces = annonce.getPcaDecision().getPca().getBeneficiaire().getDateDeces();
+        String dateDeces = "";
+        if(annonce.getPcaDecision().getPca() == null){
+             dateDeces = annonce.getPcaDecision().getDecision().getTiersBeneficiaire().getDateDeces();
+        }else{
+             dateDeces = annonce.getPcaDecision().getPca().getBeneficiaire().getDateDeces();
+        }
+
 //        if (!dateDeces.isEmpty() && isAfterAnnonce(annonce, dateDeces)) {
         if (!dateDeces.isEmpty()) {
             // Pas de droit aux PC
