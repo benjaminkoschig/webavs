@@ -143,14 +143,15 @@ public class EBillHelper {
 
     /**
      * Méthode permettant de rechercher le fichier généré durant l'impression
-     * de le retourner pour être ajouter à la facture eBill
+     * de le retourner pour être ajouter à la facture eBill et de le supprimer
+     * si nécessaire de la listes de fichiers à merger dans l'impression actuelle
      *
      * @param attachedDocuments : les fichiers généré durant l'impression
      * @param documentType : le type de document recherché
      * @param removeAttachment : définit si le fichier doit être supprimé ou non des attachment
      * @return les fichiers qui match les critères
      */
-    public List<JadePublishDocument> findAndReturnAttachedDocuments(List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
+    public List<JadePublishDocument> findReturnOrRemoveAttachedDocuments(List<JadePublishDocument> attachedDocuments, String documentType, boolean removeAttachment) {
         List<JadePublishDocument> filteredAttachedDocuments = new ArrayList<>();
         Iterator<JadePublishDocument> it = attachedDocuments.iterator();
         while (it.hasNext()) {
@@ -183,10 +184,12 @@ public class EBillHelper {
             final JadePublishDocument jadePublishDocument = it.next();
             if (entete.getIdExterneFacture().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get(CADocumentInfoHelper.SECTION_ID_EXTERNE))
                     && entete.getIdExterneRole().equals(jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentProperties().get("numero.role.formatte"))) {
-                if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
-                    filteredAttachedDocuments.add(jadePublishDocument);
-                    if (removeAttachment) {
-                        it.remove();
+                if (documentType != null) {
+                    if (jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getDocumentType().equals(documentType)) {
+                        filteredAttachedDocuments.add(jadePublishDocument);
+                        if (removeAttachment) {
+                            it.remove();
+                        }
                     }
                 } else {
                     filteredAttachedDocuments.add(jadePublishDocument);
@@ -233,8 +236,16 @@ public class EBillHelper {
         //  - eBillPrintable est sélectioné sur le plan
         if (eBillOsirisActif && plan.getEBillPrintable()) {
             if (plan.getCompteAnnexe() != null && !JadeStringUtil.isBlankOrZero(plan.getCompteAnnexe().getEBillAccountID())) {
-                List<JadePublishDocument> decisions = findAndReturnAttachedDocuments(attachedDocuments, CAILettrePlanRecouvDecision.class.getSimpleName(), false);
-                List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(y -> y.getPublishJobDefinition().getDocumentInfo().getChildren().size())).collect(Collectors.toList());
+
+                // Recherche les document de type décisions et les supprimes des attachments
+                List<JadePublishDocument> decisions = findReturnOrRemoveAttachedDocuments(attachedDocuments, CAILettrePlanRecouvDecision.class.getSimpleName(), true);
+
+                // Trie les décisions par nombre de page pour pouvoir trouver la décision déjà merge
+                List<JadePublishDocument> decisionsSorted = decisions.stream().sorted(Comparator.comparingInt(EBillHelper::getNumberOfPages).reversed()).collect(Collectors.toList());
+
+                // Supprime tous les autres documents des attachments
+                attachedDocuments.clear();
+
                 if (!decisionsSorted.isEmpty()) {
                     return decisionsSorted.get(0);
                 }
@@ -242,6 +253,10 @@ public class EBillHelper {
         }
 
         return null;
+    }
+
+    private static int getNumberOfPages(JadePublishDocument jadePublishDocument) {
+        return jadePublishDocument.getPublishJobDefinition().getDocumentInfo().getChildren().size();
     }
 
     public void ajouteCompteurEBillToMemoryLog(int factureEBill, FWMemoryLog memoryLog, JadePublishDocumentInfo docInfo, BSession session, String className) {

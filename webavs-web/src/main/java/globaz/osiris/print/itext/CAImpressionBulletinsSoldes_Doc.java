@@ -665,7 +665,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(sectionCourante.getSection(), getSession());
                 FAEnteteFacture enteteReference = eBillHelper.getEnteteFactureReference(lignes.getKey(), getSession());
                 String reference = referencesBulletinDeSoldes.get(lignes.getKey());
-                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, false);
+                List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(entete, getAttachedDocuments(), CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE, true);
 
                 if (!attachedDocuments.isEmpty()) {
                     creerFichierEBill(compteAnnexe, entete, enteteReference, lignes.getKey().getMontant(), lignes.getValue(), reference, attachedDocuments, getDateFacturationFromSection(sectionCourante.getSection()), sectionCourante.getSection(), EBillTypeDocument.BULLETIN_DE_SOLDES);
