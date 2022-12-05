@@ -276,6 +276,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             loyerMaxLocaliteSearch.setForDateFin(dateDeFin);
             loyerMaxLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
             loyerMaxLocaliteSearch.setForType(EPCForfaitType.LOYER.getCode().toString());
+            loyerMaxLocaliteSearch.setOrderKey("dateDebut");
             loyerMaxLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
                     .getForfaitPrimeAssuranceMaladieLocaliteService().search(loyerMaxLocaliteSearch);
         } catch (ForfaitsPrimesAssuranceMaladieException | JadeApplicationServiceNotAvailableException | JadePersistenceException e) {
