@@ -29,7 +29,7 @@ public class CPDonneesCalcul extends BEntity implements java.io.Serializable {
     public final static String CS_INTERET = "600012";
     public final static String CS_INTERET_MORATOIRE = "600030";
     public final static String CS_REV_20 = "600005";
-    public final static String CS_REV_50000INF = "600009";
+    public final static String CS_REV_REVENU_INF = "600009";
     public final static String CS_REV_BRUT = "600001";
     public final static String CS_REV_CI = "600021";
     public final static String CS_REV_SANS_COTISATION = "600026";
