@@ -425,7 +425,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             FAEnteteFacture entete = eBillHelper.generateEnteteFactureFictive(sectionsCouvertes.get(0), getSession()); // On se base sur la première section couvertes trouvé pour définir les informations de l'entête
             String titreSursis = String.valueOf(documentBVR.getImporter().getParametre().get("P_8"));
             String reference = documentBVR.getReferencesSursis().entrySet().stream().findFirst().get().getValue();
-            List<JadePublishDocument> attachedDocuments = eBillHelper.findAndReturnAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName(), false);
+            List<JadePublishDocument> attachedDocuments = eBillHelper.findReturnOrRemoveAttachedDocuments(getAttachedDocuments(), CAILettrePlanRecouvBVR4.class.getSimpleName(), true);
 
             // Ajoute la décision dans les attachedDocuments de la facture eBill
             ajouteDecisionToAttachedDocuments(attachedDocuments);

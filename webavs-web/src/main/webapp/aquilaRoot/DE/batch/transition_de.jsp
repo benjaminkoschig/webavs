@@ -54,6 +54,8 @@
 	}
 
 	function postInit(){
+		refreshEBillInputs();
+
 		hideRows();
 
 		// On appele la fonction qui aurait du être appelée sans le hack
@@ -91,10 +93,6 @@
 		<%} else {%>
 			$("#eBillPrintable").attr("checked", false);
 		<%}%>
-	}
-
-	function postInit(){
-		refreshEBillInputs();
 	}
 
 </script>
