@@ -135,6 +135,9 @@ public class CAProcessImpressionPlan extends BProcess {
         documentBVR.setPlanRecouvrement(plan);
         documentBVR.setCumulSolde(echeancier.getCumulSolde());
         documentBVR.setDecisionFusionnee(eBillHelper.rechercheDecisionFusionneePourEBill(plan, getSession(), getAttachedDocuments()));
+        if (documentBVR.getDecisionFusionnee() != null) {
+            setSendCompletionMail(true);
+        }
         documentBVR.setImpressionParLot(true);
         documentBVR.setTailleLot(500);
 
