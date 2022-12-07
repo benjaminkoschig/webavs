@@ -12,7 +12,6 @@ import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -823,7 +822,7 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
                 super.setParametres(
                         CPIListeDecisionParam.PARAM_FORTUNE_ARRONDIE,
                         this.getTexteDocument(acomptesNac, acompteNac, 4, 9,
-                                getDonneeCalcul().getMontant(decision.getIdDecision(), CPDonneesCalcul.CS_REV_50000INF))
+                                getDonneeCalcul().getMontant(decision.getIdDecision(), CPDonneesCalcul.CS_REV_REVENU_INF))
                                 .toString());
                 super.setParametres("L_ITEXT_ACOMPTENAC_REMARQUE",
                         this.getTexteDocument(acomptesNac, acompteNac, 4, 10, " ").toString());
@@ -918,7 +917,7 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
                 super.setParametres(
                         CPIListeDecisionParam.PARAM_FORTUNE_ARRONDIE,
                         this.getTexteDocument(decisionsNonActifTemp, decisionNonActif, 3, 4,
-                                getDonneeCalcul().getMontant(decision.getIdDecision(), CPDonneesCalcul.CS_REV_50000INF))
+                                getDonneeCalcul().getMontant(decision.getIdDecision(), CPDonneesCalcul.CS_REV_REVENU_INF))
                                 .toString());
             }
 
