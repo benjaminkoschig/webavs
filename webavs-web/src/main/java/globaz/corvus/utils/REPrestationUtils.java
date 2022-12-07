@@ -1,7 +1,6 @@
 package globaz.corvus.utils;
 
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
-import globaz.corvus.vb.decisions.REBeneficiaireInfoVO;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 
