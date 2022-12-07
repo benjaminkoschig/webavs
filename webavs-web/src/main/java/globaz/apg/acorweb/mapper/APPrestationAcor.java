@@ -121,9 +121,9 @@ public class APPrestationAcor {
             setAllocationJournalier(new FWCurrency(periodeMontantJournApgType.getAllocJourn()));
             setAllocationExploitation(new FWCurrency(periodeMontantJournApgType.getAllocJournExploitation()));
             setRevenuDeterminantMoyen(new FWCurrency(periodeMontantJournApgType.getRjm()));
-            if(!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
-                setNombreJoursSoldes(periodeMontantJournApgType.getNbJours());
-            }
+//            if(!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+//                setNombreJoursSoldes(periodeMontantJournApgType.getNbJours());
+//            }
         }else {
             setAllocationJournalier(new FWCurrency(0));
             setAllocationExploitation(new FWCurrency(0));
@@ -148,6 +148,13 @@ public class APPrestationAcor {
             if (periodeServiceApgType.getPartAssure() != null && Double.compare(periodeServiceApgType.getPartAssure(), 0.0) != 0) {
                 setVersementAssure(new FWCurrency(periodeServiceApgType.getPartAssure()));
             }
+        }else{
+            int nbJoursPeriodes = 0;
+            for (PeriodeServiceApgType periodeNbjours:
+                 fCalcul.getCarteApg().getPeriodeService()) {
+                nbJoursPeriodes += periodeNbjours.getNbJours();
+            }
+            setNombreJoursSoldes(fCalcul.getCarteApg().getSommeJoursService() - nbJoursPeriodes);
         }
     }
 
