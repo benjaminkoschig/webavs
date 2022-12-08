@@ -3,9 +3,13 @@ package globaz.eform.vb.formulaire;
 import ch.globaz.eform.business.GFEFormServiceLocator;
 import ch.globaz.eform.business.models.GFFormulaireModel;
 import ch.globaz.eform.business.search.GFFormulaireSearch;
+import ch.globaz.eform.utils.GFSessionDataContainerHelper;
+import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.vb.BJadePersistentObjectListViewBean;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+
+import javax.servlet.http.HttpSession;
 
 public class GFFormulaireListViewBean extends BJadePersistentObjectListViewBean {
 
@@ -33,6 +37,10 @@ public class GFFormulaireListViewBean extends BJadePersistentObjectListViewBean 
     public BIPersistentObject get(int idx) {
         return idx < formulaireSearch.getSize() ? new GFFormulaireViewBean(
                 (GFFormulaireModel) formulaireSearch.getSearchResults()[idx]) : new GFFormulaireViewBean();
+    }
+
+    public void putSearchModelOnSession(HttpSession session) {
+        GFSessionDataContainerHelper.putGFFormulaireSearchOnSession(session, formulaireSearch);
     }
 
     public String getByGestionnaire() {
@@ -96,7 +104,7 @@ public class GFFormulaireListViewBean extends BJadePersistentObjectListViewBean 
     }
 
     public void setLikeNss(String likeNss) {
-        formulaireSearch.setLikeNss(likeNss);
+        formulaireSearch.setLikeNss(NSUtil.unFormatAVS(likeNss));
     }
 
     public String getOrderBy() {

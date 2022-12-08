@@ -19,6 +19,7 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.properties.JadePropertiesService;
@@ -381,7 +382,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     inscriptionEBill.setAdresse1(datasTemp[index]);
                     break;
                 case ZIP:
-                    inscriptionEBill.setNpa(datasTemp[index]);
+                    if (JadeNumericUtil.isNumeric(datasTemp[index])) {
+                        inscriptionEBill.setNpa(Integer.parseInt(datasTemp[index]));
+                    }
                     break;
                 case CITY:
                     inscriptionEBill.setLocalite(datasTemp[index]);
@@ -455,7 +458,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                         inscriptionEBill.setAdresse2(datasTemp[i]);
                         break;
                     case ZIP:
-                        inscriptionEBill.setNpa(datasTemp[i]);
+                        if (JadeNumericUtil.isNumeric(datasTemp[i])) {
+                            inscriptionEBill.setNpa(Integer.parseInt(datasTemp[i]));
+                        }
                         break;
                     case CITY:
                         inscriptionEBill.setLocalite(datasTemp[i]);
