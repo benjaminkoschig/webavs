@@ -46,11 +46,11 @@
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
 		<globaz-external-xsd.version>1.2.8</globaz-external-xsd.version>
-		<ebback-api.version>9.4.0-RC1</ebback-api.version>
+		<ebback-api.version>9.4.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
-		<external-xsd.version>1.2.0-RC1</external-xsd.version>
+		<external-xsd.version>1.2.0</external-xsd.version>
 		<jackson.version>2.12.4</jackson.version>
 		<jjwt.version>0.11.2 </jjwt.version>
 
