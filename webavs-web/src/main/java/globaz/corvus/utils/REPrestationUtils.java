@@ -24,7 +24,7 @@ public class REPrestationUtils {
         String codePrestation = getCodePrestationCS(genrePrestation, fraction, quotite);
         String libelle = RENumberFormatter.codeSystemToLibelle(
                 session.getSystemCode(TYPE_CODE_GENRE, codePrestation),
-                codeIsoLangue, session);
+                codeIsoLangue.toUpperCase(), session);
         if ((Objects.equals(GENRE_500, codePrestation) || Objects.equals(GENRE_700, codePrestation))
                 && !JadeStringUtil.isEmpty(quotite)) {
             DecimalFormat dft = new DecimalFormat(PATTERN);
