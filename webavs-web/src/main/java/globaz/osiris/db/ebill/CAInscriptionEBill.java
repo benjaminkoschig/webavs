@@ -42,7 +42,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     private boolean rolePersonnel;
     private String adresse1;
     private String adresse2;
-    private String npa;
+    private int npa;
     private String localite;
     private String pays;
     private String email;
@@ -76,7 +76,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         roleParitaire = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PARITAIRE.getColNameSql());
         rolePersonnel = bStatement.dbReadBoolean(CAInscriptionEBillEnum.PERSONNEL.getColNameSql());
         adresse1 = bStatement.dbReadString(CAInscriptionEBillEnum.ADRESSE.getColNameSql());
-        npa = bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getColNameSql());
+        npa = Integer.parseInt(bStatement.dbReadNumeric(CAInscriptionEBillEnum.ZIP.getColNameSql()));
         localite = bStatement.dbReadString(CAInscriptionEBillEnum.CITY.getColNameSql());
         pays = bStatement.dbReadString(CAInscriptionEBillEnum.COUNTRY.getColNameSql());
         email = bStatement.dbReadString(CAInscriptionEBillEnum.EMAIL.getColNameSql());
@@ -130,7 +130,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         bStatement.writeField(CAInscriptionEBillEnum.ADRESSE.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getAdresse1(), "adresse1"));
         bStatement.writeField(CAInscriptionEBillEnum.ZIP.getColNameSql(),
-                this._dbWriteNumeric(bStatement.getTransaction(), getNpa(), "npa"));
+                this._dbWriteNumeric(bStatement.getTransaction(), String.valueOf(getNpa()), "npa"));
         bStatement.writeField(CAInscriptionEBillEnum.CITY.getColNameSql(),
                 this._dbWriteString(bStatement.getTransaction(), getLocalite(), "localite"));
         bStatement.writeField(CAInscriptionEBillEnum.EMAIL.getColNameSql(),
@@ -286,11 +286,11 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.statut = statut;
     }
 
-    public String getNpa() {
+    public int getNpa() {
         return npa;
     }
 
-    public void setNpa(String npa) {
+    public void setNpa(int npa) {
         this.npa = npa;
     }
 
