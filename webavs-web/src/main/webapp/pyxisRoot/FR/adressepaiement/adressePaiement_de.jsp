@@ -243,7 +243,7 @@ function isQRIban() {
 		<!-- pour copy -->
 		<INPUT type="hidden" name="mode" value="<%=((request.getParameter("mode")==null)?"":request.getParameter("mode"))%>">
 		<INPUT type="hidden" name="idAvoirPaiement" value="<%=request.getParameter("idAvoirPaiement")%>">
-		<INPUT type="hidden" name="idTiers" value="<%=request.getParameter("idTiers")%>">
+		<INPUT type="hidden" name="idTiers" value="<%=request.getParameter("idTiers") == null ? "" : request.getParameter("idTiers")%>">
 		<input type="hidden" name="oldIdAdressePaiement" value="<%=viewBean.getOldIdAdressePaiement()%>">
 		<input type="hidden" name="doSynchroAvoirPaiement" value="<%=viewBean.getDoSynchroAvoirPaiement()%>">
 	</td>
