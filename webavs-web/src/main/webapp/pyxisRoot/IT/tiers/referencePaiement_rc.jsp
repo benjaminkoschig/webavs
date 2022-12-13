@@ -31,7 +31,7 @@ usrAction = "pyxis.tiers.referencePaiement.lister";
 		</tr>
 		<tr>
 			<td align="right" style="padding-left:0.5cm">Numero di conto&nbsp;</td>
-			<td><input name="forCompteLike" type="text" readonly class="disabled" value='<%=(request.getParameter("forCompteLike")==null)?"":request.getParameter("forCompteLike") %>'/></td>
+			<td><input name="forCompteQRLike" type="text" readonly class="disabled" value='<%=(request.getParameter("forCompteQRLike")==null)?"":request.getParameter("forCompteQRLike") %>'/></td>
 
 			<td align="right" style="padding-left:0.5cm">Riferimento QR&nbsp;</td>
 			<td><input name="forReferenceQRLike" type="text"></td>

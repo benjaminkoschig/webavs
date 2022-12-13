@@ -763,11 +763,11 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 								<input type="hidden"  name="numCompteBancaire" value="<%=viewBean.getNumCompteBancaire()%>">
 								<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
-								<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+								<input type="hidden"  name="forCompteQRLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
 
 								<%
 									Object[] referencePaiementMethodsName = new Object[]{ new String[]{"setIdReferenceQRDepuisReferenceQR","getIdReferenceQR"}};
-									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+									Object[] referencePaiementParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteQRLike","forCompteQRLike"}};
 								%>
 								<ct:FWSelectorTag
 										name="referencePaiementSelector1"

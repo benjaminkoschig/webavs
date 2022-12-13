@@ -185,12 +185,12 @@ function isQRIban() {
 
 			<input type="hidden"  name="forIdTiers" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdTiers()) ? viewBean.getIdTiers() : viewBean.getIdTiersAdresse()%>">
 		    <input type="hidden"  name="forIdAdressePaiement" value="<%=!JadeStringUtil.isEmpty(viewBean.getIdAdressePaiement()) ? viewBean.getIdAdressePaiement() : viewBean.getOldIdAdressePaiement()%>">
-			<input type="hidden"  name="forCompteLike" value="<%=viewBean.getNumCompteBancaire()%>">
+			<input type="hidden"  name="forCompteQRLike" value="<%=viewBean.getNumCompteBancaire()%>">
 			<input type="hidden"  name="hideColonneSelection" value="yes">
 
 			<%
 				Object[] referencePaiementSelectionMethodsName = new Object[]{ new String[]{ }};
-				Object[] referencePaiementChercherParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+				Object[] referencePaiementChercherParams = new Object[]{ new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteQRLike","forCompteQRLike"}};
 			%>
 			<ct:FWSelectorTag
 					name="referencePaiementSelector1"
