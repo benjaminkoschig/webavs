@@ -63,7 +63,7 @@ public class RERetenuesPaiementViewBean extends RERetenuesPaiement implements FW
     private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
             new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
-            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteQRLike","forCompteQRLike"}};
 
     private String adresseFormattee = "";
     private String referenceQRFormattee = "";

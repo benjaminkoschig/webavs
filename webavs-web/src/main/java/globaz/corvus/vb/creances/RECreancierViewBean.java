@@ -59,7 +59,7 @@ public class RECreancierViewBean extends RECreancier implements FWViewBeanInterf
             new String[]{"setIdReferenceQRDepuisPyxis", "getIdReferenceQR"}};
 
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[]{
-            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteLike", "forCompteLike"}};
+            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteQRLike", "forCompteQRLike"}};
 
     private String referenceQRFormattee = "";
     private String ccpOuBanqueFormatte = "";

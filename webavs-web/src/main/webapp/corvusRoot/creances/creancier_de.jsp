@@ -251,7 +251,7 @@
                                                            value="<%=viewBean.getIdTiersAdressePmt()%>">
                 									<input type="hidden" name="forIdAdressePaiement"
                                                            value="<%=viewBean.getAdressePaiementData().getIdAdressePaiement()%>">
-                									<input type="hidden" name="forCompteLike"
+                									<input type="hidden" name="forCompteQRLike"
                                                            value="<%=viewBean.getAdressePaiementData().getCompte()%>">
 
                 									 <ct:FWSelectorTag name="selecteurReferencePaiement"

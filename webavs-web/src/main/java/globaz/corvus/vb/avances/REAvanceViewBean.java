@@ -40,7 +40,7 @@ public class REAvanceViewBean extends REAvance implements FWViewBeanInterface {
             new String[]{"setIdReferenceQRDepuisPyxis", "getIdReferenceQR"}};
 
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[]{
-            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteLike", "forCompteLike"}};
+            new String[]{"forIdTiers", "forIdTiers"}, new String[]{"forIdAdressePaiement", "forIdAdressePaiement"}, new String[]{"forCompteQRLike", "forCompteQRLike"}};
 
     private REAdressePmtUtil adressePaiement;
     private String idTiersAdressePmtDepuisPyxis;
