@@ -345,6 +345,7 @@ public abstract class REListeEcheanceDocumentGenerator extends LYAbstractListGen
         if (doAdd) {
             newEntity.setMontantPrestation(prestation.getMontantPrestation()); // doublon
             newEntity.setFractionRente(prestation.getFractionRente()); // Needed
+            newEntity.setQuotiteRente(prestation.getQuotiteRente()); // Needed
             newEntity.setIdInfoCompta(prestation.getIdInfoCompta());
         }
         if (doAdd) {
