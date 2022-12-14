@@ -232,7 +232,7 @@ public class REMiseAJourPrestProcess extends BProcess {
     }
 
     private void ajouterPrestationsNonAdaptees(final BITransaction transaction,
-            final Map<String, Object> mapPrestationsNonTrouveesCentrale2) throws Exception {
+                                               final Map<String, Object> mapPrestationsNonTrouveesCentrale2) throws Exception {
 
         RERentesAdaptees rad;
 
@@ -391,15 +391,15 @@ public class REMiseAJourPrestProcess extends BProcess {
 
         /*
          * Décisions prises en décembre
-         * 
+         *
          * - Contrôle et revalorisation de la prestation - Plafonnement - Application de la surassurance
-         * 
+         *
          * - Mise à jour des prestations
-         * 
+         *
          * Contenu de la mapPrestationsNonTrouveesCentrale : -------------------------------------------------
-         * 
+         *
          * clé = KeyRAAnnoncesAdaptation valeur = REPrestAccJointInfoComptaJointTiers
-         * 
+         *
          * Retour : -------- Cette méthode doit retournée toutes les éventuelles rentes contenues dans la map passée en
          * paramètre, mais qui n'ont pas été adaptées par cette méthode.
          */
@@ -417,7 +417,7 @@ public class REMiseAJourPrestProcess extends BProcess {
         mgr10.setForCodeAnnonce("44");
         mgr10.find(BManager.SIZE_NOLIMIT);
 
-        for (Iterator iterator = mgr10.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr10.iterator(); iterator.hasNext(); ) {
             REAnnoncesAugmentationModification10Eme ann44 = (REAnnoncesAugmentationModification10Eme) iterator.next();
 
             REAnnonceRenteManager annRenteMgr = new REAnnonceRenteManager();
@@ -435,7 +435,7 @@ public class REMiseAJourPrestProcess extends BProcess {
         mgr9.setForCodeAnnonce("41");
         mgr9.find(BManager.SIZE_NOLIMIT);
 
-        for (Iterator iterator = mgr9.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = mgr9.iterator(); iterator.hasNext(); ) {
             REAnnoncesAugmentationModification9Eme ann41 = (REAnnoncesAugmentationModification9Eme) iterator.next();
             REAnnonceRenteManager annRenteMgr = new REAnnonceRenteManager();
             annRenteMgr.setForIdAnnonceHeader(ann41.getIdAnnonce());
@@ -506,6 +506,8 @@ public class REMiseAJourPrestProcess extends BProcess {
                         PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
                                 .convertDate_MMxAAAA_to_AAAAMM(moisAnneePrecedent)));
 
+                aa.setDateMutation("01" + moisRapport);
+
                 AnnonceAbstraite aar = revalorisation.controle(aa);
 
                 // 3) Stockage des annonces révalorisées dans une map
@@ -522,7 +524,7 @@ public class REMiseAJourPrestProcess extends BProcess {
 
                     StringBuffer erreurs = new StringBuffer();
 
-                    for (Iterator iterator = aar.getErreur().getListe().keySet().iterator(); iterator.hasNext();) {
+                    for (Iterator iterator = aar.getErreur().getListe().keySet().iterator(); iterator.hasNext(); ) {
 
                         String keyError = (String) iterator.next();
                         AnnonceErreur annErreur = ((AnnonceErreur) aar.getErreur().getListe().get(keyError));
@@ -625,7 +627,7 @@ public class REMiseAJourPrestProcess extends BProcess {
                 for (int i = 0; i < aapOK.length; i++) {
                     AnnonceAbstraite aa = aapOK[i];
 
-                    for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext();) {
+                    for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext(); ) {
                         REKeyAnnoncesRevalorisees reKeyAnnoncesRevalorisees = (REKeyAnnoncesRevalorisees) iterator
                                 .next();
 
@@ -642,7 +644,7 @@ public class REMiseAJourPrestProcess extends BProcess {
                                 StringBuffer erreurs = new StringBuffer();
 
                                 for (Iterator iterator2 = aa.getErreur().getListe().keySet().iterator(); iterator2
-                                        .hasNext();) {
+                                        .hasNext(); ) {
 
                                     String keyError = (String) iterator2.next();
                                     AnnonceErreur annErreur = ((AnnonceErreur) aa.getErreur().getListe().get(keyError));
@@ -657,7 +659,7 @@ public class REMiseAJourPrestProcess extends BProcess {
 
                                 mapPrestationsNonTrouveesCentrale
                                         .get(reKeyAnnoncesRevalorisees.cleRAAnnoncesAdaptation).setRemarquesAdaptation(
-                                                erreurs.toString());
+                                        erreurs.toString());
 
                                 mapPrestationsNonTrouveesCentrale2.put(
                                         reKeyAnnoncesRevalorisees.cleRAAnnoncesAdaptation,
@@ -738,7 +740,7 @@ public class REMiseAJourPrestProcess extends BProcess {
             if (lstPrestRemove.size() > 1) {
 
                 int i = 0;
-                for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext();) {
+                for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext(); ) {
                     REKeyAnnoncesRevalorisees reKeyAnnoncesRevalorisees = (REKeyAnnoncesRevalorisees) iterator.next();
 
                     REAnnoncesCentraleKeyRA obj = annoncesRevalorisees02.get(reKeyAnnoncesRevalorisees);
@@ -793,7 +795,7 @@ public class REMiseAJourPrestProcess extends BProcess {
                 }
 
                 // Ajout des annonces dans la map des revalorisées
-                for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext();) {
+                for (Iterator iterator = lstPrestRemove.iterator(); iterator.hasNext(); ) {
                     REKeyAnnoncesRevalorisees reKeyAnnoncesRevalorisees = (REKeyAnnoncesRevalorisees) iterator.next();
 
                     REAnnoncesCentraleKeyRA value = annoncesRevalorisees02.get(reKeyAnnoncesRevalorisees);
@@ -801,7 +803,7 @@ public class REMiseAJourPrestProcess extends BProcess {
 
                         StringBuffer erreurs = new StringBuffer();
 
-                        for (Iterator iterator2 = value.getListeErreurs().keySet().iterator(); iterator2.hasNext();) {
+                        for (Iterator iterator2 = value.getListeErreurs().keySet().iterator(); iterator2.hasNext(); ) {
 
                             String keyError = (String) iterator2.next();
                             AnnonceErreur annErreur = ((AnnonceErreur) value.getListeErreurs().get(keyError));
@@ -860,12 +862,12 @@ public class REMiseAJourPrestProcess extends BProcess {
     }
 
     private void miseAjourPrestation(final BITransaction transaction,
-            final Map<String, ArrayList<Object>> mapDifferencesCentraleCaisse) throws Exception {
+                                     final Map<String, ArrayList<Object>> mapDifferencesCentraleCaisse) throws Exception {
 
         /*
          * Rechercher toutes les rentes qui sont en cours et qui ne sont pas en erreur => Pour cela, on reprend le
          * contenu de la liste des différences (liste des erreurs) qui contient toutes les rentes à mettre à jour
-         * 
+         *
          * => La clé de la map est l'id de la rente accordée
          */
 
@@ -1212,7 +1214,7 @@ public class REMiseAJourPrestProcess extends BProcess {
     }
 
     private void miseAjourPrestProgCentrale(final BITransaction transaction,
-            final Map<REKeyAnnoncesRevalorisees, REAnnoncesCentraleKeyRA> annoncesRevalorisees) throws Exception {
+                                            final Map<REKeyAnnoncesRevalorisees, REAnnoncesCentraleKeyRA> annoncesRevalorisees) throws Exception {
 
         // Stockage des changements dans la table correspondante
         RERentesAdaptees rad = null;

@@ -1,10 +1,5 @@
 package globaz.corvus.topaz;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
-
 import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -17,8 +12,7 @@ import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
-import globaz.corvus.utils.RENumberFormatter;
-import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
+import globaz.corvus.utils.REPrestationUtils;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -38,6 +32,10 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiers;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 public class REAttestationProlongationEtudeOO {
 
@@ -150,11 +148,7 @@ public class REAttestationProlongationEtudeOO {
                     REAttestationProlongationEtudeOO.CDT_BENEFICIAIRE, nomBeneficiaire);
         }
 
-        String pourRechercheCodeSysteme = getRERechercheCodeSystem(ra);
-
-        String libelle = RENumberFormatter.codeSystemToLibelle(
-                getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme),
-                codeIsoLangue, getSession());
+        String libelle = REPrestationUtils.getLibelleGenrePrestation(ra.getCodePrestation(), ra.getFractionRente(), ra.getQuotiteRente(), codeIsoLangue, getSession());
 
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_GENTREPREST,
                 libelle);
@@ -453,37 +447,6 @@ public class REAttestationProlongationEtudeOO {
             ChargementEnTeteEtSalutationLettre();
 
         }
-    }
-
-    /**
-     * Prépare la chaîne pour retrouver le code système avce .0 ou .1 ou autres fractions selon les règles analysées
-     *
-     * @param ra    Rente accordé
-     * @return      La chaîne permettant de chercher le code système
-     */
-    private String getRERechercheCodeSystem(RERenteAccJoinTblTiersJoinDemandeRente ra){
-        String pourRechercheCodeSysteme = ra.getCodePrestation();
-
-        if (Arrays.stream(REGenresPrestations.GENRE_PRESTATIONS_AI).anyMatch(genrePrestation -> genrePrestation.equals(ra.getCodePrestation()))) {
-            if (!JadeStringUtil.isEmpty(ra.getFractionRente())) {
-                pourRechercheCodeSysteme += "." + ra.getFractionRente();
-            } else if (!JadeStringUtil.isEmpty(ra.getQuotiteRente())) {
-                if (REGenresPrestations.GENRE_50.equals(ra.getCodePrestation()) || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())) {
-                    if (Float.parseFloat(ra.getQuotiteRente()) >= 0.70) {
-                        pourRechercheCodeSysteme += ".1";
-                    } else {
-                        pourRechercheCodeSysteme += ".0";
-                    }
-                } else {
-                    pourRechercheCodeSysteme += ".1";
-                }
-            } else {
-                pourRechercheCodeSysteme += ".0";
-            }
-        } else {
-            pourRechercheCodeSysteme += ".0";
-        }
-        return pourRechercheCodeSysteme;
     }
 
     public String getDateEcheance() {
