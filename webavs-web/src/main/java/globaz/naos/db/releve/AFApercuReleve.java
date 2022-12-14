@@ -1344,8 +1344,7 @@ public class AFApercuReleve extends BEntity {
                             line.getDebutPeriode());
                 } else if (CodeSystem.TYPE_RELEVE_COMPLEMENT.equals(getType())) {
                     BigDecimal masseRelevePeriodiquePrincipal = new BigDecimal(findMasseRelevePeriodiquePrincipal(line).toString());
-                    BigDecimal masseRelevePeriodiquePrincipalAnnualise = new BigDecimal(annualiserMasse(line.getDebutPeriode(), line.getFinPeriode(), masseRelevePeriodiquePrincipal.intValue()));
-                    taux = tauxVarUtil.getTaux(getSession(), masseRelevePeriodiquePrincipalAnnualise.abs().toString(),
+                    taux = tauxVarUtil.getTaux(getSession(),masseRelevePeriodiquePrincipal.abs().toString(),
                             line.getDebutPeriode());
 
                 } else {
@@ -1397,9 +1396,9 @@ public class AFApercuReleve extends BEntity {
         if (faAfactManager.size() > 0) {
             String masseFacture = ((FAAfact) faAfactManager.get(0)).getMasseFacture();
             masse = new BigDecimal(JANumberFormatter.deQuote(masseFacture));
-            return masse;
+            BigDecimal masseAnnualiser = new BigDecimal(annualiserMasse(line.getDebutPeriode(), line.getFinPeriode(), masse.intValue()));
+            return masseAnnualiser;
         }
-
         return findMasseCotisation(line);
     }
 
