@@ -52,6 +52,10 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
     private boolean isAfacForBulletinsSoldes = false;
     private java.lang.String orderBy = new String();
     private Boolean wantOnlyFileAFact = Boolean.FALSE;
+    private java.lang.String forIdExterneRole = new String();
+
+
+
 
     /**
      * Renvoie la liste des champs
@@ -317,6 +321,13 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
             }
             sqlWhere += "FAENTFP.IDEXTERNEROLE >="
                     + this._dbWriteString(statement.getTransaction(), getFromIdExterneRole());
+        }
+        if (getForIdExterneRole().length() != 0) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "FAENTFP.IDEXTERNEROLE ="
+                    + this._dbWriteString(statement.getTransaction(), getForIdExterneRole());
         }
 
         if (forAQuittancer != null) {
@@ -755,4 +766,11 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
         this.wantOnlyFileAFact = wantOnlyFileAFact;
     }
 
+    public String getForIdExterneRole() {
+        return forIdExterneRole;
+    }
+
+    public void setForIdExterneRole(String forIdExterneRole) {
+        this.forIdExterneRole = forIdExterneRole;
+    }
 }
