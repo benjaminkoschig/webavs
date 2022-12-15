@@ -1390,7 +1390,9 @@ public class AFApercuReleve extends BEntity {
         faAfactManager.setSession(getSession());
         faAfactManager.setForIdRubrique(line.getAssuranceRubriqueId());
         faAfactManager.setForDebutPeriode(jaDateDebut.toStrAMJ());
-        faAfactManager.setForIdModuleFacturation(line.getIdModFacturation());
+         faAfactManager.setForIdModuleFacturation(line.getIdModFacturation());
+        faAfactManager.setForIdExterneRole(getAffilieNumero());
+
         faAfactManager.find(BManager.SIZE_NOLIMIT);
 
         if (faAfactManager.size() > 0) {
