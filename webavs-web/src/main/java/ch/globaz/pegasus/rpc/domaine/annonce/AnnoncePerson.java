@@ -33,7 +33,7 @@ public class AnnoncePerson {
     protected PersonElementsCalcul personData;
 
     public AnnoncePerson(RpcDecisionAnnonceComplete annonce, PersonElementsCalcul personData,
-            PersonElementsCalcul requerantData) {
+            PersonElementsCalcul requerantData, boolean isPremiereAnnonceVeuvage) {
         personsElementsCalcul = annonce.getPersonsElementsCalcul();
         pcaDecision = annonce.getPcaDecision();
         this.personData = personData;
@@ -52,9 +52,9 @@ public class AnnoncePerson {
         if(ConverterPensionKind.isRentAi(personData.getTypeRenteCS()) && personData.getDegreInvalidite() != null) {
             degreeOfInvalidity = String.format("%.2f",personData.getDegreInvalidite());
         }
-        vitalNeedsCategory = annonce.resolveVitalNeedsCategory(personData, annonce.getDemande());
+        vitalNeedsCategory = annonce.resolveVitalNeedsCategory(personData, annonce.getDemande(), isPremiereAnnonceVeuvage);
         // PLAT2-1396 - le conjoint survivant aura un marital status MARIE
-        if (EtatCivil.VEUF.equals(personData.getSituationFamiliale())) {
+        if (EtatCivil.VEUF.equals(personData.getSituationFamiliale()) && isPremiereAnnonceVeuvage) {
             maritalStatus = ConverterMaritalStatus.convert(EtatCivil.MARIE);
         } else {
             maritalStatus = ConverterMaritalStatus.convert(personData.getSituationFamiliale());
