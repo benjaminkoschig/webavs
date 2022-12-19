@@ -79,11 +79,15 @@ public class RpcDecisionAnnonceComplete {
     }
 
     public RpcVitalNeedsCategory resolveVitalNeedsCategory(PersonElementsCalcul personData, Demande demande) {
-        return resolveVitalNeedsCategory(personData, pcaDecision, pcaDecisionPartner, personsElementsCalcul, demande);
+        return resolveVitalNeedsCategory(personData, pcaDecision, pcaDecisionPartner, personsElementsCalcul, demande, false);
+    }
+
+    public RpcVitalNeedsCategory resolveVitalNeedsCategory(PersonElementsCalcul personData, Demande demande, boolean isPremiereAnnonceVeuvage) {
+        return resolveVitalNeedsCategory(personData, pcaDecision, pcaDecisionPartner, personsElementsCalcul, demande, isPremiereAnnonceVeuvage);
     }
 
     private RpcVitalNeedsCategory resolveVitalNeedsCategory(PersonElementsCalcul personData, PcaDecision pcaDecision,
-            PcaDecision pcaDecisionPartner, PersonsElementsCalcul personsElementsCalcul, Demande demande) {
+            PcaDecision pcaDecisionPartner, PersonsElementsCalcul personsElementsCalcul, Demande demande, boolean isPremiereAnnonceVeuvage) {
 
         if (personData.getMembreFamille().getRoleMembreFamille().isEnfant() || demande.getIsFratrie()) {
             if (isHome(personData, pcaDecision)) {
@@ -101,16 +105,12 @@ public class RpcDecisionAnnonceComplete {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
                 // PLAT2-1396 - conjoint survivant -> COUPLE et non ALONE
-            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isVeuf(personData)) {
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null  || isPremiereAnnonceVeuvage) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;
             }
         }
-    }
-
-    private boolean isVeuf(PersonElementsCalcul personData) {
-        return EtatCivil.VEUF.equals(personData.getSituationFamiliale());
     }
 
     private boolean isHome(PersonElementsCalcul personData, PcaDecision pcaDecision) {

@@ -18,7 +18,9 @@ import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionKind;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
+import ch.globaz.pegasus.rpc.domaine.PersonsElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import globaz.apg.businessimpl.service.APAnnoncesRapgServiceV5Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,8 +162,10 @@ public class AnnonceDecision {
             }
         }
 
+        boolean isPremiereAnnonceVeuvage = controleSiPremiereAnnonceVeuvage(annonce.getPersonsElementsCalcul());
+
         for (PersonElementsCalcul personData : annonce.getPersonsElementsCalcul().getPersonsElementsCalcul()) {
-            AnnoncePerson person = new AnnoncePerson(annonce, personData, requerantData);
+            AnnoncePerson person = new AnnoncePerson(annonce, personData, requerantData, isPremiereAnnonceVeuvage);
 
             if (personData.equals(requerantData)) {
                 personRequerant = person;
@@ -174,7 +178,31 @@ public class AnnonceDecision {
             persons.add(person);
         }      
     }
-    
+
+    /**
+     * PI-051 - Annonce veuvage - Contrôle si l'on annonce un veuvage
+     *
+     * @param personsElementsCalcul
+     * @return
+     */
+    private boolean controleSiPremiereAnnonceVeuvage(PersonsElementsCalcul personsElementsCalcul) {
+        boolean isMarie = false;
+        boolean isVeuf = false;
+        // Dans la premiere annonce veuvage, le veuf est encore annoncé avec son conjoint, on contrôle donc que l'on a un veuf et un marié dans les annonces
+        for (PersonElementsCalcul person : personsElementsCalcul.getPersonsElementsCalcul()) {
+            if (person.getMembreFamille().getRoleMembreFamille() == RoleMembreFamille.REQUERANT || person.getMembreFamille().getRoleMembreFamille() == RoleMembreFamille.CONJOINT) {
+                if (person.getMembreFamille().getPersonne().getEtatCivil() == EtatCivil.MARIE) {
+                    isMarie = true;
+                }
+                if (person.getMembreFamille().getPersonne().getEtatCivil() == EtatCivil.VEUF) {
+                    isVeuf = true;
+                }
+            }
+        }
+
+        return isMarie && isVeuf;
+    }
+
     public void setDeliveryOffice(InfoCaisse infoCaisse) {
         deliveryOffice = new AnnonceDeliveryOffice(infoCaisse);
     }
