@@ -12,6 +12,8 @@ import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.business.domaine.decision.Decision;
+import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
+import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.Pca;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
@@ -162,7 +164,7 @@ public class AnnonceDecision {
             }
         }
 
-        boolean isPremiereAnnonceVeuvage = controleSiPremiereAnnonceVeuvage(annonce.getPersonsElementsCalcul());
+        boolean isPremiereAnnonceVeuvage = controleSiPremiereAnnonceVeuvage(annonce.getListMembreFamilleWithDonneesFinanciere());
 
         for (PersonElementsCalcul personData : annonce.getPersonsElementsCalcul().getPersonsElementsCalcul()) {
             AnnoncePerson person = new AnnoncePerson(annonce, personData, requerantData, isPremiereAnnonceVeuvage);
@@ -185,16 +187,16 @@ public class AnnonceDecision {
      * @param personsElementsCalcul
      * @return
      */
-    private boolean controleSiPremiereAnnonceVeuvage(PersonsElementsCalcul personsElementsCalcul) {
+    private boolean controleSiPremiereAnnonceVeuvage(List<MembreFamilleWithDonneesFinanciere> personsElementsCalcul) {
         boolean isMarie = false;
         boolean isVeuf = false;
         // Dans la premiere annonce veuvage, le veuf est encore annoncé avec son conjoint, on contrôle donc que l'on a un veuf et un marié dans les annonces
-        for (PersonElementsCalcul person : personsElementsCalcul.getPersonsElementsCalcul()) {
-            if (person.getMembreFamille().getRoleMembreFamille() == RoleMembreFamille.REQUERANT || person.getMembreFamille().getRoleMembreFamille() == RoleMembreFamille.CONJOINT) {
-                if (person.getMembreFamille().getPersonne().getEtatCivil() == EtatCivil.MARIE) {
+        for (MembreFamilleWithDonneesFinanciere person : personsElementsCalcul) {
+            if (person.isRequerant() || person.isConjoint()) {
+                if (person.getFamille().getPersonne().getEtatCivil() == EtatCivil.MARIE) {
                     isMarie = true;
                 }
-                if (person.getMembreFamille().getPersonne().getEtatCivil() == EtatCivil.VEUF) {
+                if (person.getFamille().getPersonne().getEtatCivil() == EtatCivil.VEUF) {
                     isVeuf = true;
                 }
             }
