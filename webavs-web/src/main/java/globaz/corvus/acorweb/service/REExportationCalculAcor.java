@@ -1,33 +1,7 @@
 package globaz.corvus.acorweb.service;
 
-import acor.ch.admin.zas.rc.annonces.rente.rc.DJE10BeschreibungType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.DJE9BeschreibungType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.Gutschriften10Type;
-import acor.ch.admin.zas.rc.annonces.rente.rc.Gutschriften9WeakType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.RentenaufschubType;
-import acor.ch.admin.zas.rc.annonces.rente.rc.RentenvorbezugType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AgeFlexible10;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AiCurrentType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AiInformations;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AiType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.AssureType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.CiType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonAgeFlexible;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.CommonRenteType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DemandeType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.DonneesEchelleType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase10Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.ExtraordinaireBase9Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.FlexibilisationType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase10Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.OrdinaireBase9Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire10Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteExtraordinaire9Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire10Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.RenteOrdinaire9Type;
-import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.TypeDemandeEnum;
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.EntityService;
 import ch.globaz.common.util.Dates;
@@ -43,12 +17,7 @@ import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
 import globaz.corvus.db.ci.RERassemblementCIManager;
-import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
-import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
-import globaz.corvus.db.demandes.REDemandeRenteJointDemandeManager;
-import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
-import globaz.corvus.db.demandes.REPeriodeInvalidite;
+import globaz.corvus.db.demandes.*;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.helpers.historiques.REHistoriqueRentesJoinTiersHelper;
@@ -68,7 +37,6 @@ import globaz.hera.api.ISFPeriode;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
-import globaz.hera.interfaces.tiers.SFTiersHelper;
 import globaz.hera.wrapper.SFPeriodeWrapper;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -76,12 +44,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorTechnicalException;
-import globaz.prestation.acor.web.mapper.PRAcorAssureTypeMapper;
-import globaz.prestation.acor.web.mapper.PRAcorDemandeTypeMapper;
-import globaz.prestation.acor.web.mapper.PRAcorEnfantTypeMapper;
-import globaz.prestation.acor.web.mapper.PRAcorFamilleTypeMapper;
-import globaz.prestation.acor.web.mapper.PRAcorMapper;
-import globaz.prestation.acor.web.mapper.PRConverterUtils;
+import globaz.prestation.acor.web.mapper.*;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -249,7 +212,9 @@ public class REExportationCalculAcor {
         assureType.setDonneesVeto(createDonnesVeto(infoCompl));
 
         // RENTES
-        addRentesAssures(assureType, membre);
+        if (!JadeStringUtil.isBlankOrZero(membre.getIdTiers())) {
+            addRentesAssures(assureType, membre);
+        }
 
         // Donnees AI
         if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT, membre.getRelationAuRequerant()) && StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {

@@ -25,12 +25,12 @@ import java.util.stream.Stream;
 
 /**
  * @author mmu, scr
- * 
+ *
  */
 public abstract class ASFSituationFamiliale extends BEntity {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -174,6 +174,9 @@ public abstract class ASFSituationFamiliale extends BEntity {
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
     protected ISFMembreFamilleRequerant[] getMembresFamilleAvecEnfantRecueilli(String idTiers, String csDomaine) throws Exception {
+        if (JadeStringUtil.isBlankOrZero(idTiers)) {
+            return null;
+        }
         ISFMembreFamilleRequerant[] membres = _getMembresFamille(idTiers, csDomaine);
         SFPeriodeManager periodeMgr = new SFPeriodeManager();
         List<ISFMembreFamilleRequerant> membreList = new ArrayList<>();
@@ -334,7 +337,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getMembresFamille(java.lang.String, java.lang.String)
      */
     protected ISFMembreFamilleRequerant[] _getMembresFamilleRequerant(String idTiers, String csDomaine, String date)
@@ -1013,7 +1016,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getRelationFamiliale(java.lang.String, java.lang.String)
      */
     protected ISFRelationFamiliale[] _getRelationsConjoints(String idTiersRequerant, String csDomaine, String date)
@@ -1064,7 +1067,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getRelationFamilialeEtendue(java.lang.String, java.lang.String)
      */
     protected ISFRelationFamiliale[] _getRelationsConjointsEtendues(String idTiersRequerant, String csDomaine,
@@ -1152,7 +1155,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getRelationsConjointsParIdTiers(java.lang.String, java.lang.String)
      */
     protected ISFRelationFamiliale[] _getToutesRelationsConjointsParIdTiers(String idTiers1, String idTiers2,
@@ -1322,7 +1325,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getDetailEnfant(java.lang.String)
      */
     public ISFEnfant getEnfant(String idMembreFamille) throws Exception {
@@ -1387,7 +1390,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
         List result = new ArrayList();
         /*
-         * 
+         *
          * phase préliminaire On récupère les parents du liant....
          */
         if ((inclureParents != null) && inclureParents.booleanValue()) {
@@ -1449,7 +1452,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
         Map conjoints = new HashMap();
 
         /*
-         * 
+         *
          * 1ère passe, construction de la famille proche
          */
         SFApercuRelationConjointListViewBean mgr = new SFApercuRelationConjointListViewBean();
@@ -1512,9 +1515,9 @@ public abstract class ASFSituationFamiliale extends BEntity {
         }
 
         /*
-         * 
+         *
          * 2ème passe, construction de la famille étendue
-         * 
+         *
          * Conjoints des conjoints du liant !!!
          */
         // Pour chaque conjoint, on récupère ses ex-conjoints.
@@ -1674,7 +1677,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getPeriode(java.lang.String)
      */
     public ISFPeriode[] getPeriodes(String idMembreFamille) throws Exception {
@@ -1683,7 +1686,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getPeriode(java.lang.String, java.lang.String)
      */
     public ISFPeriode[] getPeriodes(String idMembreFamille, String typePeriode) throws Exception {
@@ -1750,7 +1753,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.hera.api.ISFSituationFamiliale#getRelationsConjoints(java.lang.String, java.lang.String)
      */
     public ISFRelationFamiliale[] getToutesRelationsConjoints(String membreFamille1, String membreFamille2,
@@ -1860,7 +1863,7 @@ public abstract class ASFSituationFamiliale extends BEntity {
 
     /**
      * Vrais si les deux partenaires donnes sont du meme sexe
-     * 
+     *
      * @param idMF1
      * @param idMF2
      * @return
