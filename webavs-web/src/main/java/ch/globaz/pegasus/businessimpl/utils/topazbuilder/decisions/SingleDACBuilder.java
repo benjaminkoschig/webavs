@@ -1457,6 +1457,14 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     private String getMontantPCTotal() {
         String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
+        if (!dacOO.getSimplePrestation().getIdTiersBeneficiaire()
+                .equals(dacOO.getDecisionHeader().getSimpleDecisionHeader().getIdTiersBeneficiaire())) {
+            if(dacOO.getPcAccordee().getSimplePrestationsAccordeesConjoint() != null &&
+                    !JadeStringUtil.isBlankOrZero(dacOO.getPcAccordee().getSimplePrestationsAccordeesConjoint().getIdTiersBeneficiaire())
+                    && dacOO.getPcAccordee().getSimplePrestationsAccordeesConjoint().getIdTiersBeneficiaire().equals(dacOO.getDecisionHeader().getSimpleDecisionHeader().getIdTiersBeneficiaire())){
+                montantPrestation = dacOO.getPcAccordee().getSimplePrestationsAccordeesConjoint().getMontantPrestation();
+            }
+        }
         String dateDebut  = JadeDateUtil.getFirstDateOfMonth(dacOO.getSimplePrestation().getDateDebutDroit());
         int nbreMois;
         if(!JadeStringUtil.isBlankOrZero(dacOO.getSimplePrestation().getDateFinDroit())){
