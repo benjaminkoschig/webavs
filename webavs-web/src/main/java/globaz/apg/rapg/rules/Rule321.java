@@ -135,7 +135,6 @@ public class Rule321 extends Rule {
                 } catch (Exception e) {
                     throw new APRuleExecutionException(e);
                 }
-                return false;
             }
         }
         return true;
