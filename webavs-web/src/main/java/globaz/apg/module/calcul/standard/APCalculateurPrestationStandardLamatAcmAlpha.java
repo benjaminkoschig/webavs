@@ -45,7 +45,6 @@ import globaz.apg.vb.droits.APEnfantMatViewBean;
 import globaz.apg.vb.prestation.APPrestationListViewBean;
 import globaz.apg.vb.prestation.APPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
-import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
@@ -60,6 +59,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.prestation.application.PRAbstractApplication;
@@ -1059,115 +1059,131 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final String dateFin, final String nombreJoursSoldes, final String noRevision,
             final boolean isAllocationMax, boolean deductionComplementLamatPossible, APPrestation firstPrestationExtension) throws Exception {
 
-        // si la prestation LAMat des 14 jours supplémentaires comprend le 01.01.2008
-        // on coupe cette prestation en 2 pour pouvoir profiter du nouveau barème valable dès le 01.01.2008
-        if (BSessionUtil.compareDateFirstLower(session, dateDebut, "01.01.2008")
-                && BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFin, "01.01.2008")) {
+        // On détecte les LAMat qui chevauchent une année avec un changement de taux
+        String dateDebutSecondPeriod = null;
+        String dateFinFirstPeriode = null;
+        String anneesChangementTauxProperty = session.getApplication().getProperty(APApplication.PROPERTY_PRESTATION_LAMAT_ANNEES_CHANGEMENT_TAUX);
+        boolean isPrestationChevaucheAnneeAvecChangementDeTaux = false;
 
+        if (!JadeStringUtil.isEmpty(anneesChangementTauxProperty)) {
+            List<String> anneesChangementTaux = new ArrayList<String>(Arrays.asList(anneesChangementTauxProperty.split(",")));
+            for (String anneeChangementTaux : anneesChangementTaux) {
+                if (JadeNumericUtil.isInteger(anneeChangementTaux)) {
+                    dateFinFirstPeriode = "31.12." + (Integer.parseInt(anneeChangementTaux) - 1);
+                    dateDebutSecondPeriod = "01.01." + anneeChangementTaux;
+                    if (BSessionUtil.compareDateFirstLower(session, dateDebut, dateDebutSecondPeriod)
+                            && BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFin, dateDebutSecondPeriod)) {
+                        isPrestationChevaucheAnneeAvecChangementDeTaux = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
+
+        // Split de la période LAMAT complémentaire de 14 jours lorsq'elle est en parallèle avec une extension maternité de moins de 14 jours
+        if (sommeMontantsJournalier.compareTo(new FWCurrency(0)) == 0 // si c'est une période LAMAT complémentaire 14 jours
+                && joursSupplementairesPrisEnCompte != 0 // si c'est une extension maternité
+                && BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebut, "01.07.2021") && BSessionUtil.compareDateFirstGreater(session, dateFin, "01.07.2021") // si c'est une période entièrement après le 01.07.2021
+                && ((PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1 == 14) || (((APDroitMaternite) droit).getDateRepriseActiv() != null && BSessionUtil.compareDateEqual(session, ((APDroitMaternite) droit).getDateRepriseActiv(), JadeDateUtil.addDays(dateFin, 1)))) // si c'est une période de LAMAT complémentaire de 14 jours normale ou plus courte et coupé par une date reprise + bloque l'appel récursif
+                && firstPrestationExtension != null) { // si il y au moins une période d'extension de maternité fédérale + bloque l'appel récursif en cas de date reprise
+
+            int joursFirstPeriodLamatComplementaire = PRDateUtils.getNbDayBetween(firstPrestationExtension.getDateDebut(), firstPrestationExtension.getDateFin()) + 1;
+
+            int joursSecondPeriodLamatComplementaire = 0;
+            if (joursSupplementairesPrisEnCompte < (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) { // si c'est une extension maternité de moins de 14 jours
+                joursSecondPeriodLamatComplementaire = joursSupplementairesPrisEnCompte - joursFirstPeriodLamatComplementaire;
+            } else {
+                joursSecondPeriodLamatComplementaire = 14 - joursFirstPeriodLamatComplementaire;
+            }
+
+            int joursThirdPeriodLamatComplementaire = (PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1) - joursSecondPeriodLamatComplementaire - joursFirstPeriodLamatComplementaire;
+
+            String debutFirstLamatComplementaire = firstPrestationExtension.getDateDebut();
+            String finFirstLamatComplementaire = firstPrestationExtension.getDateFin();
+
+            String debutSecondLamatComplementaire = JadeDateUtil.addDays(firstPrestationExtension.getDateFin(), 1);
+            String finSecondLamatComplementaire = JadeDateUtil.addDays(debutSecondLamatComplementaire, joursSecondPeriodLamatComplementaire - 1);
+
+            String debutThirdLamatComplementaire = JadeDateUtil.addDays(finSecondLamatComplementaire, 1);
+            String finThirdLamatComplementaire = JadeDateUtil.addDays(debutThirdLamatComplementaire, joursThirdPeriodLamatComplementaire - 1);
+
+            // la première période splitté sur laquel on devra procéder à une déduction
+            if (joursFirstPeriodLamatComplementaire > 0) {
+                creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
+                        revenuMoyenDeterminant, genrePrestation, debutFirstLamatComplementaire, finFirstLamatComplementaire,
+                        Long.toString(joursFirstPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
+            }
+            // la deuxième période splitté sur laquel on ne devra pas procéder à une déduction
+            if (joursSecondPeriodLamatComplementaire > 0) {
+                creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
+                        revenuMoyenDeterminant, genrePrestation, debutSecondLamatComplementaire, finSecondLamatComplementaire,
+                        Long.toString(joursSecondPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
+            }
+            // la troisième période splitté sur laquel on devra procéder à une déduction
+            if (joursThirdPeriodLamatComplementaire > 0) {
+                creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
+                        revenuMoyenDeterminant, genrePrestation, debutThirdLamatComplementaire, finThirdLamatComplementaire,
+                        Long.toString(joursThirdPeriodLamatComplementaire), noRevision, isAllocationMax, false, null);
+            }
+
+        // Split les LAMat qui chevauchent une année avec un changement de taux pour pouvoir calculer avec le taux approprié
+        } else if (isPrestationChevaucheAnneeAvecChangementDeTaux) {
             final JACalendar calendar = new JACalendarGregorian();
-            final long jourFirstPeriod = calendar.daysBetween(dateDebut, "31.12.2007");
-            final long jourSecondPeriod = calendar.daysBetween("01.01.2008", dateFin);
+            final long jourFirstPeriod = calendar.daysBetween(dateDebut, dateFinFirstPeriode);
+            final long jourSecondPeriod = calendar.daysBetween(dateDebutSecondPeriod, dateFin);
 
             creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                    revenuMoyenDeterminant, genrePrestation, dateDebut, "31.12.2007",
+                    revenuMoyenDeterminant, genrePrestation, dateDebut, dateFinFirstPeriode,
                     Long.toString(jourFirstPeriod + 1), noRevision, isAllocationMax, deductionComplementLamatPossible, firstPrestationExtension);
 
             creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                    revenuMoyenDeterminant, genrePrestation, "01.01.2008", dateFin, Long.toString(jourSecondPeriod + 1),
+                    revenuMoyenDeterminant, genrePrestation, dateDebutSecondPeriod, dateFin, Long.toString(jourSecondPeriod + 1),
                     noRevision, isAllocationMax, deductionComplementLamatPossible, firstPrestationExtension);
 
+        // Le cas normal
         } else {
-            // le cas normal
             final LAMatCalculateur lamatCalculateur = new LAMatCalculateur();
 
-            // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-            int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
+            final BigDecimal montantLAMat = lamatCalculateur.calculerMontantLAMat(session, transaction,
+                    droit.getGenreService(), droit.getIdDroit(), revenuMoyenDeterminant.toString(),
+                    sommeMontantsJournalier.toString(), dateDebut, dateFin, isAllocationMax, joursSupplementairesPrisEnCompte, lastPrestation, deductionComplementLamatPossible);
 
-            // Split de la période LAMAT complémentaire de 14 jours lorsq'elle est en parallèle avec une extension maternité de moins de 14 jours
-            if (sommeMontantsJournalier.compareTo(new FWCurrency(0)) == 0 // si c'est une période LAMAT complémentaire 14 jours
-                    && joursSupplementairesPrisEnCompte != 0 // si c'est une extension maternité
-                    && BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebut, "01.07.2021") && BSessionUtil.compareDateFirstGreater(session, dateFin, "01.07.2021") // si c'est une période entièrement après le 01.07.2021
-                    && ((PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1 == 14) || (((APDroitMaternite) droit).getDateRepriseActiv() != null && BSessionUtil.compareDateEqual(session, ((APDroitMaternite) droit).getDateRepriseActiv(), JadeDateUtil.addDays(dateFin, 1)))) // si c'est une période de LAMAT complémentaire de 14 jours normale ou plus courte et coupé par une date reprise + bloque l'appel récursif
-                    && firstPrestationExtension != null) { // si il y au moins une période d'extension de maternité fédérale + bloque l'appel récursif en cas de date reprise
-
-                    int joursFirstPeriodLamatComplementaire = PRDateUtils.getNbDayBetween(firstPrestationExtension.getDateDebut(), firstPrestationExtension.getDateFin()) + 1;
-
-                    int joursSecondPeriodLamatComplementaire = 0;
-                    if (joursSupplementairesPrisEnCompte < (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) { // si c'est une extension maternité de moins de 14 jours
-                        joursSecondPeriodLamatComplementaire = joursSupplementairesPrisEnCompte - joursFirstPeriodLamatComplementaire;
-                    } else {
-                        joursSecondPeriodLamatComplementaire = 14 - joursFirstPeriodLamatComplementaire;
-                    }
-
-                    int joursThirdPeriodLamatComplementaire = (PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1) - joursSecondPeriodLamatComplementaire - joursFirstPeriodLamatComplementaire;
-
-                    String debutFirstLamatComplementaire = firstPrestationExtension.getDateDebut();
-                    String finFirstLamatComplementaire = firstPrestationExtension.getDateFin();
-
-                    String debutSecondLamatComplementaire = JadeDateUtil.addDays(firstPrestationExtension.getDateFin(), 1);
-                    String finSecondLamatComplementaire = JadeDateUtil.addDays(debutSecondLamatComplementaire, joursSecondPeriodLamatComplementaire - 1);
-
-                    String debutThirdLamatComplementaire = JadeDateUtil.addDays(finSecondLamatComplementaire, 1);
-                    String finThirdLamatComplementaire = JadeDateUtil.addDays(debutThirdLamatComplementaire, joursThirdPeriodLamatComplementaire - 1);
-
-                    // la première période splitté sur laquel on devra procéder à une déduction
-                    if (joursFirstPeriodLamatComplementaire > 0) {
-                        creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                                revenuMoyenDeterminant, genrePrestation, debutFirstLamatComplementaire, finFirstLamatComplementaire,
-                                Long.toString(joursFirstPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
-                    }
-                    // la deuxième période splitté sur laquel on ne devra pas procéder à une déduction
-                    if (joursSecondPeriodLamatComplementaire > 0) {
-                        creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                                revenuMoyenDeterminant, genrePrestation, debutSecondLamatComplementaire, finSecondLamatComplementaire,
-                                Long.toString(joursSecondPeriodLamatComplementaire), noRevision, isAllocationMax, true, null);
-                    }
-                    // la troisième période splitté sur laquel on devra procéder à une déduction
-                    if (joursThirdPeriodLamatComplementaire > 0) {
-                        creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                                revenuMoyenDeterminant, genrePrestation, debutThirdLamatComplementaire, finThirdLamatComplementaire,
-                                Long.toString(joursThirdPeriodLamatComplementaire), noRevision, isAllocationMax, false, null);
-                    }
-
+            // Aucune prestation LAMat à créer
+            if (montantLAMat.compareTo(new BigDecimal(0)) == 0) {
+                return;
             } else {
-                final BigDecimal montantLAMat = lamatCalculateur.calculerMontantLAMat(session, transaction,
-                        droit.getGenreService(), droit.getIdDroit(), revenuMoyenDeterminant.toString(),
-                        sommeMontantsJournalier.toString(), dateDebut, dateFin, isAllocationMax, joursSupplementairesPrisEnCompte, lastPrestation, deductionComplementLamatPossible);
+                // Creation de la prestation
+                final APPrestation prestation = new APPrestation();
+                prestation.setSession(session);
 
-                // Aucune prestation LAMat à créer
-                if (montantLAMat.compareTo(new BigDecimal(0)) == 0) {
-                    return;
-                } else {
-                    // Creation de la prestation
-                    final APPrestation prestation = new APPrestation();
-                    prestation.setSession(session);
+                // Les prestations LAMat ne doivent pas être annoncées
+                prestation.setContenuAnnonce(null);
 
-                    // Les prestations LAMat ne doivent pas être annoncées
-                    prestation.setContenuAnnonce(null);
+                prestation.setDateCalcul(JACalendar.todayJJsMMsAAAA());
+                prestation.setDateDebut(dateDebut);
+                prestation.setDateFin(dateFin);
+                prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+                prestation.setIdDroit(droit.getIdDroit());
+                prestation.setNombreJoursSoldes(nombreJoursSoldes);
+                prestation.setNoRevision(noRevision);
+                prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
+                prestation.setRevenuMoyenDeterminantSansArrondi(revenuMoyenDeterminant.getBigDecimalValue().toString());
+                prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
+                prestation.setGenre(genrePrestation);
 
-                    prestation.setDateCalcul(JACalendar.todayJJsMMsAAAA());
-                    prestation.setDateDebut(dateDebut);
-                    prestation.setDateFin(dateFin);
-                    prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                    prestation.setIdDroit(droit.getIdDroit());
-                    prestation.setNombreJoursSoldes(nombreJoursSoldes);
-                    prestation.setNoRevision(noRevision);
-                    prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
-                    prestation.setRevenuMoyenDeterminantSansArrondi(revenuMoyenDeterminant.getBigDecimalValue().toString());
-                    prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
-                    prestation.setGenre(genrePrestation);
+                prestation.setMontantJournalier(montantLAMat.toString());
 
-                    prestation.setMontantJournalier(montantLAMat.toString());
+                BigDecimal mb = new BigDecimal(montantLAMat.toString());
+                mb = mb.multiply(new BigDecimal(nombreJoursSoldes));
+                prestation.setMontantBrut(mb.toString());
+                prestation.add(transaction);
 
-                    BigDecimal mb = new BigDecimal(montantLAMat.toString());
-                    mb = mb.multiply(new BigDecimal(nombreJoursSoldes));
-                    prestation.setMontantBrut(mb.toString());
-                    prestation.add(transaction);
-
-                    final APModuleRepartitionPaiements repartitionPaiements = new APModuleRepartitionPaiements();
-                    repartitionPaiements.repartirPaiementsLAMat(session, transaction, lastPrestation, prestation);
-                    controleRepartitions(session, transaction, prestation.getIdPrestationApg());
-                }
+                final APModuleRepartitionPaiements repartitionPaiements = new APModuleRepartitionPaiements();
+                repartitionPaiements.repartirPaiementsLAMat(session, transaction, lastPrestation, prestation);
+                controleRepartitions(session, transaction, prestation.getIdPrestationApg());
             }
         }
     }
