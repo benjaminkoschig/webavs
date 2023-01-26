@@ -44,7 +44,7 @@ public class APImportationCalculAcor {
     }
 
     public void importCalculAcor(String idDroit) throws Exception {
-        LOG.info("Importation des données calculées. Test");
+        LOG.info("Importation des données calculées.");
         BSession session = entityService.getSession();
         BTransaction transaction = null;
         try{
