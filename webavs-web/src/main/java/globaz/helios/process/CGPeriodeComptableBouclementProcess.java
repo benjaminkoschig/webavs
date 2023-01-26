@@ -417,25 +417,6 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         if (isAborted()) {
             return false;
         }
-        if ((mandat.isEstComptabiliteAVS().booleanValue()
-                && (bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
-                .booleanValue())) && isPTRA != null && isPTRA.equals("true")) {
-            try {
-//                lissageSecteur_1999_PTRA();
-            } catch (Exception e) {
-                this.error("LISSAGE_SECTEUR_1990_ERROR", e.getMessage());
-                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
-                return false;
-            }
-
-            this.info("LISSAGE_SECTEUR_1990_OK");
-        }
-        incProgressCounter();
-
-        // Gestion de l'abort
-        if (isAborted()) {
-            return false;
-        }
 
         if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
             try {
@@ -502,17 +483,6 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
             try {
                 equilibrageCompteChargeProduitSecteur2();
-            } catch (Exception e) {
-                this.error("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_ERROR", e.getMessage());
-                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
-                return false;
-            }
-
-            this.info("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_OK");
-        }
-        if (isPTRA != null && isPTRA.equals("true") && mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementAnnuelAVS().booleanValue()) {
-            try {
-                equilibrageCompteChargeProduitSecteur25();
             } catch (Exception e) {
                 this.error("CLOTURE_ANUNELLE_AVS_EQUILIBR_CPT_SECT_2_ERROR", e.getMessage());
                 this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
@@ -1840,35 +1810,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                     if (mapCompte.containsKey(comptePTRA.compteCloture + comptePTRA.contreEcriture)) {
                         comptePTRAOld = mapCompte.get(comptePTRA.compteCloture + comptePTRA.contreEcriture);
                         comptePTRA.cumulDoit.add(comptePTRAOld.cumulDoit);
-                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulAvoir);
-                    }
-                    mapCompte.put(comptePTRA.compteCloture + comptePTRA.contreEcriture, comptePTRA);
-                }
-                if (bouclement.isBouclementAnnuelAVS().booleanValue()
-                        && secteur.isCompteExploitation().booleanValue()
-                        && (secteur.getIdSecteurAVS().charAt(0) != '9')) {
-                    String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
-
-                    String contreEcriture;
-                    contreEcriture = getIdExterneContreEcriture(secteur,
-                            (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
-                                    + ".2140.0000");
-
-
-                    ComptePTRA comptePTRA = new ComptePTRA();
-                    comptePTRA.idSecteur = secteur.getIdSecteurAVS();
-                    comptePTRA.compteCloture = compteCloture;
-                    comptePTRA.contreEcriture = contreEcriture;
-                    comptePTRA.libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION";
-                    comptePTRA.libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_CONTRE_ECRITURE_ADMINISTRATION";
-                    ComptePTRA comptePTRAOld;
-                    comptePTRA = retrieveDoitAvoirPTRA(secteur, compteCloture, contreEcriture, false,
-                            CGCompte.CS_COMPTE_EXPLOITATION, null, null, null, null, comptePTRA);
-
-                    if (mapCompte.containsKey(comptePTRA.compteCloture + comptePTRA.contreEcriture)) {
-                        comptePTRAOld = mapCompte.get(comptePTRA.compteCloture + comptePTRA.contreEcriture);
                         comptePTRA.cumulAvoir.add(comptePTRAOld.cumulAvoir);
-                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulAvoir);
                     }
                     mapCompte.put(comptePTRA.compteCloture + comptePTRA.contreEcriture, comptePTRA);
                 }
