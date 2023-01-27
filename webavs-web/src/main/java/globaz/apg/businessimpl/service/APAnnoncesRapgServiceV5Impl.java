@@ -75,6 +75,8 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
     private static final String TEMP_FILENAME = "marshalled.xml";
     public static final String ANNONCE_N = "[Annonce n°";
 
+    public static final String MINOR_VERSION = "2";
+
     private static final Logger LOG = LoggerFactory.getLogger(APAnnoncesRapgServiceV5Impl.class);
     private static final String SERVICE_PATERNITE = "91";
 
@@ -483,7 +485,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
             MessageRAPG message = createMessage(champsAnnonce);
 
-            message.setMinorVersion(BigInteger.valueOf(0));
+            message.setMinorVersion(new BigInteger(MINOR_VERSION));
             message.setDeliveryOffice(ofCommon.createDeliveryOfficeType());
             message.setSendingApplication(ofEch0058.createSendingApplicationType());
             message.setInsurantDomicile(ofCommon.createInsurantDomicileType());
