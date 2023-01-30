@@ -89,6 +89,9 @@ public class AFApplication extends BApplication {
 
     public static final String PROPERTY_CONTACT_FPV = "contactFpv";
 
+     /** Le no de la caisse FPV */
+    public static final String NO_CAISSE_FPV = "110";
+
     /**
      * Retourne la langue associée a un tier.
      * 
