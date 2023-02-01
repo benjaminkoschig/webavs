@@ -12,6 +12,7 @@ public class REAnnonce53LevelManager extends PRAbstractManager {
 
     private static final long serialVersionUID = 1L;
     private static final String LEFT_OUTER_JOIN = " LEFT OUTER JOIN ";
+    private static final String INNER_JOIN = " INNER JOIN ";
 
     @Getter
     @Setter
@@ -28,20 +29,49 @@ public class REAnnonce53LevelManager extends PRAbstractManager {
 
     @Override
     protected String _getFrom(BStatement statement) {
-        String sql = super._getFrom(statement);
+        StringBuilder sql = new StringBuilder(_getCollection()).append(REAnnonceHeader.TABLE_NAME_ANNONCE_HEADER).append(" AS HEA");
 
+        sql.append(INNER_JOIN).append(_getCollection());
+        sql.append(REAnnoncesAbstractLevel1A.TABLE_NAME_ANNONCE_ABSTRACT_LEVEL_1A);
+        sql.append(" ON HEA.").append(REAnnonceHeader.FIELDNAME_ID_ANNONCE);
+        sql.append("=").append(REAnnoncesAbstractLevel1A.FIELDNAME_ID_ANNONCE_ABS_LEV_1A);
 
-        sql += LEFT_OUTER_JOIN +_getCollection() + REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION + " AS CHA" +
-                " ON CHA.WJIANH = YXIDAN";
-        sql += LEFT_OUTER_JOIN +_getCollection() + REAnnonceHeader.TABLE_NAME_ANNONCE_HEADER + " AS HEA2" +
-                " ON HEA2.ZAILIE = YXIDAN ";
-        sql += LEFT_OUTER_JOIN +_getCollection() + REAnnonceHeader.TABLE_NAME_ANNONCE_HEADER + " AS HEA1" +
-                " ON HEA1.ZAILIE = HEA2.ZAIANH";
-        sql += LEFT_OUTER_JOIN +_getCollection() + REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION + " AS CHA2" +
-                " ON CHA2.WJIANH = HEA2.ZAIANH";
-        sql += LEFT_OUTER_JOIN +_getCollection() + REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION + " AS CHA1" +
-                " ON CHA1.WJIANH = HEA1.ZAIANH";
-        return sql;
+        sql.append(INNER_JOIN).append(_getCollection());
+        sql.append(REAnnoncesAbstractLevel2A.TABLE_NAME_ANNONCE_ABSTRACT_LEVEL_2A);
+        sql.append(" ON HEA.").append(REAnnonceHeader.FIELDNAME_ID_ANNONCE);
+        sql.append("=").append(REAnnoncesAbstractLevel2A.FIELDNAME_ID_ANNONCE_ABS_LEV_2A);
+
+        sql.append(INNER_JOIN).append(_getCollection());
+        sql.append(REAnnoncesAbstractLevel3A.TABLE_NAME_ANNONCE_ABSTRACT_LEVEL_3A);
+        sql.append(" ON HEA.").append(REAnnonceHeader.FIELDNAME_ID_ANNONCE);
+        sql.append("=").append(REAnnoncesAbstractLevel3A.FIELDNAME_ID_ANNONCE_ABS_LEV_3A);
+
+        sql.append(INNER_JOIN).append(_getCollection());
+        sql.append(REAnnonce53.TABLE_NAME_ANNONCE_53);
+        sql.append(" ON HEA.").append(REAnnonceHeader.FIELDNAME_ID_ANNONCE);
+        sql.append("=").append(REAnnonce53.FIELDNAME_ID_ANNONCE_53);
+
+        sql.append(LEFT_OUTER_JOIN).append(_getCollection());
+        sql.append(REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION).append(" AS CHA");
+        sql.append(" ON CHA.WJIANH = YXIDAN");
+
+        sql.append(LEFT_OUTER_JOIN).append(_getCollection());
+        sql.append(REAnnonceHeader.TABLE_NAME_ANNONCE_HEADER).append(" AS HEA2");
+        sql.append(" ON HEA2.ZAILIE = YXIDAN");
+
+        sql.append(LEFT_OUTER_JOIN).append(_getCollection());
+        sql.append(REAnnonceHeader.TABLE_NAME_ANNONCE_HEADER).append(" AS HEA1");
+        sql.append(" ON HEA1.ZAILIE = HEA2.ZAIANH");
+
+        sql.append(LEFT_OUTER_JOIN).append(_getCollection());
+        sql.append(REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION).append(" AS CHA2");
+        sql.append(" ON CHA2.WJIANH = HEA2.ZAIANH");
+
+        sql.append(LEFT_OUTER_JOIN).append(_getCollection());
+        sql.append(REFicheAugmentation.TABLE_NAME_FICHE_AUGMENTATION).append(" AS CHA1");
+        sql.append(" ON CHA1.WJIANH = HEA1.ZAIANH");
+
+        return sql.toString();
     }
 
     @Override
