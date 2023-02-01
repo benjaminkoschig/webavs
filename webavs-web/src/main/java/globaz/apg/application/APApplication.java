@@ -10,7 +10,6 @@ import globaz.apg.servlet.IAPActions;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
-import globaz.fweb.taglib.FWAppColorTag;
 import globaz.prestation.application.PRAbstractApplication;
 
 import java.util.Properties;
@@ -111,6 +110,9 @@ public class APApplication extends PRAbstractApplication {
      * Le nom de la propriété de la durée de jour d'un droit maternité cantonale
      */
     public static final String PROPERTY_DROIT_MAT_CANTONALE_DUREE_JOURS = "droits.maternite.cantonale.dureejours";
+
+    /** Le nom de la propriété de liste des années avec un changement de taux LAmat */
+    public static final String PROPERTY_PRESTATION_LAMAT_ANNEES_CHANGEMENT_TAUX = "prestation.maternite.lamat.annees.changement.taux";
 
     /** Le nom de la propriété de la durée de jour d'un droit maternité */
     public static final String PROPERTY_DROIT_MAT_DUREE_JOURS = "droits.maternite.dureejours";

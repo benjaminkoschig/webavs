@@ -408,7 +408,7 @@
 
 									<input type="hidden"  name="forIdTiers" value="<%=viewBean.getIdTiersAdressePaiementPersonnalisee()%>">
 									<input type="hidden"  name="forIdAdressePaiement" value="<%=viewBean.getOrReloadAdressePaiementData().getIdAdressePaiement()%>">
-									<input type="hidden"  name="forCompteLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
+									<input type="hidden"  name="forCompteQRLike" value="<%=viewBean.getOrReloadAdressePaiementData().getCompte()%>">
 
 									<ct:FWSelectorTag	name="selecteurReferencePaiement"
 														methods="<%=viewBean.getMethodesSelectionReferencePaiement()%>"

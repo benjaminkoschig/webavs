@@ -46,7 +46,7 @@ public class IJGenererDecisionViewBean extends CTScalableDocumentAbstractViewBea
     private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
             new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
-            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteQRLike","forCompteQRLike"}};
     private String adresseCourrierAssureFormatee = "";
     private String adresseCourrierEmployeurFormatee = "";
     // pour la gestion de l'adresse de courrier

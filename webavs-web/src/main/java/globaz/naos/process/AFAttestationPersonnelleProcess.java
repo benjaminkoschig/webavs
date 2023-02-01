@@ -21,6 +21,8 @@ import globaz.osiris.api.APIReferenceRubrique;
 import globaz.osiris.db.comptes.CAReferenceRubrique;
 import globaz.osiris.db.comptes.CAReferenceRubriqueManager;
 import globaz.osiris.db.comptes.CARubrique;
+import globaz.webavs.common.CommonProperties;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -272,6 +274,12 @@ public class AFAttestationPersonnelleProcess extends BProcess {
         manager.setForInTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AC + "," + CodeSystem.TYPE_ASS_COTISATION_AC2
                 + "," + CodeSystem.TYPE_ASS_COTISATION_AF + "," + CodeSystem.TYPE_ASS_COTISATION_AVS_AI + ","
                 + CodeSystem.TYPE_ASS_AFI + "," + CodeSystem.TYPE_ASS_MATERNITE);
+
+        // Ajoute les cotisations différentiels si caisse FPV
+        if (isCaisse(AFApplication.NO_CAISSE_FPV)) {
+            manager.setForInTypeAssurance(manager.getForInTypeAssurance() + "," + CodeSystem.TYPE_ASS_CPS_AUTRE + "," + CodeSystem.TYPE_ASS_CPS_GENERAL);
+        }
+
         manager.wantCallMethodBeforeFind(false);
         manager.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
@@ -335,9 +343,14 @@ public class AFAttestationPersonnelleProcess extends BProcess {
         listRubrique.addAll(extrasRubriques());
     }
 
+    private boolean isCaisse(final String noCaisse) throws Exception {
+        return noCaisse.equals(getSession().getApplication()
+                .getProperty(CommonProperties.KEY_NO_CAISSE));
+    }
+
     /**
      * Retourne les id externes rubriques complémentaires à prendre en compte pour l'édition de l'attestation.
-     * 
+     *
      * @return Collection d'id externes
      * @throws Exception
      */

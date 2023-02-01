@@ -12,13 +12,17 @@ import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.business.domaine.decision.Decision;
+import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
+import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.Pca;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionKind;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
+import ch.globaz.pegasus.rpc.domaine.PersonsElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import globaz.apg.businessimpl.service.APAnnoncesRapgServiceV5Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,8 +164,10 @@ public class AnnonceDecision {
             }
         }
 
+        boolean isPremiereAnnonceVeuvage = controleSiPremiereAnnonceVeuvage(annonce.getListMembreFamilleWithDonneesFinanciere());
+
         for (PersonElementsCalcul personData : annonce.getPersonsElementsCalcul().getPersonsElementsCalcul()) {
-            AnnoncePerson person = new AnnoncePerson(annonce, personData, requerantData);
+            AnnoncePerson person = new AnnoncePerson(annonce, personData, requerantData, isPremiereAnnonceVeuvage);
 
             if (personData.equals(requerantData)) {
                 personRequerant = person;
@@ -174,7 +180,31 @@ public class AnnonceDecision {
             persons.add(person);
         }      
     }
-    
+
+    /**
+     * PI-051 - Annonce veuvage - Contrôle si l'on annonce un veuvage
+     *
+     * @param personsElementsCalcul
+     * @return
+     */
+    private boolean controleSiPremiereAnnonceVeuvage(List<MembreFamilleWithDonneesFinanciere> personsElementsCalcul) {
+        boolean isMarie = false;
+        boolean isVeuf = false;
+        // Dans la premiere annonce veuvage, le veuf est encore annoncé avec son conjoint, on contrôle donc que l'on a un veuf et un marié dans les annonces
+        for (MembreFamilleWithDonneesFinanciere person : personsElementsCalcul) {
+            if (person.isRequerant() || person.isConjoint()) {
+                if (person.getFamille().getPersonne().getEtatCivil() == EtatCivil.MARIE) {
+                    isMarie = true;
+                }
+                if (person.getFamille().getPersonne().getEtatCivil() == EtatCivil.VEUF) {
+                    isVeuf = true;
+                }
+            }
+        }
+
+        return isMarie && isVeuf;
+    }
+
     public void setDeliveryOffice(InfoCaisse infoCaisse) {
         deliveryOffice = new AnnonceDeliveryOffice(infoCaisse);
     }

@@ -50,7 +50,7 @@ public class IJRepartitionJointPrestationViewBean extends IJRepartitionJointPres
     private static final Object[] METHODES_SEL_REFERENCE_PAIEMENT = new Object[] {
             new String[] { "setIdReferenceQRDepuisReferenceQR", "getIdReferenceQR" }};
     private static final Object[] PARAMS_CHERCHER_REFERENCE_PAIEMENT = new Object[] {
-            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteLike","forCompteLike"}};
+            new String[]{"forIdTiers","forIdTiers"}, new String[]{"forIdAdressePaiement","forIdAdressePaiement"}, new String[]{"forCompteQRLike","forCompteQRLike"}};
     private static final Object[] METHODES_SEL_BENEFICIAIRE = new Object[] {
             new String[] { "idTiersDepuisPyxis", "idTiers" }, new String[] { "nom", "nom" } };
     private static final Object[] METHODES_SEL_BENEFICIAIRE2 = new Object[] {
